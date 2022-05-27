@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/lblod/lpdc-management-service#readme",
   "dependencies": {
-    "@lblod/mu-auth-sudo": "^0.6.0-rc.1"
+    "@lblod/mu-auth-sudo": "^0.6.0-rc.1",
+    "uuid": "^8.3.2"
   }
 }
