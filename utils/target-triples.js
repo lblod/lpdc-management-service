@@ -7,11 +7,11 @@ export function targetTriples(result, predicates) {
       return item.p.value == predicate
     })
   
-    triplesByPredicate.forEach(async triple => {
+    triplesByPredicate.forEach(triple => {
       const oldUri = triple.o.value;
       const oldId = oldUri.split('/').pop();
 
-      const newId = await uuid();
+      const newId = uuid();
       const newUri = generateNewUri(oldUri, newId);
 
       searchAndReplaceUri(result.results.bindings, oldUri, newUri);
