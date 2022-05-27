@@ -8,9 +8,9 @@ app.get('/', function(req, res) {
 
 app.post('/semantic-forms/', async function(req, res) {
   const body = req.body;
-  const publiceServiceUri = body?.data?.relationships?.["conceptual-public-service"]?.data?.uri;
+  const publicServiceId = body?.data?.relationships?.["concept"]?.data?.id;
 
-  if (!publiceServiceUri) return res.status(400).json({
+  if (!publicServiceId) return res.status(400).json({
     "errors": [
       {
         "status": "400",
@@ -19,9 +19,8 @@ app.post('/semantic-forms/', async function(req, res) {
     ]
   });
   
-
   try {
-    const { uuid, uri } = await getSemanticForm(publiceServiceUri);
+    const { uuid, uri } = await getSemanticForm(publicServiceId);
     return res.status(201).json({
       data: {
         "type": "public-service",
