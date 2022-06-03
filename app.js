@@ -88,7 +88,8 @@ app.put('/semantic-forms/:formId', async function(req, res) {
 app.delete('/semantic-forms/:formId', async function(req, res) {
   const formId = req.params.formId;
   try {
-    await deleteForm(formId);
+
+    await deleteForm(formId); //TODO: import this
     return res.status(204).send();
   } catch (e) {
     console.error(e);
