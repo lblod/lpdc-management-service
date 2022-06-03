@@ -1,6 +1,6 @@
 import { app, errorHandler, uuid } from 'mu';
 import { createForm } from './lib/createForm';
-import { getForm } from './lib/getForm';
+import { retrieveForm } from './lib/retrieveForm';
 import { updateForm } from './lib/updateForm';
 
 app.get('/', function(req, res) {
@@ -49,7 +49,7 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   const formId = req.params["formId"];
   
   try {
-    const bundle = await getForm(publicServiceId, formId);
+    const bundle = await retrieveForm(publicServiceId, formId);
 
     return res.status(201).json(bundle)
   } catch (e) {
@@ -67,11 +67,11 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
 
 app.put('/semantic-forms/:formId', async function(req, res) {
 
-  const formId = req.params.formId;
   const delta = req.body;
+
   try {
-    await updateForm(formId, delta);
-    return res.status(201).json("")
+    await updateForm(delta);
+    return res.sendStatus(201);
   } catch (e) {
     console.error(e);
     if (e.status) {
