@@ -65,7 +65,7 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   }
 });
 
-app.put('/semantic-forms/:formId', async function(req, res) {
+app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res) {
 
   const delta = req.body;
 
