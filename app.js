@@ -71,7 +71,7 @@ app.put('/semantic-forms/:formId', async function(req, res) {
 
   try {
     await updateForm(delta);
-    return res.sendStatus(201);
+    return res.sendStatus(204);
   } catch (e) {
     console.error(e);
     if (e.status) {
