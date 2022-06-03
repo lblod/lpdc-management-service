@@ -70,7 +70,7 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   const delta = req.body;
 
   try {
-    await updateForm(delta);
+    await updateForm(req.params["publicServiceId"], data);
     return res.sendStatus(204);
   } catch (e) {
     console.error(e);
