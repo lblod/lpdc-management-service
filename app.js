@@ -3,6 +3,7 @@ import { createForm } from './lib/createForm';
 import { retrieveForm } from './lib/retrieveForm';
 import { updateForm } from './lib/updateForm';
 import bodyparser from 'body-parser'
+import { deleteForm } from './lib/deleteForm';
 
 app.use(bodyparser.json());
 
@@ -88,11 +89,10 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   }
 });
 
-app.delete('/semantic-forms/:formId', async function(req, res) {
-  const formId = req.params.formId;
+app.delete('/public-services/:publicServiceId', async function(req, res) {
+  const publicServiceId = req.params.publicServiceId;
   try {
-
-    await deleteForm(formId); //TODO: import this
+    await deleteForm(publicServiceId);
     return res.status(204).send();
   } catch (e) {
     console.error(e);
