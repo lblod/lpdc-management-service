@@ -2,13 +2,16 @@ import { app, errorHandler, uuid } from 'mu';
 import { createForm } from './lib/createForm';
 import { retrieveForm } from './lib/retrieveForm';
 import { updateForm } from './lib/updateForm';
+import bodyparser from 'body-parser'
+
+app.use(bodyparser.json());
 
 app.get('/', function(req, res) {
   const message = `Hey there, you have reached the lpdc-management-service! Seems like I\'m doing just fine, have a nice day! :)`;
   res.send(message);
 });
 
-app.post('/semantic-forms/', async function(req, res) {
+app.post('/public-services/', async function(req, res) {
   const body = req.body;
   const publicServiceId = body?.data?.relationships?.["concept"]?.data?.id;
 
@@ -70,7 +73,7 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   const delta = req.body;
 
   try {
-    await updateForm(req.params["publicServiceId"], data);
+    await updateForm(delta);
     return res.sendStatus(204);
   } catch (e) {
     console.error(e);
