@@ -1,8 +1,8 @@
 import { app, errorHandler, uuid } from 'mu';
+import bodyparser from 'body-parser'
 import { createForm } from './lib/createForm';
 import { retrieveForm } from './lib/retrieveForm';
 import { updateForm } from './lib/updateForm';
-import bodyparser from 'body-parser'
 import { deleteForm } from './lib/deleteForm';
 
 app.use(bodyparser.json());
@@ -27,6 +27,7 @@ app.post('/public-services/', async function(req, res) {
   
   try {
     const { uuid, uri } = await createForm(publicServiceId);
+
     return res.status(201).json({
       data: {
         "type": "public-service",
@@ -48,7 +49,6 @@ app.post('/public-services/', async function(req, res) {
 });
 
 app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res) {
-
   const publicServiceId = req.params["publicServiceId"];
   const formId = req.params["formId"];
   
@@ -70,7 +70,6 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
 });
 
 app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res) {
-
   const delta = req.body;
 
   try {
