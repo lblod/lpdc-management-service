@@ -1,5 +1,5 @@
 import { app, errorHandler, uuid } from 'mu';
-import bodyparser from 'body-parser'
+import bodyparser from 'body-parser';
 import { createForm } from './lib/createForm';
 import { retrieveForm } from './lib/retrieveForm';
 import { updateForm } from './lib/updateForm';
@@ -8,7 +8,7 @@ import { deleteForm } from './lib/deleteForm';
 app.use(bodyparser.json());
 
 app.get('/', function(req, res) {
-  const message = `Hey there, you have reached the lpdc-management-service! Seems like I\'m doing just fine, have a nice day! :)`;
+  const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
   res.send(message);
 });
 
@@ -34,7 +34,7 @@ app.post('/public-services/', async function(req, res) {
         "id": uuid,
         "uri": uri
       }
-    })
+    });
   } catch (e) {
     console.error(e);
     if (e.status) {
@@ -55,7 +55,7 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   try {
     const bundle = await retrieveForm(publicServiceId, formId);
 
-    return res.status(201).json(bundle)
+    return res.status(201).json(bundle);
   } catch (e) {
     console.error(e);
     if (e.status) {
