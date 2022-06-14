@@ -55,7 +55,7 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   try {
     const bundle = await retrieveForm(publicServiceId, formId);
 
-    return res.status(201).json(bundle);
+    return res.status(200).json(bundle);
   } catch (e) {
     console.error(e);
     if (e.status) {
@@ -74,7 +74,7 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
 
   try {
     await updateForm(delta);
-    return res.sendStatus(204);
+    return res.sendStatus(200);
   } catch (e) {
     console.error(e);
     if (e.status) {
@@ -92,7 +92,7 @@ app.delete('/public-services/:publicServiceId', async function(req, res) {
   const publicServiceId = req.params.publicServiceId;
   try {
     await deleteForm(publicServiceId);
-    return res.status(204).send();
+    return res.sendStatus(204);
   } catch (e) {
     console.error(e);
     if (e.status) {
