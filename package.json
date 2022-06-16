@@ -1,0 +1,30 @@
+{
+  "name": "lpdc-management-service",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lblod/lpdc-management-service.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lblod/lpdc-management-service/issues"
+  },
+  "homepage": "https://github.com/lblod/lpdc-management-service#readme",
+  "dependencies": {
+    "@lblod/mu-auth-sudo": "^0.6.0-rc.1",
+    "body-parser": "^1.20.0",
+    "fs-extra": "^10.1.0",
+    "rdflib": "^2.2.19",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.17.0"
+  }
+}
