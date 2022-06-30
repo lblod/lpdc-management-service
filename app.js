@@ -24,7 +24,7 @@ app.post('/public-services/', async function(req, res) {
       }
     ]
   });
-  
+
   try {
     const { uuid, uri } = await createForm(publicServiceId);
 
@@ -51,7 +51,7 @@ app.post('/public-services/', async function(req, res) {
 app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res) {
   const publicServiceId = req.params["publicServiceId"];
   const formId = req.params["formId"];
-  
+
   try {
     const bundle = await retrieveForm(publicServiceId, formId);
 
