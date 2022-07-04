@@ -1,9 +1,9 @@
 import { v4 as uuid } from 'uuid';
 
-export function targetTriples(result, predicates) {
+export function targetTriples(triples, predicates) {
 
   predicates.forEach(predicate => {
-    const triplesByPredicate = result.results.bindings.filter((item) => {
+    const triplesByPredicate = triples.filter((item) => {
       return item.p.value == predicate;
     });
 
@@ -14,11 +14,11 @@ export function targetTriples(result, predicates) {
       const newId = uuid();
       const newUri = generateNewUri(oldUri, newId);
 
-      searchAndReplaceUri(result.results.bindings, oldUri, newUri);
-      searchAndReplaceId(result.results.bindings, oldId, newId);
+      searchAndReplaceUri(triples, oldUri, newUri);
+      searchAndReplaceId(triples, oldId, newId);
     });
   });
-  return result;
+  return triples;
 }
 
 function generateNewUri(oldUri, newId) {
