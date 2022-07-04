@@ -17,11 +17,36 @@ const FORM_MAPPING = {
   "50592aa9-333f-4b51-af67-e53b4c183a9a": "translation"
 };
 
+const PREFIXES = `
+    PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ns1:	<http://data.lblod.info/vocabularies/lpdc-ipdc/>
+    PREFIX skos:	<http://www.w3.org/2004/02/skos/core#>
+    PREFIX mu:	<http://mu.semte.ch/vocabularies/core/>
+    PREFIX cpsv:	<http://purl.org/vocab/cpsv#>
+    PREFIX dct:	<http://purl.org/dc/terms/>
+    PREFIX lpdcExt:	<http://lblod.data.gift/vocabularies/lpdc-ipdc/>
+    PREFIX xkos:	<http://rdf-vocabulary.ddialliance.org/xkos#>
+    PREFIX m8g:	<http://data.europa.eu/m8g/>
+    PREFIX lblodLpdc:	<http://data.lblod.info/id/public-services/>
+    PREFIX lblodIpdcLpdc:	<http://lblod.data.gift/vocabularies/lpdc-ipdc/>
+    PREFIX dcat:	<http://www.w3.org/ns/dcat#>
+    PREFIX lang:	<http://publications.europa.eu/resource/authority/language/>
+    PREFIX lblodOrg:	<http://data.lblod.info/id/concept/organisatie/>
+    PREFIX lblodIpdcThema:	<http://data.lblod.info/id/concept/ipdc-thema/>
+    PREFIX belgif:	<http://vocab.belgif.be/ns/publicservice#>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX schema: <http://schema.org/>
+    PREFIX adms: <http://www.w3.org/ns/adms#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX ps: <http://vocab.belgif.be/ns/publicservice#>`;
+
+
 export {
   FORM_STATUS_ACTIVE,
   FORM_STATUS_STOPPED,
   FORM_STATUS_CONCEPT,
   APPLICATION_GRAPH,
   NESTED_PREDICATES,
-  FORM_MAPPING
+  FORM_MAPPING,
+  PREFIXES
 };
