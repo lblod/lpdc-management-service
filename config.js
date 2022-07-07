@@ -21,7 +21,7 @@ const PREFIXES = `
     PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ns1:	<http://data.lblod.info/vocabularies/lpdc-ipdc/>
     PREFIX skos:	<http://www.w3.org/2004/02/skos/core#>
-    PREFIX mu:	<http://mu.semte.ch/vocabularies/core/>
+    PREFIX mu:	<ttp://mu.semte.ch/vocabularies/core/>
     PREFIX cpsv:	<http://purl.org/vocab/cpsv#>
     PREFIX dct:	<http://purl.org/dc/terms/>
     PREFIX lpdcExt:	<http://lblod.data.gift/vocabularies/lpdc-ipdc/>
@@ -38,7 +38,8 @@ const PREFIXES = `
     PREFIX schema: <http://schema.org/>
     PREFIX adms: <http://www.w3.org/ns/adms#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX ps: <http://vocab.belgif.be/ns/publicservice#>`;
+    PREFIX ps: <http://vocab.belgif.be/ns/publicservice#>
+    PREFIX locn: <http://www.w3.org/ns/locn>`;
 
 
 export {
