@@ -3,14 +3,6 @@ const FORM_STATUS_STOPPED = 'http://data.lblod.info/id/concept/ipdc-thema/12873b
 const FORM_STATUS_CONCEPT = 'http://lblod.data.gift/concepts/79a52da4-f491-4e2f-9374-89a13cde8ecd';
 const APPLICATION_GRAPH = 'http://mu.semte.ch/graphs/application';
 
-const NESTED_PREDICATES = [
-  "http://vocab.belgif.be/ns/publicservice#hasRequirement",
-  "http://data.europa.eu/m8g/hasCost",
-  "http://purl.org/vocab/cpsv#follows",
-  "http://data.europa.eu/m8g/hasContactPoint",
-  "http://www.w3.org/2000/01/rdf-schema#seeAlso"
-];
-
 const FORM_MAPPING = {
   "cd0b5eba-33c1-45d9-aed9-75194c3728d3": "content",
   "149a7247-0294-44a5-a281-0a4d3782b4fd": "characteristics",
@@ -47,7 +39,6 @@ export {
   FORM_STATUS_STOPPED,
   FORM_STATUS_CONCEPT,
   APPLICATION_GRAPH,
-  NESTED_PREDICATES,
   FORM_MAPPING,
   PREFIXES
 };
