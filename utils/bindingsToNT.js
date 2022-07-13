@@ -14,6 +14,10 @@ function _bindingToNT(s, p, o) {
     obj = `${sparqlEscapeString(o.value)}`;
     if (o.datatype)
       obj += `^^${sparqlEscapeUri(o.datatype)}`;
+    else if(o.lang)
+      obj += `@${o.lang}`;
+    else if(o['xml:lang'])
+      obj += `@${o['xml:lang']}`;
   }
   return `${subject} ${predicate} ${obj} .`;
 }
