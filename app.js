@@ -1,10 +1,9 @@
 import { app, errorHandler, uuid } from 'mu';
 import bodyparser from 'body-parser';
-import { createForm } from './lib/createForm';
+import { createForm, createEmptyForm } from './lib/createForm';
 import { retrieveForm } from './lib/retrieveForm';
 import { updateForm } from './lib/updateForm';
 import { deleteForm } from './lib/deleteForm';
-
 app.use(bodyparser.json());
 
 app.get('/', function(req, res) {
@@ -16,35 +15,51 @@ app.post('/public-services/', async function(req, res) {
   const body = req.body;
   const publicServiceId = body?.data?.relationships?.["concept"]?.data?.id;
 
-  if (!publicServiceId) return res.status(400).json({
-    "errors": [
-      {
-        "status": "400",
-        "detail": "body seems to be invalid. Could not find the conceptual-public-service uri"
+  if (!publicServiceId){
+    try {
+      const { uuid, uri } = await createEmptyForm();
+  
+      return res.status(201).json({
+        data: {
+          "type": "public-service",
+          "id": uuid,
+          "uri": uri
+        }
+      });
+    } catch (e) {
+      console.error(e);
+      if (e.status) {
+        return res.status(e.status).set('content-type', 'application/json').send(e);
       }
-    ]
-  });
-
-  try {
-    const { uuid, uri } = await createForm(publicServiceId);
-
-    return res.status(201).json({
-      data: {
-        "type": "public-service",
-        "id": uuid,
-        "uri": uri
-      }
-    });
-  } catch (e) {
-    console.error(e);
-    if (e.status) {
-      return res.status(e.status).set('content-type', 'application/json').send(e);
+      const response = {
+        status: 500,
+        message: `Something unexpected went wrong while submitting semantic-form for "${uuid}".`
+      };
+      return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
-    const response = {
-      status: 500,
-      message: `Something unexpected went wrong while submitting semantic-form for "${uuid}".`
-    };
-    return res.status(response.status).set('content-type', 'application/json').send(response.message);
+  }
+  else{
+    try {
+      const { uuid, uri } = await createForm(publicServiceId);
+
+      return res.status(201).json({
+        data: {
+          "type": "public-service",
+          "id": uuid,
+          "uri": uri
+        }
+      });
+    } catch (e) {
+      console.error(e);
+      if (e.status) {
+        return res.status(e.status).set('content-type', 'application/json').send(e);
+      }
+      const response = {
+        status: 500,
+        message: `Something unexpected went wrong while submitting semantic-form for "${uuid}".`
+      };
+      return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
   }
 });
 
