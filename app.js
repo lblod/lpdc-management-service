@@ -8,7 +8,7 @@ import { ENABLE_AUTH, AUTH_USERNAME, AUTH_PASSWORD} from './config';
 
 app.use(bodyparser.json());
 
-app.use((req, res, next) => {
+const validateUser = (req, res, next) => {
   if (ENABLE_AUTH) {
     if (req.headers.authorization?.startsWith('Basic ')) {
       const b64value = req.headers.authorization.split(' ')[1];
@@ -22,14 +22,14 @@ app.use((req, res, next) => {
     return res.status(401).send('Authentication failed.');
   }
   return next();
-});
+};
 
 app.get('/', function(req, res) {
   const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
   res.send(message);
 });
 
-app.post('/public-services/', async function(req, res) {
+app.post('/public-services/', validateUser, async function(req, res) {
   const body = req.body;
   const publicServiceId = body?.data?.relationships?.["concept"]?.data?.id;
 
@@ -102,7 +102,7 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   }
 });
 
-app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res) {
+app.put('/semantic-forms/:publicServiceId/form/:formId', validateUser, async function(req, res) {
   const delta = req.body;
 
   try {
@@ -121,7 +121,7 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   }
 });
 
-app.delete('/public-services/:publicServiceId', async function(req, res) {
+app.delete('/public-services/:publicServiceId', validateUser, async function(req, res) {
   const publicServiceId = req.params.publicServiceId;
   try {
     await deleteForm(publicServiceId);
