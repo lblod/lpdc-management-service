@@ -31,10 +31,17 @@ const PREFIXES = `
   PREFIX ps: <http://vocab.belgif.be/ns/publicservice#>
   PREFIX locn: <http://www.w3.org/ns/locn>`;
 
+const ENABLE_AUTH = process.env.ENABLE_AUTH === "true" ? true : false;
+const AUTH_USERNAME = process.env.AUTH_USERNAME || "username";
+const AUTH_PASSWORD = process.env.AUTH_PASSWORD || "password";
+
 
 export {
   FORM_STATUS_CONCEPT,
   APPLICATION_GRAPH,
   FORM_MAPPING,
-  PREFIXES
+  PREFIXES,
+  ENABLE_AUTH,
+  AUTH_USERNAME,
+  AUTH_PASSWORD
 };

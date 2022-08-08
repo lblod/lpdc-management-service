@@ -4,7 +4,25 @@ import { createForm, createEmptyForm } from './lib/createForm';
 import { retrieveForm } from './lib/retrieveForm';
 import { updateForm } from './lib/updateForm';
 import { deleteForm } from './lib/deleteForm';
+import { ENABLE_AUTH, AUTH_USERNAME, AUTH_PASSWORD} from './config';
+
 app.use(bodyparser.json());
+
+app.use((req, res, next) => {
+  if (ENABLE_AUTH) {
+    if (req.headers.authorization?.startsWith('Basic ')) {
+      const b64value = req.headers.authorization.split(' ')[1];
+      const [username, password] = Buffer.from(b64value, 'base64')
+        .toString()
+        .split(':');
+      if (username === AUTH_USERNAME && password === AUTH_PASSWORD) {
+        return next();
+      }
+    }
+    return res.status(401).send('Authentication failed.');
+  }
+  return next();
+});
 
 app.get('/', function(req, res) {
   const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
