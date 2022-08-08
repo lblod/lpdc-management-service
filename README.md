@@ -14,6 +14,13 @@ services:
       - ./data/files/lpdc:/data
 ```
 
+## Basic auth configuration
+
+You can configure basic auth for the POST, PUT and DELETE endpoints of this service using the following environment variables:
+- `ENABLE_AUTH`: whether to enable basic auth or not (default: `false`)
+- `AUTH_USERNAME`: the username to use (default: `username`)
+- `AUTH_PASSWORD`: the password to use (default: `password`)
+
 # Public Services
 
 Public service templates, also called Conceptual Public Services (after this called Template) exist in the database under the type `<http://lblod.data.gift/vocabularies/lpdc-ipdc/ConceptualPublicService>`. When a user creates a new public service in the frontend, this service will create a new public-service from a template only changing the type to `<http://purl.org/vocab/cpsv#PublicService>`.
