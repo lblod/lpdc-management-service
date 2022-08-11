@@ -25,7 +25,7 @@ app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
         data: response,
       });
     } else {
-      return res.status(201).json({
+      return res.status(200).json({
         data: response,
       });
     }
