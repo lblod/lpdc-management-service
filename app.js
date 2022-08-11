@@ -14,10 +14,22 @@ app.get('/', function(req, res) {
 });
 
 app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
-  const response = await validateService(req.params["publicServiceId"]);
-  return res.status(201).json({
-    data: response
-  });
+
+  const publicServiceId = req.params["publicServiceId"];
+
+  try {
+    const response = await validateService(publicServiceId);
+    return res.status(201).json({
+      data: response
+    });
+  } catch (e) {
+    const response = {
+        status: 500,
+        message: `Unexpected error during validation  of service "${publicServiceId}".`
+    };
+    return res.status(response.status).set('content-type', 'application/json').send(response.message);
+  }
+
 });
 
 app.post('/public-services/', async function(req, res) {
