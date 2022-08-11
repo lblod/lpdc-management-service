@@ -14,7 +14,7 @@ app.get('/', function(req, res) {
 });
 
 app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
-  const response=await validateService(req.params["publicServiceId"])
+  const response = await validateService(req.params["publicServiceId"]);
   return res.status(201).json({
     data: response
   });
@@ -27,7 +27,7 @@ app.post('/public-services/', async function(req, res) {
   if (!publicServiceId){
     try {
       const { uuid, uri } = await createEmptyForm();
-  
+
       return res.status(201).json({
         data: {
           "type": "public-service",
