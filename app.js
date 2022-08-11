@@ -19,9 +19,17 @@ app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
 
   try {
     const response = await validateService(publicServiceId);
-    return res.status(201).json({
-      data: response
-    });
+
+    if(response.errors.length) {
+      return res.status(400).json({
+        data: response,
+      });
+    } else {
+      return res.status(201).json({
+        data: response,
+      });
+    }
+
   } catch (e) {
     const response = {
         status: 500,
