@@ -4,7 +4,6 @@ const APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH;
 const FORM_MAPPING = {
   "cd0b5eba-33c1-45d9-aed9-75194c3728d3": "content",
   "149a7247-0294-44a5-a281-0a4d3782b4fd": "characteristics",
-  "50592aa9-333f-4b51-af67-e53b4c183a9a": "translation"
 };
 
 const PREFIXES = `

@@ -4,11 +4,40 @@ import { createForm, createEmptyForm } from './lib/createForm';
 import { retrieveForm } from './lib/retrieveForm';
 import { updateForm } from './lib/updateForm';
 import { deleteForm } from './lib/deleteForm';
+import { validateService } from './lib/validateService';
+
 app.use(bodyparser.json());
 
 app.get('/', function(req, res) {
   const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
   res.send(message);
+});
+
+app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
+
+  const publicServiceId = req.params["publicServiceId"];
+
+  try {
+    const response = await validateService(publicServiceId);
+
+    if(response.errors.length) {
+      return res.status(400).json({
+        data: response,
+      });
+    } else {
+      return res.status(200).json({
+        data: response,
+      });
+    }
+
+  } catch (e) {
+    const response = {
+        status: 500,
+        message: `Unexpected error during validation  of service "${publicServiceId}".`
+    };
+    return res.status(response.status).set('content-type', 'application/json').send(response.message);
+  }
+
 });
 
 app.post('/public-services/', async function(req, res) {
@@ -18,7 +47,7 @@ app.post('/public-services/', async function(req, res) {
   if (!publicServiceId){
     try {
       const { uuid, uri } = await createEmptyForm();
-  
+
       return res.status(201).json({
         data: {
           "type": "public-service",
