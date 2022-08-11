@@ -4,11 +4,20 @@ import { createForm, createEmptyForm } from './lib/createForm';
 import { retrieveForm } from './lib/retrieveForm';
 import { updateForm } from './lib/updateForm';
 import { deleteForm } from './lib/deleteForm';
+import { validateService } from './lib/validateService';
+
 app.use(bodyparser.json());
 
 app.get('/', function(req, res) {
   const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
   res.send(message);
+});
+
+app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
+  const response=await validateService(req.params["publicServiceId"])
+  return res.status(201).json({
+    data: response
+  });
 });
 
 app.post('/public-services/', async function(req, res) {
