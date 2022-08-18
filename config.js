@@ -13,7 +13,7 @@ const PREFIXES = `
   PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
   PREFIX cpsv: <http://purl.org/vocab/cpsv#>
   PREFIX dct: <http://purl.org/dc/terms/>
-  PREFIX lpdcExt: <http://lblod.data.gift/vocabularies/lpdc-ipdc/>
+  PREFIX lpdcExt: <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#>
   PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
   PREFIX m8g: <http://data.europa.eu/m8g/>
   PREFIX lblodLpdc: <http://data.lblod.info/id/public-services/>
