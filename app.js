@@ -1,16 +1,39 @@
 import { app, errorHandler, uuid } from 'mu';
 import bodyparser from 'body-parser';
+import { LOG_INCOMING_DELTA } from './config';
 import { createForm, createEmptyForm } from './lib/createForm';
 import { retrieveForm } from './lib/retrieveForm';
 import { updateForm } from './lib/updateForm';
 import { deleteForm } from './lib/deleteForm';
 import { validateService } from './lib/validateService';
+import { ProcessingQueue } from './lib/processing-queue';
+import { processLdesDelta } from './lib/postProcessLdesConceptualService';
+
+const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
 app.use(bodyparser.json());
 
 app.get('/', function(req, res) {
   const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
   res.send(message);
+});
+
+app.post('/delta', async function( req, res ) {
+  try {
+    const body = req.body;
+
+    if (LOG_INCOMING_DELTA)
+      console.log(`Receiving delta ${JSON.stringify(body)}`);
+
+    LdesPostProcessingQueue
+      .addJob(async () => { return await processLdesDelta(body); } );
+
+    res.status(202).send();
+
+  } catch(error){
+    console.error(error);
+    res.status(500).send();
+  }
 });
 
 app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
