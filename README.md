@@ -172,6 +172,7 @@ N/A
   <summary><b>POST /delta</b></summary>
   <h3> processes incoming deltas from LDES feed</h3>
   The deltanotifier configuration:
+  
   ```javascript
   [
     {
