@@ -40,10 +40,10 @@ app.post('/delta', async function( req, res ) {
 app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
 
   const publicServiceId = req.params["publicServiceId"];
-
   try {
-    const response = await validateService(publicServiceId);
-
+    const bestuurseenheid = await bestuurseenheidForSession(req);
+    const response = await validateService(publicServiceId, bestuurseenheid);
+    
     if(response.errors.length) {
       return res.status(400).json({
         data: response,
