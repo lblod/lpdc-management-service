@@ -120,7 +120,7 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   const formId = req.params["formId"];
 
   try {
-    const bundle = await retrieveForm(publicServiceId, formId);
+    const bundle = await retrieveForm(publicServiceId, formId, req.headers['mu-session-id']);
 
     return res.status(200).json(bundle);
   } catch (e) {
