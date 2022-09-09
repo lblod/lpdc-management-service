@@ -8,6 +8,7 @@ import { deleteForm } from './lib/deleteForm';
 import { validateService } from './lib/validateService';
 import { ProcessingQueue } from './lib/processing-queue';
 import { processLdesDelta } from './lib/postProcessLdesConceptualService';
+import { bestuurseenheidForSession } from './utils/session-utils';
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -39,10 +40,10 @@ app.post('/delta', async function( req, res ) {
 app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
 
   const publicServiceId = req.params["publicServiceId"];
-
   try {
-    const response = await validateService(publicServiceId);
-
+    const bestuurseenheid = await bestuurseenheidForSession(req);
+    const response = await validateService(publicServiceId, bestuurseenheid);
+    
     if(response.errors.length) {
       return res.status(400).json({
         data: response,
@@ -69,7 +70,8 @@ app.post('/public-services/', async function(req, res) {
 
   if (!publicServiceId){
     try {
-      const { uuid, uri } = await createEmptyForm();
+      const bestuurseenheid = await bestuurseenheidForSession(req);
+      const { uuid, uri } = await createEmptyForm(bestuurseenheid);
 
       return res.status(201).json({
         data: {
@@ -92,7 +94,8 @@ app.post('/public-services/', async function(req, res) {
   }
   else{
     try {
-      const { uuid, uri } = await createForm(publicServiceId);
+      const bestuurseenheid = await bestuurseenheidForSession(req);
+      const { uuid, uri } = await createForm(publicServiceId, bestuurseenheid);
 
       return res.status(201).json({
         data: {
@@ -120,7 +123,8 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   const formId = req.params["formId"];
 
   try {
-    const bundle = await retrieveForm(publicServiceId, formId, req.headers['mu-session-id']);
+    const bestuurseenheid = await bestuurseenheidForSession(req);
+    const bundle = await retrieveForm(publicServiceId, formId, bestuurseenheid);
 
     return res.status(200).json(bundle);
   } catch (e) {
