@@ -35,6 +35,8 @@ const PREFIXES = `
   PREFIX dvcs: <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/>
   PREFIX eli: <http://data.europa.eu/eli/ontology#>
   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+  PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
 `;
 
 
