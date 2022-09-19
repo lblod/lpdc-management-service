@@ -31,13 +31,14 @@ const PREFIXES = `
   PREFIX adms: <http://www.w3.org/ns/adms#>
   PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
   PREFIX ps: <http://vocab.belgif.be/ns/publicservice#>
-  PREFIX locn: <http://www.w3.org/ns/locn>
+  PREFIX locn: <http://www.w3.org/ns/locn#>
   PREFIX dvcs: <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/>
   PREFIX eli: <http://data.europa.eu/eli/ontology#>
   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
   PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
   PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
   PREFIX pav: <http://purl.org/pav/>
+  PREFIX adres: <https://data.vlaanderen.be/ns/adres#>
 `;
 
 
