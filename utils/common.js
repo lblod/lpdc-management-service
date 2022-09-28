@@ -1,10 +1,10 @@
 import { v4 as uuid } from 'uuid';
 
-export function addUuid(bindingsForSubject, newUuid = uuid()) {
-  if(bindingsForSubject.length) {
-    const subject  = bindingsForSubject[0].s.value;
+export function addUuidForSubject(bindings, newUuid = uuid()) {
+  if(bindings.length) {
+    const subject  = bindings[0].s.value;
 
-    bindingsForSubject.push(
+    bindings.push(
       {
         s: { value: subject, type: 'uri' },
         p: { value: 'http://mu.semte.ch/vocabularies/core/uuid', type: 'uri'},
@@ -12,7 +12,7 @@ export function addUuid(bindingsForSubject, newUuid = uuid()) {
       }
     );
   }
-  return bindingsForSubject;
+  return bindings;
 }
 
 export function addTypeForsubject(bindings, newType) {
