@@ -43,8 +43,8 @@ export function groupBySubject(bindings) {
   return groupedBySubject;
 }
 
-export function replaceType(result, oldType, newType) {
-  for(const binding of result.results.bindings) {
+export function replaceType(bindings, oldType, newType) {
+  for(const binding of bindings) {
     const predicate = binding.p.value;
     const object = binding.o.value;
 
@@ -52,5 +52,5 @@ export function replaceType(result, oldType, newType) {
       binding.o.value = newType;
     }
   }
-  return result;
+  return bindings;
 }
