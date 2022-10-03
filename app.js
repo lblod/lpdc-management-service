@@ -12,7 +12,11 @@ import { bestuurseenheidForSession } from './utils/session-utils';
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
-app.use(bodyparser.json());
+//TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
+//      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
+//      send its data as such.
+const bodySizeLimit = process.env.MAX_BODY_SIZE || '5Mb';
+app.use(bodyparser.json({limit: bodySizeLimit}));
 
 app.get('/', function(req, res) {
   const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -43,7 +47,7 @@ app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
   try {
     const bestuurseenheid = await bestuurseenheidForSession(req);
     const response = await validateService(publicServiceId, bestuurseenheid);
-    
+
     if(response.errors.length) {
       return res.status(400).json({
         data: response,
