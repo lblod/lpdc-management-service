@@ -39,6 +39,7 @@ const PREFIXES = `
   PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
   PREFIX pav: <http://purl.org/pav/>
   PREFIX adres: <https://data.vlaanderen.be/ns/adres#>
+  PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
   PREFIX as: <https://www.w3.org/ns/activitystreams#>
 `;
 
