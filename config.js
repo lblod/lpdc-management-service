@@ -14,6 +14,7 @@ const PREFIXES = `
   PREFIX ns1: <http://data.lblod.info/vocabularies/lpdc-ipdc/>
   PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
   PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+  PREFIX pera: <http://publications.europa.eu/resource/authority/>
   PREFIX cpsv: <http://purl.org/vocab/cpsv#>
   PREFIX dct: <http://purl.org/dc/terms/>
   PREFIX lpdcExt: <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#>
