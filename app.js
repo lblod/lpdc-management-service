@@ -148,7 +148,7 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
   const delta = req.body;
 
   try {
-    await updateForm(delta);
+    await updateForm(delta, req.headers['mu-session-id']);
     return res.sendStatus(200);
   } catch (e) {
     console.error(e);
