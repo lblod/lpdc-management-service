@@ -42,6 +42,7 @@ const PREFIXES = `
   PREFIX adres: <https://data.vlaanderen.be/ns/adres#>
   PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
   PREFIX as: <https://www.w3.org/ns/activitystreams#>
+  PREFIX sh: <http://www.w3.org/ns/shacl#>
 `;
 
 
