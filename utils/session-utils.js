@@ -23,3 +23,12 @@ export async function bestuurseenheidForSession(req) {
     throw `Unexpected result fetching bestuurseenheid from session ${muSessionId}`;
   }
 }
+export async function isAllowdForLPDC( sessionUri ) {
+  const queryStr = `
+    ${PREFIXES}
+    ASK {
+      ${sparqlEscapeUri(sessionUri)} <http://mu.semte.ch/vocabularies/ext/sessionRole> "LoketLB-LPDCGebruiker".
+    }
+  `;
+  return (await querySudo(queryStr)).boolean;
+}
