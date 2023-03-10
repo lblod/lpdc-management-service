@@ -44,9 +44,10 @@ app.post('/delta', async function( req, res ) {
 app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
 
   const publicServiceId = req.params["publicServiceId"];
+  const sessionUri = req.headers['mu-session-id'];
   try {
-    const bestuurseenheid = await bestuurseenheidForSession(req);
-    const response = await validateService(publicServiceId, bestuurseenheid);
+    const bestuurseenheidData = await bestuurseenheidForSession(sessionUri);
+    const response = await validateService(publicServiceId, bestuurseenheidData.bestuurseenheid);
 
     if(response.errors.length) {
       return res.status(400).json({
@@ -71,11 +72,11 @@ app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
 app.post('/public-services/', async function(req, res) {
   const body = req.body;
   const publicServiceId = body?.data?.relationships?.["concept"]?.data?.id;
-
+  const sessionUri = req.headers['mu-session-id'];
   if (!publicServiceId){
     try {
-      const bestuurseenheid = await bestuurseenheidForSession(req);
-      const { uuid, uri } = await createEmptyForm(bestuurseenheid);
+      const bestuurseenheidData = await bestuurseenheidForSession(sessionUri);
+      const { uuid, uri } = await createEmptyForm(bestuurseenheidData.bestuurseenheid);
 
       return res.status(201).json({
         data: {
@@ -98,8 +99,8 @@ app.post('/public-services/', async function(req, res) {
   }
   else{
     try {
-      const bestuurseenheid = await bestuurseenheidForSession(req);
-      const { uuid, uri } = await createForm(publicServiceId, bestuurseenheid);
+      const bestuurseenheidData = await bestuurseenheidForSession(sessionUri);
+      const { uuid, uri } = await createForm(publicServiceId, bestuurseenheidData.bestuurseenheid);
 
       return res.status(201).json({
         data: {
@@ -125,10 +126,11 @@ app.post('/public-services/', async function(req, res) {
 app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res) {
   const publicServiceId = req.params["publicServiceId"];
   const formId = req.params["formId"];
+  const sessionUri = req.headers['mu-session-id'];
 
   try {
-    const bestuurseenheid = await bestuurseenheidForSession(req);
-    const bundle = await retrieveForm(publicServiceId, formId, bestuurseenheid);
+    const bestuurseenheidData = await bestuurseenheidForSession(sessionUri);
+    const bundle = await retrieveForm(publicServiceId, formId, bestuurseenheidData.bestuurseenheid);
 
     return res.status(200).json(bundle);
   } catch (e) {
@@ -147,7 +149,7 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
 app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res) {
   const delta = req.body;
   try {
-    await updateForm(delta);
+    await updateForm(delta, req.headers['mu-session-id']);
     return res.sendStatus(200);
   } catch (e) {
     console.error(e);
@@ -165,7 +167,7 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
 app.delete('/public-services/:publicServiceId', async function(req, res) {
   const publicServiceId = req.params.publicServiceId;
   try {
-    await deleteForm(publicServiceId);
+    await deleteForm(publicServiceId, req.headers['mu-session-id']);
     return res.sendStatus(204);
   } catch (e) {
     console.error(e);
@@ -178,6 +180,7 @@ app.delete('/public-services/:publicServiceId', async function(req, res) {
     };
     return res.status(response.status).set('content-type', 'application/json').send(response.message);
   }
+
 });
 
 app.use(errorHandler);
