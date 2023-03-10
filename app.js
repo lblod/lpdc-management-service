@@ -168,7 +168,7 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function(req, res
 app.delete('/public-services/:publicServiceId', async function(req, res) {
   const publicServiceId = req.params.publicServiceId;
   try {
-    await deleteForm(publicServiceId);
+    await deleteForm(publicServiceId, req.headers['mu-session-id']);
     return res.sendStatus(204);
   } catch (e) {
     console.error(e);
@@ -181,6 +181,7 @@ app.delete('/public-services/:publicServiceId', async function(req, res) {
     };
     return res.status(response.status).set('content-type', 'application/json').send(response.message);
   }
+
 });
 
 app.use(errorHandler);
