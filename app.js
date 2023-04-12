@@ -44,10 +44,9 @@ app.post('/delta', async function( req, res ) {
 app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
 
   const publicServiceId = req.params["publicServiceId"];
-  const sessionUri = req.headers['mu-session-id'];
+  
   try {
-    const bestuurseenheidData = await bestuurseenheidForSession(sessionUri);
-    const response = await validateService(publicServiceId, bestuurseenheidData.bestuurseenheid);
+    const response = await validateService(publicServiceId);
 
     if(response.errors.length) {
       return res.status(400).json({
@@ -126,11 +125,9 @@ app.post('/public-services/', async function(req, res) {
 app.get('/semantic-forms/:publicServiceId/form/:formId', async function(req, res) {
   const publicServiceId = req.params["publicServiceId"];
   const formId = req.params["formId"];
-  const sessionUri = req.headers['mu-session-id'];
 
   try {
-    const bestuurseenheidData = await bestuurseenheidForSession(sessionUri);
-    const bundle = await retrieveForm(publicServiceId, formId, bestuurseenheidData.bestuurseenheid);
+    const bundle = await retrieveForm(publicServiceId, formId);
 
     return res.status(200).json(bundle);
   } catch (e) {
