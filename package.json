@@ -26,7 +26,8 @@
     "rdflib": "^2.2.19",
     "node-fetch": "^2.6.7",
     "uuid": "^8.3.2",
-    "lodash": "^4.17.1"
+    "lodash": "^4.17.1",
+    "sanitize-html": "^2.10.0"
   },
   "devDependencies": {
     "eslint": "^8.17.0"
