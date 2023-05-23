@@ -79,9 +79,11 @@ app.post('/public-services/', async function(req, res) {
 
       return res.status(201).json({
         data: {
-          "type": "public-service",
+          "type": "public-services",
           "id": uuid,
-          "uri": uri
+          "attributes": {
+            "uri": uri
+          }
         }
       });
     } catch (e) {
@@ -103,9 +105,11 @@ app.post('/public-services/', async function(req, res) {
 
       return res.status(201).json({
         data: {
-          "type": "public-service",
+          "type": "public-services",
           "id": uuid,
-          "uri": uri
+          "attributes": {
+            "uri": uri
+          }
         }
       });
     } catch (e) {
