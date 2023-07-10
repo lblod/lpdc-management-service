@@ -2,7 +2,7 @@
 
 _Note_: Documentation is structured using [The software guidebook by Simon Brown](https://leanpub.com/documenting-software-architecture).
 
-LPDC Publishing Service is part of [LPDC - Digitaal loket](https://github.com/lblod/app-lpdc-digitaal-loket).
+LPDC Publishing Service is part of [LPDC - Digitaal loket](https://github.com/lblod/app-lpdc-digitaal-loket/tree/kunlabora).
 
 # 1. Context
 
@@ -190,7 +190,7 @@ All forms act on the same object: public-service (not the template!).
 
 ## files
 
-The ttl and json files for each form are located in the config/lpdc-management folder [@see LPDC - Digitaal loket](https://github.com/lblod/app-lpdc-digitaal-loket).
+The ttl and json files for each form are located in the config/lpdc-management folder [@see LPDC - Digitaal loket](https://github.com/lblod/app-lpdc-digitaal-loket/tree/kunlabora).
 
 ```
 ── config/
