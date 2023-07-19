@@ -1,6 +1,6 @@
 {
   "name": "lpdc-management-service",
-  "version": "0.24.2",
+  "version": "0.24.3",
   "description": "",
   "main": "app.js",
   "scripts": {
