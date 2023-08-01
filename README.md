@@ -225,6 +225,12 @@ services:
       - ./config/lpdc-management:/config
       - ./data/files/lpdc:/data
 ```
+## Release a new version
+We use [release-it](https://github.com/release-it/release-it/tree/main) to make a new release.
+
+```shell
+  npm run release
+```
 
 # 11. Operation and Support
 
