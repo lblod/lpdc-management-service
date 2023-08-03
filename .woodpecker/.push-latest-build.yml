@@ -8,3 +8,6 @@ pipeline:
 when:
   branch: kunlabora
   event: push
+
+depends_on:
+  - test
