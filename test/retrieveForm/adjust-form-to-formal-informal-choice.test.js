@@ -13,9 +13,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When chosenForm informal and concept in informal version then formLanguage should be @nl-be-x-informal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = 'informal';
+        const chosenForm = 'informal';
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.informal);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.informal);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-informal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -23,9 +23,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When chosenForm informal and concept in formal version then formLanguage should be @nl-be-x-generated-informal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = 'informal';
+        const chosenForm = 'informal';
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.formal);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.formal);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-generated-informal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -33,9 +33,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When chosenForm informal and concept in unknown version then formLanguage should be @nl-be-x-generated-informal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = 'informal';
+        const chosenForm = 'informal';
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.unknown);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.unknown);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-generated-informal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -43,9 +43,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When chosenForm informal and concept in both version then formLanguage should be @nl-be-x-informal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = 'informal';
+        const chosenForm = 'informal';
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.both);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.both);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-informal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -53,9 +53,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When chosenForm informal and concept only in nl version then formLanguage should be @nl', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = 'informal';
+        const chosenForm = 'informal';
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.onlyNl);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.onlyNl);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -63,9 +63,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When chosenForm formal and concept in formal version then formLanguage should be @nl-be-x-formal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = 'formal';
+        const chosenForm = 'formal';
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.formal);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.formal);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-formal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -73,9 +73,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When chosenForm formal and concept in informal version then formLanguage should be @nl-be-x-generated-formal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = 'formal';
+        const chosenForm = 'formal';
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.informal);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.informal);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-generated-formal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -83,9 +83,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When chosenForm formal and concept in unknown versions then formLanguage should be @nl-be-x-generated-formal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = 'formal';
+        const chosenForm = 'formal';
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.unknown);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.unknown);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-generated-formal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -93,9 +93,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When chosenForm formal and concept in both versions then formLanguage should be @nl-be-x-formal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = 'formal';
+        const chosenForm = 'formal';
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.both);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.both);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-formal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -103,9 +103,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When chosenForm formal and concept only in nl then formLanguage should be @nl', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = 'formal';
+        const chosenForm = 'formal';
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.onlyNl);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.onlyNl);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -113,9 +113,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When no chosenForm and concept in formal version then formLanguage should be @nl-be-x-formal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = undefined;
+        const chosenForm = undefined;
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.formal);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.formal);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-formal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -123,9 +123,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When no chosenForm and concept in informal version then formLanguage should be @nl-be-x-generated-formal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = undefined;
+        const chosenForm = undefined;
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.informal);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.informal);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-generated-formal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -133,9 +133,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When no chosenForm and concept in unknown versions then formLanguage should be @nl-be-x-generated-formal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = undefined;
+        const chosenForm = undefined;
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.unknown);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.unknown);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-generated-formal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -143,9 +143,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When no chosenForm and concept in both versions then formLanguage should be @nl-be-x-formal', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = undefined;
+        const chosenForm = undefined;
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.both);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.both);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form-formal.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
@@ -153,9 +153,9 @@ describe('Adjust form to formal informal choice', () => {
 
     it('When no chosenForm and concept only in nl then formLanguage should be @nl', () => {
         const originalForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
-        const formalInformalChoice = undefined;
+        const chosenForm = undefined;
 
-        const actual = adjustConceptFormForFormalInformalChoice(originalForm, formalInformalChoice, conceptLanguages.onlyNl);
+        const actual = adjustConceptFormForFormalInformalChoice(originalForm, chosenForm, conceptLanguages.onlyNl);
 
         const expectedForm = fs.readFileSync(`${__dirname}/form.ttl`, 'utf8');
         expect(actual).toEqual(expectedForm);
