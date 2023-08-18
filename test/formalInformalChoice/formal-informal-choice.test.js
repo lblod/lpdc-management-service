@@ -199,10 +199,10 @@ describe('formalInformalChoice', () => {
             expect(actual).toEqual('nl-be-x-generated-formal');
         });
 
-        it('When chosenForm formal and concept in unknown versions then formLanguage should be @nl-be-x-generated-formal', () => {
+        it('When chosenForm formal and concept in unknown versions then formLanguage should be @nl', () => {
             const actual = selectLanguageVersionForConcept(conceptLanguages.unknown, 'formal');
 
-            expect(actual).toEqual('nl-be-x-generated-formal');
+            expect(actual).toEqual('nl');
         });
 
         it('When chosenForm formal and concept in both versions then formLanguage should be @nl-be-x-formal', () => {
@@ -230,10 +230,10 @@ describe('formalInformalChoice', () => {
             expect(actual).toEqual('nl-be-x-generated-formal');
         });
 
-        it('When no chosenForm and concept in unknown versions then formLanguage should be @nl-be-x-generated-formal', () => {
+        it('When no chosenForm and concept in unknown versions then formLanguage should be @nl', () => {
             const actual = selectLanguageVersionForConcept(conceptLanguages.unknown, undefined);
 
-            expect(actual).toEqual('nl-be-x-generated-formal');
+            expect(actual).toEqual('nl');
         });
 
         it('When no chosenForm and concept in both versions then formLanguage should be @nl-be-x-formal', () => {
