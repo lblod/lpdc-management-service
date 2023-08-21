@@ -9,6 +9,7 @@ import { validateService } from './lib/validateService';
 import { ProcessingQueue } from './lib/processing-queue';
 import { processLdesDelta } from './lib/postProcessLdesConceptualService';
 import { bestuurseenheidForSession } from './utils/session-utils';
+import {getLanguageVersionOfConcept} from "./lib/get-concept-language-version";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -178,6 +179,22 @@ app.delete('/public-services/:publicServiceId', async function(req, res) {
     return res.status(response.status).set('content-type', 'application/json').send(response.message);
   }
 
+});
+
+app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version', async (req, res) => {
+  try {
+    const languageVersion = await getLanguageVersionOfConcept(req.params.conceptualPublicServiceId);
+    return res.json({languageVersion: languageVersion});
+  } catch (e) {
+    if (e.status) {
+      return res.status(e.status).set('content-type', 'application/json').send(e);
+    }
+    const response = {
+      status: 500,
+      message: `Something unexpected went wrong while getting language version for concept with uuid "${uuid}".`
+    };
+    return res.status(response.status).set('content-type', 'application/json').send(response.message);
+  }
 });
 
 app.use(errorHandler);
