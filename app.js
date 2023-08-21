@@ -9,7 +9,7 @@ import { validateService } from './lib/validateService';
 import { ProcessingQueue } from './lib/processing-queue';
 import { processLdesDelta } from './lib/postProcessLdesConceptualService';
 import { bestuurseenheidForSession } from './utils/session-utils';
-import {getLanguageVersionOfConcept} from "./lib/get-concept-language-version";
+import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
