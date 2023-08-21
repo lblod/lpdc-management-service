@@ -248,4 +248,160 @@ describe('formalInformalChoice', () => {
             expect(actual).toEqual('nl');
         });
     });
+
+    describe('findDutchLanguageVersionsOfTriples', () => {
+
+        it('Should return array of languages', () => {
+            const triples = [
+                {
+                    s: {
+                        value: 'https://ipdc.tni-vlaanderen.be/id/concept/1c3c0181-8158-487a-a508-84ae983c20a2',
+                        type: 'uri'
+                    },
+                    p: {
+                        value: 'http://purl.org/dc/terms/title',
+                        type: 'uri'
+                    },
+                    o: {
+                        value: 'title',
+                        ['xml:lang']: 'nl',
+                        type: 'literal'
+                    }
+                },
+                {
+                    s: {
+                        value: 'https://ipdc.tni-vlaanderen.be/id/concept/1c3c0181-8158-487a-a508-84ae983c20a2',
+                        type: 'uri'
+                    },
+                    p: {
+                        value: 'http://purl.org/dc/terms/title',
+                        type: 'uri'
+                    },
+                    o: {
+                        value: 'title',
+                        ['xml:lang']: 'nl-be-generated-formal',
+                        type: 'literal'
+                    }
+                }
+            ];
+
+            const actual = findDutchLanguageVersionsOfTriples(triples);
+            expect(actual).toEqual(['nl', 'nl-be-generated-formal']);
+        });
+
+        it('Should not contain doubles', () => {
+            const triples = [
+                {
+                    s: {
+                        value: 'https://ipdc.tni-vlaanderen.be/id/concept/1c3c0181-8158-487a-a508-84ae983c20a2',
+                        type: 'uri'
+                    },
+                    p: {
+                        value: 'http://purl.org/dc/terms/title',
+                        type: 'uri'
+                    },
+                    o: {
+                        value: 'title',
+                        ['xml:lang']: 'nl',
+                        type: 'literal'
+                    }
+                },
+                {
+                    s: {
+                        value: 'https://ipdc.tni-vlaanderen.be/id/concept/1c3c0181-8158-487a-a508-84ae983c20a2',
+                        type: 'uri'
+                    },
+                    p: {
+                        value: 'http://purl.org/dc/terms/description',
+                        type: 'uri'
+                    },
+                    o: {
+                        value: 'title',
+                        ['xml:lang']: 'nl',
+                        type: 'literal'
+                    }
+                }
+            ];
+
+            const actual = findDutchLanguageVersionsOfTriples(triples);
+            expect(actual).toEqual(['nl']);
+        });
+
+        it('Should not contain english', () => {
+            const triples = [
+                {
+                    s: {
+                        value: 'https://ipdc.tni-vlaanderen.be/id/concept/1c3c0181-8158-487a-a508-84ae983c20a2',
+                        type: 'uri'
+                    },
+                    p: {
+                        value: 'http://purl.org/dc/terms/title',
+                        type: 'uri'
+                    },
+                    o: {
+                        value: 'title',
+                        ['xml:lang']: 'nl',
+                        type: 'literal'
+                    }
+                },
+                {
+                    s: {
+                        value: 'https://ipdc.tni-vlaanderen.be/id/concept/1c3c0181-8158-487a-a508-84ae983c20a2',
+                        type: 'uri'
+                    },
+                    p: {
+                        value: 'http://purl.org/dc/terms/title',
+                        type: 'uri'
+                    },
+                    o: {
+                        value: 'title',
+                        ['xml:lang']: 'en',
+                        type: 'literal'
+                    }
+                }
+            ];
+
+            const actual = findDutchLanguageVersionsOfTriples(triples);
+            expect(actual).toEqual(['nl']);
+        });
+
+        it('Should not contain language of keyword', () => {
+            const triples = [
+                {
+                    s: {
+                        value: 'https://ipdc.tni-vlaanderen.be/id/concept/1c3c0181-8158-487a-a508-84ae983c20a2',
+                        type: 'uri'
+                    },
+                    p: {
+                        value: 'http://purl.org/dc/terms/title',
+                        type: 'uri'
+                    },
+                    o: {
+                        value: 'title',
+                        ['xml:lang']: 'nl-be-generated-formal',
+                        type: 'literal'
+                    }
+                },
+                {
+                    s: {
+                        value: 'https://ipdc.tni-vlaanderen.be/id/concept/1c3c0181-8158-487a-a508-84ae983c20a2',
+                        type: 'uri'
+                    },
+                    p: {
+                        value: 'http://www.w3.org/ns/dcat#keyword',
+                        type: 'uri'
+                    },
+                    o: {
+                        value: 'title',
+                        ['xml:lang']: 'nl',
+                        type: 'literal'
+                    }
+                }
+            ];
+
+            const actual = findDutchLanguageVersionsOfTriples(triples);
+            expect(actual).toEqual(['nl-be-generated-formal']);
+        });
+
+    });
 });
