@@ -10,6 +10,7 @@ import { ProcessingQueue } from './lib/processing-queue';
 import { processLdesDelta } from './lib/postProcessLdesConceptualService';
 import { bestuurseenheidForSession } from './utils/session-utils';
 import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
+import {getContactPointOptions} from "./lib/getContactPointOptions";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -194,6 +195,24 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version
       message: `Something unexpected went wrong while getting language version for concept with uuid "${uuid}".`
     };
     return res.status(response.status).set('content-type', 'application/json').send(response.message);
+  }
+});
+
+app.get('/contact-info-options/:fieldName', async (req, res) => {
+  try {
+    const result = await getContactPointOptions(req.params.fieldName);
+    return res.json(result);
+  } catch (e) {
+    if (e.message === 'Invalid request: not a valid field name') {
+      return res.status(400).set('content-type', 'application/json').send('Invalid request: not a valid field name');
+    } else {
+      console.error(e);
+      const response = {
+        status: 500,
+        message: `Something unexpected went wrong while getting contactInfo options".`
+      };
+      return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
   }
 });
 
