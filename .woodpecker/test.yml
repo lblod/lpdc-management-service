@@ -4,5 +4,5 @@ pipeline:
     settings:
       run: test
 when:
-  branch: kunlabora
+  branch: development
   event: push
