@@ -188,6 +188,7 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version
     const languageVersion = await getLanguageVersionOfConcept(req.params.conceptualPublicServiceId);
     return res.json({languageVersion: languageVersion});
   } catch (e) {
+    console.error(e);
     if (e.status) {
       return res.status(e.status).set('content-type', 'application/json').send(e);
     }
@@ -204,6 +205,7 @@ app.get('/contact-info-options/:fieldName', async (req, res) => {
     const result = await getContactPointOptions(req.params.fieldName);
     return res.json(result);
   } catch (e) {
+    console.error(e);
     if (e.message === 'Invalid request: not a valid field name') {
       return res.status(400).set('content-type', 'application/json').send('Invalid request: not a valid field name');
     } else {
@@ -218,13 +220,32 @@ app.get('/contact-info-options/:fieldName', async (req, res) => {
 });
 
 app.get('/address/municipalities', async (req, res) => {
-  const municipalities = await fetchMunicipalities(req.query.search);
-  return res.json(municipalities);
+  try {
+    const municipalities = await fetchMunicipalities(req.query.search);
+    return res.json(municipalities);
+  } catch (e) {
+    console.error(e);
+    const response = {
+      status: 500,
+      message: `Something unexpected went wrong while getting municipalities.`
+    };
+    return res.status(response.status).set('content-type', 'application/json').send(response.message);
+  }
 });
 
 app.get('/address/streets', async (req, res) => {
-  const streets = await fetchStreets(req.query.municipality, req.query.search);
-  return res.json(streets);
+  try {
+    const streets = await fetchStreets(req.query.municipality, req.query.search);
+    return res.json(streets);
+  } catch (e) {
+    console.error(e);
+    const response = {
+      status: 500,
+      message: `Something unexpected went wrong while getting streets.`
+    };
+    return res.status(response.status).set('content-type', 'application/json').send(response.message);
+  }
+
 });
 
 app.use(errorHandler);
