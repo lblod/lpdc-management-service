@@ -11,7 +11,7 @@ import { processLdesDelta } from './lib/postProcessLdesConceptualService';
 import { bestuurseenheidForSession } from './utils/session-utils';
 import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
 import {getContactPointOptions} from "./lib/getContactPointOptions";
-import {fetchMunicipalities} from "./lib/address";
+import {fetchMunicipalities, fetchStreets} from "./lib/address";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -220,6 +220,11 @@ app.get('/contact-info-options/:fieldName', async (req, res) => {
 app.get('/address/municipalities', async (req, res) => {
   const municipalities = await fetchMunicipalities(req.query.search);
   return res.json(municipalities);
+});
+
+app.get('/address/streets', async (req, res) => {
+  const streets = await fetchStreets(req.query.municipality, req.query.search);
+  return res.json(streets);
 });
 
 app.use(errorHandler);
