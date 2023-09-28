@@ -11,7 +11,7 @@ import { processLdesDelta } from './lib/postProcessLdesConceptualService';
 import { bestuurseenheidForSession } from './utils/session-utils';
 import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
 import {getContactPointOptions} from "./lib/getContactPointOptions";
-import {fetchMunicipalities, fetchStreets} from "./lib/address";
+import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -245,7 +245,30 @@ app.get('/address/streets', async (req, res) => {
     };
     return res.status(response.status).set('content-type', 'application/json').send(response.message);
   }
-
 });
+
+app.get('/address/validate', async (req, res) => {
+  try {
+    const address = await findAddressMatch(
+        req.query.municipality,
+        req.query.street,
+        req.query.houseNumber,
+        req.query.busNumber
+    );
+    return res.json(address);
+  } catch (e) {
+    console.error(e);
+    if (e.message === 'Invalid request: municipality, street and houseNumber are required') {
+      return res.status(400).set('content-type', 'application/json').send({message: 'Invalid request: municipality, street and houseNumber are required'});
+    }
+    const response = {
+      status: 500,
+      message: `Something unexpected went wrong while getting streets.`
+    };
+    return res.status(response.status).set('content-type', 'application/json').send(response.message);
+  }
+});
+
+
 
 app.use(errorHandler);
