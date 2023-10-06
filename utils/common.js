@@ -16,7 +16,7 @@ export function addUuidForSubject(bindings, newUuid = uuid()) {
   return bindings;
 }
 
-export function addTypeForsubject(bindings, newType) {
+export function addTypeForSubject(bindings, newType) {
   if(bindings.length) {
     const subject  = bindings[0].s.value;
 
