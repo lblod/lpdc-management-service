@@ -62,6 +62,7 @@ app.post('/semantic-forms/:publicServiceId/submit', async function(req, res) {
     }
 
   } catch (e) {
+    console.error(e);
     const response = {
         status: 500,
         message: `Unexpected error during validation  of service "${publicServiceId}".`
