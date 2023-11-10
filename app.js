@@ -1,7 +1,7 @@
 import {app, errorHandler, uuid} from 'mu';
 import bodyparser from 'body-parser';
 import {LOG_INCOMING_DELTA} from './config';
-import {createForm, createEmptyForm} from './lib/createForm';
+import {createEmptyForm, createForm} from './lib/createForm';
 import {retrieveForm} from './lib/retrieveForm';
 import {updateForm} from './lib/updateForm';
 import {deleteForm} from './lib/deleteForm';
@@ -13,6 +13,7 @@ import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
 import {getContactPointOptions} from "./lib/getContactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
 import {isConceptFunctionallyChanged} from "./lib/compareSnapshot";
+import {unlinkConcept} from "./lib/linkUnlinkConcept";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -184,6 +185,12 @@ app.delete('/public-services/:publicServiceId', async function (req, res) {
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
 
+});
+
+app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, res) {
+    const publicServiceId = req.params.publicServiceId;
+    await unlinkConcept(publicServiceId);
+    return res.sendStatus(200);
 });
 
 app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version', async (req, res) => {
