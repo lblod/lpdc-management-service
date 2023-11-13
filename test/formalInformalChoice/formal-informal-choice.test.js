@@ -1,4 +1,4 @@
-import {findDutchLanguageVersionsOfTriples, selectLanguageVersionForConcept} from "../../lib/formalInformalChoice";
+import { findDutchLanguageVersionsOfTriples, selectLanguageVersionForConcept } from "../../lib/formalInformalChoice";
 
 const conceptLanguages = {
     onlyNl: ['nl'],
@@ -150,6 +150,62 @@ describe('formalInformalChoice', () => {
             ];
             const actual = findDutchLanguageVersionsOfTriples(triples);
             expect(actual).toEqual([]);
+        });
+
+        it('Should return languages that start with nl', () => {
+            const serviceUri = 'http://data.lblod.info/id/concept/323216fa-c4ce-4804-8c14-ed8bba71cc1c';
+            const triples = [
+                {
+                    s: {value: serviceUri, type: 'uri'},
+                    p: {value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', type: 'uri'},
+                    o: {
+                        value: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService',
+                        type: 'uri'
+                    }
+                },
+                {
+                    s: {value: serviceUri, type: 'uri'},
+                    p: {value: 'http://purl.org/dc/terms/description', type: 'uri'},
+                    o: {value: 'this is the title', type: 'literal', ['xml:lang']: 'fr'}
+                },
+                {
+                    s: {value: serviceUri, type: 'uri'},
+                    p: {value: 'http://purl.org/dc/terms/description', type: 'uri'},
+                    o: {value: 'this is the title', type: 'literal', ['xml:lang']: 'de'}
+                },
+                {
+                    s: {value: serviceUri, type: 'uri'},
+                    p: {value: 'http://purl.org/dc/terms/description', type: 'uri'},
+                    o: {value: 'this is the title', type: 'literal', ['xml:lang']: 'en'}
+                },
+                {
+                    s: {value: serviceUri, type: 'uri'},
+                    p: {value: 'http://purl.org/dc/terms/description', type: 'uri'},
+                    o: {value: 'this is the title', type: 'literal', ['xml:lang']: 'es'}
+                },
+                {
+                    s: {value: serviceUri, type: 'uri'},
+                    p: {value: 'http://purl.org/dc/terms/description', type: 'uri'},
+                    o: {value: 'this is the title', type: 'literal', ['xml:lang']: 'nl-be-x-generated-formal'}
+                },
+                {
+                    s: {value: serviceUri, type: 'uri'},
+                    p: {value: 'http://purl.org/dc/terms/description', type: 'uri'},
+                    o: {value: 'this is the title', type: 'literal', ['xml:lang']: 'nl-be-x-generated-informal'}
+                },
+                {
+                    s: {value: serviceUri, type: 'uri'},
+                    p: {value: 'http://purl.org/dc/terms/description', type: 'uri'},
+                    o: {value: 'this is the title', type: 'literal', ['xml:lang']: 'nl-other-forms'}
+                },
+                {
+                    s: {value: serviceUri, type: 'uri'},
+                    p: {value: 'http://purl.org/dc/terms/description', type: 'uri'},
+                    o: {value: 'this is the title', type: 'literal', ['xml:lang']: 'nl'}
+                },
+            ];
+            const actual = findDutchLanguageVersionsOfTriples(triples);
+            expect(actual).toEqual(['nl-be-x-generated-formal', 'nl-be-x-generated-informal', 'nl-other-forms', 'nl']);
         });
     });
 
