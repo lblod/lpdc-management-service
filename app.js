@@ -14,6 +14,7 @@ import {getContactPointOptions} from "./lib/getContactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
 import {isConceptFunctionallyChanged} from "./lib/compareSnapshot";
 import {unlinkConcept} from "./lib/linkUnlinkConcept";
+import {getLanguageVersionOfInstance} from "./lib/getInstanceLanguageVersion";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -191,6 +192,20 @@ app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, re
     const publicServiceId = req.params.publicServiceId;
     await unlinkConcept(publicServiceId);
     return res.sendStatus(200);
+});
+
+app.get('/public-services/:publicServiceId/language-version', async function (req, res) {
+    try {
+        const languageVersion = await getLanguageVersionOfInstance(req.params.publicServiceId);
+        return res.json({languageVersion: languageVersion});
+    } catch (e) {
+        console.error(e);
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while getting language version for concept with uuid "${uuid}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
 });
 
 app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version', async (req, res) => {
