@@ -13,7 +13,7 @@ import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
 import {getContactPointOptions} from "./lib/getContactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
 import {isConceptFunctionallyChanged} from "./lib/compareSnapshot";
-import {unlinkConcept} from "./lib/linkUnlinkConcept";
+import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -190,6 +190,13 @@ app.delete('/public-services/:publicServiceId', async function (req, res) {
 app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, res) {
     const publicServiceId = req.params.publicServiceId;
     await unlinkConcept(publicServiceId);
+    return res.sendStatus(200);
+});
+
+app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function (req, res) {
+    const publicServiceId = req.params.publicServiceId;
+    const conceptId = req.params.conceptId;
+    await linkConcept(publicServiceId, conceptId);
     return res.sendStatus(200);
 });
 
