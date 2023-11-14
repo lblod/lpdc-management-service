@@ -1,19 +1,19 @@
-import {app, errorHandler, uuid} from 'mu';
+import { app, errorHandler, uuid } from 'mu';
 import bodyparser from 'body-parser';
-import {LOG_INCOMING_DELTA} from './config';
-import {createEmptyForm, createForm} from './lib/createForm';
-import {retrieveForm} from './lib/retrieveForm';
-import {updateForm} from './lib/updateForm';
-import {deleteForm} from './lib/deleteForm';
-import {validateService} from './lib/validateService';
-import {ProcessingQueue} from './lib/processing-queue';
-import {processLdesDelta} from './lib/postProcessLdesConceptualService';
-import {bestuurseenheidForSession} from './utils/session-utils';
-import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
-import {getContactPointOptions} from "./lib/getContactPointOptions";
-import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
-import {isConceptFunctionallyChanged} from "./lib/compareSnapshot";
-import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
+import { LOG_INCOMING_DELTA } from './config';
+import { createEmptyForm, createForm } from './lib/createForm';
+import { retrieveForm } from './lib/retrieveForm';
+import { updateForm } from './lib/updateForm';
+import { deleteForm } from './lib/deleteForm';
+import { validateService } from './lib/validateService';
+import { ProcessingQueue } from './lib/processing-queue';
+import { processLdesDelta } from './lib/postProcessLdesConceptualService';
+import { bestuurseenheidForSession } from './utils/session-utils';
+import { getLanguageVersionOfConcept } from "./lib/getConceptLanguageVersion";
+import { getContactPointOptions } from "./lib/getContactPointOptions";
+import { fetchMunicipalities, fetchStreets, findAddressMatch } from "./lib/address";
+import { isConceptFunctionallyChanged } from "./lib/compareSnapshot";
+import { linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";import { getLanguageVersionOfInstance } from "./lib/getInstanceLanguageVersion";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -191,6 +191,21 @@ app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, re
     const publicServiceId = req.params.publicServiceId;
     await unlinkConcept(publicServiceId);
     return res.sendStatus(200);
+    //TODO LPDC-772: error handling?
+});
+
+app.get('/public-services/:publicServiceId/language-version', async function (req, res) {
+    try {
+        const languageVersion = await getLanguageVersionOfInstance(req.params.publicServiceId);
+        return res.json({languageVersion: languageVersion});
+    } catch (e) {
+        console.error(e);
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while getting language version for concept with uuid "${uuid}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
 });
 
 app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function (req, res) {
