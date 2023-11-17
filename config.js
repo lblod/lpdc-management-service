@@ -13,7 +13,7 @@ const FORM_MAPPING = {
 const FORM_MAPPING_TRANSLATIONS = {
     "cd0b5eba-33c1-45d9-aed9-75194c3728d3": "inhoud",
     "149a7247-0294-44a5-a281-0a4d3782b4fd": "eigenschappen",
-}
+};
 
 
 const PREFIXES = `
