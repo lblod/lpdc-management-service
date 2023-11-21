@@ -14,6 +14,7 @@ import { getContactPointOptions } from "./lib/getContactPointOptions";
 import { fetchMunicipalities, fetchStreets, findAddressMatch } from "./lib/address";
 import { isConceptFunctionallyChanged } from "./lib/compareSnapshot";
 import { linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";import { getLanguageVersionOfInstance } from "./lib/getInstanceLanguageVersion";
+import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -198,6 +199,20 @@ app.get('/public-services/:publicServiceId/language-version', async function (re
     try {
         const languageVersion = await getLanguageVersionOfInstance(req.params.publicServiceId);
         return res.json({languageVersion: languageVersion});
+    } catch (e) {
+        console.error(e);
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while getting language version for concept with uuid "${uuid}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
+});
+
+app.post('/public-services/:publicServiceId/confirm-bijgewerkt-tot', async function (req, res) {
+    try {
+        await confirmBijgewerktTot(req.params.publicServiceId, req.body.bijgewerktTot);
+        return res.sendStatus(200);
     } catch (e) {
         console.error(e);
         const response = {
