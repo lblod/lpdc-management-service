@@ -13,8 +13,9 @@ import { getLanguageVersionOfConcept } from "./lib/getConceptLanguageVersion";
 import { getContactPointOptions } from "./lib/getContactPointOptions";
 import { fetchMunicipalities, fetchStreets, findAddressMatch } from "./lib/address";
 import { isConceptFunctionallyChanged } from "./lib/compareSnapshot";
-import { linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";import { getLanguageVersionOfInstance } from "./lib/getInstanceLanguageVersion";
-import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
+import { linkConcept, unlinkConcept } from "./lib/linkUnlinkConcept";
+import { getLanguageVersionOfInstance } from "./lib/getInstanceLanguageVersion";
+import { confirmBijgewerktTot } from "./lib/confirm-bijgewerkt-tot";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -145,7 +146,7 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
         }
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while submitting semantic-form for "${uuid}".`
+            message: `Something unexpected went wrong while submitting semantic-form for "${publicServiceId}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
@@ -181,7 +182,7 @@ app.delete('/public-services/:publicServiceId', async function (req, res) {
         }
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while deleting the semantic-form for "${uuid}".`
+            message: `Something unexpected went wrong while deleting the semantic-form for "${publicServiceId}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
@@ -189,45 +190,67 @@ app.delete('/public-services/:publicServiceId', async function (req, res) {
 });
 
 app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, res) {
-    const publicServiceId = req.params.publicServiceId;
-    await unlinkConcept(publicServiceId);
-    return res.sendStatus(200);
-    //TODO LPDC-772: error handling?
+    const instanceUUID = req.params.publicServiceId;
+    try {
+        await unlinkConcept(instanceUUID);
+        return res.sendStatus(200);
+    } catch (e) {
+        console.error(e);
+        if (e.status) {
+            return res.status(e.status).set('content-type', 'application/json').send(e);
+        }
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while ontkoppelen concept from  "${instanceUUID}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
 });
 
 app.get('/public-services/:publicServiceId/language-version', async function (req, res) {
+    const instanceUUID = req.params.publicServiceId;
     try {
-        const languageVersion = await getLanguageVersionOfInstance(req.params.publicServiceId);
+        const languageVersion = await getLanguageVersionOfInstance(instanceUUID);
         return res.json({languageVersion: languageVersion});
     } catch (e) {
         console.error(e);
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while getting language version for concept with uuid "${uuid}".`
+            message: `Something unexpected went wrong while getting language version for concept with uuid "${instanceUUID}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
 });
 
 app.post('/public-services/:publicServiceId/confirm-bijgewerkt-tot', async function (req, res) {
+    const instanceUUID = req.params.publicServiceId;
     try {
-        await confirmBijgewerktTot(req.params.publicServiceId, req.body.bijgewerktTot);
+        await confirmBijgewerktTot(instanceUUID, req.body.bijgewerktTot);
         return res.sendStatus(200);
     } catch (e) {
         console.error(e);
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while getting language version for concept with uuid "${uuid}".`
+            message: `Something unexpected went wrong while confirming bijgewerkt tot with uuid "${instanceUUID}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
 });
 
 app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function (req, res) {
-    const publicServiceId = req.params.publicServiceId;
-    const conceptId = req.params.conceptId;
-    await linkConcept(publicServiceId, conceptId);
-    return res.sendStatus(200);
+    const instanceUUID = req.params.publicServiceId;
+    try {
+        const conceptId = req.params.conceptId;
+        await linkConcept(instanceUUID, conceptId);
+        return res.sendStatus(200);
+    } catch (e) {
+        console.error(e);
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while koppelen of uuid "${instanceUUID}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
 });
 
 app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version', async (req, res) => {
