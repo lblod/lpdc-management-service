@@ -27,7 +27,7 @@ export async function bestuurseenheidForSession( sessionUri ) {
   }
 }
 
-export async function isAllowdForLPDC( sessionUri ) {
+export async function isAllowedForLPDC(sessionUri ) {
   const queryStr = `
     ${PREFIXES}
     ASK {
