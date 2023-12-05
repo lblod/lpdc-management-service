@@ -10,7 +10,7 @@ import {
 } from "./commonQueries";
 import { isEqual, sortBy } from "lodash";
 
-export async function isConceptFunctionallyChanged(newSnapshotUri, currentSnapshotUri) {
+export async function isConceptFunctionallyChanged(newSnapshotUri: string, currentSnapshotUri: string): Promise<boolean> {
     if(newSnapshotUri === currentSnapshotUri) {
         return false;
     }
@@ -41,7 +41,7 @@ export async function isConceptFunctionallyChanged(newSnapshotUri, currentSnapsh
         || compareMoreInfo(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri);
 }
 
-function isValueChangedForAnyLanguage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, predicate) {
+function isValueChangedForAnyLanguage(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string, predicate: string): boolean {
     const languages = ['nl', 'en'];
     return languages.some(language => {
         const triple1 = findTriples(currentSnapshotTriples, currentSnapshotUri, predicate, language)[0];
@@ -50,26 +50,26 @@ function isValueChangedForAnyLanguage(currentSnapshotTriples, currentSnapshotUri
     });
 }
 
-function isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, predicate) {
+function isValueChangedInSet(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string, predicate: string): boolean {
     const currentValues = findTriples(currentSnapshotTriples, currentSnapshotUri, predicate).map(triple => triple.o.value);
     const newValues = findTriples(newSnapshotTriples, newSnapshotUri, predicate).map(triple => triple.o.value);
     return !isEqual(currentValues.sort(), newValues.sort());
 }
 
-function isValueChanged(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, predicate) {
+function isValueChanged(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string, predicate: string): boolean {
     const triple1 = findTriples(currentSnapshotTriples, currentSnapshotUri, predicate)[0];
     const triple2 = findTriples(newSnapshotTriples, newSnapshotUri, predicate)[0];
     return triple1?.o?.value !== triple2?.o?.value;
 }
 
-function findTriples(snapshotTriples, subject, predicate, language) {
+function findTriples(snapshotTriples: any[], subject: string, predicate: string, language?: string) {
     return snapshotTriples
         .filter(triple => triple.s.value === subject)
         .filter(triple => triple.p.value === predicate)
         .filter(triple => language ? triple.o['xml:lang'] === language : true);
 }
 
-function compareRequirement(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri) {
+function compareRequirement(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
     const currentRequirementIds = findTriples(currentSnapshotTriples, currentSnapshotUri, Predicates.hasRequirement).map(triple => triple.o.value);
     const currentSortedRequirementIds = sortBy(currentRequirementIds, requirementId => findTriples(currentSnapshotTriples, requirementId, Predicates.order)[0].o.value);
 
@@ -98,7 +98,7 @@ function compareRequirement(currentSnapshotTriples, currentSnapshotUri, newSnaps
     return changes.some(it => it);
 }
 
-function compareProcedure(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri) {
+function compareProcedure(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
     const currentProcedureIds = findTriples(currentSnapshotTriples, currentSnapshotUri, Predicates.hasProcedure).map(triple => triple.o.value);
     const currentSortedProcedureIds = sortBy(currentProcedureIds, procedureUri => findTriples(currentSnapshotTriples, procedureUri, Predicates.order)[0].o.value);
 
@@ -136,7 +136,7 @@ function compareProcedure(currentSnapshotTriples, currentSnapshotUri, newSnapsho
     return changes.some(it => it);
 }
 
-function compareCost(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri) {
+function compareCost(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
     const currentCostIds = findTriples(currentSnapshotTriples, currentSnapshotUri, Predicates.hasCost).map(triple => triple.o.value);
     const currentSortedCostIds = sortBy(currentCostIds, costId => findTriples(currentSnapshotTriples, costId, Predicates.order)[0].o.value);
 
@@ -156,7 +156,7 @@ function compareCost(currentSnapshotTriples, currentSnapshotUri, newSnapshotTrip
     return changes.some(it => it);
 }
 
-function compareFinancialAdvantage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri) {
+function compareFinancialAdvantage(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string) {
     const currentFinancialAdvantageIds = findTriples(currentSnapshotTriples, currentSnapshotUri, Predicates.hasFinancialAdvantage).map(triple => triple.o.value);
     const currentSortedFinancialAdvantageIds = sortBy(currentFinancialAdvantageIds, costId => findTriples(currentSnapshotTriples, costId, Predicates.order)[0].o.value);
 
@@ -176,7 +176,7 @@ function compareFinancialAdvantage(currentSnapshotTriples, currentSnapshotUri, n
     return changes.some(it => it);
 }
 
-function compareMoreInfo(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri) {
+function compareMoreInfo(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
     const currentWebsiteIds = findTriples(currentSnapshotTriples, currentSnapshotUri, Predicates.hasMoreInfo).map(triple => triple.o.value);
     const currentSortedWebsiteIds = sortBy(currentWebsiteIds, costId => findTriples(currentSnapshotTriples, costId, Predicates.order)[0].o.value);
 
@@ -197,7 +197,7 @@ function compareMoreInfo(currentSnapshotTriples, currentSnapshotUri, newSnapshot
     return changes.some(it => it);
 }
 
-async function loadConceptSnapshot(snapshotUri) {
+async function loadConceptSnapshot(snapshotUri: string): Promise<any[]> {
     const type = 'lpdcExt:ConceptualPublicService';
     const graph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
     const sudo = true;

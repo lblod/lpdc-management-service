@@ -1,11 +1,11 @@
 import fetch from "node-fetch";
-import { ADRESSEN_REGISTER_API_KEY } from "../config";
+import {ADRESSEN_REGISTER_API_KEY} from "../config";
 
 
-export async function fetchMunicipalities(searchString) {
+export async function fetchMunicipalities(searchString: string): Promise<string[]> {
     const queryParams = new URLSearchParams({
         q: searchString,
-        c: 5, // limit (max = 5)
+        c: '5', // limit (max = 5)
         type: 'Municipality'
     });
     const response = await fetch(`https://geo.api.vlaanderen.be/geolocation/v4/Location?${queryParams}`);
@@ -18,7 +18,7 @@ export async function fetchMunicipalities(searchString) {
     }
 }
 
-export async function fetchStreets(municipality, searchString) {
+export async function fetchStreets(municipality: string, searchString: string): Promise<string[]> {
     const queryParams = new URLSearchParams({
         gemeentenaam: municipality,
         straatnaam: searchString
@@ -39,7 +39,7 @@ export async function fetchStreets(municipality, searchString) {
     }
 }
 
-export async function findAddressMatch(municipality, street, houseNumber, busNumber) {
+export async function findAddressMatch(municipality: string, street: string, houseNumber: string, busNumber: string): Promise<AddressDto | {}> {
     if (!municipality || !street || !houseNumber) {
         throw new Error('Invalid request: municipality, street and houseNumber are required');
     }
@@ -71,7 +71,7 @@ export async function findAddressMatch(municipality, street, houseNumber, busNum
                 adressenRegisterId: result.adresMatches[0].identificator.id
             };
         } else {
-            return {}
+            return {};
         }
     } else {
         console.error(await response.json())
@@ -79,7 +79,7 @@ export async function findAddressMatch(municipality, street, houseNumber, busNum
     }
 }
 
-export async function findPostcode(municipality) {
+export async function findPostcode(municipality: string): Promise<string> {
     const response = await fetch(
         `https://api.basisregisters.vlaanderen.be/v2/postinfo?gemeentenaam=${municipality}`,
         {headers: {'x-api-key': ADRESSEN_REGISTER_API_KEY}}
@@ -96,4 +96,13 @@ export async function findPostcode(municipality) {
         throw Error(`An error occurred when querying the address register, status code: ${response.status}`);
     }
 
+}
+
+type AddressDto = {
+    gemeente: string;
+    postcode: string;
+    straat: string;
+    huisnummer: string;
+    busnummer?: string;
+    adressenRegisterId: string;
 }

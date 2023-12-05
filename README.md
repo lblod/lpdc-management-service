@@ -78,7 +78,7 @@ NewPublicServiceId: the ID of the newly created public service that is a duplica
  <summary><b>GET /semantic-forms/:publicServiceId/form/:formId</b></summary>
 <h3>params</h3>
   <strong>publicServiceId</strong> the ID of the public service (not the template ID!) <br>
-<strong>formId</strong> ID of the form that you want to retrieve (content, properties, translation) ID's can be found in de config.js file (FORM_MAPPING)
+<strong>formId</strong> ID of the form that you want to retrieve (content, properties, translation) ID's can be found in de config.ts file (FORM_MAPPING)
 
 <h3>Request body</h3>
 

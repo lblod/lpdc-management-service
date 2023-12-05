@@ -2,7 +2,7 @@
   "name": "lpdc-management-service",
   "version": "0.32.0",
   "description": "",
-  "main": "app.js",
+  "main": "app.ts",
   "scripts": {
     "test": "jest",
     "release": "release-it"

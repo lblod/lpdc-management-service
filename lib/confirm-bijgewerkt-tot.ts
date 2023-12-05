@@ -2,7 +2,7 @@ import { removeReviewStatus, serviceUriForId } from "./commonQueries";
 import { query, sparqlEscapeUri, update } from "mu";
 import { APPLICATION_GRAPH, PREFIXES } from "../config";
 
-export async function confirmBijgewerktTot(instanceUUID, snapshotUri) {
+export async function confirmBijgewerktTot(instanceUUID: string, snapshotUri: string): Promise<void> {
     const instanceUri = await serviceUriForId(instanceUUID);
     if (instanceUri) {
         await updateHasVersionedSource(instanceUri, snapshotUri);
@@ -14,7 +14,7 @@ export async function confirmBijgewerktTot(instanceUUID, snapshotUri) {
     }
 }
 
-async function getConceptLatestFunctionalChange(instanceUri) {
+async function getConceptLatestFunctionalChange(instanceUri: string): Promise<string> {
     const queryString = `
         ${PREFIXES}
         SELECT ?snapshotUri WHERE {
@@ -27,7 +27,7 @@ async function getConceptLatestFunctionalChange(instanceUri) {
     return result.results.bindings[0]?.snapshotUri?.value;
 }
 
-async function updateHasVersionedSource(instanceUri, snapshotUri) {
+async function updateHasVersionedSource(instanceUri: string, snapshotUri: string): Promise<void> {
     const queryString = `
         ${PREFIXES}
         DELETE {

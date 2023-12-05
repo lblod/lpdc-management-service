@@ -4,7 +4,7 @@ import { CONCEPTUAL_SERVICE_GRAPH, PREFIXES } from '../config';
 import { v4 as uuid } from 'uuid';
 import { flatten } from 'lodash';
 import { bindingsToNT } from '../utils/bindingsToNT';
-import { addTypeForSubject, addUuidForSubject, groupBySubject } from '../utils/common.js';
+import { addTypeForSubject, addUuidForSubject, groupBySubject } from '../utils/common';
 import fetch from 'node-fetch';
 import {
     loadAttachments,

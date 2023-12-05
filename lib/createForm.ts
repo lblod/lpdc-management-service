@@ -3,7 +3,7 @@ import {query, sparqlEscapeDateTime, sparqlEscapeString, sparqlEscapeUri, update
 import {v4 as uuid} from 'uuid';
 import {APPLICATION_GRAPH, CONCEPTUAL_SERVICE_GRAPH, FORM_STATUS_CONCEPT, PREFIXES} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
-import {addUuidForSubject, groupBySubject, replaceType} from '../utils/common.js';
+import {addUuidForSubject, groupBySubject, replaceType} from '../utils/common';
 import {
     loadCosts,
     loadEvidences,
@@ -21,7 +21,7 @@ import {
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
 
-export async function createEmptyForm(bestuurseenheid) {
+export async function createEmptyForm(bestuurseenheid: string): Promise<{uuid: string, uri: string}> {
     const publicServiceId = uuid();
     const publicServiceUri = `http://data.lblod.info/id/public-service/${publicServiceId}`;
 
@@ -53,7 +53,7 @@ export async function createEmptyForm(bestuurseenheid) {
     };
 }
 
-export async function createForm(conceptId, bestuurseenheid) {
+export async function createForm(conceptId: string, bestuurseenheid: string): Promise<{uuid: string, uri: string}> {
     const graph = CONCEPTUAL_SERVICE_GRAPH;
     const conceptUri = await getConceptUri(conceptId);
 
@@ -95,7 +95,7 @@ export async function createForm(conceptId, bestuurseenheid) {
         });
     //some extra meta data is needed
     const newServiceUri = Object.values(publicServiceData)[0][0].s.value;
-    const newServiceUuid = Object.values(publicServiceData)[0]
+    const newServiceUuid = (Object.values(publicServiceData)[0] as any[])
         .find(triple => triple.p.value === 'http://mu.semte.ch/vocabularies/core/uuid').o.value;
 
     // Next lines is all about extracting the triple data so in can be injected in an insert.
@@ -176,7 +176,7 @@ export async function createForm(conceptId, bestuurseenheid) {
  *
  * @returns {'http://old/uri': [ {s: { {value: 'http://new/uri' } }, p: binding, o: binding } ] }
  */
-function copySubjects(bindings, uriTemplate) {
+function copySubjects(bindings: any[], uriTemplate: string) {
     const copiedData = {};
 
     if (bindings.length) {
@@ -189,7 +189,7 @@ function copySubjects(bindings, uriTemplate) {
     return copiedData;
 }
 
-function copySubject(oldUri, triplesData, uriTemplate) {
+function copySubject(oldUri: string, triplesData: any[], uriTemplate: string) {
     const newUuid = uuid();
     const newSubject = uriTemplate + newUuid;
 
@@ -222,7 +222,7 @@ function copySubject(oldUri, triplesData, uriTemplate) {
  *
  * @returns {Object}: {'http://old/parent/uri': [ {s: binding, p: binding, o:  { {value: 'http://new/child' } } } ] }
  */
-function replaceObjectsWithCopiedChildren(parentData, childrenData) {
+function replaceObjectsWithCopiedChildren(parentData: any[], childrenData: any[]) {
     for (const tripleData of Object.values(parentData)) {
         for (const triple of tripleData) {
             if (childrenData[triple.o.value]) {
@@ -233,7 +233,7 @@ function replaceObjectsWithCopiedChildren(parentData, childrenData) {
     return parentData;
 }
 
-async function getConceptUri(conceptUuid) {
+async function getConceptUri(conceptUuid: string) {
     const result = await query(`
     ${PREFIXES}
 
@@ -248,7 +248,7 @@ async function getConceptUri(conceptUuid) {
     } else throw `No exact match found for lpdcExt:ConceptualPublicService ${conceptUuid}`;
 }
 
-async function getSpatialForBestuurseenheid(bestuurseenheid) {
+async function getSpatialForBestuurseenheid(bestuurseenheid: string) {
     const queryStr = `
     ${PREFIXES}
 
@@ -270,7 +270,7 @@ async function getSpatialForBestuurseenheid(bestuurseenheid) {
     return results.map(r => r.spatial.value);
 }
 
-async function updateConceptDisplayConfig(conceptUri) {
+async function updateConceptDisplayConfig(conceptUri: string) {
     // The fact the query is split up in pieces, is dueu to the
     // virtuoso bug: https://github.com/openlink/virtuoso-opensource/issues/1055
     // Once we have the latest version of virtuoso running, we can make it prettier.
@@ -324,7 +324,7 @@ async function updateConceptDisplayConfig(conceptUri) {
   `);
 }
 
-function keepOnlyChosenLanguageVersion(publicServiceUri, allTriples, chosenForm) {
+function keepOnlyChosenLanguageVersion(publicServiceUri: string, allTriples: any[], chosenForm: string) {
     const languageVersionsInConcept = findDutchLanguageVersionsOfTriples(allTriples);
     const languageVersionToKeep = selectLanguageVersionForConcept(languageVersionsInConcept, chosenForm);
     const fields = getFieldsWithLanguage(publicServiceUri, allTriples);
@@ -346,7 +346,7 @@ function keepOnlyChosenLanguageVersion(publicServiceUri, allTriples, chosenForm)
     return triples;
 }
 
-function getFieldsWithLanguage(publicServiceUri, triples) {
+function getFieldsWithLanguage(publicServiceUri: string, triples: any[]) {
     const requirementUris = getObjects(triples, 'http://vocab.belgif.be/ns/publicservice#hasRequirement');
     const evidenceUris = getObjects(triples, 'http://data.europa.eu/m8g/hasSupportingEvidence');
     const procedureUris = getObjects(triples, 'http://purl.org/vocab/cpsv#follows');
@@ -378,7 +378,7 @@ function getFieldsWithLanguage(publicServiceUri, triples) {
     ];
 }
 
-function getObjects(triples, predicate) {
+function getObjects(triples: any[], predicate: string) {
     return triples
         .filter(triple => triple.p.value === predicate)
         .map(triple => triple.o.value);

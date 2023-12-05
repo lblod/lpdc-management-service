@@ -3,7 +3,15 @@ import { querySudo } from '@lblod/mu-auth-sudo';
 import { APPLICATION_GRAPH, PREFIXES } from '../config';
 import { sortBy } from "lodash";
 
-export async function loadEvidences(serviceUri, {graph, type, includeUuid, sudo} = {}) {
+type QueryOptions = {
+    graph?: string,
+    type?: string,
+    validTypes?: boolean,
+    includeUuid?: boolean,
+    sudo?: boolean,
+}
+
+export async function loadEvidences(serviceUri: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -38,7 +46,7 @@ export async function loadEvidences(serviceUri, {graph, type, includeUuid, sudo}
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadRequirements(service, {graph, type, includeUuid, sudo} = {}) {
+export async function loadRequirements(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -72,7 +80,7 @@ export async function loadRequirements(service, {graph, type, includeUuid, sudo}
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadOnlineProcedureRules(service, {graph, type, includeUuid, sudo} = {}) {
+export async function loadOnlineProcedureRules(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -108,7 +116,7 @@ export async function loadOnlineProcedureRules(service, {graph, type, includeUui
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadRules(service, {graph, type, includeUuid, sudo} = {}) {
+export async function loadRules(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -141,7 +149,7 @@ export async function loadRules(service, {graph, type, includeUuid, sudo} = {}) 
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadCosts(service, {graph, type, includeUuid, sudo} = {}) {
+export async function loadCosts(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -175,7 +183,7 @@ export async function loadCosts(service, {graph, type, includeUuid, sudo} = {}) 
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadFinancialAdvantages(service, {graph, type, includeUuid, sudo} = {}) {
+export async function loadFinancialAdvantages(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -209,7 +217,7 @@ export async function loadFinancialAdvantages(service, {graph, type, includeUuid
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadLegalResources(service, {graph, type, includeUuid, sudo} = {}) {
+export async function loadLegalResources(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -238,7 +246,7 @@ export async function loadLegalResources(service, {graph, type, includeUuid, sud
     return null;
 }
 
-export async function loadContactPointsAddresses(service, {graph, type, includeUuid, sudo} = {}) {
+export async function loadContactPointsAddresses(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -276,7 +284,7 @@ export async function loadContactPointsAddresses(service, {graph, type, includeU
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadContactPoints(service, {graph, type, includeUuid, sudo} = {}) {
+export async function loadContactPoints(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -312,7 +320,7 @@ export async function loadContactPoints(service, {graph, type, includeUuid, sudo
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadAttachments(service, {graph, type, includeUuid, sudo} = {}) {
+export async function loadAttachments(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -346,7 +354,7 @@ export async function loadAttachments(service, {graph, type, includeUuid, sudo} 
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadWebsites(service, {graph, type, includeUuid, sudo} = {}) {
+export async function loadWebsites(service, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -380,7 +388,7 @@ export async function loadWebsites(service, {graph, type, includeUuid, sudo} = {
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadPublicService(service, {graph, type, validTypes, includeUuid, sudo} = {}) {
+export async function loadPublicService(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     validTypes = validTypes || false;
@@ -463,7 +471,7 @@ export async function loadPublicService(service, {graph, type, validTypes, inclu
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function serviceUriForId(publicServiceId, type = 'cpsv:PublicService') {
+export async function serviceUriForId(publicServiceId: string, type: string = 'cpsv:PublicService') {
     return (await query(`
       ${PREFIXES}
 
@@ -502,7 +510,7 @@ export async function loadFormalInformalChoice() {
     `)).results.bindings;
 }
 
-export async function loadContactPointOption(option) {
+export async function loadContactPointOption(option: string) {
     const unsortedContactPointOptions = (await query(`
         SELECT DISTINCT ?option
         WHERE {
@@ -515,7 +523,7 @@ export async function loadContactPointOption(option) {
 }
 
 
-export async function removeReviewStatus(instanceUri) {
+export async function removeReviewStatus(instanceUri: string) {
     const queryString = `
         ${PREFIXES}
         DELETE {

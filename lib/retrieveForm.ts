@@ -25,7 +25,7 @@ import {
   selectLanguageVersionForConcept
 } from "./formalInformalChoice";
 
-export async function retrieveForm(publicServiceId, formId) {
+export async function retrieveForm(publicServiceId: string, formId: string) {
   let form = fs.readFileSync(`/config/${FORM_MAPPING[formId]}/form.ttl`, 'utf8');
   const metaFile = fse.readJsonSync(`/config/${FORM_MAPPING[formId]}/form.json`);
   const schemes = metaFile.meta.schemes;
