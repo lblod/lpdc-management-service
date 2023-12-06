@@ -1,4 +1,4 @@
-import { app, errorHandler, uuid } from 'mu';
+import { app, errorHandler, uuid } from './mu-helper';
 import bodyparser from 'body-parser';
 import { LOG_INCOMING_DELTA } from './config';
 import { createEmptyForm, createForm } from './lib/createForm';
@@ -291,7 +291,7 @@ app.get('/contact-info-options/:fieldName', async (req, res) => {
 
 app.get('/address/municipalities', async (req, res) => {
     try {
-        const municipalities = await fetchMunicipalities(req.query.search);
+        const municipalities = await fetchMunicipalities(req.query.search as string);
         return res.json(municipalities);
     } catch (e) {
         console.error(e);
@@ -305,7 +305,7 @@ app.get('/address/municipalities', async (req, res) => {
 
 app.get('/address/streets', async (req, res) => {
     try {
-        const streets = await fetchStreets(req.query.municipality, req.query.search);
+        const streets = await fetchStreets(req.query.municipality as string, req.query.search as string);
         return res.json(streets);
     } catch (e) {
         console.error(e);
@@ -320,10 +320,10 @@ app.get('/address/streets', async (req, res) => {
 app.get('/address/validate', async (req, res) => {
     try {
         const address = await findAddressMatch(
-            req.query.municipality,
-            req.query.street,
-            req.query.houseNumber,
-            req.query.busNumber
+            req.query.municipality as string,
+            req.query.street as string,
+            req.query.houseNumber as string,
+            req.query.busNumber as string
         );
         return res.json(address);
     } catch (e) {
@@ -341,7 +341,7 @@ app.get('/address/validate', async (req, res) => {
 
 app.get('/concept-snapshot-compare', async (req, res) => {
     try {
-        const isChanged = await isConceptFunctionallyChanged(req.query.newSnapshotUri, req.query.currentSnapshotUri);
+        const isChanged = await isConceptFunctionallyChanged(req.query.newSnapshotUri as string, req.query.currentSnapshotUri as string);
         return res.json({isChanged});
     } catch (e) {
         console.error(e);

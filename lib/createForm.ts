@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {query, sparqlEscapeDateTime, sparqlEscapeString, sparqlEscapeUri, update} from 'mu';
+import {query, sparqlEscapeDateTime, sparqlEscapeString, sparqlEscapeUri, update} from '../mu-helper';
 import {v4 as uuid} from 'uuid';
 import {APPLICATION_GRAPH, CONCEPTUAL_SERVICE_GRAPH, FORM_STATUS_CONCEPT, PREFIXES} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
@@ -222,9 +222,9 @@ function copySubject(oldUri: string, triplesData: any[], uriTemplate: string) {
  *
  * @returns {Object}: {'http://old/parent/uri': [ {s: binding, p: binding, o:  { {value: 'http://new/child' } } } ] }
  */
-function replaceObjectsWithCopiedChildren(parentData: any[], childrenData: any[]) {
+function replaceObjectsWithCopiedChildren(parentData: any, childrenData: any) {
     for (const tripleData of Object.values(parentData)) {
-        for (const triple of tripleData) {
+        for (const triple of tripleData as any[]) {
             if (childrenData[triple.o.value]) {
                 triple.o.value = childrenData[triple.o.value][0].s.value;
             }

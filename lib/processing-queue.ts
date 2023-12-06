@@ -1,6 +1,11 @@
 import { QUEUE_POLL_INTERVAL } from '../config';
 
 export class ProcessingQueue {
+
+  private name: string;
+  private queue: any[];
+  private executing: boolean;
+
   constructor( name = "default-processing-queue") {
     this.name = name;
     this.queue = [];
@@ -19,6 +24,7 @@ export class ProcessingQueue {
       catch(error){
         const errorMsg = `${this.name}: Error while processing delta in queue ${error}`;
         console.error(errorMsg);
+        console.log(error.stack)
       }
       finally {
         this.executing = false;

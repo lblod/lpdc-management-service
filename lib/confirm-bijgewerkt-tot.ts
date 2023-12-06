@@ -1,5 +1,5 @@
 import { removeReviewStatus, serviceUriForId } from "./commonQueries";
-import { query, sparqlEscapeUri, update } from "mu";
+import { query, sparqlEscapeUri, update } from "../mu-helper";
 import { APPLICATION_GRAPH, PREFIXES } from "../config";
 
 export async function confirmBijgewerktTot(instanceUUID: string, snapshotUri: string): Promise<void> {

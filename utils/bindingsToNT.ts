@@ -1,4 +1,4 @@
-import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
+import { sparqlEscapeString, sparqlEscapeUri } from '../mu-helper';
 
 export function bindingsToNT(bindings) {
     return bindings.map(b => _bindingToNT(b['s'], b['p'], b['o']));

@@ -1,5 +1,5 @@
 import { querySudo } from '@lblod/mu-auth-sudo';
-import { sparqlEscapeUri } from 'mu';
+import { sparqlEscapeUri } from '../mu-helper';
 import { PREFIXES } from '../config';
 
 export async function bestuurseenheidForSession( sessionUri ) {

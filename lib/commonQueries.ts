@@ -1,4 +1,4 @@
-import { query, sparqlEscapeString, sparqlEscapeUri, update } from 'mu';
+import { query, sparqlEscapeString, sparqlEscapeUri, update } from '../mu-helper';
 import { querySudo } from '@lblod/mu-auth-sudo';
 import { APPLICATION_GRAPH, PREFIXES } from '../config';
 import { sortBy } from "lodash";

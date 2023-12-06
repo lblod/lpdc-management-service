@@ -4,11 +4,10 @@ import * as rdflib from 'rdflib';
 import {retrieveForm} from './retrieveForm';
 import {validateForm} from '@lblod/submission-form-helpers';
 import {loadContactPointsAddresses} from "./commonQueries";
-import {findAddressMatch} from "./address";
 
-const FORM = new rdflib.Namespace('http://lblod.data.gift/vocabularies/forms/');
-const RDF = new rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-const MU = new rdflib.Namespace('http://mu.semte.ch/vocabularies/core/');
+const FORM = rdflib.Namespace('http://lblod.data.gift/vocabularies/forms/');
+const RDF = rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+const MU = rdflib.Namespace('http://mu.semte.ch/vocabularies/core/');
 
 export async function validateService(publicServiceId) {
     const formIds = Object.keys(FORM_MAPPING);

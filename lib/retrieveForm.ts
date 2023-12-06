@@ -1,7 +1,7 @@
 import {querySudo} from '@lblod/mu-auth-sudo';
 import fs from 'fs';
 import fse from 'fs-extra';
-import {sparqlEscapeUri} from 'mu';
+import {sparqlEscapeUri} from '../mu-helper';
 import {FORM_MAPPING, PREFIXES} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
 import {

@@ -1,1 +1,9 @@
-FROM semtech/mu-javascript-template:feature-node-18
+FROM node:20-alpine
+
+WORKDIR /app
+COPY package.json .
+COPY package-lock.json .
+RUN npm ci -verbose
+COPY . .
+
+CMD ["npm","run","start"]

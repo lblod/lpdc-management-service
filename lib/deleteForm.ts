@@ -1,4 +1,4 @@
-import { query, sparqlEscapeDateTime, sparqlEscapeUri, update } from 'mu';
+import { query, sparqlEscapeDateTime, sparqlEscapeUri, update } from '../mu-helper';
 import { APPLICATION_GRAPH, PREFIXES } from '../config';
 import { bindingsToNT } from '../utils/bindingsToNT';
 import {

@@ -1,5 +1,5 @@
 import { querySudo, updateSudo } from '@lblod/mu-auth-sudo';
-import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
+import { sparqlEscapeString, sparqlEscapeUri } from '../mu-helper';
 import { CONCEPTUAL_SERVICE_GRAPH, PREFIXES } from '../config';
 import { v4 as uuid } from 'uuid';
 import { flatten } from 'lodash';
@@ -250,7 +250,7 @@ async function ensureNewIpdcOrganisations(service) {
     codelistEntries = [...codelistEntries, ...await getCodeListEntriesForPredicate(service, 'lpdcExt:hasExecutingAuthority')];
     for (const code of codelistEntries) {
         if (!await existingCode(code)) {
-            const codeListData = await fetchOrgRegistryCodelistEntry(code);
+            const codeListData: any = await fetchOrgRegistryCodelistEntry(code);
             if (codeListData.prefLabel) {
                 console.log(`Inserting new codeList ${code}`);
                 await insertCodeListData(codeListData);
@@ -284,7 +284,7 @@ async function existingCode(code, conceptScheme = 'dvcs:IPDCOrganisaties') {
 }
 
 async function fetchOrgRegistryCodelistEntry(uriEntry) {
-    let result = await fetchOrgRegistryCodelistEntryThroughSubjectPage(uriEntry);
+    let result: any = await fetchOrgRegistryCodelistEntryThroughSubjectPage(uriEntry);
     if (!result.prefLabel) {
         result = await fetchOrgRegistryCodelistEntryThroughAPI(uriEntry);
     }
@@ -304,7 +304,7 @@ async function fetchOrgRegistryCodelistEntryThroughSubjectPage(uriEntry) {
         } else return null;
     };
 
-    const result = {};
+    const result: any = {};
     try {
         const response = await fetch(uriEntry, {
             headers: {'Accept': 'application/json'}
@@ -323,7 +323,7 @@ async function fetchOrgRegistryCodelistEntryThroughSubjectPage(uriEntry) {
 }
 
 async function fetchOrgRegistryCodelistEntryThroughAPI(uriEntry) {
-    const result = {};
+    const result: any = {};
     const ovoNumber = uriEntry.split('OVO')[1];
     if (!ovoNumber) {
         return result;

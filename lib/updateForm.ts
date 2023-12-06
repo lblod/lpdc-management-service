@@ -1,9 +1,10 @@
-import { sparqlEscapeUri, update, uuid } from 'mu';
+import { sparqlEscapeUri, update, uuid } from '../mu-helper';
 import { updateSudo } from '@lblod/mu-auth-sudo';
 import { APPLICATION_GRAPH } from '../config';
 import { Graph, parse, RDFNode } from '../utils/rdflib';
 import { bestuurseenheidForSession, isAllowedForLPDC } from '../utils/session-utils';
 import { getScopedGraphsForStatement } from '../utils/common';
+import {Statement} from "rdflib";
 
 export async function updateForm(data, sessionUri) {
   if(data.removals) await mutate('DELETE', data.removals, sessionUri);
@@ -11,10 +12,10 @@ export async function updateForm(data, sessionUri) {
 }
 
 async function mutate(mutationType, statements, sessionUri = null) {
-  const store = new Graph();
+  const store = Graph();
   const graph = `http://mutate-graph/${uuid()}`;
   parse(statements, store, {graph});
-  const parsedStatements = store.match(undefined, undefined, undefined, RDFNode(graph));
+  const parsedStatements = store.match(undefined, undefined, undefined, RDFNode(graph)) as Statement[];
 
   if (parsedStatements.length > 0) {
     if(mutationType == 'DELETE') {

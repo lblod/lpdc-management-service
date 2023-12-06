@@ -1,5 +1,5 @@
 import { removeReviewStatus, serviceUriForId } from "./commonQueries";
-import { query, sparqlEscapeDateTime, sparqlEscapeUri, update } from "mu";
+import { query, sparqlEscapeDateTime, sparqlEscapeUri, update } from "../mu-helper";
 import { APPLICATION_GRAPH } from "../config";
 
 export async function unlinkConcept(instanceUUID) {
