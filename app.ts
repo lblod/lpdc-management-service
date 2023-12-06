@@ -1,21 +1,21 @@
-import { app, errorHandler, uuid } from './mu-helper';
+import {app, errorHandler, uuid} from './mu-helper';
 import bodyparser from 'body-parser';
-import { LOG_INCOMING_DELTA } from './config';
-import { createEmptyForm, createForm } from './lib/createForm';
-import { retrieveForm } from './lib/retrieveForm';
-import { updateForm } from './lib/updateForm';
-import { deleteForm } from './lib/deleteForm';
-import { validateService } from './lib/validateService';
-import { ProcessingQueue } from './lib/processing-queue';
-import { processLdesDelta } from './lib/postProcessLdesConceptualService';
-import { bestuurseenheidForSession } from './utils/session-utils';
-import { getLanguageVersionOfConcept } from "./lib/getConceptLanguageVersion";
-import { getContactPointOptions } from "./lib/getContactPointOptions";
-import { fetchMunicipalities, fetchStreets, findAddressMatch } from "./lib/address";
-import { isConceptFunctionallyChanged } from "./lib/compareSnapshot";
-import { linkConcept, unlinkConcept } from "./lib/linkUnlinkConcept";
-import { getLanguageVersionOfInstance } from "./lib/getInstanceLanguageVersion";
-import { confirmBijgewerktTot } from "./lib/confirm-bijgewerkt-tot";
+import {LOG_INCOMING_DELTA} from './config';
+import {createEmptyForm, createForm} from './lib/createForm';
+import {retrieveForm} from './lib/retrieveForm';
+import {updateForm} from './lib/updateForm';
+import {deleteForm} from './lib/deleteForm';
+import {validateService} from './lib/validateService';
+import {ProcessingQueue} from './lib/processing-queue';
+import {processLdesDelta} from './lib/postProcessLdesConceptualService';
+import {bestuurseenheidForSession} from './utils/session-utils';
+import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
+import {getContactPointOptions} from "./lib/getContactPointOptions";
+import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
+import {isConceptFunctionallyChanged} from "./lib/compareSnapshot";
+import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
+import {getLanguageVersionOfInstance} from "./lib/getInstanceLanguageVersion";
+import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -50,11 +50,7 @@ app.post('/delta', async function (req, res): Promise<void> {
     }
 });
 
-app.post('/semantic-forms/:publicServiceId/submit', async function (req, res): Promise<{
-    status: number,
-    message?: string,
-    data?: any[]
-}> {
+app.post('/semantic-forms/:publicServiceId/submit', async function (req, res): Promise<any> {
 
     const publicServiceId = req.params["publicServiceId"];
 
@@ -135,7 +131,7 @@ app.post('/public-services/', async function (req, res): Promise<any> {
     }
 });
 
-app.get('/semantic-forms/:publicServiceId/form/:formId', async function (req, res) {
+app.get('/semantic-forms/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
     const publicServiceId = req.params["publicServiceId"];
     const formId = req.params["formId"];
 
@@ -156,7 +152,7 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
     }
 });
 
-app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, res) {
+app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
     const delta = req.body;
     try {
         await updateForm(delta, req.headers['mu-session-id']);
@@ -174,7 +170,7 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
     }
 });
 
-app.delete('/public-services/:publicServiceId', async function (req, res) {
+app.delete('/public-services/:publicServiceId', async function (req, res): Promise<any> {
     const publicServiceId = req.params.publicServiceId;
     try {
         await deleteForm(publicServiceId, req.headers['mu-session-id']);
@@ -193,7 +189,7 @@ app.delete('/public-services/:publicServiceId', async function (req, res) {
 
 });
 
-app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, res) {
+app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, res): Promise<any> {
     const instanceUUID = req.params.publicServiceId;
     try {
         await unlinkConcept(instanceUUID);
@@ -211,7 +207,7 @@ app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, re
     }
 });
 
-app.get('/public-services/:publicServiceId/language-version', async function (req, res) {
+app.get('/public-services/:publicServiceId/language-version', async function (req, res): Promise<any> {
     const instanceUUID = req.params.publicServiceId;
     try {
         const languageVersion = await getLanguageVersionOfInstance(instanceUUID);
@@ -226,7 +222,7 @@ app.get('/public-services/:publicServiceId/language-version', async function (re
     }
 });
 
-app.post('/public-services/:publicServiceId/confirm-bijgewerkt-tot', async function (req, res) {
+app.post('/public-services/:publicServiceId/confirm-bijgewerkt-tot', async function (req, res): Promise<any> {
     const instanceUUID = req.params.publicServiceId;
     try {
         await confirmBijgewerktTot(instanceUUID, req.body.bijgewerktTot);
@@ -241,7 +237,7 @@ app.post('/public-services/:publicServiceId/confirm-bijgewerkt-tot', async funct
     }
 });
 
-app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function (req, res) {
+app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function (req, res): Promise<any> {
     const instanceUUID = req.params.publicServiceId;
     try {
         const conceptId = req.params.conceptId;
@@ -257,7 +253,7 @@ app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function 
     }
 });
 
-app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version', async (req, res) => {
+app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version', async (req, res): Promise<any> => {
     try {
         const languageVersion = await getLanguageVersionOfConcept(req.params.conceptualPublicServiceId);
         return res.json({languageVersion: languageVersion});
@@ -274,7 +270,7 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version
     }
 });
 
-app.get('/contact-info-options/:fieldName', async (req, res) => {
+app.get('/contact-info-options/:fieldName', async (req, res): Promise<any> => {
     try {
         const result = await getContactPointOptions(req.params.fieldName);
         return res.json(result);
@@ -293,7 +289,7 @@ app.get('/contact-info-options/:fieldName', async (req, res) => {
     }
 });
 
-app.get('/address/municipalities', async (req, res) => {
+app.get('/address/municipalities', async (req, res): Promise<any> => {
     try {
         const municipalities = await fetchMunicipalities(req.query.search as string);
         return res.json(municipalities);
@@ -307,7 +303,7 @@ app.get('/address/municipalities', async (req, res) => {
     }
 });
 
-app.get('/address/streets', async (req, res) => {
+app.get('/address/streets', async (req, res): Promise<any> => {
     try {
         const streets = await fetchStreets(req.query.municipality as string, req.query.search as string);
         return res.json(streets);
@@ -321,7 +317,7 @@ app.get('/address/streets', async (req, res) => {
     }
 });
 
-app.get('/address/validate', async (req, res) => {
+app.get('/address/validate', async (req, res): Promise<any> => {
     try {
         const address = await findAddressMatch(
             req.query.municipality as string,
@@ -343,7 +339,7 @@ app.get('/address/validate', async (req, res) => {
     }
 });
 
-app.get('/concept-snapshot-compare', async (req, res) => {
+app.get('/concept-snapshot-compare', async (req, res): Promise<any> => {
     try {
         const isChanged = await isConceptFunctionallyChanged(req.query.newSnapshotUri as string, req.query.currentSnapshotUri as string);
         return res.json({isChanged});
