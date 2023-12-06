@@ -221,8 +221,6 @@ For using this service in a docker-compose stack, the following example can be u
 services:
   lpdc-management:
     image: lblod/lpdc-management-service:0.1.0
-    volumes:
-      - ./config/lpdc-management:/config
 ```
 ## Release a new version
 We use [release-it](https://github.com/release-it/release-it/tree/main) to make a new release.

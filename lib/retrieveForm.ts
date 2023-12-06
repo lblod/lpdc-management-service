@@ -26,8 +26,8 @@ import {
 } from "./formalInformalChoice";
 
 export async function retrieveForm(publicServiceId: string, formId: string) {
-  let form = fs.readFileSync(`/config/${FORM_MAPPING[formId]}/form.ttl`, 'utf8');
-  const metaFile = fse.readJsonSync(`/config/${FORM_MAPPING[formId]}/form.json`);
+  let form = fs.readFileSync(`./config/${FORM_MAPPING[formId]}/form.ttl`, 'utf8');
+  const metaFile = fse.readJsonSync(`./config/${FORM_MAPPING[formId]}/form.json`);
   const schemes = metaFile.meta.schemes;
 
   let isConceptualPublicService = false;
@@ -85,7 +85,7 @@ export async function retrieveForm(publicServiceId: string, formId: string) {
   // If a user chooses "YourEurope" as their publication channel, load
   // the relevants snippets into the content form that render the English fields obligatory.
   if (FORM_MAPPING[formId] === "content" && isYourEurope) {
-    const englishRequirementFormSnippets = fs.readFileSync(`/config/${FORM_MAPPING[formId]}/add-english-requirement.ttl`, 'utf8');
+    const englishRequirementFormSnippets = fs.readFileSync(`./config/${FORM_MAPPING[formId]}/add-english-requirement.ttl`, 'utf8');
     form += englishRequirementFormSnippets;
   }
 
