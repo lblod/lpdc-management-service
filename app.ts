@@ -25,12 +25,12 @@ const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 const bodySizeLimit = process.env.MAX_BODY_SIZE || '5Mb';
 app.use(bodyparser.json({limit: bodySizeLimit}));
 
-app.get('/', function (req, res) {
+app.get('/', function (req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
     res.send(message);
 });
 
-app.post('/delta', async function (req, res) {
+app.post('/delta', async function (req, res): Promise<void> {
     try {
         const body = req.body;
 
@@ -50,7 +50,11 @@ app.post('/delta', async function (req, res) {
     }
 });
 
-app.post('/semantic-forms/:publicServiceId/submit', async function (req, res) {
+app.post('/semantic-forms/:publicServiceId/submit', async function (req, res): Promise<{
+    status: number,
+    message?: string,
+    data?: any[]
+}> {
 
     const publicServiceId = req.params["publicServiceId"];
 
@@ -78,7 +82,7 @@ app.post('/semantic-forms/:publicServiceId/submit', async function (req, res) {
 
 });
 
-app.post('/public-services/', async function (req, res) {
+app.post('/public-services/', async function (req, res): Promise<any> {
     const body = req.body;
     const publicServiceId = body?.data?.relationships?.["concept"]?.data?.id;
     const sessionUri = req.headers['mu-session-id'];

@@ -2,8 +2,8 @@ import { querySudo } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeUri } from '../mu-helper';
 import { PREFIXES } from '../config';
 
-export async function bestuurseenheidForSession( sessionUri ) {
-  const queryStr = `
+export async function bestuurseenheidForSession(sessionUri): Promise<{ bestuurseenheid: string, uuid: string }> {
+    const queryStr = `
      ${PREFIXES}
      SELECT DISTINCT ?bestuurseenheid ?uuid
      WHERE {
@@ -14,25 +14,24 @@ export async function bestuurseenheidForSession( sessionUri ) {
      LIMIT 1
   `;
 
-  let result = await querySudo(queryStr);
+    let result = await querySudo(queryStr);
 
-  if(result.results.bindings.length == 1) {
-    return {
-      bestuurseenheid: result.results.bindings[0].bestuurseenheid.value,
-      uuid: result.results.bindings[0].uuid.value
-    };
-  }
-  else {
-    throw `Unexpected result fetching bestuurseenheid from session ${sessionUri}`;
-  }
+    if (result.results.bindings.length == 1) {
+        return {
+            bestuurseenheid: result.results.bindings[0].bestuurseenheid.value,
+            uuid: result.results.bindings[0].uuid.value
+        };
+    } else {
+        throw `Unexpected result fetching bestuurseenheid from session ${sessionUri}`;
+    }
 }
 
-export async function isAllowedForLPDC(sessionUri ) {
-  const queryStr = `
+export async function isAllowedForLPDC(sessionUri): Promise<boolean> {
+    const queryStr = `
     ${PREFIXES}
     ASK {
       ${sparqlEscapeUri(sessionUri)} <http://mu.semte.ch/vocabularies/ext/sessionRole> "LoketLB-LPDCGebruiker".
     }
   `;
-  return (await querySudo(queryStr)).boolean;
+    return (await querySudo(queryStr)).boolean;
 }

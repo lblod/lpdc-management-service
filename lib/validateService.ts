@@ -9,7 +9,7 @@ const FORM = rdflib.Namespace('http://lblod.data.gift/vocabularies/forms/');
 const RDF = rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 const MU = rdflib.Namespace('http://mu.semte.ch/vocabularies/core/');
 
-export async function validateService(publicServiceId) {
+export async function validateService(publicServiceId): Promise<{ errors: any[] }> {
     const formIds = Object.keys(FORM_MAPPING);
     const forms = [];
 

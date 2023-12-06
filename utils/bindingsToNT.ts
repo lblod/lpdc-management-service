@@ -1,10 +1,10 @@
 import { sparqlEscapeString, sparqlEscapeUri } from '../mu-helper';
 
-export function bindingsToNT(bindings) {
+export function bindingsToNT(bindings): string[] {
     return bindings.map(b => _bindingToNT(b['s'], b['p'], b['o']));
 }
 
-function _bindingToNT(s, p, o) {
+function _bindingToNT(s, p, o): string {
     const subject = sparqlEscapeUri(s.value);
     const predicate = sparqlEscapeUri(p.value);
     let obj;

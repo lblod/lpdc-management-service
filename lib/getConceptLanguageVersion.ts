@@ -14,7 +14,7 @@ import {
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
 
-export async function getLanguageVersionOfConcept(conceptUUID) {
+export async function getLanguageVersionOfConcept(conceptUUID): Promise<string> {
     const triples = await getConceptTriples(conceptUUID);
     const conceptLanguages = findDutchLanguageVersionsOfTriples(triples);
 
@@ -25,7 +25,7 @@ export async function getLanguageVersionOfConcept(conceptUUID) {
 }
 
 
-async function getConceptTriples(conceptUUID) {
+async function getConceptTriples(conceptUUID): Promise<any[]> {
     const conceptUri = await serviceUriForId(conceptUUID, 'lpdcExt:ConceptualPublicService');
     const results = [];
     results.push(await loadEvidences(conceptUri));

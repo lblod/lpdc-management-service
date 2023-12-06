@@ -13,7 +13,7 @@ import {
     serviceUriForId
 } from "./commonQueries";
 
-export async function getLanguageVersionOfInstance(publicServiceId) {
+export async function getLanguageVersionOfInstance(publicServiceId): Promise<string> {
     const triples = await getPublicServiceTriples(publicServiceId);
     const languageVersions = findDutchLanguageVersionsOfTriples(triples);
     if (languageVersions.length > 1) {
@@ -22,7 +22,7 @@ export async function getLanguageVersionOfInstance(publicServiceId) {
     return languageVersions[0];
 }
 
-async function getPublicServiceTriples(publicServiceUUID) {
+async function getPublicServiceTriples(publicServiceUUID): Promise<any[]> {
     const publicServiceUri = await serviceUriForId(publicServiceUUID, 'cpsv:PublicService');
     const type = 'cpsv:PublicService';
     const results = [];

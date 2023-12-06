@@ -3,15 +3,15 @@ import { querySudo } from '@lblod/mu-auth-sudo';
 import { APPLICATION_GRAPH, PREFIXES } from '../config';
 import { sortBy } from "lodash";
 
-type QueryOptions = {
-    graph?: string,
-    type?: string,
-    validTypes?: boolean,
-    includeUuid?: boolean,
-    sudo?: boolean,
-}
 
-export async function loadEvidences(serviceUri: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+
+export async function loadEvidences(serviceUri: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -46,7 +46,13 @@ export async function loadEvidences(serviceUri: string, {graph, type, validTypes
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadRequirements(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadRequirements(service: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -80,7 +86,13 @@ export async function loadRequirements(service: string, {graph, type, validTypes
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadOnlineProcedureRules(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadOnlineProcedureRules(service: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -116,7 +128,13 @@ export async function loadOnlineProcedureRules(service: string, {graph, type, va
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadRules(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadRules(service: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -149,7 +167,13 @@ export async function loadRules(service: string, {graph, type, validTypes, inclu
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadCosts(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadCosts(service: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -183,7 +207,13 @@ export async function loadCosts(service: string, {graph, type, validTypes, inclu
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadFinancialAdvantages(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadFinancialAdvantages(service: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -217,7 +247,13 @@ export async function loadFinancialAdvantages(service: string, {graph, type, val
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadLegalResources(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadLegalResources(service: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<null> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -246,7 +282,13 @@ export async function loadLegalResources(service: string, {graph, type, validTyp
     return null;
 }
 
-export async function loadContactPointsAddresses(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadContactPointsAddresses(service: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -284,7 +326,13 @@ export async function loadContactPointsAddresses(service: string, {graph, type, 
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadContactPoints(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadContactPoints(service: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -320,7 +368,13 @@ export async function loadContactPoints(service: string, {graph, type, validType
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadAttachments(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadAttachments(service: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -354,7 +408,13 @@ export async function loadAttachments(service: string, {graph, type, validTypes,
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadWebsites(service, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadWebsites(service, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
@@ -388,7 +448,13 @@ export async function loadWebsites(service, {graph, type, validTypes, includeUui
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadPublicService(service: string, {graph, type, validTypes, includeUuid, sudo}: QueryOptions = {}) {
+export async function loadPublicService(service: string, {
+    graph,
+    type,
+    validTypes,
+    includeUuid,
+    sudo
+}: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     validTypes = validTypes || false;
@@ -471,7 +537,7 @@ export async function loadPublicService(service: string, {graph, type, validType
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function serviceUriForId(publicServiceId: string, type: string = 'cpsv:PublicService') {
+export async function serviceUriForId(publicServiceId: string, type: string = 'cpsv:PublicService'): Promise<string> {
     return (await query(`
       ${PREFIXES}
 
@@ -485,7 +551,7 @@ export async function serviceUriForId(publicServiceId: string, type: string = 'c
     `)).results.bindings[0]?.service?.value;
 }
 
-export async function loadFormalInformalChoice() {
+export async function loadFormalInformalChoice(): Promise<any> {
     return (await query(`
       ${PREFIXES}
 
@@ -510,7 +576,7 @@ export async function loadFormalInformalChoice() {
     `)).results.bindings;
 }
 
-export async function loadContactPointOption(option: string) {
+export async function loadContactPointOption(option: string): Promise<any> {
     const unsortedContactPointOptions = (await query(`
         SELECT DISTINCT ?option
         WHERE {
@@ -523,7 +589,7 @@ export async function loadContactPointOption(option: string) {
 }
 
 
-export async function removeReviewStatus(instanceUri: string) {
+export async function removeReviewStatus(instanceUri: string): Promise<void> {
     const queryString = `
         ${PREFIXES}
         DELETE {
@@ -538,4 +604,12 @@ export async function removeReviewStatus(instanceUri: string) {
         }
     `;
     await update(queryString);
+}
+
+type QueryOptions = {
+    graph?: string,
+    type?: string,
+    validTypes?: boolean,
+    includeUuid?: boolean,
+    sudo?: boolean,
 }

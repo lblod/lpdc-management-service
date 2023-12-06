@@ -2,7 +2,7 @@ import { removeReviewStatus, serviceUriForId } from "./commonQueries";
 import { query, sparqlEscapeDateTime, sparqlEscapeUri, update } from "../mu-helper";
 import { APPLICATION_GRAPH } from "../config";
 
-export async function unlinkConcept(instanceUUID) {
+export async function unlinkConcept(instanceUUID): Promise<void> {
     const instanceUri = await serviceUriForId(instanceUUID, 'cpsv:PublicService');
     const conceptUri = await getConceptOfInstance(instanceUri);
     await unlink(instanceUri);
@@ -23,7 +23,7 @@ export async function unlinkConcept(instanceUUID) {
     }
 }
 
-export async function linkConcept(instanceUUID, conceptUUID) {
+export async function linkConcept(instanceUUID, conceptUUID): Promise<void> {
     const instanceUri = await serviceUriForId(instanceUUID, 'cpsv:PublicService');
     const conceptUri = await serviceUriForId(conceptUUID, 'lpdcExt:ConceptualPublicService');
     if (conceptUri) {
@@ -40,7 +40,7 @@ export async function linkConcept(instanceUUID, conceptUUID) {
     }
 }
 
-async function updateModified(instanceUri) {
+async function updateModified(instanceUri): Promise<void> {
     const now = new Date().toISOString();
     const updateModifiedQuery = `
         DELETE {
@@ -62,7 +62,7 @@ async function updateModified(instanceUri) {
     await update(updateModifiedQuery);
 }
 
-async function getDisplayConfiguration(conceptUri) {
+async function getDisplayConfiguration(conceptUri): Promise<string> {
     const getDisplayConfigurationQuery = `
         SELECT ?o WHERE {
                 ${sparqlEscapeUri(conceptUri)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration> ?o .
@@ -71,7 +71,7 @@ async function getDisplayConfiguration(conceptUri) {
     return (await query(getDisplayConfigurationQuery)).results.bindings[0]?.o?.value;
 }
 
-async function updateDisplayConfiguration(displayConfigurationUri, isInstantiated, isNew) {
+async function updateDisplayConfiguration(displayConfigurationUri, isInstantiated, isNew): Promise<void> {
     const updateIsInstantiatedQuery = `
             DELETE {
                 GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
@@ -95,7 +95,7 @@ async function updateDisplayConfiguration(displayConfigurationUri, isInstantiate
     await update(updateIsInstantiatedQuery);
 }
 
-async function getConceptOfInstance(instanceUri) {
+async function getConceptOfInstance(instanceUri): Promise<string> {
     const getConceptFromInstance = `
         SELECT DISTINCT ?o WHERE {
                 ${sparqlEscapeUri(instanceUri)} <http://purl.org/dc/terms/source> ?o .
@@ -104,7 +104,7 @@ async function getConceptOfInstance(instanceUri) {
     return (await query(getConceptFromInstance))?.results.bindings[0]?.o?.value;
 }
 
-async function getInstancesOfConcept(conceptUri) {
+async function getInstancesOfConcept(conceptUri): Promise<string[]> {
     const getInstancesFromConcept = `
          SELECT ?s WHERE {
                 ?s <http://purl.org/dc/terms/source> ${sparqlEscapeUri(conceptUri)} .
@@ -113,7 +113,7 @@ async function getInstancesOfConcept(conceptUri) {
     return (await query(getInstancesFromConcept)).results.bindings.map(instance => instance.s.value);
 }
 
-async function getVersionedSourceOfConcept(conceptUri) {
+async function getVersionedSourceOfConcept(conceptUri): Promise<string> {
     const queryString = `
          SELECT ?o WHERE {
             ${sparqlEscapeUri(conceptUri)} <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> ?o .
@@ -122,7 +122,7 @@ async function getVersionedSourceOfConcept(conceptUri) {
     return (await query(queryString)).results.bindings[0]?.o?.value;
 }
 
-async function unlink(instanceUri) {
+async function unlink(instanceUri): Promise<void> {
     const deleteSourceAndHasVersionedSourceQuery = `
         DELETE {
             GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
@@ -144,7 +144,7 @@ async function unlink(instanceUri) {
     await update(deleteSourceAndHasVersionedSourceQuery);
 }
 
-async function link(instanceUri, conceptUri, snapshotUri) {
+async function link(instanceUri, conceptUri, snapshotUri): Promise<void> {
     const createSourceQuery = `
         DELETE {
              GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {

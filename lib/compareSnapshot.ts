@@ -8,10 +8,10 @@ import {
     loadRules,
     loadWebsites
 } from "./commonQueries";
-import { isEqual, sortBy } from "lodash";
+import {isEqual, sortBy} from "lodash";
 
 export async function isConceptFunctionallyChanged(newSnapshotUri: string, currentSnapshotUri: string): Promise<boolean> {
-    if(newSnapshotUri === currentSnapshotUri) {
+    if (newSnapshotUri === currentSnapshotUri) {
         return false;
     }
     const currentSnapshotTriples = await loadConceptSnapshot(currentSnapshotUri);
@@ -62,7 +62,7 @@ function isValueChanged(currentSnapshotTriples: any[], currentSnapshotUri: strin
     return triple1?.o?.value !== triple2?.o?.value;
 }
 
-function findTriples(snapshotTriples: any[], subject: string, predicate: string, language?: string) {
+function findTriples(snapshotTriples: any[], subject: string, predicate: string, language?: string): any[] {
     return snapshotTriples
         .filter(triple => triple.s.value === subject)
         .filter(triple => triple.p.value === predicate)
@@ -156,7 +156,7 @@ function compareCost(currentSnapshotTriples: any[], currentSnapshotUri: string, 
     return changes.some(it => it);
 }
 
-function compareFinancialAdvantage(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string) {
+function compareFinancialAdvantage(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
     const currentFinancialAdvantageIds = findTriples(currentSnapshotTriples, currentSnapshotUri, Predicates.hasFinancialAdvantage).map(triple => triple.o.value);
     const currentSortedFinancialAdvantageIds = sortBy(currentFinancialAdvantageIds, costId => findTriples(currentSnapshotTriples, costId, Predicates.order)[0].o.value);
 
@@ -201,16 +201,17 @@ async function loadConceptSnapshot(snapshotUri: string): Promise<any[]> {
     const type = 'lpdcExt:ConceptualPublicService';
     const graph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
     const sudo = true;
+    const includeUuid = true;
 
     const results = [];
-    results.push(await loadEvidences(snapshotUri, {graph, type, sudo, includeUuid: true}));
-    results.push(await loadRequirements(snapshotUri, {graph, type, sudo, includeUuid: true}));
-    results.push(await loadOnlineProcedureRules(snapshotUri, {graph, type, sudo, includeUuid: true}));
-    results.push(await loadRules(snapshotUri, {graph, type, sudo, includeUuid: true}));
-    results.push(await loadCosts(snapshotUri, {graph, type, sudo, includeUuid: true}));
-    results.push(await loadFinancialAdvantages(snapshotUri, {graph, type, sudo, includeUuid: true}));
-    results.push(await loadWebsites(snapshotUri, {graph, type, sudo, includeUuid: true}));
-    results.push(await loadPublicService(snapshotUri, {graph, type, sudo, includeUuid: true}));
+    results.push(await loadEvidences(snapshotUri, {graph, type, includeUuid, sudo}));
+    results.push(await loadRequirements(snapshotUri, {graph, type, includeUuid, sudo}));
+    results.push(await loadOnlineProcedureRules(snapshotUri, {graph, type, includeUuid, sudo}));
+    results.push(await loadRules(snapshotUri, {graph, type, includeUuid, sudo}));
+    results.push(await loadCosts(snapshotUri, {graph, type, includeUuid, sudo}));
+    results.push(await loadFinancialAdvantages(snapshotUri, {graph, type, includeUuid, sudo}));
+    results.push(await loadWebsites(snapshotUri, {graph, type, includeUuid, sudo}));
+    results.push(await loadPublicService(snapshotUri, {graph, type, includeUuid, sudo}));
     return results.reduce((acc, b) => [...acc, ...b]);
 }
 

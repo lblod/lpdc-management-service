@@ -21,7 +21,7 @@ import {
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
 
-export async function createEmptyForm(bestuurseenheid: string): Promise<{uuid: string, uri: string}> {
+export async function createEmptyForm(bestuurseenheid: string): Promise<{ uuid: string, uri: string }> {
     const publicServiceId = uuid();
     const publicServiceUri = `http://data.lblod.info/id/public-service/${publicServiceId}`;
 
@@ -53,7 +53,7 @@ export async function createEmptyForm(bestuurseenheid: string): Promise<{uuid: s
     };
 }
 
-export async function createForm(conceptId: string, bestuurseenheid: string): Promise<{uuid: string, uri: string}> {
+export async function createForm(conceptId: string, bestuurseenheid: string): Promise<{ uuid: string, uri: string }> {
     const graph = CONCEPTUAL_SERVICE_GRAPH;
     const conceptUri = await getConceptUri(conceptId);
 
@@ -100,7 +100,7 @@ export async function createForm(conceptId: string, bestuurseenheid: string): Pr
 
     // Next lines is all about extracting the triple data so in can be injected in an insert.
     // TODO: this boilerplate could be more pretty
-    let allTriples = [
+    let allTriples: any[] = [
         publicServiceData,
         evidenceData,
         onlineProcedureData,
@@ -176,7 +176,7 @@ export async function createForm(conceptId: string, bestuurseenheid: string): Pr
  *
  * @returns {'http://old/uri': [ {s: { {value: 'http://new/uri' } }, p: binding, o: binding } ] }
  */
-function copySubjects(bindings: any[], uriTemplate: string) {
+function copySubjects(bindings: any[], uriTemplate: string): any {
     const copiedData = {};
 
     if (bindings.length) {
@@ -189,7 +189,7 @@ function copySubjects(bindings: any[], uriTemplate: string) {
     return copiedData;
 }
 
-function copySubject(oldUri: string, triplesData: any[], uriTemplate: string) {
+function copySubject(oldUri: string, triplesData: any[], uriTemplate: string): any[] {
     const newUuid = uuid();
     const newSubject = uriTemplate + newUuid;
 
@@ -222,7 +222,7 @@ function copySubject(oldUri: string, triplesData: any[], uriTemplate: string) {
  *
  * @returns {Object}: {'http://old/parent/uri': [ {s: binding, p: binding, o:  { {value: 'http://new/child' } } } ] }
  */
-function replaceObjectsWithCopiedChildren(parentData: any, childrenData: any) {
+function replaceObjectsWithCopiedChildren(parentData: any, childrenData: any):any[] {
     for (const tripleData of Object.values(parentData)) {
         for (const triple of tripleData as any[]) {
             if (childrenData[triple.o.value]) {
@@ -233,7 +233,7 @@ function replaceObjectsWithCopiedChildren(parentData: any, childrenData: any) {
     return parentData;
 }
 
-async function getConceptUri(conceptUuid: string) {
+async function getConceptUri(conceptUuid: string): Promise<string> {
     const result = await query(`
     ${PREFIXES}
 
@@ -248,7 +248,7 @@ async function getConceptUri(conceptUuid: string) {
     } else throw `No exact match found for lpdcExt:ConceptualPublicService ${conceptUuid}`;
 }
 
-async function getSpatialForBestuurseenheid(bestuurseenheid: string) {
+async function getSpatialForBestuurseenheid(bestuurseenheid: string): Promise<string[]> {
     const queryStr = `
     ${PREFIXES}
 
@@ -270,7 +270,7 @@ async function getSpatialForBestuurseenheid(bestuurseenheid: string) {
     return results.map(r => r.spatial.value);
 }
 
-async function updateConceptDisplayConfig(conceptUri: string) {
+async function updateConceptDisplayConfig(conceptUri: string): Promise<void> {
     // The fact the query is split up in pieces, is dueu to the
     // virtuoso bug: https://github.com/openlink/virtuoso-opensource/issues/1055
     // Once we have the latest version of virtuoso running, we can make it prettier.
@@ -324,7 +324,7 @@ async function updateConceptDisplayConfig(conceptUri: string) {
   `);
 }
 
-function keepOnlyChosenLanguageVersion(publicServiceUri: string, allTriples: any[], chosenForm: string) {
+function keepOnlyChosenLanguageVersion(publicServiceUri: string, allTriples: any[], chosenForm: string): any[] {
     const languageVersionsInConcept = findDutchLanguageVersionsOfTriples(allTriples);
     const languageVersionToKeep = selectLanguageVersionForConcept(languageVersionsInConcept, chosenForm);
     const fields = getFieldsWithLanguage(publicServiceUri, allTriples);
@@ -346,7 +346,7 @@ function keepOnlyChosenLanguageVersion(publicServiceUri: string, allTriples: any
     return triples;
 }
 
-function getFieldsWithLanguage(publicServiceUri: string, triples: any[]) {
+function getFieldsWithLanguage(publicServiceUri: string, triples: any[]): any[] {
     const requirementUris = getObjects(triples, 'http://vocab.belgif.be/ns/publicservice#hasRequirement');
     const evidenceUris = getObjects(triples, 'http://data.europa.eu/m8g/hasSupportingEvidence');
     const procedureUris = getObjects(triples, 'http://purl.org/vocab/cpsv#follows');
@@ -358,7 +358,10 @@ function getFieldsWithLanguage(publicServiceUri: string, triples: any[]) {
     return [
         {subject: publicServiceUri, predicate: 'http://purl.org/dc/terms/title'},
         {subject: publicServiceUri, predicate: 'http://purl.org/dc/terms/description'},
-        {subject: publicServiceUri, predicate: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription'},
+        {
+            subject: publicServiceUri,
+            predicate: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription'
+        },
         {subject: publicServiceUri, predicate: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#exception'},
         {subject: publicServiceUri, predicate: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation'},
         ...requirementUris.map(uri => ({subject: uri, predicate: 'http://purl.org/dc/terms/title'})),
@@ -378,7 +381,7 @@ function getFieldsWithLanguage(publicServiceUri: string, triples: any[]) {
     ];
 }
 
-function getObjects(triples: any[], predicate: string) {
+function getObjects(triples: any[], predicate: string): any[] {
     return triples
         .filter(triple => triple.p.value === predicate)
         .map(triple => triple.o.value);
