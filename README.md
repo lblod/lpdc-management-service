@@ -223,7 +223,6 @@ services:
     image: lblod/lpdc-management-service:0.1.0
     volumes:
       - ./config/lpdc-management:/config
-      - ./data/files/lpdc:/data
 ```
 ## Release a new version
 We use [release-it](https://github.com/release-it/release-it/tree/main) to make a new release.
