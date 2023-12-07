@@ -13,7 +13,7 @@ export async function fetchMunicipalities(searchString: string): Promise<string[
         const result = await response.json();
         return result?.LocationResult?.map(result => result.Municipality) ?? [];
     } else {
-        console.error(await response.json())
+        console.error(await response.json());
         throw Error(`An error occurred when querying the geopunt vlaanderen api, status code: ${response.status}`);
     }
 }
@@ -34,12 +34,12 @@ export async function fetchStreets(municipality: string, searchString: string): 
             .map(match => match?.straatnaam?.straatnaam?.geografischeNaam?.spelling)
             .filter(match => !!match);
     } else {
-        console.error(await response.json())
+        console.error(await response.json());
         throw Error(`An error occurred when querying the address register, status code: ${response.status}`);
     }
 }
 
-export async function findAddressMatch(municipality: string, street: string, houseNumber: string, busNumber: string): Promise<AddressDto | {}> {
+export async function findAddressMatch(municipality: string, street: string, houseNumber: string, busNumber: string): Promise<AddressDto | NonNullable<unknown>> {
     if (!municipality || !street || !houseNumber) {
         throw new Error('Invalid request: municipality, street and houseNumber are required');
     }
@@ -74,7 +74,7 @@ export async function findAddressMatch(municipality: string, street: string, hou
             return {};
         }
     } else {
-        console.error(await response.json())
+        console.error(await response.json());
         throw Error(`An error occurred when querying the address register, status code: ${response.status}`);
     }
 }
@@ -92,7 +92,7 @@ export async function findPostcode(municipality: string): Promise<string> {
             throw Error(`Can not find postcode for municipality ${municipality}`);
         }
     } else {
-        console.error(await response.json())
+        console.error(await response.json());
         throw Error(`An error occurred when querying the address register, status code: ${response.status}`);
     }
 

@@ -17,7 +17,7 @@ export async function getLanguageVersionOfInstance(publicServiceId): Promise<str
     const triples = await getPublicServiceTriples(publicServiceId);
     const languageVersions = findDutchLanguageVersionsOfTriples(triples);
     if (languageVersions.length > 1) {
-        console.error(`multiple language versions (${languageVersions.toString()}) found for instance ${publicServiceId}`)
+        console.error(`multiple language versions (${languageVersions.toString()}) found for instance ${publicServiceId}`);
     }
     return languageVersions[0];
 }

@@ -85,14 +85,14 @@ export async function retrieveForm(publicServiceId: string, formId: string): Pro
         <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/YourEurope> .
     }
   `;
-    let isYourEurope = (await querySudo(publicationChannelQuery)).boolean;
+    const isYourEurope = (await querySudo(publicationChannelQuery)).boolean;
 
-  // If a user chooses "YourEurope" as their publication channel, load
-  // the relevants snippets into the content form that render the English fields obligatory.
-  if (FORM_MAPPING[formId] === "content" && isYourEurope) {
-    const englishRequirementFormSnippets = fs.readFileSync(`./config/${FORM_MAPPING[formId]}/add-english-requirement.ttl`, 'utf8');
-    form += englishRequirementFormSnippets;
-  }
+    // If a user chooses "YourEurope" as their publication channel, load
+    // the relevants snippets into the content form that render the English fields obligatory.
+    if (FORM_MAPPING[formId] === "content" && isYourEurope) {
+        const englishRequirementFormSnippets = fs.readFileSync(`./config/${FORM_MAPPING[formId]}/add-english-requirement.ttl`, 'utf8');
+        form += englishRequirementFormSnippets;
+    }
 
     const schemesQuery = `
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>

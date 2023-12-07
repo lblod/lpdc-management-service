@@ -71,7 +71,7 @@ export async function validateService(publicServiceId): Promise<{ errors: any[] 
                     formId: form.id,
                     formUri: "http://data.lblod.info/id/forms/" + form.id,
                     message: `Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!`
-                })
+                });
             }
         }
 

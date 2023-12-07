@@ -22,7 +22,7 @@ export class ProcessingQueue {
             } catch (error) {
                 const errorMsg = `${this.name}: Error while processing delta in queue ${error}`;
                 console.error(errorMsg);
-                console.log(error.stack)
+                console.log(error.stack);
             } finally {
                 this.executing = false;
                 this.run();

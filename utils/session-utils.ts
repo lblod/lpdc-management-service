@@ -1,6 +1,6 @@
-import { querySudo } from '@lblod/mu-auth-sudo';
-import { sparqlEscapeUri } from '../mu-helper';
-import { PREFIXES } from '../config';
+import {querySudo} from '@lblod/mu-auth-sudo';
+import {sparqlEscapeUri} from '../mu-helper';
+import {PREFIXES} from '../config';
 
 export async function bestuurseenheidForSession(sessionUri): Promise<{ bestuurseenheid: string, uuid: string }> {
     const queryStr = `
@@ -14,7 +14,7 @@ export async function bestuurseenheidForSession(sessionUri): Promise<{ bestuurse
      LIMIT 1
   `;
 
-    let result = await querySudo(queryStr);
+    const result = await querySudo(queryStr);
 
     if (result.results.bindings.length == 1) {
         return {
