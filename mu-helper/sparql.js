@@ -57,7 +57,6 @@ function update(queryString) {
 
 function executeQuery(queryString) {
     return newSparqlClient().query(queryString).executeRaw().then(response => {
-        const temp = httpContext;
         if (httpContext.get('response') && !httpContext.get('response').headersSent) {
             // set mu-auth-allowed-groups on outgoing response
             const allowedGroups = response.headers['mu-auth-allowed-groups'];

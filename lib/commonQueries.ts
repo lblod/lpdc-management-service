@@ -7,7 +7,6 @@ import {sortBy} from "lodash";
 export async function loadEvidences(serviceUri: string, {
     graph,
     type,
-    validTypes,
     includeUuid,
     sudo
 }: QueryOptions = {}): Promise<any[]> {
@@ -48,7 +47,6 @@ export async function loadEvidences(serviceUri: string, {
 export async function loadRequirements(service: string, {
     graph,
     type,
-    validTypes,
     includeUuid,
     sudo
 }: QueryOptions = {}): Promise<any[]> {
@@ -88,7 +86,6 @@ export async function loadRequirements(service: string, {
 export async function loadOnlineProcedureRules(service: string, {
     graph,
     type,
-    validTypes,
     includeUuid,
     sudo
 }: QueryOptions = {}): Promise<any[]> {
@@ -130,7 +127,6 @@ export async function loadOnlineProcedureRules(service: string, {
 export async function loadRules(service: string, {
     graph,
     type,
-    validTypes,
     includeUuid,
     sudo
 }: QueryOptions = {}): Promise<any[]> {
@@ -169,7 +165,6 @@ export async function loadRules(service: string, {
 export async function loadCosts(service: string, {
     graph,
     type,
-    validTypes,
     includeUuid,
     sudo
 }: QueryOptions = {}): Promise<any[]> {
@@ -209,7 +204,6 @@ export async function loadCosts(service: string, {
 export async function loadFinancialAdvantages(service: string, {
     graph,
     type,
-    validTypes,
     includeUuid,
     sudo
 }: QueryOptions = {}): Promise<any[]> {
@@ -246,18 +240,19 @@ export async function loadFinancialAdvantages(service: string, {
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadLegalResources(service: string, {
-    graph,
-    type,
-    validTypes,
-    includeUuid,
-    sudo
-}: QueryOptions = {}): Promise<null> {
-    graph = graph || APPLICATION_GRAPH;
-    type = type || 'lpdcExt:ConceptualPublicService';
-    includeUuid = includeUuid || false;
-    const queryClient = sudo ? querySudo : query;
-
+// TODO: LPDC-735 FIX?
+// export async function loadLegalResources(service: string, {
+//     graph,
+//     type,
+//     validTypes,
+//     includeUuid,
+//     sudo
+// }: QueryOptions = {}): Promise<null> {
+//     graph = graph || APPLICATION_GRAPH;
+//     type = type || 'lpdcExt:ConceptualPublicService';
+//     includeUuid = includeUuid || false;
+//     const queryClient = sudo ? querySudo : query;
+//
     //TODO: we comment this bit out, as here we will need a refined flow because eli:LegalResource are URI's from
     //      VlaamseCodex. So copying them over is not really what we want.
     // const legalResoureQuery = `
@@ -278,13 +273,12 @@ export async function loadLegalResources(service: string, {
     //          dct:title ?title.
     //     }
     // `;
-    return null;
-}
+    // return null;
+// }
 
 export async function loadContactPointsAddresses(service: string, {
     graph,
     type,
-    validTypes,
     includeUuid,
     sudo
 }: QueryOptions = {}): Promise<any[]> {
@@ -328,7 +322,6 @@ export async function loadContactPointsAddresses(service: string, {
 export async function loadContactPoints(service: string, {
     graph,
     type,
-    validTypes,
     includeUuid,
     sudo
 }: QueryOptions = {}): Promise<any[]> {
@@ -370,7 +363,6 @@ export async function loadContactPoints(service: string, {
 export async function loadAttachments(service: string, {
     graph,
     type,
-    validTypes,
     includeUuid,
     sudo
 }: QueryOptions = {}): Promise<any[]> {
@@ -410,7 +402,6 @@ export async function loadAttachments(service: string, {
 export async function loadWebsites(service: string, {
     graph,
     type,
-    validTypes,
     includeUuid,
     sudo
 }: QueryOptions = {}): Promise<any[]> {

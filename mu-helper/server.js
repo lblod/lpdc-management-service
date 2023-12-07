@@ -31,7 +31,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-const errorHandler = function (err, req, res, next) {
+const errorHandler = function (err, req, res) {
     res.status(err.status || 400);
     res.json({
         errors: [{title: err.message}]

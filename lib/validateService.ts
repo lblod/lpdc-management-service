@@ -14,17 +14,13 @@ export async function validateService(publicServiceId: string): Promise<{ errors
     const forms = [];
 
     for (const id of formIds) {
-        try {
-            const form = await retrieveForm(publicServiceId, id);
-            forms.push({
-                type: FORM_MAPPING[id],
-                form: form,
-                id: id,
-                serviceUri: form.serviceUri
-            });
-        } catch (error) {
-            throw error;
-        }
+        const form = await retrieveForm(publicServiceId, id);
+        forms.push({
+            type: FORM_MAPPING[id],
+            form: form,
+            id: id,
+            serviceUri: form.serviceUri
+        });
     }
 
     const FORM_GRAPHS = {
