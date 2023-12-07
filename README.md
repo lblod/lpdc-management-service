@@ -25,7 +25,7 @@ It is also in charge of post-processing the LDES feed coming from IPDC.
   <summary><b>POST /public-services</b></summary>
   <h3> request body </h3>
 
-  ```javascript
+  ```json
   {
     "data": {
       "type": "public-services",
@@ -221,6 +221,9 @@ For using this service in a docker-compose stack, the following example can be u
 services:
   lpdc-management:
     image: lblod/lpdc-management-service:0.1.0
+    environment:
+      MU_SPARQL_ENDPOINT: 'http://database:8890/sparql'
+      MU_APPLICATION_GRAPH: "http://mu.semte.ch/application"
 ```
 ## Release a new version
 We use [release-it](https://github.com/release-it/release-it/tree/main) to make a new release.
@@ -232,6 +235,9 @@ We use [release-it](https://github.com/release-it/release-it/tree/main) to make 
 # 11. Operation and Support
 
 # 12. Development Environment
+
+To make sure every developer uses the same node version locally, [asdf](https://asdf-vm.com/) is used.
+After installing asdf the node version specified in `.tool-versions` will be used when running the app locally.
 
 # 13. Decision Log
 
