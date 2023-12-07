@@ -25,7 +25,7 @@ export async function createEmptyForm(bestuurseenheid: string): Promise<{ uuid: 
     const publicServiceId = uuid();
     const publicServiceUri = `http://data.lblod.info/id/public-service/${publicServiceId}`;
 
-    const spatials = await getSpatialForBestuurseenheid(bestuurseenheid);
+    const spatials = await getSpatialsForBestuurseenheid(bestuurseenheid);
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
 
     const now = new Date().toISOString();
@@ -132,7 +132,7 @@ export async function createForm(conceptId: string, bestuurseenheid: string): Pr
     }
 
     const now = new Date().toISOString();
-    const spatials = await getSpatialForBestuurseenheid(bestuurseenheid);
+    const spatials = await getSpatialsForBestuurseenheid(bestuurseenheid);
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
     const extraDataQuery = `
     ${PREFIXES}
@@ -222,7 +222,7 @@ function copySubject(oldUri: string, triplesData: any[], uriTemplate: string): a
  *
  * @returns {Object}: {'http://old/parent/uri': [ {s: binding, p: binding, o:  { {value: 'http://new/child' } } } ] }
  */
-function replaceObjectsWithCopiedChildren(parentData: any, childrenData: any):any[] {
+function replaceObjectsWithCopiedChildren(parentData: any, childrenData: any): any[] {
     for (const tripleData of Object.values(parentData)) {
         for (const triple of tripleData as any[]) {
             if (childrenData[triple.o.value]) {
@@ -248,7 +248,7 @@ async function getConceptUri(conceptUuid: string): Promise<string> {
     } else throw `No exact match found for lpdcExt:ConceptualPublicService ${conceptUuid}`;
 }
 
-async function getSpatialForBestuurseenheid(bestuurseenheid: string): Promise<string[]> {
+async function getSpatialsForBestuurseenheid(bestuurseenheid: string): Promise<string[]> {
     const queryStr = `
     ${PREFIXES}
 

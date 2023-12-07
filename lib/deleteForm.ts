@@ -1,6 +1,6 @@
-import { query, sparqlEscapeDateTime, sparqlEscapeUri, update } from '../mu-helper';
-import { APPLICATION_GRAPH, PREFIXES } from '../config';
-import { bindingsToNT } from '../utils/bindingsToNT';
+import {query, sparqlEscapeDateTime, sparqlEscapeUri, update} from '../mu-helper';
+import {APPLICATION_GRAPH, PREFIXES} from '../config';
+import {bindingsToNT} from '../utils/bindingsToNT';
 import {
     loadAttachments,
     loadContactPoints,
@@ -19,7 +19,7 @@ import {bestuurseenheidForSession, isAllowedForLPDC} from '../utils/session-util
 import {getScopedGraphsForStatement} from '../utils/common';
 import {updateSudo} from '@lblod/mu-auth-sudo';
 
-export async function deleteForm(serviceId, sessionUri): Promise<void> {
+export async function deleteForm(serviceId: string, sessionUri: string): Promise<void> {
     const serviceUri = await serviceUriForId(serviceId);
 
     if (!serviceUri) {
@@ -93,7 +93,7 @@ export async function deleteForm(serviceId, sessionUri): Promise<void> {
     }
 }
 
-async function conceptUriForService(serviceUri): Promise<string> {
+async function conceptUriForService(serviceUri: string): Promise<string> {
     return (await query(`
       ${PREFIXES}
 
@@ -107,7 +107,7 @@ async function conceptUriForService(serviceUri): Promise<string> {
     `)).results.bindings[0]?.concept?.value;
 }
 
-async function conceptHasInstances(conceptUri): Promise<boolean> {
+async function conceptHasInstances(conceptUri: string): Promise<boolean> {
     const conceptHasInstancesQuery = `
     ${PREFIXES}
     ASK WHERE {
@@ -121,7 +121,7 @@ async function conceptHasInstances(conceptUri): Promise<boolean> {
     return (await query(conceptHasInstancesQuery)).boolean;
 }
 
-async function removeInstantiatedFlag(conceptUri): Promise<void> {
+async function removeInstantiatedFlag(conceptUri: string): Promise<void> {
     const removeInstantiatedFlagQuery = `
     ${PREFIXES}
 
@@ -146,7 +146,7 @@ async function removeInstantiatedFlag(conceptUri): Promise<void> {
     await update(removeInstantiatedFlagQuery);
 }
 
-async function loadReviewStatus(serviceUri): Promise<any> {
+async function loadReviewStatus(serviceUri: string): Promise<any> {
     return (await query(`
       ${PREFIXES}
 

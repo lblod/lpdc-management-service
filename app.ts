@@ -81,7 +81,7 @@ app.post('/semantic-forms/:publicServiceId/submit', async function (req, res): P
 app.post('/public-services/', async function (req, res): Promise<any> {
     const body = req.body;
     const publicServiceId = body?.data?.relationships?.["concept"]?.data?.id;
-    const sessionUri = req.headers['mu-session-id'];
+    const sessionUri = req.headers['mu-session-id'] as string;
     if (!publicServiceId) {
         try {
             const bestuurseenheidData = await bestuurseenheidForSession(sessionUri);
@@ -154,8 +154,9 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
 
 app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
     const delta = req.body;
+    const header = req.headers['mu-session-id'] as string;
     try {
-        await updateForm(delta, req.headers['mu-session-id']);
+        await updateForm(delta, header);
         return res.sendStatus(200);
     } catch (e) {
         console.error(e);
@@ -172,8 +173,9 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
 
 app.delete('/public-services/:publicServiceId', async function (req, res): Promise<any> {
     const publicServiceId = req.params.publicServiceId;
+    const header = req.headers['mu-session-id'] as string;
     try {
-        await deleteForm(publicServiceId, req.headers['mu-session-id']);
+        await deleteForm(publicServiceId, header);
         return res.sendStatus(204);
     } catch (e) {
         console.error(e);

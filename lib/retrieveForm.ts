@@ -168,6 +168,6 @@ async function generateRuntimeConceptSchemes(): Promise<any[]> {
     return [...baseScheme, ...tailoredConcept];
 }
 
-function adjustLanguageOfForm(form, newLanguage): string {
+function adjustLanguageOfForm(form: string, newLanguage: string): string {
     return form.replaceAll(`form:language "<FORMAL_INFORMAL_LANGUAGE>"`, `form:language "${newLanguage}"`);
 }

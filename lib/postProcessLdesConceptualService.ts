@@ -1,10 +1,10 @@
-import { querySudo, updateSudo } from '@lblod/mu-auth-sudo';
-import { sparqlEscapeString, sparqlEscapeUri } from '../mu-helper';
-import { CONCEPTUAL_SERVICE_GRAPH, PREFIXES } from '../config';
-import { v4 as uuid } from 'uuid';
-import { flatten } from 'lodash';
-import { bindingsToNT } from '../utils/bindingsToNT';
-import { addTypeForSubject, addUuidForSubject, groupBySubject } from '../utils/common';
+import {querySudo, updateSudo} from '@lblod/mu-auth-sudo';
+import {sparqlEscapeString, sparqlEscapeUri} from '../mu-helper';
+import {CONCEPTUAL_SERVICE_GRAPH, PREFIXES} from '../config';
+import {v4 as uuid} from 'uuid';
+import {flatten} from 'lodash';
+import {bindingsToNT} from '../utils/bindingsToNT';
+import {addTypeForSubject, addUuidForSubject, groupBySubject} from '../utils/common';
 import fetch from 'node-fetch';
 import {
     loadAttachments,
@@ -22,7 +22,7 @@ import {
 } from './commonQueries';
 import {isConceptFunctionallyChanged} from "./compareSnapshot";
 
-export async function processLdesDelta(delta): Promise<void> {
+export async function processLdesDelta(delta: any): Promise<void> {
     let versionedServices = flatten(delta.map(changeSet => changeSet.inserts));
     versionedServices = versionedServices.filter(t => t?.subject?.value
         && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf');
@@ -74,7 +74,7 @@ export async function processLdesDelta(delta): Promise<void> {
     }
 }
 
-async function isNewVersionConceptualPublicService(vGraph, vService, service): Promise<boolean> {
+async function isNewVersionConceptualPublicService(vGraph: string, vService: string, service: string): Promise<boolean> {
     const queryStr = `
     ${PREFIXES}
     ASK {
@@ -97,7 +97,7 @@ async function isNewVersionConceptualPublicService(vGraph, vService, service): P
     return (await querySudo(queryStr)).boolean;
 }
 
-async function updateNewLdesVersion(versionedServiceGraph, versionedService, conceptualService): Promise<void> {
+async function updateNewLdesVersion(versionedServiceGraph: string, versionedService: string, conceptualService: string): Promise<void> {
     let serviceId = (await querySudo(`
     ${PREFIXES}
 
@@ -119,7 +119,7 @@ async function updateNewLdesVersion(versionedServiceGraph, versionedService, con
 
 }
 
-async function removeConceptualService(serviceId): Promise<void> {
+async function removeConceptualService(serviceId: string): Promise<void> {
     const type = 'lpdcExt:ConceptualPublicService';
     const graph = CONCEPTUAL_SERVICE_GRAPH;
     const sudo = true;
@@ -161,14 +161,14 @@ async function removeConceptualService(serviceId): Promise<void> {
     }
 }
 
-async function updateConceptualService(versionedServiceGraph, versionedServiceUri, serviceUri, serviceId): Promise<void> {
+async function updateConceptualService(versionedServiceGraph: string, versionedServiceUri: string, serviceUri: string, serviceId: string): Promise<void> {
     const graph = versionedServiceGraph;
     const sudo = true;
 
     //Some code list entries might be missing in our DB we insert these here
     await ensureNewIpdcOrganisations(versionedServiceUri);
 
-    const loadAndPostProcess = async (callBack, newType = null) => {
+    const loadAndPostProcess = async (callBack, newType = null): Promise<any[]> => {
         let finalResults = [];
         const bindings = await callBack(versionedServiceUri, {graph, sudo});
         const bindingsPerSubject = groupBySubject(bindings);
@@ -220,7 +220,7 @@ async function updateConceptualService(versionedServiceGraph, versionedServiceUr
     }
 }
 
-async function updatedVersionInformation(versionedResource, resource): Promise<void> {
+async function updatedVersionInformation(versionedResource: string, resource: string): Promise<void> {
     const queryStr = `
    ${PREFIXES}
    DELETE {
@@ -245,7 +245,7 @@ async function updatedVersionInformation(versionedResource, resource): Promise<v
     await updateSudo(queryStr);
 }
 
-async function ensureNewIpdcOrganisations(service): Promise<void> {
+async function ensureNewIpdcOrganisations(service: string): Promise<void> {
     let codelistEntries = await getCodeListEntriesForPredicate(service, 'm8g:hasCompetentAuthority');
     codelistEntries = [...codelistEntries, ...await getCodeListEntriesForPredicate(service, 'lpdcExt:hasExecutingAuthority')];
     for (const code of codelistEntries) {
@@ -259,7 +259,7 @@ async function ensureNewIpdcOrganisations(service): Promise<void> {
     }
 }
 
-async function getCodeListEntriesForPredicate(service, predicate = 'm8g:hasCompetentAuthority'): Promise<string[]> {
+async function getCodeListEntriesForPredicate(service: string, predicate: string = 'm8g:hasCompetentAuthority'): Promise<string[]> {
     const queryStr = `
     ${PREFIXES}
     SELECT DISTINCT ?codeListEntry {
@@ -270,7 +270,7 @@ async function getCodeListEntriesForPredicate(service, predicate = 'm8g:hasCompe
     return result.results.bindings.map(r => r.codeListEntry.value);
 }
 
-async function existingCode(code, conceptScheme = 'dvcs:IPDCOrganisaties'): Promise<boolean> {
+async function existingCode(code: string, conceptScheme: string = 'dvcs:IPDCOrganisaties'): Promise<boolean> {
     const queryStr = `
   ${PREFIXES}
   ASK {
@@ -283,15 +283,15 @@ async function existingCode(code, conceptScheme = 'dvcs:IPDCOrganisaties'): Prom
     return queryData.boolean;
 }
 
-async function fetchOrgRegistryCodelistEntry(uriEntry): Promise<{ uri?: string, prefLabel?: string }> {
-    let result:{ uri?: string, prefLabel?: string } = await fetchOrgRegistryCodelistEntryThroughSubjectPage(uriEntry);
+async function fetchOrgRegistryCodelistEntry(uriEntry: string): Promise<{ uri?: string, prefLabel?: string }> {
+    let result: { uri?: string, prefLabel?: string } = await fetchOrgRegistryCodelistEntryThroughSubjectPage(uriEntry);
     if (!result.prefLabel) {
         result = await fetchOrgRegistryCodelistEntryThroughAPI(uriEntry);
     }
     return result;
 }
 
-async function fetchOrgRegistryCodelistEntryThroughSubjectPage(uriEntry): Promise<{
+async function fetchOrgRegistryCodelistEntryThroughSubjectPage(uriEntry: string): Promise<{
     uri?: string,
     prefLabel?: string
 }> {
@@ -325,7 +325,7 @@ async function fetchOrgRegistryCodelistEntryThroughSubjectPage(uriEntry): Promis
     return result;
 }
 
-async function fetchOrgRegistryCodelistEntryThroughAPI(uriEntry): Promise<{ uri?: string, prefLabel?: string }> {
+async function fetchOrgRegistryCodelistEntryThroughAPI(uriEntry: string): Promise<{ uri?: string, prefLabel?: string }> {
     const result: { uri?: string, prefLabel?: string } = {};
     const ovoNumber = uriEntry.split('OVO')[1];
     if (!ovoNumber) {
@@ -349,10 +349,10 @@ async function fetchOrgRegistryCodelistEntryThroughAPI(uriEntry): Promise<{ uri?
     return result;
 }
 
-async function insertCodeListData(codeListData,
-                                  seeAlso = 'https://wegwijs.vlaanderen.be',
-                                  conceptScheme = 'dvcs:IPDCOrganisaties'): Promise<void> {
-    codeListData.uuid = uuid();
+async function insertCodeListData(codeListData: { uri?: string, prefLabel?: string },
+                                  seeAlso: string = 'https://wegwijs.vlaanderen.be',
+                                  conceptScheme: string = 'dvcs:IPDCOrganisaties'): Promise<void> {
+    const codeListDataUuid = uuid();
     const queryStr = `
     ${PREFIXES}
     INSERT {
@@ -361,7 +361,7 @@ async function insertCodeListData(codeListData,
         ${sparqlEscapeUri(codeListData.uri)} skos:inScheme ${conceptScheme}.
         ${sparqlEscapeUri(codeListData.uri)} skos:topConceptOf ${conceptScheme}.
         ${sparqlEscapeUri(codeListData.uri)} skos:prefLabel ${sparqlEscapeString(codeListData.prefLabel)}.
-        ${sparqlEscapeUri(codeListData.uri)} mu:uuid ${sparqlEscapeString(codeListData.uuid)}.
+        ${sparqlEscapeUri(codeListData.uri)} mu:uuid ${sparqlEscapeString(codeListDataUuid)}.
         ${sparqlEscapeUri(codeListData.uri)} rdfs:seeAlso ${sparqlEscapeUri(seeAlso)}.
       }
     } WHERE {
@@ -370,10 +370,10 @@ async function insertCodeListData(codeListData,
        }
     }
  `;
-    const queryResult = await querySudo(queryStr);
+    await querySudo(queryStr);
 }
 
-function determineInstanceReviewStatus(isModified, isArchiving): string | undefined {
+function determineInstanceReviewStatus(isModified: boolean, isArchiving: boolean): string | undefined {
     const reviewStatus = {
         conceptUpdated: 'http://lblod.data.gift/concepts/5a3168e2-f39b-4b5d-8638-29f935023c83',
         conceptArchived: 'http://lblod.data.gift/concepts/cf22e8d1-23c3-45da-89bc-00826eaf23c3'
@@ -389,7 +389,7 @@ function determineInstanceReviewStatus(isModified, isArchiving): string | undefi
 }
 
 
-async function flagInstancesModifiedConcept(service, reviewStatus): Promise<void> {
+async function flagInstancesModifiedConcept(service: string, reviewStatus?: string): Promise<void> {
     if (reviewStatus) {
         const updateQueryStr = `
             ${PREFIXES}
@@ -413,7 +413,7 @@ async function flagInstancesModifiedConcept(service, reviewStatus): Promise<void
     }
 }
 
-async function ensureConceptDisplayConfigs(conceptualService): Promise<void> {
+async function ensureConceptDisplayConfigs(conceptualService: string): Promise<void> {
     const insertConfigsQuery = `
     ${PREFIXES}
     
@@ -450,7 +450,7 @@ async function ensureConceptDisplayConfigs(conceptualService): Promise<void> {
     await updateSudo(insertConfigsQuery);
 }
 
-async function isArchivingEvent(versionedServiceGraph, versionedService): Promise<boolean> {
+async function isArchivingEvent(versionedServiceGraph: string, versionedService: string): Promise<boolean> {
     // IPDC sends archiving events as snapshot type "Delete" since they don't do hard deletes.
     const isDeleteSnapshotTypeQuery = `
     ASK {
@@ -465,7 +465,7 @@ async function isArchivingEvent(versionedServiceGraph, versionedService): Promis
     return (await querySudo(isDeleteSnapshotTypeQuery))?.boolean;
 }
 
-async function markConceptAsArchived(conceptualService): Promise<void> {
+async function markConceptAsArchived(conceptualService: string): Promise<void> {
     const archivedStatusConcept = 'http://lblod.data.gift/concepts/3f2666df-1dae-4cc2-a8dc-e8213e713081';
     const markAsArchivedQuery = `
     ${PREFIXES}
@@ -480,14 +480,14 @@ async function markConceptAsArchived(conceptualService): Promise<void> {
     await updateSudo(markAsArchivedQuery);
 }
 
-async function isConceptChanged(newSnapshotUri, currentSnapshotUri): Promise<boolean> {
+async function isConceptChanged(newSnapshotUri: string, currentSnapshotUri: string): Promise<boolean> {
     if (!currentSnapshotUri) {
         return false;
     }
     return isConceptFunctionallyChanged(newSnapshotUri, currentSnapshotUri);
 }
 
-async function getVersionedSourceOfConcept(conceptUri): Promise<string> {
+async function getVersionedSourceOfConcept(conceptUri: string): Promise<string> {
     const query = `
       ${PREFIXES}
       SELECT ?snapshotUri WHERE {
@@ -497,7 +497,7 @@ async function getVersionedSourceOfConcept(conceptUri): Promise<string> {
     return (await querySudo(query)).results.bindings[0]?.snapshotUri?.value;
 }
 
-async function updateLatestFunctionalChange(conceptSnapshotUri, conceptUri): Promise<void> {
+async function updateLatestFunctionalChange(conceptSnapshotUri: string, conceptUri: string): Promise<void> {
     const queryStr = `
    ${PREFIXES}
    DELETE {

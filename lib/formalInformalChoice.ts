@@ -6,13 +6,13 @@ import _ from 'lodash';
  * @param formalInformalChoice triples
  * @returns {*} 'formal' or 'informal or undefined
  */
-export function getChosenForm(formalInformalChoice): string {
+export function getChosenForm(formalInformalChoice: any): string {
     return formalInformalChoice
         .find(triple => triple.p.value === 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#chosenForm')
         ?.o?.value;
 }
 
-export function findDutchLanguageVersionsOfTriples(triples): any[] {
+export function findDutchLanguageVersionsOfTriples(triples: any[]): any[] {
     const predicatesThatCanHaveFormalInformalLanguageVersion = [
         'http://purl.org/dc/terms/title',
         'http://purl.org/dc/terms/description',
@@ -36,7 +36,7 @@ export function findDutchLanguageVersionsOfTriples(triples): any[] {
  * @returns {string} the language version
  */
 
-export function getLanguageVersionForInstance(chosenForm): string {
+export function getLanguageVersionForInstance(chosenForm: string): string {
     return chosenForm === 'informal' ? 'nl-be-x-informal' : 'nl-be-x-formal';
 }
 
@@ -46,7 +46,7 @@ export function getLanguageVersionForInstance(chosenForm): string {
  * @param chosenForm string informal or formal
  * @returns {string} language version of concept that corresponds to chosenForm
  */
-export function selectLanguageVersionForConcept(conceptLanguages, chosenForm): string {
+export function selectLanguageVersionForConcept(conceptLanguages: any[], chosenForm: string): string {
     if (chosenForm === 'informal') {
         if (conceptLanguages.includes('nl-be-x-informal')) {
             return 'nl-be-x-informal';

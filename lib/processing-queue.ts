@@ -34,7 +34,7 @@ export class ProcessingQueue {
         }
     }
 
-    addJob(origin): void {
+    addJob(origin: any): void {
         this.queue.push(origin);
     }
 }

@@ -1,8 +1,7 @@
-import { query, sparqlEscapeString, sparqlEscapeUri, update } from '../mu-helper';
-import { querySudo } from '@lblod/mu-auth-sudo';
-import { APPLICATION_GRAPH, PREFIXES } from '../config';
-import { sortBy } from "lodash";
-
+import {query, sparqlEscapeString, sparqlEscapeUri, update} from '../mu-helper';
+import {querySudo} from '@lblod/mu-auth-sudo';
+import {APPLICATION_GRAPH, PREFIXES} from '../config';
+import {sortBy} from "lodash";
 
 
 export async function loadEvidences(serviceUri: string, {
@@ -408,7 +407,7 @@ export async function loadAttachments(service: string, {
     return (await queryClient(queryStr)).results.bindings;
 }
 
-export async function loadWebsites(service, {
+export async function loadWebsites(service: string, {
     graph,
     type,
     validTypes,

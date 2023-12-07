@@ -1,17 +1,17 @@
-import { sparqlEscapeUri, update, uuid } from '../mu-helper';
-import { updateSudo } from '@lblod/mu-auth-sudo';
-import { APPLICATION_GRAPH } from '../config';
-import { Graph, parse, RDFNode } from '../utils/rdflib';
-import { bestuurseenheidForSession, isAllowedForLPDC } from '../utils/session-utils';
-import { getScopedGraphsForStatement } from '../utils/common';
+import {sparqlEscapeUri, update, uuid} from '../mu-helper';
+import {updateSudo} from '@lblod/mu-auth-sudo';
+import {APPLICATION_GRAPH} from '../config';
+import {Graph, parse, RDFNode} from '../utils/rdflib';
+import {bestuurseenheidForSession, isAllowedForLPDC} from '../utils/session-utils';
+import {getScopedGraphsForStatement} from '../utils/common';
 import {Statement} from "rdflib";
 
-export async function updateForm(data, sessionUri) {
+export async function updateForm(data: any, sessionUri: string) {
     if (data.removals) await mutate('DELETE', data.removals, sessionUri);
     if (data.additions) await mutate('INSERT', data.additions);
 }
 
-async function mutate(mutationType, statements, sessionUri = null): Promise<void> {
+async function mutate(mutationType: string, statements: any, sessionUri: string = null): Promise<void> {
     const store = Graph();
     const graph = `http://mutate-graph/${uuid()}`;
     parse(statements, store, {graph});

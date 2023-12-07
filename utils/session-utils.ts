@@ -2,7 +2,7 @@ import {querySudo} from '@lblod/mu-auth-sudo';
 import {sparqlEscapeUri} from '../mu-helper';
 import {PREFIXES} from '../config';
 
-export async function bestuurseenheidForSession(sessionUri): Promise<{ bestuurseenheid: string, uuid: string }> {
+export async function bestuurseenheidForSession(sessionUri: string): Promise<{ bestuurseenheid: string, uuid: string }> {
     const queryStr = `
      ${PREFIXES}
      SELECT DISTINCT ?bestuurseenheid ?uuid
@@ -26,7 +26,7 @@ export async function bestuurseenheidForSession(sessionUri): Promise<{ bestuurse
     }
 }
 
-export async function isAllowedForLPDC(sessionUri): Promise<boolean> {
+export async function isAllowedForLPDC(sessionUri: string): Promise<boolean> {
     const queryStr = `
     ${PREFIXES}
     ASK {

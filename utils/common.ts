@@ -1,7 +1,7 @@
 import {v4 as uuid} from 'uuid';
 import {querySudo} from '@lblod/mu-auth-sudo';
 
-export function addUuidForSubject(bindings, newUuid = uuid()): any[] {
+export function addUuidForSubject(bindings: any[], newUuid: string = uuid()): any[] {
     if (bindings.length) {
         const subject = bindings[0].s.value;
 
@@ -16,7 +16,7 @@ export function addUuidForSubject(bindings, newUuid = uuid()): any[] {
     return bindings;
 }
 
-export function addTypeForSubject(bindings, newType): any[] {
+export function addTypeForSubject(bindings: any[], newType: string): any[] {
     if (bindings.length) {
         const subject = bindings[0].s.value;
 
@@ -31,7 +31,7 @@ export function addTypeForSubject(bindings, newType): any[] {
     return bindings;
 }
 
-export function groupBySubject(bindings): any[] {
+export function groupBySubject(bindings: any[]): any[] {
     const groupedBySubject = bindings.reduce((acc, triple) => {
         if (!acc[triple.s.value]) {
             acc[triple.s.value] = [triple];
@@ -43,7 +43,7 @@ export function groupBySubject(bindings): any[] {
     return groupedBySubject;
 }
 
-export function replaceType(bindings, oldType, newType): any[] {
+export function replaceType(bindings: any[], oldType: string, newType: string): any[] {
     for (const binding of bindings) {
         const predicate = binding.p.value;
         const object = binding.o.value;
@@ -55,7 +55,7 @@ export function replaceType(bindings, oldType, newType): any[] {
     return bindings;
 }
 
-export async function getScopedGraphsForStatement(statement, targetGraphPattern): Promise<any[]> {
+export async function getScopedGraphsForStatement(statement: string, targetGraphPattern: string): Promise<any[]> {
     const queryStr = `
     SELECT DISTINCT ?g {
       GRAPH ?g {

@@ -9,7 +9,7 @@ const FORM = rdflib.Namespace('http://lblod.data.gift/vocabularies/forms/');
 const RDF = rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 const MU = rdflib.Namespace('http://mu.semte.ch/vocabularies/core/');
 
-export async function validateService(publicServiceId): Promise<{ errors: any[] }> {
+export async function validateService(publicServiceId: string): Promise<{ errors: any[] }> {
     const formIds = Object.keys(FORM_MAPPING);
     const forms = [];
 
@@ -57,13 +57,6 @@ export async function validateService(publicServiceId): Promise<{ errors: any[] 
             FORM_GRAPHS.formGraph
         );
 
-        const formUuid = formStore.any(
-            formUri,
-            MU('uuid'),
-            undefined,
-            FORM_GRAPHS.formGraph
-        );
-
         if (FORM_MAPPING[form.id] === 'content') {
             const addressesAreValid = await validateAddresses(form.serviceUri);
             if (!addressesAreValid) {
@@ -87,7 +80,7 @@ export async function validateService(publicServiceId): Promise<{ errors: any[] 
     return response;
 }
 
-async function validateAddresses(serviceUri) {
+async function validateAddresses(serviceUri: string): Promise<boolean> {
     const addresses = await loadContactPointsAddresses(serviceUri, {type: 'cpsv:PublicService', includeUuid: true});
     if (addresses) {
         const addressUris = [...new Set(addresses.map(triple => triple.s.value))];

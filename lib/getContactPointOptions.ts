@@ -1,6 +1,6 @@
 import {loadContactPointOption} from "./commonQueries";
 
-export async function getContactPointOptions(fieldName): Promise<any> {
+export async function getContactPointOptions(fieldName: string): Promise<any> {
     const fieldNames = ['telephone', 'email', 'url', 'openingHours'];
     if (fieldNames.includes(fieldName)) {
         return loadContactPointOption(fieldName);
