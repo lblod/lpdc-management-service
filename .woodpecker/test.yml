@@ -1,9 +1,8 @@
 pipeline:
   build:
-    image: node:20-alpine
-    command:
-      - npm ci
-      - npm run test
+    image: codeberg.org/woodpecker-plugins/node-pm
+    settings:
+      run: test
 when:
   branch: development
   event: push
