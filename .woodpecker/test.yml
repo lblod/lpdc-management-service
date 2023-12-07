@@ -1,10 +1,12 @@
 pipeline:
-  build:
+  lint:
     image: codeberg.org/woodpecker-plugins/node-pm
     settings:
-      run:
-        - lint
-        - test
+      run: lint
+  test:
+    image: codeberg.org/woodpecker-plugins/node-pm
+    settings:
+      run: test
 when:
   branch: development
   event: push
