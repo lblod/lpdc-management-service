@@ -1,9 +1,9 @@
 import {app, errorHandler, uuid} from './mu-helper';
 import bodyparser from 'body-parser';
-import {LOG_INCOMING_DELTA} from './config';
+import {FEATURE_FLAG_ATOMIC_UPDATE, LOG_INCOMING_DELTA} from './config';
 import {createEmptyForm, createForm} from './lib/createForm';
 import {retrieveForm} from './lib/retrieveForm';
-import {updateForm} from './lib/updateForm';
+import {updateForm, updateFormAtomic} from './lib/updateForm';
 import {deleteForm} from './lib/deleteForm';
 import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
@@ -156,7 +156,7 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
     const delta = req.body;
     const header = req.headers['mu-session-id'] as string;
     try {
-        await updateForm(delta, header);
+        FEATURE_FLAG_ATOMIC_UPDATE ? await updateFormAtomic(delta, header) : await updateForm(delta, header);
         return res.sendStatus(200);
     } catch (e) {
         console.error(e);
