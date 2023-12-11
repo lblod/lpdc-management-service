@@ -6,6 +6,7 @@ import {bestuurseenheidForSession, isAllowedForLPDC} from '../utils/session-util
 import {getScopedGraphsForStatement} from '../utils/common';
 import {Literal, Statement} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";
+import LPDCError from "../utils/lpdc-error";
 
 
 export async function updateFormAtomic(data: any, sessionUri: string): Promise<void> {
@@ -44,7 +45,7 @@ export async function updateFormAtomic(data: any, sessionUri: string): Promise<v
     const updateResult = result.results.bindings[0]['callret-0'].value;
 
     if (updateResult.includes("delete 0 (or less) and insert 0 (or less) triples")) {
-        throw new Error("Concurrent update");
+        throw new LPDCError(400, "De gegevens zijn aangepast door een andere gebruiker. Refresh en pas wijzigingen opnieuw toe. ");
     }
 
 }

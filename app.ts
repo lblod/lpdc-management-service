@@ -16,6 +16,7 @@ import {isConceptFunctionallyChanged} from "./lib/compareSnapshot";
 import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
 import {getLanguageVersionOfInstance} from "./lib/getInstanceLanguageVersion";
 import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
+import LPDCError from "./utils/lpdc-error";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -160,14 +161,14 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
         return res.sendStatus(200);
     } catch (e) {
         console.error(e);
-        if (e.status) {
-            return res.status(e.status).set('content-type', 'application/json').send(e);
+        if (e instanceof LPDCError) {
+            return res.status(e.status).set('content-type', 'application/json').json(e);
+        } else {
+            return res
+                .status(500)
+                .set('content-type', 'application/json')
+                .send(`Something unexpected went wrong while submitting semantic-form for "${uuid}".`);
         }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while submitting semantic-form for "${uuid}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
 });
 
