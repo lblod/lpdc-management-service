@@ -1,4 +1,4 @@
-import {app, errorHandler, uuid} from './mu-helper';
+import {createApp, errorHandler, uuid} from './mu-helper';
 import bodyparser from 'body-parser';
 import {FEATURE_FLAG_ATOMIC_UPDATE, LOG_INCOMING_DELTA} from './config';
 import {createEmptyForm, createForm} from './lib/createForm';
@@ -23,6 +23,7 @@ const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
 //      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
 //      send its data as such.
+const app = createApp();
 const bodySizeLimit = process.env.MAX_BODY_SIZE || '5Mb';
 app.use(bodyparser.json({limit: bodySizeLimit}));
 

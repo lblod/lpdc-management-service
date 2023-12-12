@@ -1,4 +1,4 @@
-import {app, errorHandler} from './server';
+import {createApp, errorHandler} from './server';
 import * as sparql from './sparql';
 import {v4 as uuidV4} from 'uuid';
 
@@ -6,7 +6,7 @@ import {v4 as uuidV4} from 'uuid';
 const uuid = uuidV4;
 
 const mu = {
-    app: app,
+    createApp: createApp,
     sparql: sparql,
     SPARQL: sparql.sparql,
     query: sparql.query,
@@ -38,7 +38,7 @@ const SPARQL = mu.SPARQL,
     sparqlEscapeBool = mu.sparqlEscapeBool;
 
 export {
-    app,
+    createApp,
     sparql,
     SPARQL,
     query,
