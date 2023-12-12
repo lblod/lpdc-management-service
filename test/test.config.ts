@@ -1,0 +1,1 @@
+export const TEST_SPARQL_ENDPOINT = "http://localhost:8899/sparql";
