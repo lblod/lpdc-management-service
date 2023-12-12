@@ -1,15 +1,11 @@
-import {Iri} from "../core/domain/shared/iri";
-import {Sessie} from "../core/domain/sessie";
+import {Iri} from "../../src/core/domain/shared/iri";
+import {Sessie} from "../../src/core/domain/sessie";
 import {uuid} from "../../mu-helper";
 
 export class SessieTestBuilder {
     private id: Iri;
     private bestuurseenheidId: Iri;
 
-
-    public build(): Sessie {
-        return new Sessie(this.id, this.bestuurseenheidId);
-    }
 
     static aSessie(): SessieTestBuilder {
         return new SessieTestBuilder()
@@ -24,6 +20,7 @@ export class SessieTestBuilder {
             .withBestuurseenheidId(`http://data.lblod.info/id/bestuurseenheden/${pepingen}`);
     }
 
+
     public withId(id: Iri): SessieTestBuilder {
         this.id = id;
         return this;
@@ -32,6 +29,10 @@ export class SessieTestBuilder {
     public withBestuurseenheidId(bestuurseenheidId: Iri): SessieTestBuilder {
         this.bestuurseenheidId = bestuurseenheidId;
         return this;
+    }
+
+    public build(): Sessie {
+        return new Sessie(this.id, this.bestuurseenheidId);
     }
 
 }
