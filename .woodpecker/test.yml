@@ -1,12 +1,18 @@
-pipeline:
-  lint:
-    image: codeberg.org/woodpecker-plugins/node-pm
-    settings:
-      run: lint
-  test:
-    image: codeberg.org/woodpecker-plugins/node-pm
-    settings:
-      run: test-unit
+test:
+  image: ubuntu:22.04
+  commands:
+    - echo "install ssh"
+    - apt-get update
+    - apt-get install -y openssh-client
+    - mkdir ~/.ssh
+    - ssh-keyscan -p 22 lpdc-dev.s.redhost.be >> ~/.ssh/known_hosts
+    - cat ~/.ssh/known_hosts
+    - echo "$${SSH_KEY}" >> ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - echo "Building from branch = ${CI_COMMIT_BRANCH}"
+    - ssh root@lpdc-dev.s.redhost.be 'cd /data/lpdc-management-service-ci && git fetch && git checkout ${CI_COMMIT_BRANCH} && git pull && cd /data/lpdc-management-service-ci/test && ./run-test.sh'
+
+  secrets: [ ssh_key ]
 when:
   branch: development
   event: push
