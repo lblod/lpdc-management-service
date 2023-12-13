@@ -22,6 +22,13 @@ export class Bestuurseenheid {
     getClassificatieCode(): BestuurseenheidClassificatieCode {
         return this.classificatieCode;
     }
+
+    getUUID(): string {
+        const prefix = 'http://data.lblod.info/id/bestuurseenheden/';
+        const regex = new RegExp(`^${prefix}(.*)$`);
+
+        return this.id.match(regex)[1];
+    }
 }
 
 
