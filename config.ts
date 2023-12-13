@@ -17,7 +17,7 @@ const FORM_MAPPING_TRANSLATIONS = {
     "149a7247-0294-44a5-a281-0a4d3782b4fd": "eigenschappen",
 };
 
-
+//TODO: make const for each prefix
 const PREFIXES = `
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
   PREFIX ns1: <http://data.lblod.info/vocabularies/lpdc-ipdc/>
