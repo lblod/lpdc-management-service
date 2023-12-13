@@ -3,6 +3,7 @@ import {Iri} from "../../../domain/shared/iri";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode,} from "../../../domain/bestuurseenheid";
 import {sparqlEscapeString, sparqlEscapeUri} from "../../../../../mu-helper";
 import {SparqlRepository} from "./sparql-repository";
+import {PREFIX} from "../../../../../config";
 
 export class BestuurseenheidSparqlRepository extends SparqlRepository implements BestuurseenheidRepository {
 
@@ -12,13 +13,15 @@ export class BestuurseenheidSparqlRepository extends SparqlRepository implements
 
     async findById(id: Iri): Promise<Bestuurseenheid> {
         const query = `
+            ${PREFIX.skos}
+            ${PREFIX.besluit}
             SELECT ?id ?prefLabel ?classificatieUri WHERE {
                 GRAPH <http://mu.semte.ch/graphs/public> {
                     VALUES ?id {
                         ${sparqlEscapeUri(id)}
                     }
-                     ?id <http://www.w3.org/2004/02/skos/core#prefLabel>  ?prefLabel .
-                     ?id <http://data.vlaanderen.be/ns/besluit#classificatie>  ?classificatieUri . 
+                     ?id skos:prefLabel  ?prefLabel .
+                     ?id besluit:classificatie  ?classificatieUri . 
                 }
             }
         `;
@@ -34,15 +37,17 @@ export class BestuurseenheidSparqlRepository extends SparqlRepository implements
             this.mapBestuurseenheidClassificatieUriToCode(result['classificatieUri'].value)
         );
     }
-    
+
     async save(bestuurseenheid: Bestuurseenheid): Promise<void> {
         const classificatieUri = this.mapBestuurseenheidClassificatieCodeToUri(bestuurseenheid.getClassificatieCode());
         const query = `
+            ${PREFIX.skos}
+            ${PREFIX.besluit}
             INSERT DATA { 
                 GRAPH <http://mu.semte.ch/graphs/public> {
-                    ${sparqlEscapeUri(bestuurseenheid.getId())} a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid> .
-                    ${sparqlEscapeUri(bestuurseenheid.getId())} <http://www.w3.org/2004/02/skos/core#prefLabel>  ${sparqlEscapeString(bestuurseenheid.getPrefLabel())} .
-                    ${sparqlEscapeUri(bestuurseenheid.getId())} <http://data.vlaanderen.be/ns/besluit#classificatie> ${sparqlEscapeUri(classificatieUri)} .
+                    ${sparqlEscapeUri(bestuurseenheid.getId())} a besluit:Bestuurseenheid .
+                    ${sparqlEscapeUri(bestuurseenheid.getId())} skos:prefLabel  ${sparqlEscapeString(bestuurseenheid.getPrefLabel())} .
+                    ${sparqlEscapeUri(bestuurseenheid.getId())} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .
                 }
             }
         `;

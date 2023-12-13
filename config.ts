@@ -17,7 +17,6 @@ const FORM_MAPPING_TRANSLATIONS = {
     "149a7247-0294-44a5-a281-0a4d3782b4fd": "eigenschappen",
 };
 
-//TODO: make const for each prefix
 const PREFIXES = `
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
   PREFIX ns1: <http://data.lblod.info/vocabularies/lpdc-ipdc/>
@@ -54,6 +53,40 @@ const PREFIXES = `
   PREFIX sh: <http://www.w3.org/ns/shacl#>
 `;
 
+const PREFIX = {
+    rdf: 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>',
+    ns1: 'PREFIX ns1: <http://data.lblod.info/vocabularies/lpdc-ipdc/>',
+    skos: 'PREFIX skos: <http://www.w3.org/2004/02/skos/core#>',
+    mu: 'PREFIX mu: <http://mu.semte.ch/vocabularies/core/>',
+    pera: 'PREFIX pera: <http://publications.europa.eu/resource/authority/>',
+    cpsv: 'PREFIX cpsv: <http://purl.org/vocab/cpsv#>',
+    dct: 'PREFIX dct: <http://purl.org/dc/terms/>',
+    lpdcExt: 'PREFIX lpdcExt: <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#>',
+    xkos: 'PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>',
+    m8g: 'PREFIX m8g: <http://data.europa.eu/m8g/>',
+    lblodLpdc: 'PREFIX lblodLpdc: <http://data.lblod.info/id/public-services/>',
+    lblodIpdcLpdc: 'PREFIX lblodIpdcLpdc: <http://lblod.data.gift/vocabularies/lpdc-ipdc/>',
+    dcat: 'PREFIX dcat: <http://www.w3.org/ns/dcat#>',
+    lang: 'PREFIX lang: <http://publications.europa.eu/resource/authority/language/>',
+    lblodOrg: 'PREFIX lblodOrg: <http://data.lblod.info/id/concept/organisatie/>',
+    lblodIpdcThema: 'PREFIX lblodIpdcThema: <http://data.lblod.info/id/concept/ipdc-thema/>',
+    belgif: 'PREFIX belgif: <http://vocab.belgif.be/ns/publicservice#>',
+    foaf: 'PREFIX foaf: <http://xmlns.com/foaf/0.1/>',
+    schema: 'PREFIX schema: <http://schema.org/>',
+    adms: 'PREFIX adms: <http://www.w3.org/ns/adms#>',
+    ps: 'PREFIX ps: <http://vocab.belgif.be/ns/publicservice#>',
+    locn: 'PREFIX locn: <http://www.w3.org/ns/locn#>',
+    dvcs: 'PREFIX dvcs: <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/>',
+    eli: 'PREFIX eli: <http://data.europa.eu/eli/ontology#>',
+    rdfs: 'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>',
+    ext: 'PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>',
+    besluit: 'PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>',
+    pav: 'PREFIX pav: <http://purl.org/pav/>',
+    adres: 'PREFIX adres: <https://data.vlaanderen.be/ns/adres#>',
+    xsd: 'PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>',
+    as: 'PREFIX as: <https://www.w3.org/ns/activitystreams#>',
+    sh: 'PREFIX sh: <http://www.w3.org/ns/shacl#>'
+};
 
 export {
     LOG_INCOMING_DELTA,
@@ -64,6 +97,7 @@ export {
     FORM_MAPPING,
     FORM_MAPPING_TRANSLATIONS,
     PREFIXES,
+    PREFIX,
     ADRESSEN_REGISTER_API_KEY,
     FEATURE_FLAG_ATOMIC_UPDATE
 };

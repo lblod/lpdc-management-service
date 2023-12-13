@@ -1,6 +1,6 @@
 import {querySudo, updateSudo} from '@lblod/mu-auth-sudo';
 import {sparqlEscapeString, sparqlEscapeUri} from '../mu-helper';
-import {CONCEPTUAL_SERVICE_GRAPH, PREFIXES} from '../config';
+import {CONCEPTUAL_SERVICE_GRAPH, PREFIX} from '../config';
 import {v4 as uuid} from 'uuid';
 import {flatten} from 'lodash';
 import {bindingsToNT} from '../utils/bindingsToNT';
@@ -76,7 +76,9 @@ export async function processLdesDelta(delta: any): Promise<void> {
 
 async function isNewVersionConceptualPublicService(vGraph: string, vService: string, service: string): Promise<boolean> {
     const queryStr = `
-    ${PREFIXES}
+    ${PREFIX.lpdcExt}
+    ${PREFIX.dct}
+    ${PREFIX.ext}
     ASK {
       GRAPH ${sparqlEscapeUri(vGraph)} {
         ${sparqlEscapeUri(vService)} a lpdcExt:ConceptualPublicService;
@@ -99,7 +101,8 @@ async function isNewVersionConceptualPublicService(vGraph: string, vService: str
 
 async function updateNewLdesVersion(versionedServiceGraph: string, versionedService: string, conceptualService: string): Promise<void> {
     let serviceId = (await querySudo(`
-    ${PREFIXES}
+    ${PREFIX.lpdcExt}
+    ${PREFIX.mu}
 
     SELECT DISTINCT ?uuid
     WHERE {
@@ -222,7 +225,7 @@ async function updateConceptualService(versionedServiceGraph: string, versionedS
 
 async function updatedVersionInformation(versionedResource: string, resource: string): Promise<void> {
     const queryStr = `
-   ${PREFIXES}
+   ${PREFIX.ext}
    DELETE {
      GRAPH ?g {
       ?s ext:hasVersionedSource ?version.
@@ -261,7 +264,8 @@ async function ensureNewIpdcOrganisations(service: string): Promise<void> {
 
 async function getCodeListEntriesForPredicate(service: string, predicate: string = 'm8g:hasCompetentAuthority'): Promise<string[]> {
     const queryStr = `
-    ${PREFIXES}
+    ${PREFIX.m8g}
+    ${PREFIX.lpdcExt}
     SELECT DISTINCT ?codeListEntry {
       ${sparqlEscapeUri(service)} ${predicate} ?codeListEntry.
     }
@@ -272,7 +276,10 @@ async function getCodeListEntriesForPredicate(service: string, predicate: string
 
 async function existingCode(code: string, conceptScheme: string = 'dvcs:IPDCOrganisaties'): Promise<boolean> {
     const queryStr = `
-  ${PREFIXES}
+  ${PREFIX.m8g}
+  ${PREFIX.lpdcExt}
+  ${PREFIX.dvcs}
+  ${PREFIX.skos}
   ASK {
     GRAPH ?g {
       ${sparqlEscapeUri(code)} a skos:Concept;
@@ -325,7 +332,10 @@ async function fetchOrgRegistryCodelistEntryThroughSubjectPage(uriEntry: string)
     return result;
 }
 
-async function fetchOrgRegistryCodelistEntryThroughAPI(uriEntry: string): Promise<{ uri?: string, prefLabel?: string }> {
+async function fetchOrgRegistryCodelistEntryThroughAPI(uriEntry: string): Promise<{
+    uri?: string,
+    prefLabel?: string
+}> {
     const result: { uri?: string, prefLabel?: string } = {};
     const ovoNumber = uriEntry.split('OVO')[1];
     if (!ovoNumber) {
@@ -354,7 +364,10 @@ async function insertCodeListData(codeListData: { uri?: string, prefLabel?: stri
                                   conceptScheme: string = 'dvcs:IPDCOrganisaties'): Promise<void> {
     const codeListDataUuid = uuid();
     const queryStr = `
-    ${PREFIXES}
+    ${PREFIX.dvcs}
+    ${PREFIX.skos}
+    ${PREFIX.mu}
+    ${PREFIX.rdfs}
     INSERT {
       GRAPH ?g {
         ${sparqlEscapeUri(codeListData.uri)} a skos:Concept.
@@ -392,7 +405,8 @@ function determineInstanceReviewStatus(isModified: boolean, isArchiving: boolean
 async function flagInstancesModifiedConcept(service: string, reviewStatus?: string): Promise<void> {
     if (reviewStatus) {
         const updateQueryStr = `
-            ${PREFIXES}
+            ${PREFIX.ext}
+            ${PREFIX.cpsv}
             DELETE {
                 GRAPH ?g {
                     ?service ext:reviewStatus ?status.
@@ -415,7 +429,10 @@ async function flagInstancesModifiedConcept(service: string, reviewStatus?: stri
 
 async function ensureConceptDisplayConfigs(conceptualService: string): Promise<void> {
     const insertConfigsQuery = `
-    ${PREFIXES}
+    ${PREFIX.lpdcExt}
+    ${PREFIX.mu}
+    ${PREFIX.dct}
+    ${PREFIX.besluit}
     
     INSERT {
       GRAPH ?bestuurseenheidGraph {
@@ -468,7 +485,7 @@ async function isArchivingEvent(versionedServiceGraph: string, versionedService:
 async function markConceptAsArchived(conceptualService: string): Promise<void> {
     const archivedStatusConcept = 'http://lblod.data.gift/concepts/3f2666df-1dae-4cc2-a8dc-e8213e713081';
     const markAsArchivedQuery = `
-    ${PREFIXES}
+    ${PREFIX.adms}
 
     INSERT DATA {
       GRAPH ${sparqlEscapeUri(CONCEPTUAL_SERVICE_GRAPH)} {
@@ -489,7 +506,7 @@ async function isConceptChanged(newSnapshotUri: string, currentSnapshotUri: stri
 
 async function getVersionedSourceOfConcept(conceptUri: string): Promise<string> {
     const query = `
-      ${PREFIXES}
+      ${PREFIX.ext}
       SELECT ?snapshotUri WHERE {
           ${sparqlEscapeUri(conceptUri)} ext:hasVersionedSource ?snapshotUri .
       }
@@ -499,7 +516,7 @@ async function getVersionedSourceOfConcept(conceptUri: string): Promise<string> 
 
 async function updateLatestFunctionalChange(conceptSnapshotUri: string, conceptUri: string): Promise<void> {
     const queryStr = `
-   ${PREFIXES}
+   ${PREFIX.lpdcExt}
    DELETE {
         GRAPH <http://mu.semte.ch/graphs/public> {
             ${sparqlEscapeUri(conceptUri)} lpdcExt:hasLatestFunctionalChange ?snapshot.

@@ -3,6 +3,7 @@ import {SessieRepository} from "../../../domain/sessie-repository";
 import {Sessie} from "../../../domain/sessie";
 import {SparqlRepository} from "./sparql-repository";
 import {sparqlEscapeUri} from "../../../../../mu-helper";
+import {PREFIX} from "../../../../../config";
 
 export class SessieSparqlRepository extends SparqlRepository implements SessieRepository {
 
@@ -12,12 +13,13 @@ export class SessieSparqlRepository extends SparqlRepository implements SessieRe
 
     async findById(id: Iri): Promise<Sessie> {
         const query = `
+            ${PREFIX.ext}
             SELECT ?id ?bestuurseenheid WHERE {
                 GRAPH <http://mu.semte.ch/graphs/sessions> {
                     VALUES ?id {
                         ${sparqlEscapeUri(id)}
                     }
-                     ?id <http://mu.semte.ch/vocabularies/ext/sessionGroup>  ?bestuurseenheid 
+                     ?id ext:sessionGroup  ?bestuurseenheid 
                 }
             }
         `;
@@ -35,9 +37,10 @@ export class SessieSparqlRepository extends SparqlRepository implements SessieRe
 
     async save(sessie: Sessie): Promise<void> {
         const query = `
+            ${PREFIX.ext}
             INSERT DATA { 
                 GRAPH <http://mu.semte.ch/graphs/sessions> {
-                    ${sparqlEscapeUri(sessie.getId())} <http://mu.semte.ch/vocabularies/ext/sessionGroup>  ${sparqlEscapeUri(sessie.getBestuurseenheidId())} 
+                    ${sparqlEscapeUri(sessie.getId())} ext:sessionGroup  ${sparqlEscapeUri(sessie.getBestuurseenheidId())} 
                 }
             }
         `;

@@ -1,6 +1,6 @@
-import { removeReviewStatus, serviceUriForId } from "./commonQueries";
-import { query, sparqlEscapeUri, update } from "../mu-helper";
-import { APPLICATION_GRAPH, PREFIXES } from "../config";
+import {removeReviewStatus, serviceUriForId} from "./commonQueries";
+import {query, sparqlEscapeUri, update} from "../mu-helper";
+import {APPLICATION_GRAPH, PREFIX} from "../config";
 
 export async function confirmBijgewerktTot(instanceUUID: string, snapshotUri: string): Promise<void> {
     const instanceUri = await serviceUriForId(instanceUUID);
@@ -16,20 +16,23 @@ export async function confirmBijgewerktTot(instanceUUID: string, snapshotUri: st
 
 async function getConceptLatestFunctionalChange(instanceUri: string): Promise<string> {
     const queryString = `
-        ${PREFIXES}
+    ${PREFIX.cpsv}
+    ${PREFIX.dct}
+    ${PREFIX.lpdcExt}
         SELECT ?snapshotUri WHERE {
             ${sparqlEscapeUri(instanceUri)} a cpsv:PublicService .
             ${sparqlEscapeUri(instanceUri)} dct:source ?concept .
             ?concept lpdcExt:hasLatestFunctionalChange ?snapshotUri .
         }
     `;
-    const result =  await query(queryString);
+    const result = await query(queryString);
     return result.results.bindings[0]?.snapshotUri?.value;
 }
 
 async function updateHasVersionedSource(instanceUri: string, snapshotUri: string): Promise<void> {
     const queryString = `
-        ${PREFIXES}
+        ${PREFIX.ext}
+        ${PREFIX.cpsv}
         DELETE {
             GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
                 ${sparqlEscapeUri(instanceUri)} ext:hasVersionedSource ?version.

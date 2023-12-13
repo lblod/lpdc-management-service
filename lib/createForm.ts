@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {query, sparqlEscapeDateTime, sparqlEscapeString, sparqlEscapeUri, update} from '../mu-helper';
 import {v4 as uuid} from 'uuid';
-import {APPLICATION_GRAPH, CONCEPTUAL_SERVICE_GRAPH, FORM_STATUS_CONCEPT, PREFIXES} from '../config';
+import {APPLICATION_GRAPH, CONCEPTUAL_SERVICE_GRAPH, FORM_STATUS_CONCEPT, PREFIX} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
 import {addUuidForSubject, groupBySubject, replaceType} from '../utils/common';
 import {
@@ -40,7 +40,13 @@ export async function createEmptyForm(sessionUri: string, sessionRepository: Ses
 
     const now = new Date().toISOString();
     const query = `
-  ${PREFIXES}
+  ${PREFIX.cpsv}
+  ${PREFIX.dct}
+  ${PREFIX.mu}
+  ${PREFIX.adms}
+  ${PREFIX.pav}
+  ${PREFIX.m8g}
+  ${PREFIX.lpdcExt}
   INSERT DATA {
     GRAPH <http://mu.semte.ch/graphs/application> {
       ${sparqlEscapeUri(publicServiceUri)} a cpsv:PublicService ;
@@ -150,7 +156,11 @@ export async function createForm(conceptId: string, sessionUri: string, sessieRe
     const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.getId());
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
     const extraDataQuery = `
-    ${PREFIXES}
+    ${PREFIX.adms}
+    ${PREFIX.dct}
+    ${PREFIX.pav}
+    ${PREFIX.lpdcExt}
+    ${PREFIX.cpsv}
 
     INSERT {
       GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
@@ -250,7 +260,7 @@ function replaceObjectsWithCopiedChildren(parentData: any, childrenData: any): a
 
 async function getConceptUri(conceptUuid: string): Promise<string> {
     const result = await query(`
-    ${PREFIXES}
+    ${PREFIX.mu}
 
     SELECT DISTINCT ?conceptUri WHERE {
       GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
@@ -265,8 +275,6 @@ async function getConceptUri(conceptUuid: string): Promise<string> {
 
 async function getSpatialsForBestuurseenheidUri(bestuurseenheid: string): Promise<string[]> {
     const queryStr = `
-    ${PREFIXES}
-
     SELECT DISTINCT ?spatial WHERE {
       VALUES ?werkingsGebiedP {
         <http://data.vlaanderen.be/ns/besluit#werkingsgebied>
@@ -291,7 +299,7 @@ async function updateConceptDisplayConfig(conceptUri: string): Promise<void> {
     // Once we have the latest version of virtuoso running, we can make it prettier.
     // Note: this doesn't fix the custom boolean data type, this needs to be carefully considered.
     await update(`
-    ${PREFIXES}
+    ${PREFIX.lpdcExt}
 
     DELETE {
       GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
@@ -307,7 +315,7 @@ async function updateConceptDisplayConfig(conceptUri: string): Promise<void> {
   `);
 
     await update(`
-    ${PREFIXES}
+    ${PREFIX.lpdcExt}
 
     DELETE {
       GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
@@ -323,7 +331,7 @@ async function updateConceptDisplayConfig(conceptUri: string): Promise<void> {
   `);
 
     await update(`
-    ${PREFIXES}
+    ${PREFIX.lpdcExt}
 
     INSERT {
       GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {

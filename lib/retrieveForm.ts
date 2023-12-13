@@ -2,7 +2,7 @@ import {querySudo} from '@lblod/mu-auth-sudo';
 import fs from 'fs';
 import fse from 'fs-extra';
 import {sparqlEscapeUri} from '../mu-helper';
-import {FORM_MAPPING, PREFIXES} from '../config';
+import {FORM_MAPPING, PREFIX} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
 import {
     loadAttachments,
@@ -78,7 +78,8 @@ export async function retrieveForm(publicServiceId: string, formId: string): Pro
 
     // Check whether a user chose "YourEurope" as their publication channel
     const publicationChannelQuery = `
-    ${PREFIXES}
+    ${PREFIX.lpdcExt}
+    ${PREFIX.cpsv}
 
     ASK {
       ${sparqlEscapeUri(serviceUri)} a ${type} ;
@@ -95,7 +96,7 @@ export async function retrieveForm(publicServiceId: string, formId: string): Pro
     }
 
     const schemesQuery = `
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    ${PREFIX.skos}
 
     SELECT DISTINCT ?s ?p ?o WHERE {
 
@@ -126,8 +127,8 @@ export async function retrieveForm(publicServiceId: string, formId: string): Pro
 async function generateRuntimeConceptSchemes(): Promise<any[]> {
     //spliting in two because faster
     const tailoredConceptQ = `
-    ${PREFIXES}
-
+    ${PREFIX.skos}
+    ${PREFIX.besluit}
     CONSTRUCT {
       ?bestuurseenheid a skos:Concept ;
         skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored> ;
@@ -148,7 +149,9 @@ async function generateRuntimeConceptSchemes(): Promise<any[]> {
     tailoredConcept = bindingsToNT(tailoredConcept.results.bindings);
 
     const baseSchemeQ = `
-    ${PREFIXES}
+    ${PREFIX.skos}
+    ${PREFIX.dvcs}
+    ${PREFIX.rdfs}
 
     CONSTRUCT {
       ?s ?p ?o ;

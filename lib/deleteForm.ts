@@ -1,5 +1,5 @@
 import {query, sparqlEscapeDateTime, sparqlEscapeUri, update} from '../mu-helper';
-import {APPLICATION_GRAPH, PREFIXES} from '../config';
+import {APPLICATION_GRAPH, PREFIX} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
 import {
     loadAttachments,
@@ -80,7 +80,8 @@ export async function deleteForm(serviceId: string, sessionUri: string, sessieRe
     // consistent, we mark these as:Tombstone
     const now = new Date();
     const insertTombstoneQuery = `
-    ${PREFIXES}
+    ${PREFIX.as}
+    ${PREFIX.cpsv}
     INSERT DATA {
       GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
        ${sparqlEscapeUri(serviceUri)} a  as:Tombstone;
@@ -98,7 +99,8 @@ export async function deleteForm(serviceId: string, sessionUri: string, sessieRe
 
 async function conceptUriForService(serviceUri: string): Promise<string> {
     return (await query(`
-      ${PREFIXES}
+      ${PREFIX.cpsv}
+      ${PREFIX.dct}
 
       SELECT DISTINCT ?concept
       WHERE {
@@ -112,7 +114,8 @@ async function conceptUriForService(serviceUri: string): Promise<string> {
 
 async function conceptHasInstances(conceptUri: string): Promise<boolean> {
     const conceptHasInstancesQuery = `
-    ${PREFIXES}
+    ${PREFIX.cpsv}
+    ${PREFIX.dct}
     ASK WHERE {
       GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
         ?instance a cpsv:PublicService ;
@@ -126,7 +129,7 @@ async function conceptHasInstances(conceptUri: string): Promise<boolean> {
 
 async function removeInstantiatedFlag(conceptUri: string): Promise<void> {
     const removeInstantiatedFlagQuery = `
-    ${PREFIXES}
+    ${PREFIX.lpdcExt}
 
     DELETE {
       GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
@@ -151,7 +154,8 @@ async function removeInstantiatedFlag(conceptUri: string): Promise<void> {
 
 async function loadReviewStatus(serviceUri: string): Promise<any> {
     return (await query(`
-      ${PREFIXES}
+      ${PREFIX.ext}
+      ${PREFIX.cpsv}
 
       SELECT DISTINCT ?s ?p ?o
       WHERE {
