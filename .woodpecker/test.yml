@@ -13,7 +13,7 @@ pipeline:
       - echo "Building from branch = ${CI_COMMIT_BRANCH}"
       - ssh root@lpdc-dev.s.redhost.be 'cd /data/lpdc-management-service-ci && git fetch && git checkout ${CI_COMMIT_BRANCH} && git pull && cd /data/lpdc-management-service-ci/test && ./run-test.sh'
 
-  secrets: [ ssh_key ]
+    secrets: [ ssh_key ]
 when:
   branch: development
   event: push
