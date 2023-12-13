@@ -6,7 +6,7 @@ pipeline:
   test:
     image: codeberg.org/woodpecker-plugins/node-pm
     settings:
-      run: test
+      run: test-unit
 when:
   branch: development
   event: push
