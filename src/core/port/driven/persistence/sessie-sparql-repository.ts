@@ -6,7 +6,7 @@ import {sparqlEscapeUri} from "../../../../../mu-helper";
 
 export class SessieSparqlRepository extends SparqlRepository implements SessieRepository {
 
-    constructor(endpoint: string) {
+    constructor(endpoint?: string) {
         super(endpoint);
     }
 
@@ -24,7 +24,7 @@ export class SessieSparqlRepository extends SparqlRepository implements SessieRe
         const result = await this.query(query);
 
         if (!result) {
-            throw new Error(`no session found for iri: ${id}`);
+            throw new Error(`No session found for iri: ${id}`);
         }
 
         return new Sessie(

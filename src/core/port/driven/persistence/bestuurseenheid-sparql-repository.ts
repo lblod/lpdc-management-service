@@ -6,6 +6,10 @@ import {SparqlRepository} from "./sparql-repository";
 
 export class BestuurseenheidSparqlRepository extends SparqlRepository implements BestuurseenheidRepository {
 
+    constructor(endpoint?: string) {
+        super(endpoint);
+    }
+
     async findById(id: Iri): Promise<Bestuurseenheid> {
         const query = `
             SELECT ?id ?prefLabel ?classificatieUri WHERE {
@@ -30,7 +34,7 @@ export class BestuurseenheidSparqlRepository extends SparqlRepository implements
             this.mapBestuurseenheidClassificatieUriToCode(result['classificatieUri'].value)
         );
     }
-
+    
     async save(bestuurseenheid: Bestuurseenheid): Promise<void> {
         const classificatieUri = this.mapBestuurseenheidClassificatieCodeToUri(bestuurseenheid.getClassificatieCode());
         const query = `

@@ -19,7 +19,7 @@ describe('SessieRepository', () => {
         test('When sessie not exists with id, then throw error', async () => {
             const falseSessionId = 'http://mu.semte.ch/sessions/false';
 
-            await expect(repository.findById(falseSessionId)).rejects.toThrow(new Error(`no session found for iri: ${falseSessionId}`));
+            await expect(repository.findById(falseSessionId)).rejects.toThrow(new Error(`No session found for iri: ${falseSessionId}`));
 
         });
     });
