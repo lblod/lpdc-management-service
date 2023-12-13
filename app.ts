@@ -168,7 +168,10 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
             return res
                 .status(500)
                 .set('content-type', 'application/json')
-                .send(`Something unexpected went wrong while submitting semantic-form for "${uuid}".`);
+                .json(new LPDCError(
+                    500,
+                    `Er is een serverfout opgetreden. Probeer het later opnieuw of neem contact op indien het probleem aanhoudt. Onze excuses voor het ongemak.`
+                ));
         }
     }
 });

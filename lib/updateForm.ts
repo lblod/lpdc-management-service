@@ -45,7 +45,7 @@ export async function updateFormAtomic(data: any, sessionUri: string): Promise<v
     const updateResult = result.results.bindings[0]['callret-0'].value;
 
     if (updateResult.includes("delete 0 (or less) and insert 0 (or less) triples")) {
-        throw new LPDCError(400, "De gegevens zijn aangepast door een andere gebruiker. Refresh en pas wijzigingen opnieuw toe. ");
+        throw new LPDCError(400, "De productfiche is gelijktijdig aangepast door een andere gebruiker. Refresh en geef je aanpassingen opnieuw in.");
     }
 
 }
