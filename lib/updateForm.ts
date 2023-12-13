@@ -2,21 +2,25 @@ import {sparqlEscapeUri, update, uuid} from '../mu-helper';
 import {updateSudo} from '@lblod/mu-auth-sudo';
 import {APPLICATION_GRAPH} from '../config';
 import {Graph, parse, RDFNode} from '../utils/rdflib';
-import {bestuurseenheidForSession, isAllowedForLPDC} from '../utils/session-utils';
+import {isAllowedForLPDC} from '../utils/session-utils';
 import {getScopedGraphsForStatement} from '../utils/common';
 import {Literal, Statement} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";
 import LPDCError from "../utils/lpdc-error";
+import {SessieSparqlRepository} from "../src/core/port/driven/persistence/sessie-sparql-repository";
+import {BestuurseenheidSparqlRepository} from "../src/core/port/driven/persistence/bestuurseenheid-sparql-repository";
 
 
-export async function updateFormAtomic(data: any, sessionUri: string): Promise<void> {
+export async function updateFormAtomic(data: any, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
 
-    if (!(await isAllowedForLPDC(sessionUri))) {
-        throw `Session ${sessionUri} is not an LPDC User`;
+    const sessie = await sessieRepository.findById(sessionUri);
+    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.getBestuurseenheidId());
+
+    if (!(await isAllowedForLPDC(sessie.getId()))) {
+        throw `Session ${sessie.getId()} is not an LPDC User`;
     }
 
-    const {uuid} = await bestuurseenheidForSession(sessionUri);
-    const targetGraph = `http://mu.semte.ch/graphs/organizations/${uuid}/LoketLB-LPDCGebruiker`;
+    const targetGraph = `http://mu.semte.ch/graphs/organizations/${bestuurseenheid.getUUID()}/LoketLB-LPDCGebruiker`;
 
     const deletes = parseStatements(data.removals);
     const inserts = parseStatements(data.additions);
@@ -40,7 +44,7 @@ export async function updateFormAtomic(data: any, sessionUri: string): Promise<v
                     }
                     WHERE {
                         ${modifiedTimeStamp.toNT()}
-                    }`, {}, {sparqlEndpoint : 'http://virtuoso:8890/sparql'}); //TODO LPDC-603: create an extra parameter for this url ... do not hard code
+                    }`, {}, {sparqlEndpoint: 'http://virtuoso:8890/sparql'}); //TODO LPDC-603: create an extra parameter for this url ... do not hard code
 
     const updateResult = result.results.bindings[0]['callret-0'].value;
 
@@ -58,14 +62,20 @@ function parseStatements(statements: Statement[]): Array<Quad> {
 }
 
 
+export async function updateForm(data: any, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository) {
+    const sessie = await sessieRepository.findById(sessionUri);
+    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.getBestuurseenheidId());
+
+    if (!(await isAllowedForLPDC(sessie.getId()))) {
+        throw `Session ${sessie.getId()} is not an LPDC User`;
+    }
 
 
-export async function updateForm(data: any, sessionUri: string) {
-    if (data.removals) await mutate('DELETE', data.removals, sessionUri);
+    if (data.removals) await mutate('DELETE', data.removals, bestuurseenheid.getUUID());
     if (data.additions) await mutate('INSERT', data.additions);
 }
 
-async function mutate(mutationType: string, statements: any, sessionUri: string = null): Promise<void> {
+async function mutate(mutationType: string, statements: any, bestuurseenheidUUID: string = null): Promise<void> {
     const store = Graph();
     const graph = `http://mutate-graph/${uuid()}`;
     parse(statements, store, {graph});
@@ -90,16 +100,10 @@ async function mutate(mutationType: string, statements: any, sessionUri: string 
             // There is new version of mu-auth underway, which will easily shield us from virtuoso. Or maybe the bugfix from virtuoso is earlier.
             // Keep code in sync with deleteForm.js
 
-            if (!(await isAllowedForLPDC(sessionUri))) {
-                throw `Session ${sessionUri} is not an LPDC User`;
-            }
-
-            const {uuid} = await bestuurseenheidForSession(sessionUri);
-
             const source = parsedStatements.map(t => t.toNT());
             for (const statement of source) {
                 // The workaround: ensure mu-auth deletes one triple in one graph at a time. We know that works.
-                const targetGraphPattern = `http://mu.semte.ch/graphs/organizations/${uuid}/`;
+                const targetGraphPattern = `http://mu.semte.ch/graphs/organizations/${bestuurseenheidUUID}/`;
                 const targetGraphs = await getScopedGraphsForStatement(statement, targetGraphPattern);
 
                 for (const graph of targetGraphs) {

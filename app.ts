@@ -8,7 +8,6 @@ import {deleteForm} from './lib/deleteForm';
 import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
 import {processLdesDelta} from './lib/postProcessLdesConceptualService';
-import {bestuurseenheidForSession} from './utils/session-utils';
 import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
 import {getContactPointOptions} from "./lib/getContactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
@@ -17,6 +16,8 @@ import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
 import {getLanguageVersionOfInstance} from "./lib/getInstanceLanguageVersion";
 import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
 import LPDCError from "./utils/lpdc-error";
+import {SessieSparqlRepository} from "./src/core/port/driven/persistence/sessie-sparql-repository";
+import {BestuurseenheidSparqlRepository} from "./src/core/port/driven/persistence/bestuurseenheid-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -26,6 +27,9 @@ const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 const app = createApp();
 const bodySizeLimit = process.env.MAX_BODY_SIZE || '5Mb';
 app.use(bodyparser.json({limit: bodySizeLimit}));
+
+const sessieRepository = new SessieSparqlRepository();
+const bestuurseenheidRepository = new BestuurseenheidSparqlRepository();
 
 app.get('/', function (req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -82,54 +86,30 @@ app.post('/semantic-forms/:publicServiceId/submit', async function (req, res): P
 
 app.post('/public-services/', async function (req, res): Promise<any> {
     const body = req.body;
-    const publicServiceId = body?.data?.relationships?.["concept"]?.data?.id;
+    const conceptId = body?.data?.relationships?.["concept"]?.data?.id;
     const sessionUri = req.headers['mu-session-id'] as string;
-    if (!publicServiceId) {
-        try {
-            const bestuurseenheidData = await bestuurseenheidForSession(sessionUri);
-            const {uuid, uri} = await createEmptyForm(bestuurseenheidData.bestuurseenheid);
+    try {
+        const {uuid, uri} = conceptId ?
+            await createForm(conceptId, sessionUri, sessieRepository, bestuurseenheidRepository)
+            : await createEmptyForm(sessionUri, sessieRepository, bestuurseenheidRepository);
 
-            return res.status(201).json({
-                data: {
-                    "type": "public-service",
-                    "id": uuid,
-                    "uri": uri
-                }
-            });
-        } catch (e) {
-            console.error(e);
-            if (e.status) {
-                return res.status(e.status).set('content-type', 'application/json').send(e);
+        return res.status(201).json({
+            data: {
+                "type": "public-service",
+                "id": uuid,
+                "uri": uri
             }
-            const response = {
-                status: 500,
-                message: `Something unexpected went wrong while submitting semantic-form for "${uuid}".`
-            };
-            return res.status(response.status).set('content-type', 'application/json').send(response.message);
+        });
+    } catch (e) {
+        console.error(e);
+        if (e.status) {
+            return res.status(e.status).set('content-type', 'application/json').send(e);
         }
-    } else {
-        try {
-            const bestuurseenheidData = await bestuurseenheidForSession(sessionUri);
-            const {uuid, uri} = await createForm(publicServiceId, bestuurseenheidData.bestuurseenheid);
-
-            return res.status(201).json({
-                data: {
-                    "type": "public-service",
-                    "id": uuid,
-                    "uri": uri
-                }
-            });
-        } catch (e) {
-            console.error(e);
-            if (e.status) {
-                return res.status(e.status).set('content-type', 'application/json').send(e);
-            }
-            const response = {
-                status: 500,
-                message: `Something unexpected went wrong while submitting semantic-form for "${uuid}".`
-            };
-            return res.status(response.status).set('content-type', 'application/json').send(response.message);
-        }
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while submitting semantic-form for "${uuid}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
 });
 
@@ -157,8 +137,9 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
 app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
     const delta = req.body;
     const header = req.headers['mu-session-id'] as string;
+
     try {
-        FEATURE_FLAG_ATOMIC_UPDATE ? await updateFormAtomic(delta, header) : await updateForm(delta, header);
+        FEATURE_FLAG_ATOMIC_UPDATE ? await updateFormAtomic(delta, header, sessieRepository, bestuurseenheidRepository) : await updateForm(delta, header, sessieRepository, bestuurseenheidRepository);
         return res.sendStatus(200);
     } catch (e) {
         console.error(e);
@@ -180,7 +161,7 @@ app.delete('/public-services/:publicServiceId', async function (req, res): Promi
     const publicServiceId = req.params.publicServiceId;
     const header = req.headers['mu-session-id'] as string;
     try {
-        await deleteForm(publicServiceId, header);
+        await deleteForm(publicServiceId, header, sessieRepository, bestuurseenheidRepository);
         return res.sendStatus(204);
     } catch (e) {
         console.error(e);

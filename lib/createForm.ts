@@ -20,12 +20,22 @@ import {
     getChosenForm, getLanguageVersionForInstance,
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
+import {SessieSparqlRepository} from "../src/core/port/driven/persistence/sessie-sparql-repository";
+import {BestuurseenheidSparqlRepository} from "../src/core/port/driven/persistence/bestuurseenheid-sparql-repository";
 
-export async function createEmptyForm(bestuurseenheid: string): Promise<{ uuid: string, uri: string }> {
+export async function createEmptyForm(sessionUri: string, sessionRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<{
+    uuid: string,
+    uri: string
+}> {
+
+    const sessie = await sessionRepository.findById(sessionUri);
+    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.getBestuurseenheidId());
+
+
     const publicServiceId = uuid();
     const publicServiceUri = `http://data.lblod.info/id/public-service/${publicServiceId}`;
 
-    const spatials = await getSpatialsForBestuurseenheid(bestuurseenheid);
+    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.getId());
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
 
     const now = new Date().toISOString();
@@ -39,9 +49,9 @@ export async function createEmptyForm(bestuurseenheid: string): Promise<{ uuid: 
         mu:uuid """${publicServiceId}""" ;
         adms:status <http://lblod.data.gift/concepts/79a52da4-f491-4e2f-9374-89a13cde8ecd> ;
         ${spatialsPreparedStatement.length ? spatialsPreparedStatement : ''}
-        pav:createdBy ${sparqlEscapeUri(bestuurseenheid)};
-        m8g:hasCompetentAuthority ${sparqlEscapeUri(bestuurseenheid)};
-        lpdcExt:hasExecutingAuthority ${sparqlEscapeUri(bestuurseenheid)}.
+        pav:createdBy ${sparqlEscapeUri(bestuurseenheid.getId())};
+        m8g:hasCompetentAuthority ${sparqlEscapeUri(bestuurseenheid.getId())};
+        lpdcExt:hasExecutingAuthority ${sparqlEscapeUri(bestuurseenheid.getId())}.
     }
   }`;
 
@@ -53,7 +63,10 @@ export async function createEmptyForm(bestuurseenheid: string): Promise<{ uuid: 
     };
 }
 
-export async function createForm(conceptId: string, bestuurseenheid: string): Promise<{ uuid: string, uri: string }> {
+export async function createForm(conceptId: string, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<{
+    uuid: string,
+    uri: string
+}> {
     const graph = CONCEPTUAL_SERVICE_GRAPH;
     const conceptUri = await getConceptUri(conceptId);
 
@@ -132,7 +145,9 @@ export async function createForm(conceptId: string, bestuurseenheid: string): Pr
     }
 
     const now = new Date().toISOString();
-    const spatials = await getSpatialsForBestuurseenheid(bestuurseenheid);
+    const sessie = await sessieRepository.findById(sessionUri);
+    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.getBestuurseenheidId());
+    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.getId());
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
     const extraDataQuery = `
     ${PREFIXES}
@@ -143,8 +158,8 @@ export async function createForm(conceptId: string, bestuurseenheid: string): Pr
           ${spatialsPreparedStatement.length ? spatialsPreparedStatement : ''}
           dct:created ${sparqlEscapeDateTime(now)};
           dct:modified ${sparqlEscapeDateTime(now)};
-          pav:createdBy ${sparqlEscapeUri(bestuurseenheid)};
-          lpdcExt:hasExecutingAuthority ${sparqlEscapeUri(bestuurseenheid)}.
+          pav:createdBy ${sparqlEscapeUri(bestuurseenheid.getId())};
+          lpdcExt:hasExecutingAuthority ${sparqlEscapeUri(bestuurseenheid.getId())}.
       }
     }
     WHERE {
@@ -248,7 +263,7 @@ async function getConceptUri(conceptUuid: string): Promise<string> {
     } else throw `No exact match found for lpdcExt:ConceptualPublicService ${conceptUuid}`;
 }
 
-async function getSpatialsForBestuurseenheid(bestuurseenheid: string): Promise<string[]> {
+async function getSpatialsForBestuurseenheidUri(bestuurseenheid: string): Promise<string[]> {
     const queryStr = `
     ${PREFIXES}
 

@@ -15,11 +15,13 @@ import {
     loadWebsites,
     serviceUriForId
 } from './commonQueries';
-import {bestuurseenheidForSession, isAllowedForLPDC} from '../utils/session-utils';
+import {isAllowedForLPDC} from '../utils/session-utils';
 import {getScopedGraphsForStatement} from '../utils/common';
 import {updateSudo} from '@lblod/mu-auth-sudo';
+import {SessieSparqlRepository} from "../src/core/port/driven/persistence/sessie-sparql-repository";
+import {BestuurseenheidSparqlRepository} from "../src/core/port/driven/persistence/bestuurseenheid-sparql-repository";
 
-export async function deleteForm(serviceId: string, sessionUri: string): Promise<void> {
+export async function deleteForm(serviceId: string, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
     const serviceUri = await serviceUriForId(serviceId);
 
     if (!serviceUri) {
@@ -51,15 +53,16 @@ export async function deleteForm(serviceId: string, sessionUri: string): Promise
     // See updateForm.js for longer explanation.
     // Keep code in sync with updateForm.js
     const source = bindingsToNT(sourceBindings);
+    const sessie = await sessieRepository.findById(sessionUri);
+    const bestuursEenheid = await bestuurseenheidRepository.findById(sessie.getBestuurseenheidId());
 
-    if (!(await isAllowedForLPDC(sessionUri))) {
-        throw `Session ${sessionUri} is not an LPDC User`;
+    if (!(await isAllowedForLPDC(sessie.getId()))) {
+        throw `Session ${sessie.getId()} is not an LPDC User`;
     }
 
-    const {uuid} = await bestuurseenheidForSession(sessionUri);
     for (const statement of source) {
         // The workaround: ensure mu-auth deletes one triple in one graph at a time. We know that works.
-        const targetGraphPattern = `http://mu.semte.ch/graphs/organizations/${uuid}/`;
+        const targetGraphPattern = `http://mu.semte.ch/graphs/organizations/${bestuursEenheid.getUUID()}/`;
         const targetGraphs = await getScopedGraphsForStatement(statement, targetGraphPattern);
 
         for (const graph of targetGraphs) {
