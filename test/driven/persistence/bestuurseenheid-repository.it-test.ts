@@ -4,7 +4,7 @@ import {
     BestuurseenheidSparqlRepository
 } from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
-import {BestuurseenheidTestBuilder} from "../../test-builders/bestuureenheid-test-builder";
+import {BestuurseenheidTestBuilder} from "../../core/domain/bestuureenheid-test-builder";
 
 describe('BestuurseenheidRepository', () => {
     const repository = new BestuurseenheidSparqlRepository(TEST_SPARQL_ENDPOINT);

@@ -1,4 +1,4 @@
-import {SessieTestBuilder} from "../../test-builders/sessie-test-builder";
+import {SessieTestBuilder} from "../../core/domain/sessie-test-builder";
 import {SessieSparqlRepository} from "../../../src/driven/persistence/sessie-sparql-repository";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 

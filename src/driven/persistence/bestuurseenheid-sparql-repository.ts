@@ -2,7 +2,7 @@ import {BestuurseenheidRepository} from "../../core/port/driven/persistence/best
 import {Iri} from "../../core/domain/shared/iri";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode,} from "../../core/domain/bestuurseenheid";
 import {sparqlEscapeString, sparqlEscapeUri} from "../../../mu-helper";
-import {SparqlRepository} from "../../core/port/driven/persistence/sparql-repository";
+import {SparqlRepository} from "./sparql-repository";
 import {PREFIX} from "../../../config";
 
 export class BestuurseenheidSparqlRepository extends SparqlRepository implements BestuurseenheidRepository {

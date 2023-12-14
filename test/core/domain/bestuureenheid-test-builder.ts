@@ -1,6 +1,6 @@
-import {Iri} from "../../src/core/domain/shared/iri";
-import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../src/core/domain/bestuurseenheid";
-import {uuid} from "../../mu-helper";
+import {Iri} from "../../../src/core/domain/shared/iri";
+import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
+import {uuid} from "../../../mu-helper";
 
 export class BestuurseenheidTestBuilder {
     private id: Iri;

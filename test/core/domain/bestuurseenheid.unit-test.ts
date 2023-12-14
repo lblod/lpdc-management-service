@@ -1,4 +1,4 @@
-import {BestuurseenheidTestBuilder} from "../../test-builders/bestuureenheid-test-builder";
+import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 
 test('getUUID extracts the UUID from the id', () => {
 

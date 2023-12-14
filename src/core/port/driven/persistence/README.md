@@ -1,3 +1,3 @@
 # PERSISTENCE
 
-- Contains repository interface + any relevant classes fot this
+- Contains repository interface + any relevant classes for this

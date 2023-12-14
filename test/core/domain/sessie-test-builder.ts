@@ -1,6 +1,6 @@
-import {Iri} from "../../src/core/domain/shared/iri";
-import {Sessie} from "../../src/core/domain/sessie";
-import {uuid} from "../../mu-helper";
+import {Iri} from "../../../src/core/domain/shared/iri";
+import {Sessie} from "../../../src/core/domain/sessie";
+import {uuid} from "../../../mu-helper";
 
 export class SessieTestBuilder {
     private id: Iri;
