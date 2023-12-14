@@ -4,7 +4,7 @@ export class SparqlRepository {
     private endpoint: string;
 
 
-    constructor(endpoint: string = "http://database:8890/sparql") {
+    constructor(endpoint: string = "http://virtuoso:8890/sparql") {
         this.endpoint = endpoint;
     }
 
