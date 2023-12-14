@@ -18,8 +18,8 @@ import {
 import {isAllowedForLPDC} from '../utils/session-utils';
 import {getScopedGraphsForStatement} from '../utils/common';
 import {updateSudo} from '@lblod/mu-auth-sudo';
-import {SessieSparqlRepository} from "../src/core/port/driven/persistence/sessie-sparql-repository";
-import {BestuurseenheidSparqlRepository} from "../src/core/port/driven/persistence/bestuurseenheid-sparql-repository";
+import {SessieSparqlRepository} from "../src/driven/persistence/sessie-sparql-repository";
+import {BestuurseenheidSparqlRepository} from "../src/driven/persistence/bestuurseenheid-sparql-repository";
 
 export async function deleteForm(serviceId: string, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
     const serviceUri = await serviceUriForId(serviceId);

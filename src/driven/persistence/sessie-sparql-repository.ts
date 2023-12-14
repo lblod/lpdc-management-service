@@ -1,9 +1,9 @@
-import {Iri} from "../../../domain/shared/iri";
-import {SessieRepository} from "../../../domain/sessie-repository";
-import {Sessie} from "../../../domain/sessie";
-import {SparqlRepository} from "./sparql-repository";
-import {sparqlEscapeUri} from "../../../../../mu-helper";
-import {PREFIX} from "../../../../../config";
+import {Iri} from "../../core/domain/shared/iri";
+import {SessieRepository} from "../../core/port/driven/persistence/sessie-repository";
+import {Sessie} from "../../core/domain/sessie";
+import {SparqlRepository} from "../../core/port/driven/persistence/sparql-repository";
+import {sparqlEscapeUri} from "../../../mu-helper";
+import {PREFIX} from "../../../config";
 
 export class SessieSparqlRepository extends SparqlRepository implements SessieRepository {
 

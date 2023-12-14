@@ -20,8 +20,8 @@ import {
     getChosenForm, getLanguageVersionForInstance,
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
-import {SessieSparqlRepository} from "../src/core/port/driven/persistence/sessie-sparql-repository";
-import {BestuurseenheidSparqlRepository} from "../src/core/port/driven/persistence/bestuurseenheid-sparql-repository";
+import {SessieSparqlRepository} from "../src/driven/persistence/sessie-sparql-repository";
+import {BestuurseenheidSparqlRepository} from "../src/driven/persistence/bestuurseenheid-sparql-repository";
 
 export async function createEmptyForm(sessionUri: string, sessionRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<{
     uuid: string,

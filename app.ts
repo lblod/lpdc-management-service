@@ -16,8 +16,8 @@ import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
 import {getLanguageVersionOfInstance} from "./lib/getInstanceLanguageVersion";
 import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
 import LPDCError from "./utils/lpdc-error";
-import {SessieSparqlRepository} from "./src/core/port/driven/persistence/sessie-sparql-repository";
-import {BestuurseenheidSparqlRepository} from "./src/core/port/driven/persistence/bestuurseenheid-sparql-repository";
+import {SessieSparqlRepository} from "./src/driven/persistence/sessie-sparql-repository";
+import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 

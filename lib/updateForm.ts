@@ -7,8 +7,8 @@ import {getScopedGraphsForStatement} from '../utils/common';
 import {Literal, Statement} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";
 import LPDCError from "../utils/lpdc-error";
-import {SessieSparqlRepository} from "../src/core/port/driven/persistence/sessie-sparql-repository";
-import {BestuurseenheidSparqlRepository} from "../src/core/port/driven/persistence/bestuurseenheid-sparql-repository";
+import {SessieSparqlRepository} from "../src/driven/persistence/sessie-sparql-repository";
+import {BestuurseenheidSparqlRepository} from "../src/driven/persistence/bestuurseenheid-sparql-repository";
 
 
 export async function updateFormAtomic(data: any, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
