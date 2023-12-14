@@ -11,7 +11,7 @@ describe('SessieRepository', () => {
             const sessie = SessieTestBuilder.aSessie().build();
             await repository.save(sessie);
 
-            const expectedSessie = await repository.findById(sessie.getId());
+            const expectedSessie = await repository.findById(sessie.id);
 
             expect(expectedSessie).toEqual(sessie);
         });

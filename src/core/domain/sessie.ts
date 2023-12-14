@@ -1,20 +1,20 @@
 import {Iri} from "./shared/iri";
 
 export class Sessie {
-    private id: Iri;
-    private bestuurseenheidId: Iri;
+    private readonly _id: Iri;
+    private readonly _bestuurseenheidId: Iri;
 
 
     constructor(id: Iri, bestuurseenheidId: Iri) {
-        this.id = id;
-        this.bestuurseenheidId = bestuurseenheidId;
+        this._id = id;
+        this._bestuurseenheidId = bestuurseenheidId;
     }
 
-    getId(): Iri {
-        return this.id;
+    get id(): Iri {
+        return this._id;
     }
 
-    getBestuurseenheidId(): Iri {
-        return this.bestuurseenheidId;
+    get bestuurseenheidId(): Iri {
+        return this._bestuurseenheidId;
     }
 }

@@ -39,15 +39,15 @@ export class BestuurseenheidSparqlRepository extends SparqlRepository implements
     }
 
     async save(bestuurseenheid: Bestuurseenheid): Promise<void> {
-        const classificatieUri = this.mapBestuurseenheidClassificatieCodeToUri(bestuurseenheid.getClassificatieCode());
+        const classificatieUri = this.mapBestuurseenheidClassificatieCodeToUri(bestuurseenheid.classificatieCode);
         const query = `
             ${PREFIX.skos}
             ${PREFIX.besluit}
             INSERT DATA { 
                 GRAPH <http://mu.semte.ch/graphs/public> {
-                    ${sparqlEscapeUri(bestuurseenheid.getId())} a besluit:Bestuurseenheid .
-                    ${sparqlEscapeUri(bestuurseenheid.getId())} skos:prefLabel  ${sparqlEscapeString(bestuurseenheid.getPrefLabel())} .
-                    ${sparqlEscapeUri(bestuurseenheid.getId())} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .
+                    ${sparqlEscapeUri(bestuurseenheid.id)} a besluit:Bestuurseenheid .
+                    ${sparqlEscapeUri(bestuurseenheid.id)} skos:prefLabel  ${sparqlEscapeString(bestuurseenheid.prefLabel)} .
+                    ${sparqlEscapeUri(bestuurseenheid.id)} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .
                 }
             }
         `;

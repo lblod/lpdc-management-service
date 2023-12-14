@@ -54,15 +54,15 @@ export async function deleteForm(serviceId: string, sessionUri: string, sessieRe
     // Keep code in sync with updateForm.js
     const source = bindingsToNT(sourceBindings);
     const sessie = await sessieRepository.findById(sessionUri);
-    const bestuursEenheid = await bestuurseenheidRepository.findById(sessie.getBestuurseenheidId());
+    const bestuursEenheid = await bestuurseenheidRepository.findById(sessie.bestuurseenheidId);
 
-    if (!(await isAllowedForLPDC(sessie.getId()))) {
-        throw `Session ${sessie.getId()} is not an LPDC User`;
+    if (!(await isAllowedForLPDC(sessie.id))) {
+        throw `Session ${sessie.id} is not an LPDC User`;
     }
 
     for (const statement of source) {
         // The workaround: ensure mu-auth deletes one triple in one graph at a time. We know that works.
-        const targetGraphPattern = `http://mu.semte.ch/graphs/organizations/${bestuursEenheid.getUUID()}/`;
+        const targetGraphPattern = `http://mu.semte.ch/graphs/organizations/${bestuursEenheid.uuid}/`;
         const targetGraphs = await getScopedGraphsForStatement(statement, targetGraphPattern);
 
         for (const graph of targetGraphs) {

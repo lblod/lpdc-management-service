@@ -40,7 +40,7 @@ export class SessieSparqlRepository extends SparqlRepository implements SessieRe
             ${PREFIX.ext}
             INSERT DATA { 
                 GRAPH <http://mu.semte.ch/graphs/sessions> {
-                    ${sparqlEscapeUri(sessie.getId())} ext:sessionGroup  ${sparqlEscapeUri(sessie.getBestuurseenheidId())} 
+                    ${sparqlEscapeUri(sessie.id)} ext:sessionGroup  ${sparqlEscapeUri(sessie.bestuurseenheidId)} 
                 }
             }
         `;

@@ -1,33 +1,33 @@
 import {Iri} from "./shared/iri";
 
 export class Bestuurseenheid {
-    private id: Iri;
-    private prefLabel: string;
-    private classificatieCode: BestuurseenheidClassificatieCode;
+    private readonly _id: Iri;
+    private readonly _prefLabel: string;
+    private readonly _classificatieCode: BestuurseenheidClassificatieCode;
 
     constructor(id: Iri, prefLabel: string, classificatieCode: BestuurseenheidClassificatieCode) {
-        this.id = id;
-        this.prefLabel = prefLabel;
-        this.classificatieCode = classificatieCode;
+        this._id = id;
+        this._prefLabel = prefLabel;
+        this._classificatieCode = classificatieCode;
     }
 
-    getId(): Iri {
-        return this.id;
+    get id(): Iri {
+        return this._id;
     }
 
-    getPrefLabel(): string {
-        return this.prefLabel;
+    get prefLabel(): string {
+        return this._prefLabel;
     }
 
-    getClassificatieCode(): BestuurseenheidClassificatieCode {
-        return this.classificatieCode;
+    get classificatieCode(): BestuurseenheidClassificatieCode {
+        return this._classificatieCode;
     }
 
-    getUUID(): string {
+    get uuid(): string {
         const prefix = 'http://data.lblod.info/id/bestuurseenheden/';
         const regex = new RegExp(`^${prefix}(.*)$`);
 
-        return this.id.match(regex)[1];
+        return this._id.match(regex)[1];
     }
 }
 

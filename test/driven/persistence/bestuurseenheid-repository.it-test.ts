@@ -15,7 +15,7 @@ describe('BestuurseenheidRepository', () => {
             const bestuurseenheid = BestuurseenheidTestBuilder.aBestuurseenheid().build();
             await repository.save(bestuurseenheid);
 
-            const expectedBestuurseenheid = await repository.findById(bestuurseenheid.getId());
+            const expectedBestuurseenheid = await repository.findById(bestuurseenheid.id);
 
             expect(expectedBestuurseenheid).toEqual(bestuurseenheid);
         });

@@ -29,13 +29,13 @@ export async function createEmptyForm(sessionUri: string, sessionRepository: Ses
 }> {
 
     const sessie = await sessionRepository.findById(sessionUri);
-    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.getBestuurseenheidId());
+    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.bestuurseenheidId);
 
 
     const publicServiceId = uuid();
     const publicServiceUri = `http://data.lblod.info/id/public-service/${publicServiceId}`;
 
-    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.getId());
+    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.id);
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
 
     const now = new Date().toISOString();
@@ -55,9 +55,9 @@ export async function createEmptyForm(sessionUri: string, sessionRepository: Ses
         mu:uuid """${publicServiceId}""" ;
         adms:status <http://lblod.data.gift/concepts/79a52da4-f491-4e2f-9374-89a13cde8ecd> ;
         ${spatialsPreparedStatement.length ? spatialsPreparedStatement : ''}
-        pav:createdBy ${sparqlEscapeUri(bestuurseenheid.getId())};
-        m8g:hasCompetentAuthority ${sparqlEscapeUri(bestuurseenheid.getId())};
-        lpdcExt:hasExecutingAuthority ${sparqlEscapeUri(bestuurseenheid.getId())}.
+        pav:createdBy ${sparqlEscapeUri(bestuurseenheid.id)};
+        m8g:hasCompetentAuthority ${sparqlEscapeUri(bestuurseenheid.id)};
+        lpdcExt:hasExecutingAuthority ${sparqlEscapeUri(bestuurseenheid.id)}.
     }
   }`;
 
@@ -152,8 +152,8 @@ export async function createForm(conceptId: string, sessionUri: string, sessieRe
 
     const now = new Date().toISOString();
     const sessie = await sessieRepository.findById(sessionUri);
-    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.getBestuurseenheidId());
-    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.getId());
+    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.bestuurseenheidId);
+    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.id);
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
     const extraDataQuery = `
     ${PREFIX.adms}
@@ -168,8 +168,8 @@ export async function createForm(conceptId: string, sessionUri: string, sessieRe
           ${spatialsPreparedStatement.length ? spatialsPreparedStatement : ''}
           dct:created ${sparqlEscapeDateTime(now)};
           dct:modified ${sparqlEscapeDateTime(now)};
-          pav:createdBy ${sparqlEscapeUri(bestuurseenheid.getId())};
-          lpdcExt:hasExecutingAuthority ${sparqlEscapeUri(bestuurseenheid.getId())}.
+          pav:createdBy ${sparqlEscapeUri(bestuurseenheid.id)};
+          lpdcExt:hasExecutingAuthority ${sparqlEscapeUri(bestuurseenheid.id)}.
       }
     }
     WHERE {
