@@ -14,13 +14,13 @@ import {BestuurseenheidSparqlRepository} from "../src/driven/persistence/bestuur
 export async function updateFormAtomic(data: any, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
 
     const sessie = await sessieRepository.findById(sessionUri);
-    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.getBestuurseenheidId());
+    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.bestuurseenheidId);
 
-    if (!(await isAllowedForLPDC(sessie.getId()))) {
-        throw `Session ${sessie.getId()} is not an LPDC User`;
+    if (!(await isAllowedForLPDC(sessie.id))) {
+        throw `Session ${sessie.id} is not an LPDC User`;
     }
 
-    const targetGraph = `http://mu.semte.ch/graphs/organizations/${bestuurseenheid.getUUID()}/LoketLB-LPDCGebruiker`;
+    const targetGraph = `http://mu.semte.ch/graphs/organizations/${bestuurseenheid.uuid}/LoketLB-LPDCGebruiker`;
 
     const deletes = parseStatements(data.removals);
     const inserts = parseStatements(data.additions);
@@ -64,14 +64,14 @@ function parseStatements(statements: Statement[]): Array<Quad> {
 
 export async function updateForm(data: any, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository) {
     const sessie = await sessieRepository.findById(sessionUri);
-    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.getBestuurseenheidId());
+    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.bestuurseenheidId);
 
-    if (!(await isAllowedForLPDC(sessie.getId()))) {
-        throw `Session ${sessie.getId()} is not an LPDC User`;
+    if (!(await isAllowedForLPDC(sessie.id))) {
+        throw `Session ${sessie.id} is not an LPDC User`;
     }
 
 
-    if (data.removals) await mutate('DELETE', data.removals, bestuurseenheid.getUUID());
+    if (data.removals) await mutate('DELETE', data.removals, bestuurseenheid.uuid);
     if (data.additions) await mutate('INSERT', data.additions);
 }
 
