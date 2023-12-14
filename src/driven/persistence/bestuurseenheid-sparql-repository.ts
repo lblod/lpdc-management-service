@@ -1,7 +1,7 @@
 import {BestuurseenheidRepository} from "../../core/port/driven/persistence/bestuurseenheid-repository";
 import {Iri} from "../../core/domain/shared/iri";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode,} from "../../core/domain/bestuurseenheid";
-import {sparqlEscapeString, sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeUri} from "../../../mu-helper";
 import {SparqlRepository} from "./sparql-repository";
 import {PREFIX} from "../../../config";
 
@@ -36,36 +36,6 @@ export class BestuurseenheidSparqlRepository extends SparqlRepository implements
             result['prefLabel'].value,
             this.mapBestuurseenheidClassificatieUriToCode(result['classificatieUri'].value)
         );
-    }
-
-    async save(bestuurseenheid: Bestuurseenheid): Promise<void> {
-        const classificatieUri = this.mapBestuurseenheidClassificatieCodeToUri(bestuurseenheid.classificatieCode);
-        const query = `
-            ${PREFIX.skos}
-            ${PREFIX.besluit}
-            INSERT DATA { 
-                GRAPH <http://mu.semte.ch/graphs/public> {
-                    ${sparqlEscapeUri(bestuurseenheid.id)} a besluit:Bestuurseenheid .
-                    ${sparqlEscapeUri(bestuurseenheid.id)} skos:prefLabel  ${sparqlEscapeString(bestuurseenheid.prefLabel)} .
-                    ${sparqlEscapeUri(bestuurseenheid.id)} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .
-                }
-            }
-        `;
-        await this.update(query);
-    }
-
-    mapBestuurseenheidClassificatieCodeToUri(classificatieCode: BestuurseenheidClassificatieCode): BestuurseenheidClassificatieCodeUri {
-        const key: string | undefined = Object.keys(BestuurseenheidClassificatieCode)
-            .find(key => BestuurseenheidClassificatieCode[key] === classificatieCode);
-
-        const classificatieCodeUri = BestuurseenheidClassificatieCodeUri[key];
-
-        if (!classificatieCodeUri) {
-            throw new Error(`No classification code uri found for: ${classificatieCode}`);
-        }
-        return classificatieCodeUri;
-
-
     }
 
     mapBestuurseenheidClassificatieUriToCode(classificatieCodeUri: BestuurseenheidClassificatieCodeUri): BestuurseenheidClassificatieCode {

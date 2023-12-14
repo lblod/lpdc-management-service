@@ -3,6 +3,4 @@ import {Bestuurseenheid} from "../../../domain/bestuurseenheid";
 
 export interface BestuurseenheidRepository {
     findById(id: Iri): Promise<Bestuurseenheid>;
-
-    save(bestuurseenheid: Bestuurseenheid): Promise<void>;
 }
