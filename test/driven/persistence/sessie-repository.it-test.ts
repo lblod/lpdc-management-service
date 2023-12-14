@@ -1,9 +1,9 @@
 import {SessieTestBuilder} from "../../core/domain/sessie-test-builder";
-import {SessieSparqlRepository} from "../../../src/driven/persistence/sessie-sparql-repository";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
+import {SessieSparqlTestRepository} from "./sessie-sparql-test-repository";
 
 describe('SessieRepository', () => {
-    const repository = new SessieSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const repository = new SessieSparqlTestRepository(TEST_SPARQL_ENDPOINT);
 
     describe('findById', () => {
 

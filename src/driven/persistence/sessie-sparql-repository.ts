@@ -34,18 +34,4 @@ export class SessieSparqlRepository extends SparqlRepository implements SessieRe
             result['bestuurseenheid'].value
         );
     }
-
-    async save(sessie: Sessie): Promise<void> {
-        const query = `
-            ${PREFIX.ext}
-            INSERT DATA { 
-                GRAPH <http://mu.semte.ch/graphs/sessions> {
-                    ${sparqlEscapeUri(sessie.id)} ext:sessionGroup  ${sparqlEscapeUri(sessie.bestuurseenheidId)} 
-                }
-            }
-        `;
-        await this.update(query);
-    }
-
-
 }
