@@ -20,8 +20,8 @@ export class BestuurseenheidSparqlRepository extends SparqlRepository implements
                     VALUES ?id {
                         ${sparqlEscapeUri(id)}
                     }
-                     ?id skos:prefLabel  ?prefLabel .
-                     ?id besluit:classificatie  ?classificatieUri . 
+                     ?id skos:prefLabel ?prefLabel .
+                     ?id besluit:classificatie ?classificatieUri . 
                 }
             }
         `;
@@ -48,8 +48,6 @@ export class BestuurseenheidSparqlRepository extends SparqlRepository implements
             throw new Error(`No classification code found for: ${classificatieCodeUri}`);
         }
         return classificatieCode;
-
-
     }
 }
 

@@ -2,5 +2,5 @@ import {Iri} from "../../../domain/shared/iri";
 import {Sessie} from "../../../domain/sessie";
 
 export interface SessieRepository {
-    findById(id: Iri): Promise<Sessie | undefined>;
+    findById(id: Iri): Promise<Sessie>;
 }
