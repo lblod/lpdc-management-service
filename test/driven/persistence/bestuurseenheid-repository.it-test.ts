@@ -1,10 +1,10 @@
-import {TEST_SPARQL_ENDPOINT} from "../../../test.config";
+import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {
     BestuurseenheidClassificatieCodeUri,
     BestuurseenheidSparqlRepository
-} from "../../../../src/driven/persistence/bestuurseenheid-sparql-repository";
-import {BestuurseenheidClassificatieCode} from "../../../../src/core/domain/bestuurseenheid";
-import {BestuurseenheidTestBuilder} from "../../../test-builders/bestuureenheid-test-builder";
+} from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
+import {BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
+import {BestuurseenheidTestBuilder} from "../../test-builders/bestuureenheid-test-builder";
 
 describe('BestuurseenheidRepository', () => {
     const repository = new BestuurseenheidSparqlRepository(TEST_SPARQL_ENDPOINT);
