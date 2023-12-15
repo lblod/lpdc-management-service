@@ -1,8 +1,7 @@
-import {updateSudo, querySudo} from '@lblod/mu-auth-sudo';
+import {querySudo, updateSudo} from '@lblod/mu-auth-sudo';
 
 export class SparqlRepository {
-    private endpoint: string;
-
+    private readonly endpoint: string;
 
     constructor(endpoint: string = "http://virtuoso:8890/sparql") {
         this.endpoint = endpoint;

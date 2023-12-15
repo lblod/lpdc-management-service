@@ -9,6 +9,7 @@ describe('BestuurseenheidRepository', () => {
 
     describe('findById', () => {
 
+        //TODO LPDC-894: we should consider having at least one test that inserts directly a set of triples (and not use the save); and then query with findbyid
         test('When bestuurseenheid exists with id, then return bestuurseenheid', async () => {
             const bestuurseenheid = BestuurseenheidTestBuilder.aBestuurseenheid().build();
             await repository.save(bestuurseenheid);

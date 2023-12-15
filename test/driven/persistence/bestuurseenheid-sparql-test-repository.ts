@@ -38,7 +38,6 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
             throw new Error(`No classification code uri found for: ${classificatieCode}`);
         }
         return classificatieCodeUri;
-
-
     }
+
 }

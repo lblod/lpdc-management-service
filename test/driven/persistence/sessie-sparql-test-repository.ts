@@ -21,5 +21,4 @@ export class SessieSparqlTestRepository extends SessieSparqlRepository {
         await this.update(query);
     }
 
-
 }

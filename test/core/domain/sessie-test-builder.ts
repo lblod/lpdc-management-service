@@ -6,7 +6,6 @@ export class SessieTestBuilder {
     private id: Iri;
     private bestuurseenheidId: Iri;
 
-
     static aSessie(): SessieTestBuilder {
         return new SessieTestBuilder()
             .withId(`http://mu.semte.ch/sessions/${uuid()}`)
@@ -19,7 +18,6 @@ export class SessieTestBuilder {
             .withId(`http://mu.semte.ch/sessions/${uuid()}`)
             .withBestuurseenheidId(`http://data.lblod.info/id/bestuurseenheden/${pepingen}`);
     }
-
 
     public withId(id: Iri): SessieTestBuilder {
         this.id = id;
