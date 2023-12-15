@@ -14,12 +14,13 @@ export class SessieSparqlRepository extends SparqlRepository implements SessieRe
     async findById(id: Iri): Promise<Sessie> {
         const query = `
             ${PREFIX.ext}
-            SELECT ?id ?bestuurseenheid WHERE {
+            SELECT ?id ?bestuurseenheid ?sessieRol WHERE {
                 GRAPH <http://mu.semte.ch/graphs/sessions> {
                     VALUES ?id {
                         ${sparqlEscapeUri(id)}
                     }
-                     ?id ext:sessionGroup  ?bestuurseenheid 
+                     ?id ext:sessionGroup  ?bestuurseenheid .
+                     ?id ext:sessionRole ?sessieRol .
                 }
             }
         `;
@@ -31,7 +32,8 @@ export class SessieSparqlRepository extends SparqlRepository implements SessieRe
 
         return new Sessie(
             result['id'].value,
-            result['bestuurseenheid'].value
+            result['bestuurseenheid'].value,
+            result['sessieRol'].value
         );
     }
 }
