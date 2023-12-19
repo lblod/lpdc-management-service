@@ -49,7 +49,7 @@ export async function updateFormAtomic(data: any, sessionUri: string, sessieRepo
     const updateResult = result.results.bindings[0]['callret-0'].value;
 
     if (updateResult.includes("delete 0 (or less) and insert 0 (or less) triples")) {
-        throw new LPDCError(400, "De productfiche is gelijktijdig aangepast door een andere gebruiker. Refresh en geef je aanpassingen opnieuw in.");
+        throw new LPDCError(400, "De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in.");
     }
 
 }
