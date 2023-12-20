@@ -14,7 +14,7 @@ export class SessieSparqlTestRepository extends SessieSparqlRepository {
             ${PREFIX.ext}
             INSERT DATA { 
                 GRAPH <http://mu.semte.ch/graphs/sessions> {
-                    ${sparqlEscapeUri(sessie.id)} ext:sessionGroup  ${sparqlEscapeUri(sessie.bestuurseenheidId)}.
+                    ${sparqlEscapeUri(sessie.id)} ext:sessionGroup ${sparqlEscapeUri(sessie.bestuurseenheidId)}.
                     ${sparqlEscapeUri(sessie.id)} ext:sessionRole ${sparqlEscapeString(sessie.sessieRol)}.
                 }
             }

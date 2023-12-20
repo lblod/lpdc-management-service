@@ -1,13 +1,16 @@
 import {SessieTestBuilder} from "../../core/domain/sessie-test-builder";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {SessieSparqlTestRepository} from "./sessie-sparql-test-repository";
+import {uuid} from "../../../mu-helper";
+import {DirectDatabaseAccess} from "./direct-database-access";
+import {SessieRol} from "../../../src/core/domain/sessie";
 
 describe('SessieRepository', () => {
     const repository = new SessieSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
     describe('findById', () => {
 
-        //TODO LPDC-894: we should consider having at least one test that inserts directly a set of triples (and not use the save); and then query with findbyid
         test('When sessie exists with id, then return sessie', async () => {
             const sessie = SessieTestBuilder.aSessie().build();
             await repository.save(sessie);
@@ -22,6 +25,32 @@ describe('SessieRepository', () => {
 
             await expect(repository.findById(falseSessionId)).rejects.toThrow(new Error(`No session found for iri: ${falseSessionId}`));
 
+        });
+
+        test('Verify ontology and mapping', async () => {
+            const sessieId = `http://mu.semte.ch/sessions/${uuid()}`;
+            const bestuurseenheidId = `http://data.lblod.info/id/bestuurseenheden/${uuid()}`;
+
+            const sessie =
+                        SessieTestBuilder
+                            .aSessie()
+                            .withId(sessieId)
+                            .withBestuurseenheidId(bestuurseenheidId)
+                            .withSessieRol(SessieRol.LOKETLB_LPDCGEBRUIKER)
+                            .build();
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/sessions",
+                [`<${sessieId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+                    `<${sessieId}> <http://mu.semte.ch/vocabularies/ext/sessionGroup> <${bestuurseenheidId}>`,
+                    `<${sessieId}> <http://mu.semte.ch/vocabularies/ext/sessionRole> """LoketLB-LPDCGebruiker"""`,
+                    `<${sessieId}> <http://mu.semte.ch/vocabularies/ext/sessionRole> """LoketLB-bbcdrGebruiker"""`,
+                    `<${sessieId}> <http://mu.semte.ch/vocabularies/ext/sessionRole> """LoketLB-berichtenGebruiker"""`,
+                ]);
+
+            const actualSessie = await repository.findById(sessieId);
+
+            expect(actualSessie).toEqual(sessie);
         });
     });
 
