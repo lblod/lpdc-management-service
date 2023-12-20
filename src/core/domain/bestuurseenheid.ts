@@ -6,6 +6,7 @@ export class Bestuurseenheid {
     private readonly _classificatieCode: BestuurseenheidClassificatieCode;
 
     constructor(id: Iri, prefLabel: string, classificatieCode: BestuurseenheidClassificatieCode) {
+        //TODO LPDC-916: enforce invariants
         this._id = id;
         this._prefLabel = prefLabel;
         this._classificatieCode = classificatieCode;

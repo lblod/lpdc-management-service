@@ -3,28 +3,74 @@ import {BestuurseenheidClassificatieCodeUri} from "../../../src/driven/persisten
 import {BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
 import {BestuurseenheidTestBuilder} from "../../core/domain/bestuureenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
+import {DirectDatabaseAccess} from "./direct-database-access";
+import {uuid} from "../../../mu-helper";
 
 describe('BestuurseenheidRepository', () => {
     const repository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
     describe('findById', () => {
 
-        //TODO LPDC-894: we should consider having at least one test that inserts directly a set of triples (and not use the save); and then query with findbyid
         test('When bestuurseenheid exists with id, then return bestuurseenheid', async () => {
             const bestuurseenheid = BestuurseenheidTestBuilder.aBestuurseenheid().build();
             await repository.save(bestuurseenheid);
 
-            const expectedBestuurseenheid = await repository.findById(bestuurseenheid.id);
+            const anotherBestuurseenheid = BestuurseenheidTestBuilder.aBestuurseenheid().build();
+            await repository.save(anotherBestuurseenheid);
 
-            expect(expectedBestuurseenheid).toEqual(bestuurseenheid);
+            const actualBestuurseenheid = await repository.findById(bestuurseenheid.id);
+
+            expect(actualBestuurseenheid).toEqual(bestuurseenheid);
         });
 
         test('When bestuurseenheid not exists with id, then throw error', async () => {
-            const falseBestuurseenheidId = 'http://data.lblod.info/id/bestuurseenheden/false';
+            const bestuurseenheid = BestuurseenheidTestBuilder.aBestuurseenheid().build();
+            await repository.save(bestuurseenheid);
 
-            await expect(repository.findById(falseBestuurseenheidId)).rejects.toThrow(new Error(`no bestuurseenheid found for iri: ${falseBestuurseenheidId}`));
+            const unexistingBestuurseenheidId = BestuurseenheidTestBuilder.buildIri("thisiddoesnotexist");
+
+            await expect(repository.findById(unexistingBestuurseenheidId)).rejects.toThrow(new Error(`no bestuurseenheid found for iri: ${unexistingBestuurseenheidId}`));
 
         });
+
+        test('Verify ontology and mapping', async () => {
+            const bestuurseenheidId = `http://data.lblod.info/id/bestuurseenheden/${uuid()}`;
+
+            const bestuurseenheid =
+                BestuurseenheidTestBuilder
+                    .aBestuurseenheid()
+                    .withId(bestuurseenheidId)
+                    .withPrefLabel("preferred label")
+                    .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/public",
+                [`<${bestuurseenheidId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+                    `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
+                    `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
+                ]);
+
+            const actualBestuurseenheid = await repository.findById(bestuurseenheidId);
+
+            expect(actualBestuurseenheid).toEqual(bestuurseenheid);
+        });
+
+        test('Verify ontology and mapping - only query correct type', async () => {
+            const bestuurseenheidId = `http://data.lblod.info/id/bestuurseenheden/${uuid()}`;
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/public",
+                [`<${bestuurseenheidId}> a <http://example.com/ns#SomeOtherType>`,
+                    `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
+                    `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheidId)).rejects.toThrow(new Error(`no bestuurseenheid found for iri: ${bestuurseenheidId}`));
+
+        });
+
     });
 
     describe('map bestuurseenheidClassificatieCode to uri', () => {

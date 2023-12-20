@@ -7,6 +7,7 @@ describe('SessieRepository', () => {
 
     describe('findById', () => {
 
+        //TODO LPDC-894: we should consider having at least one test that inserts directly a set of triples (and not use the save); and then query with findbyid
         test('When sessie exists with id, then return sessie', async () => {
             const sessie = SessieTestBuilder.aSessie().build();
             await repository.save(sessie);

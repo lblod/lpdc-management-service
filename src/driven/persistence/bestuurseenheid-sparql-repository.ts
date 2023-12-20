@@ -20,12 +20,13 @@ export class BestuurseenheidSparqlRepository extends SparqlRepository implements
                     VALUES ?id {
                         ${sparqlEscapeUri(id)}
                     }
-                     ?id skos:prefLabel ?prefLabel .
-                     ?id besluit:classificatie ?classificatieUri . 
+                    ?id a besluit:Bestuurseenheid .
+                    ?id skos:prefLabel ?prefLabel .
+                    ?id besluit:classificatie ?classificatieUri . 
                 }
             }
         `;
-        const result = await this.query(query);
+        const result = await this.querySingleRow(query);
 
         if (!result) {
             throw new Error(`no bestuurseenheid found for iri: ${id}`);

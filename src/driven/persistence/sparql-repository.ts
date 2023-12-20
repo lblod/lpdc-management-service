@@ -7,16 +7,23 @@ export class SparqlRepository {
         this.endpoint = endpoint;
     }
 
-    async update(query: string): Promise<void> {
+    protected async update(query: string): Promise<void> {
+        //TODO LPDC-916: error handling: we should ensure that we have verified that we did not get any error ...
         await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
     }
 
-    async query(query: string): Promise<unknown | undefined> {
+    protected async querySingleRow(query: string): Promise<unknown | undefined> {
         const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
-        return result?.results?.bindings[0];
+        const bindings = result?.results?.bindings;
+        if(bindings) {
+            if(bindings.length > 1) {
+                throw new Error(`Expecting a single row from query (${query}), got ${bindings.length} results.`);
+            }
+        }
+        return bindings[0];
     }
 
-    async queryList(query: string): Promise<unknown[]> {
+    protected async queryList(query: string): Promise<unknown[]> {
         return querySudo(query, {}, {sparqlEndpoint: this.endpoint})?.results?.bindings || [];
     }
 }

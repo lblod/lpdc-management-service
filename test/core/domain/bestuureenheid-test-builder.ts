@@ -7,16 +7,20 @@ export class BestuurseenheidTestBuilder {
     private prefLabel: string;
     private classificatieCode: BestuurseenheidClassificatieCode;
 
+    static buildIri(uniqueId: string): Iri {
+        return `http://data.lblod.info/id/bestuurseenheden/${uniqueId}`;
+    }
+
     static aBestuurseenheid(): BestuurseenheidTestBuilder {
         return new BestuurseenheidTestBuilder()
-            .withId(`http://data.lblod.info/id/bestuurseenheden/${uuid()}`)
+            .withId(BestuurseenheidTestBuilder.buildIri(uuid()))
             .withPrefLabel('Aarschot')
             .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE);
     }
 
     static aPepingen(): BestuurseenheidTestBuilder {
         return new BestuurseenheidTestBuilder()
-            .withId(`http://data.lblod.info/id/bestuurseenheden/73840d393bd94828f0903e8357c7f328d4bf4b8fbd63adbfa443e784f056a589`)
+            .withId(BestuurseenheidTestBuilder.buildIri('73840d393bd94828f0903e8357c7f328d4bf4b8fbd63adbfa443e784f056a589'))
             .withPrefLabel('Pepingen')
             .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE);
     }

@@ -24,7 +24,7 @@ export class SessieSparqlRepository extends SparqlRepository implements SessieRe
                 }
             }
         `;
-        const result = await this.query(query);
+        const result = await this.querySingleRow(query);
 
         if (!result) {
             throw new Error(`No session found for iri: ${id}`);
