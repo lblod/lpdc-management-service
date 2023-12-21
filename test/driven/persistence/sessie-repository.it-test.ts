@@ -15,15 +15,21 @@ describe('SessieRepository', () => {
             const sessie = SessieTestBuilder.aSessie().build();
             await repository.save(sessie);
 
-            const expectedSessie = await repository.findById(sessie.id);
+            const anotherSessie = SessieTestBuilder.aSessie().build();
+            await repository.save(anotherSessie);
 
-            expect(expectedSessie).toEqual(sessie);
+            const actualSessie = await repository.findById(sessie.id);
+
+            expect(actualSessie).toEqual(sessie);
         });
 
         test('When sessie not exists with id, then throw error', async () => {
-            const falseSessionId = 'http://mu.semte.ch/sessions/false';
+            const sessie = SessieTestBuilder.aSessie().build();
+            await repository.save(sessie);
 
-            await expect(repository.findById(falseSessionId)).rejects.toThrow(new Error(`No session found for iri: ${falseSessionId}`));
+            const nonExistentSessieId = SessieTestBuilder.buildIri("thisiddoesnotexist");
+
+            await expect(repository.findById(nonExistentSessieId)).rejects.toThrow(new Error(`No session found for iri: ${nonExistentSessieId}`));
 
         });
 

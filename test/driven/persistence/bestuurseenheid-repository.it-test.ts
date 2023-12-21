@@ -24,17 +24,20 @@ describe('BestuurseenheidRepository', () => {
             expect(actualBestuurseenheid).toEqual(bestuurseenheid);
         });
 
-        test('When bestuurseenheid not exists with id, then throw error', async () => {
+        test('When bestuurseenheid does not exist with id, then throw error', async () => {
             const bestuurseenheid = BestuurseenheidTestBuilder.aBestuurseenheid().build();
             await repository.save(bestuurseenheid);
 
-            const unexistingBestuurseenheidId = BestuurseenheidTestBuilder.buildIri("thisiddoesnotexist");
+            const nonExistentBestuurseenheidId = BestuurseenheidTestBuilder.buildIri("thisiddoesnotexist");
 
-            await expect(repository.findById(unexistingBestuurseenheidId)).rejects.toThrow(new Error(`no bestuurseenheid found for iri: ${unexistingBestuurseenheidId}`));
+            await expect(repository.findById(nonExistentBestuurseenheidId)).rejects.toThrow(new Error(`no bestuurseenheid found for iri: ${nonExistentBestuurseenheidId}`));
 
         });
+    });
 
-        test('Verify ontology and mapping', async () => {
+    describe('Verify ontology and mapping', () => {
+
+        test('Verify mappings', async () => {
             const bestuurseenheidId = `http://data.lblod.info/id/bestuurseenheden/${uuid()}`;
 
             const bestuurseenheid =

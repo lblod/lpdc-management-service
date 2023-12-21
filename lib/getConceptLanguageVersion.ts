@@ -2,10 +2,14 @@ import {
     loadContactPoints,
     loadContactPointsAddresses,
     loadCosts,
-    loadEvidences, loadFinancialAdvantages, loadFormalInformalChoice,
+    loadEvidences,
+    loadFinancialAdvantages,
+    loadFormalInformalChoice,
     loadOnlineProcedureRules,
     loadPublicService,
-    loadRequirements, loadRules, loadWebsites,
+    loadRequirements,
+    loadRules,
+    loadWebsites,
     serviceUriForId
 } from './commonQueries';
 import {
@@ -19,7 +23,7 @@ export async function getLanguageVersionOfConcept(conceptUUID: string): Promise<
     const conceptLanguages = findDutchLanguageVersionsOfTriples(triples);
 
     const formalInformalChoice = await loadFormalInformalChoice();
-    const chosenForm = await getChosenForm(formalInformalChoice);
+    const chosenForm = getChosenForm(formalInformalChoice);
 
     return selectLanguageVersionForConcept(conceptLanguages, chosenForm);
 }

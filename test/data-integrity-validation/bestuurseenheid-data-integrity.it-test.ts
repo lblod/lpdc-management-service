@@ -22,6 +22,8 @@ describe('Bestuurseenheid Data Integrity Validation', () => {
         `;
         const bestuurseenheidIds = await directDatabaseAccess.queryList(query);
 
+        console.log(`Verifying ${bestuurseenheidIds.length} bestuurseenheden`);
+
         for (const result of bestuurseenheidIds) {
             try {
                 const id = result['id'].value;
