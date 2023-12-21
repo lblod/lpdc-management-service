@@ -9,7 +9,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
     async findById(id: string): Promise<ConceptVersie> {
 
-        const findEntityQuery = `
+        const findEntityResult = await this.querySingleRow(`
             ${PREFIX.lpdcExt}
             
             SELECT ?id
@@ -19,39 +19,33 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         }
                     FILTER (?id = ${sparqlEscapeUri(id)}) 
                 }            
-        `;
+        `);
 
-        const result = await this.querySingleRow(findEntityQuery);
-
-        if (!result) {
+        if (!findEntityResult) {
             throw new Error(`no concept versie found for iri: ${id}`);
         }
 
-        const findTitlesQuery = `
+        const titlesQuery = this.queryList(`
             ${PREFIX.dct}
-            
             SELECT ?title
                 WHERE { 
                     GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
                         ${sparqlEscapeUri(id)} dct:title ?title. 
                     }
                 }            
-        `;
-        const titles = await this.queryList(findTitlesQuery);
+        `);
 
-        const findDescriptionsQuery = `
+        const descriptionsQuery = this.queryList(`
             ${PREFIX.dct}
-            
             SELECT ?description
                 WHERE { 
                     GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
                         ${sparqlEscapeUri(id)} dct:description ?description. 
                     }
                 }            
-        `;
-        const descriptions = await this.queryList(findDescriptionsQuery);
+        `);
 
-        const findAdditionalDescriptionsQuery = `
+        const additionalDescriptionsQuery = this.queryList(`
             ${PREFIX.lpdcExt}
             
             SELECT ?additionalDescription
@@ -60,33 +54,25 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} lpdcExt:additionalDescription ?additionalDescription. 
                     }
                 }            
-        `;
-        const additionalDescriptions = await this.queryList(findAdditionalDescriptionsQuery);
+        `);
+
+        const [titles, descriptions, additionalDescriptions] = await Promise.all([titlesQuery, descriptionsQuery, additionalDescriptionsQuery]);
 
         return new ConceptVersie(
-            result['id'].value,
-            TaalString.of(
-                titles.find(t => t['title']['xml:lang'] === 'en')?.['title']?.value as string | undefined,
-                titles.find(t => t['title']['xml:lang'] === 'nl')?.['title']?.value as string | undefined,
-                titles.find(t => t['title']['xml:lang'] === 'nl-be-x-formal')?.['title']?.value as string | undefined,
-                titles.find(t => t['title']['xml:lang'] === 'nl-be-x-informal')?.['title']?.value as string | undefined,
-                titles.find(t => t['title']['xml:lang'] === 'nl-be-x-generated-formal')?.['title']?.value as string | undefined,
-                titles.find(t => t['title']['xml:lang'] === 'nl-be-x-generated-informal')?.['title']?.value as string | undefined),
-            TaalString.of(
-                descriptions.find(t => t['description']['xml:lang'] === 'en')?.['description']?.value as string | undefined,
-                descriptions.find(t => t['description']['xml:lang'] === 'nl')?.['description']?.value as string | undefined,
-                descriptions.find(t => t['description']['xml:lang'] === 'nl-be-x-formal')?.['description']?.value as string | undefined,
-                descriptions.find(t => t['description']['xml:lang'] === 'nl-be-x-informal')?.['description']?.value as string | undefined,
-                descriptions.find(t => t['description']['xml:lang'] === 'nl-be-x-generated-formal')?.['description']?.value as string | undefined,
-                descriptions.find(t => t['description']['xml:lang'] === 'nl-be-x-generated-informal')?.['description']?.value as string | undefined),
-            TaalString.of(
-                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'en')?.['additionalDescription']?.value as string | undefined,
-                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'nl')?.['additionalDescription']?.value as string | undefined,
-                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'nl-be-x-formal')?.['additionalDescription']?.value as string | undefined,
-                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'nl-be-x-informal')?.['additionalDescription']?.value as string | undefined,
-                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'nl-be-x-generated-formal')?.['additionalDescription']?.value as string | undefined,
-                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'nl-be-x-generated-informal')?.['additionalDescription']?.value as string | undefined),
+            findEntityResult['id'].value,
+            this.asTaalString(titles.map(r => r?.['title'])),
+            this.asTaalString(descriptions.map(r => r?.['description'])),
+            this.asTaalString(additionalDescriptions.map(r => r?.['additionalDescription'])),
         );
     }
 
+    private asTaalString(aResult: any[]): TaalString | undefined {
+        return TaalString.of(
+            aResult.find(t => t['xml:lang'] === 'en')?.value as string | undefined,
+            aResult.find(t => t['xml:lang'] === 'nl')?.value as string | undefined,
+            aResult.find(t => t['xml:lang'] === 'nl-be-x-formal')?.value as string | undefined,
+            aResult.find(t => t['xml:lang'] === 'nl-be-x-informal')?.value as string | undefined,
+            aResult.find(t => t['xml:lang'] === 'nl-be-x-generated-formal')?.value as string | undefined,
+            aResult.find(t => t['xml:lang'] === 'nl-be-x-generated-informal')?.value as string | undefined);
+    }
 }
