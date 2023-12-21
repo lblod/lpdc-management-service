@@ -72,6 +72,15 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withException(TaalString.of("text-en-changed"))
+                .build()],
+        ['regulation changed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withRegulation(TaalString.of("text-en"))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withRegulation(TaalString.of("text-en-changed"))
                 .build()]
 
     ];

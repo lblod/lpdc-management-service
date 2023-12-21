@@ -24,6 +24,8 @@ export class SparqlRepository {
     }
 
     protected async queryList(query: string): Promise<unknown[]> {
+        //TODO LPDC-916:remove console.log
+        //console.log(query);
         const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
         return result?.results?.bindings || [];
     }

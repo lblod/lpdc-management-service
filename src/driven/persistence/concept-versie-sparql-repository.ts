@@ -67,7 +67,18 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
-        const [titles, descriptions, additionalDescriptions, exceptions] = await Promise.all([titlesQuery, descriptionsQuery, additionalDescriptionsQuery, exceptionsQuery]);
+        const requlationsQuery = this.queryList(`
+            ${PREFIX.lpdcExt}
+            
+            SELECT ?regulation
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} lpdcExt:regulation ?regulation. 
+                    }
+                }            
+        `);
+
+        const [titles, descriptions, additionalDescriptions, exceptions, regulations] = await Promise.all([titlesQuery, descriptionsQuery, additionalDescriptionsQuery, exceptionsQuery, requlationsQuery]);
 
         return new ConceptVersie(
             findEntityResult['id'].value,
@@ -75,6 +86,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asTaalString(descriptions.map(r => r?.['description'])),
             this.asTaalString(additionalDescriptions.map(r => r?.['additionalDescription'])),
             this.asTaalString(exceptions.map(r => r?.['exception'])),
+            this.asTaalString(regulations.map(r => r?.['regulation'])),
         );
     }
 

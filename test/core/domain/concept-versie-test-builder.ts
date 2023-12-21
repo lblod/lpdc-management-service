@@ -33,11 +33,19 @@ export class ConceptVersieTestBuilder {
     public static EXCEPTION_NL_GENERATED_FORMAL = 'Concept Versie Exception - nl-generated-formal';
     public static EXCEPTION_NL_GENERATED_INFORMAL = 'Concept Versie Exception - nl-generated-informal';
 
+    public static REGULATION_EN = 'Concept Versie Regulation - en';
+    public static REGULATION_NL = 'Concept Versie Regulation - nl';
+    public static REGULATION_NL_FORMAL = 'Concept Versie Regulation - nl-formal';
+    public static REGULATION_NL_INFORMAL = 'Concept Versie Regulation - nl-informal';
+    public static REGULATION_NL_GENERATED_FORMAL = 'Concept Versie Regulation - nl-generated-formal';
+    public static REGULATION_NL_GENERATED_INFORMAL = 'Concept Versie Regulation - nl-generated-informal';
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
     private additionalDescription: TaalString | undefined;
     private exception: TaalString | undefined;
+    private regulation: TaalString | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -82,7 +90,15 @@ export class ConceptVersieTestBuilder {
                     this.EXCEPTION_NL_FORMAL,
                     this.EXCEPTION_NL_INFORMAL,
                     this.EXCEPTION_NL_GENERATED_FORMAL,
-                    this.EXCEPTION_NL_GENERATED_INFORMAL));
+                    this.EXCEPTION_NL_GENERATED_INFORMAL))
+            .withRegulation(
+                TaalString.of(
+                    this.REGULATION_EN,
+                    this.REGULATION_NL,
+                    this.REGULATION_NL_FORMAL,
+                    this.REGULATION_NL_INFORMAL,
+                    this.REGULATION_NL_GENERATED_FORMAL,
+                    this.REGULATION_NL_GENERATED_INFORMAL));
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -110,13 +126,19 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withRegulation(regulation: TaalString): ConceptVersieTestBuilder {
+        this.regulation = regulation;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
             this.title,
             this.description,
             this.additionalDescription,
-            this.exception);
+            this.exception,
+            this.regulation);
     }
 
 }

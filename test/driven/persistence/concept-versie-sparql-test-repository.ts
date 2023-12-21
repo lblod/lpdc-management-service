@@ -23,7 +23,8 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...this.toTriples(conceptVersie.id, "dct:title", conceptVersie.title),
                 ...this.toTriples(conceptVersie.id, "dct:description", conceptVersie.description),
                 ...this.toTriples(conceptVersie.id, "lpdcExt:additionalDescription", conceptVersie.additionalDescription),
-                ...this.toTriples(conceptVersie.id, "lpdcExt:exception", conceptVersie.exception)
+                ...this.toTriples(conceptVersie.id, "lpdcExt:exception", conceptVersie.exception),
+                ...this.toTriples(conceptVersie.id, "lpdcExt:regulation", conceptVersie.regulation)
             ],
             [
                 PREFIX.dct,
