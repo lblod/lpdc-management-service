@@ -111,6 +111,13 @@ describe('ConceptVersieRepository', () => {
                         ConceptVersieTestBuilder.TITLE_NL_INFORMAL,
                         ConceptVersieTestBuilder.TITLE_NL_GENERATED_FORMAL,
                         ConceptVersieTestBuilder.TITLE_NL_GENERATED_INFORMAL))
+                    .withDescription(TaalString.of(
+                        ConceptVersieTestBuilder.DESCRIPTION_EN,
+                        ConceptVersieTestBuilder.DESCRIPTION_NL,
+                        ConceptVersieTestBuilder.DESCRIPTION_NL_FORMAL,
+                        ConceptVersieTestBuilder.DESCRIPTION_NL_INFORMAL,
+                        ConceptVersieTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
+                        ConceptVersieTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
                     .build();
 
             await directDatabaseAccess.insertData(
@@ -122,8 +129,16 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
                     `<${conceptVersieId}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.TITLE_NL_GENERATED_FORMAL}"""@nl-BE-x-generated-formal`,
                     `<${conceptVersieId}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.TITLE_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
-                    `<${conceptVersieId}> <http://purl.org/dc/terms/title> """German language is ignored"""@de`,
-                    `<${conceptVersieId}> <http://purl.org/dc/terms/title> """French language is ignored"""@fr`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/title> """Concept Versie Title German language is ignored"""@de`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/title> """Concept Versie French language is ignored"""@fr`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.DESCRIPTION_EN}"""@EN`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.DESCRIPTION_NL}"""@NL`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.DESCRIPTION_NL_FORMAL}"""@nl-BE-x-formal`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL}"""@nl-BE-x-generated-formal`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/description> """Concept Versie Description German language is ignored"""@de`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/description> """Concept Versie Description language is ignored"""@fr`,
                 ]);
 
             const actualConceptVersie = await repository.findById(conceptVersieId);

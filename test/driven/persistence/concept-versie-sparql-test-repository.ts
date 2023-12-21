@@ -20,7 +20,8 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
             'http://mu.semte.ch/graphs/lpdc/ldes-data',
             [
                 `${sparqlEscapeUri(conceptVersie.id)} a lpdcExt:ConceptualPublicService`,
-                ...this.toTriples(conceptVersie.id, "dct:title", conceptVersie.title)
+                ...this.toTriples(conceptVersie.id, "dct:title", conceptVersie.title),
+                ...this.toTriples(conceptVersie.id, "dct:description", conceptVersie.description)
             ],
             [
                 PREFIX.dct,

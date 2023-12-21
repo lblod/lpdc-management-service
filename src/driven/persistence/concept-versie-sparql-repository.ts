@@ -11,37 +11,74 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         const query = `
             ${PREFIX.lpdcExt}
             ${PREFIX.dct}
-            SELECT ?id ?titleEn ?titleNl ?titleNlFormal ?titleNlInformal ?titleNlGeneratedFormal ?titleNlGeneratedInformal WHERE {
-                GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> {
-                    VALUES ?id {
-                        ${sparqlEscapeUri(id)}
-                    }
-                    ?id a lpdcExt:ConceptualPublicService .
-                    OPTIONAL {
-                        ?id dct:title ?titleEn .
-                        FILTER(lang(?titleEn) = "en")
-                    }
-                    OPTIONAL {
-                        ?id dct:title ?titleNl .
-                        FILTER(lang(?titleNl) = "nl")
-                    }
-                    OPTIONAL {
-                        ?id dct:title ?titleNlFormal .
-                        FILTER(lang(?titleNlFormal) = "nl-be-x-formal")
-                    }
-                    OPTIONAL {
-                        ?id dct:title ?titleNlInformal .
-                        FILTER(lang(?titleNlInformal) = "nl-be-x-informal")
-                    }
-                    OPTIONAL {
-                        ?id dct:title ?titleNlGeneratedFormal .
-                        FILTER(lang(?titleNlGeneratedFormal) = "nl-be-x-generated-formal")
-                    }
-                    OPTIONAL {
-                        ?id dct:title ?titleNlGeneratedInformal .
-                        FILTER(lang(?titleNlGeneratedInformal) = "nl-be-x-generated-informal")
-                    }
-                }
+            SELECT ?id 
+                   ?titleEn 
+                   ?titleNl 
+                   ?titleNlFormal 
+                   ?titleNlInformal 
+                   ?titleNlGeneratedFormal 
+                   ?titleNlGeneratedInformal 
+                   ?descriptionEn 
+                   ?descriptionNl 
+                   ?descriptionNlFormal 
+                   ?descriptionNlInformal 
+                   ?descriptionNlGeneratedFormal 
+                   ?descriptionNlGeneratedInformal 
+                   WHERE {
+                        GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> {
+                            VALUES ?id {
+                                ${sparqlEscapeUri(id)}
+                            }
+                            ?id a lpdcExt:ConceptualPublicService .
+                            OPTIONAL {
+                                ?id dct:title ?titleEn .
+                                FILTER(lang(?titleEn) = "en")
+                            }
+                            OPTIONAL {
+                                ?id dct:title ?titleNl .
+                                FILTER(lang(?titleNl) = "nl")
+                            }
+                            OPTIONAL {
+                                ?id dct:title ?titleNlFormal .
+                                FILTER(lang(?titleNlFormal) = "nl-be-x-formal")
+                            }
+                            OPTIONAL {
+                                ?id dct:title ?titleNlInformal .
+                                FILTER(lang(?titleNlInformal) = "nl-be-x-informal")
+                            }
+                            OPTIONAL {
+                                ?id dct:title ?titleNlGeneratedFormal .
+                                FILTER(lang(?titleNlGeneratedFormal) = "nl-be-x-generated-formal")
+                            }
+                            OPTIONAL {
+                                ?id dct:title ?titleNlGeneratedInformal .
+                                FILTER(lang(?titleNlGeneratedInformal) = "nl-be-x-generated-informal")
+                            }
+                            OPTIONAL {
+                                ?id dct:description ?descriptionEn .
+                                FILTER(lang(?descriptionEn) = "en")
+                            }
+                            OPTIONAL {
+                                ?id dct:description ?descriptionNl .
+                                FILTER(lang(?descriptionNl) = "nl")
+                            }
+                            OPTIONAL {
+                                ?id dct:description ?descriptionNlFormal .
+                                FILTER(lang(?descriptionNlFormal) = "nl-be-x-formal")
+                            }
+                            OPTIONAL {
+                                ?id dct:description ?descriptionNlInformal .
+                                FILTER(lang(?descriptionNlInformal) = "nl-be-x-informal")
+                            }
+                            OPTIONAL {
+                                ?id dct:description ?descriptionNlGeneratedFormal .
+                                FILTER(lang(?descriptionNlGeneratedFormal) = "nl-be-x-generated-formal")
+                            }
+                            OPTIONAL {
+                                ?id dct:description ?descriptionNlGeneratedInformal .
+                                FILTER(lang(?descriptionNlGeneratedInformal) = "nl-be-x-generated-informal")
+                            }
+                        }
             }
         `;
 
@@ -62,7 +99,14 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 result['titleNlFormal']?.value,
                 result['titleNlInformal']?.value,
                 result['titleNlGeneratedFormal']?.value,
-                result['titleNlGeneratedInformal']?.value)
+                result['titleNlGeneratedInformal']?.value),
+            TaalString.of(
+                result['descriptionEn']?.value,
+                result['descriptionNl']?.value,
+                result['descriptionNlFormal']?.value,
+                result['descriptionNlInformal']?.value,
+                result['descriptionNlGeneratedFormal']?.value,
+                result['descriptionNlGeneratedInformal']?.value),
         );
     }
 

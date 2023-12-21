@@ -45,7 +45,17 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withTitle(TaalString.of("text-en-changed"))
+                .build()],
+        ['description changed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withDescription(TaalString.of("text-en"))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withDescription(TaalString.of("text-en-changed"))
                 .build()]
+
     ];
 
     for (const testCase of functionallyChangedTestCases) {
