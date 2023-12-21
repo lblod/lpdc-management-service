@@ -54,6 +54,15 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withDescription(TaalString.of("text-en-changed"))
+                .build()],
+        ['additional description changed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withAdditionalDescription(TaalString.of("text-en"))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withAdditionalDescription(TaalString.of("text-en-changed"))
                 .build()]
 
     ];

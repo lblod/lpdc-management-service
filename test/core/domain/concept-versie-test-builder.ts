@@ -19,9 +19,17 @@ export class ConceptVersieTestBuilder {
     public static DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Versie Description - nl-generated-formal';
     public static DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Versie Description - nl-generated-informal';
 
+    public static ADDITIONAL_DESCRIPTION_EN = 'Concept Versie Additional Description - en';
+    public static ADDITIONAL_DESCRIPTION_NL = 'Concept Versie Additional Description - nl';
+    public static ADDITIONAL_DESCRIPTION_NL_FORMAL = 'Concept Versie Additional Description - nl-formal';
+    public static ADDITIONAL_DESCRIPTION_NL_INFORMAL = 'Concept Versie Additional Description - nl-informal';
+    public static ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Versie Additional Description - nl-generated-formal';
+    public static ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Versie Additional Description - nl-generated-informal';
+
     private id: Iri;
-    private title: TaalString;
-    private description: TaalString;
+    private title: TaalString | undefined;
+    private description: TaalString | undefined;
+    private additionalDescription: TaalString | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -36,20 +44,29 @@ export class ConceptVersieTestBuilder {
         return new ConceptVersieTestBuilder()
             .withId(ConceptVersieTestBuilder.buildIri(uuid()))
             .withTitle(
-                TaalString.of(this.TITLE_EN,
+                TaalString.of(
+                    this.TITLE_EN,
                     this.TITLE_NL,
                     this.TITLE_NL_FORMAL,
                     this.TITLE_NL_INFORMAL,
                     this.TITLE_NL_GENERATED_FORMAL,
                     this.TITLE_NL_GENERATED_INFORMAL))
             .withDescription(
-                TaalString.of(this.DESCRIPTION_EN,
+                TaalString.of(
+                    this.DESCRIPTION_EN,
                     this.DESCRIPTION_NL,
                     this.DESCRIPTION_NL_FORMAL,
                     this.DESCRIPTION_NL_INFORMAL,
                     this.DESCRIPTION_NL_GENERATED_FORMAL,
-                    this.DESCRIPTION_NL_GENERATED_INFORMAL)
-            );
+                    this.DESCRIPTION_NL_GENERATED_INFORMAL))
+            .withAdditionalDescription(
+                TaalString.of(
+                    this.ADDITIONAL_DESCRIPTION_EN,
+                    this.ADDITIONAL_DESCRIPTION_NL,
+                    this.ADDITIONAL_DESCRIPTION_NL_FORMAL,
+                    this.ADDITIONAL_DESCRIPTION_NL_INFORMAL,
+                    this.ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL,
+                    this.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL));
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -67,11 +84,17 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withAdditionalDescription(additionalDescription: TaalString): ConceptVersieTestBuilder {
+        this.additionalDescription = additionalDescription;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
             this.title,
-            this.description);
+            this.description,
+            this.additionalDescription);
     }
 
 }

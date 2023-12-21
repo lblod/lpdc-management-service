@@ -8,105 +8,84 @@ import {TaalString} from "../../core/domain/taal-string";
 export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
 
     async findById(id: string): Promise<ConceptVersie> {
-        const query = `
+
+        const findEntityQuery = `
             ${PREFIX.lpdcExt}
-            ${PREFIX.dct}
-            SELECT ?id 
-                   ?titleEn 
-                   ?titleNl 
-                   ?titleNlFormal 
-                   ?titleNlInformal 
-                   ?titleNlGeneratedFormal 
-                   ?titleNlGeneratedInformal 
-                   ?descriptionEn 
-                   ?descriptionNl 
-                   ?descriptionNlFormal 
-                   ?descriptionNlInformal 
-                   ?descriptionNlGeneratedFormal 
-                   ?descriptionNlGeneratedInformal 
-                   WHERE {
-                        GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> {
-                            VALUES ?id {
-                                ${sparqlEscapeUri(id)}
-                            }
-                            ?id a lpdcExt:ConceptualPublicService .
-                            OPTIONAL {
-                                ?id dct:title ?titleEn .
-                                FILTER(lang(?titleEn) = "en")
-                            }
-                            OPTIONAL {
-                                ?id dct:title ?titleNl .
-                                FILTER(lang(?titleNl) = "nl")
-                            }
-                            OPTIONAL {
-                                ?id dct:title ?titleNlFormal .
-                                FILTER(lang(?titleNlFormal) = "nl-be-x-formal")
-                            }
-                            OPTIONAL {
-                                ?id dct:title ?titleNlInformal .
-                                FILTER(lang(?titleNlInformal) = "nl-be-x-informal")
-                            }
-                            OPTIONAL {
-                                ?id dct:title ?titleNlGeneratedFormal .
-                                FILTER(lang(?titleNlGeneratedFormal) = "nl-be-x-generated-formal")
-                            }
-                            OPTIONAL {
-                                ?id dct:title ?titleNlGeneratedInformal .
-                                FILTER(lang(?titleNlGeneratedInformal) = "nl-be-x-generated-informal")
-                            }
-                            OPTIONAL {
-                                ?id dct:description ?descriptionEn .
-                                FILTER(lang(?descriptionEn) = "en")
-                            }
-                            OPTIONAL {
-                                ?id dct:description ?descriptionNl .
-                                FILTER(lang(?descriptionNl) = "nl")
-                            }
-                            OPTIONAL {
-                                ?id dct:description ?descriptionNlFormal .
-                                FILTER(lang(?descriptionNlFormal) = "nl-be-x-formal")
-                            }
-                            OPTIONAL {
-                                ?id dct:description ?descriptionNlInformal .
-                                FILTER(lang(?descriptionNlInformal) = "nl-be-x-informal")
-                            }
-                            OPTIONAL {
-                                ?id dct:description ?descriptionNlGeneratedFormal .
-                                FILTER(lang(?descriptionNlGeneratedFormal) = "nl-be-x-generated-formal")
-                            }
-                            OPTIONAL {
-                                ?id dct:description ?descriptionNlGeneratedInformal .
-                                FILTER(lang(?descriptionNlGeneratedInformal) = "nl-be-x-generated-informal")
-                            }
+            
+            SELECT ?id
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ?id a lpdcExt:ConceptualPublicService . 
                         }
-            }
+                    FILTER (?id = ${sparqlEscapeUri(id)}) 
+                }            
         `;
 
-        //TODO LPDC-916: remove console.log
-        //console.log(query);
-
-        const result = await this.querySingleRow(query);
+        const result = await this.querySingleRow(findEntityQuery);
 
         if (!result) {
             throw new Error(`no concept versie found for iri: ${id}`);
         }
 
+        const findTitlesQuery = `
+            ${PREFIX.dct}
+            
+            SELECT ?title
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} dct:title ?title. 
+                    }
+                }            
+        `;
+        const titles = await this.queryList(findTitlesQuery);
+
+        const findDescriptionsQuery = `
+            ${PREFIX.dct}
+            
+            SELECT ?description
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} dct:description ?description. 
+                    }
+                }            
+        `;
+        const descriptions = await this.queryList(findDescriptionsQuery);
+
+        const findAdditionalDescriptionsQuery = `
+            ${PREFIX.lpdcExt}
+            
+            SELECT ?additionalDescription
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} lpdcExt:additionalDescription ?additionalDescription. 
+                    }
+                }            
+        `;
+        const additionalDescriptions = await this.queryList(findAdditionalDescriptionsQuery);
+
         return new ConceptVersie(
             result['id'].value,
             TaalString.of(
-                result['titleEn']?.value,
-                result['titleNl']?.value,
-                result['titleNlFormal']?.value,
-                result['titleNlInformal']?.value,
-                result['titleNlGeneratedFormal']?.value,
-                result['titleNlGeneratedInformal']?.value),
+                titles.find(t => t['title']['xml:lang'] === 'en')?.['title']?.value as string | undefined,
+                titles.find(t => t['title']['xml:lang'] === 'nl')?.['title']?.value as string | undefined,
+                titles.find(t => t['title']['xml:lang'] === 'nl-be-x-formal')?.['title']?.value as string | undefined,
+                titles.find(t => t['title']['xml:lang'] === 'nl-be-x-informal')?.['title']?.value as string | undefined,
+                titles.find(t => t['title']['xml:lang'] === 'nl-be-x-generated-formal')?.['title']?.value as string | undefined,
+                titles.find(t => t['title']['xml:lang'] === 'nl-be-x-generated-informal')?.['title']?.value as string | undefined),
             TaalString.of(
-                result['descriptionEn']?.value,
-                result['descriptionNl']?.value,
-                result['descriptionNlFormal']?.value,
-                result['descriptionNlInformal']?.value,
-                result['descriptionNlGeneratedFormal']?.value,
-                result['descriptionNlGeneratedInformal']?.value),
+                descriptions.find(t => t['description']['xml:lang'] === 'en')?.['description']?.value as string | undefined,
+                descriptions.find(t => t['description']['xml:lang'] === 'nl')?.['description']?.value as string | undefined,
+                descriptions.find(t => t['description']['xml:lang'] === 'nl-be-x-formal')?.['description']?.value as string | undefined,
+                descriptions.find(t => t['description']['xml:lang'] === 'nl-be-x-informal')?.['description']?.value as string | undefined,
+                descriptions.find(t => t['description']['xml:lang'] === 'nl-be-x-generated-formal')?.['description']?.value as string | undefined,
+                descriptions.find(t => t['description']['xml:lang'] === 'nl-be-x-generated-informal')?.['description']?.value as string | undefined),
+            TaalString.of(
+                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'en')?.['additionalDescription']?.value as string | undefined,
+                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'nl')?.['additionalDescription']?.value as string | undefined,
+                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'nl-be-x-formal')?.['additionalDescription']?.value as string | undefined,
+                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'nl-be-x-informal')?.['additionalDescription']?.value as string | undefined,
+                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'nl-be-x-generated-formal')?.['additionalDescription']?.value as string | undefined,
+                additionalDescriptions.find(t => t['additionalDescription']['xml:lang'] === 'nl-be-x-generated-informal')?.['additionalDescription']?.value as string | undefined),
         );
     }
 

@@ -104,20 +104,6 @@ describe('ConceptVersieRepository', () => {
                 ConceptVersieTestBuilder
                     .aFullConceptVersie()
                     .withId(conceptVersieId)
-                    .withTitle(TaalString.of(
-                        ConceptVersieTestBuilder.TITLE_EN,
-                        ConceptVersieTestBuilder.TITLE_NL,
-                        ConceptVersieTestBuilder.TITLE_NL_FORMAL,
-                        ConceptVersieTestBuilder.TITLE_NL_INFORMAL,
-                        ConceptVersieTestBuilder.TITLE_NL_GENERATED_FORMAL,
-                        ConceptVersieTestBuilder.TITLE_NL_GENERATED_INFORMAL))
-                    .withDescription(TaalString.of(
-                        ConceptVersieTestBuilder.DESCRIPTION_EN,
-                        ConceptVersieTestBuilder.DESCRIPTION_NL,
-                        ConceptVersieTestBuilder.DESCRIPTION_NL_FORMAL,
-                        ConceptVersieTestBuilder.DESCRIPTION_NL_INFORMAL,
-                        ConceptVersieTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
-                        ConceptVersieTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
                     .build();
 
             await directDatabaseAccess.insertData(
@@ -139,6 +125,14 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
                     `<${conceptVersieId}> <http://purl.org/dc/terms/description> """Concept Versie Description German language is ignored"""@de`,
                     `<${conceptVersieId}> <http://purl.org/dc/terms/description> """Concept Versie Description language is ignored"""@fr`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_EN}"""@EN`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_NL}"""@NL`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL}"""@nl-BE-x-formal`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL}"""@nl-BE-x-generated-formal`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """Concept Versie Additional Description German language is ignored"""@de`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """Concept Versie Additional Description language is ignored"""@fr`,
                 ]);
 
             const actualConceptVersie = await repository.findById(conceptVersieId);

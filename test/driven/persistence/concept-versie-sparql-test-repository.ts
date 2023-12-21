@@ -21,7 +21,8 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
             [
                 `${sparqlEscapeUri(conceptVersie.id)} a lpdcExt:ConceptualPublicService`,
                 ...this.toTriples(conceptVersie.id, "dct:title", conceptVersie.title),
-                ...this.toTriples(conceptVersie.id, "dct:description", conceptVersie.description)
+                ...this.toTriples(conceptVersie.id, "dct:description", conceptVersie.description),
+                ...this.toTriples(conceptVersie.id, "lpdcExt:additionalDescription", conceptVersie.additionalDescription)
             ],
             [
                 PREFIX.dct,
