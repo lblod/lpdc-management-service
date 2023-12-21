@@ -18,6 +18,7 @@ import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
 import LPDCError from "./utils/lpdc-error";
 import {SessieSparqlRepository} from "./src/driven/persistence/sessie-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
+import {ConceptVersieSparqlRepository} from "./src/driven/persistence/concept-versie-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -30,6 +31,7 @@ app.use(bodyparser.json({limit: bodySizeLimit}));
 
 const sessieRepository = new SessieSparqlRepository();
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository();
+const conceptVersieRepository = new ConceptVersieSparqlRepository();
 
 app.get('/', function (req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -45,7 +47,7 @@ app.post('/delta', async function (req, res): Promise<void> {
 
         LdesPostProcessingQueue
             .addJob(async () => {
-                return await processLdesDelta(body);
+                return await processLdesDelta(body, conceptVersieRepository);
             });
 
         res.status(202).send();
@@ -329,7 +331,11 @@ app.get('/address/validate', async (req, res): Promise<any> => {
 
 app.get('/concept-snapshot-compare', async (req, res): Promise<any> => {
     try {
-        const isChanged = await isConceptFunctionallyChanged(req.query.newSnapshotUri as string, req.query.currentSnapshotUri as string);
+        const isChanged =
+            await isConceptFunctionallyChanged(
+                req.query.newSnapshotUri as string,
+                req.query.currentSnapshotUri as string,
+                conceptVersieRepository);
         return res.json({isChanged});
     } catch (e) {
         console.error(e);

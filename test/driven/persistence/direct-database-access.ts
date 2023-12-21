@@ -20,7 +20,7 @@ export class DirectDatabaseAccess extends SparqlRepository {
         `;
 
         //TODO LPDC-916: remove console.log
-        console.log(query);
+        //console.log(query);
 
         await this.update(query);
     }

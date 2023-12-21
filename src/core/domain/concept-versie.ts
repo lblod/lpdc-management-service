@@ -22,4 +22,8 @@ export class ConceptVersie {
         return this._title;
     }
 
+    static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
+        return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title);
+    }
+
 }

@@ -122,6 +122,8 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
                     `<${conceptVersieId}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.TITLE_NL_GENERATED_FORMAL}"""@nl-BE-x-generated-formal`,
                     `<${conceptVersieId}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.TITLE_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/title> """German language is ignored"""@de`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/title> """French language is ignored"""@fr`,
                 ]);
 
             const actualConceptVersie = await repository.findById(conceptVersieId);

@@ -21,8 +21,9 @@ import {
     serviceUriForId
 } from './commonQueries';
 import {isConceptFunctionallyChanged} from "./compareSnapshot";
+import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
 
-export async function processLdesDelta(delta: any): Promise<void> {
+export async function processLdesDelta(delta: any, conceptVersieRepository: ConceptVersieRepository): Promise<void> {
     let versionedServices = flatten(delta.map(changeSet => changeSet.inserts));
     versionedServices = versionedServices.filter(t => t?.subject?.value
         && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf');
@@ -51,7 +52,7 @@ export async function processLdesDelta(delta: any): Promise<void> {
             const conceptUri = entry.object.value;
             const isArchiving = await isArchivingEvent(ldesDataGraph, conceptSnapshotUri);
             const currentSnapshotUri = await getVersionedSourceOfConcept(conceptUri);
-            const isConceptFunctionallyChanged = await isConceptChanged(conceptSnapshotUri, currentSnapshotUri);
+            const isConceptFunctionallyChanged = await isConceptChanged(conceptSnapshotUri, currentSnapshotUri, conceptVersieRepository);
 
             await updateNewLdesVersion(ldesDataGraph, conceptSnapshotUri, conceptUri);
             await updatedVersionInformation(conceptSnapshotUri, conceptUri);
@@ -497,11 +498,11 @@ async function markConceptAsArchived(conceptualService: string): Promise<void> {
     await updateSudo(markAsArchivedQuery);
 }
 
-async function isConceptChanged(newSnapshotUri: string, currentSnapshotUri: string): Promise<boolean> {
+async function isConceptChanged(newSnapshotUri: string, currentSnapshotUri: string, conceptVersieRepository: ConceptVersieRepository): Promise<boolean> {
     if (!currentSnapshotUri) {
         return false;
     }
-    return isConceptFunctionallyChanged(newSnapshotUri, currentSnapshotUri);
+    return isConceptFunctionallyChanged(newSnapshotUri, currentSnapshotUri, conceptVersieRepository);
 }
 
 async function getVersionedSourceOfConcept(conceptUri: string): Promise<string> {

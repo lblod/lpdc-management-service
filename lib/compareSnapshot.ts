@@ -9,15 +9,20 @@ import {
     loadWebsites
 } from "./commonQueries";
 import {isEqual, sortBy} from "lodash";
+import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
+import {ConceptVersie} from "../src/core/domain/concept-versie";
 
-export async function isConceptFunctionallyChanged(newSnapshotUri: string, currentSnapshotUri: string): Promise<boolean> {
+export async function isConceptFunctionallyChanged(newSnapshotUri: string, currentSnapshotUri: string, conceptVersieRepository: ConceptVersieRepository): Promise<boolean> {
     if (newSnapshotUri === currentSnapshotUri) {
         return false;
     }
     const currentSnapshotTriples = await loadConceptSnapshot(currentSnapshotUri);
     const newSnapshotTriples = await loadConceptSnapshot(newSnapshotUri);
 
-    return isValueChangedForAnyLanguage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.title)
+    const currentConceptVersie = await conceptVersieRepository.findById(currentSnapshotUri);
+    const newConceptVersie = await conceptVersieRepository.findById(newSnapshotUri);
+
+    return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie)
         || isValueChangedForAnyLanguage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.description)
         || isValueChangedForAnyLanguage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.additionalDescription)
         || isValueChangedForAnyLanguage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.exception)

@@ -46,7 +46,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         `;
 
         //TODO LPDC-916: remove console.log
-        console.log(query);
+        //console.log(query);
 
         const result = await this.querySingleRow(query);
 

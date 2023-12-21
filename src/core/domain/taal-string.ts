@@ -57,4 +57,9 @@ export class TaalString {
         return this._nlGeneratedInformal;
     }
 
+    static isFunctionallyChanged(aTaalString: TaalString | undefined, anotherTaalString: TaalString | undefined): boolean {
+        return aTaalString?.en !== anotherTaalString?.en
+            || aTaalString?.nl !== anotherTaalString?.nl;
+    }
+
 }
