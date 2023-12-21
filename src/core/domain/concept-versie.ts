@@ -10,13 +10,15 @@ export class ConceptVersie {
     private readonly _additionalDescription: TaalString | undefined;
     private readonly _exception: TaalString | undefined;
     private readonly _regulation: TaalString | undefined;
+    private readonly _startDate: Date | undefined;
 
     constructor(id: Iri,
                 title: TaalString | undefined,
                 description: TaalString | undefined,
                 additionalDescription: TaalString | undefined,
                 exception: TaalString | undefined,
-                regulation: TaalString | undefined) {
+                regulation: TaalString | undefined,
+                startDate: Date | undefined) {
         //TODO LPDC-916: enforce invariants ?
         this._id = id;
         this._title = title;
@@ -24,6 +26,7 @@ export class ConceptVersie {
         this._additionalDescription = additionalDescription;
         this._exception = exception;
         this._regulation = regulation;
+        this._startDate = startDate;
     }
 
     get id(): Iri {
@@ -50,12 +53,17 @@ export class ConceptVersie {
         return this._regulation;
     }
 
+    get startDate() : Date | undefined {
+        return this._startDate;
+    }
+
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
         return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
             || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
             || TaalString.isFunctionallyChanged(aConceptVersie.additionalDescription, anotherConceptVersie.additionalDescription)
             || TaalString.isFunctionallyChanged(aConceptVersie.exception, anotherConceptVersie.exception)
-            || TaalString.isFunctionallyChanged(aConceptVersie.regulation, anotherConceptVersie.regulation);
+            || TaalString.isFunctionallyChanged(aConceptVersie.regulation, anotherConceptVersie.regulation)
+            || aConceptVersie.startDate?.getTime() !== anotherConceptVersie.startDate?.getTime();
     }
 
 }

@@ -149,6 +149,7 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """${ConceptVersieTestBuilder.REGULATION_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """Concept Versie Regulation German language is ignored"""@de`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """Concept Versie Regulation  language is ignored"""@fr`,
+                    `<${conceptVersieId}> <http://schema.org/startDate> """${ConceptVersieTestBuilder.START_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                 ]);
 
             const actualConceptVersie = await repository.findById(conceptVersieId);

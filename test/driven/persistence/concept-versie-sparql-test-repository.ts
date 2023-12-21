@@ -1,6 +1,6 @@
 import {ConceptVersieSparqlRepository} from "../../../src/driven/persistence/concept-versie-sparql-repository";
 import {PREFIX} from "../../../config";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeDateTime, sparqlEscapeUri} from "../../../mu-helper";
 import {ConceptVersie} from "../../../src/core/domain/concept-versie";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {TaalString} from "../../../src/core/domain/taal-string";
@@ -24,11 +24,13 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...this.toTriples(conceptVersie.id, "dct:description", conceptVersie.description),
                 ...this.toTriples(conceptVersie.id, "lpdcExt:additionalDescription", conceptVersie.additionalDescription),
                 ...this.toTriples(conceptVersie.id, "lpdcExt:exception", conceptVersie.exception),
-                ...this.toTriples(conceptVersie.id, "lpdcExt:regulation", conceptVersie.regulation)
-            ],
+                ...this.toTriples(conceptVersie.id, "lpdcExt:regulation", conceptVersie.regulation),
+                conceptVersie.startDate ? `${sparqlEscapeUri(conceptVersie.id)} schema:startDate ${sparqlEscapeDateTime(conceptVersie.startDate.toISOString())}`: undefined,
+            ].filter(t => t != undefined),
             [
                 PREFIX.dct,
-                PREFIX.lpdcExt]);
+                PREFIX.lpdcExt,
+                PREFIX.schema]);
     }
 
     private toTriples(subject: Iri, predicate: string, object: TaalString | undefined): string[] {

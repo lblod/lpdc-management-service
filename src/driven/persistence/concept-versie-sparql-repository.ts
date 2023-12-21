@@ -9,19 +9,23 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
     async findById(id: string): Promise<ConceptVersie> {
 
-        const findEntityResult = await this.querySingleRow(`
+        const findEntityAndUniqueTriplesResult = await this.querySingleRow(`
             ${PREFIX.lpdcExt}
+            ${PREFIX.schema}
             
-            SELECT ?id
+            SELECT ?id ?startDate
                 WHERE { 
                     GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
-                        ?id a lpdcExt:ConceptualPublicService . 
+                        ?id a lpdcExt:ConceptualPublicService .
+                        OPTIONAL {
+                            ?id schema:startDate ?startDate .
                         }
+                    }
                     FILTER (?id = ${sparqlEscapeUri(id)}) 
                 }            
         `);
 
-        if (!findEntityResult) {
+        if (!findEntityAndUniqueTriplesResult) {
             throw new Error(`no concept versie found for iri: ${id}`);
         }
 
@@ -81,12 +85,13 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         const [titles, descriptions, additionalDescriptions, exceptions, regulations] = await Promise.all([titlesQuery, descriptionsQuery, additionalDescriptionsQuery, exceptionsQuery, requlationsQuery]);
 
         return new ConceptVersie(
-            findEntityResult['id'].value,
+            findEntityAndUniqueTriplesResult['id'].value,
             this.asTaalString(titles.map(r => r?.['title'])),
             this.asTaalString(descriptions.map(r => r?.['description'])),
             this.asTaalString(additionalDescriptions.map(r => r?.['additionalDescription'])),
             this.asTaalString(exceptions.map(r => r?.['exception'])),
             this.asTaalString(regulations.map(r => r?.['regulation'])),
+            this.asDate(findEntityAndUniqueTriplesResult['startDate']?.value),
         );
     }
 
@@ -98,5 +103,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             aResult.find(t => t['xml:lang'] === 'nl-be-x-informal')?.value as string | undefined,
             aResult.find(t => t['xml:lang'] === 'nl-be-x-generated-formal')?.value as string | undefined,
             aResult.find(t => t['xml:lang'] === 'nl-be-x-generated-informal')?.value as string | undefined);
+    }
+
+    private asDate(aValue: string | undefined): Date | undefined {
+        return aValue ? new Date(aValue) : undefined;
     }
 }

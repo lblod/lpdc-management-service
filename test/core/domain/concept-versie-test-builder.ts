@@ -5,40 +5,42 @@ import {TaalString} from "../../../src/core/domain/taal-string";
 
 export class ConceptVersieTestBuilder {
 
-    public static TITLE_EN = 'Concept Versie Title - en';
-    public static TITLE_NL = 'Concept Versie Title - nl';
-    public static TITLE_NL_FORMAL = 'Concept Versie Title - nl-formal';
-    public static TITLE_NL_INFORMAL = 'Concept Versie Title - nl-informal';
-    public static TITLE_NL_GENERATED_FORMAL = 'Concept Versie Title - nl-generated-formal';
-    public static TITLE_NL_GENERATED_INFORMAL = 'Concept Versie Title - nl-generated-informal';
+    public static readonly TITLE_EN = 'Concept Versie Title - en';
+    public static readonly TITLE_NL = 'Concept Versie Title - nl';
+    public static readonly TITLE_NL_FORMAL = 'Concept Versie Title - nl-formal';
+    public static readonly TITLE_NL_INFORMAL = 'Concept Versie Title - nl-informal';
+    public static readonly TITLE_NL_GENERATED_FORMAL = 'Concept Versie Title - nl-generated-formal';
+    public static readonly TITLE_NL_GENERATED_INFORMAL = 'Concept Versie Title - nl-generated-informal';
 
-    public static DESCRIPTION_EN = 'Concept Versie Description - en';
-    public static DESCRIPTION_NL = 'Concept Versie Description - nl';
-    public static DESCRIPTION_NL_FORMAL = 'Concept Versie Description - nl-formal';
-    public static DESCRIPTION_NL_INFORMAL = 'Concept Versie Description - nl-informal';
-    public static DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Versie Description - nl-generated-formal';
-    public static DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Versie Description - nl-generated-informal';
+    public static readonly DESCRIPTION_EN = 'Concept Versie Description - en';
+    public static readonly DESCRIPTION_NL = 'Concept Versie Description - nl';
+    public static readonly DESCRIPTION_NL_FORMAL = 'Concept Versie Description - nl-formal';
+    public static readonly DESCRIPTION_NL_INFORMAL = 'Concept Versie Description - nl-informal';
+    public static readonly DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Versie Description - nl-generated-formal';
+    public static readonly DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Versie Description - nl-generated-informal';
 
-    public static ADDITIONAL_DESCRIPTION_EN = 'Concept Versie Additional Description - en';
-    public static ADDITIONAL_DESCRIPTION_NL = 'Concept Versie Additional Description - nl';
-    public static ADDITIONAL_DESCRIPTION_NL_FORMAL = 'Concept Versie Additional Description - nl-formal';
-    public static ADDITIONAL_DESCRIPTION_NL_INFORMAL = 'Concept Versie Additional Description - nl-informal';
-    public static ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Versie Additional Description - nl-generated-formal';
-    public static ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Versie Additional Description - nl-generated-informal';
+    public static readonly ADDITIONAL_DESCRIPTION_EN = 'Concept Versie Additional Description - en';
+    public static readonly ADDITIONAL_DESCRIPTION_NL = 'Concept Versie Additional Description - nl';
+    public static readonly ADDITIONAL_DESCRIPTION_NL_FORMAL = 'Concept Versie Additional Description - nl-formal';
+    public static readonly ADDITIONAL_DESCRIPTION_NL_INFORMAL = 'Concept Versie Additional Description - nl-informal';
+    public static readonly ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Versie Additional Description - nl-generated-formal';
+    public static readonly ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Versie Additional Description - nl-generated-informal';
 
-    public static EXCEPTION_EN = 'Concept Versie Exception - en';
-    public static EXCEPTION_NL = 'Concept Versie Exception - nl';
-    public static EXCEPTION_NL_FORMAL = 'Concept Versie Exception - nl-formal';
-    public static EXCEPTION_NL_INFORMAL = 'Concept Versie Exception - nl-informal';
-    public static EXCEPTION_NL_GENERATED_FORMAL = 'Concept Versie Exception - nl-generated-formal';
-    public static EXCEPTION_NL_GENERATED_INFORMAL = 'Concept Versie Exception - nl-generated-informal';
+    public static readonly EXCEPTION_EN = 'Concept Versie Exception - en';
+    public static readonly EXCEPTION_NL = 'Concept Versie Exception - nl';
+    public static readonly EXCEPTION_NL_FORMAL = 'Concept Versie Exception - nl-formal';
+    public static readonly EXCEPTION_NL_INFORMAL = 'Concept Versie Exception - nl-informal';
+    public static readonly EXCEPTION_NL_GENERATED_FORMAL = 'Concept Versie Exception - nl-generated-formal';
+    public static readonly EXCEPTION_NL_GENERATED_INFORMAL = 'Concept Versie Exception - nl-generated-informal';
 
-    public static REGULATION_EN = 'Concept Versie Regulation - en';
-    public static REGULATION_NL = 'Concept Versie Regulation - nl';
-    public static REGULATION_NL_FORMAL = 'Concept Versie Regulation - nl-formal';
-    public static REGULATION_NL_INFORMAL = 'Concept Versie Regulation - nl-informal';
-    public static REGULATION_NL_GENERATED_FORMAL = 'Concept Versie Regulation - nl-generated-formal';
-    public static REGULATION_NL_GENERATED_INFORMAL = 'Concept Versie Regulation - nl-generated-informal';
+    public static readonly REGULATION_EN = 'Concept Versie Regulation - en';
+    public static readonly REGULATION_NL = 'Concept Versie Regulation - nl';
+    public static readonly REGULATION_NL_FORMAL = 'Concept Versie Regulation - nl-formal';
+    public static readonly REGULATION_NL_INFORMAL = 'Concept Versie Regulation - nl-informal';
+    public static readonly REGULATION_NL_GENERATED_FORMAL = 'Concept Versie Regulation - nl-generated-formal';
+    public static readonly REGULATION_NL_GENERATED_INFORMAL = 'Concept Versie Regulation - nl-generated-informal';
+
+    public static readonly START_DATE = new Date('2023-10-28');
 
     private id: Iri;
     private title: TaalString | undefined;
@@ -46,6 +48,7 @@ export class ConceptVersieTestBuilder {
     private additionalDescription: TaalString | undefined;
     private exception: TaalString | undefined;
     private regulation: TaalString | undefined;
+    private startDate: Date | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -98,7 +101,8 @@ export class ConceptVersieTestBuilder {
                     this.REGULATION_NL_FORMAL,
                     this.REGULATION_NL_INFORMAL,
                     this.REGULATION_NL_GENERATED_FORMAL,
-                    this.REGULATION_NL_GENERATED_INFORMAL));
+                    this.REGULATION_NL_GENERATED_INFORMAL))
+            .withStartDate(this.START_DATE);
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -131,6 +135,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withStartDate(startDate: Date): ConceptVersieTestBuilder {
+        this.startDate = startDate;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -138,7 +147,8 @@ export class ConceptVersieTestBuilder {
             this.description,
             this.additionalDescription,
             this.exception,
-            this.regulation);
+            this.regulation,
+            this.startDate);
     }
 
 }

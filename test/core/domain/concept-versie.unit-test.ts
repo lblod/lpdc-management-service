@@ -81,8 +81,34 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withRegulation(TaalString.of("text-en-changed"))
+                .build()],
+        ['start date changed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withStartDate(new Date('2023-11-10'))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withStartDate(new Date('2023-11-09'))
+                .build()],
+        ['start date appeared',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withStartDate(undefined)
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withStartDate(new Date('2023-11-09'))
+                .build()],
+        ['start date disappeared',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withStartDate(new Date('2023-11-09'))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withStartDate(undefined)
                 .build()]
-
     ];
 
     for (const testCase of functionallyChangedTestCases) {
