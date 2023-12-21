@@ -26,10 +26,18 @@ export class ConceptVersieTestBuilder {
     public static ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Versie Additional Description - nl-generated-formal';
     public static ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Versie Additional Description - nl-generated-informal';
 
+    public static EXCEPTION_EN = 'Concept Versie Exception - en';
+    public static EXCEPTION_NL = 'Concept Versie Exception - nl';
+    public static EXCEPTION_NL_FORMAL = 'Concept Versie Exception - nl-formal';
+    public static EXCEPTION_NL_INFORMAL = 'Concept Versie Exception - nl-informal';
+    public static EXCEPTION_NL_GENERATED_FORMAL = 'Concept Versie Exception - nl-generated-formal';
+    public static EXCEPTION_NL_GENERATED_INFORMAL = 'Concept Versie Exception - nl-generated-informal';
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
     private additionalDescription: TaalString | undefined;
+    private exception: TaalString | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -66,7 +74,15 @@ export class ConceptVersieTestBuilder {
                     this.ADDITIONAL_DESCRIPTION_NL_FORMAL,
                     this.ADDITIONAL_DESCRIPTION_NL_INFORMAL,
                     this.ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL,
-                    this.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL));
+                    this.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL))
+            .withException(
+                TaalString.of(
+                    this.EXCEPTION_EN,
+                    this.EXCEPTION_NL,
+                    this.EXCEPTION_NL_FORMAL,
+                    this.EXCEPTION_NL_INFORMAL,
+                    this.EXCEPTION_NL_GENERATED_FORMAL,
+                    this.EXCEPTION_NL_GENERATED_INFORMAL));
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -89,12 +105,18 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withException(exception: TaalString): ConceptVersieTestBuilder {
+        this.exception = exception;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
             this.title,
             this.description,
-            this.additionalDescription);
+            this.additionalDescription,
+            this.exception);
     }
 
 }

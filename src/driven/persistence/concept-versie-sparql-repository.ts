@@ -56,13 +56,25 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
-        const [titles, descriptions, additionalDescriptions] = await Promise.all([titlesQuery, descriptionsQuery, additionalDescriptionsQuery]);
+        const exceptionsQuery = this.queryList(`
+            ${PREFIX.lpdcExt}
+            
+            SELECT ?exception
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} lpdcExt:exception ?exception. 
+                    }
+                }            
+        `);
+
+        const [titles, descriptions, additionalDescriptions, exceptions] = await Promise.all([titlesQuery, descriptionsQuery, additionalDescriptionsQuery, exceptionsQuery]);
 
         return new ConceptVersie(
             findEntityResult['id'].value,
             this.asTaalString(titles.map(r => r?.['title'])),
             this.asTaalString(descriptions.map(r => r?.['description'])),
             this.asTaalString(additionalDescriptions.map(r => r?.['additionalDescription'])),
+            this.asTaalString(exceptions.map(r => r?.['exception'])),
         );
     }
 

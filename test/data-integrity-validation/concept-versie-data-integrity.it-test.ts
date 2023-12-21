@@ -22,7 +22,9 @@ describe('Concept Versie Data Integrity Validation', () => {
         `;
         const conceptVersieIds = await directDatabaseAccess.queryList(query);
 
-        console.log(`Verifying ${conceptVersieIds.length} concept versies`);
+        const before = new Date().valueOf();
+
+        console.log(new Date().toISOString());
 
         for (const result of conceptVersieIds) {
             try {
@@ -33,6 +35,8 @@ describe('Concept Versie Data Integrity Validation', () => {
                 console.log(e);
             }
         }
+
+        console.log(`Verifying in total ${conceptVersieIds.length} concept versies took on average ${(new Date().valueOf() - before) / conceptVersieIds.length} ms per concept`);
     });
 
 });
