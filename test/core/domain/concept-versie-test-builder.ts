@@ -41,6 +41,7 @@ export class ConceptVersieTestBuilder {
     public static readonly REGULATION_NL_GENERATED_INFORMAL = 'Concept Versie Regulation - nl-generated-informal';
 
     public static readonly START_DATE = new Date('2023-10-28');
+    public static readonly END_DATE = new Date('2027-09-16');
 
     private id: Iri;
     private title: TaalString | undefined;
@@ -49,6 +50,7 @@ export class ConceptVersieTestBuilder {
     private exception: TaalString | undefined;
     private regulation: TaalString | undefined;
     private startDate: Date | undefined;
+    private endDate: Date | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -102,7 +104,8 @@ export class ConceptVersieTestBuilder {
                     this.REGULATION_NL_INFORMAL,
                     this.REGULATION_NL_GENERATED_FORMAL,
                     this.REGULATION_NL_GENERATED_INFORMAL))
-            .withStartDate(this.START_DATE);
+            .withStartDate(this.START_DATE)
+            .withEndDate(this.END_DATE);
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -140,6 +143,12 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withEndDate(endDate: Date): ConceptVersieTestBuilder {
+        this.endDate = endDate;
+        return this;
+    }
+
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -148,7 +157,8 @@ export class ConceptVersieTestBuilder {
             this.additionalDescription,
             this.exception,
             this.regulation,
-            this.startDate);
+            this.startDate,
+            this.endDate);
     }
 
 }

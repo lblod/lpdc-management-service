@@ -11,6 +11,7 @@ export class ConceptVersie {
     private readonly _exception: TaalString | undefined;
     private readonly _regulation: TaalString | undefined;
     private readonly _startDate: Date | undefined;
+    private readonly _endDate: Date | undefined;
 
     constructor(id: Iri,
                 title: TaalString | undefined,
@@ -18,7 +19,8 @@ export class ConceptVersie {
                 additionalDescription: TaalString | undefined,
                 exception: TaalString | undefined,
                 regulation: TaalString | undefined,
-                startDate: Date | undefined) {
+                startDate: Date | undefined,
+                endDate: Date | undefined) {
         //TODO LPDC-916: enforce invariants ?
         this._id = id;
         this._title = title;
@@ -27,6 +29,7 @@ export class ConceptVersie {
         this._exception = exception;
         this._regulation = regulation;
         this._startDate = startDate;
+        this._endDate = endDate;
     }
 
     get id(): Iri {
@@ -57,13 +60,18 @@ export class ConceptVersie {
         return this._startDate;
     }
 
+    get endDate() : Date | undefined {
+        return this._endDate;
+    }
+
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
         return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
             || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
             || TaalString.isFunctionallyChanged(aConceptVersie.additionalDescription, anotherConceptVersie.additionalDescription)
             || TaalString.isFunctionallyChanged(aConceptVersie.exception, anotherConceptVersie.exception)
             || TaalString.isFunctionallyChanged(aConceptVersie.regulation, anotherConceptVersie.regulation)
-            || aConceptVersie.startDate?.getTime() !== anotherConceptVersie.startDate?.getTime();
+            || aConceptVersie.startDate?.getTime() !== anotherConceptVersie.startDate?.getTime()
+            || aConceptVersie.endDate?.getTime() !== anotherConceptVersie.endDate?.getTime();
     }
 
 }

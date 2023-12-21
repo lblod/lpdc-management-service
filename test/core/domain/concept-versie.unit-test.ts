@@ -108,6 +108,33 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withStartDate(undefined)
+                .build()],
+        ['end date changed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withEndDate(new Date('2023-11-10'))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withEndDate(new Date('2023-11-09'))
+                .build()],
+        ['end date appeared',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withEndDate(undefined)
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withEndDate(new Date('2023-11-09'))
+                .build()],
+        ['end date disappeared',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withEndDate(new Date('2023-11-09'))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withEndDate(undefined)
                 .build()]
     ];
 

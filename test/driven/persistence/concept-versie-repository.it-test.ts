@@ -97,6 +97,28 @@ describe('ConceptVersieRepository', () => {
             expect(actualConceptVersie).toEqual(conceptVersie);
         });
 
+        test('Verify minimal mappings - with start date but no end date', async () => {
+            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+
+            const conceptVersie =
+                ConceptVersieTestBuilder
+                    .aMinimalConceptVersie()
+                    .withId(conceptVersieId)
+                    .withStartDate(ConceptVersieTestBuilder.START_DATE)
+                    .withEndDate(undefined)
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptVersieId}> <http://schema.org/startDate> """${ConceptVersieTestBuilder.START_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
+                ]);
+
+            const actualConceptVersie = await repository.findById(conceptVersieId);
+
+            expect(actualConceptVersie).toEqual(conceptVersie);
+        });
+
         test('Verify full mappings', async () => {
             const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
 
@@ -150,6 +172,7 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """Concept Versie Regulation German language is ignored"""@de`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """Concept Versie Regulation  language is ignored"""@fr`,
                     `<${conceptVersieId}> <http://schema.org/startDate> """${ConceptVersieTestBuilder.START_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptVersieId}> <http://schema.org/endDate> """${ConceptVersieTestBuilder.END_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                 ]);
 
             const actualConceptVersie = await repository.findById(conceptVersieId);

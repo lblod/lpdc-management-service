@@ -13,12 +13,15 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             ${PREFIX.lpdcExt}
             ${PREFIX.schema}
             
-            SELECT ?id ?startDate
+            SELECT ?id ?startDate ?endDate
                 WHERE { 
                     GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
                         ?id a lpdcExt:ConceptualPublicService .
                         OPTIONAL {
                             ?id schema:startDate ?startDate .
+                        }
+                        OPTIONAL {
+                            ?id schema:endDate ?endDate .
                         }
                     }
                     FILTER (?id = ${sparqlEscapeUri(id)}) 
@@ -92,6 +95,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asTaalString(exceptions.map(r => r?.['exception'])),
             this.asTaalString(regulations.map(r => r?.['regulation'])),
             this.asDate(findEntityAndUniqueTriplesResult['startDate']?.value),
+            this.asDate(findEntityAndUniqueTriplesResult['endDate']?.value)
         );
     }
 
