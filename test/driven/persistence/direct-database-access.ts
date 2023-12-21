@@ -7,7 +7,7 @@ export class DirectDatabaseAccess extends SparqlRepository {
         super(endpoint);
     }
 
-    async insertData(graph: string, triples: string[]): Promise<void> {
+    public async insertData(graph: string, triples: string[]): Promise<void> {
         const query = `           
             INSERT DATA { 
                 GRAPH ${sparqlEscapeUri(graph)} {
@@ -17,5 +17,10 @@ export class DirectDatabaseAccess extends SparqlRepository {
         `;
         await this.update(query);
     }
+
+    public async queryList(query: string): Promise<unknown[]> {
+        return super.queryList(query);
+    }
+
 
 }
