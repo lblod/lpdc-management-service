@@ -13,6 +13,7 @@ export class SparqlRepository {
     }
 
     protected async querySingleRow(query: string): Promise<unknown | undefined> {
+        //TODO LPDC-916 wrap in a retry-promise with increasing fallback time ...
         const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
         const bindings = result?.results?.bindings;
         if(bindings) {
@@ -24,6 +25,7 @@ export class SparqlRepository {
     }
 
     protected async queryList(query: string): Promise<unknown[]> {
+        //TODO LPDC-916 wrap in a retry-promise with increasing fallback time ...
         //TODO LPDC-916:remove console.log
         //console.log(query);
         const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
