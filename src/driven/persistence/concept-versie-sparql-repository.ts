@@ -2,7 +2,7 @@ import {SparqlRepository} from "./sparql-repository";
 import {PREFIX} from "../../../config";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {ConceptVersieRepository} from "../../core/port/driven/persistence/concept-versie-repository";
-import {ConceptVersie, ProductType, TargetAudienceType} from "../../core/domain/concept-versie";
+import {ConceptVersie, ProductType, TargetAudienceType, ThemeType} from "../../core/domain/concept-versie";
 import {TaalString} from "../../core/domain/taal-string";
 
 export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
@@ -105,7 +105,32 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
-        const [titles, descriptions, additionalDescriptions, exceptions, regulations, targetAudiences] = await Promise.all([titlesQuery, descriptionsQuery, additionalDescriptionsQuery, exceptionsQuery, requlationsQuery, targetAudiencesQuery]);
+        const themesQuery = this.queryList(`
+            ${PREFIX.m8g}
+            
+            SELECT ?theme
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} m8g:thematicArea ?theme. 
+                    }
+                }            
+        `);
+
+        const [titles,
+            descriptions,
+            additionalDescriptions,
+            exceptions,
+            regulations,
+            targetAudiences,
+            themes] =
+            await Promise.all([
+                titlesQuery,
+                descriptionsQuery,
+                additionalDescriptionsQuery,
+                exceptionsQuery,
+                requlationsQuery,
+                targetAudiencesQuery,
+                themesQuery]);
 
         return new ConceptVersie(
             findEntityAndUniqueTriplesResult['id'].value,
@@ -118,6 +143,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asDate(findEntityAndUniqueTriplesResult['endDate']?.value),
             this.asEnum(ProductType, findEntityAndUniqueTriplesResult['type']?.value, id),
             this.asEnums(TargetAudienceType, targetAudiences.map(r => r?.['targetAudience']), id),
+            this.asEnums(ThemeType, themes.map(r => r?.['theme']), id),
         );
     }
 
@@ -135,7 +161,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         return aValue ? new Date(aValue) : undefined;
     }
 
-    private asEnums<T>(enumObj: T, values: any[], id: string): Set<T[keyof T]>{
+    private asEnums<T>(enumObj: T, values: any[], id: string): Set<T[keyof T]> {
         return new Set(values.map(value => this.asEnum(enumObj, value?.value, id)));
     }
 
@@ -146,7 +172,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 return value;
             }
         }
-        if(value) {
+        if (value) {
             throw new Error(`could not map <${value}> for iri: <${id}>`);
         }
         return undefined;

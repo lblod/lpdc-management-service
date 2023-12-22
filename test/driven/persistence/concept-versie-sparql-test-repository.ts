@@ -29,11 +29,13 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 conceptVersie.endDate ? `${sparqlEscapeUri(conceptVersie.id)} schema:endDate ${sparqlEscapeDateTime(conceptVersie.endDate.toISOString())}` : undefined,
                 conceptVersie.type ? `${sparqlEscapeUri(conceptVersie.id)} dct:type ${sparqlEscapeUri(conceptVersie.type)}` : undefined,
                 ...this.enumsToTriples(conceptVersie.id, "lpdcExt:targetAudience", conceptVersie.targetAudiences),
+                ...this.enumsToTriples(conceptVersie.id, "m8g:thematicArea", conceptVersie.themes),
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,
                 PREFIX.lpdcExt,
-                PREFIX.schema]);
+                PREFIX.schema,
+                PREFIX.m8g]);
     }
 
     private taalStringToTriples(subject: Iri, predicate: string, object: TaalString | undefined): string[] {

@@ -15,6 +15,14 @@ export class ConceptVersie {
     private readonly _endDate: Date | undefined;
     private readonly _type: ProductType | undefined;
     private readonly _targetAudiences: Set<TargetAudienceType>;
+    private readonly _themes: Set<ThemeType>;
+
+    //TODO LPDC-916: extract into shared helper ... or use lodash?
+    private sortSet<T>(aSet: Set<T>) : Set<T> {
+        const arr = Array.from(aSet);
+        arr.sort();
+        return new Set(arr);
+    }
 
     constructor(id: Iri,
                 title: TaalString | undefined,
@@ -25,7 +33,8 @@ export class ConceptVersie {
                 startDate: Date | undefined,
                 endDate: Date | undefined,
                 type: ProductType | undefined,
-                targetAudiences: Set<TargetAudienceType>) {
+                targetAudiences: Set<TargetAudienceType>,
+                themes: Set<ThemeType>) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
         this._title = title;
@@ -36,7 +45,8 @@ export class ConceptVersie {
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
-        this._targetAudiences = targetAudiences;
+        this._targetAudiences = this.sortSet(targetAudiences);
+        this._themes = this.sortSet(themes);
     }
 
     get id(): Iri {
@@ -63,20 +73,24 @@ export class ConceptVersie {
         return this._regulation;
     }
 
-    get startDate() : Date | undefined {
+    get startDate(): Date | undefined {
         return this._startDate;
     }
 
-    get endDate() : Date | undefined {
+    get endDate(): Date | undefined {
         return this._endDate;
     }
 
-    get type() : ProductType | undefined {
+    get type(): ProductType | undefined {
         return this._type;
     }
 
-    get targetAudiences(): Set<TargetAudienceType>{
+    get targetAudiences(): Set<TargetAudienceType> {
         return this._targetAudiences;
+    }
+
+    get themes(): Set<ThemeType> {
+        return this._themes;
     }
 
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
@@ -88,7 +102,8 @@ export class ConceptVersie {
             || aConceptVersie.startDate?.getTime() !== anotherConceptVersie.startDate?.getTime()
             || aConceptVersie.endDate?.getTime() !== anotherConceptVersie.endDate?.getTime()
             || aConceptVersie.type !== anotherConceptVersie.type
-            || !_.isEqual(aConceptVersie.targetAudiences, anotherConceptVersie.targetAudiences);
+            || !_.isEqual(aConceptVersie.targetAudiences, anotherConceptVersie.targetAudiences)
+            || !_.isEqual(aConceptVersie.themes, anotherConceptVersie.themes);
     }
 
 }
@@ -110,4 +125,15 @@ export enum TargetAudienceType { //TODO LPDC-916: ok to compromise and put an ur
     VLAAMSEOVERHEID = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/VlaamseOverheid',
     LOKAALBESTUUR = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/LokaalBestuur',
     VERENIGING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/Vereniging',
+}
+
+export enum ThemeType { //TODO LPDC-916: ok to compromise and put an uri in here ?
+    BURGEROVERHEID = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/BurgerOverheid',
+    CULTUURSPORTVRIJETIJD = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/CultuurSportVrijeTijd',
+    ECONOMIEWERK = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/EconomieWerk',
+    MILIEUENERGIE = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/MilieuEnergie',
+    MOBILITEITOPENBAREWERKEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/MobiliteitOpenbareWerken',
+    ONDERWIJSWETENSCHAP = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/OnderwijsWetenschap',
+    WELZIJNGEZONDHEID = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/WelzijnGezondheid',
+    BOUWENWONEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/BouwenWonen',
 }

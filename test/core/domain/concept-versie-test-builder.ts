@@ -1,6 +1,6 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
-import {ConceptVersie, ProductType, TargetAudienceType} from "../../../src/core/domain/concept-versie";
+import {ConceptVersie, ProductType, TargetAudienceType, ThemeType} from "../../../src/core/domain/concept-versie";
 import {TaalString} from "../../../src/core/domain/taal-string";
 
 export class ConceptVersieTestBuilder {
@@ -45,6 +45,7 @@ export class ConceptVersieTestBuilder {
 
     public static readonly TYPE = ProductType.FINANCIEELVOORDEEL;
     public static readonly TARGET_AUDIENCES = new Set([TargetAudienceType.BURGER, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.ORGANISATIE]);
+    public static readonly THEMES = new Set([ThemeType.CULTUURSPORTVRIJETIJD, ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]);
 
     private id: Iri;
     private title: TaalString | undefined;
@@ -56,6 +57,7 @@ export class ConceptVersieTestBuilder {
     private endDate: Date | undefined;
     private type: ProductType | undefined;
     private targetAudiences: Set<TargetAudienceType> = new Set();
+    private themes: Set<ThemeType> = new Set();
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -112,7 +114,8 @@ export class ConceptVersieTestBuilder {
             .withStartDate(this.START_DATE)
             .withEndDate(this.END_DATE)
             .withType(this.TYPE)
-            .withTargetAudiences(this.TARGET_AUDIENCES);
+            .withTargetAudiences(this.TARGET_AUDIENCES)
+            .withThemes(this.THEMES);
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -165,6 +168,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withThemes(themes: Set<ThemeType>): ConceptVersieTestBuilder {
+        this.themes = themes;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -176,7 +184,8 @@ export class ConceptVersieTestBuilder {
             this.startDate,
             this.endDate,
             this.type,
-            this.targetAudiences);
+            this.targetAudiences,
+            this.themes);
     }
 
 }

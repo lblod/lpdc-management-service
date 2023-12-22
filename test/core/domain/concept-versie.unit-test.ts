@@ -1,4 +1,4 @@
-import {ConceptVersie, ProductType, TargetAudienceType} from "../../../src/core/domain/concept-versie";
+import {ConceptVersie, ProductType, TargetAudienceType, ThemeType} from "../../../src/core/domain/concept-versie";
 import {uuid} from "../../../mu-helper";
 import {ConceptVersieTestBuilder} from "./concept-versie-test-builder";
 import {TaalString} from "../../../src/core/domain/taal-string";
@@ -189,6 +189,33 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
+                .build()],
+        ['theme updated',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withThemes(new Set([ThemeType.CULTUURSPORTVRIJETIJD]))
+                .build()],
+        ['theme added',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withThemes(new Set([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]))
+                .build()],
+        ['theme removed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withThemes(new Set([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
                 .build()]
 
     ];
