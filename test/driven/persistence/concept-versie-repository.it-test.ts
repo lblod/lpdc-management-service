@@ -173,7 +173,10 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """Concept Versie Regulation  language is ignored"""@fr`,
                     `<${conceptVersieId}> <http://schema.org/startDate> """${ConceptVersieTestBuilder.START_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptVersieId}> <http://schema.org/endDate> """${ConceptVersieTestBuilder.END_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/type> <${ConceptVersieTestBuilder.TYPE}>`,
                 ]);
+
+            //TODO LPDC-916: more realistic to also save the 'concept type? of an enum' in the database ? e.g. type, etc. (but that should be a separate query then ...)
 
             const actualConceptVersie = await repository.findById(conceptVersieId);
 

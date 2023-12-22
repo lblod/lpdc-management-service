@@ -13,8 +13,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         const findEntityAndUniqueTriplesResult = await this.querySingleRow(`
             ${PREFIX.lpdcExt}
             ${PREFIX.schema}
+            ${PREFIX.dct}
             
-            SELECT ?id ?startDate ?endDate
+            SELECT ?id ?startDate ?endDate ?type
                 WHERE { 
                     GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
                         ?id a lpdcExt:ConceptualPublicService .
@@ -23,6 +24,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         }
                         OPTIONAL {
                             ?id schema:endDate ?endDate .
+                        }
+                        OPTIONAL {
+                            ?id dct:type ?type . 
                         }
                     }
                     FILTER (?id = ${sparqlEscapeUri(id)}) 
@@ -100,7 +104,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asTaalString(exceptions.map(r => r?.['exception'])),
             this.asTaalString(regulations.map(r => r?.['regulation'])),
             this.asDate(findEntityAndUniqueTriplesResult['startDate']?.value),
-            this.asDate(findEntityAndUniqueTriplesResult['endDate']?.value)
+            this.asDate(findEntityAndUniqueTriplesResult['endDate']?.value),
+            findEntityAndUniqueTriplesResult['type']?.value
+            //TODO LPDC-916: validate that type is in fact a correct ProductType (verify that the value retrieved exists on the enum)
         );
     }
 

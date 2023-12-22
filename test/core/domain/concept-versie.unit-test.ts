@@ -1,4 +1,4 @@
-import {ConceptVersie} from "../../../src/core/domain/concept-versie";
+import {ConceptVersie, ProductType} from "../../../src/core/domain/concept-versie";
 import {uuid} from "../../../mu-helper";
 import {ConceptVersieTestBuilder} from "./concept-versie-test-builder";
 import {TaalString} from "../../../src/core/domain/taal-string";
@@ -135,6 +135,33 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withEndDate(undefined)
+                .build()],
+        ['type changed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withType(ProductType.FINANCIEELVOORDEEL)
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withType(ProductType.BEWIJS)
+                .build()],
+        ['type appeared',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withType(undefined)
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withType(ProductType.FINANCIEELVOORDEEL)
+                .build()],
+        ['type disappeared',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withType(ProductType.FINANCIEELVOORDEEL)
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withType(undefined)
                 .build()]
     ];
 

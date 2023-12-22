@@ -12,6 +12,7 @@ export class ConceptVersie {
     private readonly _regulation: TaalString | undefined;
     private readonly _startDate: Date | undefined;
     private readonly _endDate: Date | undefined;
+    private readonly _type: ProductType | undefined;
 
     constructor(id: Iri,
                 title: TaalString | undefined,
@@ -20,7 +21,8 @@ export class ConceptVersie {
                 exception: TaalString | undefined,
                 regulation: TaalString | undefined,
                 startDate: Date | undefined,
-                endDate: Date | undefined) {
+                endDate: Date | undefined,
+                type: ProductType | undefined) {
         //TODO LPDC-916: enforce invariants ?
         this._id = id;
         this._title = title;
@@ -30,6 +32,7 @@ export class ConceptVersie {
         this._regulation = regulation;
         this._startDate = startDate;
         this._endDate = endDate;
+        this._type = type;
     }
 
     get id(): Iri {
@@ -64,6 +67,10 @@ export class ConceptVersie {
         return this._endDate;
     }
 
+    get type() : ProductType | undefined {
+        return this._type;
+    }
+
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
         return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
             || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
@@ -71,7 +78,18 @@ export class ConceptVersie {
             || TaalString.isFunctionallyChanged(aConceptVersie.exception, anotherConceptVersie.exception)
             || TaalString.isFunctionallyChanged(aConceptVersie.regulation, anotherConceptVersie.regulation)
             || aConceptVersie.startDate?.getTime() !== anotherConceptVersie.startDate?.getTime()
-            || aConceptVersie.endDate?.getTime() !== anotherConceptVersie.endDate?.getTime();
+            || aConceptVersie.endDate?.getTime() !== anotherConceptVersie.endDate?.getTime()
+            || aConceptVersie.type !== anotherConceptVersie.type;
     }
 
+}
+
+export enum ProductType { //TODO LPDC-916: ok to compromise and put an uri in here ?
+    FINANCIELEVERPLICHTING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/FinancieleVerplichting',
+    TOELATING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/Toelating',
+    BEWIJS = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/Bewijs',
+    VOORWERP = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/Voorwerp',
+    ADVIESBEGELEIDING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/AdviesBegeleiding',
+    INFRASTRUCTUURMATERIAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/InfrastructuurMateriaal',
+    FINANCIEELVOORDEEL = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/FinancieelVoordeel',
 }
