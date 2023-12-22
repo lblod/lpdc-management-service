@@ -16,7 +16,6 @@ describe('Concept Versie Data Integrity Validation', () => {
 
     //TODO LPDC-916: unskip test
     //TODO LPDC-916: not fully stable yet. sometimes it blocks ... and we get timeout exceptions : maybe increase the workerthreads, async queue in virtuoso
-    //TODO LPDC-916: we need to set SUDO_QUERY_RETRY_TIMEOUT_INCREMENT_FACTOR to 0 (otherwise the timeout is 27923 millisecs ...)
     test('Load all concept versies; print errors to console.log', async () => {
         //do {
 
@@ -35,9 +34,13 @@ describe('Concept Versie Data Integrity Validation', () => {
             console.log(new Date().toISOString());
 
             for (const result of conceptVersieIds) {
-                const id = result['id'].value;
+                try {
+                    const id = result['id'].value;
                 const conceptVersieForId = await repository.findById(id);
-                expect(conceptVersieForId.id).toEqual(id);
+                    expect(conceptVersieForId.id).toEqual(id);
+                } catch(e) {
+                    console.log(e);
+                }
             }
 
             console.log(`Verifying in total ${conceptVersieIds.length} concept versies took on average ${(new Date().valueOf() - before) / conceptVersieIds.length} ms per concept`);

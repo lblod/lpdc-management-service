@@ -2,7 +2,7 @@ import {SparqlRepository} from "./sparql-repository";
 import {PREFIX} from "../../../config";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {ConceptVersieRepository} from "../../core/port/driven/persistence/concept-versie-repository";
-import {ConceptVersie} from "../../core/domain/concept-versie";
+import {ConceptVersie, ProductType} from "../../core/domain/concept-versie";
 import {TaalString} from "../../core/domain/taal-string";
 
 export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
@@ -105,7 +105,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asTaalString(regulations.map(r => r?.['regulation'])),
             this.asDate(findEntityAndUniqueTriplesResult['startDate']?.value),
             this.asDate(findEntityAndUniqueTriplesResult['endDate']?.value),
-            findEntityAndUniqueTriplesResult['type']?.value
+            this.asEnum(ProductType, findEntityAndUniqueTriplesResult['type']?.value, id)
             //TODO LPDC-916: validate that type is in fact a correct ProductType (verify that the value retrieved exists on the enum)
         );
     }
@@ -123,4 +123,18 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
     private asDate(aValue: string | undefined): Date | undefined {
         return aValue ? new Date(aValue) : undefined;
     }
+
+    //TODO LPDC-916: generalize ; extract in shared sparql toolkit?
+    private asEnum<T>(enumObj: T, value: any, id: string): T[keyof T] | undefined {
+        for (const key in enumObj) {
+            if (enumObj[key] === value) {
+                return value;
+            }
+        }
+        if(value) {
+            throw new Error(`could not map <${value}> for iri: <${id}>`);
+        }
+        return undefined;
+    }
+
 }

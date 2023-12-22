@@ -4,6 +4,7 @@ import {uuid} from "../../../mu-helper";
 import {ConceptVersieTestBuilder} from "../../core/domain/concept-versie-test-builder";
 import {ConceptVersieSparqlTestRepository} from "./concept-versie-sparql-test-repository";
 import {TaalString} from "../../../src/core/domain/taal-string";
+import {ProductType} from "../../../src/core/domain/concept-versie";
 
 describe('ConceptVersieRepository', () => {
     const repository = new ConceptVersieSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -181,6 +182,29 @@ describe('ConceptVersieRepository', () => {
             const actualConceptVersie = await repository.findById(conceptVersieId);
 
             expect(actualConceptVersie).toEqual(conceptVersie);
+        });
+
+        for(const type of Object.values(ProductType)) {
+            test(`Product type ${type} can be mapped`, async () => {
+                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withType(type).build();
+                await repository.save(conceptVersie);
+
+                const actualConceptVersie = await repository.findById(conceptVersie.id);
+
+                expect(actualConceptVersie).toEqual(conceptVersie);
+            });
+        }
+
+        test('Unknown Product Type can not be mapped', async () => {
+            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType>`,
+                ]);
+
+            await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> for iri: <${conceptVersieId}>`));
         });
     });
 });
