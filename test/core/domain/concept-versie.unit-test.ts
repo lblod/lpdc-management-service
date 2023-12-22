@@ -389,6 +389,51 @@ describe('is functionally changed', () => {
                 .aFullConceptVersie()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING]))
                 .build()],
+        ['keyword updated - en',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withKeywords([TaalString.of('abc')])
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withKeywords([TaalString.of('def')])
+                .build()],
+        ['keyword updated - nl',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withKeywords([TaalString.of(undefined, 'abc')])
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withKeywords([TaalString.of(undefined,'def')])
+                .build()],
+        ['keyword updated - en became nl',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withKeywords([TaalString.of('abc')])
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withKeywords([TaalString.of(undefined,'abc')])
+                .build()],
+        ['keyword added',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withKeywords([TaalString.of('abc')])
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withKeywords([TaalString.of('abc'), TaalString.of('def')])
+                .build()],
+        ['keyword removed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withKeywords([TaalString.of('abc'), TaalString.of('def')])
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withKeywords([TaalString.of('abc')])
+                .build()],
 
     ];
 

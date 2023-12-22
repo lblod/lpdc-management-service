@@ -36,12 +36,14 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...this.valuesToTriples(conceptVersie.id, "lpdcExt:hasExecutingAuthority", conceptVersie.executingAuthorities),
                 ...this.valuesToTriples(conceptVersie.id, "lpdcExt:publicationMedium", conceptVersie.publicationMedia),
                 ...this.valuesToTriples(conceptVersie.id, "lpdcExt:yourEuropeCategory", conceptVersie.yourEuropeCategories),
+                ...conceptVersie.keywords.flatMap(keyword => this.taalStringToTriples(conceptVersie.id, "dcat:keyword", keyword))
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,
                 PREFIX.lpdcExt,
                 PREFIX.schema,
-                PREFIX.m8g]);
+                PREFIX.m8g,
+                PREFIX.dcat]);
     }
 
     private taalStringToTriples(subject: Iri, predicate: string, object: TaalString | undefined): string[] {

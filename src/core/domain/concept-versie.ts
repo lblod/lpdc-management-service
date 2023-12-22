@@ -21,13 +21,21 @@ export class ConceptVersie {
     private readonly _executingAuthorityLevels: Set<ExecutingAuthorityLevelType>;
     private readonly _executingAuthorities: Set<Iri>;
     private readonly _publicationMedia: Set<PublicationMediumType>;
-    private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>
+    private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>;
+
+    //TODO LPDC-916: revise keywords structure
+    private readonly _keywords: TaalString[];
 
     //TODO LPDC-916: extract into shared helper ... or use lodash?
-    private asSortedSet<T>(aSet: Set<T>) : Set<T> {
-        const arr = Array.from(aSet);
-        arr.sort();
-        return new Set(arr);
+
+    private asSortedArray<T>(anArray: T[], compareFn?: (a: T, b: T) => number): T[] {
+        const arr = [...anArray];
+        arr.sort(compareFn);
+        return arr;
+    }
+
+    private asSortedSet<T>(aSet: Set<T>): Set<T> {
+        return new Set(this.asSortedArray(Array.from(aSet)));
     }
 
     constructor(id: Iri,
@@ -46,8 +54,9 @@ export class ConceptVersie {
                 executingAuthorityLevels: Set<ExecutingAuthorityLevelType>,
                 executingAuthorities: Set<Iri>,
                 publicationMedia: Set<PublicationMediumType>,
-                yourEuropeCategories: Set<YourEuropeCategoryType>
-                ) {
+                yourEuropeCategories: Set<YourEuropeCategoryType>,
+                keywords: TaalString[],
+    ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
         this._title = title;
@@ -66,6 +75,7 @@ export class ConceptVersie {
         this._executingAuthorities = this.asSortedSet(executingAuthorities);
         this._publicationMedia = this.asSortedSet(publicationMedia);
         this._yourEuropeCategories = this.asSortedSet(yourEuropeCategories);
+        this._keywords = this.asSortedArray([...keywords], TaalString.compare);
     }
 
     get id(): Iri {
@@ -136,6 +146,10 @@ export class ConceptVersie {
         return this._yourEuropeCategories;
     }
 
+    get keywords(): TaalString [] {
+        return this._keywords;
+    }
+
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
         return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
             || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
@@ -152,7 +166,8 @@ export class ConceptVersie {
             || !_.isEqual(aConceptVersie.executingAuthorityLevels, anotherConceptVersie.executingAuthorityLevels)
             || !_.isEqual(aConceptVersie.executingAuthorities, anotherConceptVersie.executingAuthorities)
             || !_.isEqual(aConceptVersie.publicationMedia, anotherConceptVersie.publicationMedia)
-            || !_.isEqual(aConceptVersie.yourEuropeCategories, anotherConceptVersie.yourEuropeCategories);
+            || !_.isEqual(aConceptVersie.yourEuropeCategories, anotherConceptVersie.yourEuropeCategories)
+            || !_.isEqual(aConceptVersie.keywords, anotherConceptVersie.keywords);
     }
 
 }

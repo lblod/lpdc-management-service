@@ -192,6 +192,17 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
+        const keywordsQuery = this.queryList(`
+           ${PREFIX.dcat}
+            
+            SELECT ?keyword
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} dcat:keyword ?keyword. 
+                    }
+                }            
+        `);
+
 
         const [titles,
             descriptions,
@@ -206,6 +217,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             executingAuthorities,
             publicationMedia,
             yourEuropeCategories,
+            keywords,
         ] =
             await Promise.all([
                 titlesQuery,
@@ -221,6 +233,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 executingAuthoritiesQuery,
                 publicationMediaQuery,
                 yourEuropeCategoriesQuery,
+                keywordsQuery,
             ]);
 
         return new ConceptVersie(
@@ -241,6 +254,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asIris(executingAuthorities.map(r => r?.['executingAuthority'])),
             this.asEnums(PublicationMediumType, publicationMedia.map(r => r?.['publicationMedium']), id),
             this.asEnums(YourEuropeCategoryType, yourEuropeCategories.map(r => r?.['yourEuropeCategory']), id),
+            keywords.map(keyword => [keyword]).flatMap(keywordsRow => this.asTaalString(keywordsRow.map(r => r?.['keyword']))),
         );
     }
 

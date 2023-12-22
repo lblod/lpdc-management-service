@@ -69,6 +69,8 @@ export class ConceptVersieTestBuilder {
 
     public static readonly YOUR_EUROPE_CATEGORIES = new Set([YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE]);
 
+    public static readonly KEYWORDS = [TaalString.of('buitenland'), TaalString.of(undefined, 'buitenland'), TaalString.of(undefined, 'ambulante activiteit'), TaalString.of('levensloos')];
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
@@ -86,6 +88,7 @@ export class ConceptVersieTestBuilder {
     private executingAuthorities: Set<Iri> = new Set();
     private publicationMedia: Set<PublicationMediumType> = new Set();
     private yourEuropeCategories: Set<YourEuropeCategoryType> = new Set();
+    private keywords: TaalString[] = [];
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -149,7 +152,8 @@ export class ConceptVersieTestBuilder {
             .withExecutingAuthorityLevels(this.EXECUTING_AUTHORITY_LEVELS)
             .withExecutingAuthorities(this.EXECUTING_AUTHORITIES)
             .withPublicationMedia(this.PUBLICATION_MEDIA)
-            .withYourEuropeCategories(this.YOUR_EUROPE_CATEGORIES);
+            .withYourEuropeCategories(this.YOUR_EUROPE_CATEGORIES)
+            .withKeywords(this.KEYWORDS);
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -237,6 +241,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withKeywords(keywords: TaalString[]): ConceptVersieTestBuilder {
+        this.keywords = keywords;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -255,7 +264,8 @@ export class ConceptVersieTestBuilder {
             this.executingAuthorityLevels,
             this.executingAuthorities,
             this.publicationMedia,
-            this.yourEuropeCategories);
+            this.yourEuropeCategories,
+            this.keywords);
     }
 
 }

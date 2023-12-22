@@ -206,6 +206,10 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptVersieTestBuilder.YOUR_EUROPE_CATEGORIES)[0]}>`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptVersieTestBuilder.YOUR_EUROPE_CATEGORIES)[1]}>`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptVersieTestBuilder.YOUR_EUROPE_CATEGORIES)[2]}>`,
+                    `<${conceptVersieId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptVersieTestBuilder.KEYWORDS)[0].en}"""@en`,
+                    `<${conceptVersieId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptVersieTestBuilder.KEYWORDS)[1].nl}"""@nl`,
+                    `<${conceptVersieId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptVersieTestBuilder.KEYWORDS)[2].nl}"""@nl`,
+                    `<${conceptVersieId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptVersieTestBuilder.KEYWORDS)[3].en}"""@en`,
                 ]);
 
             //TODO LPDC-916: more realistic to also save the 'concept type? of an enum' in the database ? e.g. type, etc. (but that should be a separate query then ...)

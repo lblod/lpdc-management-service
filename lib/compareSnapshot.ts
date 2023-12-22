@@ -8,7 +8,7 @@ import {
     loadRules,
     loadWebsites
 } from "./commonQueries";
-import {isEqual, sortBy} from "lodash";
+import {sortBy} from "lodash";
 import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
 import {ConceptVersie} from "../src/core/domain/concept-versie";
 
@@ -23,7 +23,6 @@ export async function isConceptFunctionallyChanged(newSnapshotUri: string, curre
     const newConceptVersie = await conceptVersieRepository.findById(newSnapshotUri);
 
     return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie)
-        || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.keywords)
         || compareRequirement(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareProcedure(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareCost(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
@@ -38,12 +37,6 @@ function isValueChangedForAnyLanguage(currentSnapshotTriples: any[], currentSnap
         const triple2 = findTriples(newSnapshotTriples, newSnapshotUri, predicate, language)[0];
         return triple1?.o?.value !== triple2?.o?.value;
     });
-}
-
-function isValueChangedInSet(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string, predicate: string): boolean {
-    const currentValues = findTriples(currentSnapshotTriples, currentSnapshotUri, predicate).map(triple => triple.o.value);
-    const newValues = findTriples(newSnapshotTriples, newSnapshotUri, predicate).map(triple => triple.o.value);
-    return !isEqual(currentValues.sort(), newValues.sort());
 }
 
 function isValueChanged(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string, predicate: string): boolean {
@@ -208,7 +201,6 @@ async function loadConceptSnapshot(snapshotUri: string): Promise<any[]> {
 const Predicates = {
     title: 'http://purl.org/dc/terms/title',
     description: 'http://purl.org/dc/terms/description',
-    keywords: 'http://www.w3.org/ns/dcat#keyword',
     hasRequirement: 'http://vocab.belgif.be/ns/publicservice#hasRequirement',
     hasSupportingEvidence: 'http://data.europa.eu/m8g/hasSupportingEvidence',
     order: 'http://www.w3.org/ns/shacl#order',

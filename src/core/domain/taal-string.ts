@@ -62,4 +62,33 @@ export class TaalString {
             || aTaalString?.nl !== anotherTaalString?.nl;
     }
 
+    //TODO LPDC-916: test method
+    static compare(a: TaalString, b: TaalString): number {
+        let comparison = TaalString.compareValues(a._en, b._en);
+        if (comparison !== 0) return comparison;
+
+        comparison = TaalString.compareValues(a._nl, b._nl);
+        if (comparison !== 0) return comparison;
+
+        comparison = TaalString.compareValues(a._nlFormal, b._nlFormal);
+        if (comparison !== 0) return comparison;
+
+        comparison = TaalString.compareValues(a._nlInformal, b._nlInformal);
+        if (comparison !== 0) return comparison;
+
+        comparison = TaalString.compareValues(a._nlGeneratedFormal, b._nlGeneratedFormal);
+        if (comparison !== 0) return comparison;
+
+        comparison = TaalString.compareValues(a._nlGeneratedInformal, b._nlGeneratedInformal);
+        if (comparison !== 0) return comparison;
+
+        return 0;
+    }
+
+    private static compareValues(a: string | undefined, b: string | undefined): number {
+        const strA = a || "";
+        const strB = b || "";
+        return strA.localeCompare(strB);
+    }
+
 }
