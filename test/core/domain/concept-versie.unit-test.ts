@@ -1,4 +1,10 @@
-import {ConceptVersie, ProductType, TargetAudienceType, ThemeType} from "../../../src/core/domain/concept-versie";
+import {
+    CompetentAuthorityLevelType,
+    ConceptVersie,
+    ProductType,
+    TargetAudienceType,
+    ThemeType
+} from "../../../src/core/domain/concept-versie";
 import {uuid} from "../../../mu-helper";
 import {ConceptVersieTestBuilder} from "./concept-versie-test-builder";
 import {TaalString} from "../../../src/core/domain/taal-string";
@@ -216,6 +222,33 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
+                .build()],
+        ['competent Authority Level updated',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.EUROPEES]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.LOKAAL]))
+                .build()],
+        ['competent Authority Level added',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.LOKAAL]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.LOKAAL]))
+                .build()],
+        ['competent Authority Level removed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.FEDERAAL]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.FEDERAAL]))
                 .build()]
 
     ];

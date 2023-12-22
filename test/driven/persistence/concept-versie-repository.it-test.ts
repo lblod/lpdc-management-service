@@ -4,7 +4,12 @@ import {uuid} from "../../../mu-helper";
 import {ConceptVersieTestBuilder} from "../../core/domain/concept-versie-test-builder";
 import {ConceptVersieSparqlTestRepository} from "./concept-versie-sparql-test-repository";
 import {TaalString} from "../../../src/core/domain/taal-string";
-import {ProductType, TargetAudienceType, ThemeType} from "../../../src/core/domain/concept-versie";
+import {
+    CompetentAuthorityLevelType,
+    ProductType,
+    TargetAudienceType,
+    ThemeType
+} from "../../../src/core/domain/concept-versie";
 
 describe('ConceptVersieRepository', () => {
     const repository = new ConceptVersieSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -181,6 +186,9 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <http://data.europa.eu/m8g/thematicArea> <${Array.from(ConceptVersieTestBuilder.THEMES)[0]}>`,
                     `<${conceptVersieId}> <http://data.europa.eu/m8g/thematicArea> <${Array.from(ConceptVersieTestBuilder.THEMES)[1]}>`,
                     `<${conceptVersieId}> <http://data.europa.eu/m8g/thematicArea> <${Array.from(ConceptVersieTestBuilder.THEMES)[2]}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${Array.from(ConceptVersieTestBuilder.COMPETENT_AUTHORITY_LEVELS)[0]}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${Array.from(ConceptVersieTestBuilder.COMPETENT_AUTHORITY_LEVELS)[1]}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${Array.from(ConceptVersieTestBuilder.COMPETENT_AUTHORITY_LEVELS)[2]}>`,
                 ]);
 
             //TODO LPDC-916: more realistic to also save the 'concept type? of an enum' in the database ? e.g. type, etc. (but that should be a separate query then ...)
@@ -257,6 +265,29 @@ describe('ConceptVersieRepository', () => {
                 ]);
 
             await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme> for iri: <${conceptVersieId}>`));
+        });
+
+        for(const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
+            test(`CompetentAuthorityLevelType ${competentAuthorityLevel} can be mapped`, async () => {
+                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withCompetentAuthorityLevels(new Set([competentAuthorityLevel])).build();
+                await repository.save(conceptVersie);
+
+                const actualConceptVersie = await repository.findById(conceptVersie.id);
+
+                expect(actualConceptVersie).toEqual(conceptVersie);
+            });
+        }
+
+        test('Unknown Competent Authority Level type can not be mapped', async () => {
+            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel>`,
+                ]);
+
+            await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel> for iri: <${conceptVersieId}>`));
         });
     });
 });

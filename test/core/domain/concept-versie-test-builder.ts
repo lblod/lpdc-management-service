@@ -1,6 +1,12 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
-import {ConceptVersie, ProductType, TargetAudienceType, ThemeType} from "../../../src/core/domain/concept-versie";
+import {
+    CompetentAuthorityLevelType,
+    ConceptVersie,
+    ProductType,
+    TargetAudienceType,
+    ThemeType
+} from "../../../src/core/domain/concept-versie";
 import {TaalString} from "../../../src/core/domain/taal-string";
 
 export class ConceptVersieTestBuilder {
@@ -46,6 +52,7 @@ export class ConceptVersieTestBuilder {
     public static readonly TYPE = ProductType.FINANCIEELVOORDEEL;
     public static readonly TARGET_AUDIENCES = new Set([TargetAudienceType.BURGER, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.ORGANISATIE]);
     public static readonly THEMES = new Set([ThemeType.CULTUURSPORTVRIJETIJD, ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]);
+    public static readonly COMPETENT_AUTHORITY_LEVELS = new Set([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.EUROPEES]);
 
     private id: Iri;
     private title: TaalString | undefined;
@@ -58,6 +65,7 @@ export class ConceptVersieTestBuilder {
     private type: ProductType | undefined;
     private targetAudiences: Set<TargetAudienceType> = new Set();
     private themes: Set<ThemeType> = new Set();
+    private competentAuthorityLevels: Set<CompetentAuthorityLevelType> = new Set();
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -115,7 +123,8 @@ export class ConceptVersieTestBuilder {
             .withEndDate(this.END_DATE)
             .withType(this.TYPE)
             .withTargetAudiences(this.TARGET_AUDIENCES)
-            .withThemes(this.THEMES);
+            .withThemes(this.THEMES)
+            .withCompetentAuthorityLevels(this.COMPETENT_AUTHORITY_LEVELS);
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -173,6 +182,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withCompetentAuthorityLevels(competentAuthorityLevels: Set<CompetentAuthorityLevelType>): ConceptVersieTestBuilder {
+        this.competentAuthorityLevels = competentAuthorityLevels;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -185,7 +199,8 @@ export class ConceptVersieTestBuilder {
             this.endDate,
             this.type,
             this.targetAudiences,
-            this.themes);
+            this.themes,
+            this.competentAuthorityLevels);
     }
 
 }

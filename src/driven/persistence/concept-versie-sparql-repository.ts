@@ -2,7 +2,13 @@ import {SparqlRepository} from "./sparql-repository";
 import {PREFIX} from "../../../config";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {ConceptVersieRepository} from "../../core/port/driven/persistence/concept-versie-repository";
-import {ConceptVersie, ProductType, TargetAudienceType, ThemeType} from "../../core/domain/concept-versie";
+import {
+    CompetentAuthorityLevelType,
+    ConceptVersie,
+    ProductType,
+    TargetAudienceType,
+    ThemeType
+} from "../../core/domain/concept-versie";
 import {TaalString} from "../../core/domain/taal-string";
 
 export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
@@ -116,13 +122,25 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
+        const competentAuthorityLevelQuery = this.queryList(`
+           ${PREFIX.lpdcExt}
+            
+            SELECT ?competentAuthorityLevel
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} lpdcExt:competentAuthorityLevel ?competentAuthorityLevel. 
+                    }
+                }            
+        `);
+
         const [titles,
             descriptions,
             additionalDescriptions,
             exceptions,
             regulations,
             targetAudiences,
-            themes] =
+            themes,
+            competentAuthorityLevels] =
             await Promise.all([
                 titlesQuery,
                 descriptionsQuery,
@@ -130,7 +148,8 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 exceptionsQuery,
                 requlationsQuery,
                 targetAudiencesQuery,
-                themesQuery]);
+                themesQuery,
+                competentAuthorityLevelQuery]);
 
         return new ConceptVersie(
             findEntityAndUniqueTriplesResult['id'].value,
@@ -144,6 +163,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asEnum(ProductType, findEntityAndUniqueTriplesResult['type']?.value, id),
             this.asEnums(TargetAudienceType, targetAudiences.map(r => r?.['targetAudience']), id),
             this.asEnums(ThemeType, themes.map(r => r?.['theme']), id),
+            this.asEnums(CompetentAuthorityLevelType, competentAuthorityLevels.map(r => r?.['competentAuthorityLevel']), id),
         );
     }
 

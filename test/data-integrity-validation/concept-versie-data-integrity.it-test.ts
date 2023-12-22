@@ -14,7 +14,6 @@ describe('Concept Versie Data Integrity Validation', () => {
     //TODO LPDC-916: load data concurrently ...
     //TODO LPDC-916: load data from ldes stream of production dump and verify results ...
 
-    //TODO LPDC-916: unskip test
     //TODO LPDC-916: not fully stable yet. sometimes it blocks ... and we get timeout exceptions : maybe increase the workerthreads, async queue in virtuoso
     test('Load all concept versies; print errors to console.log', async () => {
         //do {

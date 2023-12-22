@@ -23,7 +23,6 @@ export async function isConceptFunctionallyChanged(newSnapshotUri: string, curre
     const newConceptVersie = await conceptVersieRepository.findById(newSnapshotUri);
 
     return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie)
-        || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.competentAuthorityLevel)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.hasCompetentAuthority)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.executingAuthorityLevel)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.hasExecutingAuthority)

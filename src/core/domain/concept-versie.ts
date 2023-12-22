@@ -16,6 +16,7 @@ export class ConceptVersie {
     private readonly _type: ProductType | undefined;
     private readonly _targetAudiences: Set<TargetAudienceType>;
     private readonly _themes: Set<ThemeType>;
+    private readonly _competentAuthorityLevels: Set<CompetentAuthorityLevelType>;
 
     //TODO LPDC-916: extract into shared helper ... or use lodash?
     private sortSet<T>(aSet: Set<T>) : Set<T> {
@@ -34,7 +35,8 @@ export class ConceptVersie {
                 endDate: Date | undefined,
                 type: ProductType | undefined,
                 targetAudiences: Set<TargetAudienceType>,
-                themes: Set<ThemeType>) {
+                themes: Set<ThemeType>,
+                competentAuthorityLevels: Set<CompetentAuthorityLevelType>) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
         this._title = title;
@@ -47,6 +49,7 @@ export class ConceptVersie {
         this._type = type;
         this._targetAudiences = this.sortSet(targetAudiences);
         this._themes = this.sortSet(themes);
+        this._competentAuthorityLevels = this.sortSet(competentAuthorityLevels);
     }
 
     get id(): Iri {
@@ -93,6 +96,10 @@ export class ConceptVersie {
         return this._themes;
     }
 
+    get competentAuthorityLevels(): Set<CompetentAuthorityLevelType> {
+        return this._competentAuthorityLevels;
+    }
+
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
         return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
             || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
@@ -103,7 +110,8 @@ export class ConceptVersie {
             || aConceptVersie.endDate?.getTime() !== anotherConceptVersie.endDate?.getTime()
             || aConceptVersie.type !== anotherConceptVersie.type
             || !_.isEqual(aConceptVersie.targetAudiences, anotherConceptVersie.targetAudiences)
-            || !_.isEqual(aConceptVersie.themes, anotherConceptVersie.themes);
+            || !_.isEqual(aConceptVersie.themes, anotherConceptVersie.themes)
+            || !_.isEqual(aConceptVersie.competentAuthorityLevels, anotherConceptVersie.competentAuthorityLevels);
     }
 
 }
@@ -136,4 +144,12 @@ export enum ThemeType { //TODO LPDC-916: ok to compromise and put an uri in here
     ONDERWIJSWETENSCHAP = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/OnderwijsWetenschap',
     WELZIJNGEZONDHEID = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/WelzijnGezondheid',
     BOUWENWONEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/BouwenWonen',
+}
+
+export enum CompetentAuthorityLevelType {
+    EUROPEES = 'https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Europees',
+    FEDERAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Federaal',
+    VLAAMS = 'https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Vlaams',
+    PROVINCIAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Provinciaal',
+    LOKAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Lokaal',
 }

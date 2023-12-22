@@ -30,6 +30,7 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 conceptVersie.type ? `${sparqlEscapeUri(conceptVersie.id)} dct:type ${sparqlEscapeUri(conceptVersie.type)}` : undefined,
                 ...this.enumsToTriples(conceptVersie.id, "lpdcExt:targetAudience", conceptVersie.targetAudiences),
                 ...this.enumsToTriples(conceptVersie.id, "m8g:thematicArea", conceptVersie.themes),
+                ...this.enumsToTriples(conceptVersie.id, "lpdcExt:competentAuthorityLevel", conceptVersie.competentAuthorityLevels),
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,
