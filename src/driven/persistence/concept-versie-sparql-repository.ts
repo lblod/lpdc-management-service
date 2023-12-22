@@ -14,6 +14,7 @@ import {
 } from "../../core/domain/concept-versie";
 import {TaalString} from "../../core/domain/taal-string";
 import {Iri} from "../../core/domain/shared/iri";
+import {PromisePool} from '@supercharge/promise-pool';
 
 export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
 
@@ -51,7 +52,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         //TODO LPDC-916: extract these queries into SparqlQueryFragments functions
         //TODO LPDC-916: interface: titles(ids: Iri[]): returns an object with as key an IRI, and as Value: TaalString | undefined ...
 
-        const titlesQuery = this.queryList(`
+        const titlesQuery = `
             ${PREFIX.dct}
             SELECT ?title
                 WHERE { 
@@ -59,9 +60,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} dct:title ?title. 
                     }
                 }            
-        `);
+        `;
 
-        const descriptionsQuery = this.queryList(`
+        const descriptionsQuery = `
             ${PREFIX.dct}
             SELECT ?description
                 WHERE { 
@@ -69,9 +70,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} dct:description ?description. 
                     }
                 }            
-        `);
+        `;
 
-        const additionalDescriptionsQuery = this.queryList(`
+        const additionalDescriptionsQuery = `
             ${PREFIX.lpdcExt}
             
             SELECT ?additionalDescription
@@ -80,9 +81,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} lpdcExt:additionalDescription ?additionalDescription. 
                     }
                 }            
-        `);
+        `;
 
-        const exceptionsQuery = this.queryList(`
+        const exceptionsQuery = `
             ${PREFIX.lpdcExt}
             
             SELECT ?exception
@@ -91,9 +92,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} lpdcExt:exception ?exception. 
                     }
                 }            
-        `);
+        `;
 
-        const requlationsQuery = this.queryList(`
+        const requlationsQuery = `
             ${PREFIX.lpdcExt}
             
             SELECT ?regulation
@@ -102,9 +103,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} lpdcExt:regulation ?regulation. 
                     }
                 }            
-        `);
+        `;
 
-        const targetAudiencesQuery = this.queryList(`
+        const targetAudiencesQuery = `
             ${PREFIX.lpdcExt}
             
             SELECT ?targetAudience
@@ -113,9 +114,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} lpdcExt:targetAudience ?targetAudience. 
                     }
                 }            
-        `);
+        `;
 
-        const themesQuery = this.queryList(`
+        const themesQuery = `
             ${PREFIX.m8g}
             
             SELECT ?theme
@@ -124,9 +125,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} m8g:thematicArea ?theme. 
                     }
                 }            
-        `);
+        `;
 
-        const competentAuthorityLevelQuery = this.queryList(`
+        const competentAuthorityLevelQuery = `
            ${PREFIX.lpdcExt}
             
             SELECT ?competentAuthorityLevel
@@ -135,9 +136,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} lpdcExt:competentAuthorityLevel ?competentAuthorityLevel. 
                     }
                 }            
-        `);
+        `;
 
-        const competentAuthoritiesQuery = this.queryList(`
+        const competentAuthoritiesQuery = `
            ${PREFIX.m8g}
             
             SELECT ?competentAuthority
@@ -146,9 +147,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} m8g:hasCompetentAuthority ?competentAuthority. 
                     }
                 }            
-        `);
+        `;
 
-        const executingAuthorityLevelQuery = this.queryList(`
+        const executingAuthorityLevelQuery = `
            ${PREFIX.lpdcExt}
             
             SELECT ?executingAuthorityLevel
@@ -157,9 +158,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} lpdcExt:executingAuthorityLevel ?executingAuthorityLevel. 
                     }
                 }            
-        `);
+        `;
 
-        const executingAuthoritiesQuery = this.queryList(`
+        const executingAuthoritiesQuery = `
            ${PREFIX.lpdcExt}
             
             SELECT ?executingAuthority
@@ -168,9 +169,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} lpdcExt:hasExecutingAuthority ?executingAuthority. 
                     }
                 }            
-        `);
+        `;
 
-        const publicationMediaQuery = this.queryList(`
+        const publicationMediaQuery = `
            ${PREFIX.lpdcExt}
             
             SELECT ?publicationMedium
@@ -179,9 +180,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} lpdcExt:publicationMedium ?publicationMedium. 
                     }
                 }            
-        `);
+        `;
 
-        const yourEuropeCategoriesQuery = this.queryList(`
+        const yourEuropeCategoriesQuery = `
            ${PREFIX.lpdcExt}
             
             SELECT ?yourEuropeCategory
@@ -190,9 +191,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} lpdcExt:yourEuropeCategory ?yourEuropeCategory. 
                     }
                 }            
-        `);
+        `;
 
-        const keywordsQuery = this.queryList(`
+        const keywordsQuery = `
            ${PREFIX.dcat}
             
             SELECT ?keyword
@@ -201,25 +202,10 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                         ${sparqlEscapeUri(id)} dcat:keyword ?keyword. 
                     }
                 }            
-        `);
+        `;
 
-
-        const [titles,
-            descriptions,
-            additionalDescriptions,
-            exceptions,
-            regulations,
-            targetAudiences,
-            themes,
-            competentAuthorityLevels,
-            competentAuthorities,
-            executingAuthorityLevels,
-            executingAuthorities,
-            publicationMedia,
-            yourEuropeCategories,
-            keywords,
-        ] =
-            await Promise.all([
+        const listQueries =
+            [
                 titlesQuery,
                 descriptionsQuery,
                 additionalDescriptionsQuery,
@@ -234,7 +220,35 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 publicationMediaQuery,
                 yourEuropeCategoriesQuery,
                 keywordsQuery,
-            ]);
+            ];
+
+        const {results, errors} = await PromisePool
+            .withConcurrency(3)
+            .for(listQueries)
+            .useCorrespondingResults()
+            .process(async (query) => {
+                return await this.queryList(query);
+            });
+
+        if (results.some(r => r === PromisePool.failed || r === PromisePool.notRun)) {
+            console.log(errors);
+            throw new Error(`Could not query all for iri: ${id}`);
+        }
+        const [titles,
+            descriptions,
+            additionalDescriptions,
+            exceptions,
+            regulations,
+            targetAudiences,
+            themes,
+            competentAuthorityLevels,
+            competentAuthorities,
+            executingAuthorityLevels,
+            executingAuthorities,
+            publicationMedia,
+            yourEuropeCategories,
+            keywords,
+        ] = results.map(r => r as any []);
 
         return new ConceptVersie(
             findEntityAndUniqueTriplesResult['id'].value,

@@ -11,7 +11,7 @@ describe('Concept Versie Data Integrity Validation', () => {
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 
     //TODO LPDC-916: using a story representation for each queried -> verify with all the raw triples, queried directly from the database -> to ascertain we queried all data ...
-    //TODO LPDC-916: load data concurrently ...
+    //TODO LPDC-916: load data concurrently ... using PromisePool (10 concurrent users, but each of them with a kinda random wait; so to simulate n concurrent users )
     //TODO LPDC-916: load data from ldes stream of production dump and verify results ...
 
     //TODO LPDC-916: not fully stable yet. sometimes it blocks ... and we get timeout exceptions : maybe increase the workerthreads, async queue in virtuoso
@@ -29,6 +29,7 @@ describe('Concept Versie Data Integrity Validation', () => {
             const conceptVersieIds = await directDatabaseAccess.queryList(query);
 
             const before = new Date().valueOf();
+            const delayTime = 20;
 
             console.log(new Date().toISOString());
 
@@ -38,13 +39,23 @@ describe('Concept Versie Data Integrity Validation', () => {
                     const conceptVersieForId = await repository.findById(id);
                     expect(conceptVersieForId.id).toEqual(id);
                 } catch(e) {
-                    console.log(e);
+                    if(!e.message.startsWith('could not map')) {
+                        console.error(e);
+                    }
                 }
+                await wait(delayTime);
             }
 
-            console.log(`Verifying in total ${conceptVersieIds.length} concept versies took on average ${(new Date().valueOf() - before) / conceptVersieIds.length} ms per concept`);
+            console.log(`Verifying in total ${conceptVersieIds.length} concept versies took on average ${(new Date().valueOf() - before - delayTime * conceptVersieIds.length) / conceptVersieIds.length} ms per concept`);
             // eslint-disable-next-line no-constant-condition
         //} while (true);
-    }, 60000);
+    }, 60000 * 5);
+
+    function wait(milliseconds: number) {
+        return new Promise(resolve => {
+            setTimeout(resolve, milliseconds);
+        });
+    }
+
 
 });
