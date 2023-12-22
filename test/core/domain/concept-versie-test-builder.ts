@@ -57,6 +57,7 @@ export class ConceptVersieTestBuilder {
     public static readonly COMPETENT_AUTHORITY_LEVELS = new Set([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.EUROPEES]);
     public static readonly COMPETENT_AUTHORITIES = new Set([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]);
     public static readonly EXECUTING_AUTHORITY_LEVELS = new Set([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN]);
+    public static readonly EXECUTING_AUTHORITIES = new Set([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI]);
 
     private id: Iri;
     private title: TaalString | undefined;
@@ -72,6 +73,7 @@ export class ConceptVersieTestBuilder {
     private competentAuthorityLevels: Set<CompetentAuthorityLevelType> = new Set();
     private competentAuthorities: Set<Iri> = new Set();
     private executingAuthorityLevels: Set<ExecutingAuthorityLevelType> = new Set();
+    private executingAuthorities: Set<Iri> = new Set();
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -132,7 +134,8 @@ export class ConceptVersieTestBuilder {
             .withThemes(this.THEMES)
             .withCompetentAuthorityLevels(this.COMPETENT_AUTHORITY_LEVELS)
             .withCompetentAuthorities(this.COMPETENT_AUTHORITIES)
-            .withExecutingAuthorityLevels(this.EXECUTING_AUTHORITY_LEVELS);
+            .withExecutingAuthorityLevels(this.EXECUTING_AUTHORITY_LEVELS)
+            .withExecutingAuthorities(this.EXECUTING_AUTHORITIES);
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -205,6 +208,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withExecutingAuthorities(executingAuthorities: Set<Iri>): ConceptVersieTestBuilder {
+        this.executingAuthorities = executingAuthorities;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -220,7 +228,8 @@ export class ConceptVersieTestBuilder {
             this.themes,
             this.competentAuthorityLevels,
             this.competentAuthorities,
-            this.executingAuthorityLevels);
+            this.executingAuthorityLevels,
+            this.executingAuthorities);
     }
 
 }

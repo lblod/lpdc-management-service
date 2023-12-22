@@ -23,7 +23,6 @@ export async function isConceptFunctionallyChanged(newSnapshotUri: string, curre
     const newConceptVersie = await conceptVersieRepository.findById(newSnapshotUri);
 
     return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie)
-        || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.hasExecutingAuthority)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.publicationMedium)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.yourEuropeCategory)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.keywords)
@@ -211,18 +210,6 @@ async function loadConceptSnapshot(snapshotUri: string): Promise<any[]> {
 const Predicates = {
     title: 'http://purl.org/dc/terms/title',
     description: 'http://purl.org/dc/terms/description',
-    additionalDescription: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription',
-    exception: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#exception',
-    regulation: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation',
-    startDate: 'http://schema.org/startDate',
-    endDate: 'http://schema.org/endDate',
-    productType: 'http://purl.org/dc/terms/type',
-    targetAudience: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience',
-    thematicArea: 'http://data.europa.eu/m8g/thematicArea',
-    competentAuthorityLevel: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel',
-    hasCompetentAuthority: 'http://data.europa.eu/m8g/hasCompetentAuthority',
-    executingAuthorityLevel: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel',
-    hasExecutingAuthority: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority',
     keywords: 'http://www.w3.org/ns/dcat#keyword',
     publicationMedium: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium',
     yourEuropeCategory: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory',

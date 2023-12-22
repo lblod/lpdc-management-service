@@ -157,6 +157,18 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
+        const executingAuthoritiesQuery = this.queryList(`
+           ${PREFIX.lpdcExt}
+            
+            SELECT ?executingAuthority
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} lpdcExt:hasExecutingAuthority ?executingAuthority. 
+                    }
+                }            
+        `);
+
+
         const [titles,
             descriptions,
             additionalDescriptions,
@@ -166,7 +178,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             themes,
             competentAuthorityLevels,
             competentAuthorities,
-            executingAuthorityLevels] =
+            executingAuthorityLevels,
+            executingAuthorities,
+        ] =
             await Promise.all([
                 titlesQuery,
                 descriptionsQuery,
@@ -177,7 +191,8 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 themesQuery,
                 competentAuthorityLevelQuery,
                 competentAuthoritiesQuery,
-                executingAuthorityLevelQuery]);
+                executingAuthorityLevelQuery,
+                executingAuthoritiesQuery]);
 
         return new ConceptVersie(
             findEntityAndUniqueTriplesResult['id'].value,
@@ -194,6 +209,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asEnums(CompetentAuthorityLevelType, competentAuthorityLevels.map(r => r?.['competentAuthorityLevel']), id),
             this.asIris(competentAuthorities.map(r => r?.['competentAuthority'])),
             this.asEnums(ExecutingAuthorityLevelType, executingAuthorityLevels.map(r => r?.['executingAuthorityLevel']), id),
+            this.asIris(executingAuthorities.map(r => r?.['executingAuthority'])),
         );
     }
 

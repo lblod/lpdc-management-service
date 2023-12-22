@@ -19,9 +19,10 @@ export class ConceptVersie {
     private readonly _competentAuthorityLevels: Set<CompetentAuthorityLevelType>;
     private readonly _competentAuthorities: Set<Iri>;
     private readonly _executingAuthorityLevels: Set<ExecutingAuthorityLevelType>;
+    private readonly _executingAuthorities: Set<Iri>;
 
     //TODO LPDC-916: extract into shared helper ... or use lodash?
-    private sortSet<T>(aSet: Set<T>) : Set<T> {
+    private asSortedSet<T>(aSet: Set<T>) : Set<T> {
         const arr = Array.from(aSet);
         arr.sort();
         return new Set(arr);
@@ -40,7 +41,8 @@ export class ConceptVersie {
                 themes: Set<ThemeType>,
                 competentAuthorityLevels: Set<CompetentAuthorityLevelType>,
                 competentAuthorities: Set<Iri>,
-                executingAuthorityLevels: Set<ExecutingAuthorityLevelType>) {
+                executingAuthorityLevels: Set<ExecutingAuthorityLevelType>,
+                executingAuthorities: Set<Iri>,) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
         this._title = title;
@@ -51,11 +53,12 @@ export class ConceptVersie {
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
-        this._targetAudiences = this.sortSet(targetAudiences);
-        this._themes = this.sortSet(themes);
-        this._competentAuthorityLevels = this.sortSet(competentAuthorityLevels);
-        this._competentAuthorities = this.sortSet(competentAuthorities);
-        this._executingAuthorityLevels = this.sortSet(executingAuthorityLevels);
+        this._targetAudiences = this.asSortedSet(targetAudiences);
+        this._themes = this.asSortedSet(themes);
+        this._competentAuthorityLevels = this.asSortedSet(competentAuthorityLevels);
+        this._competentAuthorities = this.asSortedSet(competentAuthorities);
+        this._executingAuthorityLevels = this.asSortedSet(executingAuthorityLevels);
+        this._executingAuthorities = this.asSortedSet(executingAuthorities);
     }
 
     get id(): Iri {
@@ -114,6 +117,10 @@ export class ConceptVersie {
         return this._executingAuthorityLevels;
     }
 
+    get executingAuthorities(): Set<Iri> {
+        return this._executingAuthorities;
+    }
+
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
         return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
             || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
@@ -127,7 +134,8 @@ export class ConceptVersie {
             || !_.isEqual(aConceptVersie.themes, anotherConceptVersie.themes)
             || !_.isEqual(aConceptVersie.competentAuthorityLevels, anotherConceptVersie.competentAuthorityLevels)
             || !_.isEqual(aConceptVersie.competentAuthorities, anotherConceptVersie.competentAuthorities)
-            || !_.isEqual(aConceptVersie.executingAuthorityLevels, anotherConceptVersie.executingAuthorityLevels);
+            || !_.isEqual(aConceptVersie.executingAuthorityLevels, anotherConceptVersie.executingAuthorityLevels)
+            || !_.isEqual(aConceptVersie.executingAuthorities, anotherConceptVersie.executingAuthorities);
     }
 
 }

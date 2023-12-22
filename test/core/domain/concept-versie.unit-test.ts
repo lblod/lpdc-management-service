@@ -305,7 +305,34 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.DERDEN]))
-                .build()]
+                .build()],
+        ['executing authorities updated',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
+                .build()],
+        ['executing authorities added',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
+                .build()],
+        ['executing authorities removed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
+                .build()],
 
     ];
 
