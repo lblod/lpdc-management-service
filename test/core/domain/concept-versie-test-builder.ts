@@ -5,6 +5,7 @@ import {
     ConceptVersie,
     ExecutingAuthorityLevelType,
     ProductType,
+    PublicationMediumType,
     TargetAudienceType,
     ThemeType
 } from "../../../src/core/domain/concept-versie";
@@ -52,12 +53,18 @@ export class ConceptVersieTestBuilder {
     public static readonly END_DATE = new Date('2027-09-16');
 
     public static readonly TYPE = ProductType.FINANCIEELVOORDEEL;
+
     public static readonly TARGET_AUDIENCES = new Set([TargetAudienceType.BURGER, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.ORGANISATIE]);
+
     public static readonly THEMES = new Set([ThemeType.CULTUURSPORTVRIJETIJD, ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]);
+
     public static readonly COMPETENT_AUTHORITY_LEVELS = new Set([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.EUROPEES]);
     public static readonly COMPETENT_AUTHORITIES = new Set([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]);
+
     public static readonly EXECUTING_AUTHORITY_LEVELS = new Set([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN]);
     public static readonly EXECUTING_AUTHORITIES = new Set([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI]);
+
+    public static readonly PUBLICATION_MEDIA = new Set([PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER]);
 
     private id: Iri;
     private title: TaalString | undefined;
@@ -74,6 +81,7 @@ export class ConceptVersieTestBuilder {
     private competentAuthorities: Set<Iri> = new Set();
     private executingAuthorityLevels: Set<ExecutingAuthorityLevelType> = new Set();
     private executingAuthorities: Set<Iri> = new Set();
+    private publicationMedia: Set<PublicationMediumType> = new Set();
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -135,7 +143,8 @@ export class ConceptVersieTestBuilder {
             .withCompetentAuthorityLevels(this.COMPETENT_AUTHORITY_LEVELS)
             .withCompetentAuthorities(this.COMPETENT_AUTHORITIES)
             .withExecutingAuthorityLevels(this.EXECUTING_AUTHORITY_LEVELS)
-            .withExecutingAuthorities(this.EXECUTING_AUTHORITIES);
+            .withExecutingAuthorities(this.EXECUTING_AUTHORITIES)
+            .withPublicationMedia(this.PUBLICATION_MEDIA);
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -213,6 +222,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withPublicationMedia(publicationMedia: Set<PublicationMediumType>): ConceptVersieTestBuilder {
+        this.publicationMedia = publicationMedia;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -229,7 +243,8 @@ export class ConceptVersieTestBuilder {
             this.competentAuthorityLevels,
             this.competentAuthorities,
             this.executingAuthorityLevels,
-            this.executingAuthorities);
+            this.executingAuthorities,
+            this.publicationMedia);
     }
 
 }

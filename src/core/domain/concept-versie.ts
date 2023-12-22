@@ -20,6 +20,7 @@ export class ConceptVersie {
     private readonly _competentAuthorities: Set<Iri>;
     private readonly _executingAuthorityLevels: Set<ExecutingAuthorityLevelType>;
     private readonly _executingAuthorities: Set<Iri>;
+    private readonly _publicationMedia: Set<PublicationMediumType>;
 
     //TODO LPDC-916: extract into shared helper ... or use lodash?
     private asSortedSet<T>(aSet: Set<T>) : Set<T> {
@@ -42,7 +43,9 @@ export class ConceptVersie {
                 competentAuthorityLevels: Set<CompetentAuthorityLevelType>,
                 competentAuthorities: Set<Iri>,
                 executingAuthorityLevels: Set<ExecutingAuthorityLevelType>,
-                executingAuthorities: Set<Iri>,) {
+                executingAuthorities: Set<Iri>,
+                publicationMedia: Set<PublicationMediumType>,
+                ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
         this._title = title;
@@ -59,6 +62,7 @@ export class ConceptVersie {
         this._competentAuthorities = this.asSortedSet(competentAuthorities);
         this._executingAuthorityLevels = this.asSortedSet(executingAuthorityLevels);
         this._executingAuthorities = this.asSortedSet(executingAuthorities);
+        this._publicationMedia = this.asSortedSet(publicationMedia);
     }
 
     get id(): Iri {
@@ -121,6 +125,10 @@ export class ConceptVersie {
         return this._executingAuthorities;
     }
 
+    get publicationMedia(): Set<PublicationMediumType> {
+        return this._publicationMedia;
+    }
+
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
         return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
             || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
@@ -135,7 +143,8 @@ export class ConceptVersie {
             || !_.isEqual(aConceptVersie.competentAuthorityLevels, anotherConceptVersie.competentAuthorityLevels)
             || !_.isEqual(aConceptVersie.competentAuthorities, anotherConceptVersie.competentAuthorities)
             || !_.isEqual(aConceptVersie.executingAuthorityLevels, anotherConceptVersie.executingAuthorityLevels)
-            || !_.isEqual(aConceptVersie.executingAuthorities, anotherConceptVersie.executingAuthorities);
+            || !_.isEqual(aConceptVersie.executingAuthorities, anotherConceptVersie.executingAuthorities)
+            || !_.isEqual(aConceptVersie.publicationMedia, anotherConceptVersie.publicationMedia);
     }
 
 }
@@ -185,4 +194,9 @@ export enum ExecutingAuthorityLevelType {
     PROVINCIAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Provinciaal',
     LOKAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Lokaal',
     DERDEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Derden',
+}
+
+export enum PublicationMediumType {
+    YOUREUROPE = 'https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/YourEurope',
+    RECHTENVERKENNER = 'https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/Rechtenverkenner',
 }

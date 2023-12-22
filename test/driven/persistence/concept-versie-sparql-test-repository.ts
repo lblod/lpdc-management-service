@@ -34,6 +34,7 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...this.valuesToTriples(conceptVersie.id, "m8g:hasCompetentAuthority", conceptVersie.competentAuthorities),
                 ...this.valuesToTriples(conceptVersie.id, "lpdcExt:executingAuthorityLevel", conceptVersie.executingAuthorityLevels),
                 ...this.valuesToTriples(conceptVersie.id, "lpdcExt:hasExecutingAuthority", conceptVersie.executingAuthorities),
+                ...this.valuesToTriples(conceptVersie.id, "lpdcExt:publicationMedium", conceptVersie.publicationMedia),
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,

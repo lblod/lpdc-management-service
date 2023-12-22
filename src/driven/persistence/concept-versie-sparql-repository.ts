@@ -7,6 +7,7 @@ import {
     ConceptVersie,
     ExecutingAuthorityLevelType,
     ProductType,
+    PublicationMediumType,
     TargetAudienceType,
     ThemeType
 } from "../../core/domain/concept-versie";
@@ -168,6 +169,17 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
+        const publicationMediaQuery = this.queryList(`
+           ${PREFIX.lpdcExt}
+            
+            SELECT ?publicationMedium
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} lpdcExt:publicationMedium ?publicationMedium. 
+                    }
+                }            
+        `);
+
 
         const [titles,
             descriptions,
@@ -180,6 +192,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             competentAuthorities,
             executingAuthorityLevels,
             executingAuthorities,
+            publicationMedia,
         ] =
             await Promise.all([
                 titlesQuery,
@@ -192,7 +205,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 competentAuthorityLevelQuery,
                 competentAuthoritiesQuery,
                 executingAuthorityLevelQuery,
-                executingAuthoritiesQuery]);
+                executingAuthoritiesQuery,
+                publicationMediaQuery,
+            ]);
 
         return new ConceptVersie(
             findEntityAndUniqueTriplesResult['id'].value,
@@ -210,6 +225,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asIris(competentAuthorities.map(r => r?.['competentAuthority'])),
             this.asEnums(ExecutingAuthorityLevelType, executingAuthorityLevels.map(r => r?.['executingAuthorityLevel']), id),
             this.asIris(executingAuthorities.map(r => r?.['executingAuthority'])),
+            this.asEnums(PublicationMediumType, publicationMedia.map(r => r?.['publicationMedium']), id),
         );
     }
 

@@ -3,6 +3,7 @@ import {
     ConceptVersie,
     ExecutingAuthorityLevelType,
     ProductType,
+    PublicationMediumType,
     TargetAudienceType,
     ThemeType
 } from "../../../src/core/domain/concept-versie";
@@ -332,6 +333,33 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
+                .build()],
+        ['publication medium updated',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withPublicationMedia(new Set([PublicationMediumType.YOUREUROPE]))
+                .build()],
+        ['publication medium added',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withPublicationMedia(new Set([PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER]))
+                .build()],
+        ['publication medium removed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER, PublicationMediumType.YOUREUROPE]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
                 .build()],
 
     ];
