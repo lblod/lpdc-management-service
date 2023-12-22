@@ -17,6 +17,7 @@ export class ConceptVersie {
     private readonly _targetAudiences: Set<TargetAudienceType>;
     private readonly _themes: Set<ThemeType>;
     private readonly _competentAuthorityLevels: Set<CompetentAuthorityLevelType>;
+    private readonly _competentAuthorities: Set<Iri>;
     private readonly _executingAuthorityLevels: Set<ExecutingAuthorityLevelType>;
 
     //TODO LPDC-916: extract into shared helper ... or use lodash?
@@ -38,6 +39,7 @@ export class ConceptVersie {
                 targetAudiences: Set<TargetAudienceType>,
                 themes: Set<ThemeType>,
                 competentAuthorityLevels: Set<CompetentAuthorityLevelType>,
+                competentAuthorities: Set<Iri>,
                 executingAuthorityLevels: Set<ExecutingAuthorityLevelType>) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -52,6 +54,7 @@ export class ConceptVersie {
         this._targetAudiences = this.sortSet(targetAudiences);
         this._themes = this.sortSet(themes);
         this._competentAuthorityLevels = this.sortSet(competentAuthorityLevels);
+        this._competentAuthorities = this.sortSet(competentAuthorities);
         this._executingAuthorityLevels = this.sortSet(executingAuthorityLevels);
     }
 
@@ -103,6 +106,10 @@ export class ConceptVersie {
         return this._competentAuthorityLevels;
     }
 
+    get competentAuthorities(): Set<Iri> {
+        return this._competentAuthorities;
+    }
+
     get executingAuthorityLevels(): Set<ExecutingAuthorityLevelType> {
         return this._executingAuthorityLevels;
     }
@@ -119,6 +126,7 @@ export class ConceptVersie {
             || !_.isEqual(aConceptVersie.targetAudiences, anotherConceptVersie.targetAudiences)
             || !_.isEqual(aConceptVersie.themes, anotherConceptVersie.themes)
             || !_.isEqual(aConceptVersie.competentAuthorityLevels, anotherConceptVersie.competentAuthorityLevels)
+            || !_.isEqual(aConceptVersie.competentAuthorities, anotherConceptVersie.competentAuthorities)
             || !_.isEqual(aConceptVersie.executingAuthorityLevels, anotherConceptVersie.executingAuthorityLevels);
     }
 

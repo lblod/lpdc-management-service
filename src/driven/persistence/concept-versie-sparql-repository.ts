@@ -11,6 +11,7 @@ import {
     ThemeType
 } from "../../core/domain/concept-versie";
 import {TaalString} from "../../core/domain/taal-string";
+import {Iri} from "../../core/domain/shared/iri";
 
 export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
 
@@ -134,6 +135,17 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
+        const competentAuthoritiesQuery = this.queryList(`
+           ${PREFIX.m8g}
+            
+            SELECT ?competentAuthority
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} m8g:hasCompetentAuthority ?competentAuthority. 
+                    }
+                }            
+        `);
+
         const executingAuthorityLevelQuery = this.queryList(`
            ${PREFIX.lpdcExt}
             
@@ -153,6 +165,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             targetAudiences,
             themes,
             competentAuthorityLevels,
+            competentAuthorities,
             executingAuthorityLevels] =
             await Promise.all([
                 titlesQuery,
@@ -163,6 +176,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 targetAudiencesQuery,
                 themesQuery,
                 competentAuthorityLevelQuery,
+                competentAuthoritiesQuery,
                 executingAuthorityLevelQuery]);
 
         return new ConceptVersie(
@@ -178,6 +192,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asEnums(TargetAudienceType, targetAudiences.map(r => r?.['targetAudience']), id),
             this.asEnums(ThemeType, themes.map(r => r?.['theme']), id),
             this.asEnums(CompetentAuthorityLevelType, competentAuthorityLevels.map(r => r?.['competentAuthorityLevel']), id),
+            this.asIris(competentAuthorities.map(r => r?.['competentAuthority'])),
             this.asEnums(ExecutingAuthorityLevelType, executingAuthorityLevels.map(r => r?.['executingAuthorityLevel']), id),
         );
     }
@@ -211,6 +226,10 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             throw new Error(`could not map <${value}> for iri: <${id}>`);
         }
         return undefined;
+    }
+
+    private asIris(values: any[]): Set<Iri> {
+        return new Set(values.map(value => value.value));
     }
 
 }

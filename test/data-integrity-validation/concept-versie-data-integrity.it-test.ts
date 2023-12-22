@@ -35,7 +35,7 @@ describe('Concept Versie Data Integrity Validation', () => {
             for (const result of conceptVersieIds) {
                 try {
                     const id = result['id'].value;
-                const conceptVersieForId = await repository.findById(id);
+                    const conceptVersieForId = await repository.findById(id);
                     expect(conceptVersieForId.id).toEqual(id);
                 } catch(e) {
                     console.log(e);

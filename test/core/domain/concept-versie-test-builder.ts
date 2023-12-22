@@ -9,6 +9,7 @@ import {
     ThemeType
 } from "../../../src/core/domain/concept-versie";
 import {TaalString} from "../../../src/core/domain/taal-string";
+import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 
 export class ConceptVersieTestBuilder {
 
@@ -54,6 +55,7 @@ export class ConceptVersieTestBuilder {
     public static readonly TARGET_AUDIENCES = new Set([TargetAudienceType.BURGER, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.ORGANISATIE]);
     public static readonly THEMES = new Set([ThemeType.CULTUURSPORTVRIJETIJD, ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]);
     public static readonly COMPETENT_AUTHORITY_LEVELS = new Set([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.EUROPEES]);
+    public static readonly COMPETENT_AUTHORITIES = new Set([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]);
     public static readonly EXECUTING_AUTHORITY_LEVELS = new Set([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN]);
 
     private id: Iri;
@@ -68,6 +70,7 @@ export class ConceptVersieTestBuilder {
     private targetAudiences: Set<TargetAudienceType> = new Set();
     private themes: Set<ThemeType> = new Set();
     private competentAuthorityLevels: Set<CompetentAuthorityLevelType> = new Set();
+    private competentAuthorities: Set<Iri> = new Set();
     private executingAuthorityLevels: Set<ExecutingAuthorityLevelType> = new Set();
 
     static buildIri(uniqueId: string): Iri {
@@ -128,6 +131,7 @@ export class ConceptVersieTestBuilder {
             .withTargetAudiences(this.TARGET_AUDIENCES)
             .withThemes(this.THEMES)
             .withCompetentAuthorityLevels(this.COMPETENT_AUTHORITY_LEVELS)
+            .withCompetentAuthorities(this.COMPETENT_AUTHORITIES)
             .withExecutingAuthorityLevels(this.EXECUTING_AUTHORITY_LEVELS);
     }
 
@@ -191,6 +195,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withCompetentAuthorities(competentAuthorities: Set<Iri>): ConceptVersieTestBuilder {
+        this.competentAuthorities = competentAuthorities;
+        return this;
+    }
+
     public withExecutingAuthorityLevels(executingAuthorityLevels: Set<ExecutingAuthorityLevelType>): ConceptVersieTestBuilder {
         this.executingAuthorityLevels = executingAuthorityLevels;
         return this;
@@ -210,6 +219,7 @@ export class ConceptVersieTestBuilder {
             this.targetAudiences,
             this.themes,
             this.competentAuthorityLevels,
+            this.competentAuthorities,
             this.executingAuthorityLevels);
     }
 

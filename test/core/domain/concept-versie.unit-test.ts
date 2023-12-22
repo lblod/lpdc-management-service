@@ -9,6 +9,7 @@ import {
 import {uuid} from "../../../mu-helper";
 import {ConceptVersieTestBuilder} from "./concept-versie-test-builder";
 import {TaalString} from "../../../src/core/domain/taal-string";
+import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 
 describe('is functionally changed', () => {
 
@@ -250,6 +251,33 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.FEDERAAL]))
+                .build()],
+        ['competent authorities updated',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
+                .build()],
+        ['competent authorities added',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]))
+                .build()],
+        ['competent authorities removed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build()],
         ['executing Authority Level updated',
             ConceptVersieTestBuilder

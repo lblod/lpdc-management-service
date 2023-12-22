@@ -193,6 +193,9 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${Array.from(ConceptVersieTestBuilder.EXECUTING_AUTHORITY_LEVELS)[0]}>`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${Array.from(ConceptVersieTestBuilder.EXECUTING_AUTHORITY_LEVELS)[1]}>`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${Array.from(ConceptVersieTestBuilder.EXECUTING_AUTHORITY_LEVELS)[2]}>`,
+                    `<${conceptVersieId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptVersieTestBuilder.COMPETENT_AUTHORITIES)[0]}>`,
+                    `<${conceptVersieId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptVersieTestBuilder.COMPETENT_AUTHORITIES)[1]}>`,
+                    `<${conceptVersieId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptVersieTestBuilder.COMPETENT_AUTHORITIES)[2]}>`,
                 ]);
 
             //TODO LPDC-916: more realistic to also save the 'concept type? of an enum' in the database ? e.g. type, etc. (but that should be a separate query then ...)

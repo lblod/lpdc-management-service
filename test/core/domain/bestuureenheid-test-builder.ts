@@ -3,6 +3,10 @@ import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/co
 import {uuid} from "../../../mu-helper";
 
 export class BestuurseenheidTestBuilder {
+    public static readonly PEPINGEN_IRI = BestuurseenheidTestBuilder.buildIri('73840d393bd94828f0903e8357c7f328d4bf4b8fbd63adbfa443e784f056a589');
+    public static readonly HOUTHALEN_HELCHTEREN_IRI = BestuurseenheidTestBuilder.buildIri('d760812063231cc45ced3fa65a7cd54920329178c8df7e891aa12db442e6606a');
+    public static readonly BORGLOON_IRI = BestuurseenheidTestBuilder.buildIri('05441122597e0b20b61a8968ea1247c07f9014aad1f1f0709d0b1234e3dfbc2f');
+
     private id: Iri;
     private prefLabel: string;
     private classificatieCode: BestuurseenheidClassificatieCode;
@@ -20,7 +24,7 @@ export class BestuurseenheidTestBuilder {
 
     static aPepingen(): BestuurseenheidTestBuilder {
         return new BestuurseenheidTestBuilder()
-            .withId(BestuurseenheidTestBuilder.buildIri('73840d393bd94828f0903e8357c7f328d4bf4b8fbd63adbfa443e784f056a589'))
+            .withId(this.PEPINGEN_IRI)
             .withPrefLabel('Pepingen')
             .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE);
     }

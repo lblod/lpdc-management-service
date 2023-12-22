@@ -28,10 +28,11 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 conceptVersie.startDate ? `${sparqlEscapeUri(conceptVersie.id)} schema:startDate ${sparqlEscapeDateTime(conceptVersie.startDate.toISOString())}` : undefined,
                 conceptVersie.endDate ? `${sparqlEscapeUri(conceptVersie.id)} schema:endDate ${sparqlEscapeDateTime(conceptVersie.endDate.toISOString())}` : undefined,
                 conceptVersie.type ? `${sparqlEscapeUri(conceptVersie.id)} dct:type ${sparqlEscapeUri(conceptVersie.type)}` : undefined,
-                ...this.enumsToTriples(conceptVersie.id, "lpdcExt:targetAudience", conceptVersie.targetAudiences),
-                ...this.enumsToTriples(conceptVersie.id, "m8g:thematicArea", conceptVersie.themes),
-                ...this.enumsToTriples(conceptVersie.id, "lpdcExt:competentAuthorityLevel", conceptVersie.competentAuthorityLevels),
-                ...this.enumsToTriples(conceptVersie.id, "lpdcExt:executingAuthorityLevel", conceptVersie.executingAuthorityLevels),
+                ...this.valuesToTriples(conceptVersie.id, "lpdcExt:targetAudience", conceptVersie.targetAudiences),
+                ...this.valuesToTriples(conceptVersie.id, "m8g:thematicArea", conceptVersie.themes),
+                ...this.valuesToTriples(conceptVersie.id, "lpdcExt:competentAuthorityLevel", conceptVersie.competentAuthorityLevels),
+                ...this.valuesToTriples(conceptVersie.id, "m8g:hasCompetentAuthority", conceptVersie.competentAuthorities),
+                ...this.valuesToTriples(conceptVersie.id, "lpdcExt:executingAuthorityLevel", conceptVersie.executingAuthorityLevels),
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,
@@ -53,7 +54,7 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 .map(tuple => `${sparqlEscapeUri(subject)} ${predicate} """${tuple[1]}"""@${tuple[0]}`) : [];
     }
 
-    private enumsToTriples(subject: Iri, predicate: string, enumValues: Set<any>): string[] {
+    private valuesToTriples(subject: Iri, predicate: string, enumValues: Set<any>): string[] {
         return Array.from(enumValues)
             .map(e => `${sparqlEscapeUri(subject)} ${predicate} ${sparqlEscapeUri(e)}`);
     }
