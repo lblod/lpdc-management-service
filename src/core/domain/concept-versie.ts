@@ -21,6 +21,7 @@ export class ConceptVersie {
     private readonly _executingAuthorityLevels: Set<ExecutingAuthorityLevelType>;
     private readonly _executingAuthorities: Set<Iri>;
     private readonly _publicationMedia: Set<PublicationMediumType>;
+    private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>
 
     //TODO LPDC-916: extract into shared helper ... or use lodash?
     private asSortedSet<T>(aSet: Set<T>) : Set<T> {
@@ -45,6 +46,7 @@ export class ConceptVersie {
                 executingAuthorityLevels: Set<ExecutingAuthorityLevelType>,
                 executingAuthorities: Set<Iri>,
                 publicationMedia: Set<PublicationMediumType>,
+                yourEuropeCategories: Set<YourEuropeCategoryType>
                 ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -63,6 +65,7 @@ export class ConceptVersie {
         this._executingAuthorityLevels = this.asSortedSet(executingAuthorityLevels);
         this._executingAuthorities = this.asSortedSet(executingAuthorities);
         this._publicationMedia = this.asSortedSet(publicationMedia);
+        this._yourEuropeCategories = this.asSortedSet(yourEuropeCategories);
     }
 
     get id(): Iri {
@@ -129,6 +132,10 @@ export class ConceptVersie {
         return this._publicationMedia;
     }
 
+    get yourEuropeCategories(): Set<YourEuropeCategoryType> {
+        return this._yourEuropeCategories;
+    }
+
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
         return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
             || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
@@ -144,7 +151,8 @@ export class ConceptVersie {
             || !_.isEqual(aConceptVersie.competentAuthorities, anotherConceptVersie.competentAuthorities)
             || !_.isEqual(aConceptVersie.executingAuthorityLevels, anotherConceptVersie.executingAuthorityLevels)
             || !_.isEqual(aConceptVersie.executingAuthorities, anotherConceptVersie.executingAuthorities)
-            || !_.isEqual(aConceptVersie.publicationMedia, anotherConceptVersie.publicationMedia);
+            || !_.isEqual(aConceptVersie.publicationMedia, anotherConceptVersie.publicationMedia)
+            || !_.isEqual(aConceptVersie.yourEuropeCategories, anotherConceptVersie.yourEuropeCategories);
     }
 
 }
@@ -199,4 +207,140 @@ export enum ExecutingAuthorityLevelType {
 export enum PublicationMediumType {
     YOUREUROPE = 'https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/YourEurope',
     RECHTENVERKENNER = 'https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/Rechtenverkenner',
+}
+
+export enum YourEuropeCategoryType {
+    BEDRIJF = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Bedrijf',
+    BEDRIJFAANSPRAKELIJKHEIDBESTUURDERS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfAansprakelijkheidBestuurders',
+    BEDRIJFFUSIEVERKOOP = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfFusieVerkoop',
+    BEDRIJFINSOLVENTIELIQUIDATIE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfInsolventieLiquidatie',
+    BEDRIJFINTELLECTUELEEIGENDOMSRECHTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfIntellectueleEigendomsrechten',
+    BEDRIJFKREDIETVERZEKERING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfKredietVerzekering',
+    BEDRIJFONLINEBETAALFUNCTIES = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfOnlineBetaalFuncties',
+    BEDRIJFOVEREENKOMSTENRECHT = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfOvereenkomstenrecht',
+    BEDRIJFPERSOONSGEGEVENS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfPersoonsgegevens',
+    BEDRIJFREGISTRATIEPROCEDURESRECHTSVORMEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfRegistratieproceduresRechtsvormen',
+    BEDRIJFTRANSPARANTIE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfTransparantie',
+    BEDRIJFVERPLAATSING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfVerplaatsing',
+    BEDRIJFSFINANCIERING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Bedrijfsfinanciering',
+    BEDRIJFSFINANCIERINGFINANCIERINGNATIONAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfsfinancieringFinancieringNationaal',
+    BEDRIJFSFINANCIERINGFINANCIERINGUNIE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfsfinancieringFinancieringUnie',
+    BEDRIJFSFINANCIERINGONDERNEMERSINITIATIEVEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BedrijfsfinancieringOndernemersInitiatieven',
+    BELASTINGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Belastingen',
+    BELASTINGENACCIJNZEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BelastingenAccijnzen',
+    BELASTINGENBTW = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BelastingenBTW',
+    BELASTINGENDOUANEPROCEDURES = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BelastingenDouaneprocedures',
+    BELASTINGENDOUANERECHTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BelastingenDouanerechten',
+    BELASTINGENOVERIGEBELASTINGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BelastingenOverigeBelastingen',
+    BESCHERMINGPERSOONSGEGEVENS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BeschermingPersoonsgegevens',
+    BESCHERMINGPERSOONSGEGEVENSUITOEFENINGRECHTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BeschermingPersoonsgegevensUitoefeningRechten',
+    BURGERENFAMILIERECHTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BurgerEnFamilieRechten',
+    BURGERENFAMILIERECHTENERFRECHTENENPLICHTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BurgerEnFamilieRechtenErfrechtenEnPlichten',
+    BURGERENFAMILIERECHTENGENDERIDENTITEIT = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BurgerEnFamilieRechtenGenderIdentiteit',
+    BURGERENFAMILIERECHTENKINDEREN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BurgerEnFamilieRechtenKinderen',
+    BURGERENFAMILIERECHTENONTVOERINGKINDEREN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BurgerEnFamilieRechtenOntvoeringKinderen',
+    BURGERENFAMILIERECHTENPARTNERS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/BurgerEnFamilieRechtenPartners',
+    CONSUMENTENRECHTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Consumentenrechten',
+    CONSUMENTENRECHTENAANKOOP = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ConsumentenrechtenAankoop',
+    CONSUMENTENRECHTENBANKREKENING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ConsumentenrechtenBankrekening',
+    CONSUMENTENRECHTENBETALINGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ConsumentenrechtenBetalingen',
+    CONSUMENTENRECHTENCONSUMENTENRECHTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ConsumentenrechtenConsumentenrechten',
+    CONSUMENTENRECHTENHUURMOTORVOERTUIGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ConsumentenrechtenHuurMotorvoertuigen',
+    CONSUMENTENRECHTENNUTSVOORZIENINGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ConsumentenrechtenNutsvoorzieningen',
+    CONSUMENTENRECHTENVEILIGHEID = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ConsumentenrechtenVeiligheid',
+    DIENSTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Diensten',
+    DIENSTENERKENNINGBEROEPSKWALIFICATIES = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/DienstenErkenningBeroepskwalificaties',
+    DIENSTENKENNISGEVINGGRENSOVERSCHRIJDENDEACTIVITEITEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/DienstenKennisgevingGrensoverschrijdendeActiviteiten',
+    DIENSTENLICENTIESVERGUNNINGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/DienstenLicentiesVergunningen',
+    GEZONDHEIDVEILIGHEIDWERK = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GezondheidVeiligheidWerk',
+    GEZONDHEIDVEILIGHEIDWERKVERPLICHTINGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GezondheidVeiligheidWerkVerplichtingen',
+    GEZONDHEIDSZORG = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Gezondheidszorg',
+    GEZONDHEIDSZORGGENEESMIDDELENKOPEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GezondheidszorgGeneesmiddelenKopen',
+    GEZONDHEIDSZORGMEDISCHEBEHANDELING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GezondheidszorgMedischeBehandeling',
+    GEZONDHEIDSZORGNOODNUMMERS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GezondheidszorgNoodnummers',
+    GEZONDHEIDSZORGPREVENTIEVEOPENBAREGEZONDHEIDSMAATREGELEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GezondheidszorgPreventieveOpenbareGezondheidsmaatregelen',
+    GEZONDHEIDSZORGWOONZORGCENTRUM = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GezondheidszorgWoonzorgcentrum',
+    GEZONDHEIDSZORGZIEKTEVERZEKERING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GezondheidszorgZiekteverzekering',
+    GOEDEREN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Goederen',
+    GOEDERENCEMARKERING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GoederenCEMarkering',
+    GOEDERENERKENNINGZONDERSPECIFICATIES = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GoederenErkenningZonderSpecificaties',
+    GOEDERENGEVAARLIJKESTOFFEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GoederenGevaarlijkeStoffen',
+    GOEDERENKEURMERKEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GoederenKeurmerken',
+    GOEDERENNORMENSPECIFICATIESCERTIFICERING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GoederenNormenSpecificatiesCertificering',
+    GOEDERENPRODUCTENMETGEBREKEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GoederenProductenMetGebreken',
+    GOEDERENRECYCLAGE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GoederenRecyclage',
+    GOEDERENVERKOOPOPAFSTAND = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GoederenVerkoopOpAfstand',
+    GOEDERENVOORSCHRIFTENVEREISTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/GoederenVoorschriftenVereisten',
+    ONDERWIJSOFSTAGE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/OnderwijsOfStage',
+    ONDERWIJSOFSTAGEONDERWIJSSTELSEL = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/OnderwijsOfStageOnderwijsstelsel',
+    ONDERWIJSOFSTAGEONDERZOEK = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/OnderwijsOfStageOnderzoek',
+    ONDERWIJSOFSTAGESTAGE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/OnderwijsOfStageStage',
+    ONDERWIJSOFSTAGEVRIJWILLIGERSWERK = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/OnderwijsOfStageVrijwilligerswerk',
+    OVERHEIDSOPDRACHTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Overheidsopdrachten',
+    OVERHEIDSOPDRACHTENDEELNAME = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/OverheidsopdrachtenDeelname',
+    OVERHEIDSOPDRACHTENMELDINGONREGELMATIGHEDEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/OverheidsopdrachtenMeldingOnregelmatigheden',
+    OVERHEIDSOPDRACHTENONLINEINSCHRIJVING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/OverheidsopdrachtenOnlineInschrijving',
+    PROCEDUREGEBOORTE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureGeboorte',
+    PROCEDUREGEBOORTEBEWIJS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureGeboorteBewijs',
+    PROCEDUREPENSIONERING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedurePensionering',
+    PROCEDUREPENSIONERINGAANVRAAGUITKERING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedurePensioneringAanvraagUitkering',
+    PROCEDUREPENSIONERINGVERZOEKOMINFORMATIE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedurePensioneringVerzoekOmInformatie',
+    PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJF = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStartenExploiterenSluitenBedrijf',
+    PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFAANGIFTEVENNOOTSCHAPSBELASTING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStartenExploiterenSluitenBedrijfAangifteVennootschapsbelasting',
+    PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFBEEINDIGINGARBEIDSOVEREENKOMST = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStartenExploiterenSluitenBedrijfBeeindigingArbeidsovereenkomst',
+    PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFBETALINGSOCIALEBIJDRAGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStartenExploiterenSluitenBedrijfBetalingSocialeBijdragen',
+    PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFKENNISGEVING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStartenExploiterenSluitenBedrijfKennisgeving',
+    PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFPENSIOENENVERZEKERINGSREGELINGENWERKGEVER = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStartenExploiterenSluitenBedrijfPensioenEnVerzekeringsregelingenWerkgever',
+    PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFPENSIOENENVERZEKERINGSREGELINGENWERKNEMER = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStartenExploiterenSluitenBedrijfPensioenEnVerzekeringsregelingenWerknemer',
+    PROCEDURESTUDIE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStudie',
+    PROCEDURESTUDIEAANVRAAGTERTIAIRONDERWIJS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStudieAanvraagTertiairOnderwijs',
+    PROCEDURESTUDIEVERZOEKERKENNINGDIPLOMA = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStudieVerzoekErkenningDiploma',
+    PROCEDURESTUDIEVERZOEKTOELATINGTERTIAIRONDERWIJS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureStudieVerzoekToelatingTertiairOnderwijs',
+    PROCEDUREVERBLIJF = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureVerblijf',
+    PROCEDUREVERBLIJFBEWIJS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureVerblijfBewijs',
+    PROCEDUREVERHUIZING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureVerhuizing',
+    PROCEDUREVERHUIZINGADRESWIJZIGING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureVerhuizingAdreswijziging',
+    PROCEDUREVERHUIZINGEMISSIESTICKERS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureVerhuizingEmissiestickers',
+    PROCEDUREVERHUIZINGINSCHRIJVINGMOTORVOERTUIG = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureVerhuizingInschrijvingMotorvoertuig',
+    PROCEDUREVERHUIZINGSTICKERSWEGENINFRASTRUCTUUR = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureVerhuizingStickersWegeninfrastructuur',
+    PROCEDUREWERK = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureWerk',
+    PROCEDUREWERKAANGIFTEINKOMSTENBELASTING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureWerkAangifteInkomstenbelasting',
+    PROCEDUREWERKAANVRAAGZIEKTEVERZEKERINGSKAART = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureWerkAanvraagZiekteverzekeringskaart',
+    PROCEDUREWERKVERZOEK = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureWerkVerzoek',
+    PROCEDUREWERKWIJZIGINGBEROEPSSITUATIE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ProcedureWerkWijzigingBeroepssituatie',
+    REIZEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Reizen',
+    REIZENDOCUMENTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ReizenDocumenten',
+    REIZENELEKTRONISCHEGEGEVENS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ReizenElektronischeGegevens',
+    REIZENGOEDEREN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ReizenGoederen',
+    REIZENONDERSTEUNINGBEPERKTEMOBILITEIT = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ReizenOndersteuningBeperkteMobiliteit',
+    REIZENRECHTENVERPLICHTINGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/ReizenRechtenVerplichtingen',
+    VERBLIJF = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Verblijf',
+    VERBLIJFKOOPVERKOOP = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VerblijfKoopVerkoop',
+    VERBLIJFNATURALISATIE = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VerblijfNaturalisatie',
+    VERBLIJFOVERLIJDEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VerblijfOverlijden',
+    VERBLIJFVERBLIJFSKAARTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VerblijfVerblijfskaarten',
+    VERBLIJFVERHUIZING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VerblijfVerhuizing',
+    VERBLIJFVERKIEZINGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VerblijfVerkiezingen',
+    VOERTUIGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Voertuigen',
+    VOERTUIGENKOOPVERKOOP = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VoertuigenKoopVerkoop',
+    VOERTUIGENVERKEERSREGELS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VoertuigenVerkeersregels',
+    VOERTUIGENVERLENINGRIJBEWIJZEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VoertuigenVerleningRijbewijzen',
+    VOERTUIGENVERPLAATSING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VoertuigenVerplaatsing',
+    VOERTUIGENVERPLICHTEVERZEKERING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VoertuigenVerplichteVerzekering',
+    WERKENPENSIONERING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerkEnPensionering',
+    WERKENPENSIONERINGAANSPRAKELIJKHEIDENVERZEKERINGEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerkEnPensioneringAansprakelijkheidEnVerzekeringen',
+    WERKENPENSIONERINGARBEIDSVOORWAARDEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerkEnPensioneringArbeidsvoorwaarden',
+    WERKENPENSIONERINGBELASTINGHEFFING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerkEnPensioneringBelastingheffing',
+    WERKENPENSIONERINGERKENNINGKWALIFICATIES = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerkEnPensioneringErkenningKwalificaties',
+    WERKENPENSIONERINGGAANWERKEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerkEnPensioneringGaanWerken',
+    WERKENPENSIONERINGGELIJKEBEHANDELING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerkEnPensioneringGelijkeBehandeling',
+    WERKENPENSIONERINGGEZONDHEIDENVEILIGHEID = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerkEnPensioneringGezondheidEnVeiligheid',
+    WERKENPENSIONERINGSOCIALEZEKERHEIDSRECHTEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerkEnPensioneringSocialezekerheidsrechten',
+    WERKENPENSIONERINGWERKZOEKEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerkEnPensioneringWerkZoeken',
+    WERKNEMERS = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/Werknemers',
+    WERKNEMERSARBEIDSVOORWAARDEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerknemersArbeidsvoorwaarden',
+    WERKNEMERSGELIJKEBEHANDELING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerknemersGelijkeBehandeling',
+    WERKNEMERSPERSONEELSVERTEGENWOORDIGING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerknemersPersoneelsvertegenwoordiging',
+    WERKNEMERSSOCIALEZEKERHEID = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerknemersSocialezekerheid',
+    WERKNEMERSTEWERKSTELLING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerknemersTewerkstelling',
 }

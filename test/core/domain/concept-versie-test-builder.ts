@@ -7,7 +7,8 @@ import {
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
-    ThemeType
+    ThemeType,
+    YourEuropeCategoryType
 } from "../../../src/core/domain/concept-versie";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
@@ -66,6 +67,8 @@ export class ConceptVersieTestBuilder {
 
     public static readonly PUBLICATION_MEDIA = new Set([PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER]);
 
+    public static readonly YOUR_EUROPE_CATEGORIES = new Set([YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE]);
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
@@ -82,6 +85,7 @@ export class ConceptVersieTestBuilder {
     private executingAuthorityLevels: Set<ExecutingAuthorityLevelType> = new Set();
     private executingAuthorities: Set<Iri> = new Set();
     private publicationMedia: Set<PublicationMediumType> = new Set();
+    private yourEuropeCategories: Set<YourEuropeCategoryType> = new Set();
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -144,7 +148,8 @@ export class ConceptVersieTestBuilder {
             .withCompetentAuthorities(this.COMPETENT_AUTHORITIES)
             .withExecutingAuthorityLevels(this.EXECUTING_AUTHORITY_LEVELS)
             .withExecutingAuthorities(this.EXECUTING_AUTHORITIES)
-            .withPublicationMedia(this.PUBLICATION_MEDIA);
+            .withPublicationMedia(this.PUBLICATION_MEDIA)
+            .withYourEuropeCategories(this.YOUR_EUROPE_CATEGORIES);
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -227,6 +232,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withYourEuropeCategories(yourEuropeCategories: Set<YourEuropeCategoryType>): ConceptVersieTestBuilder {
+        this.yourEuropeCategories = yourEuropeCategories;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -244,7 +254,8 @@ export class ConceptVersieTestBuilder {
             this.competentAuthorities,
             this.executingAuthorityLevels,
             this.executingAuthorities,
-            this.publicationMedia);
+            this.publicationMedia,
+            this.yourEuropeCategories);
     }
 
 }

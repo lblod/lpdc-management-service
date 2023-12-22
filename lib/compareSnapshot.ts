@@ -23,7 +23,6 @@ export async function isConceptFunctionallyChanged(newSnapshotUri: string, curre
     const newConceptVersie = await conceptVersieRepository.findById(newSnapshotUri);
 
     return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie)
-        || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.yourEuropeCategory)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.keywords)
         || compareRequirement(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareProcedure(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
@@ -210,7 +209,6 @@ const Predicates = {
     title: 'http://purl.org/dc/terms/title',
     description: 'http://purl.org/dc/terms/description',
     keywords: 'http://www.w3.org/ns/dcat#keyword',
-    yourEuropeCategory: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory',
     hasRequirement: 'http://vocab.belgif.be/ns/publicservice#hasRequirement',
     hasSupportingEvidence: 'http://data.europa.eu/m8g/hasSupportingEvidence',
     order: 'http://www.w3.org/ns/shacl#order',

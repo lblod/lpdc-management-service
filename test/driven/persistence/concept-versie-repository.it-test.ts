@@ -10,7 +10,8 @@ import {
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
-    ThemeType
+    ThemeType,
+    YourEuropeCategoryType
 } from "../../../src/core/domain/concept-versie";
 
 describe('ConceptVersieRepository', () => {
@@ -202,6 +203,9 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${Array.from(ConceptVersieTestBuilder.EXECUTING_AUTHORITIES)[2]}>`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${Array.from(ConceptVersieTestBuilder.PUBLICATION_MEDIA)[0]}>`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${Array.from(ConceptVersieTestBuilder.PUBLICATION_MEDIA)[1]}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptVersieTestBuilder.YOUR_EUROPE_CATEGORIES)[0]}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptVersieTestBuilder.YOUR_EUROPE_CATEGORIES)[1]}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptVersieTestBuilder.YOUR_EUROPE_CATEGORIES)[2]}>`,
                 ]);
 
             //TODO LPDC-916: more realistic to also save the 'concept type? of an enum' in the database ? e.g. type, etc. (but that should be a separate query then ...)
@@ -347,6 +351,29 @@ describe('ConceptVersieRepository', () => {
                 ]);
 
             await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> for iri: <${conceptVersieId}>`));
+        });
+
+        for(const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
+            test(`YourEuropeCategoryType ${yourEuropeCategory} can be mapped`, async () => {
+                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withYourEuropeCategories(new Set([yourEuropeCategory])).build();
+                await repository.save(conceptVersie);
+
+                const actualConceptVersie = await repository.findById(conceptVersie.id);
+
+                expect(actualConceptVersie).toEqual(conceptVersie);
+            });
+        }
+
+        test('Unknown YourEuropeCategoryType can not be mapped', async () => {
+            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory>`,
+                ]);
+
+            await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> for iri: <${conceptVersieId}>`));
         });
     });
 });

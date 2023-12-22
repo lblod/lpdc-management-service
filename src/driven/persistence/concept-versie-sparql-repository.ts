@@ -9,7 +9,8 @@ import {
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
-    ThemeType
+    ThemeType,
+    YourEuropeCategoryType
 } from "../../core/domain/concept-versie";
 import {TaalString} from "../../core/domain/taal-string";
 import {Iri} from "../../core/domain/shared/iri";
@@ -180,6 +181,17 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
+        const yourEuropeCategoriesQuery = this.queryList(`
+           ${PREFIX.lpdcExt}
+            
+            SELECT ?yourEuropeCategory
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} lpdcExt:yourEuropeCategory ?yourEuropeCategory. 
+                    }
+                }            
+        `);
+
 
         const [titles,
             descriptions,
@@ -193,6 +205,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             executingAuthorityLevels,
             executingAuthorities,
             publicationMedia,
+            yourEuropeCategories,
         ] =
             await Promise.all([
                 titlesQuery,
@@ -207,6 +220,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 executingAuthorityLevelQuery,
                 executingAuthoritiesQuery,
                 publicationMediaQuery,
+                yourEuropeCategoriesQuery,
             ]);
 
         return new ConceptVersie(
@@ -226,6 +240,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asEnums(ExecutingAuthorityLevelType, executingAuthorityLevels.map(r => r?.['executingAuthorityLevel']), id),
             this.asIris(executingAuthorities.map(r => r?.['executingAuthority'])),
             this.asEnums(PublicationMediumType, publicationMedia.map(r => r?.['publicationMedium']), id),
+            this.asEnums(YourEuropeCategoryType, yourEuropeCategories.map(r => r?.['yourEuropeCategory']), id),
         );
     }
 

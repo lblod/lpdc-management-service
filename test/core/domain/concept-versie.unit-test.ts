@@ -5,7 +5,8 @@ import {
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
-    ThemeType
+    ThemeType,
+    YourEuropeCategoryType
 } from "../../../src/core/domain/concept-versie";
 import {uuid} from "../../../mu-helper";
 import {ConceptVersieTestBuilder} from "./concept-versie-test-builder";
@@ -360,6 +361,33 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
+                .build()],
+        ['your europe category updated',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withYourEuropeCategories(new Set([YourEuropeCategoryType.GOEDERENRECYCLAGE]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFINTELLECTUELEEIGENDOMSRECHTEN]))
+                .build()],
+        ['your europe category added',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING, YourEuropeCategoryType.GEZONDHEIDSZORG]))
+                .build()],
+        ['your europe category removed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withYourEuropeCategories(new Set([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withYourEuropeCategories(new Set([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING]))
                 .build()],
 
     ];
