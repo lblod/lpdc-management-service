@@ -9,6 +9,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
     async findById(id: string): Promise<ConceptVersie> {
 
+        //TODO LPDC-916: verify the cost of these OPTIONAL blocks ... and if more performant, do separate queries ...
         const findEntityAndUniqueTriplesResult = await this.querySingleRow(`
             ${PREFIX.lpdcExt}
             ${PREFIX.schema}
@@ -31,6 +32,10 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         if (!findEntityAndUniqueTriplesResult) {
             throw new Error(`no concept versie found for iri: ${id}`);
         }
+
+        //TODO LPDC-916: add to query a VALUES (id's / IRIs): so we can reuse for others that have a title?
+        //TODO LPDC-916: extract these queries into SparqlQueryFragments functions
+        //TODO LPDC-916: interface: titles(ids: Iri[]): returns an object with as key an IRI, and as Value: TaalString | undefined ...
 
         const titlesQuery = this.queryList(`
             ${PREFIX.dct}

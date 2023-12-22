@@ -10,9 +10,17 @@ describe('Concept Versie Data Integrity Validation', () => {
     const repository = new ConceptVersieSparqlTestRepository(endPoint);
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 
-    test('Load all concept versies; print errors to console.log', async () => {
+    //TODO LPDC-916: using a story representation for each queried -> verify with all the raw triples, queried directly from the database -> to ascertain we queried all data ...
+    //TODO LPDC-916: load data concurrently ...
+    //TODO LPDC-916: load data from ldes stream of production dump and verify results ...
 
-        const query = `
+    //TODO LPDC-916: unskip test
+    //TODO LPDC-916: not fully stable yet. sometimes it blocks ... and we get timeout exceptions : maybe increase the workerthreads, async queue in virtuoso
+    //TODO LPDC-916: we need to set SUDO_QUERY_RETRY_TIMEOUT_INCREMENT_FACTOR to 0 (otherwise the timeout is 27923 millisecs ...)
+    test('Load all concept versies; print errors to console.log', async () => {
+        //do {
+
+            const query = `
              ${PREFIX.lpdcExt}
             SELECT ?id WHERE {
                 GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> {
@@ -20,23 +28,21 @@ describe('Concept Versie Data Integrity Validation', () => {
                 }
             }
         `;
-        const conceptVersieIds = await directDatabaseAccess.queryList(query);
+            const conceptVersieIds = await directDatabaseAccess.queryList(query);
 
-        const before = new Date().valueOf();
+            const before = new Date().valueOf();
 
-        console.log(new Date().toISOString());
+            console.log(new Date().toISOString());
 
-        for (const result of conceptVersieIds) {
-            try {
+            for (const result of conceptVersieIds) {
                 const id = result['id'].value;
                 const conceptVersieForId = await repository.findById(id);
                 expect(conceptVersieForId.id).toEqual(id);
-            } catch (e) {
-                console.log(e);
             }
-        }
 
-        console.log(`Verifying in total ${conceptVersieIds.length} concept versies took on average ${(new Date().valueOf() - before) / conceptVersieIds.length} ms per concept`);
-    });
+            console.log(`Verifying in total ${conceptVersieIds.length} concept versies took on average ${(new Date().valueOf() - before) / conceptVersieIds.length} ms per concept`);
+            // eslint-disable-next-line no-constant-condition
+        //} while (true);
+    }, 60000);
 
 });

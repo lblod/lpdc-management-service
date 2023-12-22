@@ -9,5 +9,6 @@ services:
       DEFAULT_GRAPH: "http://mu.semte.ch/application"
     volumes:
       - ./data-tests/db:/data
+      - ./virtuoso.ini:/data/virtuoso.ini
     ports:
       - "8899:8890"
