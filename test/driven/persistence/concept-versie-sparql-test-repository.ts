@@ -20,14 +20,15 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
             'http://mu.semte.ch/graphs/lpdc/ldes-data',
             [
                 `${sparqlEscapeUri(conceptVersie.id)} a lpdcExt:ConceptualPublicService`,
-                ...this.toTriples(conceptVersie.id, "dct:title", conceptVersie.title),
-                ...this.toTriples(conceptVersie.id, "dct:description", conceptVersie.description),
-                ...this.toTriples(conceptVersie.id, "lpdcExt:additionalDescription", conceptVersie.additionalDescription),
-                ...this.toTriples(conceptVersie.id, "lpdcExt:exception", conceptVersie.exception),
-                ...this.toTriples(conceptVersie.id, "lpdcExt:regulation", conceptVersie.regulation),
-                conceptVersie.startDate ? `${sparqlEscapeUri(conceptVersie.id)} schema:startDate ${sparqlEscapeDateTime(conceptVersie.startDate.toISOString())}`: undefined,
-                conceptVersie.endDate ? `${sparqlEscapeUri(conceptVersie.id)} schema:endDate ${sparqlEscapeDateTime(conceptVersie.endDate.toISOString())}`: undefined,
+                ...this.taalStringToTriples(conceptVersie.id, "dct:title", conceptVersie.title),
+                ...this.taalStringToTriples(conceptVersie.id, "dct:description", conceptVersie.description),
+                ...this.taalStringToTriples(conceptVersie.id, "lpdcExt:additionalDescription", conceptVersie.additionalDescription),
+                ...this.taalStringToTriples(conceptVersie.id, "lpdcExt:exception", conceptVersie.exception),
+                ...this.taalStringToTriples(conceptVersie.id, "lpdcExt:regulation", conceptVersie.regulation),
+                conceptVersie.startDate ? `${sparqlEscapeUri(conceptVersie.id)} schema:startDate ${sparqlEscapeDateTime(conceptVersie.startDate.toISOString())}` : undefined,
+                conceptVersie.endDate ? `${sparqlEscapeUri(conceptVersie.id)} schema:endDate ${sparqlEscapeDateTime(conceptVersie.endDate.toISOString())}` : undefined,
                 conceptVersie.type ? `${sparqlEscapeUri(conceptVersie.id)} dct:type ${sparqlEscapeUri(conceptVersie.type)}` : undefined,
+                ...this.enumsToTriples(conceptVersie.id, "lpdcExt:targetAudience", conceptVersie.targetAudiences),
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,
@@ -35,7 +36,7 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 PREFIX.schema]);
     }
 
-    private toTriples(subject: Iri, predicate: string, object: TaalString | undefined): string[] {
+    private taalStringToTriples(subject: Iri, predicate: string, object: TaalString | undefined): string[] {
         return object ?
             [
                 ["en", object.en],
@@ -46,6 +47,11 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ["nl-be-x-generated-informal", object.nlGeneratedInformal]]
                 .filter(tuple => tuple[1] != undefined)
                 .map(tuple => `${sparqlEscapeUri(subject)} ${predicate} """${tuple[1]}"""@${tuple[0]}`) : [];
+    }
+
+    private enumsToTriples(subject: Iri, predicate: string, enumValues: Set<any>): string[] {
+        return Array.from(enumValues)
+            .map(e => `${sparqlEscapeUri(subject)} ${predicate} ${sparqlEscapeUri(e)}`);
     }
 
 }

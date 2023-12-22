@@ -2,7 +2,7 @@ import {SparqlRepository} from "./sparql-repository";
 import {PREFIX} from "../../../config";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {ConceptVersieRepository} from "../../core/port/driven/persistence/concept-versie-repository";
-import {ConceptVersie, ProductType} from "../../core/domain/concept-versie";
+import {ConceptVersie, ProductType, TargetAudienceType} from "../../core/domain/concept-versie";
 import {TaalString} from "../../core/domain/taal-string";
 
 export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
@@ -94,7 +94,18 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
-        const [titles, descriptions, additionalDescriptions, exceptions, regulations] = await Promise.all([titlesQuery, descriptionsQuery, additionalDescriptionsQuery, exceptionsQuery, requlationsQuery]);
+        const targetAudiencesQuery = this.queryList(`
+            ${PREFIX.lpdcExt}
+            
+            SELECT ?targetAudience
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} lpdcExt:targetAudience ?targetAudience. 
+                    }
+                }            
+        `);
+
+        const [titles, descriptions, additionalDescriptions, exceptions, regulations, targetAudiences] = await Promise.all([titlesQuery, descriptionsQuery, additionalDescriptionsQuery, exceptionsQuery, requlationsQuery, targetAudiencesQuery]);
 
         return new ConceptVersie(
             findEntityAndUniqueTriplesResult['id'].value,
@@ -105,8 +116,8 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asTaalString(regulations.map(r => r?.['regulation'])),
             this.asDate(findEntityAndUniqueTriplesResult['startDate']?.value),
             this.asDate(findEntityAndUniqueTriplesResult['endDate']?.value),
-            this.asEnum(ProductType, findEntityAndUniqueTriplesResult['type']?.value, id)
-            //TODO LPDC-916: validate that type is in fact a correct ProductType (verify that the value retrieved exists on the enum)
+            this.asEnum(ProductType, findEntityAndUniqueTriplesResult['type']?.value, id),
+            this.asEnums(TargetAudienceType, targetAudiences.map(r => r?.['targetAudience']), id),
         );
     }
 
@@ -122,6 +133,10 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
     private asDate(aValue: string | undefined): Date | undefined {
         return aValue ? new Date(aValue) : undefined;
+    }
+
+    private asEnums<T>(enumObj: T, values: any[], id: string): Set<T[keyof T]>{
+        return new Set(values.map(value => this.asEnum(enumObj, value?.value, id)));
     }
 
     //TODO LPDC-916: generalize ; extract in shared sparql toolkit?

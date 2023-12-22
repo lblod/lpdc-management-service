@@ -4,7 +4,7 @@ import {uuid} from "../../../mu-helper";
 import {ConceptVersieTestBuilder} from "../../core/domain/concept-versie-test-builder";
 import {ConceptVersieSparqlTestRepository} from "./concept-versie-sparql-test-repository";
 import {TaalString} from "../../../src/core/domain/taal-string";
-import {ProductType} from "../../../src/core/domain/concept-versie";
+import {ProductType, TargetAudienceType} from "../../../src/core/domain/concept-versie";
 
 describe('ConceptVersieRepository', () => {
     const repository = new ConceptVersieSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -175,6 +175,9 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <http://schema.org/startDate> """${ConceptVersieTestBuilder.START_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptVersieId}> <http://schema.org/endDate> """${ConceptVersieTestBuilder.END_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptVersieId}> <http://purl.org/dc/terms/type> <${ConceptVersieTestBuilder.TYPE}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptVersieTestBuilder.TARGET_AUDIENCES)[0]}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptVersieTestBuilder.TARGET_AUDIENCES)[1]}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptVersieTestBuilder.TARGET_AUDIENCES)[2]}>`,
                 ]);
 
             //TODO LPDC-916: more realistic to also save the 'concept type? of an enum' in the database ? e.g. type, etc. (but that should be a separate query then ...)
@@ -205,6 +208,29 @@ describe('ConceptVersieRepository', () => {
                 ]);
 
             await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> for iri: <${conceptVersieId}>`));
+        });
+
+        for(const targetAudience of Object.values(TargetAudienceType)) {
+            test(`TargetAudienceType ${targetAudience} can be mapped`, async () => {
+                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withTargetAudiences(new Set([targetAudience])).build();
+                await repository.save(conceptVersie);
+
+                const actualConceptVersie = await repository.findById(conceptVersie.id);
+
+                expect(actualConceptVersie).toEqual(conceptVersie);
+            });
+        }
+
+        test('Unknown Target Audience Type can not be mapped', async () => {
+            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                        `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
+                ]);
+
+            await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience> for iri: <${conceptVersieId}>`));
         });
     });
 });

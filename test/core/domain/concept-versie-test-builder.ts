@@ -1,6 +1,6 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
-import {ConceptVersie, ProductType} from "../../../src/core/domain/concept-versie";
+import {ConceptVersie, ProductType, TargetAudienceType} from "../../../src/core/domain/concept-versie";
 import {TaalString} from "../../../src/core/domain/taal-string";
 
 export class ConceptVersieTestBuilder {
@@ -44,6 +44,7 @@ export class ConceptVersieTestBuilder {
     public static readonly END_DATE = new Date('2027-09-16');
 
     public static readonly TYPE = ProductType.FINANCIEELVOORDEEL;
+    public static readonly TARGET_AUDIENCES = new Set([TargetAudienceType.BURGER, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.ORGANISATIE]);
 
     private id: Iri;
     private title: TaalString | undefined;
@@ -54,6 +55,7 @@ export class ConceptVersieTestBuilder {
     private startDate: Date | undefined;
     private endDate: Date | undefined;
     private type: ProductType | undefined;
+    private targetAudiences: Set<TargetAudienceType> = new Set();
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -109,7 +111,8 @@ export class ConceptVersieTestBuilder {
                     this.REGULATION_NL_GENERATED_INFORMAL))
             .withStartDate(this.START_DATE)
             .withEndDate(this.END_DATE)
-            .withType(this.TYPE);
+            .withType(this.TYPE)
+            .withTargetAudiences(this.TARGET_AUDIENCES);
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -157,6 +160,10 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withTargetAudiences(targetAudiences: Set<TargetAudienceType>): ConceptVersieTestBuilder {
+        this.targetAudiences = targetAudiences;
+        return this;
+    }
 
     public build(): ConceptVersie {
         return new ConceptVersie(
@@ -168,7 +175,8 @@ export class ConceptVersieTestBuilder {
             this.regulation,
             this.startDate,
             this.endDate,
-            this.type);
+            this.type,
+            this.targetAudiences);
     }
 
 }

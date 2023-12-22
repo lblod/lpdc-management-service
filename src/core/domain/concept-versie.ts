@@ -1,5 +1,6 @@
 import {Iri} from "./shared/iri";
 import {TaalString} from "./taal-string";
+import _ from 'lodash';
 
 
 export class ConceptVersie {
@@ -13,6 +14,7 @@ export class ConceptVersie {
     private readonly _startDate: Date | undefined;
     private readonly _endDate: Date | undefined;
     private readonly _type: ProductType | undefined;
+    private readonly _targetAudiences: Set<TargetAudienceType>;
 
     constructor(id: Iri,
                 title: TaalString | undefined,
@@ -22,8 +24,9 @@ export class ConceptVersie {
                 regulation: TaalString | undefined,
                 startDate: Date | undefined,
                 endDate: Date | undefined,
-                type: ProductType | undefined) {
-        //TODO LPDC-916: enforce invariants ?
+                type: ProductType | undefined,
+                targetAudiences: Set<TargetAudienceType>) {
+        //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
         this._title = title;
         this._description = description;
@@ -33,6 +36,7 @@ export class ConceptVersie {
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
+        this._targetAudiences = targetAudiences;
     }
 
     get id(): Iri {
@@ -71,6 +75,10 @@ export class ConceptVersie {
         return this._type;
     }
 
+    get targetAudiences(): Set<TargetAudienceType>{
+        return this._targetAudiences;
+    }
+
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
         return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
             || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
@@ -79,7 +87,8 @@ export class ConceptVersie {
             || TaalString.isFunctionallyChanged(aConceptVersie.regulation, anotherConceptVersie.regulation)
             || aConceptVersie.startDate?.getTime() !== anotherConceptVersie.startDate?.getTime()
             || aConceptVersie.endDate?.getTime() !== anotherConceptVersie.endDate?.getTime()
-            || aConceptVersie.type !== anotherConceptVersie.type;
+            || aConceptVersie.type !== anotherConceptVersie.type
+            || !_.isEqual(aConceptVersie.targetAudiences, anotherConceptVersie.targetAudiences);
     }
 
 }
@@ -92,4 +101,13 @@ export enum ProductType { //TODO LPDC-916: ok to compromise and put an uri in he
     ADVIESBEGELEIDING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/AdviesBegeleiding',
     INFRASTRUCTUURMATERIAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/InfrastructuurMateriaal',
     FINANCIEELVOORDEEL = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/FinancieelVoordeel',
+}
+
+export enum TargetAudienceType { //TODO LPDC-916: ok to compromise and put an uri in here ?
+    BURGER = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/Burger',
+    ONDERNEMING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/Onderneming',
+    ORGANISATIE = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/Organisatie',
+    VLAAMSEOVERHEID = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/VlaamseOverheid',
+    LOKAALBESTUUR = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/LokaalBestuur',
+    VERENIGING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/Vereniging',
 }

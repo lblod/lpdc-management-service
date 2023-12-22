@@ -1,4 +1,4 @@
-import {ConceptVersie, ProductType} from "../../../src/core/domain/concept-versie";
+import {ConceptVersie, ProductType, TargetAudienceType} from "../../../src/core/domain/concept-versie";
 import {uuid} from "../../../mu-helper";
 import {ConceptVersieTestBuilder} from "./concept-versie-test-builder";
 import {TaalString} from "../../../src/core/domain/taal-string";
@@ -162,7 +162,35 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withType(undefined)
+                .build()],
+        ['target audience updated',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID]))
+                .build()],
+        ['target audience added',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER]))
+                .build()],
+        ['target audience removed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
                 .build()]
+
     ];
 
     for (const testCase of functionallyChangedTestCases) {
