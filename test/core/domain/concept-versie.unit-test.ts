@@ -1,6 +1,7 @@
 import {
     CompetentAuthorityLevelType,
     ConceptVersie,
+    ExecutingAuthorityLevelType,
     ProductType,
     TargetAudienceType,
     ThemeType
@@ -249,6 +250,33 @@ describe('is functionally changed', () => {
             ConceptVersieTestBuilder
                 .aFullConceptVersie()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.FEDERAAL]))
+                .build()],
+        ['executing Authority Level updated',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.EUROPEES]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.LOKAAL]))
+                .build()],
+        ['executing Authority Level added',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.LOKAAL]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.LOKAAL]))
+                .build()],
+        ['executing Authority Level removed',
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN]))
+                .build(),
+            ConceptVersieTestBuilder
+                .aFullConceptVersie()
+                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.DERDEN]))
                 .build()]
 
     ];

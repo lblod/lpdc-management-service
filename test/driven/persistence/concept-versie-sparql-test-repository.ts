@@ -31,6 +31,7 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...this.enumsToTriples(conceptVersie.id, "lpdcExt:targetAudience", conceptVersie.targetAudiences),
                 ...this.enumsToTriples(conceptVersie.id, "m8g:thematicArea", conceptVersie.themes),
                 ...this.enumsToTriples(conceptVersie.id, "lpdcExt:competentAuthorityLevel", conceptVersie.competentAuthorityLevels),
+                ...this.enumsToTriples(conceptVersie.id, "lpdcExt:executingAuthorityLevel", conceptVersie.executingAuthorityLevels),
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,

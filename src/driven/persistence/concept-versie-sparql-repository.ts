@@ -5,6 +5,7 @@ import {ConceptVersieRepository} from "../../core/port/driven/persistence/concep
 import {
     CompetentAuthorityLevelType,
     ConceptVersie,
+    ExecutingAuthorityLevelType,
     ProductType,
     TargetAudienceType,
     ThemeType
@@ -133,6 +134,17 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }            
         `);
 
+        const executingAuthorityLevelQuery = this.queryList(`
+           ${PREFIX.lpdcExt}
+            
+            SELECT ?executingAuthorityLevel
+                WHERE { 
+                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                        ${sparqlEscapeUri(id)} lpdcExt:executingAuthorityLevel ?executingAuthorityLevel. 
+                    }
+                }            
+        `);
+
         const [titles,
             descriptions,
             additionalDescriptions,
@@ -140,7 +152,8 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             regulations,
             targetAudiences,
             themes,
-            competentAuthorityLevels] =
+            competentAuthorityLevels,
+            executingAuthorityLevels] =
             await Promise.all([
                 titlesQuery,
                 descriptionsQuery,
@@ -149,7 +162,8 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 requlationsQuery,
                 targetAudiencesQuery,
                 themesQuery,
-                competentAuthorityLevelQuery]);
+                competentAuthorityLevelQuery,
+                executingAuthorityLevelQuery]);
 
         return new ConceptVersie(
             findEntityAndUniqueTriplesResult['id'].value,
@@ -164,6 +178,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asEnums(TargetAudienceType, targetAudiences.map(r => r?.['targetAudience']), id),
             this.asEnums(ThemeType, themes.map(r => r?.['theme']), id),
             this.asEnums(CompetentAuthorityLevelType, competentAuthorityLevels.map(r => r?.['competentAuthorityLevel']), id),
+            this.asEnums(ExecutingAuthorityLevelType, executingAuthorityLevels.map(r => r?.['executingAuthorityLevel']), id),
         );
     }
 

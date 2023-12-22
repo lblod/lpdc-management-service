@@ -24,11 +24,10 @@ export async function isConceptFunctionallyChanged(newSnapshotUri: string, curre
 
     return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.hasCompetentAuthority)
-        || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.executingAuthorityLevel)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.hasExecutingAuthority)
-        || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.keywords)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.publicationMedium)
         || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.yourEuropeCategory)
+        || isValueChangedInSet(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri, Predicates.keywords)
         || compareRequirement(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareProcedure(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareCost(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)

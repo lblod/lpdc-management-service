@@ -17,6 +17,7 @@ export class ConceptVersie {
     private readonly _targetAudiences: Set<TargetAudienceType>;
     private readonly _themes: Set<ThemeType>;
     private readonly _competentAuthorityLevels: Set<CompetentAuthorityLevelType>;
+    private readonly _executingAuthorityLevels: Set<ExecutingAuthorityLevelType>;
 
     //TODO LPDC-916: extract into shared helper ... or use lodash?
     private sortSet<T>(aSet: Set<T>) : Set<T> {
@@ -36,7 +37,8 @@ export class ConceptVersie {
                 type: ProductType | undefined,
                 targetAudiences: Set<TargetAudienceType>,
                 themes: Set<ThemeType>,
-                competentAuthorityLevels: Set<CompetentAuthorityLevelType>) {
+                competentAuthorityLevels: Set<CompetentAuthorityLevelType>,
+                executingAuthorityLevels: Set<ExecutingAuthorityLevelType>) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
         this._title = title;
@@ -50,6 +52,7 @@ export class ConceptVersie {
         this._targetAudiences = this.sortSet(targetAudiences);
         this._themes = this.sortSet(themes);
         this._competentAuthorityLevels = this.sortSet(competentAuthorityLevels);
+        this._executingAuthorityLevels = this.sortSet(executingAuthorityLevels);
     }
 
     get id(): Iri {
@@ -100,6 +103,10 @@ export class ConceptVersie {
         return this._competentAuthorityLevels;
     }
 
+    get executingAuthorityLevels(): Set<ExecutingAuthorityLevelType> {
+        return this._executingAuthorityLevels;
+    }
+
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
         return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
             || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
@@ -111,7 +118,8 @@ export class ConceptVersie {
             || aConceptVersie.type !== anotherConceptVersie.type
             || !_.isEqual(aConceptVersie.targetAudiences, anotherConceptVersie.targetAudiences)
             || !_.isEqual(aConceptVersie.themes, anotherConceptVersie.themes)
-            || !_.isEqual(aConceptVersie.competentAuthorityLevels, anotherConceptVersie.competentAuthorityLevels);
+            || !_.isEqual(aConceptVersie.competentAuthorityLevels, anotherConceptVersie.competentAuthorityLevels)
+            || !_.isEqual(aConceptVersie.executingAuthorityLevels, anotherConceptVersie.executingAuthorityLevels);
     }
 
 }
@@ -152,4 +160,13 @@ export enum CompetentAuthorityLevelType {
     VLAAMS = 'https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Vlaams',
     PROVINCIAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Provinciaal',
     LOKAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Lokaal',
+}
+
+export enum ExecutingAuthorityLevelType {
+    EUROPEES = 'https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Europees',
+    FEDERAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Federaal',
+    VLAAMS = 'https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Vlaams',
+    PROVINCIAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Provinciaal',
+    LOKAAL = 'https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Lokaal',
+    DERDEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Derden',
 }
