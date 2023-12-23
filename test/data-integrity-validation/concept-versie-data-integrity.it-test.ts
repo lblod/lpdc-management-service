@@ -15,9 +15,8 @@ describe('Concept Versie Data Integrity Validation', () => {
     //TODO LPDC-916: load data from ldes stream of production dump and verify results ...
 
     test('Load all concept versies; print errors to console.log', async () => {
-        //do {
 
-            const query = `
+        const query = `
              ${PREFIX.lpdcExt}
             SELECT ?id WHERE {
                 GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> {
@@ -25,10 +24,14 @@ describe('Concept Versie Data Integrity Validation', () => {
                 }
             }
         `;
-            const conceptVersieIds = await directDatabaseAccess.queryList(query);
+        const conceptVersieIds = await directDatabaseAccess.queryList(query);
+
+        const delayTime = 20;
+        const numberOfLoops = 1;
+
+        for(let i = 0; i < numberOfLoops; i++) {
 
             const before = new Date().valueOf();
-            const delayTime = 20;
 
             console.log(new Date().toISOString());
 
@@ -47,8 +50,8 @@ describe('Concept Versie Data Integrity Validation', () => {
 
             console.log(`Verifying in total ${conceptVersieIds.length} concept versies took on average ${(new Date().valueOf() - before - delayTime * conceptVersieIds.length) / conceptVersieIds.length} ms per concept`);
             // eslint-disable-next-line no-constant-condition
-        //} while (true);
-    }, 60000 * 5);
+        }
+    }, 60000 * 15 * 100);
 
     function wait(milliseconds: number) {
         return new Promise(resolve => {
