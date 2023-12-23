@@ -1,4 +1,5 @@
 import {querySudo, updateSudo} from '@lblod/mu-auth-sudo';
+import {retry} from 'ts-retry-promise';
 
 export class SparqlRepository {
     private readonly endpoint: string;
@@ -13,22 +14,36 @@ export class SparqlRepository {
     }
 
     protected async querySingleRow(query: string): Promise<unknown | undefined> {
-        //TODO LPDC-916 wrap in a retry-promise with increasing fallback time ...
-        const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
-        const bindings = result?.results?.bindings;
-        if(bindings) {
-            if(bindings.length > 1) {
-                throw new Error(`Expecting a single row from query (${query}), got ${bindings.length} results.`);
+        return retry(async () => {
+            const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
+            const bindings = result?.results?.bindings;
+            if (bindings) {
+                if (bindings.length > 1) {
+                    throw new Error(`Expecting a single row from query (${query}), got ${bindings.length} results.`);
+                }
             }
-        }
-        return bindings[0];
+            return bindings[0];
+        }, {
+            retries: 10,
+            delay: 200,
+            backoff: "FIXED",
+            logger: (msg: string) => console.log(`Failing, but retrying ${msg}`)
+        });
     }
 
     protected async queryList(query: string): Promise<unknown[]> {
-        //TODO LPDC-916 wrap in a retry-promise with increasing fallback time ...
-        //TODO LPDC-916:remove console.log
-        //console.log(query);
-        const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
-        return result?.results?.bindings || [];
+        return retry(async () => {
+            //TODO LPDC-916:remove console.log
+            //console.log(query);
+            const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
+            return result?.results?.bindings || [];
+        }, {
+            retries: 10,
+            delay: 200,
+            backoff: "FIXED",
+            logger: (msg: string) => console.log(`Failing, but retrying ${msg}`)
+        });
     }
+
+    //TODO LPDC-916: remove duplication for retry + options ...
 }

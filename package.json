@@ -37,7 +37,8 @@
     "rdflib": "^2.2.33",
     "sparql-client-2": "https://github.com/erikap/node-sparql-client.git",
     "uuid": "^9.0.0",
-    "@supercharge/promise-pool": "^3.1.0"
+    "@supercharge/promise-pool": "^3.1.0",
+    "ts-retry-promise": "^0.7.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

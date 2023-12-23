@@ -223,7 +223,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             ];
 
         const {results, errors} = await PromisePool
-            .withConcurrency(3)
+            .withConcurrency(5)
             .for(listQueries)
             .useCorrespondingResults()
             .process(async (query) => {
