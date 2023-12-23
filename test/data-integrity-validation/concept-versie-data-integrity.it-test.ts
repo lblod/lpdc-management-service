@@ -27,7 +27,10 @@ describe('Concept Versie Data Integrity Validation', () => {
         const conceptVersieIds = await directDatabaseAccess.queryList(query);
 
         const delayTime = 20;
-        const numberOfLoops = 1;
+        const numberOfLoops = 10;
+        const averageTimes = [];
+        const technicalErrors = [];
+        const dataErrors = [];
 
         for(let i = 0; i < numberOfLoops; i++) {
 
@@ -43,14 +46,29 @@ describe('Concept Versie Data Integrity Validation', () => {
                 } catch(e) {
                     if(!e.message.startsWith('could not map')) {
                         console.error(e);
+                        technicalErrors.push(e);
+                    } else {
+                        dataErrors.push(e);
                     }
                 }
                 await wait(delayTime);
             }
 
-            console.log(`Verifying in total ${conceptVersieIds.length} concept versies took on average ${(new Date().valueOf() - before - delayTime * conceptVersieIds.length) / conceptVersieIds.length} ms per concept`);
+            const averageTime = (new Date().valueOf() - before - delayTime * conceptVersieIds.length) / conceptVersieIds.length;
+            averageTimes.push(averageTime);
+
+            console.log(`Verifying in total ${conceptVersieIds.length} concept versies took on average ${averageTime} ms per concept`);
             // eslint-disable-next-line no-constant-condition
         }
+
+        const totalAverageTime = averageTimes.reduce((accumulator, currentValue) => {return accumulator + currentValue;}, 0) / averageTimes.length;
+        console.log(`Total average time: ${totalAverageTime}`);
+        console.log(`Technical Errors [${technicalErrors}]`);
+        console.log(`Data Errors Size [${dataErrors.length}]`);
+
+        expect(totalAverageTime).toBeLessThan(30);
+        expect(technicalErrors).toEqual([]);
+
     }, 60000 * 15 * 100);
 
     function wait(milliseconds: number) {
