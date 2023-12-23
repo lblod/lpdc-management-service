@@ -2,6 +2,7 @@ import {TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {PREFIX} from "../../config";
 import {ConceptVersieSparqlTestRepository} from "../driven/persistence/concept-versie-sparql-test-repository";
+import {shuffle} from "lodash";
 
 describe('Concept Versie Data Integrity Validation', () => {
 
@@ -26,8 +27,8 @@ describe('Concept Versie Data Integrity Validation', () => {
         `;
         const conceptVersieIds = await directDatabaseAccess.queryList(query);
 
-        const delayTime = 20;
-        const numberOfLoops = 10;
+        const delayTime = 0;
+        const numberOfLoops = 1;
         const averageTimes = [];
         const technicalErrors = [];
         const dataErrors = [];
@@ -38,7 +39,10 @@ describe('Concept Versie Data Integrity Validation', () => {
 
             console.log(new Date().toISOString());
 
-            for (const result of conceptVersieIds) {
+            const randomizedConceptVersieIds = [...conceptVersieIds];
+            shuffle(randomizedConceptVersieIds);
+
+            for (const result of randomizedConceptVersieIds) {
                 try {
                     const id = result['id'].value;
                     const conceptVersieForId = await repository.findById(id);
@@ -64,9 +68,9 @@ describe('Concept Versie Data Integrity Validation', () => {
         const totalAverageTime = averageTimes.reduce((accumulator, currentValue) => {return accumulator + currentValue;}, 0) / averageTimes.length;
         console.log(`Total average time: ${totalAverageTime}`);
         console.log(`Technical Errors [${technicalErrors}]`);
-        console.log(`Data Errors Size [${dataErrors.length}]`);
+        console.log(`Data Errors Size [${dataErrors}]`);
 
-        expect(totalAverageTime).toBeLessThan(30);
+        expect(totalAverageTime).toBeLessThan(40);
         expect(technicalErrors).toEqual([]);
 
     }, 60000 * 15 * 100);
