@@ -27,7 +27,7 @@ export class SparqlRepository {
             retries: 10,
             delay: 200,
             backoff: "FIXED",
-            logger: (msg: string) => console.log(`Failing, but retrying ${msg}`)
+            logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`)
         });
     }
 
@@ -41,7 +41,7 @@ export class SparqlRepository {
             retries: 10,
             delay: 200,
             backoff: "FIXED",
-            logger: (msg: string) => console.log(`Failing, but retrying ${msg}`)
+            logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`)
         });
     }
 
