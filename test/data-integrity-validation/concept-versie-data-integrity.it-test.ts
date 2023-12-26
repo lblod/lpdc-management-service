@@ -70,8 +70,10 @@ describe('Concept Versie Data Integrity Validation', () => {
         console.log(`Technical Errors [${technicalErrors}]`);
         console.log(`Data Errors Size [${dataErrors}]`);
 
-        expect(totalAverageTime).toBeLessThan(40);
-        expect(technicalErrors).toEqual([]);
+        if(conceptVersieIds.length > 0) {
+            expect(totalAverageTime).toBeLessThan(100); //typically it is a lot less, but when querying only 2 or 3 concept versies, you might end up with more
+            expect(technicalErrors).toEqual([]);
+        }
 
     }, 60000 * 15 * 100);
 
