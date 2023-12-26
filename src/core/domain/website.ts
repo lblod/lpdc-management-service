@@ -1,25 +1,23 @@
 import {Iri} from "./shared/iri";
 import {TaalString} from "./taal-string";
-import _ from "lodash";
-import {Website} from "./website";
 
-export class Procedure {
+export class Website {
 
     //TODO LPDC-916: should not be here ... accepted compromise ?
     private readonly _id: Iri;
     private readonly _title: TaalString | undefined;
     private readonly _description: TaalString | undefined;
-    private readonly _websites: Website[];
+    private readonly _url: string | undefined;
 
     constructor(id: Iri,
                 title: TaalString | undefined,
                 description: TaalString | undefined,
-                websites: Website[],
+                url: string | undefined,
     ) {
         this._id = id;
         this._title = title;
         this._description = description;
-        this._websites = [...websites];
+        this._url = url;
     }
 
     get id(): Iri {
@@ -34,15 +32,8 @@ export class Procedure {
         return this._description;
     }
 
-    get websites(): Website[] {
-        return this._websites;
+    get url(): string | undefined {
+        return this._url;
     }
 
-    static isFunctionallyChanged(value: Procedure[], other: Procedure[]): boolean {
-        return value.length !== other.length
-            || _.zip(value, other).some((procs: [Procedure, Procedure]) => {
-                return TaalString.isFunctionallyChanged(procs[0].title, procs[1].title)
-                    || TaalString.isFunctionallyChanged(procs[0].description, procs[1].description);
-            });
-    }
 }

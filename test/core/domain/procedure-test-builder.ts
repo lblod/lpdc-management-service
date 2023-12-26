@@ -2,6 +2,8 @@ import {uuid} from "../../../mu-helper";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Procedure} from "../../../src/core/domain/procedure";
+import {aFullWebsite, anotherFullWebsite} from "./website-test-builder";
+import {Website} from "../../../src/core/domain/website";
 
 export function aMinimalProcedure(): ProcedureTestBuilder {
     return new ProcedureTestBuilder()
@@ -25,7 +27,8 @@ export function aFullProcedure(): ProcedureTestBuilder {
                 ProcedureTestBuilder.DESCRIPTION_NL_FORMAL,
                 ProcedureTestBuilder.DESCRIPTION_NL_INFORMAL,
                 ProcedureTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
-                ProcedureTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL));
+                ProcedureTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withWebsites(ProcedureTestBuilder.WEBSITES);
 }
 
 export function anotherFullProcedure(): ProcedureTestBuilder {
@@ -45,7 +48,8 @@ export function anotherFullProcedure(): ProcedureTestBuilder {
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL,
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL,
-                ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
+                ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withWebsites(ProcedureTestBuilder.ANOTHER_WEBSITES);
 }
 
 export class ProcedureTestBuilder {
@@ -78,10 +82,13 @@ export class ProcedureTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL = 'Procedure Another Description - nl-generated-formal';
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Procedure Another Description - nl-generated-informal';
 
+    public static readonly WEBSITES = [aFullWebsite().build(), anotherFullWebsite(uuid()).build()];
+    public static readonly ANOTHER_WEBSITES = [anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()];
 
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
+    private websites: Website[] = [];
 
     static buildIri(uniqueId: string): Iri {
         return `http://data.lblod.info/id/rule/${uniqueId}`;
@@ -102,11 +109,17 @@ export class ProcedureTestBuilder {
         return this;
     }
 
+    public withWebsites(websites: Website[]): ProcedureTestBuilder {
+        this.websites = websites;
+        return this;
+    }
+
     public build(): Procedure {
         return new Procedure(
             this.id,
             this.title,
-            this.description
+            this.description,
+            this.websites,
         );
     }
 

@@ -6,6 +6,7 @@ import {DirectDatabaseAccess} from "./direct-database-access";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Evidence} from "../../../src/core/domain/evidence";
+import {Website} from "../../../src/core/domain/website";
 
 export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlRepository {
 
@@ -100,8 +101,23 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...this.taalStringToTriples(procedure.id, `dct:title`, procedure.title),
                 ...this.taalStringToTriples(procedure.id, `dct:description`, procedure.description),
                 `${sparqlEscapeUri(procedure.id)} sh:order ${sparqlEscapeInt(index)}`,
+                ...this.websitesToTriples(procedure.id, 'lpdcExt:hasWebsite', procedure.websites)
             ]
         );
+    }
+
+    private websitesToTriples(subjectId: Iri, predicate: string, websites: Website[]): string [] {
+        return websites.flatMap((website, index) => {
+                return [
+                    `${sparqlEscapeUri(subjectId)} ${predicate} ${sparqlEscapeUri(website.id)}`,
+                    `${sparqlEscapeUri(website.id)} a schema:WebSite`,
+                    ...this.taalStringToTriples(website.id, 'dct:title', website.title),
+                    ...this.taalStringToTriples(website.id, 'dct:description', website.description),
+                    website.url ? `${sparqlEscapeUri(website.id)} schema:url """${website.url}"""` : undefined,
+                    `${sparqlEscapeUri(website.id)} sh:order ${sparqlEscapeInt(index)}`,
+                ];
+            }
+        ).filter(t => t != undefined);
     }
 
 }

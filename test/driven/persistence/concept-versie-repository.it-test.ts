@@ -19,6 +19,8 @@ import {
 } from "../../../src/core/domain/concept-versie";
 import {aMinimalRequirement, RequirementTestBuilder} from "../../core/domain/requirement-test-builder";
 import {aMinimalEvidence, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
+import {aMinimalProcedure, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
+import {aMinimalWebsite, WebsiteTestBuilder} from "../../core/domain/website-test-builder";
 
 describe('ConceptVersieRepository', () => {
     const repository = new ConceptVersieSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -285,6 +287,38 @@ describe('ConceptVersieRepository', () => {
                     `<${ConceptVersieTestBuilder.PROCEDURES[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
                     `<${ConceptVersieTestBuilder.PROCEDURES[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
                     `<${ConceptVersieTestBuilder.PROCEDURES[1].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> a <http://schema.org/WebSite>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].title.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].title.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].description.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].description.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].description.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://schema.org/url> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].url}"""`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[1].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> a <http://schema.org/WebSite>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].title.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].title.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].description.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].description.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].description.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://schema.org/url> """${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].url}"""`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[1].websites[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${conceptVersieId}> <http://purl.org/vocab/cpsv#follows> <${ConceptVersieTestBuilder.PROCEDURES[0].id}>`,
                     `<${ConceptVersieTestBuilder.PROCEDURES[0].id}> a <http://purl.org/vocab/cpsv#Rule>`,
                     `<${ConceptVersieTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].title.en}"""@EN`,
@@ -300,6 +334,38 @@ describe('ConceptVersieRepository', () => {
                     `<${ConceptVersieTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
                     `<${ConceptVersieTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
                     `<${ConceptVersieTestBuilder.PROCEDURES[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> a <http://schema.org/WebSite>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].title.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].title.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].description.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].description.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].description.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://schema.org/url> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].url}"""`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[1].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> a <http://schema.org/WebSite>`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].title.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].title.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].description.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].description.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].description.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://schema.org/url> """${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].url}"""`,
+                    `<${ConceptVersieTestBuilder.PROCEDURES[0].websites[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
 
                 ]);
 
@@ -352,6 +418,55 @@ describe('ConceptVersieRepository', () => {
                     `<${requirementId}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${evidenceId}>`,
                     `<${requirementId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${evidenceId}> a <http://data.europa.eu/m8g/Evidence>`,
+                ]);
+
+            const actualConceptVersie = await repository.findById(conceptVersieId);
+
+            expect(actualConceptVersie).toEqual(conceptVersie);
+        });
+
+        test('Verify minimal mappings - procedure without websites', async () => {
+            const conceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
+            const procedureId = ProcedureTestBuilder.buildIri(uuid());
+
+            const conceptVersie =
+                aMinimalConceptVersie()
+                    .withId(conceptVersieId)
+                    .withProcedures([aMinimalProcedure().withId(procedureId).withWebsites([]).build()])
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptVersieId}> <http://purl.org/vocab/cpsv#follows> <${procedureId}>`,
+                    `<${procedureId}> a <http://purl.org/vocab/cpsv#Rule>`,
+                    `<${procedureId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                ]);
+
+            const actualConceptVersie = await repository.findById(conceptVersieId);
+
+            expect(actualConceptVersie).toEqual(conceptVersie);
+        });
+
+        test('Verify minimal mappings - procedure with minimal website', async () => {
+            const conceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
+            const procedureId = ProcedureTestBuilder.buildIri(uuid());
+            const websiteId = WebsiteTestBuilder.buildIri(uuid());
+
+            const conceptVersie =
+                aMinimalConceptVersie()
+                    .withId(conceptVersieId)
+                    .withProcedures([aMinimalProcedure().withId(procedureId).withWebsites([aMinimalWebsite().withId(websiteId).build()]).build()])
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptVersieId}> <http://purl.org/vocab/cpsv#follows> <${procedureId}>`,
+                    `<${procedureId}> a <http://purl.org/vocab/cpsv#Rule>`,
+                    `<${procedureId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${procedureId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${websiteId}>`,
+                    `<${websiteId}> a <http://schema.org/WebSite>`,
                 ]);
 
             const actualConceptVersie = await repository.findById(conceptVersieId);
