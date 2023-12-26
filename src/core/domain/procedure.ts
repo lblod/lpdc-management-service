@@ -1,5 +1,6 @@
 import {Iri} from "./shared/iri";
 import {TaalString} from "./taal-string";
+import _ from "lodash";
 
 export class Procedure {
 
@@ -29,4 +30,11 @@ export class Procedure {
         return this._description;
     }
 
+    static isFunctionallyChanged(value: Procedure[], other: Procedure[]): boolean {
+        return value.length !== other.length
+            || _.zip(value, other).some((procs: [Procedure, Procedure]) => {
+                return TaalString.isFunctionallyChanged(procs[0].title, procs[1].title)
+                    || TaalString.isFunctionallyChanged(procs[0].description, procs[1].description);
+            });
+    }
 }

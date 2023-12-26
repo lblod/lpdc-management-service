@@ -172,7 +172,8 @@ export class ConceptVersie {
             || !_.isEqual(value.publicationMedia, other.publicationMedia)
             || !_.isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
             || !_.isEqual(value.keywords, other.keywords)
-            || Requirement.isFunctionallyChanged(value.requirements, other.requirements);
+            || Requirement.isFunctionallyChanged(value.requirements, other.requirements)
+            || Procedure.isFunctionallyChanged(value.procedures, other.procedures);
     }
 
 }

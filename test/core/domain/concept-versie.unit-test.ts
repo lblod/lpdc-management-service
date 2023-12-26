@@ -14,6 +14,7 @@ import {TaalString} from "../../../src/core/domain/taal-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {aMinimalRequirement} from "./requirement-test-builder";
 import {aFullEvidence, aMinimalEvidence} from "./evidence-test-builder";
+import {aFullProcedure} from "./procedure-test-builder";
 
 describe('is functionally changed', () => {
 
@@ -453,6 +454,63 @@ describe('is functionally changed', () => {
             aFullConceptVersie()
                 .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(TaalString.of('evidence description en updated')).build()).build()])
                 .build()],
+        ['procedure added',
+            aFullConceptVersie()
+                .withProcedures([])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().build()])
+                .build()],
+        ['procedure removed',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([])
+                .build()],
+        ['procedure title updated',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en updated')).build()])
+                .build()],
+        ['procedure title added',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withTitle(undefined).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en updated')).build()])
+                .build()],
+        ['procedure title removed',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en updated')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withTitle(undefined).build()])
+                .build()],
+        ['procedure description updated',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en updated')).build()])
+                .build()],
+        ['procedure description added',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withDescription(undefined).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en updated')).build()])
+                .build()],
+        ['procedure description removed',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withDescription(undefined).build()])
+                .build()],
+
 
     ];
 

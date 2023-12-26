@@ -78,11 +78,6 @@ function compareProcedure(currentSnapshotTriples: any[], currentSnapshotUri: str
                 || isValueChanged(currentSnapshotTriples, sortedCurrentWebsiteUris[i], newSnapshotTriples, sortedNewWebsiteUris[i], Predicates.url)
             );
         }
-
-        changes.push(
-            isValueChangedForAnyLanguage(currentSnapshotTriples, currentSortedProcedureIds[i], newSnapshotTriples, newSortedProcedureIds[i], Predicates.title)
-            || isValueChangedForAnyLanguage(currentSnapshotTriples, currentSortedProcedureIds[i], newSnapshotTriples, newSortedProcedureIds[i], Predicates.description)
-        );
     }
     return changes.some(it => it);
 }
