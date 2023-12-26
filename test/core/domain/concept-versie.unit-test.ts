@@ -16,6 +16,7 @@ import {aMinimalRequirement} from "./requirement-test-builder";
 import {aFullEvidence, aMinimalEvidence} from "./evidence-test-builder";
 import {aFullProcedure} from "./procedure-test-builder";
 import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
+import {aFullCost} from "./cost-test-builder";
 
 describe('is functionally changed', () => {
 
@@ -687,6 +688,69 @@ describe('is functionally changed', () => {
                 .build(),
             aFullConceptVersie()
                 .withWebsites([aMinimalWebsite().withUrl('https://url2.com').build(), aMinimalWebsite().withUrl('https://url1.com').build()])
+                .build()],
+        ['cost added',
+            aFullConceptVersie()
+                .withCosts([])
+                .build(),
+            aFullConceptVersie()
+                .withCosts([aFullCost().build()])
+                .build()],
+        ['cost removed',
+            aFullConceptVersie()
+                .withCosts([aFullCost().build()])
+                .build(),
+            aFullConceptVersie()
+                .withCosts([])
+                .build()],
+        ['cost title updated',
+            aFullConceptVersie()
+                .withCosts([aFullCost().withTitle(TaalString.of('cost title en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withCosts([aFullCost().withTitle(TaalString.of('cost title en updated')).build()])
+                .build()],
+        ['cost title added',
+            aFullConceptVersie()
+                .withCosts([aFullCost().withTitle(undefined).build()])
+                .build(),
+            aFullConceptVersie()
+                .withCosts([aFullCost().withTitle(TaalString.of('cost title en')).build()])
+                .build()],
+        ['cost title removed',
+            aFullConceptVersie()
+                .withCosts([aFullCost().withTitle(TaalString.of('cost title en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withCosts([aFullCost().withTitle(undefined).build()])
+                .build()],
+        ['cost description updated',
+            aFullConceptVersie()
+                .withCosts([aFullCost().withDescription(TaalString.of('cost description en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withCosts([aFullCost().withDescription(TaalString.of('cost description en updated')).build()])
+                .build()],
+        ['cost description added',
+            aFullConceptVersie()
+                .withCosts([aFullCost().withDescription(undefined).build()])
+                .build(),
+            aFullConceptVersie()
+                .withCosts([aFullCost().withDescription(TaalString.of('cost description en')).build()])
+                .build()],
+        ['cost description removed',
+            aFullConceptVersie()
+                .withCosts([aFullCost().withDescription(TaalString.of('cost description en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withCosts([aFullCost().withDescription(undefined).build()])
+                .build()],
+        ['cost order changed',
+            aFullConceptVersie()
+                .withCosts([aFullCost().withTitle(TaalString.of('cost title 1 en')).build(), aFullCost().withTitle(TaalString.of('cost title 2 en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withCosts([aFullCost().withTitle(TaalString.of('cost title 2 en')).build(), aFullCost().withTitle(TaalString.of('cost title 1 en')).build()])
                 .build()],
 
     ];

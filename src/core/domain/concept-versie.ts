@@ -190,7 +190,8 @@ export class ConceptVersie {
             || !_.isEqual(value.keywords, other.keywords)
             || Requirement.isFunctionallyChanged(value.requirements, other.requirements)
             || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
-            || Website.isFunctionallyChanged(value.websites, other.websites);
+            || Website.isFunctionallyChanged(value.websites, other.websites)
+            || Cost.isFunctionallyChanged(value.costs, other.costs);
     }
 
 }

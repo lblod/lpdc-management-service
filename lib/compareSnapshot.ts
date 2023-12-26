@@ -1,4 +1,4 @@
-import {loadCosts, loadFinancialAdvantages, loadPublicService} from "./commonQueries";
+import {loadFinancialAdvantages, loadPublicService} from "./commonQueries";
 import {sortBy} from "lodash";
 import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
 import {ConceptVersie} from "../src/core/domain/concept-versie";
@@ -14,7 +14,6 @@ export async function isConceptFunctionallyChanged(newSnapshotUri: string, curre
     const newConceptVersie = await conceptVersieRepository.findById(newSnapshotUri);
 
     return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie)
-        || compareCost(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareFinancialAdvantage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri);
 }
 
@@ -32,26 +31,6 @@ function findTriples(snapshotTriples: any[], subject: string, predicate: string,
         .filter(triple => triple.s.value === subject)
         .filter(triple => triple.p.value === predicate)
         .filter(triple => language ? triple.o['xml:lang'] === language : true);
-}
-
-function compareCost(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
-    const currentCostIds = findTriples(currentSnapshotTriples, currentSnapshotUri, Predicates.hasCost).map(triple => triple.o.value);
-    const currentSortedCostIds = sortBy(currentCostIds, costId => findTriples(currentSnapshotTriples, costId, Predicates.order)[0].o.value);
-
-    const newCostIds = findTriples(newSnapshotTriples, newSnapshotUri, Predicates.hasCost).map(triple => triple.o.value);
-    const newSortedCostIds = sortBy(newCostIds, costId => findTriples(newSnapshotTriples, costId, Predicates.order)[0].o.value);
-
-    if (currentSortedCostIds.length !== newSortedCostIds.length) {
-        return true;
-    }
-    const changes = [];
-    for (let i = 0; i < currentSortedCostIds.length; i++) {
-        changes.push(
-            isValueChangedForAnyLanguage(currentSnapshotTriples, currentSortedCostIds[i], newSnapshotTriples, newSortedCostIds[i], Predicates.title)
-            || isValueChangedForAnyLanguage(currentSnapshotTriples, currentSortedCostIds[i], newSnapshotTriples, newSortedCostIds[i], Predicates.description)
-        );
-    }
-    return changes.some(it => it);
 }
 
 function compareFinancialAdvantage(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
@@ -81,7 +60,6 @@ async function loadConceptSnapshot(snapshotUri: string): Promise<any[]> {
     const includeUuid = true;
 
     const results = [];
-    results.push(await loadCosts(snapshotUri, {graph, type, includeUuid, sudo}));
     results.push(await loadFinancialAdvantages(snapshotUri, {graph, type, includeUuid, sudo}));
     results.push(await loadPublicService(snapshotUri, {graph, type, includeUuid, sudo}));
     return results.reduce((acc, b) => [...acc, ...b]);
@@ -91,6 +69,5 @@ const Predicates = {
     title: 'http://purl.org/dc/terms/title',
     description: 'http://purl.org/dc/terms/description',
     order: 'http://www.w3.org/ns/shacl#order',
-    hasCost: 'http://data.europa.eu/m8g/hasCost',
     hasFinancialAdvantage: 'http://purl.org/vocab/cpsv#produces',
 };
