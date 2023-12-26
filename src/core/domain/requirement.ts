@@ -42,6 +42,7 @@ export class Requirement {
         return value.length !== other.length
             || _.zip(value, other).some((reqs: [Requirement, Requirement]) => {
                 return TaalString.isFunctionallyChanged(reqs[0].title, reqs[1].title)
-                    || TaalString.isFunctionallyChanged(reqs[0].description, reqs[1].description); });
+                    || TaalString.isFunctionallyChanged(reqs[0].description, reqs[1].description)
+                    || Evidence.isFunctionallyChanged(reqs[0].evidence, reqs[1].evidence);});
     }
 }

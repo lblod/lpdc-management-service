@@ -1,10 +1,8 @@
 import {
     loadCosts,
-    loadEvidences,
     loadFinancialAdvantages,
     loadOnlineProcedureRules,
     loadPublicService,
-    loadRequirements,
     loadRules,
     loadWebsites
 } from "./commonQueries";
@@ -23,7 +21,6 @@ export async function isConceptFunctionallyChanged(newSnapshotUri: string, curre
     const newConceptVersie = await conceptVersieRepository.findById(newSnapshotUri);
 
     return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie)
-        || compareRequirement(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareProcedure(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareCost(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareFinancialAdvantage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
@@ -50,33 +47,6 @@ function findTriples(snapshotTriples: any[], subject: string, predicate: string,
         .filter(triple => triple.s.value === subject)
         .filter(triple => triple.p.value === predicate)
         .filter(triple => language ? triple.o['xml:lang'] === language : true);
-}
-
-function compareRequirement(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
-    const currentRequirementIds = findTriples(currentSnapshotTriples, currentSnapshotUri, Predicates.hasRequirement).map(triple => triple.o.value);
-    const currentSortedRequirementIds = sortBy(currentRequirementIds, requirementId => findTriples(currentSnapshotTriples, requirementId, Predicates.order)[0].o.value);
-
-    const newRequirementIds = findTriples(newSnapshotTriples, newSnapshotUri, Predicates.hasRequirement).map(triple => triple.o.value);
-    const newSortedRequirementIds = sortBy(newRequirementIds, requirementId => findTriples(newSnapshotTriples, requirementId, Predicates.order)[0].o.value);
-
-    if (currentSortedRequirementIds.length !== newSortedRequirementIds.length) {
-        return true;
-    }
-    const changes = [];
-    for (let i = 0; i < currentSortedRequirementIds.length; i++) {
-        const currentEvidenceUri = findTriples(currentSnapshotTriples, currentSortedRequirementIds[i], Predicates.hasSupportingEvidence)[0]?.o?.value;
-        const newEvidenceUri = findTriples(newSnapshotTriples, newSortedRequirementIds[i], Predicates.hasSupportingEvidence)[0]?.o?.value;
-
-        if (!!currentEvidenceUri !== !!newEvidenceUri) {
-            return true;
-        }
-
-        changes.push(
-            isValueChangedForAnyLanguage(currentSnapshotTriples, currentEvidenceUri, newSnapshotTriples, newEvidenceUri, Predicates.title)
-            || isValueChangedForAnyLanguage(currentSnapshotTriples, currentEvidenceUri, newSnapshotTriples, newEvidenceUri, Predicates.description)
-        );
-    }
-    return changes.some(it => it);
 }
 
 function compareProcedure(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
@@ -185,8 +155,6 @@ async function loadConceptSnapshot(snapshotUri: string): Promise<any[]> {
     const includeUuid = true;
 
     const results = [];
-    results.push(await loadEvidences(snapshotUri, {graph, type, includeUuid, sudo}));
-    results.push(await loadRequirements(snapshotUri, {graph, type, includeUuid, sudo}));
     results.push(await loadOnlineProcedureRules(snapshotUri, {graph, type, includeUuid, sudo}));
     results.push(await loadRules(snapshotUri, {graph, type, includeUuid, sudo}));
     results.push(await loadCosts(snapshotUri, {graph, type, includeUuid, sudo}));

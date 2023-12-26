@@ -13,6 +13,7 @@ import {aFullConceptVersie} from "./concept-versie-test-builder";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {aMinimalRequirement} from "./requirement-test-builder";
+import {aFullEvidence, aMinimalEvidence} from "./evidence-test-builder";
 
 describe('is functionally changed', () => {
 
@@ -423,6 +424,34 @@ describe('is functionally changed', () => {
                 .build(),
             aFullConceptVersie()
                 .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-changed')).build()])
+                .build()],
+        ['requirement > evidence : added',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withEvidence(undefined).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withEvidence(aFullEvidence().build()).build()])
+                .build()],
+        ['requirement > evidence : removed',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withEvidence(aFullEvidence().build()).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withEvidence(undefined).build()])
+                .build()],
+        ['requirement > evidence title updated',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withTitle(TaalString.of('evidence title en')).build()).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withTitle(TaalString.of('evidence title en updated')).build()).build()])
+                .build()],
+        ['requirement > evidence description updated',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(TaalString.of('evidence description en')).build()).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(TaalString.of('evidence description en updated')).build()).build()])
                 .build()],
 
     ];

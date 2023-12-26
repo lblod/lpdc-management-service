@@ -29,4 +29,9 @@ export class Evidence {
         return this._description;
     }
 
+    static isFunctionallyChanged(value: Evidence | undefined, other: Evidence | undefined): boolean {
+        return TaalString.isFunctionallyChanged(value?.title, other?.title)
+            || TaalString.isFunctionallyChanged(value?.description, other?.description);
+    }
+
 }
