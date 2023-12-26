@@ -1,6 +1,6 @@
 import {ConceptVersieSparqlRepository} from "../../../src/driven/persistence/concept-versie-sparql-repository";
 import {PREFIX} from "../../../config";
-import {sparqlEscapeDateTime, sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeDateTime, sparqlEscapeInt, sparqlEscapeUri} from "../../../mu-helper";
 import {ConceptVersie} from "../../../src/core/domain/concept-versie";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {TaalString} from "../../../src/core/domain/taal-string";
@@ -36,14 +36,17 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...this.valuesToTriples(conceptVersie.id, "lpdcExt:hasExecutingAuthority", conceptVersie.executingAuthorities),
                 ...this.valuesToTriples(conceptVersie.id, "lpdcExt:publicationMedium", conceptVersie.publicationMedia),
                 ...this.valuesToTriples(conceptVersie.id, "lpdcExt:yourEuropeCategory", conceptVersie.yourEuropeCategories),
-                ...conceptVersie.keywords.flatMap(keyword => this.taalStringToTriples(conceptVersie.id, "dcat:keyword", keyword))
+                ...conceptVersie.keywords.flatMap(keyword => this.taalStringToTriples(conceptVersie.id, "dcat:keyword", keyword)),
+                ...this.requirementsToTriples(conceptVersie),
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,
                 PREFIX.lpdcExt,
                 PREFIX.schema,
                 PREFIX.m8g,
-                PREFIX.dcat]);
+                PREFIX.dcat,
+                PREFIX.ps,
+                PREFIX.sh]);
     }
 
     private taalStringToTriples(subject: Iri, predicate: string, object: TaalString | undefined): string[] {
@@ -62,6 +65,18 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
     private valuesToTriples(subject: Iri, predicate: string, enumValues: Set<any>): string[] {
         return Array.from(enumValues)
             .map(e => `${sparqlEscapeUri(subject)} ${predicate} ${sparqlEscapeUri(e)}`);
+    }
+
+    private requirementsToTriples(conceptVersie: ConceptVersie): string[] {
+        return conceptVersie.requirements.flatMap((requirement, index) =>
+            [
+                `${sparqlEscapeUri(conceptVersie.id)} ps:hasRequirement ${sparqlEscapeUri(requirement.id)}`,
+                `${sparqlEscapeUri(requirement.id)} a m8g:Requirement`,
+                ...this.taalStringToTriples(requirement.id, `dct:title`, requirement.title),
+                ...this.taalStringToTriples(requirement.id, `dct:description`, requirement.description),
+                `${sparqlEscapeUri(requirement.id)} sh:order ${sparqlEscapeInt(index)}`,
+            ]
+        );
     }
 
 }

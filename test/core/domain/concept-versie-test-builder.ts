@@ -12,6 +12,8 @@ import {
 } from "../../../src/core/domain/concept-versie";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {Requirement} from "../../../src/core/domain/requirement";
+import {RequirementTestBuilder} from "./requirement-test-builder";
 
 export class ConceptVersieTestBuilder {
 
@@ -71,6 +73,8 @@ export class ConceptVersieTestBuilder {
 
     public static readonly KEYWORDS = [TaalString.of('buitenland'), TaalString.of(undefined, 'buitenland'), TaalString.of(undefined, 'ambulante activiteit'), TaalString.of('levensloos')];
 
+    public static readonly REQUIREMENTS = [RequirementTestBuilder.aFullRequirement().build(), RequirementTestBuilder.anotherFullRequirement().build()];
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
@@ -89,6 +93,7 @@ export class ConceptVersieTestBuilder {
     private publicationMedia: Set<PublicationMediumType> = new Set();
     private yourEuropeCategories: Set<YourEuropeCategoryType> = new Set();
     private keywords: TaalString[] = [];
+    private requirements: Requirement[] = [];
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -153,7 +158,8 @@ export class ConceptVersieTestBuilder {
             .withExecutingAuthorities(this.EXECUTING_AUTHORITIES)
             .withPublicationMedia(this.PUBLICATION_MEDIA)
             .withYourEuropeCategories(this.YOUR_EUROPE_CATEGORIES)
-            .withKeywords(this.KEYWORDS);
+            .withKeywords(this.KEYWORDS)
+            .withRequirements(this.REQUIREMENTS);
     }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
@@ -246,6 +252,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withRequirements(requirements: Requirement[]): ConceptVersieTestBuilder {
+        this.requirements = requirements;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -265,7 +276,8 @@ export class ConceptVersieTestBuilder {
             this.executingAuthorities,
             this.publicationMedia,
             this.yourEuropeCategories,
-            this.keywords);
+            this.keywords,
+            this.requirements);
     }
 
 }

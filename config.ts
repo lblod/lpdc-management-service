@@ -89,6 +89,10 @@ const PREFIX = {
     sh: 'PREFIX sh: <http://www.w3.org/ns/shacl#>'
 };
 
+const GRAPH = {
+    ldesData: '<http://mu.semte.ch/graphs/lpdc/ldes-data>',
+};
+
 export {
     LOG_INCOMING_DELTA,
     QUEUE_POLL_INTERVAL,
@@ -99,6 +103,7 @@ export {
     FORM_MAPPING_TRANSLATIONS,
     PREFIXES,
     PREFIX,
+    GRAPH,
     ADRESSEN_REGISTER_API_KEY,
     FEATURE_FLAG_ATOMIC_UPDATE
 };

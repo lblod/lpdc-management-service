@@ -1,5 +1,5 @@
 import {SparqlRepository} from "./sparql-repository";
-import {PREFIX} from "../../../config";
+import {GRAPH, PREFIX} from "../../../config";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {ConceptVersieRepository} from "../../core/port/driven/persistence/concept-versie-repository";
 import {
@@ -15,10 +15,12 @@ import {
 import {TaalString} from "../../core/domain/taal-string";
 import {Iri} from "../../core/domain/shared/iri";
 import {PromisePool} from '@supercharge/promise-pool';
+import {Requirement} from "../../core/domain/requirement";
+import {asSortedArray} from "../../core/domain/shared/collections-helper";
 
 export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
 
-    async findById(id: string): Promise<ConceptVersie> {
+    async findById(id: Iri): Promise<ConceptVersie> {
 
         //TODO LPDC-916: verify the cost of these OPTIONAL blocks ... and if more performant, do separate queries ...
         const findEntityAndUniqueTriplesResult = await this.querySingleRow(`
@@ -48,26 +50,80 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             throw new Error(`no concept versie found for iri: ${id}`);
         }
 
-        //TODO LPDC-916: add to query a VALUES (id's / IRIs): so we can reuse for others that have a title?
-        //TODO LPDC-916: extract these queries into SparqlQueryFragments functions
-        //TODO LPDC-916: interface: titles(ids: Iri[]): returns an object with as key an IRI, and as Value: TaalString | undefined ...
 
-        const titlesQuery = `
+        const requirementIdsQuery = `
+            ${PREFIX.ps}
+            ${PREFIX.m8g}
+            SELECT ?requirementId
+                WHERE {
+                    GRAPH ${GRAPH.ldesData} {
+                        ${sparqlEscapeUri(id)} ps:hasRequirement ?requirementId.
+                        ?requirementId a m8g:Requirement.
+                    }
+                }
+        `;
+
+        const dependentEntityIdsQueries =
+            [
+                requirementIdsQuery,
+                ];
+
+        const {results: resultsDependentEntityIds, errors: errorsDependentEntityIds} = await PromisePool
+            .withConcurrency(5)
+            .for(dependentEntityIdsQueries)
+            .useCorrespondingResults()
+            .process(async (query) => {
+                return await this.queryList(query);
+            });
+
+        if (resultsDependentEntityIds.some(r => r === PromisePool.failed || r === PromisePool.notRun)) {
+            console.log(errorsDependentEntityIds);
+            throw new Error(`Could not query all for iri: ${id}`);
+        }
+        const [
+            requirementIdsResults,
+        ] = resultsDependentEntityIds.map(r => r as any []);
+
+        const requirementIds: Iri[] = requirementIdsResults.map(r => r?.['requirementId'].value);
+
+        //TODO LPDC-916: extract these queries into SparqlQueryFragments functions
+        //TODO LPDC-916: interface: titlesQuery(ids: Iri[]): returns an object with as key an IRI, and as Value: TaalString | undefined ...
+
+        const titlesQueryBuilder = (subjectIds: Iri[]) => `
             ${PREFIX.dct}
-            SELECT ?title
-                WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
-                        ${sparqlEscapeUri(id)} dct:title ?title. 
+            SELECT ?subjectId ?title
+                WHERE {                    
+                    GRAPH ${GRAPH.ldesData} {
+                        VALUES(?subjectId) {
+                            ${subjectIds.map(subjectId => `(${sparqlEscapeUri(subjectId)}) `).join(' ')}
+                         } 
+                        ?subjectId dct:title ?title. 
                     }
                 }            
         `;
 
-        const descriptionsQuery = `
+        const descriptionsQueryBuilder = (subjectIds: Iri[]) => `
             ${PREFIX.dct}
-            SELECT ?description
+            SELECT ?subjectId ?description
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
-                        ${sparqlEscapeUri(id)} dct:description ?description. 
+                    GRAPH ${GRAPH.ldesData} {
+                        VALUES(?subjectId) {
+                            ${subjectIds.map(subjectId => `(${sparqlEscapeUri(subjectId)}) `).join(' ')}
+                        } 
+                        ?subjectId dct:description ?description. 
+                    }
+                }            
+        `;
+
+        const ordersQueryBuilder = (subjectIds: Iri[]) => `
+            ${PREFIX.sh}
+            SELECT ?subjectId ?order
+                WHERE { 
+                    GRAPH ${GRAPH.ldesData} {
+                        VALUES(?subjectId) {
+                            ${subjectIds.map(subjectId => `(${sparqlEscapeUri(subjectId)}) `).join(' ')}
+                        } 
+                        ?subjectId sh:order ?order. 
                     }
                 }            
         `;
@@ -77,7 +133,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?additionalDescription
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} lpdcExt:additionalDescription ?additionalDescription. 
                     }
                 }            
@@ -88,7 +144,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?exception
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} lpdcExt:exception ?exception. 
                     }
                 }            
@@ -99,7 +155,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?regulation
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} lpdcExt:regulation ?regulation. 
                     }
                 }            
@@ -110,7 +166,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?targetAudience
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} lpdcExt:targetAudience ?targetAudience. 
                     }
                 }            
@@ -121,7 +177,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?theme
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} m8g:thematicArea ?theme. 
                     }
                 }            
@@ -132,7 +188,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?competentAuthorityLevel
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} lpdcExt:competentAuthorityLevel ?competentAuthorityLevel. 
                     }
                 }            
@@ -143,7 +199,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?competentAuthority
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} m8g:hasCompetentAuthority ?competentAuthority. 
                     }
                 }            
@@ -154,7 +210,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?executingAuthorityLevel
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} lpdcExt:executingAuthorityLevel ?executingAuthorityLevel. 
                     }
                 }            
@@ -165,7 +221,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?executingAuthority
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} lpdcExt:hasExecutingAuthority ?executingAuthority. 
                     }
                 }            
@@ -176,7 +232,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?publicationMedium
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} lpdcExt:publicationMedium ?publicationMedium. 
                     }
                 }            
@@ -187,7 +243,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?yourEuropeCategory
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} lpdcExt:yourEuropeCategory ?yourEuropeCategory. 
                     }
                 }            
@@ -198,7 +254,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             
             SELECT ?keyword
                 WHERE { 
-                    GRAPH <http://mu.semte.ch/graphs/lpdc/ldes-data> { 
+                    GRAPH ${GRAPH.ldesData} { 
                         ${sparqlEscapeUri(id)} dcat:keyword ?keyword. 
                     }
                 }            
@@ -206,8 +262,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
         const listQueries =
             [
-                titlesQuery,
-                descriptionsQuery,
+                titlesQueryBuilder([id, ...requirementIds]),
+                descriptionsQueryBuilder([id, ...requirementIds]),
+                ordersQueryBuilder([...requirementIds]),
                 additionalDescriptionsQuery,
                 exceptionsQuery,
                 requlationsQuery,
@@ -234,8 +291,10 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             console.log(errors);
             throw new Error(`Could not query all for iri: ${id}`);
         }
-        const [titles,
-            descriptions,
+        const [
+            allTitles,
+            allDescriptions,
+            allOrders,
             additionalDescriptions,
             exceptions,
             regulations,
@@ -252,8 +311,8 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
         return new ConceptVersie(
             findEntityAndUniqueTriplesResult['id'].value,
-            this.asTaalString(titles.map(r => r?.['title'])),
-            this.asTaalString(descriptions.map(r => r?.['description'])),
+            this.asTaalString(allTitles.filter(r => r?.['subjectId'].value === id).map(r => r?.['title'])),
+            this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === id).map(r => r?.['description'])),
             this.asTaalString(additionalDescriptions.map(r => r?.['additionalDescription'])),
             this.asTaalString(exceptions.map(r => r?.['exception'])),
             this.asTaalString(regulations.map(r => r?.['regulation'])),
@@ -269,6 +328,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asEnums(PublicationMediumType, publicationMedia.map(r => r?.['publicationMedium']), id),
             this.asEnums(YourEuropeCategoryType, yourEuropeCategories.map(r => r?.['yourEuropeCategory']), id),
             keywords.map(keyword => [keyword]).flatMap(keywordsRow => this.asTaalString(keywordsRow.map(r => r?.['keyword']))),
+            this.asRequirements(requirementIds, allTitles, allDescriptions, allOrders),
         );
     }
 
@@ -305,6 +365,22 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
     private asIris(values: any[]): Set<Iri> {
         return new Set(values.map(value => value.value));
+    }
+
+    private asRequirements(requirementIds: Iri[], allTitles: any[], allDescriptions: any[], allOrders: any[]): Requirement[] {
+        //TODO LPDC-916: implement order ...
+        const result = requirementIds.map(reqId => {
+                const title = this.asTaalString(allTitles.filter(r => r?.['subjectId'].value === reqId).map(r => r?.['title']));
+                const description = this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === reqId).map(r => r?.['description']));
+                return new Requirement(reqId, title, description);
+            }
+        );
+        return asSortedArray(result, (a, b) => {
+            const orderA = Number.parseInt(allOrders.filter(r => r?.['subjectId'].value === a.id)[0].order.value);
+            const orderB = Number.parseInt(allOrders.filter(r => r?.['subjectId'].value === b.id)[0].order.value);
+
+            return orderA - orderB;
+        });
     }
 
 }

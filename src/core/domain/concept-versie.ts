@@ -1,6 +1,8 @@
 import {Iri} from "./shared/iri";
 import {TaalString} from "./taal-string";
 import _ from 'lodash';
+import {Requirement} from "./requirement";
+import {asSortedArray, asSortedSet} from "./shared/collections-helper";
 
 
 export class ConceptVersie {
@@ -26,17 +28,7 @@ export class ConceptVersie {
     //TODO LPDC-916: revise keywords structure
     private readonly _keywords: TaalString[];
 
-    //TODO LPDC-916: extract into shared helper ... or use lodash?
-
-    private asSortedArray<T>(anArray: T[], compareFn?: (a: T, b: T) => number): T[] {
-        const arr = [...anArray];
-        arr.sort(compareFn);
-        return arr;
-    }
-
-    private asSortedSet<T>(aSet: Set<T>): Set<T> {
-        return new Set(this.asSortedArray(Array.from(aSet)));
-    }
+    private readonly _requirements: Requirement[];
 
     constructor(id: Iri,
                 title: TaalString | undefined,
@@ -56,6 +48,7 @@ export class ConceptVersie {
                 publicationMedia: Set<PublicationMediumType>,
                 yourEuropeCategories: Set<YourEuropeCategoryType>,
                 keywords: TaalString[],
+                requirements: Requirement[],
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -67,15 +60,16 @@ export class ConceptVersie {
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
-        this._targetAudiences = this.asSortedSet(targetAudiences);
-        this._themes = this.asSortedSet(themes);
-        this._competentAuthorityLevels = this.asSortedSet(competentAuthorityLevels);
-        this._competentAuthorities = this.asSortedSet(competentAuthorities);
-        this._executingAuthorityLevels = this.asSortedSet(executingAuthorityLevels);
-        this._executingAuthorities = this.asSortedSet(executingAuthorities);
-        this._publicationMedia = this.asSortedSet(publicationMedia);
-        this._yourEuropeCategories = this.asSortedSet(yourEuropeCategories);
-        this._keywords = this.asSortedArray([...keywords], TaalString.compare);
+        this._targetAudiences = asSortedSet(targetAudiences);
+        this._themes = asSortedSet(themes);
+        this._competentAuthorityLevels = asSortedSet(competentAuthorityLevels);
+        this._competentAuthorities = asSortedSet(competentAuthorities);
+        this._executingAuthorityLevels = asSortedSet(executingAuthorityLevels);
+        this._executingAuthorities = asSortedSet(executingAuthorities);
+        this._publicationMedia = asSortedSet(publicationMedia);
+        this._yourEuropeCategories = asSortedSet(yourEuropeCategories);
+        this._keywords = asSortedArray([...keywords], TaalString.compare);
+        this._requirements = [...requirements];
     }
 
     get id(): Iri {
@@ -146,8 +140,12 @@ export class ConceptVersie {
         return this._yourEuropeCategories;
     }
 
-    get keywords(): TaalString [] {
+    get keywords(): TaalString[] {
         return this._keywords;
+    }
+
+    get requirements(): Requirement[] {
+        return this._requirements;
     }
 
     static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
