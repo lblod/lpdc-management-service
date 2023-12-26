@@ -41,7 +41,8 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...conceptVersie.keywords.flatMap(keyword => this.taalStringToTriples(conceptVersie.id, "dcat:keyword", keyword)),
                 ...this.requirementsToTriples(conceptVersie),
                 ...this.proceduresToTriples(conceptVersie),
-                ...this.websitesToTriples(conceptVersie.id, 'rdfs:seeAlso', conceptVersie.websites)
+                ...this.websitesToTriples(conceptVersie.id, 'rdfs:seeAlso', conceptVersie.websites),
+                ...this.costsToTriples(conceptVersie),
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,
@@ -120,6 +121,18 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ];
             }
         ).filter(t => t != undefined);
+    }
+
+    private costsToTriples(conceptVersie: ConceptVersie): string[] {
+        return conceptVersie.costs.flatMap((cost, index) => {
+            return [
+                `${sparqlEscapeUri(conceptVersie.id)} m8g:hasCost ${sparqlEscapeUri(cost.id)}`,
+                `${sparqlEscapeUri(cost.id)} a m8g:Cost`,
+                ...this.taalStringToTriples(cost.id, 'dct:title', cost.title),
+                ...this.taalStringToTriples(cost.id, 'dct:description', cost.description),
+                `${sparqlEscapeUri(cost.id)} sh:order ${sparqlEscapeInt(index)}`,
+            ];
+        });
     }
 
 }

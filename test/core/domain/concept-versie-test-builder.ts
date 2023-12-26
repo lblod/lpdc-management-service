@@ -18,6 +18,8 @@ import {Procedure} from "../../../src/core/domain/procedure";
 import {aFullProcedure, anotherFullProcedure} from "./procedure-test-builder";
 import {anotherFullWebsite} from "./website-test-builder";
 import {Website} from "../../../src/core/domain/website";
+import {aFullCost, anotherFullCost} from "./cost-test-builder";
+import {Cost} from "../../../src/core/domain/cost";
 
 
 export function aMinimalConceptVersie(): ConceptVersieTestBuilder {
@@ -82,7 +84,8 @@ export function aFullConceptVersie(): ConceptVersieTestBuilder {
         .withKeywords(ConceptVersieTestBuilder.KEYWORDS)
         .withRequirements(ConceptVersieTestBuilder.REQUIREMENTS)
         .withProcedures(ConceptVersieTestBuilder.PROCEDURES)
-        .withWebsites(ConceptVersieTestBuilder.WEBSITES);
+        .withWebsites(ConceptVersieTestBuilder.WEBSITES)
+        .withCosts(ConceptVersieTestBuilder.COSTS);
 }
 
 export class ConceptVersieTestBuilder {
@@ -149,6 +152,8 @@ export class ConceptVersieTestBuilder {
 
     public static readonly WEBSITES = [anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()];
 
+    public static readonly COSTS = [aFullCost().build(), anotherFullCost().build()];
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
@@ -170,6 +175,7 @@ export class ConceptVersieTestBuilder {
     private requirements: Requirement[] = [];
     private procedures: Procedure[] = [];
     private websites: Website[] = [];
+    private costs: Cost[] = [];
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -280,6 +286,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withCosts(costs: Cost[]): ConceptVersieTestBuilder {
+        this.costs = costs;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -302,7 +313,9 @@ export class ConceptVersieTestBuilder {
             this.keywords,
             this.requirements,
             this.procedures,
-            this.websites);
+            this.websites,
+            this.costs,
+            );
     }
 
 }

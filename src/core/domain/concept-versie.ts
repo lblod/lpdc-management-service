@@ -5,6 +5,7 @@ import {Requirement} from "./requirement";
 import {asSortedArray, asSortedSet} from "./shared/collections-helper";
 import {Procedure} from "./procedure";
 import {Website} from "./website";
+import {Cost} from "./cost";
 
 
 export class ConceptVersie {
@@ -31,6 +32,7 @@ export class ConceptVersie {
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
     private readonly _websites: Website[];
+    private readonly _costs: Cost[];
 
     constructor(id: Iri,
                 title: TaalString | undefined,
@@ -53,6 +55,7 @@ export class ConceptVersie {
                 requirements: Requirement[],
                 procedures: Procedure[],
                 websites: Website[],
+                costs: Cost[],
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -76,6 +79,7 @@ export class ConceptVersie {
         this._requirements = [...requirements];
         this._procedures = [...procedures];
         this._websites = [...websites];
+        this._costs = [...costs];
     }
 
     get id(): Iri {
@@ -160,6 +164,10 @@ export class ConceptVersie {
 
     get websites(): Website[] {
         return this._websites;
+    }
+
+    get costs(): Cost[] {
+        return this._costs;
     }
 
     static isFunctionallyChanged(value: ConceptVersie, other: ConceptVersie): boolean {
