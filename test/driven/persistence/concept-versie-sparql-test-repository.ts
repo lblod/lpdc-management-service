@@ -5,6 +5,7 @@ import {ConceptVersie} from "../../../src/core/domain/concept-versie";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {Evidence} from "../../../src/core/domain/evidence";
 
 export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlRepository {
 
@@ -58,7 +59,7 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ["nl-be-x-informal", object.nlInformal],
                 ["nl-be-x-generated-formal", object.nlGeneratedFormal],
                 ["nl-be-x-generated-informal", object.nlGeneratedInformal]]
-                .filter(tuple => tuple[1] != undefined)
+                .filter(tuple => tuple[1] !== undefined)
                 .map(tuple => `${sparqlEscapeUri(subject)} ${predicate} """${tuple[1]}"""@${tuple[0]}`) : [];
     }
 
@@ -75,8 +76,18 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...this.taalStringToTriples(requirement.id, `dct:title`, requirement.title),
                 ...this.taalStringToTriples(requirement.id, `dct:description`, requirement.description),
                 `${sparqlEscapeUri(requirement.id)} sh:order ${sparqlEscapeInt(index)}`,
+                ...this.evidenceToTriples(requirement.id, requirement.evidence),
             ]
         );
+    }
+
+    private evidenceToTriples(requirementId: Iri, evidence: Evidence | undefined): string[] {
+        return evidence ? [
+            `${sparqlEscapeUri(requirementId)} m8g:hasSupportingEvidence ${sparqlEscapeUri(evidence.id)}`,
+            `${sparqlEscapeUri(evidence.id)} a m8g:Evidence`,
+            ...this.taalStringToTriples(evidence.id, `dct:title`, evidence.title),
+            ...this.taalStringToTriples(evidence.id, `dct:description`, evidence.description),
+        ] : [];
     }
 
 }

@@ -162,8 +162,6 @@ export class ConceptVersieTestBuilder {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
     }
 
-
-
     public withId(id: Iri): ConceptVersieTestBuilder {
         this.id = id;
         return this;

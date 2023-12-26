@@ -17,6 +17,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {PromisePool} from '@supercharge/promise-pool';
 import {Requirement} from "../../core/domain/requirement";
 import {asSortedArray} from "../../core/domain/shared/collections-helper";
+import {Evidence} from "../../core/domain/evidence";
 
 export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
 
@@ -51,22 +52,26 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         }
 
 
-        const requirementIdsQuery = `
+        const requirementAndEvidenceIdsQuery = `
             ${PREFIX.ps}
             ${PREFIX.m8g}
-            SELECT ?requirementId
+            SELECT ?requirementId ?evidenceId
                 WHERE {
                     GRAPH ${GRAPH.ldesData} {
                         ${sparqlEscapeUri(id)} ps:hasRequirement ?requirementId.
                         ?requirementId a m8g:Requirement.
+                        OPTIONAL {
+                            ?requirementId m8g:hasSupportingEvidence ?evidenceId.
+                            ?evidenceId a m8g:Evidence.
+                        }
                     }
                 }
         `;
 
         const dependentEntityIdsQueries =
             [
-                requirementIdsQuery,
-                ];
+                requirementAndEvidenceIdsQuery,
+            ];
 
         const {results: resultsDependentEntityIds, errors: errorsDependentEntityIds} = await PromisePool
             .withConcurrency(5)
@@ -81,10 +86,11 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             throw new Error(`Could not query all for iri: ${id}`);
         }
         const [
-            requirementIdsResults,
+            requirementAndEvidenceIdsResults,
         ] = resultsDependentEntityIds.map(r => r as any []);
 
-        const requirementIds: Iri[] = requirementIdsResults.map(r => r?.['requirementId'].value);
+        const requirementIds: Iri[] = requirementAndEvidenceIdsResults.map(r => r?.['requirementId'].value);
+        const evidenceIds: Iri[] = requirementAndEvidenceIdsResults.map(r => r?.['evidenceId']?.value);
 
         //TODO LPDC-916: extract these queries into SparqlQueryFragments functions
         //TODO LPDC-916: interface: titlesQuery(ids: Iri[]): returns an object with as key an IRI, and as Value: TaalString | undefined ...
@@ -262,8 +268,8 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
         const listQueries =
             [
-                titlesQueryBuilder([id, ...requirementIds]),
-                descriptionsQueryBuilder([id, ...requirementIds]),
+                titlesQueryBuilder([id, ...requirementIds, ...evidenceIds].filter(ids => ids !== undefined)),
+                descriptionsQueryBuilder([id, ...requirementIds, ...evidenceIds].filter(ids => ids !== undefined)),
                 ordersQueryBuilder([...requirementIds]),
                 additionalDescriptionsQuery,
                 exceptionsQuery,
@@ -328,7 +334,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asEnums(PublicationMediumType, publicationMedia.map(r => r?.['publicationMedium']), id),
             this.asEnums(YourEuropeCategoryType, yourEuropeCategories.map(r => r?.['yourEuropeCategory']), id),
             keywords.map(keyword => [keyword]).flatMap(keywordsRow => this.asTaalString(keywordsRow.map(r => r?.['keyword']))),
-            this.asRequirements(requirementIds, allTitles, allDescriptions, allOrders),
+            this.asRequirements(requirementIds, evidenceIds, allTitles, allDescriptions, allOrders),
         );
     }
 
@@ -367,18 +373,22 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         return new Set(values.map(value => value.value));
     }
 
-    private asRequirements(requirementIds: Iri[], allTitles: any[], allDescriptions: any[], allOrders: any[]): Requirement[] {
-        //TODO LPDC-916: implement order ...
-        const result = requirementIds.map(reqId => {
+    private asRequirements(requirementIds: Iri[], evidenceIds: Iri[], allTitles: any[], allDescriptions: any[], allOrders: any[]): Requirement[] {
+        const result = requirementIds.map((reqId, index) => {
                 const title = this.asTaalString(allTitles.filter(r => r?.['subjectId'].value === reqId).map(r => r?.['title']));
                 const description = this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === reqId).map(r => r?.['description']));
-                return new Requirement(reqId, title, description);
+                const evidenceIdForRequirement = evidenceIds[index];
+                const evidence = evidenceIdForRequirement !== undefined ?
+                    new Evidence(evidenceIdForRequirement,
+                        this.asTaalString(allTitles.filter(r => r?.['subjectId'].value === evidenceIdForRequirement).map(r => r?.['title'])),
+                        this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === evidenceIdForRequirement).map(r => r?.['description'])))
+                    : undefined;
+                return new Requirement(reqId, title, description, evidence);
             }
         );
         return asSortedArray(result, (a, b) => {
             const orderA = Number.parseInt(allOrders.filter(r => r?.['subjectId'].value === a.id)[0].order.value);
             const orderB = Number.parseInt(allOrders.filter(r => r?.['subjectId'].value === b.id)[0].order.value);
-
             return orderA - orderB;
         });
     }

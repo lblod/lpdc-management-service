@@ -1,6 +1,7 @@
 import {TaalString} from "./taal-string";
 import {Iri} from "./shared/iri";
 import _ from 'lodash';
+import {Evidence} from "./evidence";
 
 export class Requirement {
 
@@ -8,14 +9,17 @@ export class Requirement {
     private readonly _id: Iri;
     private readonly _title: TaalString | undefined;
     private readonly _description: TaalString | undefined;
+    private readonly _evidence: Evidence | undefined;
 
     constructor(id: Iri,
                 title: TaalString | undefined,
                 description: TaalString | undefined,
+                evidence: Evidence | undefined,
     ) {
         this._id = id;
         this._title = title;
         this._description = description;
+        this._evidence = evidence;
     }
 
     get id(): Iri {
@@ -28,6 +32,10 @@ export class Requirement {
 
     get description(): TaalString | undefined {
         return this._description;
+    }
+
+    get evidence(): Evidence | undefined {
+        return this._evidence;
     }
 
     static isFunctionallyChanged(value: Requirement[], other: Requirement[]): boolean {

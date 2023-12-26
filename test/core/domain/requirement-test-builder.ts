@@ -2,6 +2,8 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {Requirement} from "../../../src/core/domain/requirement";
+import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
+import {Evidence} from "../../../src/core/domain/evidence";
 
 
 export function aMinimalRequirement(): RequirementTestBuilder {
@@ -26,7 +28,8 @@ export function aFullRequirement(): RequirementTestBuilder {
                 RequirementTestBuilder.DESCRIPTION_NL_FORMAL,
                 RequirementTestBuilder.DESCRIPTION_NL_INFORMAL,
                 RequirementTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
-                RequirementTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL));
+                RequirementTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withEvidence(RequirementTestBuilder.EVIDENCE);
 }
 
 export function anotherFullRequirement(): RequirementTestBuilder {
@@ -46,7 +49,8 @@ export function anotherFullRequirement(): RequirementTestBuilder {
                 RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
                 RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL,
                 RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL,
-                RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
+                RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withEvidence(RequirementTestBuilder.ANOTHER_EVIDENCE);
 }
 
 export class RequirementTestBuilder {
@@ -79,9 +83,13 @@ export class RequirementTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL = 'Requirement Another Description - nl-generated-formal';
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Requirement Another Description - nl-generated-informal';
 
+    public static readonly EVIDENCE = aFullEvidence().build();
+    public static readonly ANOTHER_EVIDENCE = anotherFullEvidence().build();
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
+    private evidence: Evidence | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return `http://data.lblod.info/id/requirement/${uniqueId}`;
@@ -102,11 +110,17 @@ export class RequirementTestBuilder {
         return this;
     }
 
+    public withEvidence(evidence: Evidence): RequirementTestBuilder {
+        this.evidence = evidence;
+        return this;
+    }
+
     public build(): Requirement {
         return new Requirement(
             this.id,
             this.title,
             this.description,
+            this.evidence
         );
     }
 

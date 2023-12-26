@@ -17,6 +17,8 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/concept-versie";
+import {aMinimalRequirement, RequirementTestBuilder} from "../../core/domain/requirement-test-builder";
+import {aMinimalEvidence, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
 
 describe('ConceptVersieRepository', () => {
     const repository = new ConceptVersieSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -225,6 +227,20 @@ describe('ConceptVersieRepository', () => {
                     `<${ConceptVersieTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[1].description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
                     `<${ConceptVersieTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[1].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
                     `<${ConceptVersieTestBuilder.REQUIREMENTS[1].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].id}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}>`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> a <http://data.europa.eu/m8g/Evidence>`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.title.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.title.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.description.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.description.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.description.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[1].evidence.description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
                     `<${conceptVersieId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${ConceptVersieTestBuilder.REQUIREMENTS[0].id}>`,
                     `<${ConceptVersieTestBuilder.REQUIREMENTS[0].id}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${ConceptVersieTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[0].title.en}"""@EN`,
@@ -240,6 +256,20 @@ describe('ConceptVersieRepository', () => {
                     `<${ConceptVersieTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[0].description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
                     `<${ConceptVersieTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[0].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
                     `<${ConceptVersieTestBuilder.REQUIREMENTS[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].id}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}>`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> a <http://data.europa.eu/m8g/Evidence>`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.title.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.title.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.description.en}"""@EN`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.description.nl}"""@NL`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.description.nlInformal}"""@nl-BE-x-informal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                    `<${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.REQUIREMENTS[0].evidence.description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
                 ]);
 
             //TODO LPDC-916: more realistic to also save the 'concept type? of an enum' in the database ? e.g. type, etc. (but that should be a separate query then ...)
@@ -248,6 +278,56 @@ describe('ConceptVersieRepository', () => {
 
             expect(actualConceptVersie).toEqual(conceptVersie);
         });
+
+        test('Verify minimal mappings - requirement without evidence', async () => {
+            const conceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
+            const requirementId = RequirementTestBuilder.buildIri(uuid());
+
+            const conceptVersie =
+                aMinimalConceptVersie()
+                    .withId(conceptVersieId)
+                    .withRequirements([aMinimalRequirement().withId(requirementId).withEvidence(undefined).build()])
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                        `<${conceptVersieId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
+                        `<${requirementId}> a <http://data.europa.eu/m8g/Requirement>`,
+                        `<${requirementId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                ]);
+
+            const actualConceptVersie = await repository.findById(conceptVersieId);
+
+            expect(actualConceptVersie).toEqual(conceptVersie);
+        });
+
+        test('Verify minimal mappings - minimal requirement with minimal evidence', async () => {
+            const conceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
+            const requirementId = RequirementTestBuilder.buildIri(uuid());
+            const evidenceId = EvidenceTestBuilder.buildIri(uuid());
+
+            const conceptVersie =
+                aMinimalConceptVersie()
+                    .withId(conceptVersieId)
+                    .withRequirements([aMinimalRequirement().withId(requirementId).withEvidence(aMinimalEvidence().withId(evidenceId).build()).build()])
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptVersieId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
+                    `<${requirementId}> a <http://data.europa.eu/m8g/Requirement>`,
+                    `<${requirementId}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${evidenceId}>`,
+                    `<${requirementId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${evidenceId}> a <http://data.europa.eu/m8g/Evidence>`,
+                ]);
+
+            const actualConceptVersie = await repository.findById(conceptVersieId);
+
+            expect(actualConceptVersie).toEqual(conceptVersie);
+        });
+
 
         for (const type of Object.values(ProductType)) {
             test(`Product type ${type} can be mapped`, async () => {
