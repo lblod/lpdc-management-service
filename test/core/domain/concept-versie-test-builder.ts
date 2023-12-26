@@ -16,6 +16,8 @@ import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullRequirement, anotherFullRequirement} from "./requirement-test-builder";
 import {Procedure} from "../../../src/core/domain/procedure";
 import {aFullProcedure, anotherFullProcedure} from "./procedure-test-builder";
+import {anotherFullWebsite} from "./website-test-builder";
+import {Website} from "../../../src/core/domain/website";
 
 
 export function aMinimalConceptVersie(): ConceptVersieTestBuilder {
@@ -79,8 +81,10 @@ export function aFullConceptVersie(): ConceptVersieTestBuilder {
         .withYourEuropeCategories(ConceptVersieTestBuilder.YOUR_EUROPE_CATEGORIES)
         .withKeywords(ConceptVersieTestBuilder.KEYWORDS)
         .withRequirements(ConceptVersieTestBuilder.REQUIREMENTS)
-        .withProcedures(ConceptVersieTestBuilder.PROCEDURES);
+        .withProcedures(ConceptVersieTestBuilder.PROCEDURES)
+        .withWebsites(ConceptVersieTestBuilder.WEBSITES);
 }
+
 export class ConceptVersieTestBuilder {
 
     public static readonly TITLE_EN = 'Concept Versie Title - en';
@@ -143,6 +147,8 @@ export class ConceptVersieTestBuilder {
 
     public static readonly PROCEDURES = [aFullProcedure().build(), anotherFullProcedure().build()];
 
+    public static readonly WEBSITES = [anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()];
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
@@ -163,6 +169,7 @@ export class ConceptVersieTestBuilder {
     private keywords: TaalString[] = [];
     private requirements: Requirement[] = [];
     private procedures: Procedure[] = [];
+    private websites: Website[] = [];
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -268,6 +275,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withWebsites(websites: Website[]): ConceptVersieTestBuilder {
+        this.websites = websites;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -289,7 +301,8 @@ export class ConceptVersieTestBuilder {
             this.yourEuropeCategories,
             this.keywords,
             this.requirements,
-            this.procedures);
+            this.procedures,
+            this.websites);
     }
 
 }

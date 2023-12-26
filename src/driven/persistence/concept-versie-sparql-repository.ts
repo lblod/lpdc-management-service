@@ -89,10 +89,23 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }
         `;
 
+        const websiteIdsQuery = `
+            ${PREFIX.rdfs}
+            ${PREFIX.schema}
+            SELECT ?websiteId
+                WHERE {
+                    GRAPH ${GRAPH.ldesData} {
+                        ${sparqlEscapeUri(id)} rdfs:seeAlso ?websiteId.
+                        ?websiteId a schema:WebSite.
+                    }
+                }
+        `;
+
         const dependentEntityIdsQueries =
             [
                 requirementAndEvidenceIdsQuery,
                 procedureAndWebsiteIdsQuery,
+                websiteIdsQuery,
             ];
 
         const {results: resultsDependentEntityIds, errors: errorsDependentEntityIds} = await PromisePool
@@ -109,12 +122,14 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         }
         const [
             requirementAndEvidenceIdsResults,
-            procedureAndWebsiteIdsResults
+            procedureAndWebsiteIdsResults,
+            websiteIdsResults,
         ] = resultsDependentEntityIds.map(r => r as any []);
 
         const requirementIds: Iri[] = requirementAndEvidenceIdsResults.map(r => r?.['requirementId'].value);
         //TODO LPDC-916: rewrite using a tuple structure (requirement -> evidence ...) (don't depend on index of arrays) + remove the
         const evidenceIds: Iri[] = requirementAndEvidenceIdsResults.map(r => r?.['evidenceId']?.value);
+
         const procedureAndWebsiteIds: typeof OneToManyIdsType []
             = Array.from(new Set(procedureAndWebsiteIdsResults.map(r => r?.['procedureId'].value as Iri)))
             .map(procedureId =>
@@ -125,9 +140,10 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                             .flatMap(r => r?.['websiteId']?.value as Iri | undefined)
                             .filter(v => v !== undefined)))]
             );
-
         const procedureIds = procedureAndWebsiteIds.map(prodAndWebsite => prodAndWebsite[0]);
         const websitesIdsForProcedures = procedureAndWebsiteIds.flatMap(prodAndWebsite => prodAndWebsite[1]);
+
+        const websiteIds: Iri[] = websiteIdsResults.map(r => r?.['websiteId'].value);
 
         //TODO LPDC-916: extract these queries into SparqlQueryFragments functions
         //TODO LPDC-916: interface: titlesQuery(ids: Iri[]): returns an object with as key an IRI, and as Value: TaalString | undefined ...
@@ -319,10 +335,10 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         const listQueries =
             [
                 //TODO LPDC-916: can the !== undefined filters be removed?
-                titlesQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds, ...websitesIdsForProcedures].filter(ids => ids !== undefined)),
-                descriptionsQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds, ...websitesIdsForProcedures].filter(ids => ids !== undefined)),
-                ordersQueryBuilder([...requirementIds, ...procedureIds, ...websitesIdsForProcedures]),
-                urlsQueryBuilder(websitesIdsForProcedures),
+                titlesQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds].filter(ids => ids !== undefined)),
+                descriptionsQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds].filter(ids => ids !== undefined)),
+                ordersQueryBuilder([...requirementIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds]),
+                urlsQueryBuilder([...websitesIdsForProcedures, ...websiteIds]),
                 additionalDescriptionsQuery,
                 exceptionsQuery,
                 requlationsQuery,
@@ -389,6 +405,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             keywords.map(keyword => [keyword]).flatMap(keywordsRow => this.asTaalString(keywordsRow.map(r => r?.['keyword']))),
             this.asRequirements(requirementIds, evidenceIds, allTitles, allDescriptions, allOrders),
             this.asProcedures(procedureAndWebsiteIds, allTitles, allDescriptions, allOrders, allUrls),
+            this.asWebsites(websiteIds, allTitles, allDescriptions, allOrders, allUrls)
         );
     }
 
@@ -449,19 +466,23 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 const websiteIds: Iri[] = procAndWebsitesId[1];
                 const title = this.asTaalString(allTitles.filter(r => r?.['subjectId'].value === procId).map(r => r?.['title']));
                 const description = this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === procId).map(r => r?.['description']));
-                const websites =
-                    this.sort(
-                        websiteIds.map(websiteId =>
-                            new Website(
-                                websiteId,
-                                this.asTaalString(allTitles.filter(r => r?.['subjectId'].value === websiteId).map(r => r?.['title'])),
-                                this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === websiteId).map(r => r?.['description'])),
-                                allUrls.filter(r => r?.['subjectId'].value === websiteId).map(r => r?.['url'])[0]?.value)
-                        ), allOrders);
-                return new Procedure(procId, title, description, websites);//TODO LPDC-916: implement me
+                const websites = this.asWebsites(websiteIds, allTitles, allDescriptions, allOrders, allUrls);
+                return new Procedure(procId, title, description, websites);
             }
         );
         return this.sort(result, allOrders);
+    }
+
+    private asWebsites(websiteIds: Iri[], allTitles: any[], allDescriptions: any[], allOrders: any[], allUrls: any[]): Website[] {
+        return this.sort(
+            websiteIds.map(websiteId =>
+                new Website(
+                    websiteId,
+                    this.asTaalString(allTitles.filter(r => r?.['subjectId'].value === websiteId).map(r => r?.['title'])),
+                    this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === websiteId).map(r => r?.['description'])),
+                    allUrls.filter(r => r?.['subjectId'].value === websiteId).map(r => r?.['url'])[0]?.value)
+            ), allOrders);
+
     }
 
     private sort(anArray: any[], allOrders: any[]) {

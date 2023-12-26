@@ -41,6 +41,7 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...conceptVersie.keywords.flatMap(keyword => this.taalStringToTriples(conceptVersie.id, "dcat:keyword", keyword)),
                 ...this.requirementsToTriples(conceptVersie),
                 ...this.proceduresToTriples(conceptVersie),
+                ...this.websitesToTriples(conceptVersie.id, 'rdfs:seeAlso', conceptVersie.websites)
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,
@@ -50,7 +51,8 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 PREFIX.dcat,
                 PREFIX.ps,
                 PREFIX.sh,
-                PREFIX.cpsv]);
+                PREFIX.cpsv,
+                PREFIX.rdfs]);
     }
 
     private taalStringToTriples(subject: Iri, predicate: string, object: TaalString | undefined): string[] {
