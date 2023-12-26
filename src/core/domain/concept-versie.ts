@@ -3,6 +3,7 @@ import {TaalString} from "./taal-string";
 import _ from 'lodash';
 import {Requirement} from "./requirement";
 import {asSortedArray, asSortedSet} from "./shared/collections-helper";
+import {Procedure} from "./procedure";
 
 
 export class ConceptVersie {
@@ -24,11 +25,10 @@ export class ConceptVersie {
     private readonly _executingAuthorities: Set<Iri>;
     private readonly _publicationMedia: Set<PublicationMediumType>;
     private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>;
-
     //TODO LPDC-916: revise keywords structure
     private readonly _keywords: TaalString[];
-
     private readonly _requirements: Requirement[];
+    private readonly _procedures: Procedure[];
 
     constructor(id: Iri,
                 title: TaalString | undefined,
@@ -49,6 +49,7 @@ export class ConceptVersie {
                 yourEuropeCategories: Set<YourEuropeCategoryType>,
                 keywords: TaalString[],
                 requirements: Requirement[],
+                procedures: Procedure[],
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -70,6 +71,7 @@ export class ConceptVersie {
         this._yourEuropeCategories = asSortedSet(yourEuropeCategories);
         this._keywords = asSortedArray([...keywords], TaalString.compare);
         this._requirements = [...requirements];
+        this._procedures = [...procedures];
     }
 
     get id(): Iri {
@@ -146,6 +148,10 @@ export class ConceptVersie {
 
     get requirements(): Requirement[] {
         return this._requirements;
+    }
+
+    get procedures(): Procedure[] {
+        return this._procedures;
     }
 
     static isFunctionallyChanged(value: ConceptVersie, other: ConceptVersie): boolean {

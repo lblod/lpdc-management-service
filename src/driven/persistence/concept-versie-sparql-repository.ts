@@ -18,6 +18,7 @@ import {PromisePool} from '@supercharge/promise-pool';
 import {Requirement} from "../../core/domain/requirement";
 import {asSortedArray} from "../../core/domain/shared/collections-helper";
 import {Evidence} from "../../core/domain/evidence";
+import {Procedure} from "../../core/domain/procedure";
 
 export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
 
@@ -68,9 +69,21 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 }
         `;
 
+        const procedureIdsQuery = `
+            ${PREFIX.cpsv}
+            SELECT ?procedureId
+                WHERE {
+                    GRAPH ${GRAPH.ldesData} {
+                        ${sparqlEscapeUri(id)} cpsv:follows ?procedureId.
+                        ?procedureId a cpsv:Rule.
+                    }
+                }
+        `;
+
         const dependentEntityIdsQueries =
             [
                 requirementAndEvidenceIdsQuery,
+                procedureIdsQuery,
             ];
 
         const {results: resultsDependentEntityIds, errors: errorsDependentEntityIds} = await PromisePool
@@ -87,10 +100,12 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         }
         const [
             requirementAndEvidenceIdsResults,
+            procedureIdsResults
         ] = resultsDependentEntityIds.map(r => r as any []);
 
         const requirementIds: Iri[] = requirementAndEvidenceIdsResults.map(r => r?.['requirementId'].value);
         const evidenceIds: Iri[] = requirementAndEvidenceIdsResults.map(r => r?.['evidenceId']?.value);
+        const procedureIds: Iri[] = procedureIdsResults.map(r => r?.['procedureId'].value);
 
         //TODO LPDC-916: extract these queries into SparqlQueryFragments functions
         //TODO LPDC-916: interface: titlesQuery(ids: Iri[]): returns an object with as key an IRI, and as Value: TaalString | undefined ...
@@ -268,9 +283,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
         const listQueries =
             [
-                titlesQueryBuilder([id, ...requirementIds, ...evidenceIds].filter(ids => ids !== undefined)),
-                descriptionsQueryBuilder([id, ...requirementIds, ...evidenceIds].filter(ids => ids !== undefined)),
-                ordersQueryBuilder([...requirementIds]),
+                titlesQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds].filter(ids => ids !== undefined)),
+                descriptionsQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds].filter(ids => ids !== undefined)),
+                ordersQueryBuilder([...requirementIds, ...procedureIds]),
                 additionalDescriptionsQuery,
                 exceptionsQuery,
                 requlationsQuery,
@@ -335,6 +350,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asEnums(YourEuropeCategoryType, yourEuropeCategories.map(r => r?.['yourEuropeCategory']), id),
             keywords.map(keyword => [keyword]).flatMap(keywordsRow => this.asTaalString(keywordsRow.map(r => r?.['keyword']))),
             this.asRequirements(requirementIds, evidenceIds, allTitles, allDescriptions, allOrders),
+            this.asProcedures(procedureIds, allTitles, allDescriptions, allOrders),
         );
     }
 
@@ -386,7 +402,21 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 return new Requirement(reqId, title, description, evidence);
             }
         );
-        return asSortedArray(result, (a, b) => {
+        return this.sort(result, allOrders);
+    }
+
+    private asProcedures(procedureIds: Iri[], allTitles: any[], allDescriptions: any[], allOrders: any[]): Procedure[] {
+        const result = procedureIds.map((procId) => {
+                const title = this.asTaalString(allTitles.filter(r => r?.['subjectId'].value === procId).map(r => r?.['title']));
+                const description = this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === procId).map(r => r?.['description']));
+                return new Procedure(procId, title, description);
+            }
+        );
+        return this.sort(result, allOrders);
+    }
+
+    private sort(anArray: any[], allOrders: any[]) {
+        return asSortedArray(anArray, (a, b) => {
             const orderA = Number.parseInt(allOrders.filter(r => r?.['subjectId'].value === a.id)[0].order.value);
             const orderB = Number.parseInt(allOrders.filter(r => r?.['subjectId'].value === b.id)[0].order.value);
             return orderA - orderB;

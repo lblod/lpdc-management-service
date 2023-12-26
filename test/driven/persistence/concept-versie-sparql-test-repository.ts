@@ -39,6 +39,7 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...this.valuesToTriples(conceptVersie.id, "lpdcExt:yourEuropeCategory", conceptVersie.yourEuropeCategories),
                 ...conceptVersie.keywords.flatMap(keyword => this.taalStringToTriples(conceptVersie.id, "dcat:keyword", keyword)),
                 ...this.requirementsToTriples(conceptVersie),
+                ...this.proceduresToTriples(conceptVersie),
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,
@@ -47,7 +48,8 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 PREFIX.m8g,
                 PREFIX.dcat,
                 PREFIX.ps,
-                PREFIX.sh]);
+                PREFIX.sh,
+                PREFIX.cpsv]);
     }
 
     private taalStringToTriples(subject: Iri, predicate: string, object: TaalString | undefined): string[] {
@@ -88,6 +90,18 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
             ...this.taalStringToTriples(evidence.id, `dct:title`, evidence.title),
             ...this.taalStringToTriples(evidence.id, `dct:description`, evidence.description),
         ] : [];
+    }
+
+    private proceduresToTriples(conceptVersie: ConceptVersie): string[] {
+        return conceptVersie.procedures.flatMap((procedure, index) =>
+            [
+                `${sparqlEscapeUri(conceptVersie.id)} cpsv:follows ${sparqlEscapeUri(procedure.id)}`,
+                `${sparqlEscapeUri(procedure.id)} a cpsv:Rule`,
+                ...this.taalStringToTriples(procedure.id, `dct:title`, procedure.title),
+                ...this.taalStringToTriples(procedure.id, `dct:description`, procedure.description),
+                `${sparqlEscapeUri(procedure.id)} sh:order ${sparqlEscapeInt(index)}`,
+            ]
+        );
     }
 
 }

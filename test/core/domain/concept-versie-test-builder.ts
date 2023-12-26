@@ -14,6 +14,8 @@ import {TaalString} from "../../../src/core/domain/taal-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullRequirement, anotherFullRequirement} from "./requirement-test-builder";
+import {Procedure} from "../../../src/core/domain/procedure";
+import {aFullProcedure, anotherFullProcedure} from "./procedure-test-builder";
 
 
 export function aMinimalConceptVersie(): ConceptVersieTestBuilder {
@@ -76,7 +78,8 @@ export function aFullConceptVersie(): ConceptVersieTestBuilder {
         .withPublicationMedia(ConceptVersieTestBuilder.PUBLICATION_MEDIA)
         .withYourEuropeCategories(ConceptVersieTestBuilder.YOUR_EUROPE_CATEGORIES)
         .withKeywords(ConceptVersieTestBuilder.KEYWORDS)
-        .withRequirements(ConceptVersieTestBuilder.REQUIREMENTS);
+        .withRequirements(ConceptVersieTestBuilder.REQUIREMENTS)
+        .withProcedures(ConceptVersieTestBuilder.PROCEDURES);
 }
 export class ConceptVersieTestBuilder {
 
@@ -138,6 +141,8 @@ export class ConceptVersieTestBuilder {
 
     public static readonly REQUIREMENTS = [aFullRequirement().build(), anotherFullRequirement().build()];
 
+    public static readonly PROCEDURES = [aFullProcedure().build(), anotherFullProcedure().build()];
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
@@ -157,6 +162,7 @@ export class ConceptVersieTestBuilder {
     private yourEuropeCategories: Set<YourEuropeCategoryType> = new Set();
     private keywords: TaalString[] = [];
     private requirements: Requirement[] = [];
+    private procedures: Procedure[] = [];
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -257,6 +263,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withProcedures(procedures: Procedure[]): ConceptVersieTestBuilder {
+        this.procedures = procedures;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -277,7 +288,8 @@ export class ConceptVersieTestBuilder {
             this.publicationMedia,
             this.yourEuropeCategories,
             this.keywords,
-            this.requirements);
+            this.requirements,
+            this.procedures);
     }
 
 }
