@@ -1,5 +1,6 @@
 import {Iri} from "./shared/iri";
 import {TaalString} from "./taal-string";
+import _ from "lodash";
 
 export class FinancialAdvantage {
 
@@ -29,5 +30,12 @@ export class FinancialAdvantage {
         return this._description;
     }
 
+    static isFunctionallyChanged(value: FinancialAdvantage[], other: FinancialAdvantage[]): boolean {
+        return value.length !== other.length
+            || _.zip(value, other).some((financialAdvantages: [FinancialAdvantage, FinancialAdvantage]) => {
+                return TaalString.isFunctionallyChanged(financialAdvantages[0].title, financialAdvantages[1].title)
+                    || TaalString.isFunctionallyChanged(financialAdvantages[0].description, financialAdvantages[1].description);
+            });
+    }
 
 }

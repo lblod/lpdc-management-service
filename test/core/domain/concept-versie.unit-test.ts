@@ -17,6 +17,7 @@ import {aFullEvidence, aMinimalEvidence} from "./evidence-test-builder";
 import {aFullProcedure} from "./procedure-test-builder";
 import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
 import {aFullCost} from "./cost-test-builder";
+import {aFullFinancialAdvantage} from "./financial-advantage-test-builder";
 
 describe('is functionally changed', () => {
 
@@ -751,6 +752,69 @@ describe('is functionally changed', () => {
                 .build(),
             aFullConceptVersie()
                 .withCosts([aFullCost().withTitle(TaalString.of('cost title 2 en')).build(), aFullCost().withTitle(TaalString.of('cost title 1 en')).build()])
+                .build()],
+        ['financial advantage added',
+            aFullConceptVersie()
+                .withFinancialAdvantages([])
+                .build(),
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().build()])
+                .build()],
+        ['financial advantage removed',
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().build()])
+                .build(),
+            aFullConceptVersie()
+                .withFinancialAdvantages([])
+                .build()],
+        ['financial advantage title updated',
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en updated')).build()])
+                .build()],
+        ['financial advantage title added',
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(undefined).build()])
+                .build(),
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en')).build()])
+                .build()],
+        ['financial advantage title removed',
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(undefined).build()])
+                .build()],
+        ['financial advantage description updated',
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en updated')).build()])
+                .build()],
+        ['financial advantage description added',
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(undefined).build()])
+                .build(),
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en')).build()])
+                .build()],
+        ['financial advantage description removed',
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(undefined).build()])
+                .build()],
+        ['financial advantage order changed',
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 1 en')).build(), aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 2 en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 2 en')).build(), aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 1 en')).build()])
                 .build()],
 
     ];

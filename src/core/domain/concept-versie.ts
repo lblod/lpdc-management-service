@@ -199,7 +199,8 @@ export class ConceptVersie {
             || Requirement.isFunctionallyChanged(value.requirements, other.requirements)
             || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
             || Website.isFunctionallyChanged(value.websites, other.websites)
-            || Cost.isFunctionallyChanged(value.costs, other.costs);
+            || Cost.isFunctionallyChanged(value.costs, other.costs)
+            || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages);
     }
 
 }
