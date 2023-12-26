@@ -20,6 +20,8 @@ import {anotherFullWebsite} from "./website-test-builder";
 import {Website} from "../../../src/core/domain/website";
 import {aFullCost, anotherFullCost} from "./cost-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
+import {aFullFinancialAdvantage, anotherFullFinancialAdvantage} from "./financial-advantage-test-builder";
+import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 
 
 export function aMinimalConceptVersie(): ConceptVersieTestBuilder {
@@ -85,7 +87,8 @@ export function aFullConceptVersie(): ConceptVersieTestBuilder {
         .withRequirements(ConceptVersieTestBuilder.REQUIREMENTS)
         .withProcedures(ConceptVersieTestBuilder.PROCEDURES)
         .withWebsites(ConceptVersieTestBuilder.WEBSITES)
-        .withCosts(ConceptVersieTestBuilder.COSTS);
+        .withCosts(ConceptVersieTestBuilder.COSTS)
+        .withFinancialAdvantages(ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES);
 }
 
 export class ConceptVersieTestBuilder {
@@ -154,6 +157,8 @@ export class ConceptVersieTestBuilder {
 
     public static readonly COSTS = [aFullCost().build(), anotherFullCost().build()];
 
+    public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantage().build(), anotherFullFinancialAdvantage().build()];
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
@@ -176,6 +181,7 @@ export class ConceptVersieTestBuilder {
     private procedures: Procedure[] = [];
     private websites: Website[] = [];
     private costs: Cost[] = [];
+    private financialAdvantages: FinancialAdvantage[] = [];
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -291,6 +297,11 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withFinancialAdvantages(financialAdvantages: FinancialAdvantage[]): ConceptVersieTestBuilder {
+        this.financialAdvantages = financialAdvantages;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -315,7 +326,7 @@ export class ConceptVersieTestBuilder {
             this.procedures,
             this.websites,
             this.costs,
-            );
+            this.financialAdvantages);
     }
 
 }

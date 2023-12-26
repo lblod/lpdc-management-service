@@ -21,6 +21,7 @@ import {Evidence} from "../../core/domain/evidence";
 import {Procedure} from "../../core/domain/procedure";
 import {Website} from "../../core/domain/website";
 import {Cost} from "../../core/domain/cost";
+import {FinancialAdvantage} from "../../core/domain/financial-advantage";
 
 let OneToManyIdsType: [Iri, Iri[]];
 
@@ -60,6 +61,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         const requirementAndEvidenceIdsQuery = `
             ${PREFIX.ps}
             ${PREFIX.m8g}
+            
             SELECT ?requirementId ?evidenceId
                 WHERE {
                     GRAPH ${GRAPH.ldesData} {
@@ -77,6 +79,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             ${PREFIX.cpsv}
             ${PREFIX.lpdcExt}
             ${PREFIX.schema}
+            
             SELECT ?procedureId ?websiteId
                 WHERE {
                     GRAPH ${GRAPH.ldesData} {
@@ -93,6 +96,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         const websiteIdsQuery = `
             ${PREFIX.rdfs}
             ${PREFIX.schema}
+            
             SELECT ?websiteId
                 WHERE {
                     GRAPH ${GRAPH.ldesData} {
@@ -104,11 +108,25 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
         const costIdsQuery = `
             ${PREFIX.m8g}
+            
             SELECT ?costId
                 WHERE {
                     GRAPH ${GRAPH.ldesData} {
                         ${sparqlEscapeUri(id)} m8g:hasCost ?costId.
                         ?costId a m8g:Cost.
+                    }
+                }
+        `;
+
+        const financialAdvantageIdsQuery = `
+            ${PREFIX.lpdcExt}
+            ${PREFIX.cpsv}
+            
+            SELECT ?financialAdvantageId
+                WHERE {
+                    GRAPH ${GRAPH.ldesData} {
+                        ${sparqlEscapeUri(id)} cpsv:produces ?financialAdvantageId.
+                        ?financialAdvantageId a lpdcExt:FinancialAdvantage.
                     }
                 }
         `;
@@ -119,6 +137,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 procedureAndWebsiteIdsQuery,
                 websiteIdsQuery,
                 costIdsQuery,
+                financialAdvantageIdsQuery,
             ];
 
         const {results: resultsDependentEntityIds, errors: errorsDependentEntityIds} = await PromisePool
@@ -138,6 +157,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             procedureAndWebsiteIdsResults,
             websiteIdsResults,
             costIdsResults,
+            financialAdvantageIdsResults,
         ] = resultsDependentEntityIds.map(r => r as any []);
 
         const requirementIds: Iri[] = requirementAndEvidenceIdsResults.map(r => r?.['requirementId'].value);
@@ -161,11 +181,14 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
         const costIds: Iri[] = costIdsResults.map(r => r?.['costId'].value);
 
+        const financialAdvantageIds = financialAdvantageIdsResults.map(r => r?.['financialAdvantageId'].value);
+
         //TODO LPDC-916: extract these queries into SparqlQueryFragments functions
         //TODO LPDC-916: interface: titlesQuery(ids: Iri[]): returns an object with as key an IRI, and as Value: TaalString | undefined ...
 
         const titlesQueryBuilder = (subjectIds: Iri[]) => `
             ${PREFIX.dct}
+            
             SELECT ?subjectId ?title
                 WHERE {                    
                     GRAPH ${GRAPH.ldesData} {
@@ -179,6 +202,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
         const descriptionsQueryBuilder = (subjectIds: Iri[]) => `
             ${PREFIX.dct}
+            
             SELECT ?subjectId ?description
                 WHERE { 
                     GRAPH ${GRAPH.ldesData} {
@@ -192,6 +216,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
         const ordersQueryBuilder = (subjectIds: Iri[]) => `
             ${PREFIX.sh}
+            
             SELECT ?subjectId ?order
                 WHERE { 
                     GRAPH ${GRAPH.ldesData} {
@@ -205,6 +230,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
 
         const urlsQueryBuilder = (subjectIds: Iri[]) => `
             ${PREFIX.schema}
+            
             SELECT ?subjectId ?url
                 WHERE { 
                     GRAPH ${GRAPH.ldesData} {
@@ -351,9 +377,9 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
         const listQueries =
             [
                 //TODO LPDC-916: can the !== undefined filters be removed?
-                titlesQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds, ...costIds].filter(ids => ids !== undefined)),
-                descriptionsQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds, ...costIds].filter(ids => ids !== undefined)),
-                ordersQueryBuilder([...requirementIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds, ...costIds]),
+                titlesQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds, ...costIds, ...financialAdvantageIds].filter(ids => ids !== undefined)),
+                descriptionsQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds, ...costIds, ...financialAdvantageIds].filter(ids => ids !== undefined)),
+                ordersQueryBuilder([...requirementIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds, ...costIds, ...financialAdvantageIds]),
                 urlsQueryBuilder([...websitesIdsForProcedures, ...websiteIds]),
                 additionalDescriptionsQuery,
                 exceptionsQuery,
@@ -423,6 +449,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             this.asProcedures(procedureAndWebsiteIds, allTitles, allDescriptions, allOrders, allUrls),
             this.asWebsites(websiteIds, allTitles, allDescriptions, allOrders, allUrls),
             this.asCosts(costIds, allTitles, allDescriptions, allOrders),
+            this.asFinancialAdvantages(financialAdvantageIds, allTitles, allDescriptions, allOrders),
         );
     }
 
@@ -507,6 +534,16 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
                 const title = this.asTaalString(allTitles.filter(r => r?.['subjectId'].value === costId).map(r => r?.['title']));
                 const description = this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === costId).map(r => r?.['description']));
                 return new Cost(costId, title, description);
+            }
+        );
+        return this.sort(result, allOrders);
+    }
+
+    private asFinancialAdvantages(financialAdvantageIds: Iri[], allTitles: any[], allDescriptions: any[], allOrders: any[]): FinancialAdvantage[] {
+        const result = financialAdvantageIds.map(financialAdvantageId => {
+                const title = this.asTaalString(allTitles.filter(r => r?.['subjectId'].value === financialAdvantageId).map(r => r?.['title']));
+                const description = this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === financialAdvantageId).map(r => r?.['description']));
+                return new FinancialAdvantage(financialAdvantageId, title, description);
             }
         );
         return this.sort(result, allOrders);

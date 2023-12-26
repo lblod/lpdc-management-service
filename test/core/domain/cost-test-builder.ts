@@ -3,7 +3,7 @@ import {TaalString} from "../../../src/core/domain/taal-string";
 import {Cost} from "../../../src/core/domain/cost";
 import {uuid} from "../../../mu-helper";
 
-export function aMinimaCost(): CostTestBuilder {
+export function aMinimalCost(): CostTestBuilder {
     return new CostTestBuilder()
         .withId(CostTestBuilder.buildIri(uuid()));
 }

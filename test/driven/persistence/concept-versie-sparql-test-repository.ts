@@ -43,6 +43,7 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 ...this.proceduresToTriples(conceptVersie),
                 ...this.websitesToTriples(conceptVersie.id, 'rdfs:seeAlso', conceptVersie.websites),
                 ...this.costsToTriples(conceptVersie),
+                ...this.financialAdvantagesToTriples(conceptVersie),
             ].filter(t => t != undefined),
             [
                 PREFIX.dct,
@@ -133,6 +134,19 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
                 `${sparqlEscapeUri(cost.id)} sh:order ${sparqlEscapeInt(index)}`,
             ];
         });
+    }
+
+    private financialAdvantagesToTriples(conceptVersie: ConceptVersie): string[] {
+        return conceptVersie.financialAdvantages
+            .flatMap((financialAdvantage, index) => {
+                return [
+                    `${sparqlEscapeUri(conceptVersie.id)} cpsv:produces ${sparqlEscapeUri(financialAdvantage.id)}`,
+                    `${sparqlEscapeUri(financialAdvantage.id)} a lpdcExt:FinancialAdvantage`,
+                    ...this.taalStringToTriples(financialAdvantage.id, 'dct:title', financialAdvantage.title),
+                    ...this.taalStringToTriples(financialAdvantage.id, 'dct:description', financialAdvantage.description),
+                    `${sparqlEscapeUri(financialAdvantage.id)} sh:order ${sparqlEscapeInt(index)}`,
+                ];
+            });
     }
 
 }
