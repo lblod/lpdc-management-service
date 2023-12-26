@@ -181,7 +181,8 @@ export class ConceptVersie {
             || !_.isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
             || !_.isEqual(value.keywords, other.keywords)
             || Requirement.isFunctionallyChanged(value.requirements, other.requirements)
-            || Procedure.isFunctionallyChanged(value.procedures, other.procedures);
+            || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
+            || Website.isFunctionallyChanged(value.websites, other.websites);
     }
 
 }

@@ -604,6 +604,90 @@ describe('is functionally changed', () => {
             aFullConceptVersie()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url2.com').build(), aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
                 .build()],
+        ['website added',
+            aFullConceptVersie()
+                .withWebsites([])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aFullWebsite().build()])
+                .build()],
+        ['website removed',
+            aFullConceptVersie()
+                .withWebsites([aFullWebsite().build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([])
+                .build()],
+        ['website title updated',
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en updated')).build()])
+                .build()],
+        ['website title added',
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withTitle(undefined).build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en')).build()])
+                .build()],
+        ['website title removed',
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withTitle(undefined).build()])
+                .build()],
+        ['website description updated',
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en updated')).build()])
+                .build()],
+        ['website description added',
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en')).build()])
+                .build()],
+        ['website description removed',
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
+                .build()],
+        ['website url updated',
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withUrl('https://url2.com').build()])
+                .build()],
+        ['website url added',
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withUrl(undefined).build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()])
+                .build()],
+        ['website url removed',
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withUrl(null).build()])
+                .build()],
+        ['website order changed',
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build(), aMinimalWebsite().withUrl('https://url2.com').build()])
+                .build(),
+            aFullConceptVersie()
+                .withWebsites([aMinimalWebsite().withUrl('https://url2.com').build(), aMinimalWebsite().withUrl('https://url1.com').build()])
+                .build()],
 
     ];
 

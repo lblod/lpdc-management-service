@@ -1,4 +1,4 @@
-import {loadCosts, loadFinancialAdvantages, loadPublicService, loadWebsites} from "./commonQueries";
+import {loadCosts, loadFinancialAdvantages, loadPublicService} from "./commonQueries";
 import {sortBy} from "lodash";
 import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
 import {ConceptVersie} from "../src/core/domain/concept-versie";
@@ -15,8 +15,7 @@ export async function isConceptFunctionallyChanged(newSnapshotUri: string, curre
 
     return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie)
         || compareCost(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
-        || compareFinancialAdvantage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
-        || compareMoreInfo(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri);
+        || compareFinancialAdvantage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri);
 }
 
 function isValueChangedForAnyLanguage(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string, predicate: string): boolean {
@@ -26,12 +25,6 @@ function isValueChangedForAnyLanguage(currentSnapshotTriples: any[], currentSnap
         const triple2 = findTriples(newSnapshotTriples, newSnapshotUri, predicate, language)[0];
         return triple1?.o?.value !== triple2?.o?.value;
     });
-}
-
-function isValueChanged(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string, predicate: string): boolean {
-    const triple1 = findTriples(currentSnapshotTriples, currentSnapshotUri, predicate)[0];
-    const triple2 = findTriples(newSnapshotTriples, newSnapshotUri, predicate)[0];
-    return triple1?.o?.value !== triple2?.o?.value;
 }
 
 function findTriples(snapshotTriples: any[], subject: string, predicate: string, language?: string): any[] {
@@ -81,27 +74,6 @@ function compareFinancialAdvantage(currentSnapshotTriples: any[], currentSnapsho
     return changes.some(it => it);
 }
 
-function compareMoreInfo(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
-    const currentWebsiteIds = findTriples(currentSnapshotTriples, currentSnapshotUri, Predicates.hasMoreInfo).map(triple => triple.o.value);
-    const currentSortedWebsiteIds = sortBy(currentWebsiteIds, costId => findTriples(currentSnapshotTriples, costId, Predicates.order)[0].o.value);
-
-    const newWebsiteIds = findTriples(newSnapshotTriples, newSnapshotUri, Predicates.hasMoreInfo).map(triple => triple.o.value);
-    const newSortedWebsiteIds = sortBy(newWebsiteIds, costId => findTriples(newSnapshotTriples, costId, Predicates.order)[0].o.value);
-
-    if (currentSortedWebsiteIds.length !== newSortedWebsiteIds.length) {
-        return true;
-    }
-    const changes = [];
-    for (let i = 0; i < currentSortedWebsiteIds.length; i++) {
-        changes.push(
-            isValueChangedForAnyLanguage(currentSnapshotTriples, currentSortedWebsiteIds[i], newSnapshotTriples, newSortedWebsiteIds[i], Predicates.title)
-            || isValueChangedForAnyLanguage(currentSnapshotTriples, currentSortedWebsiteIds[i], newSnapshotTriples, newSortedWebsiteIds[i], Predicates.description)
-            || isValueChanged(currentSnapshotTriples, currentSortedWebsiteIds[i], newSnapshotTriples, newSortedWebsiteIds[i], Predicates.url)
-        );
-    }
-    return changes.some(it => it);
-}
-
 async function loadConceptSnapshot(snapshotUri: string): Promise<any[]> {
     const type = 'lpdcExt:ConceptualPublicService';
     const graph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
@@ -111,7 +83,6 @@ async function loadConceptSnapshot(snapshotUri: string): Promise<any[]> {
     const results = [];
     results.push(await loadCosts(snapshotUri, {graph, type, includeUuid, sudo}));
     results.push(await loadFinancialAdvantages(snapshotUri, {graph, type, includeUuid, sudo}));
-    results.push(await loadWebsites(snapshotUri, {graph, type, includeUuid, sudo}));
     results.push(await loadPublicService(snapshotUri, {graph, type, includeUuid, sudo}));
     return results.reduce((acc, b) => [...acc, ...b]);
 }
@@ -119,13 +90,7 @@ async function loadConceptSnapshot(snapshotUri: string): Promise<any[]> {
 const Predicates = {
     title: 'http://purl.org/dc/terms/title',
     description: 'http://purl.org/dc/terms/description',
-    hasRequirement: 'http://vocab.belgif.be/ns/publicservice#hasRequirement',
-    hasSupportingEvidence: 'http://data.europa.eu/m8g/hasSupportingEvidence',
     order: 'http://www.w3.org/ns/shacl#order',
-    hasProcedure: 'http://purl.org/vocab/cpsv#follows',
-    hasWebsite: 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite',
-    url: 'http://schema.org/url',
     hasCost: 'http://data.europa.eu/m8g/hasCost',
     hasFinancialAdvantage: 'http://purl.org/vocab/cpsv#produces',
-    hasMoreInfo: 'http://www.w3.org/2000/01/rdf-schema#seeAlso'
 };
