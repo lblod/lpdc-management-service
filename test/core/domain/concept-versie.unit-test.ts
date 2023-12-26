@@ -15,6 +15,7 @@ import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {aMinimalRequirement} from "./requirement-test-builder";
 import {aFullEvidence, aMinimalEvidence} from "./evidence-test-builder";
 import {aFullProcedure} from "./procedure-test-builder";
+import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
 
 describe('is functionally changed', () => {
 
@@ -468,6 +469,15 @@ describe('is functionally changed', () => {
             aFullConceptVersie()
                 .withProcedures([])
                 .build()],
+        ['procedure order changed',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en')).build(),
+                    aFullProcedure().withTitle(TaalString.of('procedure title en another')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en another')).build(),
+                    aFullProcedure().withTitle(TaalString.of('procedure title en')).build()])
+                .build()],
         ['procedure title updated',
             aFullConceptVersie()
                 .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en')).build()])
@@ -510,7 +520,90 @@ describe('is functionally changed', () => {
             aFullConceptVersie()
                 .withProcedures([aFullProcedure().withDescription(undefined).build()])
                 .build()],
-
+        ['procedure website title updated',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en')).build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en updated')).build()]).build()])
+                .build()],
+        ['procedure website title added',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(undefined).build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en')).build()]).build()])
+                .build()],
+        ['procedure website title removed',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en')).build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(undefined).build()]).build()])
+                .build()],
+        ['procedure website description updated',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en')).build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en updated')).build()]).build()])
+                .build()],
+        ['procedure website description added',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en')).build()]).build()])
+                .build()],
+        ['procedure website description removed',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en')).build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
+                .build()],
+        ['procedure website url updated',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url2.com').build()]).build()])
+                .build()],
+        ['procedure website url added',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl(undefined).build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
+                .build()],
+        ['procedure website url removed',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl(undefined).build()]).build()])
+                .build()],
+        ['procedure website added',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aFullWebsite().build()]).build()])
+                .build()],
+        ['procedure website removed',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aFullWebsite().build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([]).build()])
+                .build()],
+        ['procedure website order changed',
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build(), aMinimalWebsite().withUrl('https://url2.com').build()]).build()])
+                .build(),
+            aFullConceptVersie()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url2.com').build(), aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
+                .build()],
 
     ];
 

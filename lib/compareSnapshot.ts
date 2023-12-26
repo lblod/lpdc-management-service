@@ -1,11 +1,4 @@
-import {
-    loadCosts,
-    loadFinancialAdvantages,
-    loadOnlineProcedureRules,
-    loadPublicService,
-    loadRules,
-    loadWebsites
-} from "./commonQueries";
+import {loadCosts, loadFinancialAdvantages, loadPublicService, loadWebsites} from "./commonQueries";
 import {sortBy} from "lodash";
 import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
 import {ConceptVersie} from "../src/core/domain/concept-versie";
@@ -21,7 +14,6 @@ export async function isConceptFunctionallyChanged(newSnapshotUri: string, curre
     const newConceptVersie = await conceptVersieRepository.findById(newSnapshotUri);
 
     return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie)
-        || compareProcedure(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareCost(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareFinancialAdvantage(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri)
         || compareMoreInfo(currentSnapshotTriples, currentSnapshotUri, newSnapshotTriples, newSnapshotUri);
@@ -47,39 +39,6 @@ function findTriples(snapshotTriples: any[], subject: string, predicate: string,
         .filter(triple => triple.s.value === subject)
         .filter(triple => triple.p.value === predicate)
         .filter(triple => language ? triple.o['xml:lang'] === language : true);
-}
-
-function compareProcedure(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
-    const currentProcedureIds = findTriples(currentSnapshotTriples, currentSnapshotUri, Predicates.hasProcedure).map(triple => triple.o.value);
-    const currentSortedProcedureIds = sortBy(currentProcedureIds, procedureUri => findTriples(currentSnapshotTriples, procedureUri, Predicates.order)[0].o.value);
-
-    const newProcedureIds = findTriples(newSnapshotTriples, newSnapshotUri, Predicates.hasProcedure).map(triple => triple.o.value);
-    const newSortedProcedureIds = sortBy(newProcedureIds, procedureUri => findTriples(newSnapshotTriples, procedureUri, Predicates.order)[0].o.value);
-
-    if (currentSortedProcedureIds.length !== newSortedProcedureIds.length) {
-        return true;
-    }
-    const changes = [];
-    for (let i = 0; i < currentSortedProcedureIds.length; i++) {
-        const currentWebsiteUris = findTriples(currentSnapshotTriples, currentSortedProcedureIds[i], Predicates.hasWebsite).map(triple => triple.o.value);
-        const sortedCurrentWebsiteUris = sortBy(currentWebsiteUris, websiteUri => findTriples(currentSnapshotTriples, websiteUri, Predicates.order)[0].o.value);
-
-        const newWebsiteUris = findTriples(newSnapshotTriples, newSortedProcedureIds[i], Predicates.hasWebsite).map(triple => triple.o.value);
-        const sortedNewWebsiteUris = sortBy(newWebsiteUris, websiteUri => findTriples(newSnapshotTriples, websiteUri, Predicates.order)[0].o.value);
-
-        if (sortedCurrentWebsiteUris.length !== sortedNewWebsiteUris.length) {
-            return true;
-        }
-
-        for (let i = 0; i < sortedCurrentWebsiteUris.length; i++) {
-            changes.push(
-                isValueChangedForAnyLanguage(currentSnapshotTriples, sortedCurrentWebsiteUris[i], newSnapshotTriples, sortedNewWebsiteUris[i], Predicates.title)
-                || isValueChangedForAnyLanguage(currentSnapshotTriples, sortedCurrentWebsiteUris[i], newSnapshotTriples, sortedNewWebsiteUris[i], Predicates.description)
-                || isValueChanged(currentSnapshotTriples, sortedCurrentWebsiteUris[i], newSnapshotTriples, sortedNewWebsiteUris[i], Predicates.url)
-            );
-        }
-    }
-    return changes.some(it => it);
 }
 
 function compareCost(currentSnapshotTriples: any[], currentSnapshotUri: string, newSnapshotTriples: any[], newSnapshotUri: string): boolean {
@@ -150,8 +109,6 @@ async function loadConceptSnapshot(snapshotUri: string): Promise<any[]> {
     const includeUuid = true;
 
     const results = [];
-    results.push(await loadOnlineProcedureRules(snapshotUri, {graph, type, includeUuid, sudo}));
-    results.push(await loadRules(snapshotUri, {graph, type, includeUuid, sudo}));
     results.push(await loadCosts(snapshotUri, {graph, type, includeUuid, sudo}));
     results.push(await loadFinancialAdvantages(snapshotUri, {graph, type, includeUuid, sudo}));
     results.push(await loadWebsites(snapshotUri, {graph, type, includeUuid, sudo}));

@@ -42,7 +42,8 @@ export class Procedure {
         return value.length !== other.length
             || _.zip(value, other).some((procs: [Procedure, Procedure]) => {
                 return TaalString.isFunctionallyChanged(procs[0].title, procs[1].title)
-                    || TaalString.isFunctionallyChanged(procs[0].description, procs[1].description);
+                    || TaalString.isFunctionallyChanged(procs[0].description, procs[1].description)
+                    || Website.isFunctionallyChanged(procs[0].websites, procs[1].websites);
             });
     }
 }

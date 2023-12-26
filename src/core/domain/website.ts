@@ -1,5 +1,6 @@
 import {Iri} from "./shared/iri";
 import {TaalString} from "./taal-string";
+import _ from "lodash";
 
 export class Website {
 
@@ -34,6 +35,16 @@ export class Website {
 
     get url(): string | undefined {
         return this._url;
+    }
+
+    static isFunctionallyChanged(value: Website[], other: Website[]): boolean {
+        return value.length !== other.length
+            || _.zip(value, other).some((websites: [Website, Website]) => {
+                return TaalString.isFunctionallyChanged(websites[0].title, websites[1].title)
+                    || TaalString.isFunctionallyChanged(websites[0].description, websites[1].description)
+                    || websites[0].url !== websites[1].url;
+            });
+
     }
 
 }
