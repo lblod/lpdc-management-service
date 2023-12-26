@@ -1,7 +1,11 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
-import {ConceptVersieTestBuilder} from "../../core/domain/concept-versie-test-builder";
+import {
+    aFullConceptVersie,
+    aMinimalConceptVersie,
+    ConceptVersieTestBuilder
+} from "../../core/domain/concept-versie-test-builder";
 import {ConceptVersieSparqlTestRepository} from "./concept-versie-sparql-test-repository";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {
@@ -21,10 +25,10 @@ describe('ConceptVersieRepository', () => {
     describe('findById', () => {
 
         test('When full concept versie exists with id, then return concept versie', async () => {
-            const conceptVersie = ConceptVersieTestBuilder.aFullConceptVersie().build();
+            const conceptVersie = aFullConceptVersie().build();
             await repository.save(conceptVersie);
 
-            const anotherConceptVersie = ConceptVersieTestBuilder.aFullConceptVersie().build();
+            const anotherConceptVersie = aFullConceptVersie().build();
             await repository.save(anotherConceptVersie);
 
             const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -33,10 +37,10 @@ describe('ConceptVersieRepository', () => {
         });
 
         test('When minimal concept versie exists with id, then return concept versie', async () => {
-            const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().build();
+            const conceptVersie = aMinimalConceptVersie().build();
             await repository.save(conceptVersie);
 
-            const anotherConceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().build();
+            const anotherConceptVersie = aMinimalConceptVersie().build();
             await repository.save(anotherConceptVersie);
 
             const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -45,10 +49,10 @@ describe('ConceptVersieRepository', () => {
         });
 
         test('When minimal concept versie with incomplete title exists with id, then return concept versie', async () => {
-            const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withTitle(TaalString.of(undefined, ConceptVersieTestBuilder.TITLE_NL)).build();
+            const conceptVersie = aMinimalConceptVersie().withTitle(TaalString.of(undefined, ConceptVersieTestBuilder.TITLE_NL)).build();
             await repository.save(conceptVersie);
 
-            const anotherConceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().build();
+            const anotherConceptVersie = aMinimalConceptVersie().build();
             await repository.save(anotherConceptVersie);
 
             const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -57,7 +61,7 @@ describe('ConceptVersieRepository', () => {
         });
 
         test('When concept versie does not exist with id, then throw error', async () => {
-            const conceptVersie = ConceptVersieTestBuilder.aFullConceptVersie().build();
+            const conceptVersie = aFullConceptVersie().build();
             await repository.save(conceptVersie);
 
             const nonExistentConceptVersieId = ConceptVersieTestBuilder.buildIri('thisiddoesnotexist');
@@ -72,8 +76,7 @@ describe('ConceptVersieRepository', () => {
             const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
 
             const conceptVersie =
-                ConceptVersieTestBuilder
-                    .aMinimalConceptVersie()
+                aMinimalConceptVersie()
                     .withId(conceptVersieId)
                     .build();
 
@@ -90,8 +93,7 @@ describe('ConceptVersieRepository', () => {
             const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
 
             const conceptVersie =
-                ConceptVersieTestBuilder
-                    .aMinimalConceptVersie()
+                aMinimalConceptVersie()
                     .withId(conceptVersieId)
                     .withTitle(TaalString.of(undefined, ConceptVersieTestBuilder.TITLE_NL))
                     .build();
@@ -110,8 +112,7 @@ describe('ConceptVersieRepository', () => {
             const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
 
             const conceptVersie =
-                ConceptVersieTestBuilder
-                    .aMinimalConceptVersie()
+                aMinimalConceptVersie()
                     .withId(conceptVersieId)
                     .withStartDate(ConceptVersieTestBuilder.START_DATE)
                     .withEndDate(undefined)
@@ -132,8 +133,7 @@ describe('ConceptVersieRepository', () => {
             const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
 
             const conceptVersie =
-                ConceptVersieTestBuilder
-                    .aFullConceptVersie()
+                aFullConceptVersie()
                     .withId(conceptVersieId)
                     .build();
 
@@ -249,9 +249,9 @@ describe('ConceptVersieRepository', () => {
             expect(actualConceptVersie).toEqual(conceptVersie);
         });
 
-        for(const type of Object.values(ProductType)) {
+        for (const type of Object.values(ProductType)) {
             test(`Product type ${type} can be mapped`, async () => {
-                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withType(type).build();
+                const conceptVersie = aMinimalConceptVersie().withType(type).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -272,9 +272,9 @@ describe('ConceptVersieRepository', () => {
             await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> for iri: <${conceptVersieId}>`));
         });
 
-        for(const targetAudience of Object.values(TargetAudienceType)) {
+        for (const targetAudience of Object.values(TargetAudienceType)) {
             test(`TargetAudienceType ${targetAudience} can be mapped`, async () => {
-                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withTargetAudiences(new Set([targetAudience])).build();
+                const conceptVersie = aMinimalConceptVersie().withTargetAudiences(new Set([targetAudience])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -289,15 +289,15 @@ describe('ConceptVersieRepository', () => {
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
-                        `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
                 ]);
 
             await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience> for iri: <${conceptVersieId}>`));
         });
 
-        for(const theme of Object.values(ThemeType)) {
+        for (const theme of Object.values(ThemeType)) {
             test(`ThemeType ${theme} can be mapped`, async () => {
-                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withThemes(new Set([theme])).build();
+                const conceptVersie = aMinimalConceptVersie().withThemes(new Set([theme])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -318,9 +318,9 @@ describe('ConceptVersieRepository', () => {
             await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme> for iri: <${conceptVersieId}>`));
         });
 
-        for(const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
+        for (const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
             test(`CompetentAuthorityLevelType ${competentAuthorityLevel} can be mapped`, async () => {
-                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withCompetentAuthorityLevels(new Set([competentAuthorityLevel])).build();
+                const conceptVersie = aMinimalConceptVersie().withCompetentAuthorityLevels(new Set([competentAuthorityLevel])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -341,9 +341,9 @@ describe('ConceptVersieRepository', () => {
             await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel> for iri: <${conceptVersieId}>`));
         });
 
-        for(const executingAuthorityLevel of Object.values(ExecutingAuthorityLevelType)) {
+        for (const executingAuthorityLevel of Object.values(ExecutingAuthorityLevelType)) {
             test(`ExecutingAuthorityLevelType ${executingAuthorityLevel} can be mapped`, async () => {
-                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withExecutingAuthorityLevels(new Set([executingAuthorityLevel])).build();
+                const conceptVersie = aMinimalConceptVersie().withExecutingAuthorityLevels(new Set([executingAuthorityLevel])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -364,9 +364,9 @@ describe('ConceptVersieRepository', () => {
             await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel> for iri: <${conceptVersieId}>`));
         });
 
-        for(const publicationMedium of Object.values(PublicationMediumType)) {
+        for (const publicationMedium of Object.values(PublicationMediumType)) {
             test(`PublicationMediumType ${publicationMedium} can be mapped`, async () => {
-                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withPublicationMedia(new Set([publicationMedium])).build();
+                const conceptVersie = aMinimalConceptVersie().withPublicationMedia(new Set([publicationMedium])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -387,9 +387,9 @@ describe('ConceptVersieRepository', () => {
             await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> for iri: <${conceptVersieId}>`));
         });
 
-        for(const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
+        for (const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
             test(`YourEuropeCategoryType ${yourEuropeCategory} can be mapped`, async () => {
-                const conceptVersie = ConceptVersieTestBuilder.aMinimalConceptVersie().withYourEuropeCategories(new Set([yourEuropeCategory])).build();
+                const conceptVersie = aMinimalConceptVersie().withYourEuropeCategories(new Set([yourEuropeCategory])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);

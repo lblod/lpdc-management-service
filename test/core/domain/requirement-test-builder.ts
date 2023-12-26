@@ -4,6 +4,51 @@ import {TaalString} from "../../../src/core/domain/taal-string";
 import {Requirement} from "../../../src/core/domain/requirement";
 
 
+export function aMinimalRequirement(): RequirementTestBuilder {
+    return new RequirementTestBuilder()
+        .withId(RequirementTestBuilder.buildIri(uuid()));
+}
+
+export function aFullRequirement(): RequirementTestBuilder {
+    return new RequirementTestBuilder()
+        .withId(RequirementTestBuilder.buildIri(uuid()))
+        .withTitle(TaalString.of(
+            RequirementTestBuilder.TITLE_EN,
+            RequirementTestBuilder.TITLE_NL,
+            RequirementTestBuilder.TITLE_NL_FORMAL,
+            RequirementTestBuilder.TITLE_NL_INFORMAL,
+            RequirementTestBuilder.TITLE_NL_GENERATED_FORMAL,
+            RequirementTestBuilder.TITLE_NL_GENERATED_INFORMAL))
+        .withDescription(
+            TaalString.of(
+                RequirementTestBuilder.DESCRIPTION_EN,
+                RequirementTestBuilder.DESCRIPTION_NL,
+                RequirementTestBuilder.DESCRIPTION_NL_FORMAL,
+                RequirementTestBuilder.DESCRIPTION_NL_INFORMAL,
+                RequirementTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
+                RequirementTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL));
+}
+
+export function anotherFullRequirement(): RequirementTestBuilder {
+    return new RequirementTestBuilder()
+        .withId(RequirementTestBuilder.buildIri(uuid()))
+        .withTitle(TaalString.of(
+            RequirementTestBuilder.ANOTHER_TITLE_EN,
+            RequirementTestBuilder.ANOTHER_TITLE_NL,
+            RequirementTestBuilder.ANOTHER_TITLE_NL_FORMAL,
+            RequirementTestBuilder.ANOTHER_TITLE_NL_INFORMAL,
+            RequirementTestBuilder.ANOTHER_TITLE_NL_GENERATED_FORMAL,
+            RequirementTestBuilder.ANOTHER_TITLE_NL_GENERATED_INFORMAL))
+        .withDescription(
+            TaalString.of(
+                RequirementTestBuilder.ANOTHER_DESCRIPTION_EN,
+                RequirementTestBuilder.ANOTHER_DESCRIPTION_NL,
+                RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
+                RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL,
+                RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL,
+                RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
+}
+
 export class RequirementTestBuilder {
 
     public static readonly TITLE_EN = 'Requirement Title - en';
@@ -40,51 +85,6 @@ export class RequirementTestBuilder {
 
     static buildIri(uniqueId: string): Iri {
         return `http://data.lblod.info/id/requirement/${uniqueId}`;
-    }
-
-    static aMinimalRequirement(): RequirementTestBuilder {
-        return new RequirementTestBuilder()
-            .withId(RequirementTestBuilder.buildIri(uuid()));
-    }
-
-    static aFullRequirement(): RequirementTestBuilder {
-        return new RequirementTestBuilder()
-            .withId(RequirementTestBuilder.buildIri(uuid()))
-            .withTitle(TaalString.of(
-                this.TITLE_EN,
-                this.TITLE_NL,
-                this.TITLE_NL_FORMAL,
-                this.TITLE_NL_INFORMAL,
-                this.TITLE_NL_GENERATED_FORMAL,
-                this.TITLE_NL_GENERATED_INFORMAL))
-            .withDescription(
-                TaalString.of(
-                    this.DESCRIPTION_EN,
-                    this.DESCRIPTION_NL,
-                    this.DESCRIPTION_NL_FORMAL,
-                    this.DESCRIPTION_NL_INFORMAL,
-                    this.DESCRIPTION_NL_GENERATED_FORMAL,
-                    this.DESCRIPTION_NL_GENERATED_INFORMAL));
-    }
-
-    static anotherFullRequirement(): RequirementTestBuilder {
-        return new RequirementTestBuilder()
-            .withId(RequirementTestBuilder.buildIri(uuid()))
-            .withTitle(TaalString.of(
-                this.ANOTHER_TITLE_EN,
-                this.ANOTHER_TITLE_NL,
-                this.ANOTHER_TITLE_NL_FORMAL,
-                this.ANOTHER_TITLE_NL_INFORMAL,
-                this.ANOTHER_TITLE_NL_GENERATED_FORMAL,
-                this.ANOTHER_TITLE_NL_GENERATED_INFORMAL))
-            .withDescription(
-                TaalString.of(
-                    this.ANOTHER_DESCRIPTION_EN,
-                    this.ANOTHER_DESCRIPTION_NL,
-                    this.ANOTHER_DESCRIPTION_NL_FORMAL,
-                    this.ANOTHER_DESCRIPTION_NL_INFORMAL,
-                    this.ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL,
-                    this.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
     }
 
     public withId(id: Iri): RequirementTestBuilder {

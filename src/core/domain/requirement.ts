@@ -1,5 +1,6 @@
 import {TaalString} from "./taal-string";
 import {Iri} from "./shared/iri";
+import _ from 'lodash';
 
 export class Requirement {
 
@@ -29,4 +30,10 @@ export class Requirement {
         return this._description;
     }
 
+    static isFunctionallyChanged(value: Requirement[], other: Requirement[]): boolean {
+        return value.length !== other.length
+            || _.zip(value, other).some((reqs: [Requirement, Requirement]) => {
+                return TaalString.isFunctionallyChanged(reqs[0].title, reqs[1].title)
+                    || TaalString.isFunctionallyChanged(reqs[0].description, reqs[1].description); });
+    }
 }

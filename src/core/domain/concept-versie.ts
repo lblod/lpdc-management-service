@@ -148,24 +148,25 @@ export class ConceptVersie {
         return this._requirements;
     }
 
-    static isFunctionallyChanged(aConceptVersie: ConceptVersie, anotherConceptVersie: ConceptVersie): boolean {
-        return TaalString.isFunctionallyChanged(aConceptVersie.title, anotherConceptVersie.title)
-            || TaalString.isFunctionallyChanged(aConceptVersie.description, anotherConceptVersie.description)
-            || TaalString.isFunctionallyChanged(aConceptVersie.additionalDescription, anotherConceptVersie.additionalDescription)
-            || TaalString.isFunctionallyChanged(aConceptVersie.exception, anotherConceptVersie.exception)
-            || TaalString.isFunctionallyChanged(aConceptVersie.regulation, anotherConceptVersie.regulation)
-            || aConceptVersie.startDate?.getTime() !== anotherConceptVersie.startDate?.getTime()
-            || aConceptVersie.endDate?.getTime() !== anotherConceptVersie.endDate?.getTime()
-            || aConceptVersie.type !== anotherConceptVersie.type
-            || !_.isEqual(aConceptVersie.targetAudiences, anotherConceptVersie.targetAudiences)
-            || !_.isEqual(aConceptVersie.themes, anotherConceptVersie.themes)
-            || !_.isEqual(aConceptVersie.competentAuthorityLevels, anotherConceptVersie.competentAuthorityLevels)
-            || !_.isEqual(aConceptVersie.competentAuthorities, anotherConceptVersie.competentAuthorities)
-            || !_.isEqual(aConceptVersie.executingAuthorityLevels, anotherConceptVersie.executingAuthorityLevels)
-            || !_.isEqual(aConceptVersie.executingAuthorities, anotherConceptVersie.executingAuthorities)
-            || !_.isEqual(aConceptVersie.publicationMedia, anotherConceptVersie.publicationMedia)
-            || !_.isEqual(aConceptVersie.yourEuropeCategories, anotherConceptVersie.yourEuropeCategories)
-            || !_.isEqual(aConceptVersie.keywords, anotherConceptVersie.keywords);
+    static isFunctionallyChanged(value: ConceptVersie, other: ConceptVersie): boolean {
+        return TaalString.isFunctionallyChanged(value.title, other.title)
+            || TaalString.isFunctionallyChanged(value.description, other.description)
+            || TaalString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription)
+            || TaalString.isFunctionallyChanged(value.exception, other.exception)
+            || TaalString.isFunctionallyChanged(value.regulation, other.regulation)
+            || value.startDate?.getTime() !== other.startDate?.getTime()
+            || value.endDate?.getTime() !== other.endDate?.getTime()
+            || value.type !== other.type
+            || !_.isEqual(value.targetAudiences, other.targetAudiences)
+            || !_.isEqual(value.themes, other.themes)
+            || !_.isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels)
+            || !_.isEqual(value.competentAuthorities, other.competentAuthorities)
+            || !_.isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels)
+            || !_.isEqual(value.executingAuthorities, other.executingAuthorities)
+            || !_.isEqual(value.publicationMedia, other.publicationMedia)
+            || !_.isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
+            || !_.isEqual(value.keywords, other.keywords)
+            || Requirement.isFunctionallyChanged(value.requirements, other.requirements);
     }
 
 }

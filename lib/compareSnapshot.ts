@@ -72,9 +72,7 @@ function compareRequirement(currentSnapshotTriples: any[], currentSnapshotUri: s
         }
 
         changes.push(
-            isValueChangedForAnyLanguage(currentSnapshotTriples, currentSortedRequirementIds[i], newSnapshotTriples, newSortedRequirementIds[i], Predicates.title)
-            || isValueChangedForAnyLanguage(currentSnapshotTriples, currentSortedRequirementIds[i], newSnapshotTriples, newSortedRequirementIds[i], Predicates.description)
-            || isValueChangedForAnyLanguage(currentSnapshotTriples, currentEvidenceUri, newSnapshotTriples, newEvidenceUri, Predicates.title)
+            isValueChangedForAnyLanguage(currentSnapshotTriples, currentEvidenceUri, newSnapshotTriples, newEvidenceUri, Predicates.title)
             || isValueChangedForAnyLanguage(currentSnapshotTriples, currentEvidenceUri, newSnapshotTriples, newEvidenceUri, Predicates.description)
         );
     }

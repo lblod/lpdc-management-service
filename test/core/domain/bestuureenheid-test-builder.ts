@@ -2,6 +2,20 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
 import {uuid} from "../../../mu-helper";
 
+export function aBestuurseenheid(): BestuurseenheidTestBuilder {
+    return new BestuurseenheidTestBuilder()
+        .withId(BestuurseenheidTestBuilder.buildIri(uuid()))
+        .withPrefLabel('Aarschot')
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE);
+}
+
+export function pepingenBestuurseenheid(): Bestuurseenheid {
+    return new BestuurseenheidTestBuilder()
+        .withId(BestuurseenheidTestBuilder.PEPINGEN_IRI)
+        .withPrefLabel('Pepingen')
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .build();
+}
 export class BestuurseenheidTestBuilder {
     public static readonly PEPINGEN_IRI = BestuurseenheidTestBuilder.buildIri('73840d393bd94828f0903e8357c7f328d4bf4b8fbd63adbfa443e784f056a589');
     public static readonly HOUTHALEN_HELCHTEREN_IRI = BestuurseenheidTestBuilder.buildIri('d760812063231cc45ced3fa65a7cd54920329178c8df7e891aa12db442e6606a');
@@ -15,20 +29,6 @@ export class BestuurseenheidTestBuilder {
 
     static buildIri(uniqueId: string): Iri {
         return `http://data.lblod.info/id/bestuurseenheden/${uniqueId}`;
-    }
-
-    static aBestuurseenheid(): BestuurseenheidTestBuilder {
-        return new BestuurseenheidTestBuilder()
-            .withId(BestuurseenheidTestBuilder.buildIri(uuid()))
-            .withPrefLabel('Aarschot')
-            .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE);
-    }
-
-    static aPepingen(): BestuurseenheidTestBuilder {
-        return new BestuurseenheidTestBuilder()
-            .withId(this.PEPINGEN_IRI)
-            .withPrefLabel('Pepingen')
-            .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE);
     }
 
     public withId(id: Iri): BestuurseenheidTestBuilder {

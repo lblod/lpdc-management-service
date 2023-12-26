@@ -9,9 +9,10 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/concept-versie";
 import {uuid} from "../../../mu-helper";
-import {ConceptVersieTestBuilder} from "./concept-versie-test-builder";
+import {aFullConceptVersie} from "./concept-versie-test-builder";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {aMinimalRequirement} from "./requirement-test-builder";
 
 describe('is functionally changed', () => {
 
@@ -19,22 +20,18 @@ describe('is functionally changed', () => {
 
     const aConceptVersieUuid = uuid();
     const aConceptVersie =
-        ConceptVersieTestBuilder
-            .aFullConceptVersie()
-            .build();
+        aFullConceptVersie().build();
 
     const functionallyUnchangedTestCases: TestCase[]
         = [
-        ['same data',
+        ['exactly the same data',
             aConceptVersie,
             aConceptVersie],
         ['equal data',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withId(aConceptVersieUuid)
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withId(aConceptVersieUuid)
                 .build()]
     ];
@@ -48,391 +45,384 @@ describe('is functionally changed', () => {
     const functionallyChangedTestCases: TestCase[]
         = [
         ['title changed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withTitle(TaalString.of("text-en"))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withTitle(TaalString.of("text-en-changed"))
                 .build()],
         ['description changed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withDescription(TaalString.of("text-en"))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withDescription(TaalString.of("text-en-changed"))
                 .build()],
         ['additional description changed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withAdditionalDescription(TaalString.of("text-en"))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withAdditionalDescription(TaalString.of("text-en-changed"))
                 .build()],
         ['exception changed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withException(TaalString.of("text-en"))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withException(TaalString.of("text-en-changed"))
                 .build()],
         ['regulation changed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withRegulation(TaalString.of("text-en"))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withRegulation(TaalString.of("text-en-changed"))
                 .build()],
         ['start date changed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withStartDate(new Date('2023-11-10'))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withStartDate(new Date('2023-11-09'))
                 .build()],
         ['start date appeared',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withStartDate(undefined)
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withStartDate(new Date('2023-11-09'))
                 .build()],
         ['start date disappeared',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withStartDate(new Date('2023-11-09'))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withStartDate(undefined)
                 .build()],
         ['end date changed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withEndDate(new Date('2023-11-10'))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withEndDate(new Date('2023-11-09'))
                 .build()],
         ['end date appeared',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withEndDate(undefined)
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withEndDate(new Date('2023-11-09'))
                 .build()],
         ['end date disappeared',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withEndDate(new Date('2023-11-09'))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withEndDate(undefined)
                 .build()],
         ['type changed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withType(ProductType.FINANCIEELVOORDEEL)
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withType(ProductType.BEWIJS)
                 .build()],
         ['type appeared',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withType(undefined)
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withType(ProductType.FINANCIEELVOORDEEL)
                 .build()],
         ['type disappeared',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withType(ProductType.FINANCIEELVOORDEEL)
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withType(undefined)
                 .build()],
         ['target audience updated',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID]))
                 .build()],
         ['target audience added',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER]))
                 .build()],
         ['target audience removed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
                 .build()],
         ['theme updated',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withThemes(new Set([ThemeType.CULTUURSPORTVRIJETIJD]))
                 .build()],
         ['theme added',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withThemes(new Set([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]))
                 .build()],
         ['theme removed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withThemes(new Set([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
                 .build()],
         ['competent Authority Level updated',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.EUROPEES]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.LOKAAL]))
                 .build()],
         ['competent Authority Level added',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.LOKAAL]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.LOKAAL]))
                 .build()],
         ['competent Authority Level removed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.FEDERAAL]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.FEDERAAL]))
                 .build()],
         ['competent authorities updated',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
                 .build()],
         ['competent authorities added',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build()],
         ['competent authorities removed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build()],
         ['executing Authority Level updated',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.EUROPEES]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.LOKAAL]))
                 .build()],
         ['executing Authority Level added',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.LOKAAL]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.LOKAAL]))
                 .build()],
         ['executing Authority Level removed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.DERDEN]))
                 .build()],
         ['executing authorities updated',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
                 .build()],
         ['executing authorities added',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
                 .build()],
         ['executing authorities removed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
                 .build()],
         ['publication medium updated',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withPublicationMedia(new Set([PublicationMediumType.YOUREUROPE]))
                 .build()],
         ['publication medium added',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withPublicationMedia(new Set([PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER]))
                 .build()],
         ['publication medium removed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER, PublicationMediumType.YOUREUROPE]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
                 .build()],
         ['your europe category updated',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.GOEDERENRECYCLAGE]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFINTELLECTUELEEIGENDOMSRECHTEN]))
                 .build()],
         ['your europe category added',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING, YourEuropeCategoryType.GEZONDHEIDSZORG]))
                 .build()],
         ['your europe category removed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE]))
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING]))
                 .build()],
         ['keyword updated - en',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withKeywords([TaalString.of('abc')])
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withKeywords([TaalString.of('def')])
                 .build()],
         ['keyword updated - nl',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withKeywords([TaalString.of(undefined, 'abc')])
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
-                .withKeywords([TaalString.of(undefined,'def')])
+            aFullConceptVersie()
+                .withKeywords([TaalString.of(undefined, 'def')])
                 .build()],
         ['keyword updated - en became nl',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withKeywords([TaalString.of('abc')])
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
-                .withKeywords([TaalString.of(undefined,'abc')])
+            aFullConceptVersie()
+                .withKeywords([TaalString.of(undefined, 'abc')])
                 .build()],
         ['keyword added',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withKeywords([TaalString.of('abc')])
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withKeywords([TaalString.of('abc'), TaalString.of('def')])
                 .build()],
         ['keyword removed',
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withKeywords([TaalString.of('abc'), TaalString.of('def')])
                 .build(),
-            ConceptVersieTestBuilder
-                .aFullConceptVersie()
+            aFullConceptVersie()
                 .withKeywords([TaalString.of('abc')])
+                .build()],
+        ['requirement added',
+            aFullConceptVersie()
+                .withRequirements([])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().build()])
+                .build()],
+        ['requirement removed',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([])
+                .build()],
+        ['requirement order changed',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-1')).build(),
+                    aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-2')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-2')).build(),
+                    aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-1')).build()])
+                .build()],
+        ['requirement title updated : en changed',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en - updated')).build()])
+                .build()],
+        ['requirement title updated: nl added',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .build()],
+        ['requirement title updated: nl removed',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en')).build()])
+                .build()],
+        ['requirement title updated : nl changed',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-changed')).build()])
+                .build()],
+        ['requirement description updated : en changed',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en - updated')).build()])
+                .build()],
+        ['requirement description updated: nl added',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .build()],
+        ['requirement description updated: nl removed',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en')).build()])
+                .build()],
+        ['requirement description updated : nl changed',
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .build(),
+            aFullConceptVersie()
+                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-changed')).build()])
                 .build()],
 
     ];

@@ -1,7 +1,7 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {BestuurseenheidClassificatieCodeUri} from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
-import {BestuurseenheidTestBuilder} from "../../core/domain/bestuureenheid-test-builder";
+import {aBestuurseenheid, BestuurseenheidTestBuilder} from "../../core/domain/bestuureenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
@@ -13,10 +13,10 @@ describe('BestuurseenheidRepository', () => {
     describe('findById', () => {
 
         test('When bestuurseenheid exists with id, then return bestuurseenheid', async () => {
-            const bestuurseenheid = BestuurseenheidTestBuilder.aBestuurseenheid().build();
+            const bestuurseenheid = aBestuurseenheid().build();
             await repository.save(bestuurseenheid);
 
-            const anotherBestuurseenheid = BestuurseenheidTestBuilder.aBestuurseenheid().build();
+            const anotherBestuurseenheid = aBestuurseenheid().build();
             await repository.save(anotherBestuurseenheid);
 
             const actualBestuurseenheid = await repository.findById(bestuurseenheid.id);
@@ -25,7 +25,7 @@ describe('BestuurseenheidRepository', () => {
         });
 
         test('When bestuurseenheid does not exist with id, then throw error', async () => {
-            const bestuurseenheid = BestuurseenheidTestBuilder.aBestuurseenheid().build();
+            const bestuurseenheid = aBestuurseenheid().build();
             await repository.save(bestuurseenheid);
 
             const nonExistentBestuurseenheidId = BestuurseenheidTestBuilder.buildIri("thisiddoesnotexist");
@@ -41,8 +41,7 @@ describe('BestuurseenheidRepository', () => {
             const bestuurseenheidId = `http://data.lblod.info/id/bestuurseenheden/${uuid()}`;
 
             const bestuurseenheid =
-                BestuurseenheidTestBuilder
-                    .aBestuurseenheid()
+                aBestuurseenheid()
                     .withId(bestuurseenheidId)
                     .withPrefLabel("preferred label")
                     .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)

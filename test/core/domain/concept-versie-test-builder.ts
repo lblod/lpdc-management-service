@@ -13,8 +13,71 @@ import {
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
-import {RequirementTestBuilder} from "./requirement-test-builder";
+import {aFullRequirement, anotherFullRequirement} from "./requirement-test-builder";
 
+
+export function aMinimalConceptVersie(): ConceptVersieTestBuilder {
+    return new ConceptVersieTestBuilder()
+        .withId(ConceptVersieTestBuilder.buildIri(uuid()));
+}
+
+export function aFullConceptVersie(): ConceptVersieTestBuilder {
+    return new ConceptVersieTestBuilder()
+        .withId(ConceptVersieTestBuilder.buildIri(uuid()))
+        .withTitle(
+            TaalString.of(
+                ConceptVersieTestBuilder.TITLE_EN,
+                ConceptVersieTestBuilder.TITLE_NL,
+                ConceptVersieTestBuilder.TITLE_NL_FORMAL,
+                ConceptVersieTestBuilder.TITLE_NL_INFORMAL,
+                ConceptVersieTestBuilder.TITLE_NL_GENERATED_FORMAL,
+                ConceptVersieTestBuilder.TITLE_NL_GENERATED_INFORMAL))
+        .withDescription(
+            TaalString.of(
+                ConceptVersieTestBuilder.DESCRIPTION_EN,
+                ConceptVersieTestBuilder.DESCRIPTION_NL,
+                ConceptVersieTestBuilder.DESCRIPTION_NL_FORMAL,
+                ConceptVersieTestBuilder.DESCRIPTION_NL_INFORMAL,
+                ConceptVersieTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
+                ConceptVersieTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withAdditionalDescription(
+            TaalString.of(
+                ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_EN,
+                ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_NL,
+                ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL,
+                ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_NL_INFORMAL,
+                ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL,
+                ConceptVersieTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withException(
+            TaalString.of(
+                ConceptVersieTestBuilder.EXCEPTION_EN,
+                ConceptVersieTestBuilder.EXCEPTION_NL,
+                ConceptVersieTestBuilder.EXCEPTION_NL_FORMAL,
+                ConceptVersieTestBuilder.EXCEPTION_NL_INFORMAL,
+                ConceptVersieTestBuilder.EXCEPTION_NL_GENERATED_FORMAL,
+                ConceptVersieTestBuilder.EXCEPTION_NL_GENERATED_INFORMAL))
+        .withRegulation(
+            TaalString.of(
+                ConceptVersieTestBuilder.REGULATION_EN,
+                ConceptVersieTestBuilder.REGULATION_NL,
+                ConceptVersieTestBuilder.REGULATION_NL_FORMAL,
+                ConceptVersieTestBuilder.REGULATION_NL_INFORMAL,
+                ConceptVersieTestBuilder.REGULATION_NL_GENERATED_FORMAL,
+                ConceptVersieTestBuilder.REGULATION_NL_GENERATED_INFORMAL))
+        .withStartDate(ConceptVersieTestBuilder.START_DATE)
+        .withEndDate(ConceptVersieTestBuilder.END_DATE)
+        .withType(ConceptVersieTestBuilder.TYPE)
+        .withTargetAudiences(ConceptVersieTestBuilder.TARGET_AUDIENCES)
+        .withThemes(ConceptVersieTestBuilder.THEMES)
+        .withCompetentAuthorityLevels(ConceptVersieTestBuilder.COMPETENT_AUTHORITY_LEVELS)
+        .withCompetentAuthorities(ConceptVersieTestBuilder.COMPETENT_AUTHORITIES)
+        .withExecutingAuthorityLevels(ConceptVersieTestBuilder.EXECUTING_AUTHORITY_LEVELS)
+        .withExecutingAuthorities(ConceptVersieTestBuilder.EXECUTING_AUTHORITIES)
+        .withPublicationMedia(ConceptVersieTestBuilder.PUBLICATION_MEDIA)
+        .withYourEuropeCategories(ConceptVersieTestBuilder.YOUR_EUROPE_CATEGORIES)
+        .withKeywords(ConceptVersieTestBuilder.KEYWORDS)
+        .withRequirements(ConceptVersieTestBuilder.REQUIREMENTS);
+}
 export class ConceptVersieTestBuilder {
 
     public static readonly TITLE_EN = 'Concept Versie Title - en';
@@ -73,7 +136,7 @@ export class ConceptVersieTestBuilder {
 
     public static readonly KEYWORDS = [TaalString.of('buitenland'), TaalString.of(undefined, 'buitenland'), TaalString.of(undefined, 'ambulante activiteit'), TaalString.of('levensloos')];
 
-    public static readonly REQUIREMENTS = [RequirementTestBuilder.aFullRequirement().build(), RequirementTestBuilder.anotherFullRequirement().build()];
+    public static readonly REQUIREMENTS = [aFullRequirement().build(), anotherFullRequirement().build()];
 
     private id: Iri;
     private title: TaalString | undefined;
@@ -99,68 +162,7 @@ export class ConceptVersieTestBuilder {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
     }
 
-    static aMinimalConceptVersie(): ConceptVersieTestBuilder {
-        return new ConceptVersieTestBuilder()
-            .withId(ConceptVersieTestBuilder.buildIri(uuid()));
-    }
 
-    static aFullConceptVersie(): ConceptVersieTestBuilder {
-        return new ConceptVersieTestBuilder()
-            .withId(ConceptVersieTestBuilder.buildIri(uuid()))
-            .withTitle(
-                TaalString.of(
-                    this.TITLE_EN,
-                    this.TITLE_NL,
-                    this.TITLE_NL_FORMAL,
-                    this.TITLE_NL_INFORMAL,
-                    this.TITLE_NL_GENERATED_FORMAL,
-                    this.TITLE_NL_GENERATED_INFORMAL))
-            .withDescription(
-                TaalString.of(
-                    this.DESCRIPTION_EN,
-                    this.DESCRIPTION_NL,
-                    this.DESCRIPTION_NL_FORMAL,
-                    this.DESCRIPTION_NL_INFORMAL,
-                    this.DESCRIPTION_NL_GENERATED_FORMAL,
-                    this.DESCRIPTION_NL_GENERATED_INFORMAL))
-            .withAdditionalDescription(
-                TaalString.of(
-                    this.ADDITIONAL_DESCRIPTION_EN,
-                    this.ADDITIONAL_DESCRIPTION_NL,
-                    this.ADDITIONAL_DESCRIPTION_NL_FORMAL,
-                    this.ADDITIONAL_DESCRIPTION_NL_INFORMAL,
-                    this.ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL,
-                    this.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL))
-            .withException(
-                TaalString.of(
-                    this.EXCEPTION_EN,
-                    this.EXCEPTION_NL,
-                    this.EXCEPTION_NL_FORMAL,
-                    this.EXCEPTION_NL_INFORMAL,
-                    this.EXCEPTION_NL_GENERATED_FORMAL,
-                    this.EXCEPTION_NL_GENERATED_INFORMAL))
-            .withRegulation(
-                TaalString.of(
-                    this.REGULATION_EN,
-                    this.REGULATION_NL,
-                    this.REGULATION_NL_FORMAL,
-                    this.REGULATION_NL_INFORMAL,
-                    this.REGULATION_NL_GENERATED_FORMAL,
-                    this.REGULATION_NL_GENERATED_INFORMAL))
-            .withStartDate(this.START_DATE)
-            .withEndDate(this.END_DATE)
-            .withType(this.TYPE)
-            .withTargetAudiences(this.TARGET_AUDIENCES)
-            .withThemes(this.THEMES)
-            .withCompetentAuthorityLevels(this.COMPETENT_AUTHORITY_LEVELS)
-            .withCompetentAuthorities(this.COMPETENT_AUTHORITIES)
-            .withExecutingAuthorityLevels(this.EXECUTING_AUTHORITY_LEVELS)
-            .withExecutingAuthorities(this.EXECUTING_AUTHORITIES)
-            .withPublicationMedia(this.PUBLICATION_MEDIA)
-            .withYourEuropeCategories(this.YOUR_EUROPE_CATEGORIES)
-            .withKeywords(this.KEYWORDS)
-            .withRequirements(this.REQUIREMENTS);
-    }
 
     public withId(id: Iri): ConceptVersieTestBuilder {
         this.id = id;

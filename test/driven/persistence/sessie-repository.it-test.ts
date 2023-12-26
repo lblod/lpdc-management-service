@@ -1,4 +1,4 @@
-import {SessieTestBuilder} from "../../core/domain/sessie-test-builder";
+import {aSessie, SessieTestBuilder} from "../../core/domain/sessie-test-builder";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {SessieSparqlTestRepository} from "./sessie-sparql-test-repository";
 import {uuid} from "../../../mu-helper";
@@ -12,10 +12,10 @@ describe('SessieRepository', () => {
     describe('findById', () => {
 
         test('When sessie exists with id, then return sessie', async () => {
-            const sessie = SessieTestBuilder.aSessie().build();
+            const sessie = aSessie().build();
             await repository.save(sessie);
 
-            const anotherSessie = SessieTestBuilder.aSessie().build();
+            const anotherSessie = aSessie().build();
             await repository.save(anotherSessie);
 
             const actualSessie = await repository.findById(sessie.id);
@@ -24,7 +24,7 @@ describe('SessieRepository', () => {
         });
 
         test('When sessie not exists with id, then throw error', async () => {
-            const sessie = SessieTestBuilder.aSessie().build();
+            const sessie = aSessie().build();
             await repository.save(sessie);
 
             const nonExistentSessieId = SessieTestBuilder.buildIri("thisiddoesnotexist");
@@ -38,8 +38,7 @@ describe('SessieRepository', () => {
             const bestuurseenheidId = `http://data.lblod.info/id/bestuurseenheden/${uuid()}`;
 
             const sessie =
-                        SessieTestBuilder
-                            .aSessie()
+                        aSessie()
                             .withId(sessieId)
                             .withBestuurseenheidId(bestuurseenheidId)
                             .withSessieRol(SessieRol.LOKETLB_LPDCGEBRUIKER)

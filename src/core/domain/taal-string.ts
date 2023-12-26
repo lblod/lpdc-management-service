@@ -57,9 +57,9 @@ export class TaalString {
         return this._nlGeneratedInformal;
     }
 
-    static isFunctionallyChanged(aTaalString: TaalString | undefined, anotherTaalString: TaalString | undefined): boolean {
-        return aTaalString?.en !== anotherTaalString?.en
-            || aTaalString?.nl !== anotherTaalString?.nl;
+    static isFunctionallyChanged(value: TaalString | undefined, other: TaalString | undefined): boolean {
+        return value?.en !== other?.en
+            || value?.nl !== other?.nl;
     }
 
     //TODO LPDC-916: test method
