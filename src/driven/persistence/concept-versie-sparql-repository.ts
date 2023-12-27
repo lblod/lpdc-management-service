@@ -2,15 +2,7 @@ import {SparqlQuerying} from "./sparql-querying";
 import {GRAPH, PREFIX} from "../../../config";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {ConceptVersieRepository} from "../../core/port/driven/persistence/concept-versie-repository";
-import {
-    CompetentAuthorityLevelType,
-    ConceptVersie,
-    ExecutingAuthorityLevelType,
-    PublicationMediumType,
-    TargetAudienceType,
-    ThemeType,
-    YourEuropeCategoryType
-} from "../../core/domain/concept-versie";
+import {ConceptVersie} from "../../core/domain/concept-versie";
 import {TaalString} from "../../core/domain/taal-string";
 import {Iri} from "../../core/domain/shared/iri";
 import {PromisePool} from '@supercharge/promise-pool';
@@ -169,20 +161,6 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
 
         const financialAdvantageIds = financialAdvantageIdsResults.map(r => r?.['financialAdvantageId'].value);
 
-        const descriptionsQueryBuilder = (subjectIds: Iri[]) => `
-            ${PREFIX.dct}
-            
-            SELECT ?subjectId ?description
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} {
-                        VALUES(?subjectId) {
-                            ${subjectIds.map(subjectId => `(${sparqlEscapeUri(subjectId)}) `).join(' ')}
-                        } 
-                        ?subjectId dct:description ?description. 
-                    }
-                }            
-        `;
-
         const ordersQueryBuilder = (subjectIds: Iri[]) => `
             ${PREFIX.sh}
             
@@ -211,127 +189,6 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
                 }            
         `;
 
-        const additionalDescriptionsQuery = `
-            ${PREFIX.lpdcExt}
-            
-            SELECT ?additionalDescription
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} lpdcExt:additionalDescription ?additionalDescription. 
-                    }
-                }            
-        `;
-
-        const exceptionsQuery = `
-            ${PREFIX.lpdcExt}
-            
-            SELECT ?exception
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} lpdcExt:exception ?exception. 
-                    }
-                }            
-        `;
-
-        const requlationsQuery = `
-            ${PREFIX.lpdcExt}
-            
-            SELECT ?regulation
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} lpdcExt:regulation ?regulation. 
-                    }
-                }            
-        `;
-
-        const targetAudiencesQuery = `
-            ${PREFIX.lpdcExt}
-            
-            SELECT ?targetAudience
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} lpdcExt:targetAudience ?targetAudience. 
-                    }
-                }            
-        `;
-
-        const themesQuery = `
-            ${PREFIX.m8g}
-            
-            SELECT ?theme
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} m8g:thematicArea ?theme. 
-                    }
-                }            
-        `;
-
-        const competentAuthorityLevelQuery = `
-           ${PREFIX.lpdcExt}
-            
-            SELECT ?competentAuthorityLevel
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} lpdcExt:competentAuthorityLevel ?competentAuthorityLevel. 
-                    }
-                }            
-        `;
-
-        const competentAuthoritiesQuery = `
-           ${PREFIX.m8g}
-            
-            SELECT ?competentAuthority
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} m8g:hasCompetentAuthority ?competentAuthority. 
-                    }
-                }            
-        `;
-
-        const executingAuthorityLevelQuery = `
-           ${PREFIX.lpdcExt}
-            
-            SELECT ?executingAuthorityLevel
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} lpdcExt:executingAuthorityLevel ?executingAuthorityLevel. 
-                    }
-                }            
-        `;
-
-        const executingAuthoritiesQuery = `
-           ${PREFIX.lpdcExt}
-            
-            SELECT ?executingAuthority
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} lpdcExt:hasExecutingAuthority ?executingAuthority. 
-                    }
-                }            
-        `;
-
-        const publicationMediaQuery = `
-           ${PREFIX.lpdcExt}
-            
-            SELECT ?publicationMedium
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} lpdcExt:publicationMedium ?publicationMedium. 
-                    }
-                }            
-        `;
-
-        const yourEuropeCategoriesQuery = `
-           ${PREFIX.lpdcExt}
-            
-            SELECT ?yourEuropeCategory
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} lpdcExt:yourEuropeCategory ?yourEuropeCategory. 
-                    }
-                }            
-        `;
-
         const keywordsQuery = `
            ${PREFIX.dcat}
             
@@ -345,20 +202,8 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
 
         const listQueries =
             [
-                descriptionsQueryBuilder([id, ...requirementIds, ...evidenceIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds, ...costIds, ...financialAdvantageIds].filter(ids => ids !== undefined)),
                 ordersQueryBuilder([...requirementIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds, ...costIds, ...financialAdvantageIds]),
                 urlsQueryBuilder([...websitesIdsForProcedures, ...websiteIds]),
-                additionalDescriptionsQuery,
-                exceptionsQuery,
-                requlationsQuery,
-                targetAudiencesQuery,
-                themesQuery,
-                competentAuthorityLevelQuery,
-                competentAuthoritiesQuery,
-                executingAuthorityLevelQuery,
-                executingAuthoritiesQuery,
-                publicationMediaQuery,
-                yourEuropeCategoriesQuery,
                 keywordsQuery,
             ];
 
@@ -375,47 +220,35 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
             throw new Error(`Could not query all for iri: ${id}`);
         }
         const [
-            allDescriptions,
             allOrders,
             allUrls,
-            additionalDescriptions,
-            exceptions,
-            regulations,
-            targetAudiences,
-            themes,
-            competentAuthorityLevels,
-            competentAuthorities,
-            executingAuthorityLevels,
-            executingAuthorities,
-            publicationMedia,
-            yourEuropeCategories,
             keywords,
         ] = results.map(r => r as any []);
 
         return new ConceptVersie(
             id,
             mapper.title(id),
-            this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === id).map(r => r?.['description'])),
-            this.asTaalString(additionalDescriptions.map(r => r?.['additionalDescription'])),
-            this.asTaalString(exceptions.map(r => r?.['exception'])),
-            this.asTaalString(regulations.map(r => r?.['regulation'])),
+            mapper.description(id),
+            mapper.additionalDescription(id),
+            mapper.exception(id),
+            mapper.regulation(id),
             mapper.startDate(id),
             mapper.endDate(id),
             mapper.productType(id),
-            this.asEnums(TargetAudienceType, targetAudiences.map(r => r?.['targetAudience']), id),
-            this.asEnums(ThemeType, themes.map(r => r?.['theme']), id),
-            this.asEnums(CompetentAuthorityLevelType, competentAuthorityLevels.map(r => r?.['competentAuthorityLevel']), id),
-            this.asIris(competentAuthorities.map(r => r?.['competentAuthority'])),
-            this.asEnums(ExecutingAuthorityLevelType, executingAuthorityLevels.map(r => r?.['executingAuthorityLevel']), id),
-            this.asIris(executingAuthorities.map(r => r?.['executingAuthority'])),
-            this.asEnums(PublicationMediumType, publicationMedia.map(r => r?.['publicationMedium']), id),
-            this.asEnums(YourEuropeCategoryType, yourEuropeCategories.map(r => r?.['yourEuropeCategory']), id),
+            mapper.targetAudiences(id),
+            mapper.themes(id),
+            mapper.competentAuthorityLevels(id),
+            mapper.competentAuthorities(id),
+            mapper.executingAuthorityLevels(id),
+            mapper.executingAuthorities(id),
+            mapper.publicationMedia(id),
+            mapper.yourEuropeCategories(id),
             keywords.map(keyword => [keyword]).flatMap(keywordsRow => this.asTaalString(keywordsRow.map(r => r?.['keyword']))),
-            this.asRequirements(requirementIds, evidenceIds, mapper, allDescriptions, allOrders),
-            this.asProcedures(procedureAndWebsiteIds, mapper, allDescriptions, allOrders, allUrls),
-            this.asWebsites(websiteIds, mapper, allDescriptions, allOrders, allUrls),
-            this.asCosts(costIds, mapper, allDescriptions, allOrders),
-            this.asFinancialAdvantages(financialAdvantageIds, mapper, allDescriptions, allOrders),
+            this.asRequirements(requirementIds, evidenceIds, mapper, allOrders),
+            this.asProcedures(procedureAndWebsiteIds, mapper, allOrders, allUrls),
+            this.asWebsites(websiteIds, mapper, allOrders, allUrls),
+            this.asCosts(costIds, mapper, allOrders),
+            this.asFinancialAdvantages(financialAdvantageIds, mapper, allOrders),
         );
     }
 
@@ -429,36 +262,15 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
             aResult.find(t => t['xml:lang'] === 'nl-be-x-generated-informal')?.value as string | undefined);
     }
 
-    private asEnums<T>(enumObj: T, values: any[], id: string): Set<T[keyof T]> {
-        return new Set(values.map(value => this.asEnum(enumObj, value?.value, id)));
-    }
-
-    //TODO LPDC-916: generalize ; extract in shared sparql toolkit?
-    private asEnum<T>(enumObj: T, value: any, id: string): T[keyof T] | undefined {
-        for (const key in enumObj) {
-            if (enumObj[key] === value) {
-                return value;
-            }
-        }
-        if (value) {
-            throw new Error(`could not map <${value}> for iri: <${id}>`);
-        }
-        return undefined;
-    }
-
-    private asIris(values: any[]): Set<Iri> {
-        return new Set(values.map(value => value.value));
-    }
-
-    private asRequirements(requirementIds: Iri[], evidenceIds: Iri[], mapper: QuadsToDomainMapper, allDescriptions: any[], allOrders: any[]): Requirement[] {
+    private asRequirements(requirementIds: Iri[], evidenceIds: Iri[], mapper: QuadsToDomainMapper, allOrders: any[]): Requirement[] {
         const result = requirementIds.map((reqId, index) => {
                 const title = mapper.title(reqId);
-                const description = this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === reqId).map(r => r?.['description']));
+                const description = mapper.description(reqId);
                 const evidenceIdForRequirement = evidenceIds[index];
                 const evidence = evidenceIdForRequirement !== undefined ?
                     new Evidence(evidenceIdForRequirement,
                         mapper.title(evidenceIdForRequirement),
-                        this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === evidenceIdForRequirement).map(r => r?.['description'])))
+                        mapper.description(evidenceIdForRequirement))
                     : undefined;
                 return new Requirement(reqId, title, description, evidence);
             }
@@ -466,45 +278,45 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
         return this.sort(result, allOrders);
     }
 
-    private asProcedures(procedureAndWebsiteIds: typeof OneToManyIdsType [], mapper: QuadsToDomainMapper, allDescriptions: any[], allOrders: any[], allUrls: any[]): Procedure[] {
+    private asProcedures(procedureAndWebsiteIds: typeof OneToManyIdsType [], mapper: QuadsToDomainMapper, allOrders: any[], allUrls: any[]): Procedure[] {
         const result = procedureAndWebsiteIds.map((procAndWebsitesId) => {
                 const procId: Iri = procAndWebsitesId[0];
                 const websiteIds: Iri[] = procAndWebsitesId[1];
                 const title = mapper.title(procId);
-                const description = this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === procId).map(r => r?.['description']));
-                const websites = this.asWebsites(websiteIds, mapper, allDescriptions, allOrders, allUrls);
+                const description = mapper.description(procId);
+                const websites = this.asWebsites(websiteIds, mapper, allOrders, allUrls);
                 return new Procedure(procId, title, description, websites);
             }
         );
         return this.sort(result, allOrders);
     }
 
-    private asWebsites(websiteIds: Iri[], mapper: QuadsToDomainMapper, allDescriptions: any[], allOrders: any[], allUrls: any[]): Website[] {
+    private asWebsites(websiteIds: Iri[], mapper: QuadsToDomainMapper, allOrders: any[], allUrls: any[]): Website[] {
         return this.sort(
             websiteIds.map(websiteId =>
                 new Website(
                     websiteId,
                     mapper.title(websiteId),
-                    this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === websiteId).map(r => r?.['description'])),
+                    mapper.description(websiteId),
                     allUrls.filter(r => r?.['subjectId'].value === websiteId).map(r => r?.['url'])[0]?.value)
             ), allOrders);
 
     }
 
-    private asCosts(costIds: Iri[], mapper: QuadsToDomainMapper, allDescriptions: any[], allOrders: any[]): Cost[] {
+    private asCosts(costIds: Iri[], mapper: QuadsToDomainMapper, allOrders: any[]): Cost[] {
         const result = costIds.map(costId => {
                 const title = mapper.title(costId);
-                const description = this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === costId).map(r => r?.['description']));
+                const description = mapper.description(costId);
                 return new Cost(costId, title, description);
             }
         );
         return this.sort(result, allOrders);
     }
 
-    private asFinancialAdvantages(financialAdvantageIds: Iri[], mapper: QuadsToDomainMapper, allDescriptions: any[], allOrders: any[]): FinancialAdvantage[] {
+    private asFinancialAdvantages(financialAdvantageIds: Iri[], mapper: QuadsToDomainMapper, allOrders: any[]): FinancialAdvantage[] {
         const result = financialAdvantageIds.map(financialAdvantageId => {
                 const title = mapper.title(financialAdvantageId);
-                const description = this.asTaalString(allDescriptions.filter(r => r?.['subjectId'].value === financialAdvantageId).map(r => r?.['description']));
+                const description = mapper.description(financialAdvantageId);
                 return new FinancialAdvantage(financialAdvantageId, title, description);
             }
         );
