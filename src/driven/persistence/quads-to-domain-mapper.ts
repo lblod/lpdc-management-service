@@ -15,6 +15,9 @@ import {Cost} from "../../core/domain/cost";
 import {asSortedArray} from "../../core/domain/shared/collections-helper";
 import {FinancialAdvantage} from "../../core/domain/financial-advantage";
 import {Website} from "../../core/domain/website";
+import {Procedure} from "../../core/domain/procedure";
+import {Requirement} from "../../core/domain/requirement";
+import {Evidence} from "../../core/domain/evidence";
 
 
 export const NAMESPACE = {
@@ -27,6 +30,7 @@ export const NAMESPACE = {
     sh: Namespace('http://www.w3.org/ns/shacl#'),
     cpsv: Namespace('http://purl.org/vocab/cpsv#'),
     rdfs: Namespace('http://www.w3.org/2000/01/rdf-schema#'),
+    ps: Namespace('http://vocab.belgif.be/ns/publicservice#'),
 };
 
 export class QuadsToDomainMapper {
@@ -147,9 +151,9 @@ export class QuadsToDomainMapper {
         return this.sort(financialAdvantages);
     }
 
-    websites(id: Iri): Website[] {
+    public websites(id: Iri, predicate: NamedNode = namedNode(NAMESPACE.rdfs('seeAlso').value)): Website[] {
         const websiteIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.rdfs('seeAlso'), null, this.graphId)));
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), predicate, null, this.graphId)));
 
         websiteIds.forEach(websiteId =>
             this.errorIfMissingOrIncorrectType(websiteId, namedNode(NAMESPACE.schema('WebSite').value)));
@@ -159,6 +163,50 @@ export class QuadsToDomainMapper {
                 new Website(websiteId, this.title(websiteId), this.description(websiteId), this.url(websiteId)));
 
         return this.sort(websites);
+    }
+
+    procedures(id: Iri): Procedure[] {
+        const procedureIds =
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.cpsv('follows'), null, this.graphId)));
+
+        procedureIds.forEach(procedureId =>
+            this.errorIfMissingOrIncorrectType(procedureId, namedNode(NAMESPACE.cpsv('Rule').value)));
+
+        const procedures =
+            procedureIds.map(procedureId =>
+                new Procedure(procedureId, this.title(procedureId), this.description(procedureId), this.websites(procedureId, namedNode(NAMESPACE.lpdcExt('hasWebsite').value))));
+
+        return this.sort(procedures);
+    }
+
+    requirements(id: Iri): Requirement[] {
+        const requirementIds =
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.ps('hasRequirement'), null, this.graphId)));
+
+        requirementIds.forEach(requirementId =>
+            this.errorIfMissingOrIncorrectType(requirementId, namedNode(NAMESPACE.m8g('Requirement').value)));
+
+        const requirements =
+            requirementIds.map(requirementId =>
+                new Requirement(requirementId, this.title(requirementId), this.description(requirementId), this.evidence(requirementId)));
+
+        return this.sort(requirements);
+    }
+
+    evidence(id: Iri): Evidence | undefined {
+        const evidenceIds =
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.m8g('hasSupportingEvidence'), null, this.graphId)));
+
+        evidenceIds.forEach(evidenceId =>
+            this.errorIfMissingOrIncorrectType(evidenceId, namedNode(NAMESPACE.m8g('Evidence').value)));
+
+        if(evidenceIds.length > 1) {
+            throw new Error(`Did not expect more than one evidence for ${id}`);
+        }
+        if(evidenceIds.length === 0) {
+            return undefined;
+        }
+        return new Evidence(evidenceIds[0], this.title(evidenceIds[0]), this.description(evidenceIds[0]));
     }
 
     private asDate(aValue: string | undefined): Date | undefined {
