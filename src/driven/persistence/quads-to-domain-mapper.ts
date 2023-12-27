@@ -11,6 +11,10 @@ import {
     YourEuropeCategoryType
 } from "../../core/domain/concept-versie";
 import {TaalString} from "../../core/domain/taal-string";
+import {Cost} from "../../core/domain/cost";
+import {asSortedArray} from "../../core/domain/shared/collections-helper";
+import {FinancialAdvantage} from "../../core/domain/financial-advantage";
+import {Website} from "../../core/domain/website";
 
 
 export const NAMESPACE = {
@@ -19,6 +23,10 @@ export const NAMESPACE = {
     rdf: Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#'),
     lpdcExt: Namespace('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#'),
     m8g: Namespace('http://data.europa.eu/m8g/'),
+    dcat: Namespace('http://www.w3.org/ns/dcat#'),
+    sh: Namespace('http://www.w3.org/ns/shacl#'),
+    cpsv: Namespace('http://purl.org/vocab/cpsv#'),
+    rdfs: Namespace('http://www.w3.org/2000/01/rdf-schema#'),
 };
 
 export class QuadsToDomainMapper {
@@ -106,8 +114,59 @@ export class QuadsToDomainMapper {
         return this.asEnums(YourEuropeCategoryType, this.store.statementsMatching(namedNode(id), NAMESPACE.lpdcExt("yourEuropeCategory"), null, this.graphId), id);
     }
 
+    keywords(id: Iri): TaalString[] {
+        return this.store.statementsMatching(namedNode(id), NAMESPACE.dcat("keyword"), null, this.graphId)
+            .map(s => [s])
+            .flatMap(statements => this.asTaalString(statements));
+    }
+
+    url(id: Iri): string | undefined {
+        return this.store.anyValue(namedNode(id), NAMESPACE.schema("url"), null, this.graphId);
+    }
+
+    costs(id: Iri): Cost[] {
+        const costIds =
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.m8g('hasCost'), null, this.graphId)));
+        costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, namedNode(NAMESPACE.m8g('Cost').value)));
+
+        const costs = costIds.map(costId => new Cost(costId, this.title(costId), this.description(costId)));
+
+        return this.sort(costs);
+    }
+
+    financialAdvantages(id: Iri): FinancialAdvantage[] {
+        const financialAdvantageIds =
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.cpsv('produces'), null, this.graphId)));
+        financialAdvantageIds.forEach(financialAdvantageId =>
+            this.errorIfMissingOrIncorrectType(financialAdvantageId, namedNode(NAMESPACE.lpdcExt('FinancialAdvantage').value)));
+
+        const financialAdvantages =
+            financialAdvantageIds.map(financialAdvantageId =>
+                new FinancialAdvantage(financialAdvantageId, this.title(financialAdvantageId), this.description(financialAdvantageId)));
+
+        return this.sort(financialAdvantages);
+    }
+
+    websites(id: Iri): Website[] {
+        const websiteIds =
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.rdfs('seeAlso'), null, this.graphId)));
+
+        websiteIds.forEach(websiteId =>
+            this.errorIfMissingOrIncorrectType(websiteId, namedNode(NAMESPACE.schema('WebSite').value)));
+
+        const websites =
+            websiteIds.map(websiteId =>
+                new Website(websiteId, this.title(websiteId), this.description(websiteId), this.url(websiteId)));
+
+        return this.sort(websites);
+    }
+
     private asDate(aValue: string | undefined): Date | undefined {
         return aValue ? new Date(aValue) : undefined;
+    }
+
+    private asNumber(aValue: string | undefined): number | undefined {
+        return aValue ? Number.parseInt(aValue) : undefined;
     }
 
     private asEnums<T>(enumObj: T, statements: Statement[], id: string): Set<T[keyof T]> {
@@ -147,4 +206,28 @@ export class QuadsToDomainMapper {
     private asLiterals(statements: Statement[]) {
         return statements?.map(s => s.object as Literal);
     }
+
+    private sort(anArray: any) {
+        const orders = anArray
+            .map((obj: { id: any; }) => {
+                const id = obj.id;
+                const order: number | undefined = this.asNumber(this.store.anyValue(namedNode(id), NAMESPACE.sh('order'), null, this.graphId));
+                return [id, order];
+            });
+
+        return asSortedArray(anArray, (a: any, b: any) => {
+            const orderA = orders.find((idAndOrder: any) => idAndOrder[0] === a.id);
+            const orderB = orders.find((idAndOrder: any) => idAndOrder[0] === b.id);
+
+            if (!orderA) {
+                throw new Error(`No order found for ${a.id}`);
+            }
+            if (!orderB) {
+                throw new Error(`No order found for ${b.id}`);
+            }
+            return orderA[1] - orderB[1];
+        });
+    }
+
+
 }

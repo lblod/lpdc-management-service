@@ -3,7 +3,6 @@ import {GRAPH, PREFIX} from "../../../config";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {ConceptVersieRepository} from "../../core/port/driven/persistence/concept-versie-repository";
 import {ConceptVersie} from "../../core/domain/concept-versie";
-import {TaalString} from "../../core/domain/taal-string";
 import {Iri} from "../../core/domain/shared/iri";
 import {PromisePool} from '@supercharge/promise-pool';
 import {Requirement} from "../../core/domain/requirement";
@@ -11,8 +10,6 @@ import {asSortedArray} from "../../core/domain/shared/collections-helper";
 import {Evidence} from "../../core/domain/evidence";
 import {Procedure} from "../../core/domain/procedure";
 import {Website} from "../../core/domain/website";
-import {Cost} from "../../core/domain/cost";
-import {FinancialAdvantage} from "../../core/domain/financial-advantage";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {NAMESPACE, QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {namedNode} from "rdflib";
@@ -71,51 +68,10 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
                 }
         `;
 
-        const websiteIdsQuery = `
-            ${PREFIX.rdfs}
-            ${PREFIX.schema}
-            
-            SELECT ?websiteId
-                WHERE {
-                    GRAPH ${GRAPH.ldesData} {
-                        ${sparqlEscapeUri(id)} rdfs:seeAlso ?websiteId.
-                        ?websiteId a schema:WebSite.
-                    }
-                }
-        `;
-
-        const costIdsQuery = `
-            ${PREFIX.m8g}
-            
-            SELECT ?costId
-                WHERE {
-                    GRAPH ${GRAPH.ldesData} {
-                        ${sparqlEscapeUri(id)} m8g:hasCost ?costId.
-                        ?costId a m8g:Cost.
-                    }
-                }
-        `;
-
-        const financialAdvantageIdsQuery = `
-            ${PREFIX.lpdcExt}
-            ${PREFIX.cpsv}
-            
-            SELECT ?financialAdvantageId
-                WHERE {
-                    GRAPH ${GRAPH.ldesData} {
-                        ${sparqlEscapeUri(id)} cpsv:produces ?financialAdvantageId.
-                        ?financialAdvantageId a lpdcExt:FinancialAdvantage.
-                    }
-                }
-        `;
-
         const dependentEntityIdsQueries =
             [
                 requirementAndEvidenceIdsQuery,
                 procedureAndWebsiteIdsQuery,
-                websiteIdsQuery,
-                costIdsQuery,
-                financialAdvantageIdsQuery,
             ];
 
         const {results: resultsDependentEntityIds, errors: errorsDependentEntityIds} = await PromisePool
@@ -133,9 +89,6 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
         const [
             requirementAndEvidenceIdsResults,
             procedureAndWebsiteIdsResults,
-            websiteIdsResults,
-            costIdsResults,
-            financialAdvantageIdsResults,
         ] = resultsDependentEntityIds.map(r => r as any []);
 
         const requirementIds: Iri[] = requirementAndEvidenceIdsResults.map(r => r?.['requirementId'].value);
@@ -154,12 +107,6 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
             );
         const procedureIds = procedureAndWebsiteIds.map(prodAndWebsite => prodAndWebsite[0]);
         const websitesIdsForProcedures = procedureAndWebsiteIds.flatMap(prodAndWebsite => prodAndWebsite[1]);
-
-        const websiteIds: Iri[] = websiteIdsResults.map(r => r?.['websiteId'].value);
-
-        const costIds: Iri[] = costIdsResults.map(r => r?.['costId'].value);
-
-        const financialAdvantageIds = financialAdvantageIdsResults.map(r => r?.['financialAdvantageId'].value);
 
         const ordersQueryBuilder = (subjectIds: Iri[]) => `
             ${PREFIX.sh}
@@ -189,22 +136,10 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
                 }            
         `;
 
-        const keywordsQuery = `
-           ${PREFIX.dcat}
-            
-            SELECT ?keyword
-                WHERE { 
-                    GRAPH ${GRAPH.ldesData} { 
-                        ${sparqlEscapeUri(id)} dcat:keyword ?keyword. 
-                    }
-                }            
-        `;
-
         const listQueries =
             [
-                ordersQueryBuilder([...requirementIds, ...procedureIds, ...websitesIdsForProcedures, ...websiteIds, ...costIds, ...financialAdvantageIds]),
-                urlsQueryBuilder([...websitesIdsForProcedures, ...websiteIds]),
-                keywordsQuery,
+                ordersQueryBuilder([...requirementIds, ...procedureIds, ...websitesIdsForProcedures]),
+                urlsQueryBuilder([...websitesIdsForProcedures]),
             ];
 
         const {results, errors} = await PromisePool
@@ -222,7 +157,6 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
         const [
             allOrders,
             allUrls,
-            keywords,
         ] = results.map(r => r as any []);
 
         return new ConceptVersie(
@@ -243,23 +177,13 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
             mapper.executingAuthorities(id),
             mapper.publicationMedia(id),
             mapper.yourEuropeCategories(id),
-            keywords.map(keyword => [keyword]).flatMap(keywordsRow => this.asTaalString(keywordsRow.map(r => r?.['keyword']))),
+            mapper.keywords(id),
             this.asRequirements(requirementIds, evidenceIds, mapper, allOrders),
             this.asProcedures(procedureAndWebsiteIds, mapper, allOrders, allUrls),
-            this.asWebsites(websiteIds, mapper, allOrders, allUrls),
-            this.asCosts(costIds, mapper, allOrders),
-            this.asFinancialAdvantages(financialAdvantageIds, mapper, allOrders),
+            mapper.websites(id),
+            mapper.costs(id),
+            mapper.financialAdvantages(id),
         );
-    }
-
-    private asTaalString(aResult: any[]): TaalString | undefined {
-        return TaalString.of(
-            aResult.find(t => t['xml:lang'] === 'en')?.value as string | undefined,
-            aResult.find(t => t['xml:lang'] === 'nl')?.value as string | undefined,
-            aResult.find(t => t['xml:lang'] === 'nl-be-x-formal')?.value as string | undefined,
-            aResult.find(t => t['xml:lang'] === 'nl-be-x-informal')?.value as string | undefined,
-            aResult.find(t => t['xml:lang'] === 'nl-be-x-generated-formal')?.value as string | undefined,
-            aResult.find(t => t['xml:lang'] === 'nl-be-x-generated-informal')?.value as string | undefined);
     }
 
     private asRequirements(requirementIds: Iri[], evidenceIds: Iri[], mapper: QuadsToDomainMapper, allOrders: any[]): Requirement[] {
@@ -302,27 +226,6 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
             ), allOrders);
 
     }
-
-    private asCosts(costIds: Iri[], mapper: QuadsToDomainMapper, allOrders: any[]): Cost[] {
-        const result = costIds.map(costId => {
-                const title = mapper.title(costId);
-                const description = mapper.description(costId);
-                return new Cost(costId, title, description);
-            }
-        );
-        return this.sort(result, allOrders);
-    }
-
-    private asFinancialAdvantages(financialAdvantageIds: Iri[], mapper: QuadsToDomainMapper, allOrders: any[]): FinancialAdvantage[] {
-        const result = financialAdvantageIds.map(financialAdvantageId => {
-                const title = mapper.title(financialAdvantageId);
-                const description = mapper.description(financialAdvantageId);
-                return new FinancialAdvantage(financialAdvantageId, title, description);
-            }
-        );
-        return this.sort(result, allOrders);
-    }
-
 
     private sort(anArray: any[], allOrders: any[]) {
         return asSortedArray(anArray, (a, b) => {
