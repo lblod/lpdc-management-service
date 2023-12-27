@@ -1,14 +1,15 @@
 import {Iri} from "../../core/domain/shared/iri";
 import {SessieRepository} from "../../core/port/driven/persistence/sessie-repository";
 import {Sessie, SessieRol} from "../../core/domain/sessie";
-import {SparqlRepository} from "./sparql-repository";
+import {SparqlQuerying} from "./sparql-querying";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {PREFIX} from "../../../config";
 
-export class SessieSparqlRepository extends SparqlRepository implements SessieRepository {
+export class SessieSparqlRepository implements SessieRepository {
 
+    protected readonly querying: SparqlQuerying;
     constructor(endpoint?: string) {
-        super(endpoint);
+        this.querying = new SparqlQuerying(endpoint);
     }
 
     async findById(id: Iri): Promise<Sessie> {
@@ -24,7 +25,7 @@ export class SessieSparqlRepository extends SparqlRepository implements SessieRe
                 }
             }
         `;
-        const result = await this.querySingleRow(query);
+        const result = await this.querying.singleRow(query);
 
         if (!result) {
             throw new Error(`No session found for iri: ${id}`);

@@ -2,13 +2,14 @@ import {BestuurseenheidRepository} from "../../core/port/driven/persistence/best
 import {Iri} from "../../core/domain/shared/iri";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode,} from "../../core/domain/bestuurseenheid";
 import {sparqlEscapeUri} from "../../../mu-helper";
-import {SparqlRepository} from "./sparql-repository";
+import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX} from "../../../config";
 
-export class BestuurseenheidSparqlRepository extends SparqlRepository implements BestuurseenheidRepository {
+export class BestuurseenheidSparqlRepository implements BestuurseenheidRepository {
 
+    protected readonly querying: SparqlQuerying;
     constructor(endpoint?: string) {
-        super(endpoint);
+        this.querying = new SparqlQuerying(endpoint);
     }
 
     async findById(id: Iri): Promise<Bestuurseenheid> {
@@ -26,7 +27,7 @@ export class BestuurseenheidSparqlRepository extends SparqlRepository implements
                 }
             }
         `;
-        const result = await this.querySingleRow(query);
+        const result = await this.querying.singleRow(query);
 
         if (!result) {
             throw new Error(`no bestuurseenheid found for iri: ${id}`);

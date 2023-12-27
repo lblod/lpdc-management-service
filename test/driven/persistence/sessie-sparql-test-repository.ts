@@ -19,7 +19,7 @@ export class SessieSparqlTestRepository extends SessieSparqlRepository {
                 }
             }
         `;
-        await this.update(query);
+        await this.querying.update(query);
     }
 
 }

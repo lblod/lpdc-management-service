@@ -1,4 +1,4 @@
-import {SparqlRepository} from "./sparql-repository";
+import {SparqlQuerying} from "./sparql-querying";
 import {GRAPH, PREFIX} from "../../../config";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {ConceptVersieRepository} from "../../core/port/driven/persistence/concept-versie-repository";
@@ -25,12 +25,17 @@ import {FinancialAdvantage} from "../../core/domain/financial-advantage";
 
 let OneToManyIdsType: [Iri, Iri[]];
 
-export class ConceptVersieSparqlRepository extends SparqlRepository implements ConceptVersieRepository {
+export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
+
+    protected readonly querying: SparqlQuerying;
+    constructor(endpoint?: string) {
+        this.querying = new SparqlQuerying(endpoint);
+    }
 
     async findById(id: Iri): Promise<ConceptVersie> {
 
         //TODO LPDC-916: verify the cost of these OPTIONAL blocks ... and if more performant, do separate queries ...
-        const findEntityAndUniqueTriplesResult = await this.querySingleRow(`
+        const findEntityAndUniqueTriplesResult = await this.querying.singleRow(`
             ${PREFIX.lpdcExt}
             ${PREFIX.schema}
             ${PREFIX.dct}
@@ -145,7 +150,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             .for(dependentEntityIdsQueries)
             .useCorrespondingResults()
             .process(async (query) => {
-                return await this.queryList(query);
+                return await this.querying.list(query);
             });
 
         if (resultsDependentEntityIds.some(r => r === PromisePool.failed || r === PromisePool.notRun)) {
@@ -400,7 +405,7 @@ export class ConceptVersieSparqlRepository extends SparqlRepository implements C
             .for(listQueries)
             .useCorrespondingResults()
             .process(async (query) => {
-                return await this.queryList(query);
+                return await this.querying.list(query);
             });
 
         if (results.some(r => r === PromisePool.failed || r === PromisePool.notRun)) {

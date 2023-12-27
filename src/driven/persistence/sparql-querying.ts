@@ -1,19 +1,19 @@
 import {querySudo, updateSudo} from '@lblod/mu-auth-sudo';
 import {retry} from 'ts-retry-promise';
 
-export class SparqlRepository {
+export class SparqlQuerying {
     private readonly endpoint: string;
 
     constructor(endpoint: string = "http://virtuoso:8890/sparql") {
         this.endpoint = endpoint;
     }
 
-    protected async update(query: string): Promise<void> {
+    public async update(query: string): Promise<void> {
         //TODO LPDC-916: error handling: we should ensure that we have verified that we did not get any error ...
         await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
     }
 
-    protected async querySingleRow(query: string): Promise<unknown | undefined> {
+    public async singleRow(query: string): Promise<unknown | undefined> {
         return retry(async () => {
             const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
             const bindings = result?.results?.bindings;
@@ -31,7 +31,7 @@ export class SparqlRepository {
         });
     }
 
-    protected async queryList(query: string): Promise<unknown[]> {
+    public async list(query: string): Promise<unknown[]> {
         return retry(async () => {
             //TODO LPDC-916:remove console.log
             //console.log(query);

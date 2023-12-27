@@ -86,7 +86,8 @@ const PREFIX = {
     adres: 'PREFIX adres: <https://data.vlaanderen.be/ns/adres#>',
     xsd: 'PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>',
     as: 'PREFIX as: <https://www.w3.org/ns/activitystreams#>',
-    sh: 'PREFIX sh: <http://www.w3.org/ns/shacl#>'
+    sh: 'PREFIX sh: <http://www.w3.org/ns/shacl#>',
+    ex: 'PREFIX ex: <http://example.com/ns#>',
 };
 
 const GRAPH = {

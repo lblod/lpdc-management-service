@@ -1,10 +1,12 @@
-import {SparqlRepository} from "../../../src/driven/persistence/sparql-repository";
+import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {sparqlEscapeUri} from "../../../mu-helper";
 
-export class DirectDatabaseAccess extends SparqlRepository {
+export class DirectDatabaseAccess {
+
+    private readonly querying: SparqlQuerying;
 
     constructor(endpoint?: string) {
-        super(endpoint);
+        this.querying = new SparqlQuerying(endpoint);
     }
 
     public async insertData(graph: string, triples: string[], prefixes?: string[]): Promise<void> {
@@ -22,11 +24,11 @@ export class DirectDatabaseAccess extends SparqlRepository {
         //TODO LPDC-916: remove console.log
         //console.log(query);
 
-        await this.update(query);
+        await this.querying.update(query);
     }
 
-    public async queryList(query: string): Promise<unknown[]> {
-        return super.queryList(query);
+    public async list(query: string): Promise<unknown[]> {
+        return this.querying.list(query);
     }
 
 

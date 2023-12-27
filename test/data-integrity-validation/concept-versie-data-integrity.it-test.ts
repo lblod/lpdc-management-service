@@ -25,7 +25,7 @@ describe('Concept Versie Data Integrity Validation', () => {
                 }
             }
         `;
-        const conceptVersieIds = await directDatabaseAccess.queryList(query);
+        const conceptVersieIds = await directDatabaseAccess.list(query);
 
         const delayTime = 0;
         const numberOfLoops = 1;

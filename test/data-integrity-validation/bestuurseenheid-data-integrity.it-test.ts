@@ -20,7 +20,7 @@ describe('Bestuurseenheid Data Integrity Validation', () => {
                 }
             }
         `;
-        const bestuurseenheidIds = await directDatabaseAccess.queryList(query);
+        const bestuurseenheidIds = await directDatabaseAccess.list(query);
 
         console.log(`Verifying ${bestuurseenheidIds.length} bestuurseenheden`);
 
