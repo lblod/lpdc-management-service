@@ -3,7 +3,7 @@
 import {Iri} from "../../core/domain/shared/iri";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {SparqlQuerying} from "./sparql-querying";
-import {isNamedNode, Literal, literal, namedNode, NamedNode, quad} from "rdflib";
+import {isNamedNode} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";
 
 export class DatastoreToQuadsRecursiveSparqlFetcher {
@@ -34,7 +34,7 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
               }`;
 
         const result = await this.querying.list(query);
-        const quads = this.asQuads(result, graph);
+        const quads = this.querying.asQuads(result, graph);
 
         const referencedIds =
             quads
@@ -48,46 +48,6 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
         previouslyQueriedIds.forEach(previouslyQueriedId => otherIdsToQuery.delete(previouslyQueriedId));
 
         return [...quads, ...await this.doFetch(graph, [...otherIdsToQuery], [...subjectIds, ...previouslyQueriedIds])];
-    }
-
-    private asQuads(queryResults: unknown[], graph: string) {
-        return queryResults.map(r => {
-            const s = this.asNamedNode(r['s']);
-            const p = this.asNamedNode(r['p']);
-            const o = this.asNamedNodeOrLiteral(r['o']);
-            const g = namedNode(graph);
-            return quad(s, p, o, g);
-        });
-    }
-
-    private asNamedNodeOrLiteral(term: any): NamedNode | Literal {
-        if (term.type === 'uri') {
-            return this.asNamedNode(term);
-        }
-        if (term.type === 'literal'
-                || term.type === 'typed-literal') {
-            return this.asLiteral(term);
-        }
-        throw new Error(`Could not parse ${JSON.stringify(term)} as Named Node Or Literal`);
-    }
-
-    private asLiteral(term: any): Literal {
-        if (term.type !== 'literal'
-                && term.type !== 'typed-literal') {
-            throw new Error(`Expecting a literal for ${term.value}`);
-        }
-
-        const lang: string | undefined = term['xml:lang'];
-        const datatype: string | undefined = term['datatype'];
-        return literal(term.value, lang || datatype);
-    }
-
-    private asNamedNode(term: any): NamedNode {
-        if (term.type !== 'uri') {
-            throw new Error(`Expecting an IRI for ${term.value}`);
-        }
-
-        return namedNode(term.value);
     }
 
 }
