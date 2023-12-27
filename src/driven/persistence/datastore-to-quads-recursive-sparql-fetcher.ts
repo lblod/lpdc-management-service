@@ -6,11 +6,11 @@ import {SparqlQuerying} from "./sparql-querying";
 import {isNamedNode, Literal, literal, namedNode, NamedNode, quad} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";
 
-export class DatastoreToDatasetRecursiveSparqlFetcher {
+export class DatastoreToQuadsRecursiveSparqlFetcher {
 
     private readonly querying: SparqlQuerying;
 
-    constructor(endpoint) {
+    constructor(endpoint?: string) {
         this.querying = new SparqlQuerying(endpoint);
     }
 

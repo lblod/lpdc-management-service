@@ -3,19 +3,19 @@ import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {sparqlEscapeDate, sparqlEscapeDateTime, sparqlEscapeInt, uuid} from "../../../mu-helper";
 import {PREFIX} from "../../../config";
 import {
-    DatastoreToDatasetRecursiveSparqlFetcher
-} from "../../../src/driven/persistence/datastore-to-dataset-recursive-sparql-fetcher";
+    DatastoreToQuadsRecursiveSparqlFetcher
+} from "../../../src/driven/persistence/datastore-to-quads-recursive-sparql-fetcher";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {literal, namedNode, quad} from 'rdflib';
 import {Quad} from "rdflib/lib/tf-types";
 
-describe('recursively fetches a part of a datastore into a dataset using sparql endpoint', () => {
+describe('recursively fetches a part of a datastore into a array of quads using sparql endpoint', () => {
 
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
-    const fetcher = new DatastoreToDatasetRecursiveSparqlFetcher(TEST_SPARQL_ENDPOINT);
+    const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(TEST_SPARQL_ENDPOINT);
 
     test('Throws Error when endpoint cannot be reached', async () => {
-        const fetcherWithIncorrectEndpoint = new DatastoreToDatasetRecursiveSparqlFetcher('thiscanotbereached');
+        const fetcherWithIncorrectEndpoint = new DatastoreToQuadsRecursiveSparqlFetcher('thiscanotbereached');
 
         const startIri: Iri = `http://example.com/ns#abc}`;
 
