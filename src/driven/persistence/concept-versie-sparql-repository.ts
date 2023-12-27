@@ -3,8 +3,7 @@ import {ConceptVersieRepository} from "../../core/port/driven/persistence/concep
 import {ConceptVersie} from "../../core/domain/concept-versie";
 import {Iri} from "../../core/domain/shared/iri";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
-import {NAMESPACE, QuadsToDomainMapper} from "./quads-to-domain-mapper";
-import {namedNode} from "rdflib";
+import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 
 export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
 
@@ -23,33 +22,7 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
 
         const mapper = new QuadsToDomainMapper(quads, ldesDataGraph);
 
-        mapper.errorIfMissingOrIncorrectType(id, namedNode(NAMESPACE.lpdcExt('ConceptualPublicService').value));
-
-        return new ConceptVersie(
-            id,
-            mapper.title(id),
-            mapper.description(id),
-            mapper.additionalDescription(id),
-            mapper.exception(id),
-            mapper.regulation(id),
-            mapper.startDate(id),
-            mapper.endDate(id),
-            mapper.productType(id),
-            mapper.targetAudiences(id),
-            mapper.themes(id),
-            mapper.competentAuthorityLevels(id),
-            mapper.competentAuthorities(id),
-            mapper.executingAuthorityLevels(id),
-            mapper.executingAuthorities(id),
-            mapper.publicationMedia(id),
-            mapper.yourEuropeCategories(id),
-            mapper.keywords(id),
-            mapper.requirements(id),
-            mapper.procedures(id),
-            mapper.websites(id),
-            mapper.costs(id),
-            mapper.financialAdvantages(id),
-        );
+        return mapper.conceptVersie(id);
     }
 
 }

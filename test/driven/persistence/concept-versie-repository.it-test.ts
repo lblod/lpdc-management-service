@@ -471,8 +471,6 @@ describe('ConceptVersieRepository', () => {
 
                 ]);
 
-            //TODO LPDC-916: more realistic to also save the 'concept type? of an enum' in the database ? e.g. type, etc. (but that should be a separate query then ...)
-
             const actualConceptVersie = await repository.findById(conceptVersieId);
 
             expect(actualConceptVersie).toEqual(conceptVersie);

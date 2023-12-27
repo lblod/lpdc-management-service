@@ -3,6 +3,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {graph, Literal, NamedNode, namedNode, Namespace, Statement} from "rdflib";
 import {
     CompetentAuthorityLevelType,
+    ConceptVersie,
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
@@ -44,7 +45,38 @@ export class QuadsToDomainMapper {
         this.graphId = namedNode(graphId);
     }
 
-    errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
+    conceptVersie(id: Iri): ConceptVersie {
+
+        this.errorIfMissingOrIncorrectType(id, namedNode(NAMESPACE.lpdcExt('ConceptualPublicService').value));
+
+        return new ConceptVersie(
+            id,
+            this.title(id),
+            this.description(id),
+            this.additionalDescription(id),
+            this.exception(id),
+            this.regulation(id),
+            this.startDate(id),
+            this.endDate(id),
+            this.productType(id),
+            this.targetAudiences(id),
+            this.themes(id),
+            this.competentAuthorityLevels(id),
+            this.competentAuthorities(id),
+            this.executingAuthorityLevels(id),
+            this.executingAuthorities(id),
+            this.publicationMedia(id),
+            this.yourEuropeCategories(id),
+            this.keywords(id),
+            this.requirements(id),
+            this.procedures(id),
+            this.websites(id),
+            this.costs(id),
+            this.financialAdvantages(id),
+        );
+    }
+
+    private errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
         const typeFoundForId: string = this.store.anyValue(namedNode(id), NAMESPACE.rdf("type"), null, this.graphId);
         if (!typeFoundForId) {
             throw new Error(`Could not find <${id}> for type ${type}`);
@@ -54,81 +86,81 @@ export class QuadsToDomainMapper {
         }
     }
 
-    startDate(id: Iri): Date | undefined {
+    private startDate(id: Iri): Date | undefined {
         return this.asDate(this.store.anyValue(namedNode(id), NAMESPACE.schema("startDate"), null, this.graphId));
     }
 
-    endDate(id: Iri): Date | undefined {
+    private endDate(id: Iri): Date | undefined {
         return this.asDate(this.store.anyValue(namedNode(id), NAMESPACE.schema("endDate"), null, this.graphId));
     }
 
-    productType(id: Iri): ProductType | undefined {
+    private productType(id: Iri): ProductType | undefined {
         return this.asEnum(ProductType, this.store.anyValue(namedNode(id), NAMESPACE.dct("type"), null, this.graphId), id);
     }
 
-    title(id: Iri): TaalString | undefined {
+    private title(id: Iri): TaalString | undefined {
         return this.asTaalString(this.store.statementsMatching(namedNode(id), NAMESPACE.dct('title'), null, this.graphId));
     }
 
-    description(id: Iri): TaalString | undefined {
+    private description(id: Iri): TaalString | undefined {
         return this.asTaalString(this.store.statementsMatching(namedNode(id), NAMESPACE.dct('description'), null, this.graphId));
     }
 
-    additionalDescription(id: Iri): TaalString | undefined {
+    private additionalDescription(id: Iri): TaalString | undefined {
         return this.asTaalString(this.store.statementsMatching(namedNode(id), NAMESPACE.lpdcExt('additionalDescription'), null, this.graphId));
     }
 
-    exception(id: Iri): TaalString | undefined {
+    private exception(id: Iri): TaalString | undefined {
         return this.asTaalString(this.store.statementsMatching(namedNode(id), NAMESPACE.lpdcExt('exception'), null, this.graphId));
     }
 
-    regulation(id: Iri): TaalString | undefined {
+    private regulation(id: Iri): TaalString | undefined {
         return this.asTaalString(this.store.statementsMatching(namedNode(id), NAMESPACE.lpdcExt('regulation'), null, this.graphId));
     }
 
-    targetAudiences(id: Iri): Set<TargetAudienceType> {
+    private targetAudiences(id: Iri): Set<TargetAudienceType> {
         return this.asEnums(TargetAudienceType, this.store.statementsMatching(namedNode(id), NAMESPACE.lpdcExt("targetAudience"), null, this.graphId), id);
     }
 
-    themes(id: Iri): Set<ThemeType> {
+    private themes(id: Iri): Set<ThemeType> {
         return this.asEnums(ThemeType, this.store.statementsMatching(namedNode(id), NAMESPACE.m8g("thematicArea"), null, this.graphId), id);
     }
 
-    competentAuthorityLevels(id: Iri): Set<CompetentAuthorityLevelType> {
+    private competentAuthorityLevels(id: Iri): Set<CompetentAuthorityLevelType> {
         return this.asEnums(CompetentAuthorityLevelType, this.store.statementsMatching(namedNode(id), NAMESPACE.lpdcExt("competentAuthorityLevel"), null, this.graphId), id);
     }
 
-    competentAuthorities(id: Iri): Set<Iri> {
+    private competentAuthorities(id: Iri): Set<Iri> {
         return this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.m8g("hasCompetentAuthority"), null, this.graphId));
     }
 
-    executingAuthorityLevels(id: Iri): Set<ExecutingAuthorityLevelType> {
+    private executingAuthorityLevels(id: Iri): Set<ExecutingAuthorityLevelType> {
         return this.asEnums(ExecutingAuthorityLevelType, this.store.statementsMatching(namedNode(id), NAMESPACE.lpdcExt("executingAuthorityLevel"), null, this.graphId), id);
     }
 
-    executingAuthorities(id: Iri): Set<Iri> {
+    private executingAuthorities(id: Iri): Set<Iri> {
         return this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.lpdcExt("hasExecutingAuthority"), null, this.graphId));
     }
 
-    publicationMedia(id: Iri): Set<PublicationMediumType> {
+    private publicationMedia(id: Iri): Set<PublicationMediumType> {
         return this.asEnums(PublicationMediumType, this.store.statementsMatching(namedNode(id), NAMESPACE.lpdcExt("publicationMedium"), null, this.graphId), id);
     }
 
-    yourEuropeCategories(id: Iri): Set<YourEuropeCategoryType> {
+    private yourEuropeCategories(id: Iri): Set<YourEuropeCategoryType> {
         return this.asEnums(YourEuropeCategoryType, this.store.statementsMatching(namedNode(id), NAMESPACE.lpdcExt("yourEuropeCategory"), null, this.graphId), id);
     }
 
-    keywords(id: Iri): TaalString[] {
+    private keywords(id: Iri): TaalString[] {
         return this.store.statementsMatching(namedNode(id), NAMESPACE.dcat("keyword"), null, this.graphId)
             .map(s => [s])
             .flatMap(statements => this.asTaalString(statements));
     }
 
-    url(id: Iri): string | undefined {
+    private url(id: Iri): string | undefined {
         return this.store.anyValue(namedNode(id), NAMESPACE.schema("url"), null, this.graphId);
     }
 
-    costs(id: Iri): Cost[] {
+    private costs(id: Iri): Cost[] {
         const costIds =
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.m8g('hasCost'), null, this.graphId)));
         costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, namedNode(NAMESPACE.m8g('Cost').value)));
@@ -138,7 +170,7 @@ export class QuadsToDomainMapper {
         return this.sort(costs);
     }
 
-    financialAdvantages(id: Iri): FinancialAdvantage[] {
+    private financialAdvantages(id: Iri): FinancialAdvantage[] {
         const financialAdvantageIds =
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.cpsv('produces'), null, this.graphId)));
         financialAdvantageIds.forEach(financialAdvantageId =>
@@ -151,7 +183,7 @@ export class QuadsToDomainMapper {
         return this.sort(financialAdvantages);
     }
 
-    public websites(id: Iri, predicate: NamedNode = namedNode(NAMESPACE.rdfs('seeAlso').value)): Website[] {
+    private websites(id: Iri, predicate: NamedNode = namedNode(NAMESPACE.rdfs('seeAlso').value)): Website[] {
         const websiteIds =
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), predicate, null, this.graphId)));
 
@@ -165,7 +197,7 @@ export class QuadsToDomainMapper {
         return this.sort(websites);
     }
 
-    procedures(id: Iri): Procedure[] {
+    private procedures(id: Iri): Procedure[] {
         const procedureIds =
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.cpsv('follows'), null, this.graphId)));
 
@@ -179,7 +211,7 @@ export class QuadsToDomainMapper {
         return this.sort(procedures);
     }
 
-    requirements(id: Iri): Requirement[] {
+    private requirements(id: Iri): Requirement[] {
         const requirementIds =
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.ps('hasRequirement'), null, this.graphId)));
 
@@ -193,17 +225,17 @@ export class QuadsToDomainMapper {
         return this.sort(requirements);
     }
 
-    evidence(id: Iri): Evidence | undefined {
+    private evidence(id: Iri): Evidence | undefined {
         const evidenceIds =
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NAMESPACE.m8g('hasSupportingEvidence'), null, this.graphId)));
 
         evidenceIds.forEach(evidenceId =>
             this.errorIfMissingOrIncorrectType(evidenceId, namedNode(NAMESPACE.m8g('Evidence').value)));
 
-        if(evidenceIds.length > 1) {
+        if (evidenceIds.length > 1) {
             throw new Error(`Did not expect more than one evidence for ${id}`);
         }
-        if(evidenceIds.length === 0) {
+        if (evidenceIds.length === 0) {
             return undefined;
         }
         return new Evidence(evidenceIds[0], this.title(evidenceIds[0]), this.description(evidenceIds[0]));
@@ -276,6 +308,5 @@ export class QuadsToDomainMapper {
             return orderA[1] - orderB[1];
         });
     }
-
 
 }
