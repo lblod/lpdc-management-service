@@ -1,41 +1,42 @@
 import {ConceptVersie} from "../../core/domain/concept-versie";
-import {sparqlEscapeDateTime, sparqlEscapeInt, sparqlEscapeUri} from "../../../mu-helper";
 import {Iri} from "../../core/domain/shared/iri";
 import {TaalString} from "../../core/domain/taal-string";
 import {Evidence} from "../../core/domain/evidence";
 import {Website} from "../../core/domain/website";
+import {literal, NamedNode, namedNode, quad, Statement} from "rdflib";
+import {NS} from "./namespaces";
 
 export class DomainToTriplesMapper {
 
-    public conceptVersieToTriples(conceptVersie: ConceptVersie): string[] {
+    public conceptVersieToTriples(conceptVersie: ConceptVersie): Statement[] {
         return [
-            `${sparqlEscapeUri(conceptVersie.id)} a lpdcExt:ConceptualPublicService`,
-            ...this.taalStringToTriples(conceptVersie.id, "dct:title", conceptVersie.title),
-            ...this.taalStringToTriples(conceptVersie.id, "dct:description", conceptVersie.description),
-            ...this.taalStringToTriples(conceptVersie.id, "lpdcExt:additionalDescription", conceptVersie.additionalDescription),
-            ...this.taalStringToTriples(conceptVersie.id, "lpdcExt:exception", conceptVersie.exception),
-            ...this.taalStringToTriples(conceptVersie.id, "lpdcExt:regulation", conceptVersie.regulation),
-            conceptVersie.startDate ? `${sparqlEscapeUri(conceptVersie.id)} schema:startDate ${sparqlEscapeDateTime(conceptVersie.startDate.toISOString())}` : undefined,
-            conceptVersie.endDate ? `${sparqlEscapeUri(conceptVersie.id)} schema:endDate ${sparqlEscapeDateTime(conceptVersie.endDate.toISOString())}` : undefined,
-            conceptVersie.type ? `${sparqlEscapeUri(conceptVersie.id)} dct:type ${sparqlEscapeUri(conceptVersie.type)}` : undefined,
-            ...this.valuesToTriples(conceptVersie.id, "lpdcExt:targetAudience", conceptVersie.targetAudiences),
-            ...this.valuesToTriples(conceptVersie.id, "m8g:thematicArea", conceptVersie.themes),
-            ...this.valuesToTriples(conceptVersie.id, "lpdcExt:competentAuthorityLevel", conceptVersie.competentAuthorityLevels),
-            ...this.valuesToTriples(conceptVersie.id, "m8g:hasCompetentAuthority", conceptVersie.competentAuthorities),
-            ...this.valuesToTriples(conceptVersie.id, "lpdcExt:executingAuthorityLevel", conceptVersie.executingAuthorityLevels),
-            ...this.valuesToTriples(conceptVersie.id, "lpdcExt:hasExecutingAuthority", conceptVersie.executingAuthorities),
-            ...this.valuesToTriples(conceptVersie.id, "lpdcExt:publicationMedium", conceptVersie.publicationMedia),
-            ...this.valuesToTriples(conceptVersie.id, "lpdcExt:yourEuropeCategory", conceptVersie.yourEuropeCategories),
-            ...conceptVersie.keywords.flatMap(keyword => this.taalStringToTriples(conceptVersie.id, "dcat:keyword", keyword)),
+            quad(namedNode(conceptVersie.id), NS.rdf('type'), NS.lpdcExt('ConceptualPublicService')),
+            conceptVersie.startDate ? quad(namedNode(conceptVersie.id), NS.schema('startDate'), literal(conceptVersie.startDate.toISOString(), NS.xsd('dateTime'))) : undefined,
+            conceptVersie.endDate ? quad(namedNode(conceptVersie.id), NS.schema('endDate'), literal(conceptVersie.endDate.toISOString(), NS.xsd('dateTime'))) : undefined,
+            conceptVersie.type ? quad(namedNode(conceptVersie.id), NS.dct('type'), namedNode(conceptVersie.type)) : undefined,
+            ...this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.dct('title').value), conceptVersie.title),
+            ...this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.dct('description').value), conceptVersie.description),
+            ...this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('additionalDescription').value), conceptVersie.additionalDescription),
+            ...this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('exception').value), conceptVersie.exception),
+            ...this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('regulation').value), conceptVersie.regulation),
+            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('targetAudience').value), conceptVersie.targetAudiences),
+            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.m8g('thematicArea').value), conceptVersie.themes),
+            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('competentAuthorityLevel').value), conceptVersie.competentAuthorityLevels),
+            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.m8g('hasCompetentAuthority').value), conceptVersie.competentAuthorities),
+            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('executingAuthorityLevel').value), conceptVersie.executingAuthorityLevels),
+            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('hasExecutingAuthority').value), conceptVersie.executingAuthorities),
+            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('publicationMedium').value), conceptVersie.publicationMedia),
+            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('yourEuropeCategory').value), conceptVersie.yourEuropeCategories),
+            ...conceptVersie.keywords.flatMap(keyword => this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.dcat('keyword').value), keyword)),
             ...this.requirementsToTriples(conceptVersie),
             ...this.proceduresToTriples(conceptVersie),
-            ...this.websitesToTriples(conceptVersie.id, 'rdfs:seeAlso', conceptVersie.websites),
+            ...this.websitesToTriples(conceptVersie.id, namedNode(NS.rdfs('seeAlso').value), conceptVersie.websites),
             ...this.costsToTriples(conceptVersie),
             ...this.financialAdvantagesToTriples(conceptVersie),
-        ].filter(t => t != undefined);
+        ].filter(t => t !== undefined);
     }
 
-    private taalStringToTriples(subject: Iri, predicate: string, object: TaalString | undefined): string[] {
+    private taalStringToTriples(subject: NamedNode, predicate: NamedNode, object: TaalString | undefined): Statement[] {
         return object ?
             [
                 ["en", object.en],
@@ -45,84 +46,84 @@ export class DomainToTriplesMapper {
                 ["nl-be-x-generated-formal", object.nlGeneratedFormal],
                 ["nl-be-x-generated-informal", object.nlGeneratedInformal]]
                 .filter(tuple => tuple[1] !== undefined)
-                .map(tuple => `${sparqlEscapeUri(subject)} ${predicate} """${tuple[1]}"""@${tuple[0]}`) : [];
+                .map(tuple => quad(subject, predicate, literal(tuple[1], tuple[0]))) : [];
     }
 
-    private valuesToTriples(subject: Iri, predicate: string, enumValues: Set<any>): string[] {
+    private valuesToTriples(subject: NamedNode, predicate: NamedNode, enumValues: Set<any>): Statement[] {
         return Array.from(enumValues)
-            .map(e => `${sparqlEscapeUri(subject)} ${predicate} ${sparqlEscapeUri(e)}`);
+            .map(e => quad(subject, predicate, literal(e)));
     }
 
-    private requirementsToTriples(conceptVersie: ConceptVersie): string[] {
+    private requirementsToTriples(conceptVersie: ConceptVersie): Statement[] {
         return conceptVersie.requirements.flatMap((requirement, index) =>
             [
-                `${sparqlEscapeUri(conceptVersie.id)} ps:hasRequirement ${sparqlEscapeUri(requirement.id)}`,
-                `${sparqlEscapeUri(requirement.id)} a m8g:Requirement`,
-                ...this.taalStringToTriples(requirement.id, `dct:title`, requirement.title),
-                ...this.taalStringToTriples(requirement.id, `dct:description`, requirement.description),
-                `${sparqlEscapeUri(requirement.id)} sh:order ${sparqlEscapeInt(index)}`,
+                quad(namedNode(conceptVersie.id), NS.ps('hasRequirement'), namedNode(requirement.id)),
+                quad(namedNode(requirement.id), NS.rdf('type'), NS.m8g('Requirement')),
+                ...this.taalStringToTriples(namedNode(requirement.id), namedNode(NS.dct(`title`).value), requirement.title),
+                ...this.taalStringToTriples(namedNode(requirement.id), namedNode(NS.dct(`description`).value), requirement.description),
+                quad(namedNode(requirement.id), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
                 ...this.evidenceToTriples(requirement.id, requirement.evidence),
             ]
         );
     }
 
-    private evidenceToTriples(requirementId: Iri, evidence: Evidence | undefined): string[] {
+    private evidenceToTriples(requirementId: Iri, evidence: Evidence | undefined): Statement[] {
         return evidence ? [
-            `${sparqlEscapeUri(requirementId)} m8g:hasSupportingEvidence ${sparqlEscapeUri(evidence.id)}`,
-            `${sparqlEscapeUri(evidence.id)} a m8g:Evidence`,
-            ...this.taalStringToTriples(evidence.id, `dct:title`, evidence.title),
-            ...this.taalStringToTriples(evidence.id, `dct:description`, evidence.description),
+            quad(namedNode(requirementId), NS.m8g('hasSupportingEvidence'), namedNode(evidence.id)),
+            quad(namedNode(evidence.id), NS.rdf('type'), NS.m8g('Evidence')),
+            ...this.taalStringToTriples(namedNode(evidence.id), namedNode(NS.dct(`title`).value), evidence.title),
+            ...this.taalStringToTriples(namedNode(evidence.id), namedNode(NS.dct(`description`).value), evidence.description),
         ] : [];
     }
 
-    private proceduresToTriples(conceptVersie: ConceptVersie): string[] {
+    private proceduresToTriples(conceptVersie: ConceptVersie): Statement[] {
         return conceptVersie.procedures.flatMap((procedure, index) =>
             [
-                `${sparqlEscapeUri(conceptVersie.id)} cpsv:follows ${sparqlEscapeUri(procedure.id)}`,
-                `${sparqlEscapeUri(procedure.id)} a cpsv:Rule`,
-                ...this.taalStringToTriples(procedure.id, `dct:title`, procedure.title),
-                ...this.taalStringToTriples(procedure.id, `dct:description`, procedure.description),
-                `${sparqlEscapeUri(procedure.id)} sh:order ${sparqlEscapeInt(index)}`,
-                ...this.websitesToTriples(procedure.id, 'lpdcExt:hasWebsite', procedure.websites)
+                quad(namedNode(conceptVersie.id), NS.cpsv('follows'), namedNode(procedure.id)),
+                quad(namedNode(procedure.id), NS.rdf('type'), NS.cpsv('Rule')),
+                ...this.taalStringToTriples(namedNode(procedure.id), namedNode(NS.dct(`title`).value), procedure.title),
+                ...this.taalStringToTriples(namedNode(procedure.id), namedNode(NS.dct(`description`).value), procedure.description),
+                quad(namedNode(procedure.id), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                ...this.websitesToTriples(procedure.id, namedNode(NS.lpdcExt('hasWebsite').value), procedure.websites)
             ]
         );
     }
 
-    private websitesToTriples(subjectId: Iri, predicate: string, websites: Website[]): string [] {
+    private websitesToTriples(subjectId: Iri, predicate: NamedNode, websites: Website[]): Statement [] {
         return websites.flatMap((website, index) => {
                 return [
-                    `${sparqlEscapeUri(subjectId)} ${predicate} ${sparqlEscapeUri(website.id)}`,
-                    `${sparqlEscapeUri(website.id)} a schema:WebSite`,
-                    ...this.taalStringToTriples(website.id, 'dct:title', website.title),
-                    ...this.taalStringToTriples(website.id, 'dct:description', website.description),
-                    website.url ? `${sparqlEscapeUri(website.id)} schema:url """${website.url}"""` : undefined,
-                    `${sparqlEscapeUri(website.id)} sh:order ${sparqlEscapeInt(index)}`,
+                    quad(namedNode(subjectId), predicate, namedNode(website.id)),
+                    quad(namedNode(website.id), NS.rdf('type'), NS.schema('WebSite')),
+                    ...this.taalStringToTriples(namedNode(website.id), namedNode(NS.dct(`title`).value), website.title),
+                    ...this.taalStringToTriples(namedNode(website.id), namedNode(NS.dct(`description`).value), website.description),
+                    website.url ? quad(namedNode(website.id), NS.schema('url'), literal(website.url)) : undefined,
+                    quad(namedNode(website.id), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
                 ];
             }
         ).filter(t => t != undefined);
     }
 
-    private costsToTriples(conceptVersie: ConceptVersie): string[] {
+    private costsToTriples(conceptVersie: ConceptVersie): Statement[] {
         return conceptVersie.costs.flatMap((cost, index) => {
             return [
-                `${sparqlEscapeUri(conceptVersie.id)} m8g:hasCost ${sparqlEscapeUri(cost.id)}`,
-                `${sparqlEscapeUri(cost.id)} a m8g:Cost`,
-                ...this.taalStringToTriples(cost.id, 'dct:title', cost.title),
-                ...this.taalStringToTriples(cost.id, 'dct:description', cost.description),
-                `${sparqlEscapeUri(cost.id)} sh:order ${sparqlEscapeInt(index)}`,
+                quad(namedNode(conceptVersie.id), NS.m8g('hasCost'), namedNode(cost.id)),
+                quad(namedNode(cost.id), NS.rdf('type'), NS.m8g('Cost')),
+                ...this.taalStringToTriples(namedNode(cost.id), namedNode(NS.dct(`title`).value), cost.title),
+                ...this.taalStringToTriples(namedNode(cost.id), namedNode(NS.dct(`description`).value), cost.description),
+                quad(namedNode(cost.id), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
             ];
         });
     }
 
-    private financialAdvantagesToTriples(conceptVersie: ConceptVersie): string[] {
+    private financialAdvantagesToTriples(conceptVersie: ConceptVersie): Statement[] {
         return conceptVersie.financialAdvantages
             .flatMap((financialAdvantage, index) => {
                 return [
-                    `${sparqlEscapeUri(conceptVersie.id)} cpsv:produces ${sparqlEscapeUri(financialAdvantage.id)}`,
-                    `${sparqlEscapeUri(financialAdvantage.id)} a lpdcExt:FinancialAdvantage`,
-                    ...this.taalStringToTriples(financialAdvantage.id, 'dct:title', financialAdvantage.title),
-                    ...this.taalStringToTriples(financialAdvantage.id, 'dct:description', financialAdvantage.description),
-                    `${sparqlEscapeUri(financialAdvantage.id)} sh:order ${sparqlEscapeInt(index)}`,
+                    quad(namedNode(conceptVersie.id), NS.cpsv('produces'), namedNode(financialAdvantage.id)),
+                    quad(namedNode(financialAdvantage.id), NS.rdf('type'), NS.lpdcExt('FinancialAdvantage')),
+                    ...this.taalStringToTriples(namedNode(financialAdvantage.id), namedNode(NS.dct(`title`).value), financialAdvantage.title),
+                    ...this.taalStringToTriples(namedNode(financialAdvantage.id), namedNode(NS.dct(`description`).value), financialAdvantage.description),
+                    quad(namedNode(financialAdvantage.id), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
                 ];
             });
     }

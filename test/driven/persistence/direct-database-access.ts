@@ -16,7 +16,7 @@ export class DirectDatabaseAccess {
             
         INSERT DATA { 
             GRAPH ${sparqlEscapeUri(graph)} {
-                ${triples.join(".\n")}
+                ${triples.map(str => str.endsWith('.') ? str.slice(0, -1) : str).join(".\n")}
             }                     
         }
         `;
