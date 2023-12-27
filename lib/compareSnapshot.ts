@@ -1,6 +1,7 @@
 import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
 import {ConceptVersie} from "../src/core/domain/concept-versie";
 
+//TODO LPDC-916: should become a domain service ... + add a collaboration test with 2 cases
 export async function isConceptFunctionallyChanged(newSnapshotUri: string, currentSnapshotUri: string, conceptVersieRepository: ConceptVersieRepository): Promise<boolean> {
     if (newSnapshotUri === currentSnapshotUri) {
         return false;
