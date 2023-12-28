@@ -24,24 +24,27 @@ import {ConceptVersieRepository} from "../src/core/port/driven/persistence/conce
 import {ConceptVersie, SnapshotType} from "../src/core/domain/concept-versie";
 
 export async function processLdesDelta(delta: any, conceptVersieRepository: ConceptVersieRepository): Promise<void> {
-    let versionedServices = flatten(delta.map(changeSet => changeSet.inserts));
-    versionedServices = versionedServices.filter(t => t?.subject?.value
-        && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf');
-    //ensure unique:
-    versionedServices = versionedServices.reduce((acc, t) => {
-        acc[t?.subject?.value] = t;
-        return acc;
-    }, {});
+    let versionedServices =
+        flatten(delta.map(changeSet => changeSet.inserts))
+            .filter(t => t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
+            .reduce((acc, t) => {
+                acc[t?.subject?.value] = t;
+                return acc;
+            }, {});
     versionedServices = Object.values(versionedServices);
 
     const toProcess = [];
 
     for (const entry of versionedServices) {
-        if (await isNewVersionConceptualPublicService(entry.graph.value, entry.subject.value, entry.object.value)) {
-            console.log(`New versioned resource found: ${entry.subject.value} of service ${entry.object.value}`);
+        const ldesDataGraph = entry.graph.value;
+        const newConceptSnapshotUri = entry.subject.value;
+        const conceptUri = entry.object.value;
+
+        if (await isNewVersionConceptualPublicService(ldesDataGraph, newConceptSnapshotUri, conceptUri)) {
+            console.log(`New versioned resource found: ${newConceptSnapshotUri} of service ${conceptUri}`);
             toProcess.push(entry);
         } else {
-            console.log(`The versioned resource ${entry.subject.value} is an older version of service ${entry.object.value}`);
+            console.log(`The versioned resource ${newConceptSnapshotUri} is an older version of service ${conceptUri}`);
         }
     }
 
@@ -79,25 +82,25 @@ export async function processLdesDelta(delta: any, conceptVersieRepository: Conc
     }
 }
 
-async function isNewVersionConceptualPublicService(vGraph: string, vService: string, service: string): Promise<boolean> {
+async function isNewVersionConceptualPublicService(ldesGraph: string, conceptSnapshotUri: string, conceptUri: string): Promise<boolean> {
     const queryStr = `
     ${PREFIX.lpdcExt}
     ${PREFIX.dct}
     ${PREFIX.ext}
     ASK {
-      GRAPH ${sparqlEscapeUri(vGraph)} {
-        ${sparqlEscapeUri(vService)} a lpdcExt:ConceptualPublicService;
-          dct:isVersionOf ${sparqlEscapeUri(service)};
+      GRAPH ${sparqlEscapeUri(ldesGraph)} {
+        ${sparqlEscapeUri(conceptSnapshotUri)} a lpdcExt:ConceptualPublicService;
+          dct:isVersionOf ${sparqlEscapeUri(conceptUri)};
           <http://www.w3.org/ns/prov#generatedAtTime> ?time.
 
          FILTER NOT EXISTS {
-           ?otherVersion dct:isVersionOf ${sparqlEscapeUri(service)};
+           ?otherVersion dct:isVersionOf ${sparqlEscapeUri(conceptUri)};
              <http://www.w3.org/ns/prov#generatedAtTime> ?otherTime.
            FILTER(?time < ?otherTime)
          }
        }
        FILTER NOT EXISTS {
-         ${sparqlEscapeUri(service)} ext:hasVersionedSource | ext:previousVersionedSource ${sparqlEscapeUri(vService)}.
+         ${sparqlEscapeUri(conceptUri)} ext:hasVersionedSource | ext:previousVersionedSource ${sparqlEscapeUri(conceptSnapshotUri)}.
        }
     }
   `;
