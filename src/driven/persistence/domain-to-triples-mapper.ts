@@ -19,14 +19,14 @@ export class DomainToTriplesMapper {
             ...this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('additionalDescription').value), conceptVersie.additionalDescription),
             ...this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('exception').value), conceptVersie.exception),
             ...this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('regulation').value), conceptVersie.regulation),
-            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('targetAudience').value), conceptVersie.targetAudiences),
-            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.m8g('thematicArea').value), conceptVersie.themes),
-            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('competentAuthorityLevel').value), conceptVersie.competentAuthorityLevels),
-            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.m8g('hasCompetentAuthority').value), conceptVersie.competentAuthorities),
-            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('executingAuthorityLevel').value), conceptVersie.executingAuthorityLevels),
-            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('hasExecutingAuthority').value), conceptVersie.executingAuthorities),
-            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('publicationMedium').value), conceptVersie.publicationMedia),
-            ...this.valuesToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('yourEuropeCategory').value), conceptVersie.yourEuropeCategories),
+            ...this.irisToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('targetAudience').value), conceptVersie.targetAudiences),
+            ...this.irisToTriples(namedNode(conceptVersie.id), namedNode(NS.m8g('thematicArea').value), conceptVersie.themes),
+            ...this.irisToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('competentAuthorityLevel').value), conceptVersie.competentAuthorityLevels),
+            ...this.irisToTriples(namedNode(conceptVersie.id), namedNode(NS.m8g('hasCompetentAuthority').value), conceptVersie.competentAuthorities),
+            ...this.irisToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('executingAuthorityLevel').value), conceptVersie.executingAuthorityLevels),
+            ...this.irisToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('hasExecutingAuthority').value), conceptVersie.executingAuthorities),
+            ...this.irisToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('publicationMedium').value), conceptVersie.publicationMedia),
+            ...this.irisToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('yourEuropeCategory').value), conceptVersie.yourEuropeCategories),
             ...conceptVersie.keywords.flatMap(keyword => this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.dcat('keyword').value), keyword)),
             ...this.requirementsToTriples(conceptVersie),
             ...this.proceduresToTriples(conceptVersie),
@@ -49,9 +49,9 @@ export class DomainToTriplesMapper {
                 .map(tuple => quad(subject, predicate, literal(tuple[1], tuple[0]))) : [];
     }
 
-    private valuesToTriples(subject: NamedNode, predicate: NamedNode, enumValues: Set<any>): Statement[] {
+    private irisToTriples(subject: NamedNode, predicate: NamedNode, enumValues: Set<any>): Statement[] {
         return Array.from(enumValues)
-            .map(e => quad(subject, predicate, literal(e)));
+            .map(e => quad(subject, predicate, namedNode(e)));
     }
 
     private requirementsToTriples(conceptVersie: ConceptVersie): Statement[] {
