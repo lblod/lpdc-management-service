@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {query, sparqlEscapeDateTime, sparqlEscapeString, sparqlEscapeUri, update} from '../mu-helper';
 import {v4 as uuid} from 'uuid';
-import {APPLICATION_GRAPH, CONCEPTUAL_SERVICE_GRAPH, FORM_STATUS_CONCEPT, PREFIX} from '../config';
+import {APPLICATION_GRAPH, CONCEPT_GRAPH, FORM_STATUS_CONCEPT, PREFIX} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
 import {addUuidForSubject, groupBySubject, replaceType} from '../utils/common';
 import {
@@ -74,7 +74,7 @@ export async function createForm(conceptId: string, sessionUri: string, sessieRe
     uuid: string,
     uri: string
 }> {
-    const graph = CONCEPTUAL_SERVICE_GRAPH;
+    const graph = CONCEPT_GRAPH;
     const conceptUri = await getConceptUri(conceptId);
 
     const evidenceData = copySubjects(await loadEvidences(conceptUri, {graph}),

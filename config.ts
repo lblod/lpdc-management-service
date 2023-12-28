@@ -1,6 +1,6 @@
 const FORM_STATUS_CONCEPT = 'http://lblod.data.gift/concepts/79a52da4-f491-4e2f-9374-89a13cde8ecd';
 const APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH;
-const CONCEPTUAL_SERVICE_GRAPH = 'http://mu.semte.ch/graphs/public';
+const CONCEPT_GRAPH = 'http://mu.semte.ch/graphs/public';
 const QUEUE_POLL_INTERVAL = Number(process.env.QUEUE_POLL_INTERVAL) || 60000; //1min
 const LOG_INCOMING_DELTA = process.env.LOG_INCOMING_DELTA == 'true' || false;
 const ADRESSEN_REGISTER_API_KEY = process.env.ADRESSEN_REGISTER_API_KEY;
@@ -97,7 +97,7 @@ const GRAPH = {
 export {
     LOG_INCOMING_DELTA,
     QUEUE_POLL_INTERVAL,
-    CONCEPTUAL_SERVICE_GRAPH,
+    CONCEPT_GRAPH,
     FORM_STATUS_CONCEPT,
     APPLICATION_GRAPH,
     FORM_MAPPING,

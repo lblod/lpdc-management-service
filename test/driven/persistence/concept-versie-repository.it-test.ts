@@ -3,11 +3,15 @@ import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
 import {
     aFullConceptVersie,
-    aMinimalConceptVersie,
+    aMinimalConcept,
     ConceptVersieTestBuilder
 } from "../../core/domain/concept-versie-test-builder";
 import {ConceptVersieSparqlTestRepository} from "./concept-versie-sparql-test-repository";
 import {TaalString} from "../../../src/core/domain/taal-string";
+import {aMinimalRequirement, RequirementTestBuilder} from "../../core/domain/requirement-test-builder";
+import {aMinimalEvidence, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
+import {aMinimalProcedure, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
+import {aMinimalWebsite, WebsiteTestBuilder} from "../../core/domain/website-test-builder";
 import {
     CompetentAuthorityLevelType,
     ConceptTagType,
@@ -18,11 +22,7 @@ import {
     TargetAudienceType,
     ThemeType,
     YourEuropeCategoryType
-} from "../../../src/core/domain/concept-versie";
-import {aMinimalRequirement, RequirementTestBuilder} from "../../core/domain/requirement-test-builder";
-import {aMinimalEvidence, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
-import {aMinimalProcedure, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
-import {aMinimalWebsite, WebsiteTestBuilder} from "../../core/domain/website-test-builder";
+} from "../../../src/core/domain/types";
 
 describe('ConceptVersieRepository', () => {
     const repository = new ConceptVersieSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -43,10 +43,10 @@ describe('ConceptVersieRepository', () => {
         });
 
         test('When minimal concept versie exists with id, then return concept versie', async () => {
-            const conceptVersie = aMinimalConceptVersie().build();
+            const conceptVersie = aMinimalConcept().build();
             await repository.save(conceptVersie);
 
-            const anotherConceptVersie = aMinimalConceptVersie().build();
+            const anotherConceptVersie = aMinimalConcept().build();
             await repository.save(anotherConceptVersie);
 
             const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -55,10 +55,10 @@ describe('ConceptVersieRepository', () => {
         });
 
         test('When minimal concept versie with incomplete title exists with id, then return concept versie', async () => {
-            const conceptVersie = aMinimalConceptVersie().withTitle(TaalString.of(undefined, ConceptVersieTestBuilder.TITLE_NL)).build();
+            const conceptVersie = aMinimalConcept().withTitle(TaalString.of(undefined, ConceptVersieTestBuilder.TITLE_NL)).build();
             await repository.save(conceptVersie);
 
-            const anotherConceptVersie = aMinimalConceptVersie().build();
+            const anotherConceptVersie = aMinimalConcept().build();
             await repository.save(anotherConceptVersie);
 
             const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -92,7 +92,7 @@ describe('ConceptVersieRepository', () => {
             const conceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
 
             const conceptVersie =
-                aMinimalConceptVersie()
+                aMinimalConcept()
                     .withId(conceptVersieId)
                     .build();
 
@@ -109,7 +109,7 @@ describe('ConceptVersieRepository', () => {
             const conceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
 
             const conceptVersie =
-                aMinimalConceptVersie()
+                aMinimalConcept()
                     .withId(conceptVersieId)
                     .withTitle(TaalString.of(undefined, ConceptVersieTestBuilder.TITLE_NL))
                     .build();
@@ -128,7 +128,7 @@ describe('ConceptVersieRepository', () => {
             const conceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
 
             const conceptVersie =
-                aMinimalConceptVersie()
+                aMinimalConcept()
                     .withId(conceptVersieId)
                     .withStartDate(ConceptVersieTestBuilder.START_DATE)
                     .withEndDate(undefined)
@@ -492,7 +492,7 @@ describe('ConceptVersieRepository', () => {
             const requirementId = RequirementTestBuilder.buildIri(uuid());
 
             const conceptVersie =
-                aMinimalConceptVersie()
+                aMinimalConcept()
                     .withId(conceptVersieId)
                     .withRequirements([aMinimalRequirement().withId(requirementId).withEvidence(undefined).build()])
                     .build();
@@ -516,7 +516,7 @@ describe('ConceptVersieRepository', () => {
             const evidenceId = EvidenceTestBuilder.buildIri(uuid());
 
             const conceptVersie =
-                aMinimalConceptVersie()
+                aMinimalConcept()
                     .withId(conceptVersieId)
                     .withRequirements([aMinimalRequirement().withId(requirementId).withEvidence(aMinimalEvidence().withId(evidenceId).build()).build()])
                     .build();
@@ -541,7 +541,7 @@ describe('ConceptVersieRepository', () => {
             const procedureId = ProcedureTestBuilder.buildIri(uuid());
 
             const conceptVersie =
-                aMinimalConceptVersie()
+                aMinimalConcept()
                     .withId(conceptVersieId)
                     .withProcedures([aMinimalProcedure().withId(procedureId).withWebsites([]).build()])
                     .build();
@@ -565,7 +565,7 @@ describe('ConceptVersieRepository', () => {
             const websiteId = WebsiteTestBuilder.buildIri(uuid());
 
             const conceptVersie =
-                aMinimalConceptVersie()
+                aMinimalConcept()
                     .withId(conceptVersieId)
                     .withProcedures([aMinimalProcedure().withId(procedureId).withWebsites([aMinimalWebsite().withId(websiteId).build()]).build()])
                     .build();
@@ -588,7 +588,7 @@ describe('ConceptVersieRepository', () => {
 
         for (const type of Object.values(ProductType)) {
             test(`Product type ${type} can be mapped`, async () => {
-                const conceptVersie = aMinimalConceptVersie().withType(type).build();
+                const conceptVersie = aMinimalConcept().withType(type).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -611,7 +611,7 @@ describe('ConceptVersieRepository', () => {
 
         for (const targetAudience of Object.values(TargetAudienceType)) {
             test(`TargetAudienceType ${targetAudience} can be mapped`, async () => {
-                const conceptVersie = aMinimalConceptVersie().withTargetAudiences(new Set([targetAudience])).build();
+                const conceptVersie = aMinimalConcept().withTargetAudiences(new Set([targetAudience])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -634,7 +634,7 @@ describe('ConceptVersieRepository', () => {
 
         for (const theme of Object.values(ThemeType)) {
             test(`ThemeType ${theme} can be mapped`, async () => {
-                const conceptVersie = aMinimalConceptVersie().withThemes(new Set([theme])).build();
+                const conceptVersie = aMinimalConcept().withThemes(new Set([theme])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -657,7 +657,7 @@ describe('ConceptVersieRepository', () => {
 
         for (const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
             test(`CompetentAuthorityLevelType ${competentAuthorityLevel} can be mapped`, async () => {
-                const conceptVersie = aMinimalConceptVersie().withCompetentAuthorityLevels(new Set([competentAuthorityLevel])).build();
+                const conceptVersie = aMinimalConcept().withCompetentAuthorityLevels(new Set([competentAuthorityLevel])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -680,7 +680,7 @@ describe('ConceptVersieRepository', () => {
 
         for (const executingAuthorityLevel of Object.values(ExecutingAuthorityLevelType)) {
             test(`ExecutingAuthorityLevelType ${executingAuthorityLevel} can be mapped`, async () => {
-                const conceptVersie = aMinimalConceptVersie().withExecutingAuthorityLevels(new Set([executingAuthorityLevel])).build();
+                const conceptVersie = aMinimalConcept().withExecutingAuthorityLevels(new Set([executingAuthorityLevel])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -703,7 +703,7 @@ describe('ConceptVersieRepository', () => {
 
         for (const publicationMedium of Object.values(PublicationMediumType)) {
             test(`PublicationMediumType ${publicationMedium} can be mapped`, async () => {
-                const conceptVersie = aMinimalConceptVersie().withPublicationMedia(new Set([publicationMedium])).build();
+                const conceptVersie = aMinimalConcept().withPublicationMedia(new Set([publicationMedium])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -726,7 +726,7 @@ describe('ConceptVersieRepository', () => {
 
         for (const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
             test(`YourEuropeCategoryType ${yourEuropeCategory} can be mapped`, async () => {
-                const conceptVersie = aMinimalConceptVersie().withYourEuropeCategories(new Set([yourEuropeCategory])).build();
+                const conceptVersie = aMinimalConcept().withYourEuropeCategories(new Set([yourEuropeCategory])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -749,7 +749,7 @@ describe('ConceptVersieRepository', () => {
 
         for (const type of Object.values(SnapshotType)) {
             test(`Snapshot type ${type} can be mapped`, async () => {
-                const conceptVersie = aMinimalConceptVersie().withSnapshotType(type).build();
+                const conceptVersie = aMinimalConcept().withSnapshotType(type).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);
@@ -772,7 +772,7 @@ describe('ConceptVersieRepository', () => {
 
         for (const type of Object.values(ConceptTagType)) {
             test(`Concept Tag type ${type} can be mapped`, async () => {
-                const conceptVersie = aMinimalConceptVersie().withConceptTags(new Set([type])).build();
+                const conceptVersie = aMinimalConcept().withConceptTags(new Set([type])).build();
                 await repository.save(conceptVersie);
 
                 const actualConceptVersie = await repository.findById(conceptVersie.id);

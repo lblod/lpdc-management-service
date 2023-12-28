@@ -1,17 +1,6 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
-import {
-    CompetentAuthorityLevelType,
-    ConceptTagType,
-    ConceptVersie,
-    ExecutingAuthorityLevelType,
-    ProductType,
-    PublicationMediumType,
-    SnapshotType,
-    TargetAudienceType,
-    ThemeType,
-    YourEuropeCategoryType
-} from "../../../src/core/domain/concept-versie";
+import {ConceptVersie} from "../../../src/core/domain/concept-versie";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
@@ -25,9 +14,20 @@ import {Cost} from "../../../src/core/domain/cost";
 import {aFullFinancialAdvantage, anotherFullFinancialAdvantage} from "./financial-advantage-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
+import {
+    CompetentAuthorityLevelType,
+    ConceptTagType,
+    ExecutingAuthorityLevelType,
+    ProductType,
+    PublicationMediumType,
+    SnapshotType,
+    TargetAudienceType,
+    ThemeType,
+    YourEuropeCategoryType
+} from "../../../src/core/domain/types";
 
 
-export function aMinimalConceptVersie(): ConceptVersieTestBuilder {
+export function aMinimalConcept(): ConceptVersieTestBuilder {
     return new ConceptVersieTestBuilder()
         .withId(ConceptVersieTestBuilder.buildIri(uuid()));
 }

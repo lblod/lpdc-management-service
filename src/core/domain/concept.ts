@@ -1,26 +1,24 @@
 import {Iri} from "./shared/iri";
 import {TaalString} from "./taal-string";
-import _ from 'lodash';
+import {FormatPreservingDate} from "./format-preserving-date";
 import {Requirement} from "./requirement";
-import {asSortedArray, asSortedSet} from "./shared/collections-helper";
 import {Procedure} from "./procedure";
 import {Website} from "./website";
 import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
-import {FormatPreservingDate} from "./format-preserving-date";
+import {asSortedArray, asSortedSet} from "./shared/collections-helper";
 import {
     CompetentAuthorityLevelType,
-    ConceptTagType,
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
-    SnapshotType,
     TargetAudienceType,
     ThemeType,
     YourEuropeCategoryType
 } from "./types";
 
-export class ConceptVersie { //TODO LPDC-916: or ConceptSnapshot?
+
+export class Concept {
 
     private readonly _id: Iri;
     private readonly _title: TaalString | undefined;
@@ -45,13 +43,7 @@ export class ConceptVersie { //TODO LPDC-916: or ConceptSnapshot?
     private readonly _websites: Website[];
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
-    private readonly _isVersionOfConcept: Iri | undefined;
-    private readonly _dateCreated: FormatPreservingDate | undefined;
-    private readonly _dateModified: FormatPreservingDate | undefined;
-    private readonly _generatedAtTime: FormatPreservingDate | undefined;
     private readonly _productId: string | undefined;
-    private readonly _snapshotType: SnapshotType | undefined;
-    private readonly _conceptTags: Set<ConceptTagType>;
 
     constructor(id: Iri,
                 title: TaalString | undefined,
@@ -76,13 +68,7 @@ export class ConceptVersie { //TODO LPDC-916: or ConceptSnapshot?
                 websites: Website[],
                 costs: Cost[],
                 financialAdvantages: FinancialAdvantage[],
-                isVersionOfConcept: Iri,
-                dateCreated: FormatPreservingDate | undefined,
-                dateModified: FormatPreservingDate | undefined,
-                generatedAtTime: FormatPreservingDate | undefined,
                 productId: string | undefined,
-                snapshotType: SnapshotType | undefined,
-                conceptTags: Set<ConceptTagType>,
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -108,13 +94,7 @@ export class ConceptVersie { //TODO LPDC-916: or ConceptSnapshot?
         this._websites = [...websites];
         this._costs = [...costs];
         this._financialAdvantages = [...financialAdvantages];
-        this._isVersionOfConcept = isVersionOfConcept;
-        this._dateCreated = dateCreated;
-        this._dateModified = dateModified;
-        this._generatedAtTime = generatedAtTime;
         this._productId = productId;
-        this._snapshotType = snapshotType;
-        this._conceptTags = asSortedSet(conceptTags);
     }
 
     get id(): Iri {
@@ -209,62 +189,8 @@ export class ConceptVersie { //TODO LPDC-916: or ConceptSnapshot?
         return this._financialAdvantages;
     }
 
-    get isVersionOfConcept(): Iri | undefined{
-        return this._isVersionOfConcept;
-    }
-
-    get dateCreated(): FormatPreservingDate | undefined {
-        return this._dateCreated;
-    }
-
-    get dateModified(): FormatPreservingDate | undefined {
-        return this._dateModified;
-    }
-
-    get generatedAtTime(): FormatPreservingDate | undefined {
-        return this._generatedAtTime;
-    }
-
-    get identifier(): string | undefined {
-        return this.id.substring(this.id.lastIndexOf('/') + 1);
-    }
-
     get productId(): string | undefined {
         return this._productId;
     }
 
-    get snapshotType(): SnapshotType | undefined {
-        return this._snapshotType;
-    }
-
-    get conceptTags(): Set<ConceptTagType> | undefined {
-        return this._conceptTags;
-    }
-
-    static isFunctionallyChanged(value: ConceptVersie, other: ConceptVersie): boolean {
-        return TaalString.isFunctionallyChanged(value.title, other.title)
-            || TaalString.isFunctionallyChanged(value.description, other.description)
-            || TaalString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription)
-            || TaalString.isFunctionallyChanged(value.exception, other.exception)
-            || TaalString.isFunctionallyChanged(value.regulation, other.regulation)
-            || FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate)
-            || FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate)
-            || value.type !== other.type
-            || !_.isEqual(value.targetAudiences, other.targetAudiences)
-            || !_.isEqual(value.themes, other.themes)
-            || !_.isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels)
-            || !_.isEqual(value.competentAuthorities, other.competentAuthorities)
-            || !_.isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels)
-            || !_.isEqual(value.executingAuthorities, other.executingAuthorities)
-            || !_.isEqual(value.publicationMedia, other.publicationMedia)
-            || !_.isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
-            || !_.isEqual(value.keywords, other.keywords)
-            || Requirement.isFunctionallyChanged(value.requirements, other.requirements)
-            || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
-            || Website.isFunctionallyChanged(value.websites, other.websites)
-            || Cost.isFunctionallyChanged(value.costs, other.costs)
-            || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages);
-    }
-
 }
-

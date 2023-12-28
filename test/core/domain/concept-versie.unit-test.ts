@@ -1,13 +1,4 @@
-import {
-    CompetentAuthorityLevelType,
-    ConceptVersie,
-    ExecutingAuthorityLevelType,
-    ProductType,
-    PublicationMediumType,
-    TargetAudienceType,
-    ThemeType,
-    YourEuropeCategoryType
-} from "../../../src/core/domain/concept-versie";
+import {ConceptVersie} from "../../../src/core/domain/concept-versie";
 import {uuid} from "../../../mu-helper";
 import {aFullConceptVersie, ConceptVersieTestBuilder} from "./concept-versie-test-builder";
 import {TaalString} from "../../../src/core/domain/taal-string";
@@ -19,6 +10,15 @@ import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
 import {aFullCost} from "./cost-test-builder";
 import {aFullFinancialAdvantage} from "./financial-advantage-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
+import {
+    CompetentAuthorityLevelType,
+    ExecutingAuthorityLevelType,
+    ProductType,
+    PublicationMediumType,
+    TargetAudienceType,
+    ThemeType,
+    YourEuropeCategoryType
+} from "../../../src/core/domain/types";
 
 describe('is functionally changed', () => {
 

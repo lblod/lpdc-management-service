@@ -1,18 +1,7 @@
 import {Quad} from "rdflib/lib/tf-types";
 import {Iri} from "../../core/domain/shared/iri";
 import {graph, Literal, NamedNode, namedNode, Statement} from "rdflib";
-import {
-    CompetentAuthorityLevelType,
-    ConceptTagType,
-    ConceptVersie,
-    ExecutingAuthorityLevelType,
-    ProductType,
-    PublicationMediumType,
-    SnapshotType,
-    TargetAudienceType,
-    ThemeType,
-    YourEuropeCategoryType
-} from "../../core/domain/concept-versie";
+import {ConceptVersie} from "../../core/domain/concept-versie";
 import {TaalString} from "../../core/domain/taal-string";
 import {Cost} from "../../core/domain/cost";
 import {asSortedArray} from "../../core/domain/shared/collections-helper";
@@ -23,7 +12,18 @@ import {Requirement} from "../../core/domain/requirement";
 import {Evidence} from "../../core/domain/evidence";
 import {NS} from "./namespaces";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
-
+import {
+    CompetentAuthorityLevelType,
+    ConceptTagType,
+    ExecutingAuthorityLevelType,
+    ProductType,
+    PublicationMediumType,
+    SnapshotType,
+    TargetAudienceType,
+    ThemeType,
+    YourEuropeCategoryType
+} from "../../core/domain/types";
+import {Concept} from "../../core/domain/concept";
 
 export class QuadsToDomainMapper {
 
@@ -71,6 +71,37 @@ export class QuadsToDomainMapper {
             this.productId(id),
             this.snapshotType(id),
             this.conceptTags(id),
+        );
+    }
+
+    concept(id: Iri): Concept {
+        this.errorIfMissingOrIncorrectType(id, namedNode(NS.lpdcExt('ConceptualPublicService').value));
+
+        return new Concept(
+            id,
+            this.title(id),
+            this.description(id),
+            this.additionalDescription(id),
+            this.exception(id),
+            this.regulation(id),
+            this.startDate(id),
+            this.endDate(id),
+            this.productType(id),
+            this.targetAudiences(id),
+            this.themes(id),
+            this.competentAuthorityLevels(id),
+            this.competentAuthorities(id),
+            this.executingAuthorityLevels(id),
+            this.executingAuthorities(id),
+            this.publicationMedia(id),
+            this.yourEuropeCategories(id),
+            this.keywords(id),
+            this.requirements(id),
+            this.procedures(id),
+            this.websites(id),
+            this.costs(id),
+            this.financialAdvantages(id),
+            this.productId(id),
         );
     }
 

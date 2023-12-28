@@ -1,6 +1,6 @@
 import {querySudo, updateSudo} from '@lblod/mu-auth-sudo';
 import {sparqlEscapeString, sparqlEscapeUri} from '../mu-helper';
-import {CONCEPTUAL_SERVICE_GRAPH, PREFIX} from '../config';
+import {CONCEPT_GRAPH, PREFIX} from '../config';
 import {v4 as uuid} from 'uuid';
 import {flatten} from 'lodash';
 import {bindingsToNT} from '../utils/bindingsToNT';
@@ -21,7 +21,8 @@ import {
     serviceUriForId
 } from './commonQueries';
 import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
-import {ConceptVersie, SnapshotType} from "../src/core/domain/concept-versie";
+import {ConceptVersie} from "../src/core/domain/concept-versie";
+import {SnapshotType} from "../src/core/domain/types";
 
 export async function processLdesDelta(delta: any, conceptVersieRepository: ConceptVersieRepository): Promise<void> {
     let versionedServices =
@@ -132,7 +133,7 @@ async function upsertNewLdesVersion(versionedServiceGraph: string, versionedServ
 
 async function removeConceptualService(serviceId: string): Promise<void> {
     const type = 'lpdcExt:ConceptualPublicService';
-    const graph = CONCEPTUAL_SERVICE_GRAPH;
+    const graph = CONCEPT_GRAPH;
     const sudo = true;
 
     const serviceUri = await serviceUriForId(serviceId, type);
@@ -224,7 +225,7 @@ async function insertConceptualService(versionedServiceGraph: string, versionedS
     for (const statement of source) {
         await updateSudo(`
         INSERT DATA {
-          GRAPH ${sparqlEscapeUri(CONCEPTUAL_SERVICE_GRAPH)} {
+          GRAPH ${sparqlEscapeUri(CONCEPT_GRAPH)} {
             ${statement}
           }
         }`);
@@ -496,7 +497,7 @@ async function markConceptAsArchived(conceptualService: string): Promise<void> {
     ${PREFIX.adms}
 
     INSERT DATA {
-      GRAPH ${sparqlEscapeUri(CONCEPTUAL_SERVICE_GRAPH)} {
+      GRAPH ${sparqlEscapeUri(CONCEPT_GRAPH)} {
         ${sparqlEscapeUri(conceptualService)} adms:status ${sparqlEscapeUri(archivedStatusConcept)} .
       }
     }
