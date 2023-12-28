@@ -8,6 +8,7 @@ import {
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {literal, namedNode, quad} from 'rdflib';
 import {Quad} from "rdflib/lib/tf-types";
+import {NS} from "../../../src/driven/persistence/namespaces";
 
 describe('recursively fetches a part of a datastore into a array of quads using sparql endpoint', () => {
 
@@ -19,7 +20,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
 
         const startIri: Iri = `http://example.com/ns#abc}`;
 
-        await expect(fetcherWithIncorrectEndpoint.fetch('http://some-test-graph', startIri)).rejects.toThrow('All retries failed. Last error: Error: Invalid URI "thiscanotbereached"');
+        await expect(fetcherWithIncorrectEndpoint.fetch('http://some-test-graph', startIri, [])).rejects.toThrow('All retries failed. Last error: Error: Invalid URI "thiscanotbereached"');
     });
 
     test('Can query non recursively all triples linked to an IRI', async () => {
@@ -49,7 +50,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
             [PREFIX.ex]);
 
 
-        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri);
+        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri, []);
 
         const expectedQuads = [
             quad(namedNode(startIri), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode("http://example.com/ns#aType"), namedNode(graph)),
@@ -79,7 +80,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
             ],
             [PREFIX.ex]);
 
-        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri);
+        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri, []);
 
         const expectedQuads = [
             quad(namedNode(startIri), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode("http://example.com/ns#aType"), namedNode(graph)),
@@ -106,7 +107,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
             ],
             [PREFIX.ex]);
 
-        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri);
+        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri, []);
 
         const expectedQuads = [
             quad(namedNode(startIri), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode("http://example.com/ns#aType"), namedNode(graph)),
@@ -135,7 +136,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
             ],
             [PREFIX.ex]);
 
-        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri);
+        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri, []);
 
         const expectedQuads = [
             quad(namedNode(startIri), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode("http://example.com/ns#aType"), namedNode(graph)),
@@ -176,7 +177,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
             ],
             [PREFIX.ex]);
 
-        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri);
+        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri, []);
 
         const expectedQuads = [
             quad(namedNode(startIri), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode("http://example.com/ns#aType"), namedNode(graph)),
@@ -208,7 +209,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
             ],
             [PREFIX.ex]);
 
-        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri);
+        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri, []);
 
         const expectedQuads = [
             quad(namedNode(startIri), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode("http://example.com/ns#aType"), namedNode(graph)),
@@ -232,7 +233,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
             ],
             [PREFIX.ex]);
 
-        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri);
+        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri, []);
 
         const expectedQuads = [
             quad(namedNode(startIri), namedNode('http://example.com/ns#has-one-to-one'), namedNode(nestedIri), namedNode(graph)),
@@ -263,7 +264,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
             ],
             [PREFIX.ex]);
 
-        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri);
+        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri, []);
 
         const expectedQuads = [
             quad(namedNode(startIri), namedNode('http://example.com/ns#has-one-to-one'), namedNode(nestedIri), namedNode(graph)),
@@ -271,6 +272,45 @@ describe('recursively fetches a part of a datastore into a array of quads using 
         ];
         expect(actualDataSet).toEqual(expect.arrayContaining(expectedQuads));
         expect(actualDataSet).toHaveLength(expectedQuads.length);
+    });
+
+    test('Stops at Predicates To Stop Recursion', async () => {
+        const startIri: Iri = `http://example.com/ns#${uuid()}`;
+        const nestedIri: Iri = `http://example.com/ns#${uuid()}`;
+        const otherNestedIri: Iri = `http://example.com/ns#${uuid()}`;
+        const otherNestedNestedIri: Iri = `http://example.com/ns#${uuid()}`;
+        const nestedNestedIri: Iri = `http://example.com/ns#${uuid()}`;
+        const nestedNestedNestedIri: Iri = `http://example.com/ns#${uuid()}`;
+        const graph: Iri = 'http://some-test-graph';
+
+        await directDatabaseAccess.insertData(
+            graph,
+            [`<${startIri}> ex:has-one-to-many <${nestedIri}>`,
+                   `<${startIri}> ex:predicate-to-stop-recursion <${otherNestedIri}>`,
+                   `<${nestedIri}> ex:has-one-to-one <${nestedNestedIri}>`,
+                   `<${nestedNestedIri}> a ex:TypeToQueryOn`,
+                   `<${nestedNestedIri}> ex:a-value "abc"`,
+                   `<${nestedNestedIri}> ex:even-deeper-relation-to-stop-querying <${nestedNestedNestedIri}>`,
+                   `<${nestedNestedNestedIri}> a ex:ATypeToStopRecursion`,
+                   `<${nestedNestedNestedIri}> ex:some-other-value "def"`,
+                   `<${otherNestedIri}> a ex:AnotherType`,
+                   `<${otherNestedIri}> ex:some-other-relation <${otherNestedNestedIri}>`,
+            ],
+            [PREFIX.ex]);
+
+        const actualDataSet: Quad[] = await fetcher.fetch('http://some-test-graph', startIri, [NS.ex('predicate-to-stop-recursion').value, NS.ex('even-deeper-relation-to-stop-querying').value]);
+
+        const expectedQuads = [
+            quad(namedNode(startIri), NS.ex('has-one-to-many'), namedNode(nestedIri), namedNode(graph)),
+            quad(namedNode(startIri), NS.ex('predicate-to-stop-recursion'), namedNode(otherNestedIri), namedNode(graph)),
+            quad(namedNode(nestedIri), NS.ex('has-one-to-one'), namedNode(nestedNestedIri), namedNode(graph)),
+            quad(namedNode(nestedNestedIri), NS.rdf('type'), NS.ex('TypeToQueryOn'), namedNode(graph)),
+            quad(namedNode(nestedNestedIri), NS.ex('a-value'), literal('abc'), namedNode(graph)),
+            quad(namedNode(nestedNestedIri), NS.ex('even-deeper-relation-to-stop-querying'), namedNode(nestedNestedNestedIri), namedNode(graph)),
+        ];
+
+        expect(actualDataSet).toHaveLength(expectedQuads.length);
+        expect(actualDataSet).toEqual(expect.arrayContaining(expectedQuads));
     });
 
 

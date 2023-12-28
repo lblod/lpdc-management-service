@@ -14,12 +14,12 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
         this.querying = new SparqlQuerying(endpoint);
     }
 
-    async fetch(graph: Iri, from: Iri): Promise<Quad[]> {
-        return await this.doFetch(graph, [from], []);
+    async fetch(graph: Iri, from: Iri, predicatesToStopRecursion: Iri[]): Promise<Quad[]> {
+        return await this.doFetch(graph, [from], [], predicatesToStopRecursion);
     }
 
-    private async doFetch(graph: Iri, subjectIds: Iri[], previouslyQueriedIds: Iri[]): Promise<Quad[]> {
-        if(subjectIds.length === 0) {
+    private async doFetch(graph: Iri, subjectIds: Iri[], previouslyQueriedIds: Iri[], predicatesToStopRecursion: Iri[]): Promise<Quad[]> {
+        if (subjectIds.length === 0) {
             return [];
         }
         const query =
@@ -38,16 +38,20 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
 
         const referencedIds =
             quads
-                .filter(q => isNamedNode(q.object)
-                    && q.predicate.value !== `http://www.w3.org/1999/02/22-rdf-syntax-ns#type`
-                    && !previouslyQueriedIds.some(id => id === q.object.value))
+                .filter(q => {
+                    return isNamedNode(q.object)
+                        && q.predicate.value !== `http://www.w3.org/1999/02/22-rdf-syntax-ns#type`
+                        && !previouslyQueriedIds.some(id => id === q.object.value)
+                        && !predicatesToStopRecursion.some(id => id === q.predicate.value);
+                })
                 .map(q => q.object.value);
 
         const otherIdsToQuery = new Set(referencedIds);
+
         subjectIds.forEach(subjectId => otherIdsToQuery.delete(subjectId));
         previouslyQueriedIds.forEach(previouslyQueriedId => otherIdsToQuery.delete(previouslyQueriedId));
 
-        return [...quads, ...await this.doFetch(graph, [...otherIdsToQuery], [...subjectIds, ...previouslyQueriedIds])];
+        return [...quads, ...await this.doFetch(graph, [...otherIdsToQuery], [...subjectIds, ...previouslyQueriedIds], predicatesToStopRecursion)];
     }
 
 }

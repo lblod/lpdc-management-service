@@ -13,4 +13,5 @@ export const NS = {
     ps: Namespace('http://vocab.belgif.be/ns/publicservice#'),
     xsd: Namespace('http://www.w3.org/2001/XMLSchema#'),
     prov: Namespace('http://www.w3.org/ns/prov#'),
+    ex: Namespace('http://example.com/ns#'),
 };

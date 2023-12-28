@@ -18,7 +18,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
 
     async findById(id: Iri): Promise<Concept> {
         //TODO LPDC-916: we should restrict querying in this graph on type / and or predicate (because in this public graph there is a lot of other stuff we don't want to query up) ...
-        const quads = await this.fetcher.fetch(CONCEPT_GRAPH, id);
+        const quads = await this.fetcher.fetch(CONCEPT_GRAPH, id, []);
 
         const mapper = new QuadsToDomainMapper(quads, CONCEPT_GRAPH);
 
