@@ -24,7 +24,7 @@ import {aFullCost, anotherFullCost} from "./cost-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
 import {aFullFinancialAdvantage, anotherFullFinancialAdvantage} from "./financial-advantage-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
-import {PreciseDate} from "../../../src/core/domain/precise-date";
+import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 
 
 export function aMinimalConceptVersie(): ConceptVersieTestBuilder {
@@ -139,8 +139,8 @@ export class ConceptVersieTestBuilder {
     public static readonly REGULATION_NL_GENERATED_FORMAL = 'Concept Versie Regulation - nl-generated-formal';
     public static readonly REGULATION_NL_GENERATED_INFORMAL = 'Concept Versie Regulation - nl-generated-informal';
 
-    public static readonly START_DATE = new Date('2023-10-28');
-    public static readonly END_DATE = new Date('2027-09-16');
+    public static readonly START_DATE = FormatPreservingDate.of('2023-10-28 00:00:00Z');
+    public static readonly END_DATE = FormatPreservingDate.of('2027-09-16 00:00:00.000Z');
 
     public static readonly TYPE = ProductType.FINANCIEELVOORDEEL;
 
@@ -173,9 +173,9 @@ export class ConceptVersieTestBuilder {
     //TODO LPDC-916: when the ConceptTestBuilder is present -> use the UUID from that one ...
     public static readonly IS_VERSION_OF_CONCEPT = 'https://ipdc.vlaanderen.be/id/concept/cae5e6b4-0b6b-4b3c-8ec6-755313f7fe8a';
 
-    public static readonly DATE_CREATED = PreciseDate.of('2022-10-05T13:00:42.074442Z');
-    public static readonly DATE_MODIFIED = PreciseDate.of('2023-09-12T20:00:20.242928Z');
-    public static readonly GENERATED_AT_TIME = PreciseDate.of('2023-09-12T20:00:20.564313Z');
+    public static readonly DATE_CREATED = FormatPreservingDate.of('2022-10-05T13:00:42.074442Z');
+    public static readonly DATE_MODIFIED = FormatPreservingDate.of('2023-09-12T20:00:20.242928Z');
+    public static readonly GENERATED_AT_TIME = FormatPreservingDate.of('2023-09-12T20:00:20.564313Z');
 
     public static readonly PRODUCT_ID = "1502";
 
@@ -189,8 +189,8 @@ export class ConceptVersieTestBuilder {
     private additionalDescription: TaalString | undefined;
     private exception: TaalString | undefined;
     private regulation: TaalString | undefined;
-    private startDate: Date | undefined;
-    private endDate: Date | undefined;
+    private startDate: FormatPreservingDate | undefined;
+    private endDate: FormatPreservingDate | undefined;
     private type: ProductType | undefined;
     private targetAudiences: Set<TargetAudienceType> = new Set();
     private themes: Set<ThemeType> = new Set();
@@ -207,9 +207,9 @@ export class ConceptVersieTestBuilder {
     private costs: Cost[] = [];
     private financialAdvantages: FinancialAdvantage[] = [];
     private isVersionOfConcept: Iri | undefined;
-    private dateCreated: PreciseDate | undefined;
-    private dateModified: PreciseDate | undefined;
-    private generatedAtTime: PreciseDate | undefined;
+    private dateCreated: FormatPreservingDate | undefined;
+    private dateModified: FormatPreservingDate | undefined;
+    private generatedAtTime: FormatPreservingDate | undefined;
     private productId: string | undefined;
     private snapshotType: SnapshotType | undefined;
     private conceptTags: Set<ConceptTagType> = new Set();
@@ -248,12 +248,12 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
-    public withStartDate(startDate: Date): ConceptVersieTestBuilder {
+    public withStartDate(startDate: FormatPreservingDate): ConceptVersieTestBuilder {
         this.startDate = startDate;
         return this;
     }
 
-    public withEndDate(endDate: Date): ConceptVersieTestBuilder {
+    public withEndDate(endDate: FormatPreservingDate): ConceptVersieTestBuilder {
         this.endDate = endDate;
         return this;
     }
@@ -338,17 +338,17 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
-    public withDateCreated(dateCreated: PreciseDate): ConceptVersieTestBuilder {
+    public withDateCreated(dateCreated: FormatPreservingDate): ConceptVersieTestBuilder {
         this.dateCreated = dateCreated;
         return this;
     }
 
-    public withDateModified(dateModified: PreciseDate): ConceptVersieTestBuilder {
+    public withDateModified(dateModified: FormatPreservingDate): ConceptVersieTestBuilder {
         this.dateModified = dateModified;
         return this;
     }
 
-    public withGeneratedAtTime(generatedAtTime: PreciseDate): ConceptVersieTestBuilder {
+    public withGeneratedAtTime(generatedAtTime: FormatPreservingDate): ConceptVersieTestBuilder {
         this.generatedAtTime = generatedAtTime;
         return this;
     }

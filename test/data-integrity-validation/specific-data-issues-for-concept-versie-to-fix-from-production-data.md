@@ -7,7 +7,8 @@
 <http://mu.semte.ch/blank#2192c6c3-b88a-4a1e-b97d-85a5cda2ba4d> <http://purl.org/dc/terms/title> "Volmachtformulier"@nl .
 ```
 
-=> **still to solve in the data**
+=> **still to solve in the data** 
+But it seems that these two are the only incorrect ones ...
 
 # case 2: all legal resources are modeled incorrectly.
 
@@ -59,10 +60,24 @@ conclusions:
 ```
 - All other fields are not mapped yet ; we should map them all.
   - http://purl.org/dc/terms/isVersionOf - ok
-  - http://schema.org/dateCreated - ok (but only millisecond accuracy in javascript, no nanoseconds accuracy)
-  - http://schema.org/dateModified - ok (but only millisecond accuracy in javascript, no nanoseconds accuracy
-  - http://schema.org/identifier
-  - http://schema.org/productID
-  - http://www.w3.org/ns/prov#generatedAtTime
-  - https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag
-  - https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType
+  - http://schema.org/dateCreated - ok 
+  - http://schema.org/dateModified - ok
+  - http://schema.org/identifier - ok
+  - http://schema.org/productID - ok
+  - http://www.w3.org/ns/prov#generatedAtTime - ok
+  - https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag - ok
+  - https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType - ok
+
+
+# case 3: some enddates cannot be mapped
+
+```
+<https://ipdc.vlaanderen.be/id/conceptsnapshot/0d2a2f5a-7213-483d-9fb9-abe0cbac0348> <http://schema.org/endDate> "2020-12-09T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<https://ipdc.vlaanderen.be/id/conceptsnapshot/19bb6349-0976-4ce5-895a-28a6fd30787a> <http://schema.org/endDate> "2020-12-09T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<https://ipdc.vlaanderen.be/id/conceptsnapshot/202bf7d3-38bf-4910-81e6-f3a18dc46910> <http://schema.org/endDate> "2020-12-09T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+```
+
+is caused because the data in the database is exactly `"2020-12-09T12:00:00Z"` ; so no milliseconds specified ... 
+=> use FormatPreservingDate to keep exact string format read from the database, but smartly compare taking into account nanos , millis, or none.
+
+

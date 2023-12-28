@@ -137,7 +137,7 @@ describe('ConceptVersieRepository', () => {
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
-                    `<${conceptVersieId}> <http://schema.org/startDate> """${ConceptVersieTestBuilder.START_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
+                    `<${conceptVersieId}> <http://schema.org/startDate> """${ConceptVersieTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
                 ]);
 
             const actualConceptVersie = await repository.findById(conceptVersieId);
@@ -197,8 +197,8 @@ describe('ConceptVersieRepository', () => {
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """${ConceptVersieTestBuilder.REGULATION_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """Concept Versie Regulation German language is ignored"""@de`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """Concept Versie Regulation  language is ignored"""@fr`,
-                    `<${conceptVersieId}> <http://schema.org/startDate> """${ConceptVersieTestBuilder.START_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${conceptVersieId}> <http://schema.org/endDate> """${ConceptVersieTestBuilder.END_DATE.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptVersieId}> <http://schema.org/startDate> """${ConceptVersieTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptVersieId}> <http://schema.org/endDate> """${ConceptVersieTestBuilder.END_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptVersieId}> <http://purl.org/dc/terms/type> <${ConceptVersieTestBuilder.TYPE}>`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptVersieTestBuilder.TARGET_AUDIENCES)[0]}>`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptVersieTestBuilder.TARGET_AUDIENCES)[1]}>`,
@@ -472,9 +472,9 @@ describe('ConceptVersieRepository', () => {
                     `<${ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES[0].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
                     `<${ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${conceptVersieId}> <http://purl.org/dc/terms/isVersionOf> <${ConceptVersieTestBuilder.IS_VERSION_OF_CONCEPT}>`,
-                    `<${conceptVersieId}> <http://schema.org/dateCreated> """${ConceptVersieTestBuilder.DATE_CREATED.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${conceptVersieId}> <http://schema.org/dateModified> """${ConceptVersieTestBuilder.DATE_MODIFIED.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${conceptVersieId}> <http://www.w3.org/ns/prov#generatedAtTime> """${ConceptVersieTestBuilder.GENERATED_AT_TIME.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptVersieId}> <http://schema.org/dateCreated> """${ConceptVersieTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptVersieId}> <http://schema.org/dateModified> """${ConceptVersieTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptVersieId}> <http://www.w3.org/ns/prov#generatedAtTime> """${ConceptVersieTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptVersieId}> <http://schema.org/identifier> """${id}"""`,
                     `<${conceptVersieId}> <http://schema.org/productID> """${ConceptVersieTestBuilder.PRODUCT_ID}"""`,
                     `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${ConceptVersieTestBuilder.SNAPSHOT_TYPE}>`,

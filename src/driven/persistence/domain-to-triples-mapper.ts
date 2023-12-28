@@ -11,8 +11,8 @@ export class DomainToTriplesMapper {
     public conceptVersieToTriples(conceptVersie: ConceptVersie): Statement[] {
         return [
             quad(namedNode(conceptVersie.id), NS.rdf('type'), NS.lpdcExt('ConceptualPublicService')),
-            conceptVersie.startDate ? quad(namedNode(conceptVersie.id), NS.schema('startDate'), literal(conceptVersie.startDate.toISOString(), NS.xsd('dateTime'))) : undefined,
-            conceptVersie.endDate ? quad(namedNode(conceptVersie.id), NS.schema('endDate'), literal(conceptVersie.endDate.toISOString(), NS.xsd('dateTime'))) : undefined,
+            conceptVersie.startDate ? quad(namedNode(conceptVersie.id), NS.schema('startDate'), literal(conceptVersie.startDate.value, NS.xsd('dateTime'))) : undefined,
+            conceptVersie.endDate ? quad(namedNode(conceptVersie.id), NS.schema('endDate'), literal(conceptVersie.endDate.value, NS.xsd('dateTime'))) : undefined,
             conceptVersie.type ? quad(namedNode(conceptVersie.id), NS.dct('type'), namedNode(conceptVersie.type)) : undefined,
             ...this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.dct('title').value), conceptVersie.title),
             ...this.taalStringToTriples(namedNode(conceptVersie.id), namedNode(NS.dct('description').value), conceptVersie.description),
@@ -34,9 +34,9 @@ export class DomainToTriplesMapper {
             ...this.costsToTriples(conceptVersie),
             ...this.financialAdvantagesToTriples(conceptVersie),
             conceptVersie.isVersionOfConcept ? quad(namedNode(conceptVersie.id), NS.dct('isVersionOf'), namedNode(conceptVersie.isVersionOfConcept)) : undefined,
-            conceptVersie.dateCreated ? quad(namedNode(conceptVersie.id), NS.schema('dateCreated'), literal(conceptVersie.dateCreated.toISOString(), NS.xsd('dateTime'))) : undefined,
-            conceptVersie.dateModified ? quad(namedNode(conceptVersie.id), NS.schema('dateModified'), literal(conceptVersie.dateModified.toISOString(), NS.xsd('dateTime'))) : undefined,
-            conceptVersie.generatedAtTime ? quad(namedNode(conceptVersie.id), NS.prov('generatedAtTime'), literal(conceptVersie.generatedAtTime.toISOString(), NS.xsd('dateTime'))) : undefined,
+            conceptVersie.dateCreated ? quad(namedNode(conceptVersie.id), NS.schema('dateCreated'), literal(conceptVersie.dateCreated.value, NS.xsd('dateTime'))) : undefined,
+            conceptVersie.dateModified ? quad(namedNode(conceptVersie.id), NS.schema('dateModified'), literal(conceptVersie.dateModified.value, NS.xsd('dateTime'))) : undefined,
+            conceptVersie.generatedAtTime ? quad(namedNode(conceptVersie.id), NS.prov('generatedAtTime'), literal(conceptVersie.generatedAtTime.value, NS.xsd('dateTime'))) : undefined,
             quad(namedNode(conceptVersie.id), NS.schema('identifier'), literal(conceptVersie.identifier)),
             conceptVersie.productId ? quad(namedNode(conceptVersie.id), NS.schema('productID'), literal(conceptVersie.productId)) : undefined,
             conceptVersie.snapshotType ? quad(namedNode(conceptVersie.id), NS.lpdcExt('snapshotType'), namedNode(conceptVersie.snapshotType)) : undefined,

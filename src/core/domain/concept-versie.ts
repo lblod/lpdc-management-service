@@ -7,7 +7,7 @@ import {Procedure} from "./procedure";
 import {Website} from "./website";
 import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
-import {PreciseDate} from "./precise-date";
+import {FormatPreservingDate} from "./format-preserving-date";
 
 
 export class ConceptVersie {
@@ -18,8 +18,8 @@ export class ConceptVersie {
     private readonly _additionalDescription: TaalString | undefined;
     private readonly _exception: TaalString | undefined;
     private readonly _regulation: TaalString | undefined;
-    private readonly _startDate: Date | undefined;
-    private readonly _endDate: Date | undefined;
+    private readonly _startDate: FormatPreservingDate | undefined;
+    private readonly _endDate: FormatPreservingDate | undefined;
     private readonly _type: ProductType | undefined;
     private readonly _targetAudiences: Set<TargetAudienceType>;
     private readonly _themes: Set<ThemeType>;
@@ -37,9 +37,9 @@ export class ConceptVersie {
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
     private readonly _isVersionOfConcept: Iri | undefined;
-    private readonly _dateCreated: PreciseDate | undefined;
-    private readonly _dateModified: PreciseDate | undefined;
-    private readonly _generatedAtTime: PreciseDate | undefined;
+    private readonly _dateCreated: FormatPreservingDate | undefined;
+    private readonly _dateModified: FormatPreservingDate | undefined;
+    private readonly _generatedAtTime: FormatPreservingDate | undefined;
     private readonly _productId: string | undefined;
     private readonly _snapshotType: SnapshotType | undefined;
     private readonly _conceptTags: Set<ConceptTagType>;
@@ -50,8 +50,8 @@ export class ConceptVersie {
                 additionalDescription: TaalString | undefined,
                 exception: TaalString | undefined,
                 regulation: TaalString | undefined,
-                startDate: Date | undefined,
-                endDate: Date | undefined,
+                startDate: FormatPreservingDate | undefined,
+                endDate: FormatPreservingDate | undefined,
                 type: ProductType | undefined,
                 targetAudiences: Set<TargetAudienceType>,
                 themes: Set<ThemeType>,
@@ -68,9 +68,9 @@ export class ConceptVersie {
                 costs: Cost[],
                 financialAdvantages: FinancialAdvantage[],
                 isVersionOfConcept: Iri,
-                dateCreated: PreciseDate | undefined,
-                dateModified: PreciseDate | undefined,
-                generatedAtTime: PreciseDate | undefined,
+                dateCreated: FormatPreservingDate | undefined,
+                dateModified: FormatPreservingDate | undefined,
+                generatedAtTime: FormatPreservingDate | undefined,
                 productId: string | undefined,
                 snapshotType: SnapshotType | undefined,
                 conceptTags: Set<ConceptTagType>,
@@ -132,11 +132,11 @@ export class ConceptVersie {
         return this._regulation;
     }
 
-    get startDate(): Date | undefined {
+    get startDate(): FormatPreservingDate | undefined {
         return this._startDate;
     }
 
-    get endDate(): Date | undefined {
+    get endDate(): FormatPreservingDate | undefined {
         return this._endDate;
     }
 
@@ -204,15 +204,15 @@ export class ConceptVersie {
         return this._isVersionOfConcept;
     }
 
-    get dateCreated(): PreciseDate | undefined {
+    get dateCreated(): FormatPreservingDate | undefined {
         return this._dateCreated;
     }
 
-    get dateModified(): PreciseDate | undefined {
+    get dateModified(): FormatPreservingDate | undefined {
         return this._dateModified;
     }
 
-    get generatedAtTime(): PreciseDate | undefined {
+    get generatedAtTime(): FormatPreservingDate | undefined {
         return this._generatedAtTime;
     }
 
@@ -238,8 +238,8 @@ export class ConceptVersie {
             || TaalString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription)
             || TaalString.isFunctionallyChanged(value.exception, other.exception)
             || TaalString.isFunctionallyChanged(value.regulation, other.regulation)
-            || value.startDate?.getTime() !== other.startDate?.getTime()
-            || value.endDate?.getTime() !== other.endDate?.getTime()
+            || !value.startDate?.isEqual(other.startDate)
+            || !value.endDate?.isEqual(other.endDate)
             || value.type !== other.type
             || !_.isEqual(value.targetAudiences, other.targetAudiences)
             || !_.isEqual(value.themes, other.themes)

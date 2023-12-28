@@ -18,6 +18,7 @@ import {aFullProcedure} from "./procedure-test-builder";
 import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
 import {aFullCost} from "./cost-test-builder";
 import {aFullFinancialAdvantage} from "./financial-advantage-test-builder";
+import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 
 describe('is functionally changed', () => {
 
@@ -49,8 +50,21 @@ describe('is functionally changed', () => {
                 .build(),
             aFullConceptVersie()
                 .withId(aConceptVersieId)
-                .build()]
-    ];
+                .build()],
+        ['start date the same except formatting',
+            aFullConceptVersie()
+                .withStartDate(FormatPreservingDate.of('2027-09-16 00:00:00Z'))
+                .build(),
+            aFullConceptVersie()
+                .withStartDate(FormatPreservingDate.of('2027-09-16 00:00:00.000Z'))
+                .build()],
+        ['start date the same except formatting',
+            aFullConceptVersie()
+                .withEndDate(FormatPreservingDate.of('2027-09-16 00:00:00Z'))
+                .build(),
+            aFullConceptVersie()
+                .withEndDate(FormatPreservingDate.of('2027-09-16 00:00:00.000Z'))
+                .build()],    ];
 
     for (const testCase of functionallyUnchangedTestCases) {
         test(`not functionally changed when ${testCase[0]}`, () => {
@@ -97,42 +111,42 @@ describe('is functionally changed', () => {
                 .build()],
         ['start date changed',
             aFullConceptVersie()
-                .withStartDate(new Date('2023-11-10'))
+                .withStartDate(FormatPreservingDate.of('2023-11-10 00:00:00.000Z'))
                 .build(),
             aFullConceptVersie()
-                .withStartDate(new Date('2023-11-09'))
+                .withStartDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build()],
         ['start date appeared',
             aFullConceptVersie()
                 .withStartDate(undefined)
                 .build(),
             aFullConceptVersie()
-                .withStartDate(new Date('2023-11-09'))
+                .withStartDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build()],
         ['start date disappeared',
             aFullConceptVersie()
-                .withStartDate(new Date('2023-11-09'))
+                .withStartDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build(),
             aFullConceptVersie()
                 .withStartDate(undefined)
                 .build()],
         ['end date changed',
             aFullConceptVersie()
-                .withEndDate(new Date('2023-11-10'))
+                .withEndDate(FormatPreservingDate.of('2023-11-10 00:00:00.000Z'))
                 .build(),
             aFullConceptVersie()
-                .withEndDate(new Date('2023-11-09'))
+                .withEndDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build()],
         ['end date appeared',
             aFullConceptVersie()
                 .withEndDate(undefined)
                 .build(),
             aFullConceptVersie()
-                .withEndDate(new Date('2023-11-09'))
+                .withEndDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build()],
         ['end date disappeared',
             aFullConceptVersie()
-                .withEndDate(new Date('2023-11-09'))
+                .withEndDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build(),
             aFullConceptVersie()
                 .withEndDate(undefined)

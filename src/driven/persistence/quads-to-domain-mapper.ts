@@ -22,7 +22,7 @@ import {Procedure} from "../../core/domain/procedure";
 import {Requirement} from "../../core/domain/requirement";
 import {Evidence} from "../../core/domain/evidence";
 import {NS} from "./namespaces";
-import {PreciseDate} from "../../core/domain/precise-date";
+import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 
 
 export class QuadsToDomainMapper {
@@ -84,12 +84,12 @@ export class QuadsToDomainMapper {
         }
     }
 
-    private startDate(id: Iri): Date | undefined {
-        return this.asDate(this.store.anyValue(namedNode(id), NS.schema("startDate"), null, this.graphId));
+    private startDate(id: Iri): FormatPreservingDate | undefined {
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id), NS.schema("startDate"), null, this.graphId));
     }
 
-    private endDate(id: Iri): Date | undefined {
-        return this.asDate(this.store.anyValue(namedNode(id), NS.schema("endDate"), null, this.graphId));
+    private endDate(id: Iri): FormatPreservingDate | undefined {
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id), NS.schema("endDate"), null, this.graphId));
     }
 
     private productType(id: Iri): ProductType | undefined {
@@ -162,16 +162,16 @@ export class QuadsToDomainMapper {
         return this.store.anyValue(namedNode(id), NS.dct("isVersionOf"), null, this.graphId);
     }
 
-    private dateCreated(id: Iri): PreciseDate | undefined {
-        return this.asPreciseDate(this.store.anyValue(namedNode(id), NS.schema("dateCreated"), null, this.graphId));
+    private dateCreated(id: Iri): FormatPreservingDate | undefined {
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id), NS.schema("dateCreated"), null, this.graphId));
     }
 
-    private dateModified(id: Iri): PreciseDate | undefined {
-        return this.asPreciseDate(this.store.anyValue(namedNode(id), NS.schema("dateModified"), null, this.graphId));
+    private dateModified(id: Iri): FormatPreservingDate | undefined {
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id), NS.schema("dateModified"), null, this.graphId));
     }
 
-    private generatedAtTime(id: Iri): PreciseDate | undefined {
-        return this.asPreciseDate(this.store.anyValue(namedNode(id), NS.prov("generatedAtTime"), null, this.graphId));
+    private generatedAtTime(id: Iri): FormatPreservingDate | undefined {
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id), NS.prov("generatedAtTime"), null, this.graphId));
     }
 
     private productId(id: Iri): string | undefined {
@@ -267,12 +267,8 @@ export class QuadsToDomainMapper {
         return new Evidence(evidenceIds[0], this.title(evidenceIds[0]), this.description(evidenceIds[0]));
     }
 
-    private asDate(aValue: string | undefined): Date | undefined {
-        return aValue ? new Date(aValue) : undefined;
-    }
-
-    private asPreciseDate(aValue: string | undefined): PreciseDate | undefined {
-        return PreciseDate.of(aValue);
+    private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {
+        return FormatPreservingDate.of(aValue);
     }
 
     private asNumber(aValue: string | undefined): number | undefined {
