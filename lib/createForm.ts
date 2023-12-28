@@ -17,7 +17,8 @@ import {
 } from './commonQueries';
 import {
     findDutchLanguageVersionsOfTriples,
-    getChosenForm, getLanguageVersionForInstance,
+    getChosenForm,
+    getLanguageVersionForInstance,
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
 import {SessieSparqlRepository} from "../src/driven/persistence/sessie-sparql-repository";
@@ -190,7 +191,7 @@ export async function createForm(conceptId: string, sessionUri: string, sessieRe
 }
 
 /*
- * Helper function to execute a query and copy retreived resources into new resources.
+ * Helper function to execute a query and copy retrieved resources into new resources.
  * It adds both a UUID and dct:source to the new resource too.
  * It returns an intermediate data structure. Which is easier to use when relations need
  * to be copied over.

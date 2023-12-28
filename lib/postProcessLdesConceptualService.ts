@@ -21,7 +21,7 @@ import {
     serviceUriForId
 } from './commonQueries';
 import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
-import {ConceptVersie} from "../src/core/domain/concept-versie";
+import {ConceptVersie, SnapshotType} from "../src/core/domain/concept-versie";
 
 export async function processLdesDelta(delta: any, conceptVersieRepository: ConceptVersieRepository): Promise<void> {
     let versionedServices = flatten(delta.map(changeSet => changeSet.inserts));
@@ -48,16 +48,20 @@ export async function processLdesDelta(delta: any, conceptVersieRepository: Conc
     for (const entry of toProcess) {
         try {
             const ldesDataGraph = entry.graph.value;
-            const conceptSnapshotUri = entry.subject.value;
+            const newConceptSnapshotUri = entry.subject.value;
             const conceptUri = entry.object.value;
-            const isArchiving = await isArchivingEvent(ldesDataGraph, conceptSnapshotUri);
-            const currentSnapshotUri = await getVersionedSourceOfConcept(conceptUri);
-            const isConceptFunctionallyChanged = await isConceptChanged(conceptSnapshotUri, currentSnapshotUri, conceptVersieRepository);
 
-            await updateNewLdesVersion(ldesDataGraph, conceptSnapshotUri, conceptUri);
-            await updatedVersionInformation(conceptSnapshotUri, conceptUri);
+            const newConceptVersie = await conceptVersieRepository.findById(newConceptSnapshotUri);
+            const currentSnapshotUri: string | undefined = await getVersionedSourceOfConcept(conceptUri);
+
+            const isArchiving = newConceptVersie.snapshotType === SnapshotType.DELETE;
+
+            const isConceptFunctionallyChanged = await isConceptChanged(newConceptVersie, currentSnapshotUri, conceptVersieRepository);
+
+            await upsertNewLdesVersion(ldesDataGraph, newConceptSnapshotUri, conceptUri);
+            await updatedVersionInformation(newConceptSnapshotUri, conceptUri);
             if (!currentSnapshotUri || isConceptFunctionallyChanged) {
-                await updateLatestFunctionalChange(conceptSnapshotUri, conceptUri);
+                await updateLatestFunctionalChange(newConceptSnapshotUri, conceptUri);
             }
 
             const instanceReviewStatus = determineInstanceReviewStatus(isConceptFunctionallyChanged, isArchiving);
@@ -100,7 +104,7 @@ async function isNewVersionConceptualPublicService(vGraph: string, vService: str
     return (await querySudo(queryStr)).boolean;
 }
 
-async function updateNewLdesVersion(versionedServiceGraph: string, versionedService: string, conceptualService: string): Promise<void> {
+async function upsertNewLdesVersion(versionedServiceGraph: string, versionedService: string, conceptualService: string): Promise<void> {
     let serviceId = (await querySudo(`
     ${PREFIX.lpdcExt}
     ${PREFIX.mu}
@@ -119,7 +123,7 @@ async function updateNewLdesVersion(versionedServiceGraph: string, versionedServ
     } else {
         serviceId = uuid();
     }
-    await updateConceptualService(versionedServiceGraph, versionedService, conceptualService, serviceId);
+    await insertConceptualService(versionedServiceGraph, versionedService, conceptualService, serviceId);
 
 }
 
@@ -165,7 +169,7 @@ async function removeConceptualService(serviceId: string): Promise<void> {
     }
 }
 
-async function updateConceptualService(versionedServiceGraph: string, versionedServiceUri: string, serviceUri: string, serviceId: string): Promise<void> {
+async function insertConceptualService(versionedServiceGraph: string, versionedServiceUri: string, serviceUri: string, serviceId: string): Promise<void> {
     const graph = versionedServiceGraph;
     const sudo = true;
 
@@ -498,13 +502,12 @@ async function markConceptAsArchived(conceptualService: string): Promise<void> {
     await updateSudo(markAsArchivedQuery);
 }
 
-async function isConceptChanged(newSnapshotUri: string, currentSnapshotUri: string, conceptVersieRepository: ConceptVersieRepository): Promise<boolean> {
+async function isConceptChanged(newConceptVersie: ConceptVersie, currentSnapshotUri: string, conceptVersieRepository: ConceptVersieRepository): Promise<boolean> {
     if (!currentSnapshotUri) {
         return false;
     }
 
     const currentConceptVersie = await conceptVersieRepository.findById(currentSnapshotUri);
-    const newConceptVersie = await conceptVersieRepository.findById(newSnapshotUri);
 
     return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie);
 }

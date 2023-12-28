@@ -10,7 +10,7 @@ import {FinancialAdvantage} from "./financial-advantage";
 import {FormatPreservingDate} from "./format-preserving-date";
 
 
-export class ConceptVersie {
+export class ConceptVersie { //TODO LPDC-916: or ConceptSnapshot?
 
     private readonly _id: Iri;
     private readonly _title: TaalString | undefined;
