@@ -5,7 +5,6 @@ import {Website} from "./website";
 
 export class Procedure {
 
-    //TODO LPDC-916: should not be here ... accepted compromise ?
     private readonly _id: Iri;
     private readonly _title: TaalString | undefined;
     private readonly _description: TaalString | undefined;
@@ -16,6 +15,7 @@ export class Procedure {
                 description: TaalString | undefined,
                 websites: Website[],
     ) {
+//TODO LPDC-916: add invariants
         this._id = id;
         this._title = title;
         this._description = description;

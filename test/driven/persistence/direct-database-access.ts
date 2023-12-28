@@ -21,9 +21,6 @@ export class DirectDatabaseAccess {
         }
         `;
 
-        //TODO LPDC-916: remove console.log
-        //console.log(query);
-
         await this.querying.update(query);
     }
 

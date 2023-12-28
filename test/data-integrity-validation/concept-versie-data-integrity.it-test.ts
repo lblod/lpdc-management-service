@@ -6,7 +6,6 @@ import {shuffle} from "lodash";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
 import {asSortedArray, asSortedSet} from "../../src/core/domain/shared/collections-helper";
-import fs from "fs";
 import {isLiteral, namedNode} from "rdflib";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {
@@ -23,10 +22,6 @@ describe('Concept Versie Data Integrity Validation', () => {
     const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endPoint);
     const graph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
     const domainToTriplesMapper = new DomainToTriplesMapper();
-
-    //TODO LPDC-916: using a story representation for each queried -> verify with all the raw triples, queried directly from the database -> to ascertain we queried all data ...
-    //TODO LPDC-916: load data concurrently ... using PromisePool (10 concurrent users, but each of them with a kinda random wait; so to simulate n concurrent users )
-    //TODO LPDC-916: load data from ldes stream of production dump and verify results ...
 
    test.skip('Load all concept versies; print errors to console.log', async () => {
 
@@ -106,8 +101,8 @@ describe('Concept Versie Data Integrity Validation', () => {
                 .forEach(q => allQuadsOfGraphAsTurtle.delete(q));
 
             //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
-            fs.writeFileSync(`/tmp/remaining-quads.txt`, Array.from(asSortedSet(allQuadsOfGraphAsTurtle)).join('\n'));
-            //expect(asSortedSet(allQuadsOfGraphAsSet)).toEqual(new Set());
+            //fs.writeFileSync(`/tmp/remaining-quads.txt`, Array.from(asSortedSet(allQuadsOfGraphAsTurtle)).join('\n'));
+            expect(asSortedSet(allQuadsOfGraphAsTurtle)).toEqual(new Set());
 
             const averageTime = (new Date().valueOf() - before - delayTime * conceptVersieIds.length) / conceptVersieIds.length;
             averageTimes.push(averageTime);

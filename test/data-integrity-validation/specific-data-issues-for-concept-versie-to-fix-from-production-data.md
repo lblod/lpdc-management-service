@@ -1,4 +1,4 @@
-# case 1: some concept snapshots websites have the a title with the same language (2 times nl, 2 times en) 
+# case 1: some concept snapshots websites have the a title with the same language (2 times nl, 2 times en)  (not solved)
 
 ![case1.png](img%2Fcase1.png)
 
@@ -10,7 +10,7 @@
 => **still to solve in the data** 
 But it seems that these two are the only incorrect ones ...
 
-# case 2: all legal resources are modeled incorrectly.
+# case 2: all legal resources are modeled incorrectly. (not solved)
 
 ![case2.png](img%2Fcase2.png)
 
@@ -29,7 +29,7 @@ This is off course not correct ... you see that there are multiple shacl orders 
 => **still to solve in the data**
 + we still need to load this in the data
 
-# case 3: not all triples seem to be loaded, that are directly linked to a concept versie
+# case 3: not all triples seem to be loaded, that are directly linked to a concept versie (solved)
 
 one example is :
 
@@ -69,7 +69,7 @@ conclusions:
   - https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType - ok
 
 
-# case 3: some enddates cannot be mapped
+# case 4: some enddates cannot be mapped (solved)
 
 ```
 <https://ipdc.vlaanderen.be/id/conceptsnapshot/0d2a2f5a-7213-483d-9fb9-abe0cbac0348> <http://schema.org/endDate> "2020-12-09T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
@@ -78,6 +78,6 @@ conclusions:
 ```
 
 is caused because the data in the database is exactly `"2020-12-09T12:00:00Z"` ; so no milliseconds specified ... 
-=> use FormatPreservingDate to keep exact string format read from the database, but smartly compare taking into account nanos , millis, or none.
+=> use FormatPreservingDate to keep exact string format read from the database, but smartly compare taking into account nanos , millis, or none. -. ok
 
 

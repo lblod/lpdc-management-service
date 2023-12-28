@@ -4,7 +4,6 @@ import _ from "lodash";
 
 export class FinancialAdvantage {
 
-    //TODO LPDC-916: should not be here ... accepted compromise ?
     private readonly _id: Iri;
     private readonly _title: TaalString | undefined;
     private readonly _description: TaalString | undefined;
@@ -13,6 +12,7 @@ export class FinancialAdvantage {
                 title: TaalString | undefined,
                 description: TaalString | undefined,
     ) {
+        //TODO LPDC-916: add invariants
         this._id = id;
         this._title = title;
         this._description = description;

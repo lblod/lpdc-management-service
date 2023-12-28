@@ -29,7 +29,6 @@ export class ConceptVersie {
     private readonly _executingAuthorities: Set<Iri>;
     private readonly _publicationMedia: Set<PublicationMediumType>;
     private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>;
-    //TODO LPDC-916: revise keywords structure
     private readonly _keywords: TaalString[];
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
@@ -269,7 +268,7 @@ export enum ProductType { //TODO LPDC-916: ok to compromise and put an uri in he
     FINANCIEELVOORDEEL = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/FinancieelVoordeel',
 }
 
-export enum TargetAudienceType { //TODO LPDC-916: ok to compromise and put an uri in here ?
+export enum TargetAudienceType {
     BURGER = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/Burger',
     ONDERNEMING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/Onderneming',
     ORGANISATIE = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/Organisatie',
@@ -278,7 +277,7 @@ export enum TargetAudienceType { //TODO LPDC-916: ok to compromise and put an ur
     VERENIGING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/Vereniging',
 }
 
-export enum ThemeType { //TODO LPDC-916: ok to compromise and put an uri in here ?
+export enum ThemeType {
     BURGEROVERHEID = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/BurgerOverheid',
     CULTUURSPORTVRIJETIJD = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/CultuurSportVrijeTijd',
     ECONOMIEWERK = 'https://productencatalogus.data.vlaanderen.be/id/concept/Thema/EconomieWerk',

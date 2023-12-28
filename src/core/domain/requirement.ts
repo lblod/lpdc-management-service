@@ -5,12 +5,12 @@ import {Evidence} from "./evidence";
 
 export class Requirement {
 
-    //TODO LPDC-916: should not be here ... accepted compromise ?
     private readonly _id: Iri;
     private readonly _title: TaalString | undefined;
     private readonly _description: TaalString | undefined;
     private readonly _evidence: Evidence | undefined;
 
+    //TODO LPDC-916: add invariants
     constructor(id: Iri,
                 title: TaalString | undefined,
                 description: TaalString | undefined,

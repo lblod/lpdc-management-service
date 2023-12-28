@@ -34,8 +34,6 @@ export class SparqlQuerying {
 
     public async list(query: string): Promise<unknown[]> {
         return retry(async () => {
-            //TODO LPDC-916:remove console.log
-            //console.log(query);
             const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
             return result?.results?.bindings || [];
         }, {
