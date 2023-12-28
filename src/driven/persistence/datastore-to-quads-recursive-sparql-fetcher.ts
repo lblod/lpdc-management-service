@@ -5,6 +5,7 @@ import {sparqlEscapeUri} from "../../../mu-helper";
 import {SparqlQuerying} from "./sparql-querying";
 import {isNamedNode} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";
+import {NS} from "./namespaces";
 
 export class DatastoreToQuadsRecursiveSparqlFetcher {
 
@@ -14,11 +15,12 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
         this.querying = new SparqlQuerying(endpoint);
     }
 
-    async fetch(graph: Iri, from: Iri, predicatesToStopRecursion: Iri[]): Promise<Quad[]> {
-        return await this.doFetch(graph, [from], [], predicatesToStopRecursion);
+    //TODO LPDC-916: also add predicatesToNotQuery (and exclude them in a filter (https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration comes to mind when querying concepts));
+    async fetch(graph: Iri, from: Iri, predicatesToStopRecursion: Iri[], illegalTypesToRecurseInto: Iri[]): Promise<Quad[]> {
+        return await this.doFetch(graph, [from], [], predicatesToStopRecursion, illegalTypesToRecurseInto);
     }
 
-    private async doFetch(graph: Iri, subjectIds: Iri[], previouslyQueriedIds: Iri[], predicatesToStopRecursion: Iri[]): Promise<Quad[]> {
+    private async doFetch(graph: Iri, subjectIds: Iri[], previouslyQueriedIds: Iri[], predicatesToStopRecursion: Iri[], illegalTypesToRecurseInto: Iri[]): Promise<Quad[]> {
         if (subjectIds.length === 0) {
             return [];
         }
@@ -36,11 +38,19 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
         const result = await this.querying.list(query);
         const quads = this.querying.asQuads(result, graph);
 
+        quads
+            .filter(q => q.predicate.value === NS.rdf('type').value)
+            .forEach(q => {
+                if(illegalTypesToRecurseInto.includes(q.object.value)) {
+                    throw Error(`Recursing into <${q.object.value}> from <${q.subject.value}> is not allowed.`);
+                }
+            });
+
         const referencedIds =
             quads
                 .filter(q => {
                     return isNamedNode(q.object)
-                        && q.predicate.value !== `http://www.w3.org/1999/02/22-rdf-syntax-ns#type`
+                        && q.predicate.value !== NS.rdf('type').value
                         && !previouslyQueriedIds.some(id => id === q.object.value)
                         && !predicatesToStopRecursion.some(id => id === q.predicate.value);
                 })
@@ -51,7 +61,7 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
         subjectIds.forEach(subjectId => otherIdsToQuery.delete(subjectId));
         previouslyQueriedIds.forEach(previouslyQueriedId => otherIdsToQuery.delete(previouslyQueriedId));
 
-        return [...quads, ...await this.doFetch(graph, [...otherIdsToQuery], [...subjectIds, ...previouslyQueriedIds], predicatesToStopRecursion)];
+        return [...quads, ...await this.doFetch(graph, [...otherIdsToQuery], [...subjectIds, ...previouslyQueriedIds], predicatesToStopRecursion, illegalTypesToRecurseInto)];
     }
 
 }

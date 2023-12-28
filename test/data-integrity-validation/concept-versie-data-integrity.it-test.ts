@@ -126,7 +126,7 @@ describe('Concept Versie Data Integrity Validation', () => {
     test.skip('Load one concept versie and print quads', async() => {
         const id: Iri = 'https://ipdc.vlaanderen.be/id/conceptsnapshot/0d2a2f5a-7213-483d-9fb9-abe0cbac0348';
 
-        const allQuads = await fetcher.fetch(graph, id, []);
+        const allQuads = await fetcher.fetch(graph, id, [], []);
         console.log('recursive queries');
         const allQuadsAsStrings = asSortedArray(allQuads.map(q => q.toString()));
         console.log(allQuadsAsStrings.join('\n'));

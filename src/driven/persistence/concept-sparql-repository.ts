@@ -5,6 +5,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {Concept} from "../../core/domain/concept";
 import {CONCEPT_GRAPH} from "../../../config";
 import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {NS} from "./namespaces";
 
 export class ConceptSparqlRepository implements ConceptRepository {
 
@@ -18,7 +19,16 @@ export class ConceptSparqlRepository implements ConceptRepository {
 
     async findById(id: Iri): Promise<Concept> {
         //TODO LPDC-916: we should restrict querying in this graph on type / and or predicate (because in this public graph there is a lot of other stuff we don't want to query up) ...
-        const quads = await this.fetcher.fetch(CONCEPT_GRAPH, id, []);
+        //TODO LPDC-916: add in the insertdata test, skos:Concepts for each of the relations (this will make the test fail)
+        //TODO LPDC-916: then add here the stop recursions
+        //TODO LPDC-916: same for https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptDisplayConfiguration
+        const quads = await this.fetcher.fetch(CONCEPT_GRAPH,
+            id,
+            [],
+            [
+                NS.skos('Concept').value,
+                NS.lpdcExt('ConceptDisplayConfiguration').value,
+            ]);
 
         const mapper = new QuadsToDomainMapper(quads, CONCEPT_GRAPH);
 
