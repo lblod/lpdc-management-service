@@ -18,8 +18,8 @@ export class FormatPreservingDate {
         return this._value;
     }
 
-    isEqual(other: FormatPreservingDate | undefined): boolean {
-        return this.fullyPadded === other?.fullyPadded;
+    static isFunctionallyChanged(value: FormatPreservingDate | undefined, other: FormatPreservingDate | undefined): boolean {
+        return value?.fullyPadded !== other?.fullyPadded;
     }
 
     private get fullyPadded(): string {

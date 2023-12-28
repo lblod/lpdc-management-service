@@ -10,28 +10,30 @@ describe('format preserving date', () => {
        expect(FormatPreservingDate.of('2023-09-12Z').value).toEqual('2023-09-12Z');
     });
 
-    test('equal', () => {
-        expect(FormatPreservingDate.of('2027-09-16 00:00:00Z').isEqual(FormatPreservingDate.of('2027-09-16 00:00:00Z'))).toBeTruthy();
-        expect(FormatPreservingDate.of('2027-09-16 20:00:20.564Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:20.564Z'))).toBeTruthy();
-        expect(FormatPreservingDate.of('2027-09-16 20:00:20.564313Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:20.564313Z'))).toBeTruthy();
+    test('functionally not changed', () => {
+        expect(FormatPreservingDate.isFunctionallyChanged(undefined, undefined)).toBeFalsy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 00:00:00Z'), FormatPreservingDate.of('2027-09-16 00:00:00Z'))).toBeFalsy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:20.564Z'), FormatPreservingDate.of('2027-09-16 20:00:20.564Z'))).toBeFalsy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:20.564313Z'), FormatPreservingDate.of('2027-09-16 20:00:20.564313Z'))).toBeFalsy();
 
-        expect(FormatPreservingDate.of('2027-09-16 20:00:20.000Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:20.000000Z'))).toBeTruthy();
-        expect(FormatPreservingDate.of('2027-09-16 20:00:20.564Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:20.564000Z'))).toBeTruthy();
-        expect(FormatPreservingDate.of('2027-09-16 20:00:22Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:22.000Z'))).toBeTruthy();
-        expect(FormatPreservingDate.of('2027-09-16 20:00:22Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:22.000000Z'))).toBeTruthy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:20.000Z'), FormatPreservingDate.of('2027-09-16 20:00:20.000000Z'))).toBeFalsy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:20.564Z'), FormatPreservingDate.of('2027-09-16 20:00:20.564000Z'))).toBeFalsy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:22Z'), FormatPreservingDate.of('2027-09-16 20:00:22.000Z'))).toBeFalsy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:22Z'), FormatPreservingDate.of('2027-09-16 20:00:22.000000Z'))).toBeFalsy();
     });
 
-    test('not equal', () => {
-        expect(FormatPreservingDate.of('2027-09-16 00:00:00Z').isEqual(undefined)).toBeFalsy();
+    test('functionally changed', () => {
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 00:00:00Z'), undefined)).toBeTruthy();
+        expect(FormatPreservingDate.isFunctionallyChanged(undefined, FormatPreservingDate.of('2027-09-17 00:00:00Z'))).toBeTruthy();
 
-        expect(FormatPreservingDate.of('2027-09-16 00:00:00Z').isEqual(FormatPreservingDate.of('2027-09-17 00:00:00Z'))).toBeFalsy();
-        expect(FormatPreservingDate.of('2027-09-16 20:00:20.564Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:20.561Z'))).toBeFalsy();
-        expect(FormatPreservingDate.of('2027-09-16 20:00:20.564313Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:20.564311Z'))).toBeFalsy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 00:00:00Z'), FormatPreservingDate.of('2027-09-17 00:00:00Z'))).toBeTruthy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:20.564Z'), FormatPreservingDate.of('2027-09-16 20:00:20.561Z'))).toBeTruthy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:20.564313Z'), FormatPreservingDate.of('2027-09-16 20:00:20.564311Z'))).toBeTruthy();
 
-        expect(FormatPreservingDate.of('2027-09-16 20:00:20.000Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:20.000001Z'))).toBeFalsy();
-        expect(FormatPreservingDate.of('2027-09-16 20:00:20.564Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:20.564001Z'))).toBeFalsy();
-        expect(FormatPreservingDate.of('2027-09-16 20:00:20Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:20.001Z'))).toBeFalsy();
-        expect(FormatPreservingDate.of('2027-09-16 20:00:20Z').isEqual(FormatPreservingDate.of('2027-09-16 20:00:20.000001Z'))).toBeFalsy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:20.000Z'), FormatPreservingDate.of('2027-09-16 20:00:20.000001Z'))).toBeTruthy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:20.564Z'), FormatPreservingDate.of('2027-09-16 20:00:20.564001Z'))).toBeTruthy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:20Z'), FormatPreservingDate.of('2027-09-16 20:00:20.001Z'))).toBeTruthy();
+        expect(FormatPreservingDate.isFunctionallyChanged(FormatPreservingDate.of('2027-09-16 20:00:20Z'), FormatPreservingDate.of('2027-09-16 20:00:20.000001Z'))).toBeTruthy();
     });
 
 

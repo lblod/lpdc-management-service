@@ -238,8 +238,8 @@ export class ConceptVersie {
             || TaalString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription)
             || TaalString.isFunctionallyChanged(value.exception, other.exception)
             || TaalString.isFunctionallyChanged(value.regulation, other.regulation)
-            || !value.startDate?.isEqual(other.startDate)
-            || !value.endDate?.isEqual(other.endDate)
+            || FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate)
+            || FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate)
             || value.type !== other.type
             || !_.isEqual(value.targetAudiences, other.targetAudiences)
             || !_.isEqual(value.themes, other.themes)

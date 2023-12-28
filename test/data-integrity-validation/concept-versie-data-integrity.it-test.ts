@@ -28,7 +28,7 @@ describe('Concept Versie Data Integrity Validation', () => {
     //TODO LPDC-916: load data concurrently ... using PromisePool (10 concurrent users, but each of them with a kinda random wait; so to simulate n concurrent users )
     //TODO LPDC-916: load data from ldes stream of production dump and verify results ...
 
-    test.skip('Load all concept versies; print errors to console.log', async () => {
+   test.skip('Load all concept versies; print errors to console.log', async () => {
 
         const conceptVersieIdsQuery = `
              ${PREFIX.lpdcExt}
@@ -129,7 +129,7 @@ describe('Concept Versie Data Integrity Validation', () => {
     }, 60000 * 15 * 100);
 
     test.skip('Load one concept versie and print quads', async() => {
-        const id: Iri = 'https://ipdc.vlaanderen.be/id/conceptsnapshot/00215468-5567-41a0-8e3b-3eb3ef62c33f';
+        const id: Iri = 'https://ipdc.vlaanderen.be/id/conceptsnapshot/0d2a2f5a-7213-483d-9fb9-abe0cbac0348';
 
         const allQuads = await fetcher.fetch(graph, id);
         console.log('recursive queries');
