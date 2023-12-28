@@ -448,6 +448,7 @@ export enum YourEuropeCategoryType {
 }
 
 export enum SnapshotType {
+    CREATE = 'https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/Create',
     UPDATE = 'https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/Update',
     DELETE = 'https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/Delete',
 }
