@@ -20,8 +20,8 @@ import {
     loadWebsites,
     serviceUriForId
 } from './commonQueries';
-import {isConceptFunctionallyChanged} from "./compareSnapshot";
 import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
+import {ConceptVersie} from "../src/core/domain/concept-versie";
 
 export async function processLdesDelta(delta: any, conceptVersieRepository: ConceptVersieRepository): Promise<void> {
     let versionedServices = flatten(delta.map(changeSet => changeSet.inserts));
@@ -502,7 +502,11 @@ async function isConceptChanged(newSnapshotUri: string, currentSnapshotUri: stri
     if (!currentSnapshotUri) {
         return false;
     }
-    return isConceptFunctionallyChanged(newSnapshotUri, currentSnapshotUri, conceptVersieRepository);
+
+    const currentConceptVersie = await conceptVersieRepository.findById(currentSnapshotUri);
+    const newConceptVersie = await conceptVersieRepository.findById(newSnapshotUri);
+
+    return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie);
 }
 
 async function getVersionedSourceOfConcept(conceptUri: string): Promise<string> {

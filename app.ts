@@ -11,7 +11,6 @@ import {processLdesDelta} from './lib/postProcessLdesConceptualService';
 import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
 import {getContactPointOptions} from "./lib/getContactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
-import {isConceptFunctionallyChanged} from "./lib/compareSnapshot";
 import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
 import {getLanguageVersionOfInstance} from "./lib/getInstanceLanguageVersion";
 import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
@@ -19,6 +18,7 @@ import LPDCError from "./utils/lpdc-error";
 import {SessieSparqlRepository} from "./src/driven/persistence/sessie-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
 import {ConceptVersieSparqlRepository} from "./src/driven/persistence/concept-versie-sparql-repository";
+import {ConceptVersie} from "./src/core/domain/concept-versie";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -331,11 +331,11 @@ app.get('/address/validate', async (req, res): Promise<any> => {
 
 app.get('/concept-snapshot-compare', async (req, res): Promise<any> => {
     try {
-        const isChanged =
-            await isConceptFunctionallyChanged(
-                req.query.newSnapshotUri as string,
-                req.query.currentSnapshotUri as string,
-                conceptVersieRepository);
+        const currentConceptVersie = await conceptVersieRepository.findById(req.query.currentSnapshotUri as string);
+        const newConceptVersie = await conceptVersieRepository.findById(req.query.newSnapshotUri as string);
+
+        const isChanged = ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie);
+
         return res.json({isChanged});
     } catch (e) {
         console.error(e);
