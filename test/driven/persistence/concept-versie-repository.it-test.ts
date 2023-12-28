@@ -10,9 +10,11 @@ import {ConceptVersieSparqlTestRepository} from "./concept-versie-sparql-test-re
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {
     CompetentAuthorityLevelType,
+    ConceptTagType,
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
+    SnapshotType,
     TargetAudienceType,
     ThemeType,
     YourEuropeCategoryType
@@ -87,7 +89,7 @@ describe('ConceptVersieRepository', () => {
         });
 
         test('Verify minimal mappings', async () => {
-            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
 
             const conceptVersie =
                 aMinimalConceptVersie()
@@ -104,7 +106,7 @@ describe('ConceptVersieRepository', () => {
         });
 
         test('Verify minimal mappings - with incomplete title', async () => {
-            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
 
             const conceptVersie =
                 aMinimalConceptVersie()
@@ -123,7 +125,7 @@ describe('ConceptVersieRepository', () => {
         });
 
         test('Verify minimal mappings - with start date but no end date', async () => {
-            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
 
             const conceptVersie =
                 aMinimalConceptVersie()
@@ -144,7 +146,8 @@ describe('ConceptVersieRepository', () => {
         });
 
         test('Verify full mappings', async () => {
-            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const id = uuid();
+            const conceptVersieId =  ConceptVersieTestBuilder.buildIri(id);
 
             const conceptVersie =
                 aFullConceptVersie()
@@ -468,7 +471,15 @@ describe('ConceptVersieRepository', () => {
                     `<${ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES[0].description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
                     `<${ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/description> """${ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES[0].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
                     `<${ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
-
+                    `<${conceptVersieId}> <http://purl.org/dc/terms/isVersionOf> <${ConceptVersieTestBuilder.IS_VERSION_OF_CONCEPT}>`,
+                    `<${conceptVersieId}> <http://schema.org/dateCreated> """${ConceptVersieTestBuilder.DATE_CREATED.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptVersieId}> <http://schema.org/dateModified> """${ConceptVersieTestBuilder.DATE_MODIFIED.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptVersieId}> <http://www.w3.org/ns/prov#generatedAtTime> """${ConceptVersieTestBuilder.GENERATED_AT_TIME.toISOString()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptVersieId}> <http://schema.org/identifier> """${id}"""`,
+                    `<${conceptVersieId}> <http://schema.org/productID> """${ConceptVersieTestBuilder.PRODUCT_ID}"""`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${ConceptVersieTestBuilder.SNAPSHOT_TYPE}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${Array.from(ConceptVersieTestBuilder.CONCEPT_TAGS)[0]}>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${Array.from(ConceptVersieTestBuilder.CONCEPT_TAGS)[1]}>`,
                 ]);
 
             const actualConceptVersie = await repository.findById(conceptVersieId);
@@ -734,6 +745,52 @@ describe('ConceptVersieRepository', () => {
                 ]);
 
             await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> for iri: <${conceptVersieId}>`));
+        });
+
+        for (const type of Object.values(SnapshotType)) {
+            test(`Snapshot type ${type} can be mapped`, async () => {
+                const conceptVersie = aMinimalConceptVersie().withSnapshotType(type).build();
+                await repository.save(conceptVersie);
+
+                const actualConceptVersie = await repository.findById(conceptVersie.id);
+
+                expect(actualConceptVersie).toEqual(conceptVersie);
+            });
+        }
+
+        test('Unknown Snapshot Type can not be mapped', async () => {
+            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/NonExistingSnapshotType>`,
+                ]);
+
+            await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/NonExistingSnapshotType> for iri: <${conceptVersieId}>`));
+        });
+
+        for (const type of Object.values(ConceptTagType)) {
+            test(`Concept Tag type ${type} can be mapped`, async () => {
+                const conceptVersie = aMinimalConceptVersie().withConceptTags(new Set([type])).build();
+                await repository.save(conceptVersie);
+
+                const actualConceptVersie = await repository.findById(conceptVersie.id);
+
+                expect(actualConceptVersie).toEqual(conceptVersie);
+            });
+        }
+
+        test('Unknown ConceptTag Type can not be mapped', async () => {
+            const conceptVersieId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+
+            await directDatabaseAccess.insertData(
+                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                [`<${conceptVersieId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptVersieId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <https://productencatalogus.data.vlaanderen.be/id/concept/ConceptTag/NonExistingConceptTag>`,
+                ]);
+
+            await expect(repository.findById(conceptVersieId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/ConceptTag/NonExistingConceptTag> for iri: <${conceptVersieId}>`));
         });
     });
 });

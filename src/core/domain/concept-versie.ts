@@ -7,6 +7,7 @@ import {Procedure} from "./procedure";
 import {Website} from "./website";
 import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
+import {PreciseDate} from "./precise-date";
 
 
 export class ConceptVersie {
@@ -35,6 +36,13 @@ export class ConceptVersie {
     private readonly _websites: Website[];
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
+    private readonly _isVersionOfConcept: Iri | undefined;
+    private readonly _dateCreated: PreciseDate | undefined;
+    private readonly _dateModified: PreciseDate | undefined;
+    private readonly _generatedAtTime: PreciseDate | undefined;
+    private readonly _productId: string | undefined;
+    private readonly _snapshotType: SnapshotType | undefined;
+    private readonly _conceptTags: Set<ConceptTagType>;
 
     constructor(id: Iri,
                 title: TaalString | undefined,
@@ -59,6 +67,13 @@ export class ConceptVersie {
                 websites: Website[],
                 costs: Cost[],
                 financialAdvantages: FinancialAdvantage[],
+                isVersionOfConcept: Iri,
+                dateCreated: PreciseDate | undefined,
+                dateModified: PreciseDate | undefined,
+                generatedAtTime: PreciseDate | undefined,
+                productId: string | undefined,
+                snapshotType: SnapshotType | undefined,
+                conceptTags: Set<ConceptTagType>,
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -84,6 +99,13 @@ export class ConceptVersie {
         this._websites = [...websites];
         this._costs = [...costs];
         this._financialAdvantages = [...financialAdvantages];
+        this._isVersionOfConcept = isVersionOfConcept;
+        this._dateCreated = dateCreated;
+        this._dateModified = dateModified;
+        this._generatedAtTime = generatedAtTime;
+        this._productId = productId;
+        this._snapshotType = snapshotType;
+        this._conceptTags = asSortedSet(conceptTags);
     }
 
     get id(): Iri {
@@ -176,6 +198,38 @@ export class ConceptVersie {
 
     get financialAdvantages(): FinancialAdvantage[] {
         return this._financialAdvantages;
+    }
+
+    get isVersionOfConcept(): Iri | undefined{
+        return this._isVersionOfConcept;
+    }
+
+    get dateCreated(): PreciseDate | undefined {
+        return this._dateCreated;
+    }
+
+    get dateModified(): PreciseDate | undefined {
+        return this._dateModified;
+    }
+
+    get generatedAtTime(): PreciseDate | undefined {
+        return this._generatedAtTime;
+    }
+
+    get identifier(): string | undefined {
+        return this.id.substring(this.id.lastIndexOf('/') + 1);
+    }
+
+    get productId(): string | undefined {
+        return this._productId;
+    }
+
+    get snapshotType(): SnapshotType | undefined {
+        return this._snapshotType;
+    }
+
+    get conceptTags(): Set<ConceptTagType> | undefined {
+        return this._conceptTags;
     }
 
     static isFunctionallyChanged(value: ConceptVersie, other: ConceptVersie): boolean {
@@ -391,4 +445,14 @@ export enum YourEuropeCategoryType {
     WERKNEMERSPERSONEELSVERTEGENWOORDIGING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerknemersPersoneelsvertegenwoordiging',
     WERKNEMERSSOCIALEZEKERHEID = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerknemersSocialezekerheid',
     WERKNEMERSTEWERKSTELLING = 'https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/WerknemersTewerkstelling',
+}
+
+export enum SnapshotType {
+    UPDATE = 'https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/Update',
+    DELETE = 'https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/Delete',
+}
+
+export enum ConceptTagType {
+    YOUREUROPEVERPLICHT = 'https://productencatalogus.data.vlaanderen.be/id/concept/ConceptTag/YourEuropeVerplicht',
+    YOUREUROPEAANBEVOLEN = 'https://productencatalogus.data.vlaanderen.be/id/concept/ConceptTag/YourEuropeAanbevolen',
 }

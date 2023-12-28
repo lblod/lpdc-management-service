@@ -33,6 +33,14 @@ export class DomainToTriplesMapper {
             ...this.websitesToTriples(conceptVersie.id, namedNode(NS.rdfs('seeAlso').value), conceptVersie.websites),
             ...this.costsToTriples(conceptVersie),
             ...this.financialAdvantagesToTriples(conceptVersie),
+            conceptVersie.isVersionOfConcept ? quad(namedNode(conceptVersie.id), NS.dct('isVersionOf'), namedNode(conceptVersie.isVersionOfConcept)) : undefined,
+            conceptVersie.dateCreated ? quad(namedNode(conceptVersie.id), NS.schema('dateCreated'), literal(conceptVersie.dateCreated.toISOString(), NS.xsd('dateTime'))) : undefined,
+            conceptVersie.dateModified ? quad(namedNode(conceptVersie.id), NS.schema('dateModified'), literal(conceptVersie.dateModified.toISOString(), NS.xsd('dateTime'))) : undefined,
+            conceptVersie.generatedAtTime ? quad(namedNode(conceptVersie.id), NS.prov('generatedAtTime'), literal(conceptVersie.generatedAtTime.toISOString(), NS.xsd('dateTime'))) : undefined,
+            quad(namedNode(conceptVersie.id), NS.schema('identifier'), literal(conceptVersie.identifier)),
+            conceptVersie.productId ? quad(namedNode(conceptVersie.id), NS.schema('productID'), literal(conceptVersie.productId)) : undefined,
+            conceptVersie.snapshotType ? quad(namedNode(conceptVersie.id), NS.lpdcExt('snapshotType'), namedNode(conceptVersie.snapshotType)) : undefined,
+            ...this.irisToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('conceptTag').value), conceptVersie.conceptTags),
         ].filter(t => t !== undefined);
     }
 

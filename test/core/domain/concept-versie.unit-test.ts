@@ -9,7 +9,7 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/concept-versie";
 import {uuid} from "../../../mu-helper";
-import {aFullConceptVersie} from "./concept-versie-test-builder";
+import {aFullConceptVersie, ConceptVersieTestBuilder} from "./concept-versie-test-builder";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {aMinimalRequirement} from "./requirement-test-builder";
@@ -21,9 +21,20 @@ import {aFullFinancialAdvantage} from "./financial-advantage-test-builder";
 
 describe('is functionally changed', () => {
 
+    test('identifier is extracted from id', () => {
+        const aUUID = uuid();
+        const id = ConceptVersieTestBuilder.buildIri(aUUID);
+        const aConceptVersie =
+            aFullConceptVersie()
+                .withId(id)
+                .build();
+
+        expect(aConceptVersie.identifier).toEqual(aUUID);
+    });
+
     type TestCase = [string, ConceptVersie, ConceptVersie];
 
-    const aConceptVersieUuid = uuid();
+    const aConceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
     const aConceptVersie =
         aFullConceptVersie().build();
 
@@ -34,10 +45,10 @@ describe('is functionally changed', () => {
             aConceptVersie],
         ['equal data',
             aFullConceptVersie()
-                .withId(aConceptVersieUuid)
+                .withId(aConceptVersieId)
                 .build(),
             aFullConceptVersie()
-                .withId(aConceptVersieUuid)
+                .withId(aConceptVersieId)
                 .build()]
     ];
 

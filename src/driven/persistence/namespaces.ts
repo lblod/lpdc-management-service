@@ -12,4 +12,5 @@ export const NS = {
     rdfs: Namespace('http://www.w3.org/2000/01/rdf-schema#'),
     ps: Namespace('http://vocab.belgif.be/ns/publicservice#'),
     xsd: Namespace('http://www.w3.org/2001/XMLSchema#'),
+    prov: Namespace('http://www.w3.org/ns/prov#'),
 };

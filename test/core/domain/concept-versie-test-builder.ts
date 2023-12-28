@@ -2,10 +2,12 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
 import {
     CompetentAuthorityLevelType,
+    ConceptTagType,
     ConceptVersie,
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
+    SnapshotType,
     TargetAudienceType,
     ThemeType,
     YourEuropeCategoryType
@@ -22,6 +24,7 @@ import {aFullCost, anotherFullCost} from "./cost-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
 import {aFullFinancialAdvantage, anotherFullFinancialAdvantage} from "./financial-advantage-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
+import {PreciseDate} from "../../../src/core/domain/precise-date";
 
 
 export function aMinimalConceptVersie(): ConceptVersieTestBuilder {
@@ -30,8 +33,9 @@ export function aMinimalConceptVersie(): ConceptVersieTestBuilder {
 }
 
 export function aFullConceptVersie(): ConceptVersieTestBuilder {
+    const id = uuid();
     return new ConceptVersieTestBuilder()
-        .withId(ConceptVersieTestBuilder.buildIri(uuid()))
+        .withId(ConceptVersieTestBuilder.buildIri(id))
         .withTitle(
             TaalString.of(
                 ConceptVersieTestBuilder.TITLE_EN,
@@ -88,7 +92,14 @@ export function aFullConceptVersie(): ConceptVersieTestBuilder {
         .withProcedures(ConceptVersieTestBuilder.PROCEDURES)
         .withWebsites(ConceptVersieTestBuilder.WEBSITES)
         .withCosts(ConceptVersieTestBuilder.COSTS)
-        .withFinancialAdvantages(ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES);
+        .withFinancialAdvantages(ConceptVersieTestBuilder.FINANCIAL_ADVANTAGES)
+        .withIsVersionOfConcept(ConceptVersieTestBuilder.IS_VERSION_OF_CONCEPT)
+        .withDateCreated(ConceptVersieTestBuilder.DATE_CREATED)
+        .withDateModified(ConceptVersieTestBuilder.DATE_MODIFIED)
+        .withGeneratedAtTime(ConceptVersieTestBuilder.GENERATED_AT_TIME)
+        .withProductId(ConceptVersieTestBuilder.PRODUCT_ID)
+        .withSnapshotType(ConceptVersieTestBuilder.SNAPSHOT_TYPE)
+        .withConceptTags(ConceptVersieTestBuilder.CONCEPT_TAGS);
 }
 
 export class ConceptVersieTestBuilder {
@@ -159,6 +170,19 @@ export class ConceptVersieTestBuilder {
 
     public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantage().build(), anotherFullFinancialAdvantage().build()];
 
+    //TODO LPDC-916: when the ConceptTestBuilder is present -> use the UUID from that one ...
+    public static readonly IS_VERSION_OF_CONCEPT = 'https://ipdc.vlaanderen.be/id/concept/cae5e6b4-0b6b-4b3c-8ec6-755313f7fe8a';
+
+    public static readonly DATE_CREATED = PreciseDate.of('2022-10-05T13:00:42.074442Z');
+    public static readonly DATE_MODIFIED = PreciseDate.of('2023-09-12T20:00:20.242928Z');
+    public static readonly GENERATED_AT_TIME = PreciseDate.of('2023-09-12T20:00:20.564313Z');
+
+    public static readonly PRODUCT_ID = "1502";
+
+    public static readonly SNAPSHOT_TYPE = SnapshotType.UPDATE;
+
+    public static readonly CONCEPT_TAGS = new Set([ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT]);
+
     private id: Iri;
     private title: TaalString | undefined;
     private description: TaalString | undefined;
@@ -182,6 +206,13 @@ export class ConceptVersieTestBuilder {
     private websites: Website[] = [];
     private costs: Cost[] = [];
     private financialAdvantages: FinancialAdvantage[] = [];
+    private isVersionOfConcept: Iri | undefined;
+    private dateCreated: PreciseDate | undefined;
+    private dateModified: PreciseDate | undefined;
+    private generatedAtTime: PreciseDate | undefined;
+    private productId: string | undefined;
+    private snapshotType: SnapshotType | undefined;
+    private conceptTags: Set<ConceptTagType> = new Set();
 
     static buildIri(uniqueId: string): Iri {
         return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
@@ -302,6 +333,41 @@ export class ConceptVersieTestBuilder {
         return this;
     }
 
+    public withIsVersionOfConcept(isVersionOfConcept: Iri): ConceptVersieTestBuilder {
+        this.isVersionOfConcept = isVersionOfConcept;
+        return this;
+    }
+
+    public withDateCreated(dateCreated: PreciseDate): ConceptVersieTestBuilder {
+        this.dateCreated = dateCreated;
+        return this;
+    }
+
+    public withDateModified(dateModified: PreciseDate): ConceptVersieTestBuilder {
+        this.dateModified = dateModified;
+        return this;
+    }
+
+    public withGeneratedAtTime(generatedAtTime: PreciseDate): ConceptVersieTestBuilder {
+        this.generatedAtTime = generatedAtTime;
+        return this;
+    }
+
+    public withProductId(productId: string): ConceptVersieTestBuilder {
+        this.productId = productId;
+        return this;
+    }
+
+    public withSnapshotType(snapshotType: SnapshotType): ConceptVersieTestBuilder {
+        this.snapshotType = snapshotType;
+        return this;
+    }
+
+    public withConceptTags(conceptTags: Set<ConceptTagType>): ConceptVersieTestBuilder {
+        this.conceptTags = conceptTags;
+        return this;
+    }
+
     public build(): ConceptVersie {
         return new ConceptVersie(
             this.id,
@@ -326,7 +392,15 @@ export class ConceptVersieTestBuilder {
             this.procedures,
             this.websites,
             this.costs,
-            this.financialAdvantages);
+            this.financialAdvantages,
+            this.isVersionOfConcept,
+            this.dateCreated,
+            this.dateModified,
+            this.generatedAtTime,
+            this.productId,
+            this.snapshotType,
+            this.conceptTags,
+            );
     }
 
 }

@@ -7,7 +7,7 @@ export class TaalString {
     private readonly _nlGeneratedFormal: string | undefined;
     private readonly _nlGeneratedInformal: string | undefined;
 
-    constructor(en: string | undefined,
+    private constructor(en: string | undefined,
                 nl: string | undefined,
                 nlFormal: string | undefined,
                 nlInformal: string | undefined,

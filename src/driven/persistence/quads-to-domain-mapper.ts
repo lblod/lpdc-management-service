@@ -3,10 +3,12 @@ import {Iri} from "../../core/domain/shared/iri";
 import {graph, Literal, NamedNode, namedNode, Statement} from "rdflib";
 import {
     CompetentAuthorityLevelType,
+    ConceptTagType,
     ConceptVersie,
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
+    SnapshotType,
     TargetAudienceType,
     ThemeType,
     YourEuropeCategoryType
@@ -20,6 +22,7 @@ import {Procedure} from "../../core/domain/procedure";
 import {Requirement} from "../../core/domain/requirement";
 import {Evidence} from "../../core/domain/evidence";
 import {NS} from "./namespaces";
+import {PreciseDate} from "../../core/domain/precise-date";
 
 
 export class QuadsToDomainMapper {
@@ -61,6 +64,13 @@ export class QuadsToDomainMapper {
             this.websites(id),
             this.costs(id),
             this.financialAdvantages(id),
+            this.isVersionOfConcept(id),
+            this.dateCreated(id),
+            this.dateModified(id),
+            this.generatedAtTime(id),
+            this.productId(id),
+            this.snapshotType(id),
+            this.conceptTags(id),
         );
     }
 
@@ -148,6 +158,34 @@ export class QuadsToDomainMapper {
         return this.store.anyValue(namedNode(id), NS.schema("url"), null, this.graphId);
     }
 
+    private isVersionOfConcept(id: Iri): string | undefined {
+        return this.store.anyValue(namedNode(id), NS.dct("isVersionOf"), null, this.graphId);
+    }
+
+    private dateCreated(id: Iri): PreciseDate | undefined {
+        return this.asPreciseDate(this.store.anyValue(namedNode(id), NS.schema("dateCreated"), null, this.graphId));
+    }
+
+    private dateModified(id: Iri): PreciseDate | undefined {
+        return this.asPreciseDate(this.store.anyValue(namedNode(id), NS.schema("dateModified"), null, this.graphId));
+    }
+
+    private generatedAtTime(id: Iri): PreciseDate | undefined {
+        return this.asPreciseDate(this.store.anyValue(namedNode(id), NS.prov("generatedAtTime"), null, this.graphId));
+    }
+
+    private productId(id: Iri): string | undefined {
+        return this.store.anyValue(namedNode(id), NS.schema("productID"), null, this.graphId);
+    }
+
+    private snapshotType(id: Iri): SnapshotType | undefined {
+        return this.asEnum(SnapshotType, this.store.anyValue(namedNode(id), NS.lpdcExt("snapshotType"), null, this.graphId), id);
+    }
+
+    private conceptTags(id: Iri): Set<ConceptTagType> {
+        return this.asEnums(ConceptTagType, this.store.statementsMatching(namedNode(id), NS.lpdcExt("conceptTag"), null, this.graphId), id);
+    }
+
     private costs(id: Iri): Cost[] {
         const costIds =
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.m8g('hasCost'), null, this.graphId)));
@@ -233,6 +271,10 @@ export class QuadsToDomainMapper {
         return aValue ? new Date(aValue) : undefined;
     }
 
+    private asPreciseDate(aValue: string | undefined): PreciseDate | undefined {
+        return PreciseDate.of(aValue);
+    }
+
     private asNumber(aValue: string | undefined): number | undefined {
         return aValue ? Number.parseInt(aValue) : undefined;
     }
@@ -272,7 +314,11 @@ export class QuadsToDomainMapper {
     }
 
     private asLiterals(statements: Statement[]) {
-        return statements?.map(s => s.object as Literal);
+        return statements?.map(this.asLiteral);
+    }
+
+    private asLiteral(statement: Statement) {
+        return statement.object as Literal;
     }
 
     private sort(anArray: any) {
