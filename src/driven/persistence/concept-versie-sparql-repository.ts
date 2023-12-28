@@ -4,6 +4,7 @@ import {ConceptVersie} from "../../core/domain/concept-versie";
 import {Iri} from "../../core/domain/shared/iri";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {NS} from "./namespaces";
 
 export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
 
@@ -18,7 +19,15 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
     async findById(id: Iri): Promise<ConceptVersie> {
         const ldesDataGraph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
 
-        const quads = await this.fetcher.fetch(ldesDataGraph, id, [], []);
+        const quads = await this.fetcher.fetch(ldesDataGraph,
+            id,
+            [],
+            [
+                NS.skos('Concept').value,
+                NS.lpdcExt('ConceptDisplayConfiguration').value,
+                NS.besluit('bestuurseenheid').value,
+                NS.m8g('PublicOrganisation').value
+            ]);
 
         const mapper = new QuadsToDomainMapper(quads, ldesDataGraph);
 

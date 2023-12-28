@@ -12,6 +12,8 @@ import {
     DatastoreToQuadsRecursiveSparqlFetcher
 } from "../../src/driven/persistence/datastore-to-quads-recursive-sparql-fetcher";
 
+//TODO LPDC-916: also make test for Concept Data Integrity Validation
+
 describe('Concept Versie Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all

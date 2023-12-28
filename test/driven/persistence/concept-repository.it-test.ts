@@ -109,7 +109,8 @@ describe('ConceptRepository', () => {
 
         test('Verify full mappings', async () => {
             const id = uuid();
-            const conceptId =  ConceptTestBuilder.buildIri(id);
+            const conceptId = ConceptTestBuilder.buildIri(id);
+            const conceptDisplayConfigurationId = `http://data.lblod.info/id/conceptual-display-configuration/${uuid()}`;
 
             const concept =
                 aFullConcept()
@@ -163,28 +164,51 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> <http://schema.org/endDate> """${ConceptTestBuilder.END_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptId}> <http://purl.org/dc/terms/type> <${ConceptTestBuilder.TYPE}>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptTestBuilder.TARGET_AUDIENCES)[0]}>`,
+                    `<${Array.from(ConceptTestBuilder.TARGET_AUDIENCES)[0]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptTestBuilder.TARGET_AUDIENCES)[1]}>`,
+                    `<${Array.from(ConceptTestBuilder.TARGET_AUDIENCES)[1]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptTestBuilder.TARGET_AUDIENCES)[2]}>`,
+                    `<${Array.from(ConceptTestBuilder.TARGET_AUDIENCES)[2]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <http://data.europa.eu/m8g/thematicArea> <${Array.from(ConceptTestBuilder.THEMES)[0]}>`,
+                    `<${Array.from(ConceptTestBuilder.THEMES)[0]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <http://data.europa.eu/m8g/thematicArea> <${Array.from(ConceptTestBuilder.THEMES)[1]}>`,
+                    `<${Array.from(ConceptTestBuilder.THEMES)[1]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <http://data.europa.eu/m8g/thematicArea> <${Array.from(ConceptTestBuilder.THEMES)[2]}>`,
+                    `<${Array.from(ConceptTestBuilder.THEMES)[2]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITY_LEVELS)[0]}>`,
+                    `<${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITY_LEVELS)[0]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITY_LEVELS)[1]}>`,
+                    `<${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITY_LEVELS)[1]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITY_LEVELS)[2]}>`,
+                    `<${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITY_LEVELS)[2]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITIES)[0]}>`,
+                    `<${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITIES)[0]}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
                     `<${conceptId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITIES)[1]}>`,
+                    `<${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITIES)[1]}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
                     `<${conceptId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITIES)[2]}>`,
+                    `<${Array.from(ConceptTestBuilder.COMPETENT_AUTHORITIES)[2]}> a <http://data.europa.eu/m8g/PublicOrganisation>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITY_LEVELS)[0]}>`,
+                    `<${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITY_LEVELS)[0]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITY_LEVELS)[1]}>`,
+                    `<${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITY_LEVELS)[1]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITY_LEVELS)[2]}>`,
+                    `<${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITY_LEVELS)[2]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITIES)[0]}>`,
+                    `<${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITIES)[0]}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITIES)[1]}>`,
+                    `<${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITIES)[1]}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITIES)[2]}>`,
+                    `<${Array.from(ConceptTestBuilder.EXECUTING_AUTHORITIES)[2]}> a <http://data.europa.eu/m8g/PublicOrganisation>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${Array.from(ConceptTestBuilder.PUBLICATION_MEDIA)[0]}>`,
+                    `<${Array.from(ConceptTestBuilder.PUBLICATION_MEDIA)[0]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${Array.from(ConceptTestBuilder.PUBLICATION_MEDIA)[1]}>`,
+                    `<${Array.from(ConceptTestBuilder.PUBLICATION_MEDIA)[1]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptTestBuilder.YOUR_EUROPE_CATEGORIES)[0]}>`,
+                    `<${Array.from(ConceptTestBuilder.YOUR_EUROPE_CATEGORIES)[0]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptTestBuilder.YOUR_EUROPE_CATEGORIES)[1]}>`,
+                    `<${Array.from(ConceptTestBuilder.YOUR_EUROPE_CATEGORIES)[1]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptTestBuilder.YOUR_EUROPE_CATEGORIES)[2]}>`,
+                    `<${Array.from(ConceptTestBuilder.YOUR_EUROPE_CATEGORIES)[2]}> a <http://www.w3.org/2004/02/skos/core#Concept>`,
                     `<${conceptId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptTestBuilder.KEYWORDS)[0].en}"""@en`,
                     `<${conceptId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptTestBuilder.KEYWORDS)[1].nl}"""@nl`,
                     `<${conceptId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptTestBuilder.KEYWORDS)[2].nl}"""@nl`,
@@ -434,6 +458,9 @@ describe('ConceptRepository', () => {
                     `<${ConceptTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/description> """${ConceptTestBuilder.FINANCIAL_ADVANTAGES[0].description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
                     `<${ConceptTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${conceptId}> <http://schema.org/productID> """${ConceptTestBuilder.PRODUCT_ID}"""`,
+                    `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${ConceptTestBuilder.PROCEDURES[0].websites[0].id}>`,
+                    `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration> <${conceptDisplayConfigurationId}>`,
+                    `<${conceptDisplayConfigurationId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptDisplayConfiguration>`,
                 ]);
 
             const actualConcept = await repository.findById(conceptId);

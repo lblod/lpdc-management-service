@@ -18,16 +18,26 @@ export class ConceptSparqlRepository implements ConceptRepository {
     }
 
     async findById(id: Iri): Promise<Concept> {
-        //TODO LPDC-916: we should restrict querying in this graph on type / and or predicate (because in this public graph there is a lot of other stuff we don't want to query up) ...
-        //TODO LPDC-916: add in the insertdata test, skos:Concepts for each of the relations (this will make the test fail)
-        //TODO LPDC-916: then add here the stop recursions
-        //TODO LPDC-916: same for https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptDisplayConfiguration
         const quads = await this.fetcher.fetch(CONCEPT_GRAPH,
             id,
-            [],
+            //TODO LPDC-916: verify others in detail
+            [
+                NS.lpdcExt('yourEuropeCategory').value,
+                NS.lpdcExt('targetAudience').value,
+                NS.m8g('thematicArea').value,
+                NS.lpdcExt('competentAuthorityLevel').value,
+                NS.m8g('hasCompetentAuthority').value,
+                NS.lpdcExt('executingAuthorityLevel').value,
+                NS.lpdcExt('hasExecutingAuthority').value,
+                NS.lpdcExt('publicationMedium').value,
+                NS.lpdcExt('hasConceptDisplayConfiguration').value, //TODO LPDC-916: this works, but we don't want to query these ones at all (there are way to many in production database). so add excluded triples ...
+            ],
+            //TODO LPDC-916: verify others in detail on production dataset
             [
                 NS.skos('Concept').value,
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
+                NS.besluit('Bestuurseenheid').value,
+                NS.m8g('PublicOrganisation').value,
             ]);
 
         const mapper = new QuadsToDomainMapper(quads, CONCEPT_GRAPH);
