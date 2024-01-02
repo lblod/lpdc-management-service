@@ -8,12 +8,14 @@ import {isLiteral} from "rdflib";
 import {shuffle} from "lodash";
 import {asSortedSet} from "../../src/core/domain/shared/collections-helper";
 import fs from "fs";
+import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 
 describe('Concept Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
 
     const repository = new ConceptSparqlTestRepository(endPoint);
+    const snapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);
     const graph = CONCEPT_GRAPH;
@@ -133,6 +135,9 @@ describe('Concept Data Integrity Validation', () => {
                         domainToTriplesMapper.conceptToTriples(conceptForId);
                     quadsFromRequeriedConcepts =
                         [...quadsForConceptForId, ...quadsFromRequeriedConcepts];
+
+                    const latestConceptSnapshot = await snapshotRepository.findById(conceptForId.latestConceptSnapshot);
+                    expect(latestConceptSnapshot.id).toEqual(latestConceptSnapshot.id);
                 } catch (e) {
                     console.error(e);
                     if (!e.message.startsWith('could not map')) {
