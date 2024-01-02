@@ -171,7 +171,6 @@ export class ConceptVersieTestBuilder {
 
     public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantage().build(), anotherFullFinancialAdvantage().build()];
 
-    //TODO LPDC-916: when the ConceptTestBuilder is present -> use the UUID from that one ...
     public static readonly IS_VERSION_OF_CONCEPT = ConceptTestBuilder.buildIri(uuid());
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2022-10-05T13:00:42.074442Z');
