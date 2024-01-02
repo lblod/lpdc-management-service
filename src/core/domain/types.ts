@@ -1,4 +1,4 @@
-export enum ProductType { //TODO LPDC-916: url in mapping code ?
+export enum ProductType {
     FINANCIELEVERPLICHTING = 'FinancieleVerplichting',
     TOELATING = 'Toelating',
     BEWIJS = 'Bewijs',
@@ -33,7 +33,7 @@ export enum CompetentAuthorityLevelType {
     FEDERAAL = 'Federaal',
     VLAAMS = 'Vlaams',
     PROVINCIAAL = 'Provinciaal',
-    LOKAAL = 'Lokaaal',
+    LOKAAL = 'Lokaal',
 }
 
 export enum ExecutingAuthorityLevelType {
