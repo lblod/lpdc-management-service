@@ -11,6 +11,7 @@ export function aMinimalCost(): CostTestBuilder {
 export function aFullCost(): CostTestBuilder {
     return new CostTestBuilder()
         .withId(CostTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             CostTestBuilder.TITLE_EN,
             CostTestBuilder.TITLE_NL,
@@ -31,6 +32,7 @@ export function aFullCost(): CostTestBuilder {
 export function anotherFullCost(): CostTestBuilder {
     return new CostTestBuilder()
         .withId(CostTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             CostTestBuilder.ANOTHER_TITLE_EN,
             CostTestBuilder.ANOTHER_TITLE_NL,
@@ -79,6 +81,7 @@ export class CostTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Cost Another Description - nl-generated-informal';
 
     private id: Iri;
+    private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
 
@@ -88,6 +91,11 @@ export class CostTestBuilder {
 
     public withId(id: Iri): CostTestBuilder {
         this.id = id;
+        return this;
+    }
+
+    public withUuid(uuid: string): CostTestBuilder {
+        this.uuid = uuid;
         return this;
     }
 
@@ -104,6 +112,7 @@ export class CostTestBuilder {
     public build(): Cost {
         return new Cost(
             this.id,
+            this.uuid,
             this.title,
             this.description,
         );

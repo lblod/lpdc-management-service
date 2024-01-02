@@ -15,5 +15,7 @@ export const NS = {
     prov: Namespace('http://www.w3.org/ns/prov#'),
     ex: Namespace('http://example.com/ns#'),
     skos: Namespace('http://www.w3.org/2004/02/skos/core#'),
-    besluit: Namespace('http://data.vlaanderen.be/ns/besluit#')
+    besluit: Namespace('http://data.vlaanderen.be/ns/besluit#'),
+    adms: Namespace('http://www.w3.org/ns/adms#'),
+    mu: Namespace('http://mu.semte.ch/vocabularies/core/'),
 };

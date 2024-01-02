@@ -11,6 +11,7 @@ export function aMinimalWebsite(): WebsiteTestBuilder {
 export function aFullWebsite(): WebsiteTestBuilder {
     return new WebsiteTestBuilder()
         .withId(WebsiteTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             WebsiteTestBuilder.TITLE_EN,
             WebsiteTestBuilder.TITLE_NL,
@@ -29,25 +30,26 @@ export function aFullWebsite(): WebsiteTestBuilder {
         .withUrl(WebsiteTestBuilder.URL);
 }
 
-export function anotherFullWebsite(uuid: string): WebsiteTestBuilder {
+export function anotherFullWebsite(aUuid: string): WebsiteTestBuilder {
     return new WebsiteTestBuilder()
-        .withId(WebsiteTestBuilder.buildIri(uuid))
+        .withId(WebsiteTestBuilder.buildIri(aUuid))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
-            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_EN(uuid),
-            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL(uuid),
-            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_FORMAL(uuid),
-            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_INFORMAL(uuid),
-            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_GENERATED_FORMAL(uuid),
-            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_GENERATED_INFORMAL(uuid)))
+            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_EN(aUuid),
+            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL(aUuid),
+            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_FORMAL(aUuid),
+            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_INFORMAL(aUuid),
+            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_GENERATED_FORMAL(aUuid),
+            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_GENERATED_INFORMAL(aUuid)))
         .withDescription(
             LanguageString.of(
-                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_EN(uuid),
-                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL(uuid),
-                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_FORMAL(uuid),
-                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_INFORMAL(uuid),
-                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_GENERATED_FORMAL(uuid),
-                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_GENERATED_INFORMAL(uuid)))
-        .withUrl(WebsiteTestBuilder.ANOTHER_URL_TEMPLATE(uuid));
+                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_EN(aUuid),
+                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL(aUuid),
+                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_FORMAL(aUuid),
+                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_INFORMAL(aUuid),
+                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_GENERATED_FORMAL(aUuid),
+                WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_GENERATED_INFORMAL(aUuid)))
+        .withUrl(WebsiteTestBuilder.ANOTHER_URL_TEMPLATE(aUuid));
 }
 
 export class WebsiteTestBuilder {
@@ -84,6 +86,7 @@ export class WebsiteTestBuilder {
     public static readonly ANOTHER_URL_TEMPLATE = (param:string) =>  `https://some-other-url-${param}.test`;
 
     private id: Iri;
+    private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
     private url: string | undefined;
@@ -94,6 +97,11 @@ export class WebsiteTestBuilder {
 
     public withId(id: Iri): WebsiteTestBuilder {
         this.id = id;
+        return this;
+    }
+
+    public withUuid(uuid: string) : WebsiteTestBuilder {
+        this.uuid = uuid;
         return this;
     }
 
@@ -115,6 +123,7 @@ export class WebsiteTestBuilder {
     public build(): Website {
         return new Website(
             this.id,
+            this.uuid,
             this.title,
             this.description,
             this.url);

@@ -6,17 +6,20 @@ import {Website} from "./website";
 export class Procedure {
 
     private readonly _id: Iri;
+    private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _websites: Website[];
 
     constructor(id: Iri,
+                uuid: string | undefined,
                 title: LanguageString | undefined,
                 description: LanguageString | undefined,
                 websites: Website[],
     ) {
 //TODO LPDC-917: add invariants
         this._id = id;
+        this._uuid = uuid;
         this._title = title;
         this._description = description;
         this._websites = [...websites];
@@ -24,6 +27,10 @@ export class Procedure {
 
     get id(): Iri {
         return this._id;
+    }
+
+    get uuid(): Iri {
+        return this._uuid;
     }
 
     get title(): LanguageString | undefined {

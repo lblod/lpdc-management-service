@@ -147,6 +147,10 @@ export class QuadsToDomainMapper {
         return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('regulation'), null, this.graphId));
     }
 
+    private uuid(id: Iri): string | undefined {
+        return this.store.anyValue(namedNode(id), NS.mu("uuid"), null, this.graphId);
+    }
+
     private targetAudiences(id: Iri): Set<TargetAudienceType> {
         return this.asEnums(TargetAudienceType, this.store.statementsMatching(namedNode(id), NS.lpdcExt("targetAudience"), null, this.graphId), id);
     }
@@ -222,7 +226,7 @@ export class QuadsToDomainMapper {
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.m8g('hasCost'), null, this.graphId)));
         costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, NS.m8g('Cost')));
 
-        const costs = costIds.map(costId => new Cost(costId, this.title(costId), this.description(costId)));
+        const costs = costIds.map(costId => new Cost(costId, this.uuid(costId), this.title(costId), this.description(costId)));
 
         return this.sort(costs);
     }
@@ -235,7 +239,7 @@ export class QuadsToDomainMapper {
 
         const financialAdvantages =
             financialAdvantageIds.map(financialAdvantageId =>
-                new FinancialAdvantage(financialAdvantageId, this.title(financialAdvantageId), this.description(financialAdvantageId)));
+                new FinancialAdvantage(financialAdvantageId, this.uuid(financialAdvantageId), this.title(financialAdvantageId), this.description(financialAdvantageId)));
 
         return this.sort(financialAdvantages);
     }
@@ -249,7 +253,7 @@ export class QuadsToDomainMapper {
 
         const websites =
             websiteIds.map(websiteId =>
-                new Website(websiteId, this.title(websiteId), this.description(websiteId), this.url(websiteId)));
+                new Website(websiteId, this.uuid(websiteId), this.title(websiteId), this.description(websiteId), this.url(websiteId)));
 
         return this.sort(websites);
     }
@@ -263,7 +267,7 @@ export class QuadsToDomainMapper {
 
         const procedures =
             procedureIds.map(procedureId =>
-                new Procedure(procedureId, this.title(procedureId), this.description(procedureId), this.websites(procedureId, NS.lpdcExt('hasWebsite'))));
+                new Procedure(procedureId, this.uuid(procedureId), this.title(procedureId), this.description(procedureId), this.websites(procedureId, NS.lpdcExt('hasWebsite'))));
 
         return this.sort(procedures);
     }
@@ -277,7 +281,7 @@ export class QuadsToDomainMapper {
 
         const requirements =
             requirementIds.map(requirementId =>
-                new Requirement(requirementId, this.title(requirementId), this.description(requirementId), this.evidence(requirementId)));
+                new Requirement(requirementId, this.uuid(requirementId), this.title(requirementId), this.description(requirementId), this.evidence(requirementId)));
 
         return this.sort(requirements);
     }
@@ -295,7 +299,7 @@ export class QuadsToDomainMapper {
         if (evidenceIds.length === 0) {
             return undefined;
         }
-        return new Evidence(evidenceIds[0], this.title(evidenceIds[0]), this.description(evidenceIds[0]));
+        return new Evidence(evidenceIds[0], this.uuid(evidenceIds[0]),  this.title(evidenceIds[0]), this.description(evidenceIds[0]));
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {

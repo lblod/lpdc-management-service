@@ -21,11 +21,9 @@ export class ConceptSparqlRepository implements ConceptRepository {
         const quads = await this.fetcher.fetch(
             CONCEPT_GRAPH,
             id,
-            //TODO LPDC-916: verify others in detail on production dataset
             [
                 NS.lpdcExt('hasConceptDisplayConfiguration').value,
             ],
-            //TODO LPDC-916: verify others in detail on production dataset
             [
                 NS.lpdcExt('yourEuropeCategory').value,
                 NS.lpdcExt('targetAudience').value,
@@ -35,8 +33,10 @@ export class ConceptSparqlRepository implements ConceptRepository {
                 NS.lpdcExt('executingAuthorityLevel').value,
                 NS.lpdcExt('hasExecutingAuthority').value,
                 NS.lpdcExt('publicationMedium').value,
+                NS.dct("type").value,
+                NS.lpdcExt("conceptTag").value,
+                NS.adms('status').value,
             ],
-            //TODO LPDC-916: verify others in detail on production dataset
             [
                 NS.skos('Concept').value,
                 NS.lpdcExt('ConceptDisplayConfiguration').value,

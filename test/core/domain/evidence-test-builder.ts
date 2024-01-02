@@ -12,6 +12,7 @@ export function aMinimalEvidence(): EvidenceTestBuilder {
 export function aFullEvidence(): EvidenceTestBuilder {
     return new EvidenceTestBuilder()
         .withId(EvidenceTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             EvidenceTestBuilder.TITLE_EN,
             EvidenceTestBuilder.TITLE_NL,
@@ -32,6 +33,7 @@ export function aFullEvidence(): EvidenceTestBuilder {
 export function anotherFullEvidence(): EvidenceTestBuilder {
     return new EvidenceTestBuilder()
         .withId(EvidenceTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             EvidenceTestBuilder.ANOTHER_TITLE_EN,
             EvidenceTestBuilder.ANOTHER_TITLE_NL,
@@ -80,6 +82,7 @@ export class EvidenceTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Evidence Another Description - nl-generated-informal';
 
     private id: Iri;
+    private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
 
@@ -89,6 +92,11 @@ export class EvidenceTestBuilder {
 
     public withId(id: Iri): EvidenceTestBuilder {
         this.id = id;
+        return this;
+    }
+
+    public withUuid(uuid: string): EvidenceTestBuilder {
+        this.uuid = uuid;
         return this;
     }
 
@@ -105,6 +113,7 @@ export class EvidenceTestBuilder {
     public build(): Evidence {
         return new Evidence(
             this.id,
+            this.uuid,
             this.title,
             this.description);
     }

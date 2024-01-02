@@ -11,6 +11,7 @@ export function aMinimalFinancialAdvantage(): FinancialAdvantageTestBuilder {
 export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
     return new FinancialAdvantageTestBuilder()
         .withId(FinancialAdvantageTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.TITLE_EN,
             FinancialAdvantageTestBuilder.TITLE_NL,
@@ -31,6 +32,7 @@ export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
 export function anotherFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
     return new FinancialAdvantageTestBuilder()
         .withId(FinancialAdvantageTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_EN,
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_NL,
@@ -79,6 +81,7 @@ export class FinancialAdvantageTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Financial Advantage Another Description - nl-generated-informal';
 
     private id: Iri;
+    private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
 
@@ -88,6 +91,11 @@ export class FinancialAdvantageTestBuilder {
 
     public withId(id: Iri): FinancialAdvantageTestBuilder {
         this.id = id;
+        return this;
+    }
+
+    public withUuid(uuid: string): FinancialAdvantageTestBuilder {
+        this.uuid = uuid;
         return this;
     }
 
@@ -104,6 +112,7 @@ export class FinancialAdvantageTestBuilder {
     public build(): FinancialAdvantage {
         return new FinancialAdvantage(
             this.id,
+            this.uuid,
             this.title,
             this.description,
         );

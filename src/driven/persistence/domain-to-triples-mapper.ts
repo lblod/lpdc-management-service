@@ -166,6 +166,7 @@ export class DomainToTriplesMapper {
         return values.flatMap((requirement, index) =>
             [
                 quad(namedNode(id), NS.ps('hasRequirement'), namedNode(requirement.id)),
+                requirement.uuid ? quad(namedNode(requirement.id), NS.mu('uuid'), literal(requirement.uuid)) : undefined,
                 quad(namedNode(requirement.id), NS.rdf('type'), NS.m8g('Requirement')),
                 ...this.languageStringToTriples(namedNode(requirement.id), NS.dct(`title`), requirement.title),
                 ...this.languageStringToTriples(namedNode(requirement.id), NS.dct(`description`), requirement.description),
@@ -178,6 +179,7 @@ export class DomainToTriplesMapper {
     private evidenceToTriples(requirementId: Iri, evidence: Evidence | undefined): Statement[] {
         return evidence ? [
             quad(namedNode(requirementId), NS.m8g('hasSupportingEvidence'), namedNode(evidence.id)),
+            evidence.uuid ? quad(namedNode(evidence.id), NS.mu('uuid'), literal(evidence.uuid)) : undefined,
             quad(namedNode(evidence.id), NS.rdf('type'), NS.m8g('Evidence')),
             ...this.languageStringToTriples(namedNode(evidence.id), NS.dct(`title`), evidence.title),
             ...this.languageStringToTriples(namedNode(evidence.id), NS.dct(`description`), evidence.description),
@@ -188,6 +190,7 @@ export class DomainToTriplesMapper {
         return values.flatMap((procedure, index) =>
             [
                 quad(namedNode(id), NS.cpsv('follows'), namedNode(procedure.id)),
+                procedure.uuid ? quad(namedNode(procedure.id), NS.mu('uuid'), literal(procedure.uuid)) : undefined,
                 quad(namedNode(procedure.id), NS.rdf('type'), NS.cpsv('Rule')),
                 ...this.languageStringToTriples(namedNode(procedure.id), NS.dct(`title`), procedure.title),
                 ...this.languageStringToTriples(namedNode(procedure.id), NS.dct(`description`), procedure.description),
@@ -201,6 +204,7 @@ export class DomainToTriplesMapper {
         return websites.flatMap((website, index) => {
                 return [
                     quad(namedNode(id), predicate, namedNode(website.id)),
+                    website.uuid ? quad(namedNode(website.id), NS.mu('uuid'), literal(website.uuid)) : undefined,
                     quad(namedNode(website.id), NS.rdf('type'), NS.schema('WebSite')),
                     ...this.languageStringToTriples(namedNode(website.id), NS.dct(`title`), website.title),
                     ...this.languageStringToTriples(namedNode(website.id), NS.dct(`description`), website.description),
@@ -215,6 +219,7 @@ export class DomainToTriplesMapper {
         return values.flatMap((cost, index) => {
             return [
                 quad(namedNode(id), NS.m8g('hasCost'), namedNode(cost.id)),
+                cost.uuid ? quad(namedNode(cost.id), NS.mu('uuid'), literal(cost.uuid)) : undefined,
                 quad(namedNode(cost.id), NS.rdf('type'), NS.m8g('Cost')),
                 ...this.languageStringToTriples(namedNode(cost.id), NS.dct(`title`), cost.title),
                 ...this.languageStringToTriples(namedNode(cost.id), NS.dct(`description`), cost.description),
@@ -228,6 +233,7 @@ export class DomainToTriplesMapper {
             .flatMap((financialAdvantage, index) => {
                 return [
                     quad(namedNode(id), NS.cpsv('produces'), namedNode(financialAdvantage.id)),
+                    financialAdvantage.uuid ? quad(namedNode(financialAdvantage.id), NS.mu('uuid'), literal(financialAdvantage.uuid)) : undefined,
                     quad(namedNode(financialAdvantage.id), NS.rdf('type'), NS.lpdcExt('FinancialAdvantage')),
                     ...this.languageStringToTriples(namedNode(financialAdvantage.id), NS.dct(`title`), financialAdvantage.title),
                     ...this.languageStringToTriples(namedNode(financialAdvantage.id), NS.dct(`description`), financialAdvantage.description),

@@ -13,6 +13,7 @@ export function aMinimalProcedure(): ProcedureTestBuilder {
 export function aFullProcedure(): ProcedureTestBuilder {
     return new ProcedureTestBuilder()
         .withId(ProcedureTestBuilder.buildIri(uuid()))
+        .withUUID(uuid())
         .withTitle(LanguageString.of(
             ProcedureTestBuilder.TITLE_EN,
             ProcedureTestBuilder.TITLE_NL,
@@ -34,6 +35,7 @@ export function aFullProcedure(): ProcedureTestBuilder {
 export function anotherFullProcedure(): ProcedureTestBuilder {
     return new ProcedureTestBuilder()
         .withId(ProcedureTestBuilder.buildIri(uuid()))
+        .withUUID(uuid())
         .withTitle(LanguageString.of(
             ProcedureTestBuilder.ANOTHER_TITLE_EN,
             ProcedureTestBuilder.ANOTHER_TITLE_NL,
@@ -86,6 +88,7 @@ export class ProcedureTestBuilder {
     public static readonly ANOTHER_WEBSITES = [anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()];
 
     private id: Iri;
+    private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
     private websites: Website[] = [];
@@ -96,6 +99,11 @@ export class ProcedureTestBuilder {
 
     public withId(id: Iri): ProcedureTestBuilder {
         this.id = id;
+        return this;
+    }
+
+    public withUUID(uuid: string): ProcedureTestBuilder {
+        this.uuid = uuid;
         return this;
     }
 
@@ -117,6 +125,7 @@ export class ProcedureTestBuilder {
     public build(): Procedure {
         return new Procedure(
             this.id,
+            this.uuid,
             this.title,
             this.description,
             this.websites,

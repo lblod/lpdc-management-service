@@ -14,6 +14,7 @@ export function aMinimalRequirement(): RequirementTestBuilder {
 export function aFullRequirement(): RequirementTestBuilder {
     return new RequirementTestBuilder()
         .withId(RequirementTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             RequirementTestBuilder.TITLE_EN,
             RequirementTestBuilder.TITLE_NL,
@@ -35,6 +36,7 @@ export function aFullRequirement(): RequirementTestBuilder {
 export function anotherFullRequirement(): RequirementTestBuilder {
     return new RequirementTestBuilder()
         .withId(RequirementTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             RequirementTestBuilder.ANOTHER_TITLE_EN,
             RequirementTestBuilder.ANOTHER_TITLE_NL,
@@ -87,6 +89,7 @@ export class RequirementTestBuilder {
     public static readonly ANOTHER_EVIDENCE = anotherFullEvidence().build();
 
     private id: Iri;
+    private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
     private evidence: Evidence | undefined;
@@ -97,6 +100,11 @@ export class RequirementTestBuilder {
 
     public withId(id: Iri): RequirementTestBuilder {
         this.id = id;
+        return this;
+    }
+
+    public withUuid(uuid: string): RequirementTestBuilder {
+        this.uuid = uuid;
         return this;
     }
 
@@ -118,6 +126,7 @@ export class RequirementTestBuilder {
     public build(): Requirement {
         return new Requirement(
             this.id,
+            this.uuid,
             this.title,
             this.description,
             this.evidence

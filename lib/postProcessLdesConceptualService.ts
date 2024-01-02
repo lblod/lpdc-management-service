@@ -476,21 +476,6 @@ async function ensureConceptDisplayConfigs(conceptualService: string): Promise<v
     await updateSudo(insertConfigsQuery);
 }
 
-async function isArchivingEvent(versionedServiceGraph: string, versionedService: string): Promise<boolean> {
-    // IPDC sends archiving events as snapshot type "Delete" since they don't do hard deletes.
-    const isDeleteSnapshotTypeQuery = `
-    ASK {
-      GRAPH ${sparqlEscapeUri(versionedServiceGraph)} {
-        ${sparqlEscapeUri(versionedService)}
-          <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType>
-          <https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/Delete> .
-      }
-    }
-  `;
-
-    return (await querySudo(isDeleteSnapshotTypeQuery))?.boolean;
-}
-
 async function markConceptAsArchived(conceptualService: string): Promise<void> {
     const archivedStatusConcept = 'http://lblod.data.gift/concepts/3f2666df-1dae-4cc2-a8dc-e8213e713081';
     const markAsArchivedQuery = `
