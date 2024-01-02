@@ -48,6 +48,7 @@ export class Concept {
     private readonly _latestConceptSnapshot: Iri;
     private readonly _previousConceptSnapshots: Set<Iri>;
     private readonly _latestFunctionallyChangedConceptSnapshot: Iri; //TODO LPDC-916: implement me
+    //TODO LPDC-916: add concept tag
 
     constructor(id: Iri,
                 uuid: string | undefined,

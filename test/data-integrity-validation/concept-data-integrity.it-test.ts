@@ -109,9 +109,12 @@ describe('Concept Data Integrity Validation', () => {
         Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://publications.europa.eu/resource/authority/language/'))
             .forEach(q => allQuadsOfGraph.delete(q));
 
+        //TODO LPDC-916: filter out legal resource
+
 
         const delayTime = 0;
         const numberOfLoops = 1;
+        const alsoLoadRelatedConceptSnapshots = true;
         const averageTimes = [];
         const technicalErrors = [];
         const dataErrors = [];
@@ -136,8 +139,17 @@ describe('Concept Data Integrity Validation', () => {
                     quadsFromRequeriedConcepts =
                         [...quadsForConceptForId, ...quadsFromRequeriedConcepts];
 
-                    const latestConceptSnapshot = await snapshotRepository.findById(conceptForId.latestConceptSnapshot);
-                    expect(latestConceptSnapshot.id).toEqual(latestConceptSnapshot.id);
+                    if(alsoLoadRelatedConceptSnapshots) {
+                        const latestConceptSnapshot = await snapshotRepository.findById(conceptForId.latestConceptSnapshot);
+                        expect(latestConceptSnapshot.id).toEqual(conceptForId.latestConceptSnapshot);
+                        expect(latestConceptSnapshot.isVersionOfConcept).toEqual(id);
+
+                        for(const eachPreviousConceptSnapshotId of conceptForId.previousConceptSnapshots) {
+                            const previousConceptSnapshot = await snapshotRepository.findById(eachPreviousConceptSnapshotId);
+                            expect(previousConceptSnapshot.id).toEqual(eachPreviousConceptSnapshotId);
+                            expect(previousConceptSnapshot.isVersionOfConcept).toEqual(id);
+                        }
+                    }
                 } catch (e) {
                     console.error(e);
                     if (!e.message.startsWith('could not map')) {
@@ -173,7 +185,7 @@ describe('Concept Data Integrity Validation', () => {
         console.log(`Data Errors Size [${dataErrors}]`);
 
         if (conceptIds.length > 0) {
-            expect(totalAverageTime).toBeLessThan(100); //typically it is a lot less, but when querying only 2 or 3 concept, you might end up with more
+            expect(totalAverageTime).toBeLessThan(100);
             expect(technicalErrors).toEqual([]);
         }
 
