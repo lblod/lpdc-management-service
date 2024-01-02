@@ -39,7 +39,7 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
         const quads = this.querying.asQuads(result, graph);
 
         quads
-            .filter(q => q.predicate.value === NS.rdf('type').value)
+            .filter(q => q.predicate.equals(NS.rdf('type')))
             .forEach(q => {
                 if (illegalTypesToRecurseInto.includes(q.object.value)) {
                     throw Error(`Recursing into <${q.object.value}> from <${q.subject.value}> is not allowed.`);
@@ -50,7 +50,8 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
             quads
                 .filter(q => {
                     return isNamedNode(q.object)
-                        && q.predicate.value !== NS.rdf('type').value
+                        && !q.predicate
+                            .equals(NS.rdf('type'))
                         && !previouslyQueriedIds.some(id => id === q.object.value)
                         && !predicatesToStopRecursion.some(id => id === q.predicate.value);
                 })

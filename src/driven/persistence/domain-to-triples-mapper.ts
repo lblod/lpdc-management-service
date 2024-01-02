@@ -3,7 +3,8 @@ import {Iri} from "../../core/domain/shared/iri";
 import {TaalString} from "../../core/domain/taal-string";
 import {Evidence} from "../../core/domain/evidence";
 import {Website} from "../../core/domain/website";
-import {literal, NamedNode, namedNode, quad, Statement} from "rdflib";
+import {literal, namedNode, quad, Statement} from "rdflib";
+import {NamedNode} from 'rdflib/lib/tf-types';
 import {NS} from "./namespaces";
 import {Concept} from "../../core/domain/concept";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
@@ -25,7 +26,7 @@ export class DomainToTriplesMapper {
 
     public conceptToTriples(concept: Concept): Statement[] {
         return [
-            this.rdfType(concept.id, namedNode(NS.lpdcExt('ConceptualPublicService').value)),
+            this.rdfType(concept.id, NS.lpdcExt('ConceptualPublicService')),
             this.startDate(concept.id, concept.startDate),
             this.endDate(concept.id, concept.endDate),
             this.type(concept.id, concept.type),
@@ -45,7 +46,7 @@ export class DomainToTriplesMapper {
             ...this.keywords(concept.id, concept.keywords),
             ...this.requirements(concept.id, concept.requirements),
             ...this.procedures(concept.id, concept.procedures),
-            ...this.websites(concept.id, namedNode(NS.rdfs('seeAlso').value), concept.websites),
+            ...this.websites(concept.id, NS.rdfs('seeAlso'), concept.websites),
             ...this.costs(concept.id, concept.costs),
             ...this.financialAdvantages(concept.id, concept.financialAdvantages),
             this.productId(concept.id, concept.productId),
@@ -54,7 +55,7 @@ export class DomainToTriplesMapper {
 
     public conceptSnapshotToTriples(conceptSnapshot: ConceptSnapshot): Statement[] {
         return [
-            this.rdfType(conceptSnapshot.id, namedNode(NS.lpdcExt('ConceptualPublicService').value)),
+            this.rdfType(conceptSnapshot.id, NS.lpdcExt('ConceptualPublicService')),
             this.startDate(conceptSnapshot.id, conceptSnapshot.startDate),
             this.endDate(conceptSnapshot.id, conceptSnapshot.endDate),
             this.type(conceptSnapshot.id, conceptSnapshot.type),
@@ -74,7 +75,7 @@ export class DomainToTriplesMapper {
             ...this.keywords(conceptSnapshot.id, conceptSnapshot.keywords),
             ...this.requirements(conceptSnapshot.id, conceptSnapshot.requirements),
             ...this.procedures(conceptSnapshot.id, conceptSnapshot.procedures),
-            ...this.websites(conceptSnapshot.id, namedNode(NS.rdfs('seeAlso').value), conceptSnapshot.websites),
+            ...this.websites(conceptSnapshot.id, NS.rdfs('seeAlso'), conceptSnapshot.websites),
             ...this.costs(conceptSnapshot.id, conceptSnapshot.costs),
             ...this.financialAdvantages(conceptSnapshot.id, conceptSnapshot.financialAdvantages),
             conceptSnapshot.isVersionOfConcept ? quad(namedNode(conceptSnapshot.id), NS.dct('isVersionOf'), namedNode(conceptSnapshot.isVersionOfConcept)) : undefined,
@@ -84,7 +85,7 @@ export class DomainToTriplesMapper {
             quad(namedNode(conceptSnapshot.id), NS.schema('identifier'), literal(conceptSnapshot.identifier)),
             this.productId(conceptSnapshot.id, conceptSnapshot.productId),
             conceptSnapshot.snapshotType ? quad(namedNode(conceptSnapshot.id), NS.lpdcExt('snapshotType'), namedNode(conceptSnapshot.snapshotType)) : undefined,
-            ...this.irisToTriples(namedNode(conceptSnapshot.id), namedNode(NS.lpdcExt('conceptTag').value), conceptSnapshot.conceptTags),
+            ...this.irisToTriples(namedNode(conceptSnapshot.id), NS.lpdcExt('conceptTag'), conceptSnapshot.conceptTags),
         ].filter(t => t !== undefined);
     }
 
@@ -105,58 +106,58 @@ export class DomainToTriplesMapper {
     }
 
     private title(id: Iri, value: TaalString): Statement [] {
-        return this.taalStringToTriples(namedNode(id), namedNode(NS.dct('title').value), value);
+        return this.taalStringToTriples(namedNode(id), NS.dct('title'), value);
     }
 
     private description(id: Iri, value: TaalString): Statement [] {
-        return this.taalStringToTriples(namedNode(id), namedNode(NS.dct('description').value), value);
+        return this.taalStringToTriples(namedNode(id), NS.dct('description'), value);
     }
 
     private additionalDescription(id: Iri, value: TaalString): Statement [] {
-        return this.taalStringToTriples(namedNode(id), namedNode(NS.lpdcExt('additionalDescription').value), value);
+        return this.taalStringToTriples(namedNode(id), NS.lpdcExt('additionalDescription'), value);
     }
 
     private exception(id: Iri, value: TaalString): Statement [] {
-        return this.taalStringToTriples(namedNode(id), namedNode(NS.lpdcExt('exception').value), value);
+        return this.taalStringToTriples(namedNode(id), NS.lpdcExt('exception'), value);
     }
 
     private regulation(id: Iri, value: TaalString): Statement [] {
-        return this.taalStringToTriples(namedNode(id), namedNode(NS.lpdcExt('regulation').value), value);
+        return this.taalStringToTriples(namedNode(id), NS.lpdcExt('regulation'), value);
     }
 
     private targetAudiences(id: Iri, values: Set<TargetAudienceType>): Statement [] {
-        return this.irisToTriples(namedNode(id), namedNode(NS.lpdcExt('targetAudience').value), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('targetAudience'), values);
     }
     private themes(id: Iri, values: Set<ThemeType>): Statement [] {
-        return this.irisToTriples(namedNode(id), namedNode(NS.m8g('thematicArea').value), values);
+        return this.irisToTriples(namedNode(id), NS.m8g('thematicArea'), values);
     }
 
     private competentAuthorityLevels(id: Iri, values: Set<CompetentAuthorityLevelType>): Statement [] {
-        return this.irisToTriples(namedNode(id), namedNode(NS.lpdcExt('competentAuthorityLevel').value), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('competentAuthorityLevel'), values);
     }
 
     private competentAuthorities(id: Iri, values: Set<Iri>): Statement [] {
-        return this.irisToTriples(namedNode(id), namedNode(NS.m8g('hasCompetentAuthority').value), values);
+        return this.irisToTriples(namedNode(id), NS.m8g('hasCompetentAuthority'), values);
     }
 
     private executingAuthorityLevels(id: Iri, values: Set<ExecutingAuthorityLevelType>): Statement [] {
-        return this.irisToTriples(namedNode(id), namedNode(NS.lpdcExt('executingAuthorityLevel').value), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('executingAuthorityLevel'), values);
     }
 
     private executingAuthorities(id: Iri, values: Set<Iri>): Statement [] {
-        return this.irisToTriples(namedNode(id), namedNode(NS.lpdcExt('hasExecutingAuthority').value), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('hasExecutingAuthority'), values);
     }
 
     private publicationMedia(id: Iri, values: Set<PublicationMediumType>): Statement [] {
-        return this.irisToTriples(namedNode(id), namedNode(NS.lpdcExt('publicationMedium').value), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('publicationMedium'), values);
     }
 
     private yourEuropeCategories(id: Iri, values: Set<YourEuropeCategoryType>): Statement [] {
-        return this.irisToTriples(namedNode(id), namedNode(NS.lpdcExt('yourEuropeCategory').value), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('yourEuropeCategory'), values);
     }
 
     private keywords(id: Iri, values: TaalString []): Statement [] {
-        return values.flatMap(keyword => this.taalStringToTriples(namedNode(id), namedNode(NS.dcat('keyword').value), keyword));
+        return values.flatMap(keyword => this.taalStringToTriples(namedNode(id), NS.dcat('keyword'), keyword));
     }
 
     private requirements(id: Iri, values: Requirement[]): Statement[] {
@@ -164,8 +165,8 @@ export class DomainToTriplesMapper {
             [
                 quad(namedNode(id), NS.ps('hasRequirement'), namedNode(requirement.id)),
                 quad(namedNode(requirement.id), NS.rdf('type'), NS.m8g('Requirement')),
-                ...this.taalStringToTriples(namedNode(requirement.id), namedNode(NS.dct(`title`).value), requirement.title),
-                ...this.taalStringToTriples(namedNode(requirement.id), namedNode(NS.dct(`description`).value), requirement.description),
+                ...this.taalStringToTriples(namedNode(requirement.id), NS.dct(`title`), requirement.title),
+                ...this.taalStringToTriples(namedNode(requirement.id), NS.dct(`description`), requirement.description),
                 quad(namedNode(requirement.id), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
                 ...this.evidenceToTriples(requirement.id, requirement.evidence),
             ]
@@ -176,8 +177,8 @@ export class DomainToTriplesMapper {
         return evidence ? [
             quad(namedNode(requirementId), NS.m8g('hasSupportingEvidence'), namedNode(evidence.id)),
             quad(namedNode(evidence.id), NS.rdf('type'), NS.m8g('Evidence')),
-            ...this.taalStringToTriples(namedNode(evidence.id), namedNode(NS.dct(`title`).value), evidence.title),
-            ...this.taalStringToTriples(namedNode(evidence.id), namedNode(NS.dct(`description`).value), evidence.description),
+            ...this.taalStringToTriples(namedNode(evidence.id), NS.dct(`title`), evidence.title),
+            ...this.taalStringToTriples(namedNode(evidence.id), NS.dct(`description`), evidence.description),
         ] : [];
     }
 
@@ -186,10 +187,10 @@ export class DomainToTriplesMapper {
             [
                 quad(namedNode(id), NS.cpsv('follows'), namedNode(procedure.id)),
                 quad(namedNode(procedure.id), NS.rdf('type'), NS.cpsv('Rule')),
-                ...this.taalStringToTriples(namedNode(procedure.id), namedNode(NS.dct(`title`).value), procedure.title),
-                ...this.taalStringToTriples(namedNode(procedure.id), namedNode(NS.dct(`description`).value), procedure.description),
+                ...this.taalStringToTriples(namedNode(procedure.id), NS.dct(`title`), procedure.title),
+                ...this.taalStringToTriples(namedNode(procedure.id), NS.dct(`description`), procedure.description),
                 quad(namedNode(procedure.id), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
-                ...this.websites(procedure.id, namedNode(NS.lpdcExt('hasWebsite').value), procedure.websites)
+                ...this.websites(procedure.id, NS.lpdcExt('hasWebsite'), procedure.websites)
             ]
         );
     }
@@ -199,8 +200,8 @@ export class DomainToTriplesMapper {
                 return [
                     quad(namedNode(id), predicate, namedNode(website.id)),
                     quad(namedNode(website.id), NS.rdf('type'), NS.schema('WebSite')),
-                    ...this.taalStringToTriples(namedNode(website.id), namedNode(NS.dct(`title`).value), website.title),
-                    ...this.taalStringToTriples(namedNode(website.id), namedNode(NS.dct(`description`).value), website.description),
+                    ...this.taalStringToTriples(namedNode(website.id), NS.dct(`title`), website.title),
+                    ...this.taalStringToTriples(namedNode(website.id), NS.dct(`description`), website.description),
                     website.url ? quad(namedNode(website.id), NS.schema('url'), literal(website.url)) : undefined,
                     quad(namedNode(website.id), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
                 ];
@@ -213,8 +214,8 @@ export class DomainToTriplesMapper {
             return [
                 quad(namedNode(id), NS.m8g('hasCost'), namedNode(cost.id)),
                 quad(namedNode(cost.id), NS.rdf('type'), NS.m8g('Cost')),
-                ...this.taalStringToTriples(namedNode(cost.id), namedNode(NS.dct(`title`).value), cost.title),
-                ...this.taalStringToTriples(namedNode(cost.id), namedNode(NS.dct(`description`).value), cost.description),
+                ...this.taalStringToTriples(namedNode(cost.id), NS.dct(`title`), cost.title),
+                ...this.taalStringToTriples(namedNode(cost.id), NS.dct(`description`), cost.description),
                 quad(namedNode(cost.id), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
             ];
         });
@@ -226,8 +227,8 @@ export class DomainToTriplesMapper {
                 return [
                     quad(namedNode(id), NS.cpsv('produces'), namedNode(financialAdvantage.id)),
                     quad(namedNode(financialAdvantage.id), NS.rdf('type'), NS.lpdcExt('FinancialAdvantage')),
-                    ...this.taalStringToTriples(namedNode(financialAdvantage.id), namedNode(NS.dct(`title`).value), financialAdvantage.title),
-                    ...this.taalStringToTriples(namedNode(financialAdvantage.id), namedNode(NS.dct(`description`).value), financialAdvantage.description),
+                    ...this.taalStringToTriples(namedNode(financialAdvantage.id), NS.dct(`title`), financialAdvantage.title),
+                    ...this.taalStringToTriples(namedNode(financialAdvantage.id), NS.dct(`description`), financialAdvantage.description),
                     quad(namedNode(financialAdvantage.id), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
                 ];
             });
@@ -236,7 +237,6 @@ export class DomainToTriplesMapper {
     private productId(id: Iri, productId: Iri | undefined): Statement | undefined {
         return productId ? quad(namedNode(id), NS.schema('productID'), literal(productId)) : undefined;
     }
-
 
     private taalStringToTriples(subject: NamedNode, predicate: NamedNode, object: TaalString | undefined): Statement[] {
         return object ?

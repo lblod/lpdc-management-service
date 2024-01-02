@@ -1,6 +1,6 @@
-import {Quad} from "rdflib/lib/tf-types";
+import {NamedNode, Quad} from "rdflib/lib/tf-types";
 import {Iri} from "../../core/domain/shared/iri";
-import {graph, Literal, NamedNode, namedNode, Statement} from "rdflib";
+import {graph, Literal, namedNode, Statement} from "rdflib";
 import {ConceptSnapshot} from "../../core/domain/concept-snapshot";
 import {TaalString} from "../../core/domain/taal-string";
 import {Cost} from "../../core/domain/cost";
@@ -38,7 +38,7 @@ export class QuadsToDomainMapper {
 
     conceptSnapshot(id: Iri): ConceptSnapshot {
 
-        this.errorIfMissingOrIncorrectType(id, namedNode(NS.lpdcExt('ConceptualPublicService').value));
+        this.errorIfMissingOrIncorrectType(id, NS.lpdcExt('ConceptualPublicService'));
 
         return new ConceptSnapshot(
             id,
@@ -75,7 +75,7 @@ export class QuadsToDomainMapper {
     }
 
     concept(id: Iri): Concept {
-        this.errorIfMissingOrIncorrectType(id, namedNode(NS.lpdcExt('ConceptualPublicService').value));
+        this.errorIfMissingOrIncorrectType(id, NS.lpdcExt('ConceptualPublicService'));
 
         return new Concept(
             id,
@@ -220,7 +220,7 @@ export class QuadsToDomainMapper {
     private costs(id: Iri): Cost[] {
         const costIds =
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.m8g('hasCost'), null, this.graphId)));
-        costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, namedNode(NS.m8g('Cost').value)));
+        costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, NS.m8g('Cost')));
 
         const costs = costIds.map(costId => new Cost(costId, this.title(costId), this.description(costId)));
 
@@ -231,7 +231,7 @@ export class QuadsToDomainMapper {
         const financialAdvantageIds =
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.cpsv('produces'), null, this.graphId)));
         financialAdvantageIds.forEach(financialAdvantageId =>
-            this.errorIfMissingOrIncorrectType(financialAdvantageId, namedNode(NS.lpdcExt('FinancialAdvantage').value)));
+            this.errorIfMissingOrIncorrectType(financialAdvantageId, NS.lpdcExt('FinancialAdvantage')));
 
         const financialAdvantages =
             financialAdvantageIds.map(financialAdvantageId =>
@@ -240,12 +240,12 @@ export class QuadsToDomainMapper {
         return this.sort(financialAdvantages);
     }
 
-    private websites(id: Iri, predicate: NamedNode = namedNode(NS.rdfs('seeAlso').value)): Website[] {
+    private websites(id: Iri, predicate: NamedNode = NS.rdfs('seeAlso')): Website[] {
         const websiteIds =
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), predicate, null, this.graphId)));
 
         websiteIds.forEach(websiteId =>
-            this.errorIfMissingOrIncorrectType(websiteId, namedNode(NS.schema('WebSite').value)));
+            this.errorIfMissingOrIncorrectType(websiteId, NS.schema('WebSite')));
 
         const websites =
             websiteIds.map(websiteId =>
@@ -259,11 +259,11 @@ export class QuadsToDomainMapper {
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.cpsv('follows'), null, this.graphId)));
 
         procedureIds.forEach(procedureId =>
-            this.errorIfMissingOrIncorrectType(procedureId, namedNode(NS.cpsv('Rule').value)));
+            this.errorIfMissingOrIncorrectType(procedureId, NS.cpsv('Rule')));
 
         const procedures =
             procedureIds.map(procedureId =>
-                new Procedure(procedureId, this.title(procedureId), this.description(procedureId), this.websites(procedureId, namedNode(NS.lpdcExt('hasWebsite').value))));
+                new Procedure(procedureId, this.title(procedureId), this.description(procedureId), this.websites(procedureId, NS.lpdcExt('hasWebsite'))));
 
         return this.sort(procedures);
     }
@@ -273,7 +273,7 @@ export class QuadsToDomainMapper {
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.ps('hasRequirement'), null, this.graphId)));
 
         requirementIds.forEach(requirementId =>
-            this.errorIfMissingOrIncorrectType(requirementId, namedNode(NS.m8g('Requirement').value)));
+            this.errorIfMissingOrIncorrectType(requirementId, NS.m8g('Requirement')));
 
         const requirements =
             requirementIds.map(requirementId =>
@@ -287,7 +287,7 @@ export class QuadsToDomainMapper {
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.m8g('hasSupportingEvidence'), null, this.graphId)));
 
         evidenceIds.forEach(evidenceId =>
-            this.errorIfMissingOrIncorrectType(evidenceId, namedNode(NS.m8g('Evidence').value)));
+            this.errorIfMissingOrIncorrectType(evidenceId, NS.m8g('Evidence')));
 
         if (evidenceIds.length > 1) {
             throw new Error(`Did not expect more than one evidence for ${id}`);

@@ -1,7 +1,6 @@
 import {Namespace} from "rdflib";
 
 export const NS = {
-    //TODO LPDC-916: make sure it returns a NamedNode when called with string
     schema: Namespace('http://schema.org/'),
     dct: Namespace('http://purl.org/dc/terms/'),
     rdf: Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#'),
