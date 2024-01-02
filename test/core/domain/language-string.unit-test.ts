@@ -60,6 +60,93 @@ describe('constructing', () => {
 
 });
 
+describe('compare', () => {
+
+    test('Compare - en', () => {
+        const firstLessThanSecond = LanguageString.compare(LanguageString.of('abc'), LanguageString.of('def'));
+        const firstGreaterThanSecond = LanguageString.compare(LanguageString.of('def'), LanguageString.of('abc'));
+        const firstEqualToSecond = LanguageString.compare(LanguageString.of('abc'), LanguageString.of('abc'));
+        expect(firstLessThanSecond).toEqual(-1);
+        expect(firstGreaterThanSecond).toEqual(1);
+        expect(firstEqualToSecond).toEqual(0);
+    });
+
+    test('Compare - nl', () => {
+        const firstLessThanSecond = LanguageString.compare(LanguageString.of(undefined,'abc'), LanguageString.of(undefined,'def'));
+        const firstGreaterThanSecond = LanguageString.compare(LanguageString.of(undefined,'def'), LanguageString.of(undefined,'abc'));
+        const firstEqualToSecond = LanguageString.compare(LanguageString.of(undefined,'abc'), LanguageString.of(undefined,'abc'));
+        expect(firstLessThanSecond).toEqual(-1);
+        expect(firstGreaterThanSecond).toEqual(1);
+        expect(firstEqualToSecond).toEqual(0);
+    });
+
+    test('Compare - nlFormal', () => {
+        const firstLessThanSecond = LanguageString.compare(LanguageString.of(undefined, undefined,'abc'), LanguageString.of(undefined, undefined,'def'));
+        const firstGreaterThanSecond = LanguageString.compare(LanguageString.of(undefined, undefined,'def'), LanguageString.of(undefined, undefined,'abc'));
+        const firstEqualToSecond = LanguageString.compare(LanguageString.of(undefined, undefined,'abc'), LanguageString.of(undefined, undefined,'abc'));
+        expect(firstLessThanSecond).toEqual(-1);
+        expect(firstGreaterThanSecond).toEqual(1);
+        expect(firstEqualToSecond).toEqual(0);
+    });
+
+    test('Compare - nlInformal', () => {
+        const firstLessThanSecond = LanguageString.compare(LanguageString.of(undefined, undefined, undefined,'abc'), LanguageString.of(undefined, undefined, undefined,'def'));
+        const firstGreaterThanSecond = LanguageString.compare(LanguageString.of(undefined, undefined, undefined,'def'), LanguageString.of(undefined, undefined, undefined,'abc'));
+        const firstEqualToSecond = LanguageString.compare(LanguageString.of(undefined, undefined, undefined,'abc'), LanguageString.of(undefined, undefined, undefined,'abc'));
+        expect(firstLessThanSecond).toEqual(-1);
+        expect(firstGreaterThanSecond).toEqual(1);
+        expect(firstEqualToSecond).toEqual(0);
+    });
+
+    test('Compare - nlGeneratedFormal', () => {
+        const firstLessThanSecond = LanguageString.compare(LanguageString.of(undefined, undefined, undefined, undefined,'abc'), LanguageString.of(undefined, undefined, undefined, undefined,'def'));
+        const firstGreaterThanSecond = LanguageString.compare(LanguageString.of(undefined, undefined, undefined, undefined,'def'), LanguageString.of(undefined, undefined, undefined, undefined,'abc'));
+        const firstEqualToSecond = LanguageString.compare(LanguageString.of(undefined, undefined, undefined, undefined,'abc'), LanguageString.of(undefined, undefined, undefined, undefined,'abc'));
+        expect(firstLessThanSecond).toEqual(-1);
+        expect(firstGreaterThanSecond).toEqual(1);
+        expect(firstEqualToSecond).toEqual(0);
+    });
+
+    test('Compare - nlGeneratedInformal', () => {
+        const firstLessThanSecond = LanguageString.compare(LanguageString.of(undefined,undefined, undefined, undefined, undefined,'abc'), LanguageString.of(undefined,undefined, undefined, undefined, undefined,'def'));
+        const firstGreaterThanSecond = LanguageString.compare(LanguageString.of(undefined,undefined, undefined, undefined, undefined,'def'), LanguageString.of(undefined,undefined, undefined, undefined, undefined,'abc'));
+        const firstEqualToSecond = LanguageString.compare(LanguageString.of(undefined,undefined, undefined, undefined, undefined,'abc'), LanguageString.of(undefined,undefined, undefined, undefined, undefined,'abc'));
+        expect(firstLessThanSecond).toEqual(-1);
+        expect(firstGreaterThanSecond).toEqual(1);
+        expect(firstEqualToSecond).toEqual(0);
+    });
+
+    test('Compare - multiple languages - en', () => {
+        const firstLessThanSecond = LanguageString.compare(
+            LanguageString.of(undefined, '2'),
+            LanguageString.of('1', '2'));
+        const firstGreaterThanSecond = LanguageString.compare(
+            LanguageString.of('1', '2'),
+            LanguageString.of(undefined, '2'));
+        const firstEqualToSecond = LanguageString.compare(
+            LanguageString.of('1', '2'),
+            LanguageString.of('1', '2'));
+        expect(firstLessThanSecond).toEqual(-1);
+        expect(firstGreaterThanSecond).toEqual(1);
+        expect(firstEqualToSecond).toEqual(0);
+    });
+
+    test('Compare - multiple languages - nl', () => {
+        const firstLessThanSecond = LanguageString.compare(
+            LanguageString.of('1', undefined),
+            LanguageString.of('1', '2'));
+        const firstGreaterThanSecond = LanguageString.compare(
+            LanguageString.of('1', '2'),
+            LanguageString.of('1', undefined));
+        const firstEqualToSecond = LanguageString.compare(
+            LanguageString.of('1', '2'),
+            LanguageString.of('1', '2'));
+        expect(firstLessThanSecond).toEqual(-1);
+        expect(firstGreaterThanSecond).toEqual(1);
+        expect(firstEqualToSecond).toEqual(0);
+    });
+});
+
 describe('is functionally changed', () => {
 
     type TestCase = [string, LanguageString | undefined, LanguageString | undefined];

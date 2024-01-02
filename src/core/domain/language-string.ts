@@ -62,7 +62,6 @@ export class LanguageString {
             || value?.nl !== other?.nl;
     }
 
-    //TODO LPDC-916: test method
     static compare(a: LanguageString, b: LanguageString): number {
         let comparison = LanguageString.compareValues(a._en, b._en);
         if (comparison !== 0) return comparison;
