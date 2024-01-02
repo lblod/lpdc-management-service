@@ -2,7 +2,7 @@ import {NamedNode, Quad} from "rdflib/lib/tf-types";
 import {Iri} from "../../core/domain/shared/iri";
 import {graph, Literal, namedNode, Statement} from "rdflib";
 import {ConceptSnapshot} from "../../core/domain/concept-snapshot";
-import {TaalString} from "../../core/domain/taal-string";
+import {LanguageString} from "../../core/domain/language-string";
 import {Cost} from "../../core/domain/cost";
 import {asSortedArray} from "../../core/domain/shared/collections-helper";
 import {FinancialAdvantage} from "../../core/domain/financial-advantage";
@@ -127,24 +127,24 @@ export class QuadsToDomainMapper {
         return this.asEnum(ProductType, this.store.anyValue(namedNode(id), NS.dct("type"), null, this.graphId), id);
     }
 
-    private title(id: Iri): TaalString | undefined {
-        return this.asTaalString(this.store.statementsMatching(namedNode(id), NS.dct('title'), null, this.graphId));
+    private title(id: Iri): LanguageString | undefined {
+        return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.dct('title'), null, this.graphId));
     }
 
-    private description(id: Iri): TaalString | undefined {
-        return this.asTaalString(this.store.statementsMatching(namedNode(id), NS.dct('description'), null, this.graphId));
+    private description(id: Iri): LanguageString | undefined {
+        return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.dct('description'), null, this.graphId));
     }
 
-    private additionalDescription(id: Iri): TaalString | undefined {
-        return this.asTaalString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('additionalDescription'), null, this.graphId));
+    private additionalDescription(id: Iri): LanguageString | undefined {
+        return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('additionalDescription'), null, this.graphId));
     }
 
-    private exception(id: Iri): TaalString | undefined {
-        return this.asTaalString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('exception'), null, this.graphId));
+    private exception(id: Iri): LanguageString | undefined {
+        return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('exception'), null, this.graphId));
     }
 
-    private regulation(id: Iri): TaalString | undefined {
-        return this.asTaalString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('regulation'), null, this.graphId));
+    private regulation(id: Iri): LanguageString | undefined {
+        return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('regulation'), null, this.graphId));
     }
 
     private targetAudiences(id: Iri): Set<TargetAudienceType> {
@@ -179,10 +179,10 @@ export class QuadsToDomainMapper {
         return this.asEnums(YourEuropeCategoryType, this.store.statementsMatching(namedNode(id), NS.lpdcExt("yourEuropeCategory"), null, this.graphId), id);
     }
 
-    private keywords(id: Iri): TaalString[] {
+    private keywords(id: Iri): LanguageString[] {
         return this.store.statementsMatching(namedNode(id), NS.dcat("keyword"), null, this.graphId)
             .map(s => [s])
-            .flatMap(statements => this.asTaalString(statements));
+            .flatMap(statements => this.asLangugaeString(statements));
     }
 
     private url(id: Iri): string | undefined {
@@ -323,10 +323,10 @@ export class QuadsToDomainMapper {
         return undefined;
     }
 
-    private asTaalString(statements: Statement[]): TaalString | undefined {
+    private asLangugaeString(statements: Statement[]): LanguageString | undefined {
         const literals: Literal[] | undefined = this.asLiterals(statements);
 
-        return TaalString.of(
+        return LanguageString.of(
             literals?.find(l => l.language === 'en')?.value,
             literals?.find(l => l.language === 'nl')?.value,
             literals?.find(l => l.language === 'nl-be-x-formal')?.value,

@@ -1,5 +1,5 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {uuid} from "../../../mu-helper";
 
@@ -11,7 +11,7 @@ export function aMinimalFinancialAdvantage(): FinancialAdvantageTestBuilder {
 export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
     return new FinancialAdvantageTestBuilder()
         .withId(FinancialAdvantageTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.TITLE_EN,
             FinancialAdvantageTestBuilder.TITLE_NL,
             FinancialAdvantageTestBuilder.TITLE_NL_FORMAL,
@@ -19,7 +19,7 @@ export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
             FinancialAdvantageTestBuilder.TITLE_NL_GENERATED_FORMAL,
             FinancialAdvantageTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 FinancialAdvantageTestBuilder.DESCRIPTION_EN,
                 FinancialAdvantageTestBuilder.DESCRIPTION_NL,
                 FinancialAdvantageTestBuilder.DESCRIPTION_NL_FORMAL,
@@ -31,7 +31,7 @@ export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
 export function anotherFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
     return new FinancialAdvantageTestBuilder()
         .withId(FinancialAdvantageTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_EN,
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_NL,
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_NL_FORMAL,
@@ -39,7 +39,7 @@ export function anotherFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_NL_GENERATED_FORMAL,
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_EN,
                 FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_NL,
                 FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
@@ -79,8 +79,8 @@ export class FinancialAdvantageTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Financial Advantage Another Description - nl-generated-informal';
 
     private id: Iri;
-    private title: TaalString | undefined;
-    private description: TaalString | undefined;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return `http://data.lblod.info/id/financial-advantage/${uniqueId}`;
@@ -91,12 +91,12 @@ export class FinancialAdvantageTestBuilder {
         return this;
     }
 
-    public withTitle(title: TaalString): FinancialAdvantageTestBuilder {
+    public withTitle(title: LanguageString): FinancialAdvantageTestBuilder {
         this.title = title;
         return this;
     }
 
-    public withDescription(description: TaalString): FinancialAdvantageTestBuilder {
+    public withDescription(description: LanguageString): FinancialAdvantageTestBuilder {
         this.description = description;
         return this;
     }

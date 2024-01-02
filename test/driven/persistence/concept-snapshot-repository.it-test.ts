@@ -7,7 +7,7 @@ import {
     ConceptSnapshotTestBuilder
 } from "../../core/domain/concept-snapshot-test-builder";
 import {ConceptSnapshotSparqlTestRepository} from "./concept-snapshot-sparql-test-repository";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {aMinimalRequirement, RequirementTestBuilder} from "../../core/domain/requirement-test-builder";
 import {aMinimalEvidence, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
 import {aMinimalProcedure, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
@@ -55,7 +55,7 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         test('When minimal concept snapshot with incomplete title exists with id, then return concept snapshot', async () => {
-            const conceptSnapshot = aMinimalConcept().withTitle(TaalString.of(undefined, ConceptSnapshotTestBuilder.TITLE_NL)).build();
+            const conceptSnapshot = aMinimalConcept().withTitle(LanguageString.of(undefined, ConceptSnapshotTestBuilder.TITLE_NL)).build();
             await repository.save(conceptSnapshot);
 
             const anotherConceptSnapshot = aMinimalConcept().build();
@@ -111,7 +111,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshot =
                 aMinimalConcept()
                     .withId(conceptSnapshotId)
-                    .withTitle(TaalString.of(undefined, ConceptSnapshotTestBuilder.TITLE_NL))
+                    .withTitle(LanguageString.of(undefined, ConceptSnapshotTestBuilder.TITLE_NL))
                     .build();
 
             await directDatabaseAccess.insertData(

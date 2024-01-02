@@ -1,15 +1,15 @@
 import {Iri} from "./shared/iri";
-import {TaalString} from "./taal-string";
+import {LanguageString} from "./language-string";
 
 export class Evidence {
 
     private readonly _id: Iri;
-    private readonly _title: TaalString | undefined;
-    private readonly _description: TaalString | undefined;
+    private readonly _title: LanguageString | undefined;
+    private readonly _description: LanguageString | undefined;
 
     constructor(id: Iri,
-                title: TaalString | undefined,
-                description: TaalString | undefined,
+                title: LanguageString | undefined,
+                description: LanguageString | undefined,
     ) {
 //TODO LPDC-916: add invariants
         this._id = id;
@@ -21,17 +21,17 @@ export class Evidence {
         return this._id;
     }
 
-    get title(): TaalString | undefined {
+    get title(): LanguageString | undefined {
         return this._title;
     }
 
-    get description(): TaalString | undefined {
+    get description(): LanguageString | undefined {
         return this._description;
     }
 
     static isFunctionallyChanged(value: Evidence | undefined, other: Evidence | undefined): boolean {
-        return TaalString.isFunctionallyChanged(value?.title, other?.title)
-            || TaalString.isFunctionallyChanged(value?.description, other?.description);
+        return LanguageString.isFunctionallyChanged(value?.title, other?.title)
+            || LanguageString.isFunctionallyChanged(value?.description, other?.description);
     }
 
 }

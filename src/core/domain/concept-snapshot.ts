@@ -1,5 +1,5 @@
 import {Iri} from "./shared/iri";
-import {TaalString} from "./taal-string";
+import {LanguageString} from "./language-string";
 import _ from 'lodash';
 import {Requirement} from "./requirement";
 import {asSortedArray, asSortedSet} from "./shared/collections-helper";
@@ -23,11 +23,11 @@ import {
 export class ConceptSnapshot {
 
     private readonly _id: Iri;
-    private readonly _title: TaalString | undefined;
-    private readonly _description: TaalString | undefined;
-    private readonly _additionalDescription: TaalString | undefined;
-    private readonly _exception: TaalString | undefined;
-    private readonly _regulation: TaalString | undefined;
+    private readonly _title: LanguageString | undefined;
+    private readonly _description: LanguageString | undefined;
+    private readonly _additionalDescription: LanguageString | undefined;
+    private readonly _exception: LanguageString | undefined;
+    private readonly _regulation: LanguageString | undefined;
     private readonly _startDate: FormatPreservingDate | undefined;
     private readonly _endDate: FormatPreservingDate | undefined;
     private readonly _type: ProductType | undefined;
@@ -39,7 +39,7 @@ export class ConceptSnapshot {
     private readonly _executingAuthorities: Set<Iri>;
     private readonly _publicationMedia: Set<PublicationMediumType>;
     private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>;
-    private readonly _keywords: TaalString[]; //TODO LPDC-916: change to Set
+    private readonly _keywords: LanguageString[]; //TODO LPDC-916: change to Set
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
     private readonly _websites: Website[];
@@ -54,11 +54,11 @@ export class ConceptSnapshot {
     private readonly _conceptTags: Set<ConceptTagType>;
 
     constructor(id: Iri,
-                title: TaalString | undefined,
-                description: TaalString | undefined,
-                additionalDescription: TaalString | undefined,
-                exception: TaalString | undefined,
-                regulation: TaalString | undefined,
+                title: LanguageString | undefined,
+                description: LanguageString | undefined,
+                additionalDescription: LanguageString | undefined,
+                exception: LanguageString | undefined,
+                regulation: LanguageString | undefined,
                 startDate: FormatPreservingDate | undefined,
                 endDate: FormatPreservingDate | undefined,
                 type: ProductType | undefined,
@@ -70,7 +70,7 @@ export class ConceptSnapshot {
                 executingAuthorities: Set<Iri>,
                 publicationMedia: Set<PublicationMediumType>,
                 yourEuropeCategories: Set<YourEuropeCategoryType>,
-                keywords: TaalString[],
+                keywords: LanguageString[],
                 requirements: Requirement[],
                 procedures: Procedure[],
                 websites: Website[],
@@ -102,7 +102,7 @@ export class ConceptSnapshot {
         this._executingAuthorities = asSortedSet(executingAuthorities);
         this._publicationMedia = asSortedSet(publicationMedia);
         this._yourEuropeCategories = asSortedSet(yourEuropeCategories);
-        this._keywords = asSortedArray([...keywords], TaalString.compare);
+        this._keywords = asSortedArray([...keywords], LanguageString.compare);
         this._requirements = [...requirements];
         this._procedures = [...procedures];
         this._websites = [...websites];
@@ -121,23 +121,23 @@ export class ConceptSnapshot {
         return this._id;
     }
 
-    get title(): TaalString | undefined {
+    get title(): LanguageString | undefined {
         return this._title;
     }
 
-    get description(): TaalString | undefined {
+    get description(): LanguageString | undefined {
         return this._description;
     }
 
-    get additionalDescription(): TaalString | undefined {
+    get additionalDescription(): LanguageString | undefined {
         return this._additionalDescription;
     }
 
-    get exception(): TaalString | undefined {
+    get exception(): LanguageString | undefined {
         return this._exception;
     }
 
-    get regulation(): TaalString | undefined {
+    get regulation(): LanguageString | undefined {
         return this._regulation;
     }
 
@@ -185,7 +185,7 @@ export class ConceptSnapshot {
         return this._yourEuropeCategories;
     }
 
-    get keywords(): TaalString[] {
+    get keywords(): LanguageString[] {
         return this._keywords;
     }
 
@@ -242,11 +242,11 @@ export class ConceptSnapshot {
     }
 
     static isFunctionallyChanged(value: ConceptSnapshot, other: ConceptSnapshot): boolean {
-        return TaalString.isFunctionallyChanged(value.title, other.title)
-            || TaalString.isFunctionallyChanged(value.description, other.description)
-            || TaalString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription)
-            || TaalString.isFunctionallyChanged(value.exception, other.exception)
-            || TaalString.isFunctionallyChanged(value.regulation, other.regulation)
+        return LanguageString.isFunctionallyChanged(value.title, other.title)
+            || LanguageString.isFunctionallyChanged(value.description, other.description)
+            || LanguageString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription)
+            || LanguageString.isFunctionallyChanged(value.exception, other.exception)
+            || LanguageString.isFunctionallyChanged(value.regulation, other.regulation)
             || FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate)
             || FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate)
             || value.type !== other.type

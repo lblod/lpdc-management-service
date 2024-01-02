@@ -1,6 +1,6 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
 import {Evidence} from "../../../src/core/domain/evidence";
@@ -14,7 +14,7 @@ export function aMinimalRequirement(): RequirementTestBuilder {
 export function aFullRequirement(): RequirementTestBuilder {
     return new RequirementTestBuilder()
         .withId(RequirementTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             RequirementTestBuilder.TITLE_EN,
             RequirementTestBuilder.TITLE_NL,
             RequirementTestBuilder.TITLE_NL_FORMAL,
@@ -22,7 +22,7 @@ export function aFullRequirement(): RequirementTestBuilder {
             RequirementTestBuilder.TITLE_NL_GENERATED_FORMAL,
             RequirementTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 RequirementTestBuilder.DESCRIPTION_EN,
                 RequirementTestBuilder.DESCRIPTION_NL,
                 RequirementTestBuilder.DESCRIPTION_NL_FORMAL,
@@ -35,7 +35,7 @@ export function aFullRequirement(): RequirementTestBuilder {
 export function anotherFullRequirement(): RequirementTestBuilder {
     return new RequirementTestBuilder()
         .withId(RequirementTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             RequirementTestBuilder.ANOTHER_TITLE_EN,
             RequirementTestBuilder.ANOTHER_TITLE_NL,
             RequirementTestBuilder.ANOTHER_TITLE_NL_FORMAL,
@@ -43,7 +43,7 @@ export function anotherFullRequirement(): RequirementTestBuilder {
             RequirementTestBuilder.ANOTHER_TITLE_NL_GENERATED_FORMAL,
             RequirementTestBuilder.ANOTHER_TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 RequirementTestBuilder.ANOTHER_DESCRIPTION_EN,
                 RequirementTestBuilder.ANOTHER_DESCRIPTION_NL,
                 RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
@@ -87,8 +87,8 @@ export class RequirementTestBuilder {
     public static readonly ANOTHER_EVIDENCE = anotherFullEvidence().build();
 
     private id: Iri;
-    private title: TaalString | undefined;
-    private description: TaalString | undefined;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
     private evidence: Evidence | undefined;
 
     static buildIri(uniqueId: string): Iri {
@@ -100,12 +100,12 @@ export class RequirementTestBuilder {
         return this;
     }
 
-    public withTitle(title: TaalString): RequirementTestBuilder {
+    public withTitle(title: LanguageString): RequirementTestBuilder {
         this.title = title;
         return this;
     }
 
-    public withDescription(description: TaalString): RequirementTestBuilder {
+    public withDescription(description: LanguageString): RequirementTestBuilder {
         this.description = description;
         return this;
     }

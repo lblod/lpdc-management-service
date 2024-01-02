@@ -1,5 +1,5 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {Cost} from "../../../src/core/domain/cost";
 import {uuid} from "../../../mu-helper";
 
@@ -11,7 +11,7 @@ export function aMinimalCost(): CostTestBuilder {
 export function aFullCost(): CostTestBuilder {
     return new CostTestBuilder()
         .withId(CostTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             CostTestBuilder.TITLE_EN,
             CostTestBuilder.TITLE_NL,
             CostTestBuilder.TITLE_NL_FORMAL,
@@ -19,7 +19,7 @@ export function aFullCost(): CostTestBuilder {
             CostTestBuilder.TITLE_NL_GENERATED_FORMAL,
             CostTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 CostTestBuilder.DESCRIPTION_EN,
                 CostTestBuilder.DESCRIPTION_NL,
                 CostTestBuilder.DESCRIPTION_NL_FORMAL,
@@ -31,7 +31,7 @@ export function aFullCost(): CostTestBuilder {
 export function anotherFullCost(): CostTestBuilder {
     return new CostTestBuilder()
         .withId(CostTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             CostTestBuilder.ANOTHER_TITLE_EN,
             CostTestBuilder.ANOTHER_TITLE_NL,
             CostTestBuilder.ANOTHER_TITLE_NL_FORMAL,
@@ -39,7 +39,7 @@ export function anotherFullCost(): CostTestBuilder {
             CostTestBuilder.ANOTHER_TITLE_NL_GENERATED_FORMAL,
             CostTestBuilder.ANOTHER_TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 CostTestBuilder.ANOTHER_DESCRIPTION_EN,
                 CostTestBuilder.ANOTHER_DESCRIPTION_NL,
                 CostTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
@@ -79,8 +79,8 @@ export class CostTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Cost Another Description - nl-generated-informal';
 
     private id: Iri;
-    private title: TaalString | undefined;
-    private description: TaalString | undefined;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return `http://data.lblod.info/id/cost/${uniqueId}`;
@@ -91,12 +91,12 @@ export class CostTestBuilder {
         return this;
     }
 
-    public withTitle(title: TaalString): CostTestBuilder {
+    public withTitle(title: LanguageString): CostTestBuilder {
         this.title = title;
         return this;
     }
 
-    public withDescription(description: TaalString): CostTestBuilder {
+    public withDescription(description: LanguageString): CostTestBuilder {
         this.description = description;
         return this;
     }

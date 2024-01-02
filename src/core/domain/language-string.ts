@@ -1,4 +1,4 @@
-export class TaalString { //TODO LPDC-916: rename to LanguageString
+export class LanguageString {
 
     private readonly _en: string | undefined;
     private readonly _nl: string | undefined;
@@ -27,11 +27,11 @@ export class TaalString { //TODO LPDC-916: rename to LanguageString
         nlFormal?: string | undefined,
         nlInformal?: string | undefined,
         nlGeneratedFormal?: string | undefined,
-        nlGeneratedInformal?: string | undefined): TaalString {
+        nlGeneratedInformal?: string | undefined): LanguageString {
         if(!en && !nl && !nlFormal && !nlInformal && !nlGeneratedFormal && !nlGeneratedInformal) {
             return undefined;
         }
-        return new TaalString(en, nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal);
+        return new LanguageString(en, nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal);
     }
 
     get en(): string | undefined {
@@ -57,29 +57,29 @@ export class TaalString { //TODO LPDC-916: rename to LanguageString
         return this._nlGeneratedInformal;
     }
 
-    static isFunctionallyChanged(value: TaalString | undefined, other: TaalString | undefined): boolean {
+    static isFunctionallyChanged(value: LanguageString | undefined, other: LanguageString | undefined): boolean {
         return value?.en !== other?.en
             || value?.nl !== other?.nl;
     }
 
     //TODO LPDC-916: test method
-    static compare(a: TaalString, b: TaalString): number {
-        let comparison = TaalString.compareValues(a._en, b._en);
+    static compare(a: LanguageString, b: LanguageString): number {
+        let comparison = LanguageString.compareValues(a._en, b._en);
         if (comparison !== 0) return comparison;
 
-        comparison = TaalString.compareValues(a._nl, b._nl);
+        comparison = LanguageString.compareValues(a._nl, b._nl);
         if (comparison !== 0) return comparison;
 
-        comparison = TaalString.compareValues(a._nlFormal, b._nlFormal);
+        comparison = LanguageString.compareValues(a._nlFormal, b._nlFormal);
         if (comparison !== 0) return comparison;
 
-        comparison = TaalString.compareValues(a._nlInformal, b._nlInformal);
+        comparison = LanguageString.compareValues(a._nlInformal, b._nlInformal);
         if (comparison !== 0) return comparison;
 
-        comparison = TaalString.compareValues(a._nlGeneratedFormal, b._nlGeneratedFormal);
+        comparison = LanguageString.compareValues(a._nlGeneratedFormal, b._nlGeneratedFormal);
         if (comparison !== 0) return comparison;
 
-        comparison = TaalString.compareValues(a._nlGeneratedInformal, b._nlGeneratedInformal);
+        comparison = LanguageString.compareValues(a._nlGeneratedInformal, b._nlGeneratedInformal);
         if (comparison !== 0) return comparison;
 
         return 0;

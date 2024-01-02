@@ -1,7 +1,7 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {ConceptSparqlTestRepository} from "./concept-sparql-test-repository";
 import {aFullConcept, aMinimalConcept, ConceptTestBuilder} from "../../core/domain/concept-test-builder";
 import {CONCEPT_GRAPH} from "../../../config";
@@ -37,7 +37,7 @@ describe('ConceptRepository', () => {
         });
 
         test('When minimal concept with incomplete title exists with id, then return concept', async () => {
-            const concept = aMinimalConcept().withTitle(TaalString.of(undefined, ConceptTestBuilder.TITLE_NL)).build();
+            const concept = aMinimalConcept().withTitle(LanguageString.of(undefined, ConceptTestBuilder.TITLE_NL)).build();
             await repository.save(concept);
 
             const anotherConcept = aMinimalConcept().build();
@@ -93,7 +93,7 @@ describe('ConceptRepository', () => {
             const concept =
                 aMinimalConcept()
                     .withId(conceptId)
-                    .withTitle(TaalString.of(undefined, ConceptTestBuilder.TITLE_NL))
+                    .withTitle(LanguageString.of(undefined, ConceptTestBuilder.TITLE_NL))
                     .build();
 
             await directDatabaseAccess.insertData(

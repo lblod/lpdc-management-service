@@ -1,16 +1,16 @@
 import {Iri} from "./shared/iri";
-import {TaalString} from "./taal-string";
+import {LanguageString} from "./language-string";
 import _ from "lodash";
 
 export class Cost {
 
     private readonly _id: Iri;
-    private readonly _title: TaalString | undefined;
-    private readonly _description: TaalString | undefined;
+    private readonly _title: LanguageString | undefined;
+    private readonly _description: LanguageString | undefined;
 
     constructor(id: Iri,
-                title: TaalString | undefined,
-                description: TaalString | undefined,
+                title: LanguageString | undefined,
+                description: LanguageString | undefined,
     ) {
         //TODO LPDC-916: add invariants
         this._id = id;
@@ -22,19 +22,19 @@ export class Cost {
         return this._id;
     }
 
-    get title(): TaalString | undefined {
+    get title(): LanguageString | undefined {
         return this._title;
     }
 
-    get description(): TaalString | undefined {
+    get description(): LanguageString | undefined {
         return this._description;
     }
 
     static isFunctionallyChanged(value: Cost[], other: Cost[]): boolean {
         return value.length !== other.length
             || _.zip(value, other).some((costs: [Cost, Cost]) => {
-                return TaalString.isFunctionallyChanged(costs[0].title, costs[1].title)
-                    || TaalString.isFunctionallyChanged(costs[0].description, costs[1].description);
+                return LanguageString.isFunctionallyChanged(costs[0].title, costs[1].title)
+                    || LanguageString.isFunctionallyChanged(costs[0].description, costs[1].description);
             });
     }
 

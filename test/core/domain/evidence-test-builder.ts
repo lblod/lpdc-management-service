@@ -1,5 +1,5 @@
 import {uuid} from "../../../mu-helper";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Evidence} from "../../../src/core/domain/evidence";
 
@@ -12,7 +12,7 @@ export function aMinimalEvidence(): EvidenceTestBuilder {
 export function aFullEvidence(): EvidenceTestBuilder {
     return new EvidenceTestBuilder()
         .withId(EvidenceTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             EvidenceTestBuilder.TITLE_EN,
             EvidenceTestBuilder.TITLE_NL,
             EvidenceTestBuilder.TITLE_NL_FORMAL,
@@ -20,7 +20,7 @@ export function aFullEvidence(): EvidenceTestBuilder {
             EvidenceTestBuilder.TITLE_NL_GENERATED_FORMAL,
             EvidenceTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 EvidenceTestBuilder.DESCRIPTION_EN,
                 EvidenceTestBuilder.DESCRIPTION_NL,
                 EvidenceTestBuilder.DESCRIPTION_NL_FORMAL,
@@ -32,7 +32,7 @@ export function aFullEvidence(): EvidenceTestBuilder {
 export function anotherFullEvidence(): EvidenceTestBuilder {
     return new EvidenceTestBuilder()
         .withId(EvidenceTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             EvidenceTestBuilder.ANOTHER_TITLE_EN,
             EvidenceTestBuilder.ANOTHER_TITLE_NL,
             EvidenceTestBuilder.ANOTHER_TITLE_NL_FORMAL,
@@ -40,7 +40,7 @@ export function anotherFullEvidence(): EvidenceTestBuilder {
             EvidenceTestBuilder.ANOTHER_TITLE_NL_GENERATED_FORMAL,
             EvidenceTestBuilder.ANOTHER_TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 EvidenceTestBuilder.ANOTHER_DESCRIPTION_EN,
                 EvidenceTestBuilder.ANOTHER_DESCRIPTION_NL,
                 EvidenceTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
@@ -80,8 +80,8 @@ export class EvidenceTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Evidence Another Description - nl-generated-informal';
 
     private id: Iri;
-    private title: TaalString | undefined;
-    private description: TaalString | undefined;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return `http://data.lblod.info/id/evidence/${uniqueId}`;
@@ -92,12 +92,12 @@ export class EvidenceTestBuilder {
         return this;
     }
 
-    public withTitle(title: TaalString): EvidenceTestBuilder {
+    public withTitle(title: LanguageString): EvidenceTestBuilder {
         this.title = title;
         return this;
     }
 
-    public withDescription(description: TaalString): EvidenceTestBuilder {
+    public withDescription(description: LanguageString): EvidenceTestBuilder {
         this.description = description;
         return this;
     }

@@ -1,5 +1,5 @@
 import {uuid} from "../../../mu-helper";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,
@@ -34,7 +34,7 @@ export function aFullConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
         .withId(ConceptTestBuilder.buildIri(id))
         .withTitle(
-            TaalString.of(
+            LanguageString.of(
                 ConceptTestBuilder.TITLE_EN,
                 ConceptTestBuilder.TITLE_NL,
                 ConceptTestBuilder.TITLE_NL_FORMAL,
@@ -42,7 +42,7 @@ export function aFullConcept(): ConceptTestBuilder {
                 ConceptTestBuilder.TITLE_NL_GENERATED_FORMAL,
                 ConceptTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 ConceptTestBuilder.DESCRIPTION_EN,
                 ConceptTestBuilder.DESCRIPTION_NL,
                 ConceptTestBuilder.DESCRIPTION_NL_FORMAL,
@@ -50,7 +50,7 @@ export function aFullConcept(): ConceptTestBuilder {
                 ConceptTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
                 ConceptTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
         .withAdditionalDescription(
-            TaalString.of(
+            LanguageString.of(
                 ConceptTestBuilder.ADDITIONAL_DESCRIPTION_EN,
                 ConceptTestBuilder.ADDITIONAL_DESCRIPTION_NL,
                 ConceptTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL,
@@ -58,7 +58,7 @@ export function aFullConcept(): ConceptTestBuilder {
                 ConceptTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL,
                 ConceptTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL))
         .withException(
-            TaalString.of(
+            LanguageString.of(
                 ConceptTestBuilder.EXCEPTION_EN,
                 ConceptTestBuilder.EXCEPTION_NL,
                 ConceptTestBuilder.EXCEPTION_NL_FORMAL,
@@ -66,7 +66,7 @@ export function aFullConcept(): ConceptTestBuilder {
                 ConceptTestBuilder.EXCEPTION_NL_GENERATED_FORMAL,
                 ConceptTestBuilder.EXCEPTION_NL_GENERATED_INFORMAL))
         .withRegulation(
-            TaalString.of(
+            LanguageString.of(
                 ConceptTestBuilder.REGULATION_EN,
                 ConceptTestBuilder.REGULATION_NL,
                 ConceptTestBuilder.REGULATION_NL_FORMAL,
@@ -149,7 +149,7 @@ export class ConceptTestBuilder {
 
     public static readonly YOUR_EUROPE_CATEGORIES = new Set([YourEuropeCategoryType.WERKENPENSIONERING, YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFPENSIOENENVERZEKERINGSREGELINGENWERKGEVER, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE]);
 
-    public static readonly KEYWORDS = [TaalString.of('overlijden - en'), TaalString.of(undefined, 'overlijden - nl'), TaalString.of(undefined, 'goederen verhandelen'), TaalString.of('sacrale activiteiten')];
+    public static readonly KEYWORDS = [LanguageString.of('overlijden - en'), LanguageString.of(undefined, 'overlijden - nl'), LanguageString.of(undefined, 'goederen verhandelen'), LanguageString.of('sacrale activiteiten')];
 
     public static readonly REQUIREMENTS = [aFullRequirement().build(), anotherFullRequirement().build()];
 
@@ -165,11 +165,11 @@ export class ConceptTestBuilder {
 
 
     private id: Iri;
-    private title: TaalString | undefined;
-    private description: TaalString | undefined;
-    private additionalDescription: TaalString | undefined;
-    private exception: TaalString | undefined;
-    private regulation: TaalString | undefined;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
+    private additionalDescription: LanguageString | undefined;
+    private exception: LanguageString | undefined;
+    private regulation: LanguageString | undefined;
     private startDate: FormatPreservingDate | undefined;
     private endDate: FormatPreservingDate | undefined;
     private type: ProductType | undefined;
@@ -181,7 +181,7 @@ export class ConceptTestBuilder {
     private executingAuthorities: Set<Iri> = new Set();
     private publicationMedia: Set<PublicationMediumType> = new Set();
     private yourEuropeCategories: Set<YourEuropeCategoryType> = new Set();
-    private keywords: TaalString[] = [];
+    private keywords: LanguageString[] = [];
     private requirements: Requirement[] = [];
     private procedures: Procedure[] = [];
     private websites: Website[] = [];
@@ -198,27 +198,27 @@ export class ConceptTestBuilder {
         return this;
     }
 
-    public withTitle(title: TaalString): ConceptTestBuilder {
+    public withTitle(title: LanguageString): ConceptTestBuilder {
         this.title = title;
         return this;
     }
 
-    public withDescription(description: TaalString): ConceptTestBuilder {
+    public withDescription(description: LanguageString): ConceptTestBuilder {
         this.description = description;
         return this;
     }
 
-    public withAdditionalDescription(additionalDescription: TaalString): ConceptTestBuilder {
+    public withAdditionalDescription(additionalDescription: LanguageString): ConceptTestBuilder {
         this.additionalDescription = additionalDescription;
         return this;
     }
 
-    public withException(exception: TaalString): ConceptTestBuilder {
+    public withException(exception: LanguageString): ConceptTestBuilder {
         this.exception = exception;
         return this;
     }
 
-    public withRegulation(regulation: TaalString): ConceptTestBuilder {
+    public withRegulation(regulation: LanguageString): ConceptTestBuilder {
         this.regulation = regulation;
         return this;
     }
@@ -278,7 +278,7 @@ export class ConceptTestBuilder {
         return this;
     }
 
-    public withKeywords(keywords: TaalString[]): ConceptTestBuilder {
+    public withKeywords(keywords: LanguageString[]): ConceptTestBuilder {
         this.keywords = keywords;
         return this;
     }

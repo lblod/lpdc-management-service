@@ -1,5 +1,5 @@
 import {uuid} from "../../../mu-helper";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Procedure} from "../../../src/core/domain/procedure";
 import {aFullWebsite, anotherFullWebsite} from "./website-test-builder";
@@ -13,7 +13,7 @@ export function aMinimalProcedure(): ProcedureTestBuilder {
 export function aFullProcedure(): ProcedureTestBuilder {
     return new ProcedureTestBuilder()
         .withId(ProcedureTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             ProcedureTestBuilder.TITLE_EN,
             ProcedureTestBuilder.TITLE_NL,
             ProcedureTestBuilder.TITLE_NL_FORMAL,
@@ -21,7 +21,7 @@ export function aFullProcedure(): ProcedureTestBuilder {
             ProcedureTestBuilder.TITLE_NL_GENERATED_FORMAL,
             ProcedureTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 ProcedureTestBuilder.DESCRIPTION_EN,
                 ProcedureTestBuilder.DESCRIPTION_NL,
                 ProcedureTestBuilder.DESCRIPTION_NL_FORMAL,
@@ -34,7 +34,7 @@ export function aFullProcedure(): ProcedureTestBuilder {
 export function anotherFullProcedure(): ProcedureTestBuilder {
     return new ProcedureTestBuilder()
         .withId(ProcedureTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             ProcedureTestBuilder.ANOTHER_TITLE_EN,
             ProcedureTestBuilder.ANOTHER_TITLE_NL,
             ProcedureTestBuilder.ANOTHER_TITLE_NL_FORMAL,
@@ -42,7 +42,7 @@ export function anotherFullProcedure(): ProcedureTestBuilder {
             ProcedureTestBuilder.ANOTHER_TITLE_NL_GENERATED_FORMAL,
             ProcedureTestBuilder.ANOTHER_TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_EN,
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL,
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
@@ -86,8 +86,8 @@ export class ProcedureTestBuilder {
     public static readonly ANOTHER_WEBSITES = [anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()];
 
     private id: Iri;
-    private title: TaalString | undefined;
-    private description: TaalString | undefined;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
     private websites: Website[] = [];
 
     static buildIri(uniqueId: string): Iri {
@@ -99,12 +99,12 @@ export class ProcedureTestBuilder {
         return this;
     }
 
-    public withTitle(title: TaalString): ProcedureTestBuilder {
+    public withTitle(title: LanguageString): ProcedureTestBuilder {
         this.title = title;
         return this;
     }
 
-    public withDescription(description: TaalString): ProcedureTestBuilder {
+    public withDescription(description: LanguageString): ProcedureTestBuilder {
         this.description = description;
         return this;
     }

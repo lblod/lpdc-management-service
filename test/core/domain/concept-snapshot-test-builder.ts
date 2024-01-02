@@ -1,7 +1,7 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
 import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullRequirement, anotherFullRequirement} from "./requirement-test-builder";
@@ -38,7 +38,7 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
     return new ConceptSnapshotTestBuilder()
         .withId(ConceptSnapshotTestBuilder.buildIri(id))
         .withTitle(
-            TaalString.of(
+            LanguageString.of(
                 ConceptSnapshotTestBuilder.TITLE_EN,
                 ConceptSnapshotTestBuilder.TITLE_NL,
                 ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
@@ -46,7 +46,7 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
                 ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL,
                 ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 ConceptSnapshotTestBuilder.DESCRIPTION_EN,
                 ConceptSnapshotTestBuilder.DESCRIPTION_NL,
                 ConceptSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
@@ -54,7 +54,7 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
                 ConceptSnapshotTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
                 ConceptSnapshotTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
         .withAdditionalDescription(
-            TaalString.of(
+            LanguageString.of(
                 ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_EN,
                 ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL,
                 ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL,
@@ -62,7 +62,7 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
                 ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL,
                 ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL))
         .withException(
-            TaalString.of(
+            LanguageString.of(
                 ConceptSnapshotTestBuilder.EXCEPTION_EN,
                 ConceptSnapshotTestBuilder.EXCEPTION_NL,
                 ConceptSnapshotTestBuilder.EXCEPTION_NL_FORMAL,
@@ -70,7 +70,7 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
                 ConceptSnapshotTestBuilder.EXCEPTION_NL_GENERATED_FORMAL,
                 ConceptSnapshotTestBuilder.EXCEPTION_NL_GENERATED_INFORMAL))
         .withRegulation(
-            TaalString.of(
+            LanguageString.of(
                 ConceptSnapshotTestBuilder.REGULATION_EN,
                 ConceptSnapshotTestBuilder.REGULATION_NL,
                 ConceptSnapshotTestBuilder.REGULATION_NL_FORMAL,
@@ -159,7 +159,7 @@ export class ConceptSnapshotTestBuilder {
 
     public static readonly YOUR_EUROPE_CATEGORIES = new Set([YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE]);
 
-    public static readonly KEYWORDS = [TaalString.of('buitenland'), TaalString.of(undefined, 'buitenland'), TaalString.of(undefined, 'ambulante activiteit'), TaalString.of('levensloos')];
+    public static readonly KEYWORDS = [LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')];
 
     public static readonly REQUIREMENTS = [aFullRequirement().build(), anotherFullRequirement().build()];
 
@@ -184,11 +184,11 @@ export class ConceptSnapshotTestBuilder {
     public static readonly CONCEPT_TAGS = new Set([ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT]);
 
     private id: Iri;
-    private title: TaalString | undefined;
-    private description: TaalString | undefined;
-    private additionalDescription: TaalString | undefined;
-    private exception: TaalString | undefined;
-    private regulation: TaalString | undefined;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
+    private additionalDescription: LanguageString | undefined;
+    private exception: LanguageString | undefined;
+    private regulation: LanguageString | undefined;
     private startDate: FormatPreservingDate | undefined;
     private endDate: FormatPreservingDate | undefined;
     private type: ProductType | undefined;
@@ -200,7 +200,7 @@ export class ConceptSnapshotTestBuilder {
     private executingAuthorities: Set<Iri> = new Set();
     private publicationMedia: Set<PublicationMediumType> = new Set();
     private yourEuropeCategories: Set<YourEuropeCategoryType> = new Set();
-    private keywords: TaalString[] = [];
+    private keywords: LanguageString[] = [];
     private requirements: Requirement[] = [];
     private procedures: Procedure[] = [];
     private websites: Website[] = [];
@@ -223,27 +223,27 @@ export class ConceptSnapshotTestBuilder {
         return this;
     }
 
-    public withTitle(title: TaalString): ConceptSnapshotTestBuilder {
+    public withTitle(title: LanguageString): ConceptSnapshotTestBuilder {
         this.title = title;
         return this;
     }
 
-    public withDescription(description: TaalString): ConceptSnapshotTestBuilder {
+    public withDescription(description: LanguageString): ConceptSnapshotTestBuilder {
         this.description = description;
         return this;
     }
 
-    public withAdditionalDescription(additionalDescription: TaalString): ConceptSnapshotTestBuilder {
+    public withAdditionalDescription(additionalDescription: LanguageString): ConceptSnapshotTestBuilder {
         this.additionalDescription = additionalDescription;
         return this;
     }
 
-    public withException(exception: TaalString): ConceptSnapshotTestBuilder {
+    public withException(exception: LanguageString): ConceptSnapshotTestBuilder {
         this.exception = exception;
         return this;
     }
 
-    public withRegulation(regulation: TaalString): ConceptSnapshotTestBuilder {
+    public withRegulation(regulation: LanguageString): ConceptSnapshotTestBuilder {
         this.regulation = regulation;
         return this;
     }
@@ -303,7 +303,7 @@ export class ConceptSnapshotTestBuilder {
         return this;
     }
 
-    public withKeywords(keywords: TaalString[]): ConceptSnapshotTestBuilder {
+    public withKeywords(keywords: LanguageString[]): ConceptSnapshotTestBuilder {
         this.keywords = keywords;
         return this;
     }

@@ -1,5 +1,5 @@
 import {uuid} from "../../../mu-helper";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Website} from "../../../src/core/domain/website";
 
@@ -11,7 +11,7 @@ export function aMinimalWebsite(): WebsiteTestBuilder {
 export function aFullWebsite(): WebsiteTestBuilder {
     return new WebsiteTestBuilder()
         .withId(WebsiteTestBuilder.buildIri(uuid()))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             WebsiteTestBuilder.TITLE_EN,
             WebsiteTestBuilder.TITLE_NL,
             WebsiteTestBuilder.TITLE_NL_FORMAL,
@@ -19,7 +19,7 @@ export function aFullWebsite(): WebsiteTestBuilder {
             WebsiteTestBuilder.TITLE_NL_GENERATED_FORMAL,
             WebsiteTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 WebsiteTestBuilder.DESCRIPTION_EN,
                 WebsiteTestBuilder.DESCRIPTION_NL,
                 WebsiteTestBuilder.DESCRIPTION_NL_FORMAL,
@@ -32,7 +32,7 @@ export function aFullWebsite(): WebsiteTestBuilder {
 export function anotherFullWebsite(uuid: string): WebsiteTestBuilder {
     return new WebsiteTestBuilder()
         .withId(WebsiteTestBuilder.buildIri(uuid))
-        .withTitle(TaalString.of(
+        .withTitle(LanguageString.of(
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_EN(uuid),
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL(uuid),
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_FORMAL(uuid),
@@ -40,7 +40,7 @@ export function anotherFullWebsite(uuid: string): WebsiteTestBuilder {
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_GENERATED_FORMAL(uuid),
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_GENERATED_INFORMAL(uuid)))
         .withDescription(
-            TaalString.of(
+            LanguageString.of(
                 WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_EN(uuid),
                 WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL(uuid),
                 WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_FORMAL(uuid),
@@ -84,8 +84,8 @@ export class WebsiteTestBuilder {
     public static readonly ANOTHER_URL_TEMPLATE = (param:string) =>  `https://some-other-url-${param}.test`;
 
     private id: Iri;
-    private title: TaalString | undefined;
-    private description: TaalString | undefined;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
     private url: string | undefined;
 
     static buildIri(uniqueId: string): Iri {
@@ -97,12 +97,12 @@ export class WebsiteTestBuilder {
         return this;
     }
 
-    public withTitle(title: TaalString): WebsiteTestBuilder {
+    public withTitle(title: LanguageString): WebsiteTestBuilder {
         this.title = title;
         return this;
     }
 
-    public withDescription(description: TaalString): WebsiteTestBuilder {
+    public withDescription(description: LanguageString): WebsiteTestBuilder {
         this.description = description;
         return this;
     }

@@ -1,18 +1,18 @@
 import {Iri} from "./shared/iri";
-import {TaalString} from "./taal-string";
+import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {Website} from "./website";
 
 export class Procedure {
 
     private readonly _id: Iri;
-    private readonly _title: TaalString | undefined;
-    private readonly _description: TaalString | undefined;
+    private readonly _title: LanguageString | undefined;
+    private readonly _description: LanguageString | undefined;
     private readonly _websites: Website[];
 
     constructor(id: Iri,
-                title: TaalString | undefined,
-                description: TaalString | undefined,
+                title: LanguageString | undefined,
+                description: LanguageString | undefined,
                 websites: Website[],
     ) {
 //TODO LPDC-916: add invariants
@@ -26,11 +26,11 @@ export class Procedure {
         return this._id;
     }
 
-    get title(): TaalString | undefined {
+    get title(): LanguageString | undefined {
         return this._title;
     }
 
-    get description(): TaalString | undefined {
+    get description(): LanguageString | undefined {
         return this._description;
     }
 
@@ -41,8 +41,8 @@ export class Procedure {
     static isFunctionallyChanged(value: Procedure[], other: Procedure[]): boolean {
         return value.length !== other.length
             || _.zip(value, other).some((procs: [Procedure, Procedure]) => {
-                return TaalString.isFunctionallyChanged(procs[0].title, procs[1].title)
-                    || TaalString.isFunctionallyChanged(procs[0].description, procs[1].description)
+                return LanguageString.isFunctionallyChanged(procs[0].title, procs[1].title)
+                    || LanguageString.isFunctionallyChanged(procs[0].description, procs[1].description)
                     || Website.isFunctionallyChanged(procs[0].websites, procs[1].websites);
             });
     }

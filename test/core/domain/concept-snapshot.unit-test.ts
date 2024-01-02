@@ -1,7 +1,7 @@
 import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
 import {uuid} from "../../../mu-helper";
 import {aFullConceptSnapshot, ConceptSnapshotTestBuilder} from "./concept-snapshot-test-builder";
-import {TaalString} from "../../../src/core/domain/taal-string";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {aMinimalRequirement} from "./requirement-test-builder";
 import {aFullEvidence, aMinimalEvidence} from "./evidence-test-builder";
@@ -76,38 +76,38 @@ describe('is functionally changed', () => {
         = [
         ['title changed',
             aFullConceptSnapshot()
-                .withTitle(TaalString.of("text-en"))
+                .withTitle(LanguageString.of("text-en"))
                 .build(),
             aFullConceptSnapshot()
-                .withTitle(TaalString.of("text-en-changed"))
+                .withTitle(LanguageString.of("text-en-changed"))
                 .build()],
         ['description changed',
             aFullConceptSnapshot()
-                .withDescription(TaalString.of("text-en"))
+                .withDescription(LanguageString.of("text-en"))
                 .build(),
             aFullConceptSnapshot()
-                .withDescription(TaalString.of("text-en-changed"))
+                .withDescription(LanguageString.of("text-en-changed"))
                 .build()],
         ['additional description changed',
             aFullConceptSnapshot()
-                .withAdditionalDescription(TaalString.of("text-en"))
+                .withAdditionalDescription(LanguageString.of("text-en"))
                 .build(),
             aFullConceptSnapshot()
-                .withAdditionalDescription(TaalString.of("text-en-changed"))
+                .withAdditionalDescription(LanguageString.of("text-en-changed"))
                 .build()],
         ['exception changed',
             aFullConceptSnapshot()
-                .withException(TaalString.of("text-en"))
+                .withException(LanguageString.of("text-en"))
                 .build(),
             aFullConceptSnapshot()
-                .withException(TaalString.of("text-en-changed"))
+                .withException(LanguageString.of("text-en-changed"))
                 .build()],
         ['regulation changed',
             aFullConceptSnapshot()
-                .withRegulation(TaalString.of("text-en"))
+                .withRegulation(LanguageString.of("text-en"))
                 .build(),
             aFullConceptSnapshot()
-                .withRegulation(TaalString.of("text-en-changed"))
+                .withRegulation(LanguageString.of("text-en-changed"))
                 .build()],
         ['start date changed',
             aFullConceptSnapshot()
@@ -342,38 +342,38 @@ describe('is functionally changed', () => {
                 .build()],
         ['keyword updated - en',
             aFullConceptSnapshot()
-                .withKeywords([TaalString.of('abc')])
+                .withKeywords([LanguageString.of('abc')])
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords([TaalString.of('def')])
+                .withKeywords([LanguageString.of('def')])
                 .build()],
         ['keyword updated - nl',
             aFullConceptSnapshot()
-                .withKeywords([TaalString.of(undefined, 'abc')])
+                .withKeywords([LanguageString.of(undefined, 'abc')])
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords([TaalString.of(undefined, 'def')])
+                .withKeywords([LanguageString.of(undefined, 'def')])
                 .build()],
         ['keyword updated - en became nl',
             aFullConceptSnapshot()
-                .withKeywords([TaalString.of('abc')])
+                .withKeywords([LanguageString.of('abc')])
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords([TaalString.of(undefined, 'abc')])
+                .withKeywords([LanguageString.of(undefined, 'abc')])
                 .build()],
         ['keyword added',
             aFullConceptSnapshot()
-                .withKeywords([TaalString.of('abc')])
+                .withKeywords([LanguageString.of('abc')])
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords([TaalString.of('abc'), TaalString.of('def')])
+                .withKeywords([LanguageString.of('abc'), LanguageString.of('def')])
                 .build()],
         ['keyword removed',
             aFullConceptSnapshot()
-                .withKeywords([TaalString.of('abc'), TaalString.of('def')])
+                .withKeywords([LanguageString.of('abc'), LanguageString.of('def')])
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords([TaalString.of('abc')])
+                .withKeywords([LanguageString.of('abc')])
                 .build()],
         ['requirement added',
             aFullConceptSnapshot()
@@ -391,68 +391,68 @@ describe('is functionally changed', () => {
                 .build()],
         ['requirement order changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-1')).build(),
-                    aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-2')).build()])
+                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en-1')).build(),
+                    aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en-2')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-2')).build(),
-                    aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-1')).build()])
+                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en-2')).build(),
+                    aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en-1')).build()])
                 .build()],
         ['requirement title updated : en changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en')).build()])
+                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en - updated')).build()])
+                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en - updated')).build()])
                 .build()],
         ['requirement title updated: nl added',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en')).build()])
+                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
                 .build()],
         ['requirement title updated: nl removed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en')).build()])
+                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en')).build()])
                 .build()],
         ['requirement title updated : nl changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-changed')).build()])
+                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-changed')).build()])
                 .build()],
         ['requirement description updated : en changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en')).build()])
+                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en - updated')).build()])
+                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en - updated')).build()])
                 .build()],
         ['requirement description updated: nl added',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en')).build()])
+                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
                 .build()],
         ['requirement description updated: nl removed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en')).build()])
+                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en')).build()])
                 .build()],
         ['requirement description updated : nl changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-changed')).build()])
+                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-changed')).build()])
                 .build()],
         ['requirement > evidence : added',
             aFullConceptSnapshot()
@@ -470,17 +470,17 @@ describe('is functionally changed', () => {
                 .build()],
         ['requirement > evidence title updated',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withTitle(TaalString.of('evidence title en')).build()).build()])
+                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withTitle(LanguageString.of('evidence title en')).build()).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withTitle(TaalString.of('evidence title en updated')).build()).build()])
+                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withTitle(LanguageString.of('evidence title en updated')).build()).build()])
                 .build()],
         ['requirement > evidence description updated',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(TaalString.of('evidence description en')).build()).build()])
+                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(LanguageString.of('evidence description en')).build()).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(TaalString.of('evidence description en updated')).build()).build()])
+                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(LanguageString.of('evidence description en updated')).build()).build()])
                 .build()],
         ['procedure added',
             aFullConceptSnapshot()
@@ -498,93 +498,93 @@ describe('is functionally changed', () => {
                 .build()],
         ['procedure order changed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en')).build(),
-                    aFullProcedure().withTitle(TaalString.of('procedure title en another')).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en')).build(),
+                    aFullProcedure().withTitle(LanguageString.of('procedure title en another')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en another')).build(),
-                    aFullProcedure().withTitle(TaalString.of('procedure title en')).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en another')).build(),
+                    aFullProcedure().withTitle(LanguageString.of('procedure title en')).build()])
                 .build()],
         ['procedure title updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en')).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en updated')).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en updated')).build()])
                 .build()],
         ['procedure title added',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en updated')).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en updated')).build()])
                 .build()],
         ['procedure title removed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en updated')).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en updated')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(undefined).build()])
                 .build()],
         ['procedure description updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en')).build()])
+                .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en updated')).build()])
+                .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description en updated')).build()])
                 .build()],
         ['procedure description added',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en updated')).build()])
+                .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description en updated')).build()])
                 .build()],
         ['procedure description removed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en')).build()])
+                .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(undefined).build()])
                 .build()],
         ['procedure website title updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(LanguageString.of('procedure website title en')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en updated')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(LanguageString.of('procedure website title en updated')).build()]).build()])
                 .build()],
         ['procedure website title added',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(undefined).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(LanguageString.of('procedure website title en')).build()]).build()])
                 .build()],
         ['procedure website title removed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(LanguageString.of('procedure website title en')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(undefined).build()]).build()])
                 .build()],
         ['procedure website description updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en updated')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en updated')).build()]).build()])
                 .build()],
         ['procedure website description added',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
                 .build()],
         ['procedure website description removed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
@@ -647,42 +647,42 @@ describe('is functionally changed', () => {
                 .build()],
         ['website title updated',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en')).build()])
+                .withWebsites([aMinimalWebsite().withTitle(LanguageString.of('website title en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en updated')).build()])
+                .withWebsites([aMinimalWebsite().withTitle(LanguageString.of('website title en updated')).build()])
                 .build()],
         ['website title added',
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withTitle(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en')).build()])
+                .withWebsites([aMinimalWebsite().withTitle(LanguageString.of('website title en')).build()])
                 .build()],
         ['website title removed',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en')).build()])
+                .withWebsites([aMinimalWebsite().withTitle(LanguageString.of('website title en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withTitle(undefined).build()])
                 .build()],
         ['website description updated',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en')).build()])
+                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en updated')).build()])
+                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en updated')).build()])
                 .build()],
         ['website description added',
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en')).build()])
+                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
                 .build()],
         ['website description removed',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en')).build()])
+                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
@@ -731,52 +731,52 @@ describe('is functionally changed', () => {
                 .build()],
         ['cost title updated',
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(TaalString.of('cost title en')).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(TaalString.of('cost title en updated')).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title en updated')).build()])
                 .build()],
         ['cost title added',
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(TaalString.of('cost title en')).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title en')).build()])
                 .build()],
         ['cost title removed',
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(TaalString.of('cost title en')).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(undefined).build()])
                 .build()],
         ['cost description updated',
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withDescription(TaalString.of('cost description en')).build()])
+                .withCosts([aFullCost().withDescription(LanguageString.of('cost description en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withDescription(TaalString.of('cost description en updated')).build()])
+                .withCosts([aFullCost().withDescription(LanguageString.of('cost description en updated')).build()])
                 .build()],
         ['cost description added',
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withDescription(TaalString.of('cost description en')).build()])
+                .withCosts([aFullCost().withDescription(LanguageString.of('cost description en')).build()])
                 .build()],
         ['cost description removed',
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withDescription(TaalString.of('cost description en')).build()])
+                .withCosts([aFullCost().withDescription(LanguageString.of('cost description en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(undefined).build()])
                 .build()],
         ['cost order changed',
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(TaalString.of('cost title 1 en')).build(), aFullCost().withTitle(TaalString.of('cost title 2 en')).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title 1 en')).build(), aFullCost().withTitle(LanguageString.of('cost title 2 en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(TaalString.of('cost title 2 en')).build(), aFullCost().withTitle(TaalString.of('cost title 1 en')).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title 2 en')).build(), aFullCost().withTitle(LanguageString.of('cost title 1 en')).build()])
                 .build()],
         ['financial advantage added',
             aFullConceptSnapshot()
@@ -794,52 +794,52 @@ describe('is functionally changed', () => {
                 .build()],
         ['financial advantage title updated',
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en updated')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title en updated')).build()])
                 .build()],
         ['financial advantage title added',
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title en')).build()])
                 .build()],
         ['financial advantage title removed',
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(undefined).build()])
                 .build()],
         ['financial advantage description updated',
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en updated')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description en updated')).build()])
                 .build()],
         ['financial advantage description added',
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description en')).build()])
                 .build()],
         ['financial advantage description removed',
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(undefined).build()])
                 .build()],
         ['financial advantage order changed',
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 1 en')).build(), aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 2 en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 en')).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 2 en')).build(), aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 1 en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 en')).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 en')).build()])
                 .build()],
 
     ];
