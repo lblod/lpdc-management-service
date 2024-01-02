@@ -1,5 +1,7 @@
 import {Namespace} from "rdflib";
 
+const conceptNS = Namespace('https://productencatalogus.data.vlaanderen.be/id/concept/');
+
 export const NS = {
     schema: Namespace('http://schema.org/'),
     dct: Namespace('http://purl.org/dc/terms/'),
@@ -18,4 +20,16 @@ export const NS = {
     besluit: Namespace('http://data.vlaanderen.be/ns/besluit#'),
     adms: Namespace('http://www.w3.org/ns/adms#'),
     mu: Namespace('http://mu.semte.ch/vocabularies/core/'),
+    concept: {
+        type: Namespace(conceptNS('Type/').value),
+        doelgroep: Namespace(conceptNS('Doelgroep/').value),
+        thema: Namespace(conceptNS('Thema/').value),
+        bevoegdBestuursniveau: Namespace(conceptNS('BevoegdBestuursniveau/').value),
+        uitvoerendBestuursniveau: Namespace(conceptNS('UitvoerendBestuursniveau/').value),
+        publicatieKanaal: Namespace(conceptNS('PublicatieKanaal/').value),
+        yourEuropeCategorie: Namespace(conceptNS('YourEuropeCategorie/').value),
+        snapshotType: Namespace(conceptNS('SnapshotType/').value),
+        conceptTag: Namespace(conceptNS('ConceptTag/').value),
+    },
+
 };

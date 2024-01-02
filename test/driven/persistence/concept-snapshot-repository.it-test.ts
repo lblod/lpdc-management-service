@@ -23,6 +23,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
+import {NS} from "../../../src/driven/persistence/namespaces";
 
 describe('ConceptSnapshotRepository', () => {
     const repository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -147,7 +148,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify full mappings', async () => {
             const id = uuid();
-            const conceptSnapshotId =  ConceptSnapshotTestBuilder.buildIri(id);
+            const conceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(id);
 
             const conceptSnapshot =
                 aFullConceptSnapshot()
@@ -199,30 +200,30 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """Concept Snapshot Regulation  language is ignored"""@fr`,
                     `<${conceptSnapshotId}> <http://schema.org/startDate> """${ConceptSnapshotTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/endDate> """${ConceptSnapshotTestBuilder.END_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/type> <${ConceptSnapshotTestBuilder.TYPE}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptSnapshotTestBuilder.TARGET_AUDIENCES)[0]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptSnapshotTestBuilder.TARGET_AUDIENCES)[1]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${Array.from(ConceptSnapshotTestBuilder.TARGET_AUDIENCES)[2]}>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${Array.from(ConceptSnapshotTestBuilder.THEMES)[0]}>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${Array.from(ConceptSnapshotTestBuilder.THEMES)[1]}>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${Array.from(ConceptSnapshotTestBuilder.THEMES)[2]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)[0]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)[1]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)[2]}>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/type> <${NS.concept.type(ConceptSnapshotTestBuilder.TYPE).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.concept.doelgroep(Array.from(ConceptSnapshotTestBuilder.TARGET_AUDIENCES)[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.concept.doelgroep(Array.from(ConceptSnapshotTestBuilder.TARGET_AUDIENCES)[1]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.concept.doelgroep(Array.from(ConceptSnapshotTestBuilder.TARGET_AUDIENCES)[2]).value}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${NS.concept.thema(Array.from(ConceptSnapshotTestBuilder.THEMES)[0]).value}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${NS.concept.thema(Array.from(ConceptSnapshotTestBuilder.THEMES)[1]).value}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${NS.concept.thema(Array.from(ConceptSnapshotTestBuilder.THEMES)[2]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.concept.bevoegdBestuursniveau(Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.concept.bevoegdBestuursniveau(Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)[1]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.concept.bevoegdBestuursniveau(Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)[2]).value}>`,
                     `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITIES)[0]}>`,
                     `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITIES)[1]}>`,
                     `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITIES)[2]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)[0]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)[1]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)[2]}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.concept.uitvoerendBestuursniveau(Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.concept.uitvoerendBestuursniveau(Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)[1]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.concept.uitvoerendBestuursniveau(Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)[2]).value}>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITIES)[0]}>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITIES)[1]}>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITIES)[2]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${Array.from(ConceptSnapshotTestBuilder.PUBLICATION_MEDIA)[0]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${Array.from(ConceptSnapshotTestBuilder.PUBLICATION_MEDIA)[1]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)[0]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)[1]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${Array.from(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)[2]}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.concept.publicatieKanaal(Array.from(ConceptSnapshotTestBuilder.PUBLICATION_MEDIA)[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.concept.publicatieKanaal(Array.from(ConceptSnapshotTestBuilder.PUBLICATION_MEDIA)[1]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.concept.yourEuropeCategorie(Array.from(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.concept.yourEuropeCategorie(Array.from(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)[1]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.concept.yourEuropeCategorie(Array.from(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)[2]).value}>`,
                     `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptSnapshotTestBuilder.KEYWORDS)[0].en}"""@en`,
                     `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptSnapshotTestBuilder.KEYWORDS)[1].nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptSnapshotTestBuilder.KEYWORDS)[2].nl}"""@nl`,
@@ -493,9 +494,9 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${ConceptSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/identifier> """${id}"""`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${ConceptSnapshotTestBuilder.PRODUCT_ID}"""`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${ConceptSnapshotTestBuilder.SNAPSHOT_TYPE}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${Array.from(ConceptSnapshotTestBuilder.CONCEPT_TAGS)[0]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${Array.from(ConceptSnapshotTestBuilder.CONCEPT_TAGS)[1]}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.concept.snapshotType(ConceptSnapshotTestBuilder.SNAPSHOT_TYPE).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.concept.conceptTag(Array.from(ConceptSnapshotTestBuilder.CONCEPT_TAGS)[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.concept.conceptTag(Array.from(ConceptSnapshotTestBuilder.CONCEPT_TAGS)[1]).value}>`,
                 ]);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
@@ -516,9 +517,9 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
-                        `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
-                        `<${requirementId}> a <http://data.europa.eu/m8g/Requirement>`,
-                        `<${requirementId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
+                    `<${requirementId}> a <http://data.europa.eu/m8g/Requirement>`,
+                    `<${requirementId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                 ]);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshotId);

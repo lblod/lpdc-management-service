@@ -85,8 +85,8 @@ export class DomainToTriplesMapper {
             conceptSnapshot.generatedAtTime ? quad(namedNode(conceptSnapshot.id), NS.prov('generatedAtTime'), literal(conceptSnapshot.generatedAtTime.value, NS.xsd('dateTime'))) : undefined,
             quad(namedNode(conceptSnapshot.id), NS.schema('identifier'), literal(conceptSnapshot.identifier)),
             this.productId(conceptSnapshot.id, conceptSnapshot.productId),
-            conceptSnapshot.snapshotType ? quad(namedNode(conceptSnapshot.id), NS.lpdcExt('snapshotType'), namedNode(conceptSnapshot.snapshotType)) : undefined,
-            ...this.irisToTriples(namedNode(conceptSnapshot.id), NS.lpdcExt('conceptTag'), conceptSnapshot.conceptTags),
+            conceptSnapshot.snapshotType ? quad(namedNode(conceptSnapshot.id), NS.lpdcExt('snapshotType'), namedNode(this.enumToIri(conceptSnapshot.snapshotType, NS.concept.snapshotType))) : undefined,
+            ...this.irisToTriples(namedNode(conceptSnapshot.id), NS.lpdcExt('conceptTag'), this.enumsToIris(conceptSnapshot.conceptTags, NS.concept.conceptTag)),
         ].filter(t => t !== undefined);
     }
 
@@ -103,7 +103,7 @@ export class DomainToTriplesMapper {
     }
 
     private type(id: Iri, value: ProductType): Statement | undefined {
-        return value ? quad(namedNode(id), NS.dct('type'), namedNode(value)) : undefined;
+        return value ? quad(namedNode(id), NS.dct('type'), namedNode(this.enumToIri(value, NS.concept.type))) : undefined;
     }
 
     private title(id: Iri, value: LanguageString): Statement [] {
@@ -127,15 +127,15 @@ export class DomainToTriplesMapper {
     }
 
     private targetAudiences(id: Iri, values: Set<TargetAudienceType>): Statement [] {
-        return this.irisToTriples(namedNode(id), NS.lpdcExt('targetAudience'), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('targetAudience'), this.enumsToIris(values, NS.concept.doelgroep));
     }
 
     private themes(id: Iri, values: Set<ThemeType>): Statement [] {
-        return this.irisToTriples(namedNode(id), NS.m8g('thematicArea'), values);
+        return this.irisToTriples(namedNode(id), NS.m8g('thematicArea'), this.enumsToIris(values, NS.concept.thema));
     }
 
     private competentAuthorityLevels(id: Iri, values: Set<CompetentAuthorityLevelType>): Statement [] {
-        return this.irisToTriples(namedNode(id), NS.lpdcExt('competentAuthorityLevel'), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('competentAuthorityLevel'), this.enumsToIris(values, NS.concept.bevoegdBestuursniveau));
     }
 
     private competentAuthorities(id: Iri, values: Set<Iri>): Statement [] {
@@ -143,7 +143,7 @@ export class DomainToTriplesMapper {
     }
 
     private executingAuthorityLevels(id: Iri, values: Set<ExecutingAuthorityLevelType>): Statement [] {
-        return this.irisToTriples(namedNode(id), NS.lpdcExt('executingAuthorityLevel'), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('executingAuthorityLevel'), this.enumsToIris(values, NS.concept.uitvoerendBestuursniveau));
     }
 
     private executingAuthorities(id: Iri, values: Set<Iri>): Statement [] {
@@ -151,11 +151,11 @@ export class DomainToTriplesMapper {
     }
 
     private publicationMedia(id: Iri, values: Set<PublicationMediumType>): Statement [] {
-        return this.irisToTriples(namedNode(id), NS.lpdcExt('publicationMedium'), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('publicationMedium'), this.enumsToIris(values, NS.concept.publicatieKanaal));
     }
 
     private yourEuropeCategories(id: Iri, values: Set<YourEuropeCategoryType>): Statement [] {
-        return this.irisToTriples(namedNode(id), NS.lpdcExt('yourEuropeCategory'), values);
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('yourEuropeCategory'), this.enumsToIris(values, NS.concept.yourEuropeCategorie));
     }
 
     private keywords(id: Iri, values: Set<LanguageString>): Statement[] {
@@ -265,4 +265,12 @@ export class DomainToTriplesMapper {
             .map(e => quad(subject, predicate, namedNode(e)));
     }
 
+    private enumsToIris(values: Set<any>, namespace: (ln: string) => NamedNode): Set<Iri> {
+        return new Set(Array.from(values).map(v => this.enumToIri(v, namespace)));
+    }
+
+    private enumToIri(value: any, namespace: (ln: string) => NamedNode): Iri {
+        value = namespace(value).value;
+        return value;
+    }
 }

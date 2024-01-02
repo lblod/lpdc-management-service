@@ -24,6 +24,7 @@ import {
     YourEuropeCategoryType
 } from "../../core/domain/types";
 import {Concept} from "../../core/domain/concept";
+import {Namespace} from "rdflib/lib/factories/factory-types";
 
 export class QuadsToDomainMapper {
 
@@ -125,7 +126,7 @@ export class QuadsToDomainMapper {
     }
 
     private productType(id: Iri): ProductType | undefined {
-        return this.asEnum(ProductType, this.store.anyValue(namedNode(id), NS.dct("type"), null, this.graphId), id);
+        return this.asEnum(ProductType, NS.concept.type, this.store.anyValue(namedNode(id), NS.dct("type"), null, this.graphId), id);
     }
 
     private title(id: Iri): LanguageString | undefined {
@@ -153,15 +154,15 @@ export class QuadsToDomainMapper {
     }
 
     private targetAudiences(id: Iri): Set<TargetAudienceType> {
-        return this.asEnums(TargetAudienceType, this.store.statementsMatching(namedNode(id), NS.lpdcExt("targetAudience"), null, this.graphId), id);
+        return this.asEnums(TargetAudienceType, NS.concept.doelgroep, this.store.statementsMatching(namedNode(id), NS.lpdcExt("targetAudience"), null, this.graphId), id);
     }
 
     private themes(id: Iri): Set<ThemeType> {
-        return this.asEnums(ThemeType, this.store.statementsMatching(namedNode(id), NS.m8g("thematicArea"), null, this.graphId), id);
+        return this.asEnums(ThemeType, NS.concept.thema, this.store.statementsMatching(namedNode(id), NS.m8g("thematicArea"), null, this.graphId), id);
     }
 
     private competentAuthorityLevels(id: Iri): Set<CompetentAuthorityLevelType> {
-        return this.asEnums(CompetentAuthorityLevelType, this.store.statementsMatching(namedNode(id), NS.lpdcExt("competentAuthorityLevel"), null, this.graphId), id);
+        return this.asEnums(CompetentAuthorityLevelType, NS.concept.bevoegdBestuursniveau, this.store.statementsMatching(namedNode(id), NS.lpdcExt("competentAuthorityLevel"), null, this.graphId), id);
     }
 
     private competentAuthorities(id: Iri): Set<Iri> {
@@ -169,7 +170,7 @@ export class QuadsToDomainMapper {
     }
 
     private executingAuthorityLevels(id: Iri): Set<ExecutingAuthorityLevelType> {
-        return this.asEnums(ExecutingAuthorityLevelType, this.store.statementsMatching(namedNode(id), NS.lpdcExt("executingAuthorityLevel"), null, this.graphId), id);
+        return this.asEnums(ExecutingAuthorityLevelType, NS.concept.uitvoerendBestuursniveau, this.store.statementsMatching(namedNode(id), NS.lpdcExt("executingAuthorityLevel"), null, this.graphId), id);
     }
 
     private executingAuthorities(id: Iri): Set<Iri> {
@@ -177,11 +178,11 @@ export class QuadsToDomainMapper {
     }
 
     private publicationMedia(id: Iri): Set<PublicationMediumType> {
-        return this.asEnums(PublicationMediumType, this.store.statementsMatching(namedNode(id), NS.lpdcExt("publicationMedium"), null, this.graphId), id);
+        return this.asEnums(PublicationMediumType, NS.concept.publicatieKanaal, this.store.statementsMatching(namedNode(id), NS.lpdcExt("publicationMedium"), null, this.graphId), id);
     }
 
     private yourEuropeCategories(id: Iri): Set<YourEuropeCategoryType> {
-        return this.asEnums(YourEuropeCategoryType, this.store.statementsMatching(namedNode(id), NS.lpdcExt("yourEuropeCategory"), null, this.graphId), id);
+        return this.asEnums(YourEuropeCategoryType, NS.concept.yourEuropeCategorie, this.store.statementsMatching(namedNode(id), NS.lpdcExt("yourEuropeCategory"), null, this.graphId), id);
     }
 
     private keywords(id: Iri): Set<LanguageString> {
@@ -215,11 +216,11 @@ export class QuadsToDomainMapper {
     }
 
     private snapshotType(id: Iri): SnapshotType | undefined {
-        return this.asEnum(SnapshotType, this.store.anyValue(namedNode(id), NS.lpdcExt("snapshotType"), null, this.graphId), id);
+        return this.asEnum(SnapshotType, NS.concept.snapshotType, this.store.anyValue(namedNode(id), NS.lpdcExt("snapshotType"), null, this.graphId), id);
     }
 
     private conceptTags(id: Iri): Set<ConceptTagType> {
-        return this.asEnums(ConceptTagType, this.store.statementsMatching(namedNode(id), NS.lpdcExt("conceptTag"), null, this.graphId), id);
+        return this.asEnums(ConceptTagType, NS.concept.conceptTag, this.store.statementsMatching(namedNode(id), NS.lpdcExt("conceptTag"), null, this.graphId), id);
     }
 
     private costs(id: Iri): Cost[] {
@@ -311,15 +312,15 @@ export class QuadsToDomainMapper {
         return aValue ? Number.parseInt(aValue) : undefined;
     }
 
-    private asEnums<T>(enumObj: T, statements: Statement[], id: string): Set<T[keyof T]> {
+    private asEnums<T>(enumObj: T, namespace: Namespace, statements: Statement[], id: string): Set<T[keyof T]> {
         const literals: Literal[] | undefined = this.asLiterals(statements);
-        return new Set(literals.map(literal => this.asEnum(enumObj, literal?.value, id)));
+        return new Set(literals.map(literal => this.asEnum(enumObj, namespace, literal?.value, id)));
     }
 
-    private asEnum<T>(enumObj: T, value: any, id: string): T[keyof T] | undefined {
+    private asEnum<T>(enumObj: T, namespace: Namespace, value: any, id: string): T[keyof T] | undefined {
         for (const key in enumObj) {
-            if (enumObj[key] === value) {
-                return value;
+            if (namespace(enumObj[key] as string).value === value) {
+                return enumObj[key];
             }
         }
         if (value) {
@@ -374,5 +375,4 @@ export class QuadsToDomainMapper {
             return orderA[1] - orderB[1];
         });
     }
-
 }

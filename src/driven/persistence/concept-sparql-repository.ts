@@ -43,7 +43,6 @@ export class ConceptSparqlRepository implements ConceptRepository {
                 NS.besluit('Bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
             ]);
-
         const mapper = new QuadsToDomainMapper(quads, CONCEPT_GRAPH);
 
         return mapper.concept(id);
