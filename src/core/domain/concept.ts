@@ -45,6 +45,9 @@ export class Concept {
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
     private readonly _productId: string | undefined;
+    private readonly _latestConceptSnapshot: Iri;
+    private readonly _previousConceptSnapshots: Set<Iri>; //TODO LDPC-916: implement me
+    private readonly _latestFunctionallyChangedConceptSnapshot: Iri; //TODO LDPC-916: implement me
 
     constructor(id: Iri,
                 uuid: string | undefined,
@@ -71,6 +74,7 @@ export class Concept {
                 costs: Cost[],
                 financialAdvantages: FinancialAdvantage[],
                 productId: string | undefined,
+                latestConceptSnapshot: Iri,
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -98,6 +102,7 @@ export class Concept {
         this._costs = [...costs];
         this._financialAdvantages = [...financialAdvantages];
         this._productId = productId;
+        this._latestConceptSnapshot = latestConceptSnapshot;
     }
 
     get id(): Iri {
@@ -198,6 +203,10 @@ export class Concept {
 
     get productId(): string | undefined {
         return this._productId;
+    }
+
+    get latestConceptSnapshot(): Iri {
+        return this._latestConceptSnapshot;
     }
 
 }

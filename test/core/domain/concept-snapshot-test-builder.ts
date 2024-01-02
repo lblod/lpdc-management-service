@@ -25,18 +25,18 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
-import {ConceptTestBuilder} from "./concept-test-builder";
+import {buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 
 
 export function aMinimalConcept(): ConceptSnapshotTestBuilder {
     return new ConceptSnapshotTestBuilder()
-        .withId(ConceptSnapshotTestBuilder.buildIri(uuid()));
+        .withId(buildConceptSnapshotIri(uuid()));
 }
 
 export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
     const id = uuid();
     return new ConceptSnapshotTestBuilder()
-        .withId(ConceptSnapshotTestBuilder.buildIri(id))
+        .withId(buildConceptSnapshotIri(id))
         .withTitle(
             LanguageString.of(
                 ConceptSnapshotTestBuilder.TITLE_EN,
@@ -171,7 +171,7 @@ export class ConceptSnapshotTestBuilder {
 
     public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantage().build(), anotherFullFinancialAdvantage().build()];
 
-    public static readonly IS_VERSION_OF_CONCEPT = ConceptTestBuilder.buildIri(uuid());
+    public static readonly IS_VERSION_OF_CONCEPT = buildConceptIri(uuid());
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2022-10-05T13:00:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2023-09-12T20:00:20.242928Z');
@@ -213,10 +213,6 @@ export class ConceptSnapshotTestBuilder {
     private productId: string | undefined;
     private snapshotType: SnapshotType | undefined;
     private conceptTags: Set<ConceptTagType> = new Set();
-
-    static buildIri(uniqueId: string): Iri {
-        return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
-    }
 
     public withId(id: Iri): ConceptSnapshotTestBuilder {
         this.id = id;

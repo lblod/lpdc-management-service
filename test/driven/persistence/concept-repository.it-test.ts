@@ -7,6 +7,7 @@ import {aFullConcept, aMinimalConcept, ConceptTestBuilder} from "../../core/doma
 import {CONCEPT_GRAPH} from "../../../config";
 import {NS} from "../../../src/driven/persistence/namespaces";
 
+import {buildConceptIri} from "../../core/domain/iri-test-builder";
 
 describe('ConceptRepository', () => {
     const repository = new ConceptSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -54,7 +55,7 @@ describe('ConceptRepository', () => {
             const concept = aFullConcept().build();
             await repository.save(concept);
 
-            const nonExistentConceptId = ConceptTestBuilder.buildIri('thisiddoesnotexist');
+            const nonExistentConceptId = buildConceptIri('thisiddoesnotexist');
 
             await expect(repository.findById(nonExistentConceptId)).rejects.toThrow(new Error(`Could not find <https://ipdc.tni-vlaanderen.be/id/concept/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`));
         });
@@ -73,7 +74,7 @@ describe('ConceptRepository', () => {
         });
 
         test('Verify minimal mappings', async () => {
-            const conceptId = ConceptTestBuilder.buildIri(uuid());
+            const conceptId = buildConceptIri(uuid());
 
             const concept =
                 aMinimalConcept()
@@ -82,7 +83,10 @@ describe('ConceptRepository', () => {
 
             await directDatabaseAccess.insertData(
                 CONCEPT_GRAPH,
-                [`<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`]);
+                [
+                    `<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
+                ]);
 
             const actualConcept = await repository.findById(conceptId);
 
@@ -90,7 +94,7 @@ describe('ConceptRepository', () => {
         });
 
         test('Verify minimal mappings - with incomplete title', async () => {
-            const conceptId = ConceptTestBuilder.buildIri(uuid());
+            const conceptId = buildConceptIri(uuid());
 
             const concept =
                 aMinimalConcept()
@@ -100,8 +104,11 @@ describe('ConceptRepository', () => {
 
             await directDatabaseAccess.insertData(
                 CONCEPT_GRAPH,
-                [`<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
-                    `<${conceptId}> <http://purl.org/dc/terms/title> """${ConceptTestBuilder.TITLE_NL}"""@nl`]);
+                [
+                    `<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptId}> <http://purl.org/dc/terms/title> """${ConceptTestBuilder.TITLE_NL}"""@nl`,
+                    `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
+                ]);
 
             const actualConcept = await repository.findById(conceptId);
 
@@ -111,7 +118,7 @@ describe('ConceptRepository', () => {
 
         test('Verify full mappings', async () => {
             const id = uuid();
-            const conceptId = ConceptTestBuilder.buildIri(id);
+            const conceptId = buildConceptIri(id);
             const conceptDisplayConfigurationId = `http://data.lblod.info/id/conceptual-display-configuration/${uuid()}`;
 
             const concept =
@@ -480,6 +487,7 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${ConceptTestBuilder.PROCEDURES[0].websites[0].id}>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration> <${conceptDisplayConfigurationId}>`,
                     `<${conceptDisplayConfigurationId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptDisplayConfiguration>`,
+                    `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
                 ]);
 
             const actualConcept = await repository.findById(conceptId);

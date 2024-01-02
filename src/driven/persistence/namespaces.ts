@@ -20,6 +20,7 @@ export const NS = {
     besluit: Namespace('http://data.vlaanderen.be/ns/besluit#'),
     adms: Namespace('http://www.w3.org/ns/adms#'),
     mu: Namespace('http://mu.semte.ch/vocabularies/core/'),
+    ext: Namespace('http://mu.semte.ch/vocabularies/ext/'),
     concept: {
         type: Namespace(conceptNS('Type/').value),
         doelgroep: Namespace(conceptNS('Doelgroep/').value),

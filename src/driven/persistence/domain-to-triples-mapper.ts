@@ -51,6 +51,7 @@ export class DomainToTriplesMapper {
             ...this.costs(concept.id, concept.costs),
             ...this.financialAdvantages(concept.id, concept.financialAdvantages),
             this.productId(concept.id, concept.productId),
+            quad(namedNode(concept.id), NS.ext('hasVersionedSource'), namedNode(concept.latestConceptSnapshot)),
         ].filter(t => t !== undefined);
     }
 

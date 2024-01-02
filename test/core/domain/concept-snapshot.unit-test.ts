@@ -1,6 +1,6 @@
 import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
 import {uuid} from "../../../mu-helper";
-import {aFullConceptSnapshot, ConceptSnapshotTestBuilder} from "./concept-snapshot-test-builder";
+import {aFullConceptSnapshot} from "./concept-snapshot-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {aMinimalRequirement} from "./requirement-test-builder";
@@ -19,12 +19,13 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
+import {buildConceptSnapshotIri} from "./iri-test-builder";
 
 describe('constructing', () => {
 
     test('identifier is extracted from id', () => {
         const aUUID = uuid();
-        const id = ConceptSnapshotTestBuilder.buildIri(aUUID);
+        const id = buildConceptSnapshotIri(aUUID);
         const aConceptSnapshot =
             aFullConceptSnapshot()
                 .withId(id)
@@ -53,7 +54,7 @@ describe('is functionally changed', () => {
 
     type TestCase = [string, ConceptSnapshot, ConceptSnapshot];
 
-    const aConceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(uuid());
+    const aConceptSnapshotId = buildConceptSnapshotIri(uuid());
     const aConceptSnapshot =
         aFullConceptSnapshot().build();
 

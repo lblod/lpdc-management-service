@@ -23,16 +23,18 @@ import {Website} from "../../../src/core/domain/website";
 import {Cost} from "../../../src/core/domain/cost";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Concept} from "../../../src/core/domain/concept";
+import {buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 
 export function aMinimalConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
-        .withId(ConceptTestBuilder.buildIri(uuid()));
+        .withId(buildConceptIri(uuid()))
+        .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()));
 }
 
 export function aFullConcept(): ConceptTestBuilder {
     const id = uuid();
     return new ConceptTestBuilder()
-        .withId(ConceptTestBuilder.buildIri(id))
+        .withId(buildConceptIri(id))
         .withUuid(uuid())
         .withTitle(
             LanguageString.of(
@@ -91,7 +93,8 @@ export function aFullConcept(): ConceptTestBuilder {
         .withWebsites(ConceptTestBuilder.WEBSITES)
         .withCosts(ConceptTestBuilder.COSTS)
         .withFinancialAdvantages(ConceptTestBuilder.FINANCIAL_ADVANTAGES)
-        .withProductId(ConceptTestBuilder.PRODUCT_ID);
+        .withProductId(ConceptTestBuilder.PRODUCT_ID)
+        .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()));
 }
 
 export class ConceptTestBuilder {
@@ -164,7 +167,6 @@ export class ConceptTestBuilder {
 
     public static readonly PRODUCT_ID = "5468";
 
-
     private id: Iri;
     private uuid: string | undefined;
     private title: LanguageString | undefined;
@@ -190,10 +192,7 @@ export class ConceptTestBuilder {
     private costs: Cost[] = [];
     private financialAdvantages: FinancialAdvantage[] = [];
     private productId: string | undefined;
-
-    static buildIri(uniqueId: string): Iri {
-        return `https://ipdc.tni-vlaanderen.be/id/concept/${uniqueId}`;
-    }
+    private latestConceptSnapshot: Iri;
 
     public withId(id: Iri): ConceptTestBuilder {
         this.id = id;
@@ -320,6 +319,11 @@ export class ConceptTestBuilder {
         return this;
     }
 
+    public withLatestConceptSnapshot(latestConceptSnapshot: string): ConceptTestBuilder {
+        this.latestConceptSnapshot = latestConceptSnapshot;
+        return this;
+    }
+
     public build(): Concept {
         return new Concept(
             this.id,
@@ -347,6 +351,7 @@ export class ConceptTestBuilder {
             this.costs,
             this.financialAdvantages,
             this.productId,
+            this.latestConceptSnapshot,
         );
     }
 

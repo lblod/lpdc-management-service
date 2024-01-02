@@ -23,6 +23,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
+import {buildConceptSnapshotIri} from "../../core/domain/iri-test-builder";
 import {NS} from "../../../src/driven/persistence/namespaces";
 
 describe('ConceptSnapshotRepository', () => {
@@ -71,7 +72,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshot = aFullConceptSnapshot().build();
             await repository.save(conceptSnapshot);
 
-            const nonExistentConceptSnapshotId = ConceptSnapshotTestBuilder.buildIri('thisiddoesnotexist');
+            const nonExistentConceptSnapshotId = buildConceptSnapshotIri('thisiddoesnotexist');
 
             await expect(repository.findById(nonExistentConceptSnapshotId)).rejects.toThrow(new Error(`Could not find <https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`));
         });
@@ -90,7 +91,7 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         test('Verify minimal mappings', async () => {
-            const conceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(uuid());
+            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
 
             const conceptSnapshot =
                 aMinimalConcept()
@@ -107,7 +108,7 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         test('Verify minimal mappings - with incomplete title', async () => {
-            const conceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(uuid());
+            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
 
             const conceptSnapshot =
                 aMinimalConcept()
@@ -126,7 +127,7 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         test('Verify minimal mappings - with start date but no end date', async () => {
-            const conceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(uuid());
+            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
 
             const conceptSnapshot =
                 aMinimalConcept()
@@ -148,7 +149,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify full mappings', async () => {
             const id = uuid();
-            const conceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(id);
+            const conceptSnapshotId = buildConceptSnapshotIri(id);
 
             const conceptSnapshot =
                 aFullConceptSnapshot()
@@ -505,7 +506,7 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         test('Verify minimal mappings - requirement without evidence', async () => {
-            const conceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(uuid());
+            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
             const requirementId = RequirementTestBuilder.buildIri(uuid());
 
             const conceptSnapshot =
@@ -528,7 +529,7 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         test('Verify minimal mappings - minimal requirement with minimal evidence', async () => {
-            const conceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(uuid());
+            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
             const requirementId = RequirementTestBuilder.buildIri(uuid());
             const evidenceId = EvidenceTestBuilder.buildIri(uuid());
 
@@ -554,7 +555,7 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         test('Verify minimal mappings - procedure without websites', async () => {
-            const conceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(uuid());
+            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
             const procedureId = ProcedureTestBuilder.buildIri(uuid());
 
             const conceptSnapshot =
@@ -577,7 +578,7 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         test('Verify minimal mappings - procedure with minimal website', async () => {
-            const conceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(uuid());
+            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
             const procedureId = ProcedureTestBuilder.buildIri(uuid());
             const websiteId = WebsiteTestBuilder.buildIri(uuid());
 
