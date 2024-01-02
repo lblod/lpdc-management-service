@@ -22,6 +22,7 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
         const quads = await this.fetcher.fetch(ldesDataGraph,
             id,
             [],
+            [],
             [
                 NS.skos('Concept').value,
                 NS.lpdcExt('ConceptDisplayConfiguration').value,

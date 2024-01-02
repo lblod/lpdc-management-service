@@ -15,23 +15,25 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
         this.querying = new SparqlQuerying(endpoint);
     }
 
-    //TODO LPDC-916: also add predicatesToNotQuery (and exclude them in a filter (https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration comes to mind when querying concepts));
-    async fetch(graph: Iri, from: Iri, predicatesToStopRecursion: Iri[], illegalTypesToRecurseInto: Iri[]): Promise<Quad[]> {
-        return await this.doFetch(graph, [from], [], predicatesToStopRecursion, illegalTypesToRecurseInto);
+    async fetch(graph: Iri, from: Iri, predicatesToNotQuery: Iri[], predicatesToStopRecursion: Iri[], illegalTypesToRecurseInto: Iri[]): Promise<Quad[]> {
+        return await this.doFetch(graph, [from], [], predicatesToNotQuery, predicatesToStopRecursion, illegalTypesToRecurseInto);
     }
 
-    private async doFetch(graph: Iri, subjectIds: Iri[], previouslyQueriedIds: Iri[], predicatesToStopRecursion: Iri[], illegalTypesToRecurseInto: Iri[]): Promise<Quad[]> {
+    private async doFetch(graph: Iri, subjectIds: Iri[], previouslyQueriedIds: Iri[], predicatesToNotQuery: Iri[], predicatesToStopRecursion: Iri[], illegalTypesToRecurseInto: Iri[]): Promise<Quad[]> {
         if (subjectIds.length === 0) {
             return [];
         }
+        const subjectIdsQueryFragment =  `${subjectIds.map(subjectId => `(${sparqlEscapeUri(subjectId)}) `).join(' ')}`;
+        const filterQueryFragment = predicatesToNotQuery.length > 0 ? `FILTER (${predicatesToNotQuery.map(predicateId => `?p != ${sparqlEscapeUri(predicateId)}`).join(' && ')})` : '';
         const query =
             ` SELECT ?s ?p ?o
               WHERE { 
                     GRAPH ${sparqlEscapeUri(graph)} {
                         VALUES(?s) {
-                            ${subjectIds.map(subjectId => `(${sparqlEscapeUri(subjectId)}) `).join(' ')}
+                            ${subjectIdsQueryFragment}
                         } 
                         ?s ?p ?o
+                        ${filterQueryFragment}
                     }
               }`;
 
@@ -41,7 +43,7 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
         quads
             .filter(q => q.predicate.value === NS.rdf('type').value)
             .forEach(q => {
-                if(illegalTypesToRecurseInto.includes(q.object.value)) {
+                if (illegalTypesToRecurseInto.includes(q.object.value)) {
                     throw Error(`Recursing into <${q.object.value}> from <${q.subject.value}> is not allowed.`);
                 }
             });
@@ -61,7 +63,15 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
         subjectIds.forEach(subjectId => otherIdsToQuery.delete(subjectId));
         previouslyQueriedIds.forEach(previouslyQueriedId => otherIdsToQuery.delete(previouslyQueriedId));
 
-        return [...quads, ...await this.doFetch(graph, [...otherIdsToQuery], [...subjectIds, ...previouslyQueriedIds], predicatesToStopRecursion, illegalTypesToRecurseInto)];
+        return [
+            ...quads,
+            ...await this.doFetch(
+                graph,
+                [...otherIdsToQuery],
+                [...subjectIds, ...previouslyQueriedIds],
+                predicatesToNotQuery,
+                predicatesToStopRecursion,
+                illegalTypesToRecurseInto)];
     }
 
 }

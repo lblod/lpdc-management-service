@@ -20,6 +20,9 @@ export class ConceptSparqlRepository implements ConceptRepository {
     async findById(id: Iri): Promise<Concept> {
         const quads = await this.fetcher.fetch(CONCEPT_GRAPH,
             id,
+            [
+                NS.lpdcExt('hasConceptDisplayConfiguration').value,
+            ],
             //TODO LPDC-916: verify others in detail
             [
                 NS.lpdcExt('yourEuropeCategory').value,
@@ -30,7 +33,6 @@ export class ConceptSparqlRepository implements ConceptRepository {
                 NS.lpdcExt('executingAuthorityLevel').value,
                 NS.lpdcExt('hasExecutingAuthority').value,
                 NS.lpdcExt('publicationMedium').value,
-                NS.lpdcExt('hasConceptDisplayConfiguration').value, //TODO LPDC-916: this works, but we don't want to query these ones at all (there are way to many in production database). so add excluded triples ...
             ],
             //TODO LPDC-916: verify others in detail on production dataset
             [
