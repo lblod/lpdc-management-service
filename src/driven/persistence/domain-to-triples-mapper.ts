@@ -51,7 +51,8 @@ export class DomainToTriplesMapper {
             ...this.costs(concept.id, concept.costs),
             ...this.financialAdvantages(concept.id, concept.financialAdvantages),
             this.productId(concept.id, concept.productId),
-            quad(namedNode(concept.id), NS.ext('hasVersionedSource'), namedNode(concept.latestConceptSnapshot)),
+            this.latestConceptSnapshot(concept.id, concept.latestConceptSnapshot),
+            ...this.previousConceptSnapshots(concept.id, concept.previousConceptSnapshots),
         ].filter(t => t !== undefined);
     }
 
@@ -162,6 +163,14 @@ export class DomainToTriplesMapper {
     private keywords(id: Iri, values: Set<LanguageString>): Statement[] {
         return Array.from(values)
             .flatMap(keyword => this.languageStringToTriples(namedNode(id), namedNode(NS.dcat('keyword').value), keyword));
+    }
+
+    private latestConceptSnapshot(id: Iri, value: Iri): Statement {
+        return quad(namedNode(id), NS.ext('hasVersionedSource'), namedNode(value));
+    }
+
+    private previousConceptSnapshots(id: Iri, values: Set<Iri>): Statement[] {
+        return Array.from(values).map(v => quad(namedNode(id), NS.ext('previousVersionedSource'), namedNode(v)));
     }
 
     private requirements(id: Iri, values: Requirement[]): Statement[] {

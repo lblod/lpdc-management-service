@@ -1,6 +1,6 @@
 import {NamedNode, Quad} from 'rdflib/lib/tf-types';
 import {Iri} from '../../core/domain/shared/iri';
-import {graph, Literal, namedNode, Statement} from 'rdflib';
+import {graph, isLiteral, isNamedNode, Literal, namedNode, Statement} from 'rdflib';
 import {ConceptSnapshot} from '../../core/domain/concept-snapshot';
 import {LanguageString} from '../../core/domain/language-string';
 import {Cost} from '../../core/domain/cost';
@@ -105,6 +105,7 @@ export class QuadsToDomainMapper {
             this.financialAdvantages(id),
             this.productId(id),
             this.latestConceptSnapshot(id),
+            this.previousConceptSnapshots(id),
         );
     }
 
@@ -131,23 +132,23 @@ export class QuadsToDomainMapper {
     }
 
     private title(id: Iri): LanguageString | undefined {
-        return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.dct('title'), null, this.graphId));
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id), NS.dct('title'), null, this.graphId));
     }
 
     private description(id: Iri): LanguageString | undefined {
-        return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.dct('description'), null, this.graphId));
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id), NS.dct('description'), null, this.graphId));
     }
 
     private additionalDescription(id: Iri): LanguageString | undefined {
-        return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('additionalDescription'), null, this.graphId));
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('additionalDescription'), null, this.graphId));
     }
 
     private exception(id: Iri): LanguageString | undefined {
-        return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('exception'), null, this.graphId));
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('exception'), null, this.graphId));
     }
 
     private regulation(id: Iri): LanguageString | undefined {
-        return this.asLangugaeString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('regulation'), null, this.graphId));
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('regulation'), null, this.graphId));
     }
 
     private uuid(id: Iri): string | undefined {
@@ -189,15 +190,15 @@ export class QuadsToDomainMapper {
     private keywords(id: Iri): Set<LanguageString> {
         return new Set(this.store.statementsMatching(namedNode(id), NS.dcat('keyword'), null, this.graphId)
             .map(s => [s])
-            .flatMap(statements => this.asLangugaeString(statements)));
+            .flatMap(statements => this.asLanguageString(statements)));
     }
 
     private url(id: Iri): string | undefined {
         return this.store.anyValue(namedNode(id), NS.schema('url'), null, this.graphId);
     }
 
-    private isVersionOfConcept(id: Iri): string | undefined {
-        return this.store.anyValue(namedNode(id), NS.dct('isVersionOf'), null, this.graphId);
+    private isVersionOfConcept(id: Iri): Iri | undefined {
+        return this.asIri(this.store.anyStatementMatching(namedNode(id), NS.dct('isVersionOf'), null, this.graphId));
     }
 
     private dateCreated(id: Iri): FormatPreservingDate | undefined {
@@ -217,7 +218,11 @@ export class QuadsToDomainMapper {
     }
 
     private latestConceptSnapshot(id: Iri): Iri {
-        return this.store.anyValue(namedNode(id), NS.ext('hasVersionedSource'), null, this.graphId);
+        return this.asIri(this.store.anyStatementMatching(namedNode(id), NS.ext('hasVersionedSource'), null, this.graphId));
+    }
+
+    private previousConceptSnapshots(id: Iri): Set<Iri> {
+        return this.asIris(this.store.statementsMatching(namedNode(id), NS.ext('previousVersionedSource'), null, this.graphId));
     }
 
     private snapshotType(id: Iri): SnapshotType | undefined {
@@ -306,7 +311,7 @@ export class QuadsToDomainMapper {
         if (evidenceIds.length === 0) {
             return undefined;
         }
-        return new Evidence(evidenceIds[0], this.uuid(evidenceIds[0]),  this.title(evidenceIds[0]), this.description(evidenceIds[0]));
+        return new Evidence(evidenceIds[0], this.uuid(evidenceIds[0]), this.title(evidenceIds[0]), this.description(evidenceIds[0]));
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {
@@ -318,8 +323,8 @@ export class QuadsToDomainMapper {
     }
 
     private asEnums<T>(enumObj: T, namespace: Namespace, statements: Statement[], id: string): Set<T[keyof T]> {
-        const literals: Literal[] | undefined = this.asLiterals(statements);
-        return new Set(literals.map(literal => this.asEnum(enumObj, namespace, literal?.value, id)));
+        const namedNodes: NamedNode[] | undefined = this.asNamedNodes(statements);
+        return new Set(namedNodes.map(namedNode => this.asEnum(enumObj, namespace, namedNode?.value, id)));
     }
 
     private asEnum<T>(enumObj: T, namespace: Namespace, value: any, id: string): T[keyof T] | undefined {
@@ -334,7 +339,7 @@ export class QuadsToDomainMapper {
         return undefined;
     }
 
-    private asLangugaeString(statements: Statement[]): LanguageString | undefined {
+    private asLanguageString(statements: Statement[]): LanguageString | undefined {
         const literals: Literal[] | undefined = this.asLiterals(statements);
 
         return LanguageString.of(
@@ -348,15 +353,33 @@ export class QuadsToDomainMapper {
     }
 
     private asIris(statements: Statement[]): Set<Iri> {
-        return new Set(this.asLiterals(statements).map(value => value.value));
+        return new Set(this.asNamedNodes(statements).map(value => value.value));
     }
 
-    private asLiterals(statements: Statement[]) {
+    private asIri(statement: Statement | undefined): Iri | undefined {
+        return statement ? this.asNamedNode(statement).value : undefined;
+    }
+
+    private asLiterals(statements: Statement[]): Literal[] {
         return statements?.map(this.asLiteral);
     }
 
-    private asLiteral(statement: Statement) {
+    private asNamedNodes(statements: Statement[]): NamedNode[] {
+        return statements?.map(this.asNamedNode);
+    }
+
+    private asLiteral(statement: Statement): Literal {
+        if(!isLiteral(statement.object)) {
+            throw Error(`Expecting (${statement}) to have an object that is a literal.`);
+        }
         return statement.object as Literal;
+    }
+
+    private asNamedNode(statement: Statement): NamedNode {
+        if(!isNamedNode(statement.object)) {
+            throw Error(`Expecting (${statement}) to have an object that is a named node.`);
+        }
+        return statement.object as NamedNode;
     }
 
     private sort(anArray: any) {

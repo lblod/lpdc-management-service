@@ -94,7 +94,8 @@ export function aFullConcept(): ConceptTestBuilder {
         .withCosts(ConceptTestBuilder.COSTS)
         .withFinancialAdvantages(ConceptTestBuilder.FINANCIAL_ADVANTAGES)
         .withProductId(ConceptTestBuilder.PRODUCT_ID)
-        .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()));
+        .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()))
+        .withPreviousConceptSnapshots(new Set([buildConceptSnapshotIri(uuid()), buildConceptSnapshotIri(uuid()), buildConceptSnapshotIri(uuid())]));
 }
 
 export class ConceptTestBuilder {
@@ -193,6 +194,7 @@ export class ConceptTestBuilder {
     private financialAdvantages: FinancialAdvantage[] = [];
     private productId: string | undefined;
     private latestConceptSnapshot: Iri;
+    private previousConceptSnapshots: Set<Iri> = new Set();
 
     public withId(id: Iri): ConceptTestBuilder {
         this.id = id;
@@ -319,8 +321,13 @@ export class ConceptTestBuilder {
         return this;
     }
 
-    public withLatestConceptSnapshot(latestConceptSnapshot: string): ConceptTestBuilder {
+    public withLatestConceptSnapshot(latestConceptSnapshot: Iri): ConceptTestBuilder {
         this.latestConceptSnapshot = latestConceptSnapshot;
+        return this;
+    }
+
+    public withPreviousConceptSnapshots(previousConceptSnapshots: Set<Iri>): ConceptTestBuilder {
+        this.previousConceptSnapshots = previousConceptSnapshots;
         return this;
     }
 
@@ -352,6 +359,7 @@ export class ConceptTestBuilder {
             this.financialAdvantages,
             this.productId,
             this.latestConceptSnapshot,
+            this.previousConceptSnapshots,
         );
     }
 

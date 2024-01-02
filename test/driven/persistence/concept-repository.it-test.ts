@@ -488,6 +488,9 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration> <${conceptDisplayConfigurationId}>`,
                     `<${conceptDisplayConfigurationId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptDisplayConfiguration>`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
+                    `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${Array.from(concept.previousConceptSnapshots)[0]}>`,
+                    `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${Array.from(concept.previousConceptSnapshots)[1]}>`,
+                    `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${Array.from(concept.previousConceptSnapshots)[2]}>`,
                 ]);
 
             const actualConcept = await repository.findById(conceptId);
