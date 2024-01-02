@@ -1,4 +1,4 @@
-import {ConceptVersie} from "../../core/domain/concept-versie";
+import {ConceptSnapshot} from "../../core/domain/concept-snapshot";
 import {Iri} from "../../core/domain/shared/iri";
 import {TaalString} from "../../core/domain/taal-string";
 import {Evidence} from "../../core/domain/evidence";
@@ -52,39 +52,39 @@ export class DomainToTriplesMapper {
         ].filter(t => t !== undefined);
     }
 
-    public conceptVersieToTriples(conceptVersie: ConceptVersie): Statement[] {
+    public conceptSnapshotToTriples(conceptSnapshot: ConceptSnapshot): Statement[] {
         return [
-            this.rdfType(conceptVersie.id, namedNode(NS.lpdcExt('ConceptualPublicService').value)),
-            this.startDate(conceptVersie.id, conceptVersie.startDate),
-            this.endDate(conceptVersie.id, conceptVersie.endDate),
-            this.type(conceptVersie.id, conceptVersie.type),
-            ...this.title(conceptVersie.id, conceptVersie.title),
-            ...this.description(conceptVersie.id, conceptVersie.description),
-            ...this.additionalDescription(conceptVersie.id, conceptVersie.additionalDescription),
-            ...this.exception(conceptVersie.id, conceptVersie.exception),
-            ...this.regulation(conceptVersie.id, conceptVersie.regulation),
-            ...this.targetAudiences(conceptVersie.id, conceptVersie.targetAudiences),
-            ...this.themes(conceptVersie.id, conceptVersie.themes),
-            ...this.competentAuthorityLevels(conceptVersie.id, conceptVersie.competentAuthorityLevels),
-            ...this.competentAuthorities(conceptVersie.id, conceptVersie.competentAuthorities),
-            ...this.executingAuthorityLevels(conceptVersie.id, conceptVersie.executingAuthorityLevels),
-            ...this.executingAuthorities(conceptVersie.id, conceptVersie.executingAuthorities),
-            ...this.publicationMedia(conceptVersie.id, conceptVersie.publicationMedia),
-            ...this.yourEuropeCategories(conceptVersie.id, conceptVersie.yourEuropeCategories),
-            ...this.keywords(conceptVersie.id, conceptVersie.keywords),
-            ...this.requirements(conceptVersie.id, conceptVersie.requirements),
-            ...this.procedures(conceptVersie.id, conceptVersie.procedures),
-            ...this.websites(conceptVersie.id, namedNode(NS.rdfs('seeAlso').value), conceptVersie.websites),
-            ...this.costs(conceptVersie.id, conceptVersie.costs),
-            ...this.financialAdvantages(conceptVersie.id, conceptVersie.financialAdvantages),
-            conceptVersie.isVersionOfConcept ? quad(namedNode(conceptVersie.id), NS.dct('isVersionOf'), namedNode(conceptVersie.isVersionOfConcept)) : undefined,
-            conceptVersie.dateCreated ? quad(namedNode(conceptVersie.id), NS.schema('dateCreated'), literal(conceptVersie.dateCreated.value, NS.xsd('dateTime'))) : undefined,
-            conceptVersie.dateModified ? quad(namedNode(conceptVersie.id), NS.schema('dateModified'), literal(conceptVersie.dateModified.value, NS.xsd('dateTime'))) : undefined,
-            conceptVersie.generatedAtTime ? quad(namedNode(conceptVersie.id), NS.prov('generatedAtTime'), literal(conceptVersie.generatedAtTime.value, NS.xsd('dateTime'))) : undefined,
-            quad(namedNode(conceptVersie.id), NS.schema('identifier'), literal(conceptVersie.identifier)),
-            this.productId(conceptVersie.id, conceptVersie.productId),
-            conceptVersie.snapshotType ? quad(namedNode(conceptVersie.id), NS.lpdcExt('snapshotType'), namedNode(conceptVersie.snapshotType)) : undefined,
-            ...this.irisToTriples(namedNode(conceptVersie.id), namedNode(NS.lpdcExt('conceptTag').value), conceptVersie.conceptTags),
+            this.rdfType(conceptSnapshot.id, namedNode(NS.lpdcExt('ConceptualPublicService').value)),
+            this.startDate(conceptSnapshot.id, conceptSnapshot.startDate),
+            this.endDate(conceptSnapshot.id, conceptSnapshot.endDate),
+            this.type(conceptSnapshot.id, conceptSnapshot.type),
+            ...this.title(conceptSnapshot.id, conceptSnapshot.title),
+            ...this.description(conceptSnapshot.id, conceptSnapshot.description),
+            ...this.additionalDescription(conceptSnapshot.id, conceptSnapshot.additionalDescription),
+            ...this.exception(conceptSnapshot.id, conceptSnapshot.exception),
+            ...this.regulation(conceptSnapshot.id, conceptSnapshot.regulation),
+            ...this.targetAudiences(conceptSnapshot.id, conceptSnapshot.targetAudiences),
+            ...this.themes(conceptSnapshot.id, conceptSnapshot.themes),
+            ...this.competentAuthorityLevels(conceptSnapshot.id, conceptSnapshot.competentAuthorityLevels),
+            ...this.competentAuthorities(conceptSnapshot.id, conceptSnapshot.competentAuthorities),
+            ...this.executingAuthorityLevels(conceptSnapshot.id, conceptSnapshot.executingAuthorityLevels),
+            ...this.executingAuthorities(conceptSnapshot.id, conceptSnapshot.executingAuthorities),
+            ...this.publicationMedia(conceptSnapshot.id, conceptSnapshot.publicationMedia),
+            ...this.yourEuropeCategories(conceptSnapshot.id, conceptSnapshot.yourEuropeCategories),
+            ...this.keywords(conceptSnapshot.id, conceptSnapshot.keywords),
+            ...this.requirements(conceptSnapshot.id, conceptSnapshot.requirements),
+            ...this.procedures(conceptSnapshot.id, conceptSnapshot.procedures),
+            ...this.websites(conceptSnapshot.id, namedNode(NS.rdfs('seeAlso').value), conceptSnapshot.websites),
+            ...this.costs(conceptSnapshot.id, conceptSnapshot.costs),
+            ...this.financialAdvantages(conceptSnapshot.id, conceptSnapshot.financialAdvantages),
+            conceptSnapshot.isVersionOfConcept ? quad(namedNode(conceptSnapshot.id), NS.dct('isVersionOf'), namedNode(conceptSnapshot.isVersionOfConcept)) : undefined,
+            conceptSnapshot.dateCreated ? quad(namedNode(conceptSnapshot.id), NS.schema('dateCreated'), literal(conceptSnapshot.dateCreated.value, NS.xsd('dateTime'))) : undefined,
+            conceptSnapshot.dateModified ? quad(namedNode(conceptSnapshot.id), NS.schema('dateModified'), literal(conceptSnapshot.dateModified.value, NS.xsd('dateTime'))) : undefined,
+            conceptSnapshot.generatedAtTime ? quad(namedNode(conceptSnapshot.id), NS.prov('generatedAtTime'), literal(conceptSnapshot.generatedAtTime.value, NS.xsd('dateTime'))) : undefined,
+            quad(namedNode(conceptSnapshot.id), NS.schema('identifier'), literal(conceptSnapshot.identifier)),
+            this.productId(conceptSnapshot.id, conceptSnapshot.productId),
+            conceptSnapshot.snapshotType ? quad(namedNode(conceptSnapshot.id), NS.lpdcExt('snapshotType'), namedNode(conceptSnapshot.snapshotType)) : undefined,
+            ...this.irisToTriples(namedNode(conceptSnapshot.id), namedNode(NS.lpdcExt('conceptTag').value), conceptSnapshot.conceptTags),
         ].filter(t => t !== undefined);
     }
 

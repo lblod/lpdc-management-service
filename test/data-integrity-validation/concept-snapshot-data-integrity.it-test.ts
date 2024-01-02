@@ -1,7 +1,7 @@
 import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {PREFIX} from "../../config";
-import {ConceptVersieSparqlTestRepository} from "../driven/persistence/concept-versie-sparql-test-repository";
+import {ConceptSnapshotSparqlTestRepository} from "../driven/persistence/concept-snapshot-sparql-test-repository";
 import {shuffle} from "lodash";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
@@ -14,20 +14,20 @@ import {
 
 //TODO LPDC-916: also make test for Concept Data Integrity Validation
 
-describe('Concept Versie Data Integrity Validation', () => {
+describe('Concept Snapshot Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
 
-    const repository = new ConceptVersieSparqlTestRepository(endPoint);
+    const repository = new ConceptSnapshotSparqlTestRepository(endPoint);
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);
     const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endPoint);
     const graph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
     const domainToTriplesMapper = new DomainToTriplesMapper();
 
-   test.skip('Load all concept versies; print errors to console.log', async () => {
+   test.skip('Load all concept snapshots; print errors to console.log', async () => {
 
-        const conceptVersieIdsQuery = `
+        const conceptSnapshotIdsQuery = `
              ${PREFIX.lpdcExt}
             SELECT ?id WHERE {
                 GRAPH <${graph}> {
@@ -35,7 +35,7 @@ describe('Concept Versie Data Integrity Validation', () => {
                 }
             }
         `;
-        const conceptVersieIds = await directDatabaseAccess.list(conceptVersieIdsQuery);
+        const conceptSnapshotIds = await directDatabaseAccess.list(conceptSnapshotIdsQuery);
 
         const allTriplesOfGraphQuery = `
              ${PREFIX.lpdcExt}
@@ -68,24 +68,24 @@ describe('Concept Versie Data Integrity Validation', () => {
         const dataErrors = [];
 
         for(let i = 0; i < numberOfLoops; i++) {
-            let quadsFromRequeriedConceptVersies = [];
+            let quadsFromRequeriedConceptSnapshots = [];
 
             const before = new Date().valueOf();
 
             console.log(new Date().toISOString());
 
-            const randomizedConceptVersieIds = [...conceptVersieIds];
-            shuffle(randomizedConceptVersieIds);
+            const randomizedConceptSnapshotIds = [...conceptSnapshotIds];
+            shuffle(randomizedConceptSnapshotIds);
 
-            for (const result of randomizedConceptVersieIds) {
+            for (const result of randomizedConceptSnapshotIds) {
                 try {
                     const id = result['id'].value;
-                    const conceptVersieForId = await repository.findById(id);
-                    expect(conceptVersieForId.id).toEqual(id);
-                    const quadsForConceptVersieForId =
-                        new DomainToTriplesMapper().conceptVersieToTriples(conceptVersieForId);
-                    quadsFromRequeriedConceptVersies =
-                        [...quadsForConceptVersieForId, ...quadsFromRequeriedConceptVersies];
+                    const conceptSnapshotForId = await repository.findById(id);
+                    expect(conceptSnapshotForId.id).toEqual(id);
+                    const quadsForConceptSnapshotForId =
+                        new DomainToTriplesMapper().conceptSnapshotToTriples(conceptSnapshotForId);
+                    quadsFromRequeriedConceptSnapshots =
+                        [...quadsForConceptSnapshotForId, ...quadsFromRequeriedConceptSnapshots];
                 } catch(e) {
                     console.error(e);
                     if(!e.message.startsWith('could not map')) {
@@ -99,17 +99,17 @@ describe('Concept Versie Data Integrity Validation', () => {
             }
 
             const allQuadsOfGraphAsTurtle = new Set(Array.from(allQuadsOfGraph).map(q => q.toString()));
-            quadsFromRequeriedConceptVersies.map(q => q.toString())
+            quadsFromRequeriedConceptSnapshots.map(q => q.toString())
                 .forEach(q => allQuadsOfGraphAsTurtle.delete(q));
 
             //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
             //fs.writeFileSync(`/tmp/remaining-quads.txt`, Array.from(asSortedSet(allQuadsOfGraphAsTurtle)).join('\n'));
             expect(asSortedSet(allQuadsOfGraphAsTurtle)).toEqual(new Set());
 
-            const averageTime = (new Date().valueOf() - before - delayTime * conceptVersieIds.length) / conceptVersieIds.length;
+            const averageTime = (new Date().valueOf() - before - delayTime * conceptSnapshotIds.length) / conceptSnapshotIds.length;
             averageTimes.push(averageTime);
 
-            console.log(`Verifying in total ${conceptVersieIds.length} concept versies took on average ${averageTime} ms per concept`);
+            console.log(`Verifying in total ${conceptSnapshotIds.length} concept snapshots took on average ${averageTime} ms per concept`);
             // eslint-disable-next-line no-constant-condition
         }
 
@@ -118,14 +118,14 @@ describe('Concept Versie Data Integrity Validation', () => {
         console.log(`Technical Errors [${technicalErrors}]`);
         console.log(`Data Errors Size [${dataErrors}]`);
 
-        if(conceptVersieIds.length > 0) {
-            expect(totalAverageTime).toBeLessThan(100); //typically it is a lot less, but when querying only 2 or 3 concept versies, you might end up with more
+        if(conceptSnapshotIds.length > 0) {
+            expect(totalAverageTime).toBeLessThan(100); //typically it is a lot less, but when querying only 2 or 3 concept snapshots, you might end up with more
             expect(technicalErrors).toEqual([]);
         }
 
     }, 60000 * 15 * 100);
 
-    test.skip('Load one concept versie and print quads', async() => {
+    test.skip('Load one concept snapshot and print quads', async() => {
         const id: Iri = 'https://ipdc.vlaanderen.be/id/conceptsnapshot/0d2a2f5a-7213-483d-9fb9-abe0cbac0348';
 
         const allQuads = await fetcher.fetch(graph, id, [], [], []);
@@ -133,13 +133,13 @@ describe('Concept Versie Data Integrity Validation', () => {
         const allQuadsAsStrings = asSortedArray(allQuads.map(q => q.toString()));
         console.log(allQuadsAsStrings.join('\n'));
 
-        const conceptVersie = await repository.findById(id);
-        const conceptVersieToTriples = domainToTriplesMapper.conceptVersieToTriples(conceptVersie);
+        const conceptSnapshot = await repository.findById(id);
+        const conceptSnapshotToTriples = domainToTriplesMapper.conceptSnapshotToTriples(conceptSnapshot);
         console.log('saving back');
-        const allConceptVersieToTriplesAsStrings = asSortedArray(conceptVersieToTriples.map(q => q.toString()));
-        console.log(allConceptVersieToTriplesAsStrings.join('\n'));
+        const allConceptSnapshotToTriplesAsStrings = asSortedArray(conceptSnapshotToTriples.map(q => q.toString()));
+        console.log(allConceptSnapshotToTriplesAsStrings.join('\n'));
 
-        expect(allQuadsAsStrings).toEqual(allConceptVersieToTriplesAsStrings);
+        expect(allQuadsAsStrings).toEqual(allConceptSnapshotToTriplesAsStrings);
 
     });
 

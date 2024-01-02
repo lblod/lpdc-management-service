@@ -20,11 +20,11 @@ import {
     loadWebsites,
     serviceUriForId
 } from './commonQueries';
-import {ConceptVersieRepository} from "../src/core/port/driven/persistence/concept-versie-repository";
-import {ConceptVersie} from "../src/core/domain/concept-versie";
+import {ConceptSnapshotRepository} from "../src/core/port/driven/persistence/concept-snapshot-repository";
+import {ConceptSnapshot} from "../src/core/domain/concept-snapshot";
 import {SnapshotType} from "../src/core/domain/types";
 
-export async function processLdesDelta(delta: any, conceptVersieRepository: ConceptVersieRepository): Promise<void> {
+export async function processLdesDelta(delta: any, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<void> {
     let versionedServices =
         flatten(delta.map(changeSet => changeSet.inserts))
             .filter(t => t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
@@ -55,12 +55,12 @@ export async function processLdesDelta(delta: any, conceptVersieRepository: Conc
             const newConceptSnapshotUri = entry.subject.value;
             const conceptUri = entry.object.value;
 
-            const newConceptVersie = await conceptVersieRepository.findById(newConceptSnapshotUri);
+            const newConceptSnapshot = await conceptSnapshotRepository.findById(newConceptSnapshotUri);
             const currentSnapshotUri: string | undefined = await getVersionedSourceOfConcept(conceptUri);
 
-            const isArchiving = newConceptVersie.snapshotType === SnapshotType.DELETE;
+            const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
 
-            const isConceptFunctionallyChanged = await isConceptChanged(newConceptVersie, currentSnapshotUri, conceptVersieRepository);
+            const isConceptFunctionallyChanged = await isConceptChanged(newConceptSnapshot, currentSnapshotUri, conceptSnapshotRepository);
 
             await upsertNewLdesVersion(ldesDataGraph, newConceptSnapshotUri, conceptUri);
             await updatedVersionInformation(newConceptSnapshotUri, conceptUri);
@@ -506,14 +506,14 @@ async function markConceptAsArchived(conceptualService: string): Promise<void> {
     await updateSudo(markAsArchivedQuery);
 }
 
-async function isConceptChanged(newConceptVersie: ConceptVersie, currentSnapshotUri: string, conceptVersieRepository: ConceptVersieRepository): Promise<boolean> {
+async function isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotUri: string, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<boolean> {
     if (!currentSnapshotUri) {
         return false;
     }
 
-    const currentConceptVersie = await conceptVersieRepository.findById(currentSnapshotUri);
+    const currentConceptSnapshot = await conceptSnapshotRepository.findById(currentSnapshotUri);
 
-    return ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie);
+    return ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
 }
 
 async function getVersionedSourceOfConcept(conceptUri: string): Promise<string> {

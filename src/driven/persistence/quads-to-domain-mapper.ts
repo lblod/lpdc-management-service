@@ -1,7 +1,7 @@
 import {Quad} from "rdflib/lib/tf-types";
 import {Iri} from "../../core/domain/shared/iri";
 import {graph, Literal, NamedNode, namedNode, Statement} from "rdflib";
-import {ConceptVersie} from "../../core/domain/concept-versie";
+import {ConceptSnapshot} from "../../core/domain/concept-snapshot";
 import {TaalString} from "../../core/domain/taal-string";
 import {Cost} from "../../core/domain/cost";
 import {asSortedArray} from "../../core/domain/shared/collections-helper";
@@ -36,11 +36,11 @@ export class QuadsToDomainMapper {
         this.graphId = namedNode(graphId);
     }
 
-    conceptVersie(id: Iri): ConceptVersie {
+    conceptSnapshot(id: Iri): ConceptSnapshot {
 
         this.errorIfMissingOrIncorrectType(id, namedNode(NS.lpdcExt('ConceptualPublicService').value));
 
-        return new ConceptVersie(
+        return new ConceptSnapshot(
             id,
             this.title(id),
             this.description(id),

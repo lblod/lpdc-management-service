@@ -1,9 +1,9 @@
-import {ConceptVersieSparqlRepository} from "../../../src/driven/persistence/concept-versie-sparql-repository";
-import {ConceptVersie} from "../../../src/core/domain/concept-versie";
+import {ConceptSnapshotSparqlRepository} from "../../../src/driven/persistence/concept-snapshot-sparql-repository";
+import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {DomainToTriplesMapper} from "../../../src/driven/persistence/domain-to-triples-mapper";
 
-export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlRepository {
+export class ConceptSnapshotSparqlTestRepository extends ConceptSnapshotSparqlRepository {
 
     private readonly directDatabaseAccess: DirectDatabaseAccess;
 
@@ -12,11 +12,11 @@ export class ConceptVersieSparqlTestRepository extends ConceptVersieSparqlReposi
         this.directDatabaseAccess = new DirectDatabaseAccess(endpoint);
     }
 
-    async save(conceptVersie: ConceptVersie): Promise<void> {
+    async save(conceptSnapshot: ConceptSnapshot): Promise<void> {
         await this.directDatabaseAccess.insertData(
             'http://mu.semte.ch/graphs/lpdc/ldes-data',
             [
-                ...new DomainToTriplesMapper().conceptVersieToTriples(conceptVersie).map(s => s.toNT())
+                ...new DomainToTriplesMapper().conceptSnapshotToTriples(conceptSnapshot).map(s => s.toNT())
             ]);
     }
 

@@ -1,12 +1,12 @@
 import {SparqlQuerying} from "./sparql-querying";
-import {ConceptVersieRepository} from "../../core/port/driven/persistence/concept-versie-repository";
-import {ConceptVersie} from "../../core/domain/concept-versie";
+import {ConceptSnapshotRepository} from "../../core/port/driven/persistence/concept-snapshot-repository";
+import {ConceptSnapshot} from "../../core/domain/concept-snapshot";
 import {Iri} from "../../core/domain/shared/iri";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 
-export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
+export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepository {
 
     protected readonly querying: SparqlQuerying;
     protected readonly fetcher: DatastoreToQuadsRecursiveSparqlFetcher;
@@ -16,7 +16,7 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
         this.fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endpoint);
     }
 
-    async findById(id: Iri): Promise<ConceptVersie> {
+    async findById(id: Iri): Promise<ConceptSnapshot> {
         const ldesDataGraph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
 
         const quads = await this.fetcher.fetch(
@@ -33,7 +33,7 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
 
         const mapper = new QuadsToDomainMapper(quads, ldesDataGraph);
 
-        return mapper.conceptVersie(id);
+        return mapper.conceptSnapshot(id);
     }
 
 }

@@ -20,7 +20,7 @@ import {
     YourEuropeCategoryType
 } from "./types";
 
-export class ConceptVersie { //TODO LPDC-916: rename to ConceptSnapshot
+export class ConceptSnapshot {
 
     private readonly _id: Iri;
     private readonly _title: TaalString | undefined;
@@ -241,7 +241,7 @@ export class ConceptVersie { //TODO LPDC-916: rename to ConceptSnapshot
         return this._conceptTags;
     }
 
-    static isFunctionallyChanged(value: ConceptVersie, other: ConceptVersie): boolean {
+    static isFunctionallyChanged(value: ConceptSnapshot, other: ConceptSnapshot): boolean {
         return TaalString.isFunctionallyChanged(value.title, other.title)
             || TaalString.isFunctionallyChanged(value.description, other.description)
             || TaalString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription)

@@ -17,8 +17,8 @@ import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
 import LPDCError from "./utils/lpdc-error";
 import {SessieSparqlRepository} from "./src/driven/persistence/sessie-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
-import {ConceptVersieSparqlRepository} from "./src/driven/persistence/concept-versie-sparql-repository";
-import {ConceptVersie} from "./src/core/domain/concept-versie";
+import {ConceptSnapshotSparqlRepository} from "./src/driven/persistence/concept-snapshot-sparql-repository";
+import {ConceptSnapshot} from "./src/core/domain/concept-snapshot";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -31,7 +31,7 @@ app.use(bodyparser.json({limit: bodySizeLimit}));
 
 const sessieRepository = new SessieSparqlRepository();
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository();
-const conceptVersieRepository = new ConceptVersieSparqlRepository();
+const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository();
 
 app.get('/', function (req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -47,7 +47,7 @@ app.post('/delta', async function (req, res): Promise<void> {
 
         LdesPostProcessingQueue
             .addJob(async () => {
-                return await processLdesDelta(body, conceptVersieRepository);
+                return await processLdesDelta(body, conceptSnapshotRepository);
             });
 
         res.status(202).send();
@@ -331,10 +331,10 @@ app.get('/address/validate', async (req, res): Promise<any> => {
 
 app.get('/concept-snapshot-compare', async (req, res): Promise<any> => {
     try {
-        const currentConceptVersie = await conceptVersieRepository.findById(req.query.currentSnapshotUri as string);
-        const newConceptVersie = await conceptVersieRepository.findById(req.query.newSnapshotUri as string);
+        const currentConceptSnapshot = await conceptSnapshotRepository.findById(req.query.currentSnapshotUri as string);
+        const newConceptSnapshot = await conceptSnapshotRepository.findById(req.query.newSnapshotUri as string);
 
-        const isChanged = ConceptVersie.isFunctionallyChanged(currentConceptVersie, newConceptVersie);
+        const isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
 
         return res.json({isChanged});
     } catch (e) {

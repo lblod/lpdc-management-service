@@ -29,7 +29,7 @@ This is off course not correct ... you see that there are multiple shacl orders 
 => **still to solve in the data**
 + we still need to load this in the data
 
-# case 3: not all triples seem to be loaded, that are directly linked to a concept versie (solved)
+# case 3: not all triples seem to be loaded, that are directly linked to a concept snapshot (solved)
 
 one example is :
 
@@ -50,7 +50,7 @@ one example is :
 <https://ipdc.vlaanderen.be/id/conceptsnapshot/00215468-5567-41a0-8e3b-3eb3ef62c33f> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/VerblijfOverlijden> .
 ```
 
-Running 'Load one concept versie and print quads' on this case gives:
+Running 'Load one concept snapshot and print quads' on this case gives:
 
 conclusions:
 - Thematic area is incorrectly saved as string, should be an iri => solved for all enums ... 

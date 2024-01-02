@@ -1,6 +1,6 @@
-import {ConceptVersie} from "../../../src/core/domain/concept-versie";
+import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
 import {uuid} from "../../../mu-helper";
-import {aFullConceptVersie, ConceptVersieTestBuilder} from "./concept-versie-test-builder";
+import {aFullConceptSnapshot, ConceptSnapshotTestBuilder} from "./concept-snapshot-test-builder";
 import {TaalString} from "../../../src/core/domain/taal-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {aMinimalRequirement} from "./requirement-test-builder";
@@ -24,821 +24,821 @@ describe('is functionally changed', () => {
 
     test('identifier is extracted from id', () => {
         const aUUID = uuid();
-        const id = ConceptVersieTestBuilder.buildIri(aUUID);
-        const aConceptVersie =
-            aFullConceptVersie()
+        const id = ConceptSnapshotTestBuilder.buildIri(aUUID);
+        const aConceptSnapshot =
+            aFullConceptSnapshot()
                 .withId(id)
                 .build();
 
-        expect(aConceptVersie.identifier).toEqual(aUUID);
+        expect(aConceptSnapshot.identifier).toEqual(aUUID);
     });
 
-    type TestCase = [string, ConceptVersie, ConceptVersie];
+    type TestCase = [string, ConceptSnapshot, ConceptSnapshot];
 
-    const aConceptVersieId = ConceptVersieTestBuilder.buildIri(uuid());
-    const aConceptVersie =
-        aFullConceptVersie().build();
+    const aConceptSnapshotId = ConceptSnapshotTestBuilder.buildIri(uuid());
+    const aConceptSnapshot =
+        aFullConceptSnapshot().build();
 
     const functionallyUnchangedTestCases: TestCase[]
         = [
         ['exactly the same data',
-            aConceptVersie,
-            aConceptVersie],
+            aConceptSnapshot,
+            aConceptSnapshot],
         ['equal data',
-            aFullConceptVersie()
-                .withId(aConceptVersieId)
+            aFullConceptSnapshot()
+                .withId(aConceptSnapshotId)
                 .build(),
-            aFullConceptVersie()
-                .withId(aConceptVersieId)
+            aFullConceptSnapshot()
+                .withId(aConceptSnapshotId)
                 .build()],
         ['start date the same except formatting',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withStartDate(FormatPreservingDate.of('2027-09-16 00:00:00Z'))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withStartDate(FormatPreservingDate.of('2027-09-16 00:00:00.000Z'))
                 .build()],
         ['end date the same except formatting',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2027-09-16 00:00:00Z'))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2027-09-16 00:00:00.000Z'))
                 .build()],    ];
 
     for (const testCase of functionallyUnchangedTestCases) {
         test(`not functionally changed when ${testCase[0]}`, () => {
-            expect(ConceptVersie.isFunctionallyChanged(testCase[1], testCase[2])).toBeFalsy();
+            expect(ConceptSnapshot.isFunctionallyChanged(testCase[1], testCase[2])).toBeFalsy();
         });
     }
 
     const functionallyChangedTestCases: TestCase[]
         = [
         ['title changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withTitle(TaalString.of("text-en"))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withTitle(TaalString.of("text-en-changed"))
                 .build()],
         ['description changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withDescription(TaalString.of("text-en"))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withDescription(TaalString.of("text-en-changed"))
                 .build()],
         ['additional description changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withAdditionalDescription(TaalString.of("text-en"))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withAdditionalDescription(TaalString.of("text-en-changed"))
                 .build()],
         ['exception changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withException(TaalString.of("text-en"))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withException(TaalString.of("text-en-changed"))
                 .build()],
         ['regulation changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRegulation(TaalString.of("text-en"))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRegulation(TaalString.of("text-en-changed"))
                 .build()],
         ['start date changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withStartDate(FormatPreservingDate.of('2023-11-10 00:00:00.000Z'))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withStartDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build()],
         ['start date appeared',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withStartDate(undefined)
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withStartDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build()],
         ['start date disappeared',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withStartDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withStartDate(undefined)
                 .build()],
         ['end date changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2023-11-10 00:00:00.000Z'))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build()],
         ['end date appeared',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withEndDate(undefined)
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build()],
         ['end date disappeared',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withEndDate(undefined)
                 .build()],
         ['type changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withType(ProductType.FINANCIEELVOORDEEL)
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withType(ProductType.BEWIJS)
                 .build()],
         ['type appeared',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withType(undefined)
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withType(ProductType.FINANCIEELVOORDEEL)
                 .build()],
         ['type disappeared',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withType(ProductType.FINANCIEELVOORDEEL)
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withType(undefined)
                 .build()],
         ['target audience updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID]))
                 .build()],
         ['target audience added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER]))
                 .build()],
         ['target audience removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
                 .build()],
         ['theme updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withThemes(new Set([ThemeType.CULTUURSPORTVRIJETIJD]))
                 .build()],
         ['theme added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withThemes(new Set([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]))
                 .build()],
         ['theme removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withThemes(new Set([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
                 .build()],
         ['competent Authority Level updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.EUROPEES]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.LOKAAL]))
                 .build()],
         ['competent Authority Level added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.LOKAAL]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.LOKAAL]))
                 .build()],
         ['competent Authority Level removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.FEDERAAL]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.FEDERAAL]))
                 .build()],
         ['competent authorities updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
                 .build()],
         ['competent authorities added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build()],
         ['competent authorities removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
                 .build()],
         ['executing Authority Level updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.EUROPEES]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.LOKAAL]))
                 .build()],
         ['executing Authority Level added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.LOKAAL]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.LOKAAL]))
                 .build()],
         ['executing Authority Level removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.DERDEN]))
                 .build()],
         ['executing authorities updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
                 .build()],
         ['executing authorities added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
                 .build()],
         ['executing authorities removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
                 .build()],
         ['publication medium updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withPublicationMedia(new Set([PublicationMediumType.YOUREUROPE]))
                 .build()],
         ['publication medium added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withPublicationMedia(new Set([PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER]))
                 .build()],
         ['publication medium removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER, PublicationMediumType.YOUREUROPE]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
                 .build()],
         ['your europe category updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.GOEDERENRECYCLAGE]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFINTELLECTUELEEIGENDOMSRECHTEN]))
                 .build()],
         ['your europe category added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING, YourEuropeCategoryType.GEZONDHEIDSZORG]))
                 .build()],
         ['your europe category removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE]))
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withYourEuropeCategories(new Set([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING]))
                 .build()],
         ['keyword updated - en',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withKeywords([TaalString.of('abc')])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withKeywords([TaalString.of('def')])
                 .build()],
         ['keyword updated - nl',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withKeywords([TaalString.of(undefined, 'abc')])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withKeywords([TaalString.of(undefined, 'def')])
                 .build()],
         ['keyword updated - en became nl',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withKeywords([TaalString.of('abc')])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withKeywords([TaalString.of(undefined, 'abc')])
                 .build()],
         ['keyword added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withKeywords([TaalString.of('abc')])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withKeywords([TaalString.of('abc'), TaalString.of('def')])
                 .build()],
         ['keyword removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withKeywords([TaalString.of('abc'), TaalString.of('def')])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withKeywords([TaalString.of('abc')])
                 .build()],
         ['requirement added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().build()])
                 .build()],
         ['requirement removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([])
                 .build()],
         ['requirement order changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-1')).build(),
                     aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-2')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-2')).build(),
                     aMinimalRequirement().withTitle(TaalString.of('requirement-title-en-1')).build()])
                 .build()],
         ['requirement title updated : en changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en - updated')).build()])
                 .build()],
         ['requirement title updated: nl added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-nl')).build()])
                 .build()],
         ['requirement title updated: nl removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-nl')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en')).build()])
                 .build()],
         ['requirement title updated : nl changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-nl')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withTitle(TaalString.of('requirement-title-en', 'requirement-title-changed')).build()])
                 .build()],
         ['requirement description updated : en changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en - updated')).build()])
                 .build()],
         ['requirement description updated: nl added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-nl')).build()])
                 .build()],
         ['requirement description updated: nl removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-nl')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en')).build()])
                 .build()],
         ['requirement description updated : nl changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-nl')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withDescription(TaalString.of('requirement-description-en', 'requirement-description-changed')).build()])
                 .build()],
         ['requirement > evidence : added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withEvidence(undefined).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withEvidence(aFullEvidence().build()).build()])
                 .build()],
         ['requirement > evidence : removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withEvidence(aFullEvidence().build()).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withEvidence(undefined).build()])
                 .build()],
         ['requirement > evidence title updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withTitle(TaalString.of('evidence title en')).build()).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withTitle(TaalString.of('evidence title en updated')).build()).build()])
                 .build()],
         ['requirement > evidence description updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(TaalString.of('evidence description en')).build()).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(TaalString.of('evidence description en updated')).build()).build()])
                 .build()],
         ['procedure added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().build()])
                 .build()],
         ['procedure removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([])
                 .build()],
         ['procedure order changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en')).build(),
                     aFullProcedure().withTitle(TaalString.of('procedure title en another')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en another')).build(),
                     aFullProcedure().withTitle(TaalString.of('procedure title en')).build()])
                 .build()],
         ['procedure title updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en updated')).build()])
                 .build()],
         ['procedure title added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(undefined).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en updated')).build()])
                 .build()],
         ['procedure title removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(TaalString.of('procedure title en updated')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(undefined).build()])
                 .build()],
         ['procedure description updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en updated')).build()])
                 .build()],
         ['procedure description added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(undefined).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en updated')).build()])
                 .build()],
         ['procedure description removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(TaalString.of('procedure description en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(undefined).build()])
                 .build()],
         ['procedure website title updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en')).build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en updated')).build()]).build()])
                 .build()],
         ['procedure website title added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(undefined).build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en')).build()]).build()])
                 .build()],
         ['procedure website title removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(TaalString.of('procedure website title en')).build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(undefined).build()]).build()])
                 .build()],
         ['procedure website description updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en')).build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en updated')).build()]).build()])
                 .build()],
         ['procedure website description added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en')).build()]).build()])
                 .build()],
         ['procedure website description removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(TaalString.of('procedure website description en')).build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
                 .build()],
         ['procedure website url updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url2.com').build()]).build()])
                 .build()],
         ['procedure website url added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl(undefined).build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
                 .build()],
         ['procedure website url removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl(undefined).build()]).build()])
                 .build()],
         ['procedure website added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aFullWebsite().build()]).build()])
                 .build()],
         ['procedure website removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aFullWebsite().build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([]).build()])
                 .build()],
         ['procedure website order changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build(), aMinimalWebsite().withUrl('https://url2.com').build()]).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url2.com').build(), aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
                 .build()],
         ['website added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aFullWebsite().build()])
                 .build()],
         ['website removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aFullWebsite().build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([])
                 .build()],
         ['website title updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en updated')).build()])
                 .build()],
         ['website title added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withTitle(undefined).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en')).build()])
                 .build()],
         ['website title removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withTitle(TaalString.of('website title en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withTitle(undefined).build()])
                 .build()],
         ['website description updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en updated')).build()])
                 .build()],
         ['website description added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en')).build()])
                 .build()],
         ['website description removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(TaalString.of('website description en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
                 .build()],
         ['website url updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withUrl('https://url2.com').build()])
                 .build()],
         ['website url added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withUrl(undefined).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()])
                 .build()],
         ['website url removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withUrl(null).build()])
                 .build()],
         ['website order changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build(), aMinimalWebsite().withUrl('https://url2.com').build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withUrl('https://url2.com').build(), aMinimalWebsite().withUrl('https://url1.com').build()])
                 .build()],
         ['cost added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().build()])
                 .build()],
         ['cost removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([])
                 .build()],
         ['cost title updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(TaalString.of('cost title en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(TaalString.of('cost title en updated')).build()])
                 .build()],
         ['cost title added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(undefined).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(TaalString.of('cost title en')).build()])
                 .build()],
         ['cost title removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(TaalString.of('cost title en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(undefined).build()])
                 .build()],
         ['cost description updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(TaalString.of('cost description en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(TaalString.of('cost description en updated')).build()])
                 .build()],
         ['cost description added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(undefined).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(TaalString.of('cost description en')).build()])
                 .build()],
         ['cost description removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(TaalString.of('cost description en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(undefined).build()])
                 .build()],
         ['cost order changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(TaalString.of('cost title 1 en')).build(), aFullCost().withTitle(TaalString.of('cost title 2 en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(TaalString.of('cost title 2 en')).build(), aFullCost().withTitle(TaalString.of('cost title 1 en')).build()])
                 .build()],
         ['financial advantage added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().build()])
                 .build()],
         ['financial advantage removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([])
                 .build()],
         ['financial advantage title updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en updated')).build()])
                 .build()],
         ['financial advantage title added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(undefined).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en')).build()])
                 .build()],
         ['financial advantage title removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(undefined).build()])
                 .build()],
         ['financial advantage description updated',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en updated')).build()])
                 .build()],
         ['financial advantage description added',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(undefined).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en')).build()])
                 .build()],
         ['financial advantage description removed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(TaalString.of('financial advantage description en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(undefined).build()])
                 .build()],
         ['financial advantage order changed',
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 1 en')).build(), aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 2 en')).build()])
                 .build(),
-            aFullConceptVersie()
+            aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 2 en')).build(), aFullFinancialAdvantage().withTitle(TaalString.of('financial advantage title 1 en')).build()])
                 .build()],
 
@@ -846,7 +846,7 @@ describe('is functionally changed', () => {
 
     for (const testCase of functionallyChangedTestCases) {
         test(`functionally changed when ${testCase[0]}`, () => {
-            expect(ConceptVersie.isFunctionallyChanged(testCase[1], testCase[2])).toBeTruthy();
+            expect(ConceptSnapshot.isFunctionallyChanged(testCase[1], testCase[2])).toBeTruthy();
         });
     }
 
