@@ -21,16 +21,16 @@ import {
     getLanguageVersionForInstance,
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
-import {SessieSparqlRepository} from "../src/driven/persistence/sessie-sparql-repository";
+import {SessionSparqlRepository} from "../src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "../src/driven/persistence/bestuurseenheid-sparql-repository";
 
-export async function createEmptyForm(sessionUri: string, sessionRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<{
+export async function createEmptyForm(sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<{
     uuid: string,
     uri: string
 }> {
 
-    const sessie = await sessionRepository.findById(sessionUri);
-    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.bestuurseenheidId);
+    const session = await sessionRepository.findById(sessionUri);
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
 
     const publicServiceId = uuid();
@@ -70,7 +70,7 @@ export async function createEmptyForm(sessionUri: string, sessionRepository: Ses
     };
 }
 
-export async function createForm(conceptId: string, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<{
+export async function createForm(conceptId: string, sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<{
     uuid: string,
     uri: string
 }> {
@@ -152,8 +152,8 @@ export async function createForm(conceptId: string, sessionUri: string, sessieRe
     }
 
     const now = new Date().toISOString();
-    const sessie = await sessieRepository.findById(sessionUri);
-    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.bestuurseenheidId);
+    const session = await sessionRepository.findById(sessionUri);
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.id);
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
     const extraDataQuery = `

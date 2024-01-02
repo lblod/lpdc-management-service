@@ -7,17 +7,17 @@ import {getScopedGraphsForStatement} from '../utils/common';
 import {Literal, Statement} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";
 import LPDCError from "../utils/lpdc-error";
-import {SessieSparqlRepository} from "../src/driven/persistence/sessie-sparql-repository";
+import {SessionSparqlRepository} from "../src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "../src/driven/persistence/bestuurseenheid-sparql-repository";
 
 
-export async function updateFormAtomic(data: any, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
+export async function updateFormAtomic(data: any, sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
 
-    const sessie = await sessieRepository.findById(sessionUri);
-    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.bestuurseenheidId);
+    const session = await sessionRepository.findById(sessionUri);
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    if (!(await isAllowedForLPDC(sessie.id))) {
-        throw `Session ${sessie.id} is not an LPDC User`;
+    if (!(await isAllowedForLPDC(session.id))) {
+        throw `Session ${session.id} is not an LPDC User`;
     }
 
     const targetGraph = `http://mu.semte.ch/graphs/organizations/${bestuurseenheid.uuid}/LoketLB-LPDCGebruiker`;
@@ -62,12 +62,12 @@ function parseStatements(statements: Statement[]): Array<Quad> {
 }
 
 
-export async function updateForm(data: any, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository) {
-    const sessie = await sessieRepository.findById(sessionUri);
-    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.bestuurseenheidId);
+export async function updateForm(data: any, sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository) {
+    const session = await sessionRepository.findById(sessionUri);
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    if (!(await isAllowedForLPDC(sessie.id))) {
-        throw `Session ${sessie.id} is not an LPDC User`;
+    if (!(await isAllowedForLPDC(session.id))) {
+        throw `Session ${session.id} is not an LPDC User`;
     }
 
 

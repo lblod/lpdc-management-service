@@ -18,10 +18,10 @@ import {
 import {isAllowedForLPDC} from '../utils/session-utils';
 import {getScopedGraphsForStatement} from '../utils/common';
 import {updateSudo} from '@lblod/mu-auth-sudo';
-import {SessieSparqlRepository} from "../src/driven/persistence/sessie-sparql-repository";
+import {SessionSparqlRepository} from "../src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "../src/driven/persistence/bestuurseenheid-sparql-repository";
 
-export async function deleteForm(serviceId: string, sessionUri: string, sessieRepository: SessieSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
+export async function deleteForm(serviceId: string, sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
     const serviceUri = await serviceUriForId(serviceId);
 
     if (!serviceUri) {
@@ -53,11 +53,11 @@ export async function deleteForm(serviceId: string, sessionUri: string, sessieRe
     // See updateForm.js for longer explanation.
     // Keep code in sync with updateForm.js
     const source = bindingsToNT(sourceBindings);
-    const sessie = await sessieRepository.findById(sessionUri);
-    const bestuurseenheid = await bestuurseenheidRepository.findById(sessie.bestuurseenheidId);
+    const session = await sessionRepository.findById(sessionUri);
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    if (!(await isAllowedForLPDC(sessie.id))) {
-        throw `Session ${sessie.id} is not an LPDC User`;
+    if (!(await isAllowedForLPDC(session.id))) {
+        throw `Session ${session.id} is not an LPDC User`;
     }
 
     for (const statement of source) {

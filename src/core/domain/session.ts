@@ -1,14 +1,14 @@
 import {Iri} from "./shared/iri";
 
-export class Sessie {
+export class Session {
     private readonly _id: Iri;
     private readonly _bestuurseenheidId: Iri;
-    private readonly _sessieRol: SessieRol;
+    private readonly _sessionRol: SessionRole;
 
-    constructor(id: Iri, bestuurseenheidId: Iri, sessieRol: SessieRol) {
+    constructor(id: Iri, bestuurseenheidId: Iri, sessionRole: SessionRole) {
         this._id = id;
         this._bestuurseenheidId = bestuurseenheidId;
-        this._sessieRol = sessieRol;
+        this._sessionRol = sessionRole;
     }
 
     get id(): Iri {
@@ -19,11 +19,11 @@ export class Sessie {
         return this._bestuurseenheidId;
     }
 
-    get sessieRol(): SessieRol {
-        return this._sessieRol;
+    get sessionRol(): SessionRole {
+        return this._sessionRol;
     }
 }
 
-export enum SessieRol {
+export enum SessionRole {
     LOKETLB_LPDCGEBRUIKER = 'LoketLB-LPDCGebruiker'
 }

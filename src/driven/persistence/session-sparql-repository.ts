@@ -1,27 +1,27 @@
 import {Iri} from "../../core/domain/shared/iri";
-import {SessieRepository} from "../../core/port/driven/persistence/sessie-repository";
-import {Sessie, SessieRol} from "../../core/domain/sessie";
+import {SessionRepository} from "../../core/port/driven/persistence/session-repository";
+import {Session, SessionRole} from "../../core/domain/session";
 import {SparqlQuerying} from "./sparql-querying";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {PREFIX} from "../../../config";
 
-export class SessieSparqlRepository implements SessieRepository {
+export class SessionSparqlRepository implements SessionRepository {
 
     protected readonly querying: SparqlQuerying;
     constructor(endpoint?: string) {
         this.querying = new SparqlQuerying(endpoint);
     }
 
-    async findById(id: Iri): Promise<Sessie> {
+    async findById(id: Iri): Promise<Session> {
         const query = `
             ${PREFIX.ext}
-            SELECT ?id ?bestuurseenheid ?sessieRol WHERE {
+            SELECT ?id ?bestuurseenheid ?sessionRole WHERE {
                 GRAPH <http://mu.semte.ch/graphs/sessions> {
-                    VALUES (?id ?sessieRol) {
-                        (${sparqlEscapeUri(id)} """${SessieRol.LOKETLB_LPDCGEBRUIKER}""")
+                    VALUES (?id ?sessionRole) {
+                        (${sparqlEscapeUri(id)} """${SessionRole.LOKETLB_LPDCGEBRUIKER}""")
                     }
                     ?id ext:sessionGroup ?bestuurseenheid .
-                    ?id ext:sessionRole ?sessieRol .
+                    ?id ext:sessionRole ?sessionRole .
                 }
             }
         `;
@@ -31,10 +31,10 @@ export class SessieSparqlRepository implements SessieRepository {
             throw new Error(`No session found for iri: ${id}`);
         }
 
-        return new Sessie(
+        return new Session(
             result['id'].value,
             result['bestuurseenheid'].value,
-            result['sessieRol'].value
+            result['sessionRole'].value
         );
     }
 }

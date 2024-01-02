@@ -15,7 +15,7 @@ import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
 import {getLanguageVersionOfInstance} from "./lib/getInstanceLanguageVersion";
 import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
 import LPDCError from "./utils/lpdc-error";
-import {SessieSparqlRepository} from "./src/driven/persistence/sessie-sparql-repository";
+import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "./src/driven/persistence/concept-snapshot-sparql-repository";
 import {ConceptSnapshot} from "./src/core/domain/concept-snapshot";
@@ -29,7 +29,7 @@ const app = createApp();
 const bodySizeLimit = process.env.MAX_BODY_SIZE || '5Mb';
 app.use(bodyparser.json({limit: bodySizeLimit}));
 
-const sessieRepository = new SessieSparqlRepository();
+const sessionRepository = new SessionSparqlRepository();
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository();
 const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository();
 
@@ -92,8 +92,8 @@ app.post('/public-services/', async function (req, res): Promise<any> {
     const sessionUri = req.headers['mu-session-id'] as string;
     try {
         const {uuid, uri} = conceptId ?
-            await createForm(conceptId, sessionUri, sessieRepository, bestuurseenheidRepository)
-            : await createEmptyForm(sessionUri, sessieRepository, bestuurseenheidRepository);
+            await createForm(conceptId, sessionUri, sessionRepository, bestuurseenheidRepository)
+            : await createEmptyForm(sessionUri, sessionRepository, bestuurseenheidRepository);
 
         return res.status(201).json({
             data: {
@@ -141,7 +141,7 @@ app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
     const header = req.headers['mu-session-id'] as string;
 
     try {
-        FEATURE_FLAG_ATOMIC_UPDATE ? await updateFormAtomic(delta, header, sessieRepository, bestuurseenheidRepository) : await updateForm(delta, header, sessieRepository, bestuurseenheidRepository);
+        FEATURE_FLAG_ATOMIC_UPDATE ? await updateFormAtomic(delta, header, sessionRepository, bestuurseenheidRepository) : await updateForm(delta, header, sessionRepository, bestuurseenheidRepository);
         return res.sendStatus(200);
     } catch (e) {
         console.error(e);
@@ -163,7 +163,7 @@ app.delete('/public-services/:publicServiceId', async function (req, res): Promi
     const publicServiceId = req.params.publicServiceId;
     const header = req.headers['mu-session-id'] as string;
     try {
-        await deleteForm(publicServiceId, header, sessieRepository, bestuurseenheidRepository);
+        await deleteForm(publicServiceId, header, sessionRepository, bestuurseenheidRepository);
         return res.sendStatus(204);
     } catch (e) {
         console.error(e);
