@@ -179,10 +179,10 @@ export class QuadsToDomainMapper {
         return this.asEnums(YourEuropeCategoryType, this.store.statementsMatching(namedNode(id), NS.lpdcExt("yourEuropeCategory"), null, this.graphId), id);
     }
 
-    private keywords(id: Iri): LanguageString[] {
-        return this.store.statementsMatching(namedNode(id), NS.dcat("keyword"), null, this.graphId)
+    private keywords(id: Iri): Set<LanguageString> {
+        return new Set(this.store.statementsMatching(namedNode(id), NS.dcat("keyword"), null, this.graphId)
             .map(s => [s])
-            .flatMap(statements => this.asLangugaeString(statements));
+            .flatMap(statements => this.asLangugaeString(statements)));
     }
 
     private url(id: Iri): string | undefined {

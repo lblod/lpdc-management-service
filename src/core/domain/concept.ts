@@ -6,7 +6,7 @@ import {Procedure} from "./procedure";
 import {Website} from "./website";
 import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
-import {asSortedArray, asSortedSet} from "./shared/collections-helper";
+import {asSortedSet} from "./shared/collections-helper";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
@@ -37,7 +37,7 @@ export class Concept {
     private readonly _executingAuthorities: Set<Iri>;
     private readonly _publicationMedia: Set<PublicationMediumType>;
     private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>;
-    private readonly _keywords: LanguageString[];
+    private readonly _keywords: Set<LanguageString>;
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
     private readonly _websites: Website[];
@@ -62,7 +62,7 @@ export class Concept {
                 executingAuthorities: Set<Iri>,
                 publicationMedia: Set<PublicationMediumType>,
                 yourEuropeCategories: Set<YourEuropeCategoryType>,
-                keywords: LanguageString[],
+                keywords: Set<LanguageString>,
                 requirements: Requirement[],
                 procedures: Procedure[],
                 websites: Website[],
@@ -88,7 +88,7 @@ export class Concept {
         this._executingAuthorities = asSortedSet(executingAuthorities);
         this._publicationMedia = asSortedSet(publicationMedia);
         this._yourEuropeCategories = asSortedSet(yourEuropeCategories);
-        this._keywords = asSortedArray([...keywords], LanguageString.compare);
+        this._keywords = asSortedSet(keywords, LanguageString.compare);
         this._requirements = [...requirements];
         this._procedures = [...procedures];
         this._websites = [...websites];
@@ -165,7 +165,7 @@ export class Concept {
         return this._yourEuropeCategories;
     }
 
-    get keywords(): LanguageString[] {
+    get keywords(): Set<LanguageString> {
         return this._keywords;
     }
 

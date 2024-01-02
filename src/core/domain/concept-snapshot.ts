@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from 'lodash';
 import {Requirement} from "./requirement";
-import {asSortedArray, asSortedSet} from "./shared/collections-helper";
+import {asSortedSet} from "./shared/collections-helper";
 import {Procedure} from "./procedure";
 import {Website} from "./website";
 import {Cost} from "./cost";
@@ -39,7 +39,7 @@ export class ConceptSnapshot {
     private readonly _executingAuthorities: Set<Iri>;
     private readonly _publicationMedia: Set<PublicationMediumType>;
     private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>;
-    private readonly _keywords: LanguageString[]; //TODO LPDC-916: change to Set
+    private readonly _keywords: Set<LanguageString>;
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
     private readonly _websites: Website[];
@@ -70,7 +70,7 @@ export class ConceptSnapshot {
                 executingAuthorities: Set<Iri>,
                 publicationMedia: Set<PublicationMediumType>,
                 yourEuropeCategories: Set<YourEuropeCategoryType>,
-                keywords: LanguageString[],
+                keywords: Set<LanguageString>,
                 requirements: Requirement[],
                 procedures: Procedure[],
                 websites: Website[],
@@ -102,7 +102,7 @@ export class ConceptSnapshot {
         this._executingAuthorities = asSortedSet(executingAuthorities);
         this._publicationMedia = asSortedSet(publicationMedia);
         this._yourEuropeCategories = asSortedSet(yourEuropeCategories);
-        this._keywords = asSortedArray([...keywords], LanguageString.compare);
+        this._keywords = asSortedSet(keywords, LanguageString.compare);
         this._requirements = [...requirements];
         this._procedures = [...procedures];
         this._websites = [...websites];
@@ -185,7 +185,7 @@ export class ConceptSnapshot {
         return this._yourEuropeCategories;
     }
 
-    get keywords(): LanguageString[] {
+    get keywords(): Set<LanguageString> {
         return this._keywords;
     }
 

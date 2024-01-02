@@ -159,7 +159,7 @@ export class ConceptSnapshotTestBuilder {
 
     public static readonly YOUR_EUROPE_CATEGORIES = new Set([YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE]);
 
-    public static readonly KEYWORDS = [LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')];
+    public static readonly KEYWORDS = new Set([LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')]);
 
     public static readonly REQUIREMENTS = [aFullRequirement().build(), anotherFullRequirement().build()];
 
@@ -200,7 +200,7 @@ export class ConceptSnapshotTestBuilder {
     private executingAuthorities: Set<Iri> = new Set();
     private publicationMedia: Set<PublicationMediumType> = new Set();
     private yourEuropeCategories: Set<YourEuropeCategoryType> = new Set();
-    private keywords: LanguageString[] = [];
+    private keywords: Set<LanguageString> = new Set();
     private requirements: Requirement[] = [];
     private procedures: Procedure[] = [];
     private websites: Website[] = [];
@@ -303,7 +303,7 @@ export class ConceptSnapshotTestBuilder {
         return this;
     }
 
-    public withKeywords(keywords: LanguageString[]): ConceptSnapshotTestBuilder {
+    public withKeywords(keywords: Set<LanguageString>): ConceptSnapshotTestBuilder {
         this.keywords = keywords;
         return this;
     }

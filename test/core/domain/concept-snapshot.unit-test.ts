@@ -20,7 +20,7 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 
-describe('is functionally changed', () => {
+describe('constructing', () => {
 
     test('identifier is extracted from id', () => {
         const aUUID = uuid();
@@ -32,6 +32,24 @@ describe('is functionally changed', () => {
 
         expect(aConceptSnapshot.identifier).toEqual(aUUID);
     });
+
+    test('keywords are sorted', () => {
+        const aConceptSnapshot =
+            aFullConceptSnapshot()
+                .withKeywords(new Set([
+                    LanguageString.of('def'),
+                    LanguageString.of('abc')
+                ]))
+                .build();
+
+        expect(Array.from(aConceptSnapshot.keywords)).toEqual([
+            LanguageString.of('abc'),
+            LanguageString.of('def'),
+        ]);
+    });
+});
+
+describe('is functionally changed', () => {
 
     type TestCase = [string, ConceptSnapshot, ConceptSnapshot];
 
@@ -342,38 +360,38 @@ describe('is functionally changed', () => {
                 .build()],
         ['keyword updated - en',
             aFullConceptSnapshot()
-                .withKeywords([LanguageString.of('abc')])
+                .withKeywords(new Set([LanguageString.of('abc')]))
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords([LanguageString.of('def')])
+                .withKeywords(new Set([LanguageString.of('def')]))
                 .build()],
         ['keyword updated - nl',
             aFullConceptSnapshot()
-                .withKeywords([LanguageString.of(undefined, 'abc')])
+                .withKeywords(new Set([LanguageString.of(undefined, 'abc')]))
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords([LanguageString.of(undefined, 'def')])
+                .withKeywords(new Set([LanguageString.of(undefined, 'def')]))
                 .build()],
         ['keyword updated - en became nl',
             aFullConceptSnapshot()
-                .withKeywords([LanguageString.of('abc')])
+                .withKeywords(new Set([LanguageString.of('abc')]))
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords([LanguageString.of(undefined, 'abc')])
+                .withKeywords(new Set([LanguageString.of(undefined, 'abc')]))
                 .build()],
         ['keyword added',
             aFullConceptSnapshot()
-                .withKeywords([LanguageString.of('abc')])
+                .withKeywords(new Set([LanguageString.of('abc')]))
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords([LanguageString.of('abc'), LanguageString.of('def')])
+                .withKeywords(new Set([LanguageString.of('abc'), LanguageString.of('def')]))
                 .build()],
         ['keyword removed',
             aFullConceptSnapshot()
-                .withKeywords([LanguageString.of('abc'), LanguageString.of('def')])
+                .withKeywords(new Set([LanguageString.of('abc'), LanguageString.of('def')]))
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords([LanguageString.of('abc')])
+                .withKeywords(new Set([LanguageString.of('abc')]))
                 .build()],
         ['requirement added',
             aFullConceptSnapshot()

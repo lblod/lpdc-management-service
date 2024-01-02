@@ -149,7 +149,7 @@ export class ConceptTestBuilder {
 
     public static readonly YOUR_EUROPE_CATEGORIES = new Set([YourEuropeCategoryType.WERKENPENSIONERING, YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFPENSIOENENVERZEKERINGSREGELINGENWERKGEVER, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE]);
 
-    public static readonly KEYWORDS = [LanguageString.of('overlijden - en'), LanguageString.of(undefined, 'overlijden - nl'), LanguageString.of(undefined, 'goederen verhandelen'), LanguageString.of('sacrale activiteiten')];
+    public static readonly KEYWORDS = new Set([LanguageString.of('overlijden - en'), LanguageString.of(undefined, 'overlijden - nl'), LanguageString.of(undefined, 'goederen verhandelen'), LanguageString.of('sacrale activiteiten')]);
 
     public static readonly REQUIREMENTS = [aFullRequirement().build(), anotherFullRequirement().build()];
 
@@ -181,7 +181,7 @@ export class ConceptTestBuilder {
     private executingAuthorities: Set<Iri> = new Set();
     private publicationMedia: Set<PublicationMediumType> = new Set();
     private yourEuropeCategories: Set<YourEuropeCategoryType> = new Set();
-    private keywords: LanguageString[] = [];
+    private keywords: Set<LanguageString> = new Set();
     private requirements: Requirement[] = [];
     private procedures: Procedure[] = [];
     private websites: Website[] = [];
@@ -278,7 +278,7 @@ export class ConceptTestBuilder {
         return this;
     }
 
-    public withKeywords(keywords: LanguageString[]): ConceptTestBuilder {
+    public withKeywords(keywords: Set<LanguageString>): ConceptTestBuilder {
         this.keywords = keywords;
         return this;
     }

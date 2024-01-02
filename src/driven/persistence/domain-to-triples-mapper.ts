@@ -93,11 +93,11 @@ export class DomainToTriplesMapper {
         return quad(namedNode(id), NS.rdf('type'), type);
     }
 
-    private startDate(id: Iri, value: FormatPreservingDate | undefined) : Statement | undefined {
+    private startDate(id: Iri, value: FormatPreservingDate | undefined): Statement | undefined {
         return value ? quad(namedNode(id), NS.schema('startDate'), literal(value.value, NS.xsd('dateTime'))) : undefined;
     }
 
-    private endDate(id: Iri, value: FormatPreservingDate | undefined) : Statement | undefined {
+    private endDate(id: Iri, value: FormatPreservingDate | undefined): Statement | undefined {
         return value ? quad(namedNode(id), NS.schema('endDate'), literal(value.value, NS.xsd('dateTime'))) : undefined;
     }
 
@@ -128,6 +128,7 @@ export class DomainToTriplesMapper {
     private targetAudiences(id: Iri, values: Set<TargetAudienceType>): Statement [] {
         return this.irisToTriples(namedNode(id), NS.lpdcExt('targetAudience'), values);
     }
+
     private themes(id: Iri, values: Set<ThemeType>): Statement [] {
         return this.irisToTriples(namedNode(id), NS.m8g('thematicArea'), values);
     }
@@ -156,8 +157,9 @@ export class DomainToTriplesMapper {
         return this.irisToTriples(namedNode(id), NS.lpdcExt('yourEuropeCategory'), values);
     }
 
-    private keywords(id: Iri, values: LanguageString []): Statement [] {
-        return values.flatMap(keyword => this.languageStringToTriples(namedNode(id), NS.dcat('keyword'), keyword));
+    private keywords(id: Iri, values: Set<LanguageString>): Statement[] {
+        return Array.from(values)
+            .flatMap(keyword => this.languageStringToTriples(namedNode(id), namedNode(NS.dcat('keyword').value), keyword));
     }
 
     private requirements(id: Iri, values: Requirement[]): Statement[] {
