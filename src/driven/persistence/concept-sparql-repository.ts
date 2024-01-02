@@ -20,10 +20,11 @@ export class ConceptSparqlRepository implements ConceptRepository {
     async findById(id: Iri): Promise<Concept> {
         const quads = await this.fetcher.fetch(CONCEPT_GRAPH,
             id,
+            //TODO LPDC-916: verify others in detail on production dataset
             [
                 NS.lpdcExt('hasConceptDisplayConfiguration').value,
             ],
-            //TODO LPDC-916: verify others in detail
+            //TODO LPDC-916: verify others in detail on production dataset
             [
                 NS.lpdcExt('yourEuropeCategory').value,
                 NS.lpdcExt('targetAudience').value,

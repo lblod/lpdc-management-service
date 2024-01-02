@@ -25,6 +25,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
+import {ConceptTestBuilder} from "./concept-test-builder";
 
 
 export function aMinimalConcept(): ConceptVersieTestBuilder {
@@ -171,7 +172,7 @@ export class ConceptVersieTestBuilder {
     public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantage().build(), anotherFullFinancialAdvantage().build()];
 
     //TODO LPDC-916: when the ConceptTestBuilder is present -> use the UUID from that one ...
-    public static readonly IS_VERSION_OF_CONCEPT = 'https://ipdc.vlaanderen.be/id/concept/cae5e6b4-0b6b-4b3c-8ec6-755313f7fe8a';
+    public static readonly IS_VERSION_OF_CONCEPT = ConceptTestBuilder.buildIri(uuid());
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2022-10-05T13:00:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2023-09-12T20:00:20.242928Z');
