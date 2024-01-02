@@ -5,7 +5,7 @@ export class FormatPreservingDate {
     private readonly _value: string;
 
     private constructor(valueFormattedInIso8601WithNanosMillisOrSeconds: string) {
-        //TODO LPDC-916: add invariants
+        //TODO LPDC-917: add invariants
         this._value = valueFormattedInIso8601WithNanosMillisOrSeconds;
     }
 

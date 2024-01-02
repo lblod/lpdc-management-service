@@ -84,7 +84,7 @@ export class ConceptSnapshot {
                 snapshotType: SnapshotType | undefined,
                 conceptTags: Set<ConceptTagType>,
     ) {
-        //TODO LPDC-916: enforce invariants ? + do safe copies ?
+        //TODO LPDC-917: enforce invariants ? + do safe copies ?
         this._id = id;
         this._title = title;
         this._description = description;

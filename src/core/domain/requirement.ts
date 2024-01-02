@@ -10,7 +10,7 @@ export class Requirement {
     private readonly _description: LanguageString | undefined;
     private readonly _evidence: Evidence | undefined;
 
-    //TODO LPDC-916: add invariants
+    //TODO LPDC-917: add invariants
     constructor(id: Iri,
                 title: LanguageString | undefined,
                 description: LanguageString | undefined,
