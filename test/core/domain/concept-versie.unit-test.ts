@@ -58,7 +58,7 @@ describe('is functionally changed', () => {
             aFullConceptVersie()
                 .withStartDate(FormatPreservingDate.of('2027-09-16 00:00:00.000Z'))
                 .build()],
-        ['start date the same except formatting',
+        ['end date the same except formatting',
             aFullConceptVersie()
                 .withEndDate(FormatPreservingDate.of('2027-09-16 00:00:00Z'))
                 .build(),

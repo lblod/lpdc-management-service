@@ -19,7 +19,8 @@ export class ConceptVersieSparqlRepository implements ConceptVersieRepository {
     async findById(id: Iri): Promise<ConceptVersie> {
         const ldesDataGraph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
 
-        const quads = await this.fetcher.fetch(ldesDataGraph,
+        const quads = await this.fetcher.fetch(
+            ldesDataGraph,
             id,
             [],
             [],

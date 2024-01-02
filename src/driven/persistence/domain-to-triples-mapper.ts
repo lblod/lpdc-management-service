@@ -251,8 +251,8 @@ export class DomainToTriplesMapper {
                 .map(tuple => quad(subject, predicate, literal(tuple[1], tuple[0]))) : [];
     }
 
-    private irisToTriples(subject: NamedNode, predicate: NamedNode, enumValues: Set<any>): Statement[] {
-        return Array.from(enumValues)
+    private irisToTriples(subject: NamedNode, predicate: NamedNode, values: Set<any>): Statement[] {
+        return Array.from(values)
             .map(e => quad(subject, predicate, namedNode(e)));
     }
 

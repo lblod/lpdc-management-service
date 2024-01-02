@@ -83,7 +83,5 @@ export class SparqlQuerying {
 
         return namedNode(term.value);
     }
-
-    //TODO LPDC-916: remove duplication for retry + options ...
 }
 

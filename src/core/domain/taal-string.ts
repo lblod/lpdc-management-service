@@ -1,4 +1,4 @@
-export class TaalString {
+export class TaalString { //TODO LPDC-916: rename to LanguageString
 
     private readonly _en: string | undefined;
     private readonly _nl: string | undefined;

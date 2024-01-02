@@ -9,7 +9,6 @@ export class FormatPreservingDate {
         this._value = valueFormattedInIso8601WithNanosMillisOrSeconds;
     }
 
-    //TODO LPDC-916: validate input
     public static of(valueFormattedInIso8601WithNanosMillisOrSeconds: string | undefined): FormatPreservingDate | undefined {
         return valueFormattedInIso8601WithNanosMillisOrSeconds ? new FormatPreservingDate(valueFormattedInIso8601WithNanosMillisOrSeconds) : undefined;
     }

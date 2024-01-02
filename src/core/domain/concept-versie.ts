@@ -20,7 +20,7 @@ import {
     YourEuropeCategoryType
 } from "./types";
 
-export class ConceptVersie { //TODO LPDC-916: or ConceptSnapshot?
+export class ConceptVersie { //TODO LPDC-916: rename to ConceptSnapshot
 
     private readonly _id: Iri;
     private readonly _title: TaalString | undefined;
@@ -39,7 +39,7 @@ export class ConceptVersie { //TODO LPDC-916: or ConceptSnapshot?
     private readonly _executingAuthorities: Set<Iri>;
     private readonly _publicationMedia: Set<PublicationMediumType>;
     private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>;
-    private readonly _keywords: TaalString[];
+    private readonly _keywords: TaalString[]; //TODO LPDC-916: change to Set
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
     private readonly _websites: Website[];

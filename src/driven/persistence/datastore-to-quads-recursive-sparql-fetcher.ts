@@ -1,5 +1,3 @@
-//TODO LPDC-916: put into some generic directory
-
 import {Iri} from "../../core/domain/shared/iri";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {SparqlQuerying} from "./sparql-querying";

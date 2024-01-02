@@ -1,4 +1,4 @@
-export enum ProductType { //TODO LPDC-916: ok to compromise and put an uri in here ?
+export enum ProductType { //TODO LPDC-916: url in mapping code ?
     FINANCIELEVERPLICHTING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/FinancieleVerplichting',
     TOELATING = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/Toelating',
     BEWIJS = 'https://productencatalogus.data.vlaanderen.be/id/concept/Type/Bewijs',
