@@ -33,6 +33,7 @@ export function aFullConcept(): ConceptTestBuilder {
     const id = uuid();
     return new ConceptTestBuilder()
         .withId(ConceptTestBuilder.buildIri(id))
+        .withUuid(uuid())
         .withTitle(
             LanguageString.of(
                 ConceptTestBuilder.TITLE_EN,
@@ -165,6 +166,7 @@ export class ConceptTestBuilder {
 
 
     private id: Iri;
+    private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
     private additionalDescription: LanguageString | undefined;
@@ -195,6 +197,11 @@ export class ConceptTestBuilder {
 
     public withId(id: Iri): ConceptTestBuilder {
         this.id = id;
+        return this;
+    }
+
+    public withUuid(uuid: string): ConceptTestBuilder {
+        this.uuid = uuid;
         return this;
     }
 
@@ -316,6 +323,7 @@ export class ConceptTestBuilder {
     public build(): Concept {
         return new Concept(
             this.id,
+            this.uuid,
             this.title,
             this.description,
             this.additionalDescription,

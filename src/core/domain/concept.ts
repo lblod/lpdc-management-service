@@ -21,6 +21,7 @@ import {
 export class Concept {
 
     private readonly _id: Iri;
+    private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _additionalDescription: LanguageString | undefined;
@@ -46,6 +47,7 @@ export class Concept {
     private readonly _productId: string | undefined;
 
     constructor(id: Iri,
+                uuid: string | undefined,
                 title: LanguageString | undefined,
                 description: LanguageString | undefined,
                 additionalDescription: LanguageString | undefined,
@@ -72,6 +74,7 @@ export class Concept {
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
+        this._uuid = uuid;
         this._title = title;
         this._description = description;
         this._additionalDescription = additionalDescription;
@@ -99,6 +102,10 @@ export class Concept {
 
     get id(): Iri {
         return this._id;
+    }
+
+    get uuid(): string | undefined {
+        return this._uuid;
     }
 
     get title(): LanguageString | undefined {

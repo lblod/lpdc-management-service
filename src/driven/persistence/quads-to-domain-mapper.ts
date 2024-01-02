@@ -79,6 +79,7 @@ export class QuadsToDomainMapper {
 
         return new Concept(
             id,
+            this.uuid(id),
             this.title(id),
             this.description(id),
             this.additionalDescription(id),

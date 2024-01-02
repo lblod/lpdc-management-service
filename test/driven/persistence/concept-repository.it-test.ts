@@ -120,6 +120,7 @@ describe('ConceptRepository', () => {
             await directDatabaseAccess.insertData(
                 CONCEPT_GRAPH,
                 [`<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptId}> <http://mu.semte.ch/vocabularies/core/uuid> """${concept.uuid}"""`,
                     `<${conceptId}> <http://purl.org/dc/terms/title> """${ConceptTestBuilder.TITLE_EN}"""@EN`,
                     `<${conceptId}> <http://purl.org/dc/terms/title> """${ConceptTestBuilder.TITLE_NL}"""@NL`,
                     `<${conceptId}> <http://purl.org/dc/terms/title> """${ConceptTestBuilder.TITLE_NL_FORMAL}"""@nl-BE-x-formal`,

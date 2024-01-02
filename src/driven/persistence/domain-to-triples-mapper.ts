@@ -27,6 +27,7 @@ export class DomainToTriplesMapper {
     public conceptToTriples(concept: Concept): Statement[] {
         return [
             this.rdfType(concept.id, NS.lpdcExt('ConceptualPublicService')),
+            concept.uuid ? quad(namedNode(concept.id), NS.mu('uuid'), literal(concept.uuid)) : undefined,
             this.startDate(concept.id, concept.startDate),
             this.endDate(concept.id, concept.endDate),
             this.type(concept.id, concept.type),

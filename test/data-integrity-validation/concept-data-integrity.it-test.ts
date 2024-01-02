@@ -103,6 +103,10 @@ describe('Concept Data Integrity Validation', () => {
         Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties'))
             .forEach(q => allQuadsOfGraph.delete(q));
 
+        //filter out all triples linked to http://publications.europa.eu/resource/authority/language/ subjects
+        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://publications.europa.eu/resource/authority/language/'))
+            .forEach(q => allQuadsOfGraph.delete(q));
+
 
         const delayTime = 0;
         const numberOfLoops = 1;
