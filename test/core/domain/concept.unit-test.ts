@@ -1,5 +1,6 @@
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {aFullConcept} from "./concept-test-builder";
+import {aFullConcept, ConceptTestBuilder} from "./concept-test-builder";
+import {Language} from "../../../src/core/domain/language";
 
 describe('constructing', () => {
 
@@ -17,4 +18,28 @@ describe('constructing', () => {
             LanguageString.of('def')
         ]);
     });
+
+    test('concept languages', () => {
+        const aConcept =
+            aFullConcept()
+                .withTitle(
+                    LanguageString.of(
+                        ConceptTestBuilder.TITLE_EN,
+                        ConceptTestBuilder.TITLE_NL,
+                        ConceptTestBuilder.TITLE_NL_FORMAL,
+                        ConceptTestBuilder.TITLE_NL_INFORMAL,
+                        ConceptTestBuilder.TITLE_NL_GENERATED_FORMAL,
+                        ConceptTestBuilder.TITLE_NL_GENERATED_INFORMAL))
+                .build();
+
+        expect(aConcept.conceptLanguages).toEqual(new Set([
+            Language.EN,
+            Language.NL,
+            Language.FORMAL,
+            Language.INFORMAL,
+            Language.GENERATED_FORMAL,
+            Language.GENERATED_INFORMAL
+        ]));
+    });
+
 });

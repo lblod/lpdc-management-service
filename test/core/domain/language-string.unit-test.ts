@@ -1,4 +1,5 @@
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {Language} from "../../../src/core/domain/language";
 
 describe('constructing', () => {
 
@@ -58,6 +59,39 @@ describe('constructing', () => {
     });
 
 
+});
+
+describe('get defined languages', () => {
+
+    test('get defined language - en', () => {
+       const languageString = LanguageString.of('text-en', undefined);
+       expect(languageString.definedLanguages).toEqual(new Set([Language.EN]));
+    });
+
+    test('defined language - en & nl', () => {
+        const languageString = LanguageString.of('text-en', 'nl');
+        expect(languageString.definedLanguages).toEqual(new Set([Language.EN, Language.NL]));
+    });
+
+    test('defined language - formal', () => {
+        const languageString = LanguageString.of(undefined, undefined, 'text-formal');
+        expect(languageString.definedLanguages).toEqual(new Set([Language.FORMAL]));
+    });
+
+    test('defined language - informal', () => {
+        const languageString = LanguageString.of(undefined, undefined, undefined, 'text-informal');
+        expect(languageString.definedLanguages).toEqual(new Set([Language.INFORMAL]));
+    });
+
+    test('defined language - generatedFormal', () => {
+        const languageString = LanguageString.of(undefined, undefined, undefined, undefined, 'text-generated-formal');
+        expect(languageString.definedLanguages).toEqual(new Set([Language.GENERATED_FORMAL]));
+    });
+
+    test('defined language - generatedInFormal', () => {
+        const languageString = LanguageString.of(undefined, undefined, undefined, undefined, undefined, 'text-generated-informal');
+        expect(languageString.definedLanguages).toEqual(new Set([Language.GENERATED_INFORMAL]));
+    });
 });
 
 describe('compare', () => {

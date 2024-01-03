@@ -1,3 +1,5 @@
+import {Language} from "./language";
+
 export class LanguageString {
 
     private readonly _en: string | undefined;
@@ -55,6 +57,17 @@ export class LanguageString {
 
     get nlGeneratedInformal(): string | undefined {
         return this._nlGeneratedInformal;
+    }
+
+    get definedLanguages(): Set<Language> {
+        const definedLanguages = [];
+        if (this._en !== undefined) definedLanguages.push(Language.EN);
+        if (this._nl !== undefined) definedLanguages.push(Language.NL);
+        if (this._nlFormal !== undefined) definedLanguages.push(Language.FORMAL);
+        if (this._nlInformal !== undefined) definedLanguages.push(Language.INFORMAL);
+        if (this._nlGeneratedFormal !== undefined) definedLanguages.push(Language.GENERATED_FORMAL);
+        if (this._nlGeneratedInformal !== undefined) definedLanguages.push(Language.GENERATED_INFORMAL);
+        return new Set(definedLanguages);
     }
 
     static isFunctionallyChanged(value: LanguageString | undefined, other: LanguageString | undefined): boolean {

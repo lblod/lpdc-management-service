@@ -19,6 +19,7 @@ import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-r
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "./src/driven/persistence/concept-snapshot-sparql-repository";
 import {ConceptSnapshot} from "./src/core/domain/concept-snapshot";
+import {ConceptSparqlRepository} from "./src/driven/persistence/concept-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -32,6 +33,7 @@ app.use(bodyparser.json({limit: bodySizeLimit}));
 const sessionRepository = new SessionSparqlRepository();
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository();
 const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository();
+const conceptRepository = new ConceptSparqlRepository();
 
 app.get('/', function (req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -245,7 +247,7 @@ app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function 
 
 app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version', async (req, res): Promise<any> => {
     try {
-        const languageVersion = await getLanguageVersionOfConcept(req.params.conceptualPublicServiceId);
+        const languageVersion = await getLanguageVersionOfConcept(req.params.conceptualPublicServiceId, conceptRepository);
         return res.json({languageVersion: languageVersion});
     } catch (e) {
         console.error(e);

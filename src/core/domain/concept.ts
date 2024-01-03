@@ -17,6 +17,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "./types";
+import {Language} from "./language";
 
 export class Concept {
 
@@ -111,6 +112,12 @@ export class Concept {
         this._previousConceptSnapshots = asSortedSet(previousConceptSnapshots);
         this._latestFunctionallyChangedConceptSnapshot = latestFunctionallyChangedConceptSnapshot;
         this._conceptTags = asSortedSet(conceptTags);
+    }
+
+    get conceptLanguages(): Set<Language> {
+        return this._title.definedLanguages;
+        //TODO LPDC-916 validate title has 3 languageVersions
+        //TODO LPDC-916 make title required
     }
 
     get id(): Iri {

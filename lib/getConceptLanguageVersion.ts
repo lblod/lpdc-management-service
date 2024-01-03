@@ -1,47 +1,14 @@
-import {
-    loadContactPoints,
-    loadContactPointsAddresses,
-    loadCosts,
-    loadEvidences,
-    loadFinancialAdvantages,
-    loadFormalInformalChoice,
-    loadOnlineProcedureRules,
-    loadPublicService,
-    loadRequirements,
-    loadRules,
-    loadWebsites,
-    serviceUriForId
-} from './commonQueries';
-import {
-    findDutchLanguageVersionsOfTriples,
-    getChosenForm,
-    selectLanguageVersionForConcept
-} from "./formalInformalChoice";
+import {loadFormalInformalChoice, serviceUriForId} from './commonQueries';
+import {getChosenForm, selectLanguageVersionForConcept} from "./formalInformalChoice";
+import {ConceptSparqlRepository} from "../src/driven/persistence/concept-sparql-repository";
 
-export async function getLanguageVersionOfConcept(conceptUUID: string): Promise<string> {
-    const triples = await getConceptTriples(conceptUUID);
-    const conceptLanguages = findDutchLanguageVersionsOfTriples(triples);
+export async function getLanguageVersionOfConcept(conceptUUID: string, conceptRepository: ConceptSparqlRepository): Promise<string> {
+    const conceptUri = await serviceUriForId(conceptUUID, 'lpdcExt:ConceptualPublicService');
+    const concept = await conceptRepository.findById(conceptUri);
+    const conceptLanguages = Array.from(concept.conceptLanguages);
 
     const formalInformalChoice = await loadFormalInformalChoice();
     const chosenForm = getChosenForm(formalInformalChoice);
 
     return selectLanguageVersionForConcept(conceptLanguages, chosenForm);
-}
-
-
-async function getConceptTriples(conceptUUID: string): Promise<any[]> {
-    const conceptUri = await serviceUriForId(conceptUUID, 'lpdcExt:ConceptualPublicService');
-    const results = [];
-    results.push(await loadEvidences(conceptUri));
-    results.push(await loadRequirements(conceptUri));
-    results.push(await loadOnlineProcedureRules(conceptUri));
-    results.push(await loadRules(conceptUri));
-    results.push(await loadCosts(conceptUri));
-    results.push(await loadFinancialAdvantages(conceptUri));
-    results.push(await loadContactPointsAddresses(conceptUri));
-    results.push(await loadContactPoints(conceptUri));
-    results.push(await loadWebsites(conceptUri));
-    results.push(await loadPublicService(conceptUri));
-
-    return results.reduce((acc, b) => [...acc, ...b]);
 }
