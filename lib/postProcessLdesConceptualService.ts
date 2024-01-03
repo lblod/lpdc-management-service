@@ -1,6 +1,6 @@
 import {querySudo, updateSudo} from '@lblod/mu-auth-sudo';
 import {sparqlEscapeString, sparqlEscapeUri} from '../mu-helper';
-import {CONCEPT_GRAPH, PREFIX} from '../config';
+import {CONCEPT_GRAPH, CONCEPT_SNAPSHOT_LDES_GRAPH, PREFIX} from '../config';
 import {v4 as uuid} from 'uuid';
 import {flatten} from 'lodash';
 import {bindingsToNT} from '../utils/bindingsToNT';
@@ -23,58 +23,55 @@ import {
 import {ConceptSnapshotRepository} from "../src/core/port/driven/persistence/concept-snapshot-repository";
 import {ConceptSnapshot} from "../src/core/domain/concept-snapshot";
 import {SnapshotType} from "../src/core/domain/types";
+import {Iri} from "../src/core/domain/shared/iri";
+
+type LdesDelta = {
+    conceptSnapshotId: Iri;
+    conceptId: Iri;
+}
 
 export async function processLdesDelta(delta: any, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<void> {
-    let versionedServices =
-        flatten(delta.map(changeSet => changeSet.inserts))
-            .filter(t => t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
-            .reduce((acc, t) => {
-                acc[t?.subject?.value] = t;
-                return acc;
-            }, {});
-    versionedServices = Object.values(versionedServices);
+    const versionedServices: LdesDelta[] = flatten(delta.map(changeSet => changeSet.inserts))
+        .filter(t => t?.graph.value === CONCEPT_SNAPSHOT_LDES_GRAPH && t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
+        .map((delta: any) => ({conceptSnapshotId: delta?.subject?.value, conceptId: delta?.object?.value } as LdesDelta));
 
-    const toProcess = [];
+    const toProcess: LdesDelta[] = [];
 
     for (const entry of versionedServices) {
-        const ldesDataGraph = entry.graph.value;
-        const newConceptSnapshotUri = entry.subject.value;
-        const conceptUri = entry.object.value;
 
-        if (await isNewVersionConceptualPublicService(ldesDataGraph, newConceptSnapshotUri, conceptUri)) {
-            console.log(`New versioned resource found: ${newConceptSnapshotUri} of service ${conceptUri}`);
+        if (await isNewVersionConceptualPublicService(entry.conceptSnapshotId, entry.conceptId)) {
+            console.log(`New versioned resource found: ${entry.conceptSnapshotId} of service ${entry.conceptId}`);
             toProcess.push(entry);
         } else {
-            console.log(`The versioned resource ${newConceptSnapshotUri} is an older version of service ${conceptUri}`);
+            console.log(`The versioned resource ${entry.conceptSnapshotId} is an older version of service ${entry.conceptId}`);
         }
     }
 
     for (const entry of toProcess) {
         try {
-            const ldesDataGraph = entry.graph.value;
-            const newConceptSnapshotUri = entry.subject.value;
-            const conceptUri = entry.object.value;
+            const newConceptSnapshotId = entry.conceptSnapshotId;
+            const conceptId = entry.conceptId;
 
-            const newConceptSnapshot = await conceptSnapshotRepository.findById(newConceptSnapshotUri);
-            const currentSnapshotUri: string | undefined = await getVersionedSourceOfConcept(conceptUri);
+            const newConceptSnapshot = await conceptSnapshotRepository.findById(newConceptSnapshotId);
+            const currentSnapshotId: string | undefined = await getVersionedSourceOfConcept(conceptId);
 
             const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
 
-            const isConceptFunctionallyChanged = await isConceptChanged(newConceptSnapshot, currentSnapshotUri, conceptSnapshotRepository);
+            const isConceptFunctionallyChanged = await isConceptChanged(newConceptSnapshot, currentSnapshotId, conceptSnapshotRepository);
 
-            await upsertNewLdesVersion(ldesDataGraph, newConceptSnapshotUri, conceptUri);
-            await updatedVersionInformation(newConceptSnapshotUri, conceptUri);
-            if (!currentSnapshotUri || isConceptFunctionallyChanged) {
-                await updateLatestFunctionalChange(newConceptSnapshotUri, conceptUri);
+            await upsertNewLdesVersion(newConceptSnapshotId, conceptId);
+            await updatedVersionInformation(newConceptSnapshotId, conceptId);
+            if (!currentSnapshotId || isConceptFunctionallyChanged) {
+                await updateLatestFunctionalChange(newConceptSnapshotId, conceptId);
             }
 
             const instanceReviewStatus = determineInstanceReviewStatus(isConceptFunctionallyChanged, isArchiving);
-            await flagInstancesModifiedConcept(conceptUri, instanceReviewStatus);
+            await flagInstancesModifiedConcept(conceptId, instanceReviewStatus);
 
-            await ensureConceptDisplayConfigs(conceptUri);
+            await ensureConceptDisplayConfigs(conceptId);
 
             if (isArchiving) {
-                await markConceptAsArchived(conceptUri);
+                await markConceptAsArchived(conceptId);
             }
         } catch (e) {
             console.error(`Error processing: ${JSON.stringify(entry)}`);
@@ -83,13 +80,13 @@ export async function processLdesDelta(delta: any, conceptSnapshotRepository: Co
     }
 }
 
-async function isNewVersionConceptualPublicService(ldesGraph: string, conceptSnapshotUri: string, conceptUri: string): Promise<boolean> {
+async function isNewVersionConceptualPublicService(conceptSnapshotUri: string, conceptUri: string): Promise<boolean> {
     const queryStr = `
     ${PREFIX.lpdcExt}
     ${PREFIX.dct}
     ${PREFIX.ext}
     ASK {
-      GRAPH ${sparqlEscapeUri(ldesGraph)} {
+      GRAPH ${sparqlEscapeUri(CONCEPT_SNAPSHOT_LDES_GRAPH)} {
         ${sparqlEscapeUri(conceptSnapshotUri)} a lpdcExt:ConceptualPublicService;
           dct:isVersionOf ${sparqlEscapeUri(conceptUri)};
           <http://www.w3.org/ns/prov#generatedAtTime> ?time.
@@ -108,7 +105,7 @@ async function isNewVersionConceptualPublicService(ldesGraph: string, conceptSna
     return (await querySudo(queryStr)).boolean;
 }
 
-async function upsertNewLdesVersion(versionedServiceGraph: string, versionedService: string, conceptualService: string): Promise<void> {
+async function upsertNewLdesVersion(versionedService: string, conceptualService: string): Promise<void> {
     let serviceId = (await querySudo(`
     ${PREFIX.lpdcExt}
     ${PREFIX.mu}
@@ -127,7 +124,7 @@ async function upsertNewLdesVersion(versionedServiceGraph: string, versionedServ
     } else {
         serviceId = uuid();
     }
-    await insertConceptualService(versionedServiceGraph, versionedService, conceptualService, serviceId);
+    await insertConceptualService(versionedService, conceptualService, serviceId);
 
 }
 
@@ -173,8 +170,8 @@ async function removeConceptualService(serviceId: string): Promise<void> {
     }
 }
 
-async function insertConceptualService(versionedServiceGraph: string, versionedServiceUri: string, serviceUri: string, serviceId: string): Promise<void> {
-    const graph = versionedServiceGraph;
+async function insertConceptualService(versionedServiceUri: string, serviceUri: string, serviceId: string): Promise<void> {
+    const graph = CONCEPT_SNAPSHOT_LDES_GRAPH;
     const sudo = true;
 
     //Some code list entries might be missing in our DB we insert these here
