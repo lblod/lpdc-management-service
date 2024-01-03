@@ -8,12 +8,14 @@ export async function loadEvidences(serviceUri: string, {
     graph,
     type,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions,
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -41,19 +43,21 @@ export async function loadEvidences(serviceUri: string, {
         }
       }
   `;
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 export async function loadRequirements(service: string, {
     graph,
     type,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions,
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -80,19 +84,21 @@ export async function loadRequirements(service: string, {
         }
       }
   `;
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 export async function loadOnlineProcedureRules(service: string, {
     graph,
     type,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions,
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -121,19 +127,21 @@ export async function loadOnlineProcedureRules(service: string, {
          }
       }
   `;
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 export async function loadRules(service: string, {
     graph,
     type,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions,
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -159,19 +167,21 @@ export async function loadRules(service: string, {
       }
   `;
 
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 export async function loadCosts(service: string, {
     graph,
     type,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -198,19 +208,21 @@ export async function loadCosts(service: string, {
       }
   `;
 
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 export async function loadFinancialAdvantages(service: string, {
     graph,
     type,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -237,7 +249,7 @@ export async function loadFinancialAdvantages(service: string, {
       }
   `;
 
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 // TODO: LPDC-735 FIX?
@@ -280,12 +292,14 @@ export async function loadContactPointsAddresses(service: string, {
     graph,
     type,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -316,19 +330,21 @@ export async function loadContactPointsAddresses(service: string, {
          }
       }
   `;
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 export async function loadContactPoints(service: string, {
     graph,
     type,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -357,19 +373,21 @@ export async function loadContactPoints(service: string, {
      }
   `;
 
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 export async function loadAttachments(service: string, {
     graph,
     type,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -396,19 +414,21 @@ export async function loadAttachments(service: string, {
       }
   `;
 
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 export async function loadWebsites(service: string, {
     graph,
     type,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -435,7 +455,7 @@ export async function loadWebsites(service: string, {
         }
       }
   `;
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 export async function loadPublicService(service: string, {
@@ -443,13 +463,15 @@ export async function loadPublicService(service: string, {
     type,
     validTypes,
     includeUuid,
-    sudo
+    sudo,
+    connectionOptions
 }: QueryOptions = {}): Promise<any[]> {
     graph = graph || APPLICATION_GRAPH;
     type = type || 'lpdcExt:ConceptualPublicService';
     validTypes = validTypes || false;
     includeUuid = includeUuid || false;
     const queryClient = sudo ? querySudo : query;
+    connectionOptions = connectionOptions || {};
 
     const queryStr = `
     ${PREFIXES}
@@ -524,7 +546,7 @@ export async function loadPublicService(service: string, {
         }
     }
   `;
-    return (await queryClient(queryStr)).results.bindings;
+    return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
 export async function serviceUriForId(publicServiceId: string, type: string = 'cpsv:PublicService'): Promise<string> {
@@ -602,4 +624,5 @@ type QueryOptions = {
     validTypes?: boolean,
     includeUuid?: boolean,
     sudo?: boolean,
+    connectionOptions?: object,
 }
