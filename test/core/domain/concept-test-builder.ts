@@ -28,7 +28,8 @@ import {buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 export function aMinimalConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
         .withId(buildConceptIri(uuid()))
-        .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()));
+        .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()))
+        .withLatestFunctionallyChangedConceptSnapshot(buildConceptSnapshotIri(uuid()));
 }
 
 export function aFullConcept(): ConceptTestBuilder {
@@ -95,7 +96,8 @@ export function aFullConcept(): ConceptTestBuilder {
         .withFinancialAdvantages(ConceptTestBuilder.FINANCIAL_ADVANTAGES)
         .withProductId(ConceptTestBuilder.PRODUCT_ID)
         .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()))
-        .withPreviousConceptSnapshots(new Set([buildConceptSnapshotIri(uuid()), buildConceptSnapshotIri(uuid()), buildConceptSnapshotIri(uuid())]));
+        .withPreviousConceptSnapshots(new Set([buildConceptSnapshotIri(uuid()), buildConceptSnapshotIri(uuid()), buildConceptSnapshotIri(uuid())]))
+        .withLatestFunctionallyChangedConceptSnapshot(buildConceptSnapshotIri(uuid()));
 }
 
 export class ConceptTestBuilder {
@@ -195,6 +197,7 @@ export class ConceptTestBuilder {
     private productId: string | undefined;
     private latestConceptSnapshot: Iri;
     private previousConceptSnapshots: Set<Iri> = new Set();
+    private latestFunctionallyChangedConceptSnapshot: Iri;
 
     public withId(id: Iri): ConceptTestBuilder {
         this.id = id;
@@ -331,6 +334,11 @@ export class ConceptTestBuilder {
         return this;
     }
 
+    public withLatestFunctionallyChangedConceptSnapshot(latestFunctionallyChangedConceptSnapshot: Iri): ConceptTestBuilder {
+        this.latestFunctionallyChangedConceptSnapshot = latestFunctionallyChangedConceptSnapshot;
+        return this;
+    }
+
     public build(): Concept {
         return new Concept(
             this.id,
@@ -360,6 +368,7 @@ export class ConceptTestBuilder {
             this.productId,
             this.latestConceptSnapshot,
             this.previousConceptSnapshots,
+            this.latestFunctionallyChangedConceptSnapshot,
         );
     }
 

@@ -53,6 +53,7 @@ export class DomainToTriplesMapper {
             this.productId(concept.id, concept.productId),
             this.latestConceptSnapshot(concept.id, concept.latestConceptSnapshot),
             ...this.previousConceptSnapshots(concept.id, concept.previousConceptSnapshots),
+            this.latestFunctionallyChangedConceptSnapshot(concept.id, concept.latestFunctionallyChangedConceptSnapshot),
         ].filter(t => t !== undefined);
     }
 
@@ -167,6 +168,10 @@ export class DomainToTriplesMapper {
 
     private latestConceptSnapshot(id: Iri, value: Iri): Statement {
         return quad(namedNode(id), NS.ext('hasVersionedSource'), namedNode(value));
+    }
+
+    private latestFunctionallyChangedConceptSnapshot(id: Iri, value: Iri): Statement {
+        return quad(namedNode(id), NS.lpdcExt('hasLatestFunctionalChange'), namedNode(value));
     }
 
     private previousConceptSnapshots(id: Iri, values: Set<Iri>): Statement[] {

@@ -47,7 +47,7 @@ export class Concept {
     private readonly _productId: string | undefined;
     private readonly _latestConceptSnapshot: Iri;
     private readonly _previousConceptSnapshots: Set<Iri>;
-    private readonly _latestFunctionallyChangedConceptSnapshot: Iri; //TODO LPDC-916: implement me
+    private readonly _latestFunctionallyChangedConceptSnapshot: Iri;
     //TODO LPDC-916: add concept tag
 
     constructor(id: Iri,
@@ -77,6 +77,7 @@ export class Concept {
                 productId: string | undefined,
                 latestConceptSnapshot: Iri,
                 previousConceptSnapshots: Set<Iri>,
+                latestFunctionallyChangedConceptSnapshot: Iri,
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -106,6 +107,7 @@ export class Concept {
         this._productId = productId;
         this._latestConceptSnapshot = latestConceptSnapshot;
         this._previousConceptSnapshots = asSortedSet(previousConceptSnapshots);
+        this._latestFunctionallyChangedConceptSnapshot = latestFunctionallyChangedConceptSnapshot;
     }
 
     get id(): Iri {
@@ -214,6 +216,10 @@ export class Concept {
 
     get previousConceptSnapshots(): Set<Iri> {
         return this._previousConceptSnapshots;
+    }
+
+    get latestFunctionallyChangedConceptSnapshot(): Iri {
+        return this._latestFunctionallyChangedConceptSnapshot;
     }
 
 }

@@ -106,6 +106,7 @@ export class QuadsToDomainMapper {
             this.productId(id),
             this.latestConceptSnapshot(id),
             this.previousConceptSnapshots(id),
+            this.latestFunctionallyChangedConceptSnapshot(id),
         );
     }
 
@@ -223,6 +224,10 @@ export class QuadsToDomainMapper {
 
     private previousConceptSnapshots(id: Iri): Set<Iri> {
         return this.asIris(this.store.statementsMatching(namedNode(id), NS.ext('previousVersionedSource'), null, this.graphId));
+    }
+
+    private latestFunctionallyChangedConceptSnapshot(id: Iri): Iri {
+        return this.asIri(this.store.anyStatementMatching(namedNode(id), NS.lpdcExt('hasLatestFunctionalChange'), null, this.graphId));
     }
 
     private snapshotType(id: Iri): SnapshotType | undefined {

@@ -86,6 +86,7 @@ describe('ConceptRepository', () => {
                 [
                     `<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
+                    `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
                 ]);
 
             const actualConcept = await repository.findById(conceptId);
@@ -108,6 +109,7 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptId}> <http://purl.org/dc/terms/title> """${ConceptTestBuilder.TITLE_NL}"""@nl`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
+                    `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
                 ]);
 
             const actualConcept = await repository.findById(conceptId);
@@ -491,6 +493,7 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${Array.from(concept.previousConceptSnapshots)[0]}>`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${Array.from(concept.previousConceptSnapshots)[1]}>`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${Array.from(concept.previousConceptSnapshots)[2]}>`,
+                    `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
                 ]);
 
             const actualConcept = await repository.findById(conceptId);
