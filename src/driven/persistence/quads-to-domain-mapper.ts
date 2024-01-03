@@ -73,6 +73,7 @@ export class QuadsToDomainMapper {
             this.productId(id),
             this.snapshotType(id),
             this.conceptTags(id),
+            this.legalResources(id),
         );
     }
 
@@ -243,6 +244,10 @@ export class QuadsToDomainMapper {
 
     private isConceptArchived(id: Iri): boolean {
          return !!this.store.anyStatementMatching(namedNode(id), NS.adms('status'), STATUS.concept.archived, this.graphId);
+    }
+
+    private legalResources(id: Iri): Set<Iri> {
+        return this.asIris(this.store.statementsMatching(namedNode(id), NS.m8g('hasLegalResource'), null, this.graphId));
     }
 
     private costs(id: Iri): Cost[] {

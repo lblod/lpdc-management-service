@@ -21,6 +21,8 @@ export const NS = {
     adms: Namespace('http://www.w3.org/ns/adms#'),
     mu: Namespace('http://mu.semte.ch/vocabularies/core/'),
     ext: Namespace('http://mu.semte.ch/vocabularies/ext/'),
+    eli: Namespace('http://data.europa.eu/eli/ontology#'),
+    eliIncorrectlyInDatabase: Namespace('http://data.europa.eu/eli/ontology/#'), //we need a clean up in ipdc and in our database to be able remove this hack ...
     concept: {
         type: Namespace(conceptNS('Type/').value),
         doelgroep: Namespace(conceptNS('Doelgroep/').value),

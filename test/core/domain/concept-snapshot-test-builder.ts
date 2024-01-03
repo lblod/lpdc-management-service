@@ -25,7 +25,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
-import {buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
+import {buildCodexVlaanderenIri, buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 
 
 export function aMinimalConcept(): ConceptSnapshotTestBuilder {
@@ -100,7 +100,8 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
         .withGeneratedAtTime(ConceptSnapshotTestBuilder.GENERATED_AT_TIME)
         .withProductId(ConceptSnapshotTestBuilder.PRODUCT_ID)
         .withSnapshotType(ConceptSnapshotTestBuilder.SNAPSHOT_TYPE)
-        .withConceptTags(ConceptSnapshotTestBuilder.CONCEPT_TAGS);
+        .withConceptTags(ConceptSnapshotTestBuilder.CONCEPT_TAGS)
+        .withLegalResources(ConceptSnapshotTestBuilder.LEGAL_RESOURCES);
 }
 
 export class ConceptSnapshotTestBuilder {
@@ -183,6 +184,8 @@ export class ConceptSnapshotTestBuilder {
 
     public static readonly CONCEPT_TAGS = new Set([ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT]);
 
+    public static readonly LEGAL_RESOURCES = new Set([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())]);
+
     private id: Iri;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
@@ -213,6 +216,7 @@ export class ConceptSnapshotTestBuilder {
     private productId: string | undefined;
     private snapshotType: SnapshotType | undefined;
     private conceptTags: Set<ConceptTagType> = new Set();
+    private legalResources: Set<Iri> = new Set();
 
     public withId(id: Iri): ConceptSnapshotTestBuilder {
         this.id = id;
@@ -364,6 +368,11 @@ export class ConceptSnapshotTestBuilder {
         return this;
     }
 
+    public withLegalResources(legalResources: Set<Iri>): ConceptSnapshotTestBuilder {
+        this.legalResources = legalResources;
+        return this;
+    }
+
     public build(): ConceptSnapshot {
         return new ConceptSnapshot(
             this.id,
@@ -396,6 +405,7 @@ export class ConceptSnapshotTestBuilder {
             this.productId,
             this.snapshotType,
             this.conceptTags,
+            this.legalResources,
             );
     }
 

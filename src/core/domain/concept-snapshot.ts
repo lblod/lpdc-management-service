@@ -52,6 +52,7 @@ export class ConceptSnapshot {
     private readonly _productId: string | undefined;
     private readonly _snapshotType: SnapshotType | undefined;
     private readonly _conceptTags: Set<ConceptTagType>;
+    private readonly _legalResources: Set<Iri>;
 
     constructor(id: Iri,
                 title: LanguageString | undefined,
@@ -83,6 +84,7 @@ export class ConceptSnapshot {
                 productId: string | undefined,
                 snapshotType: SnapshotType | undefined,
                 conceptTags: Set<ConceptTagType>,
+                legalResources: Set<Iri>,
     ) {
         //TODO LPDC-917: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -115,6 +117,7 @@ export class ConceptSnapshot {
         this._productId = productId;
         this._snapshotType = snapshotType;
         this._conceptTags = asSortedSet(conceptTags);
+        this._legalResources = asSortedSet(legalResources);
     }
 
     get id(): Iri {
@@ -237,8 +240,12 @@ export class ConceptSnapshot {
         return this._snapshotType;
     }
 
-    get conceptTags(): Set<ConceptTagType> | undefined {
+    get conceptTags(): Set<ConceptTagType> {
         return this._conceptTags;
+    }
+
+    get legalResources(): Set<Iri> {
+        return this._legalResources;
     }
 
     static isFunctionallyChanged(value: ConceptSnapshot, other: ConceptSnapshot): boolean {

@@ -7,3 +7,7 @@ export function buildConceptSnapshotIri(uniqueId: string): Iri {
 export function buildConceptIri(uniqueId: string): Iri {
     return `https://ipdc.tni-vlaanderen.be/id/concept/${uniqueId}`;
 }
+
+export function buildCodexVlaanderenIri(uniqueId: string): Iri {
+    return `https://codex.vlaanderen.be/${uniqueId}`;
+}

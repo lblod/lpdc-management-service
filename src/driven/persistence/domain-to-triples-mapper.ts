@@ -94,6 +94,7 @@ export class DomainToTriplesMapper {
             this.productId(conceptSnapshot.id, conceptSnapshot.productId),
             conceptSnapshot.snapshotType ? quad(namedNode(conceptSnapshot.id), NS.lpdcExt('snapshotType'), namedNode(this.enumToIri(conceptSnapshot.snapshotType, NS.concept.snapshotType))) : undefined,
             ...this.conceptTags(conceptSnapshot.id, conceptSnapshot.conceptTags),
+            ...this.legalResources(conceptSnapshot.id, conceptSnapshot.legalResources),
         ].filter(t => t !== undefined);
     }
 
@@ -176,6 +177,10 @@ export class DomainToTriplesMapper {
 
     private isArchived(id: Iri, isArchived: boolean): Statement | undefined {
         return isArchived ? quad(namedNode(id), NS.adms('status'), STATUS.concept.archived) : undefined;
+    }
+
+    private legalResources(id: Iri, values: Set<Iri>): Statement[] {
+        return this.irisToTriples(namedNode(id), NS.m8g('hasLegalResource'), values);
     }
 
     private latestConceptSnapshot(id: Iri, value: Iri): Statement {

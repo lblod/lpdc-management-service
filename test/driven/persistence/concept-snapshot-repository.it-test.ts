@@ -498,6 +498,18 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.concept.snapshotType(ConceptSnapshotTestBuilder.SNAPSHOT_TYPE).value}>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.concept.conceptTag(Array.from(ConceptSnapshotTestBuilder.CONCEPT_TAGS)[0]).value}>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.concept.conceptTag(Array.from(ConceptSnapshotTestBuilder.CONCEPT_TAGS)[1]).value}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasLegalResource> <${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[0]}>`,
+                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[0]}> a <http://data.europa.eu/eli/ontology/#LegalResource>`, // the actual data in the database contains an error ...
+                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[0]}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[0]}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasLegalResource> <${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[1]}>`,
+                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[1]}> a <http://data.europa.eu/eli/ontology/#LegalResource>`,
+                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[1]}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[1]}> <http://www.w3.org/ns/shacl#order> """3"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasLegalResource> <${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[2]}>`,
+                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[2]}> a <http://data.europa.eu/eli/ontology/#LegalResource>`,
+                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[2]}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[2]}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                 ]);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshotId);

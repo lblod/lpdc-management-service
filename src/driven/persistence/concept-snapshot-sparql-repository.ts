@@ -23,12 +23,16 @@ export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepositor
             ldesDataGraph,
             id,
             [],
-            [],
+            [
+                NS.m8g('hasLegalResource').value,
+            ],
             [
                 NS.skos('Concept').value,
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
                 NS.besluit('bestuurseenheid').value,
-                NS.m8g('PublicOrganisation').value
+                NS.m8g('PublicOrganisation').value,
+                NS.eli('LegalResource').value,
+                NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
 
         const mapper = new QuadsToDomainMapper(quads, ldesDataGraph);

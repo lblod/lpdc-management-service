@@ -36,6 +36,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
                 NS.dct("type").value,
                 NS.lpdcExt("conceptTag").value,
                 NS.adms('status').value,
+                NS.m8g('hasLegalResource').value,
             ],
             [
                 NS.skos('Concept').value,

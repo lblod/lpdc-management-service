@@ -55,8 +55,8 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         Array.from(allQuadsOfGraph).filter(q => q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/state')))
             .forEach(q => allQuadsOfGraph.delete(q));
 
-        //filter out legal resources
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith("https://codex.vlaanderen.be/") || q.predicate.equals(namedNode('http://data.europa.eu/m8g/hasLegalResource')))
+        //filter out legal resources data (iri reference still exists)
+        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith("https://codex.vlaanderen.be/"))
             .forEach(q => allQuadsOfGraph.delete(q));
 
         const delayTime = 0;
