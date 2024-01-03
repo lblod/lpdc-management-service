@@ -7,7 +7,6 @@ import {updateForm, updateFormAtomic} from './lib/updateForm';
 import {deleteForm} from './lib/deleteForm';
 import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
-import {processLdesDelta} from './lib/postProcessLdesConceptualService';
 import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
 import {getContactPointOptions} from "./lib/getContactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
@@ -22,6 +21,9 @@ import {ConceptSnapshot} from "./src/core/domain/concept-snapshot";
 import {ConceptSparqlRepository} from "./src/driven/persistence/concept-sparql-repository";
 import {Iri} from "./src/core/domain/shared/iri";
 import {flatten} from "lodash";
+import {
+    NewConceptSnapshotToConceptMergerDomainService
+} from "./src/core/domain/new-concept-snapshot-to-concept-merger-domain-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -36,6 +38,7 @@ const sessionRepository = new SessionSparqlRepository();
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository();
 const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository();
 const conceptRepository = new ConceptSparqlRepository();
+const newConceptSnapshotToConceptMergerDomainService = new NewConceptSnapshotToConceptMergerDomainService(conceptSnapshotRepository, conceptRepository);
 
 app.get('/', function (req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -54,7 +57,9 @@ app.post('/delta', async function (req, res): Promise<void> {
                 const newConceptSnapshotIds: Iri[] = flatten(delta.map(changeSet => changeSet.inserts))
                     .filter(t => t?.graph.value === CONCEPT_SNAPSHOT_LDES_GRAPH && t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
                     .map((delta: any) => delta.subject.value as Iri);
-                return await processLdesDelta(newConceptSnapshotIds, conceptRepository, conceptSnapshotRepository);
+                for (const newConceptSnapshotId of newConceptSnapshotIds) {
+                    await newConceptSnapshotToConceptMergerDomainService.merge(newConceptSnapshotId);
+                }
             });
 
         res.status(202).send();

@@ -1,10 +1,9 @@
 import {querySudo, updateSudo} from '@lblod/mu-auth-sudo';
-import {sparqlEscapeString, sparqlEscapeUri} from '../mu-helper';
-import {CONCEPT_GRAPH, CONCEPT_SNAPSHOT_LDES_GRAPH, PREFIX} from '../config';
+import {sparqlEscapeString, sparqlEscapeUri} from '../../../mu-helper';
+import {CONCEPT_GRAPH, CONCEPT_SNAPSHOT_LDES_GRAPH, PREFIX} from '../../../config';
 import {v4 as uuid} from 'uuid';
-import {flatten} from 'lodash';
-import {bindingsToNT} from '../utils/bindingsToNT';
-import {addTypeForSubject, addUuidForSubject, groupBySubject} from '../utils/common';
+import {bindingsToNT} from '../../../utils/bindingsToNT';
+import {addTypeForSubject, addUuidForSubject, groupBySubject} from '../../../utils/common';
 import fetch from 'node-fetch';
 import {
     loadAttachments,
@@ -19,26 +18,35 @@ import {
     loadRules,
     loadWebsites,
     serviceUriForId
-} from './commonQueries';
-import {ConceptSnapshotRepository} from "../src/core/port/driven/persistence/concept-snapshot-repository";
-import {ConceptSnapshot} from "../src/core/domain/concept-snapshot";
-import {SnapshotType} from "../src/core/domain/types";
-import {Iri} from "../src/core/domain/shared/iri";
-import {ConceptSparqlRepository} from "../src/driven/persistence/concept-sparql-repository";
+} from '../../../lib/commonQueries';
+import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snapshot-repository";
+import {ConceptSnapshot} from "./concept-snapshot";
+import {SnapshotType} from "./types";
+import {ConceptSparqlRepository} from "../../driven/persistence/concept-sparql-repository";
+import {Iri} from "./shared/iri";
 
-export async function processLdesDelta(newConceptSnapshotIds: Iri[], conceptRepository: ConceptSparqlRepository, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<void> {
-    for (const newConceptSnapshotId of newConceptSnapshotIds) {
-        const newConceptSnapshot = await conceptSnapshotRepository.findById(newConceptSnapshotId);
+export class NewConceptSnapshotToConceptMergerDomainService {
+
+    private readonly _conceptSnapshotRepository: ConceptSnapshotRepository;
+    private readonly _conceptRepository: ConceptSparqlRepository;
+
+    constructor(conceptSnapshotRepository: ConceptSnapshotRepository, conceptRepository: ConceptSparqlRepository) {
+        this._conceptSnapshotRepository = conceptSnapshotRepository;
+        this._conceptRepository = conceptRepository;
+    }
+
+    async merge(newConceptSnapshotId: Iri) {
+        const newConceptSnapshot = await this._conceptSnapshotRepository.findById(newConceptSnapshotId);
         const conceptId = newConceptSnapshot.isVersionOfConcept;
 
-        if (await shouldConceptSnapshotBeAppliedToConcept(newConceptSnapshot, conceptRepository, conceptSnapshotRepository)) {
+        if (await shouldConceptSnapshotBeAppliedToConcept(newConceptSnapshot, this._conceptRepository, this._conceptSnapshotRepository)) {
             console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
             try {
                 const currentSnapshotId: string | undefined = await getVersionedSourceOfConcept(conceptId);
 
                 const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
 
-                const isConceptFunctionallyChanged = await isConceptChanged(newConceptSnapshot, currentSnapshotId, conceptSnapshotRepository);
+                const isConceptFunctionallyChanged = await isConceptChanged(newConceptSnapshot, currentSnapshotId, this._conceptSnapshotRepository);
 
                 await upsertNewLdesVersion(newConceptSnapshotId, conceptId);
                 await updatedVersionInformation(newConceptSnapshotId, conceptId);
@@ -62,7 +70,9 @@ export async function processLdesDelta(newConceptSnapshotIds: Iri[], conceptRepo
             console.log(`The versioned resource ${newConceptSnapshotId} is an older version of service ${conceptId}`);
         }
     }
+
 }
+
 
 async function shouldConceptSnapshotBeAppliedToConcept(conceptSnapshot: ConceptSnapshot, conceptRepository: ConceptSparqlRepository, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<boolean> {
     const conceptId = conceptSnapshot.isVersionOfConcept;
@@ -462,12 +472,12 @@ async function markConceptAsArchived(conceptualService: string): Promise<void> {
     await updateSudo(markAsArchivedQuery);
 }
 
-async function isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotUri: string, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<boolean> {
-    if (!currentSnapshotUri) {
+async function isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: string, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<boolean> {
+    if (!currentSnapshotId) {
         return false;
     }
 
-    const currentConceptSnapshot = await conceptSnapshotRepository.findById(currentSnapshotUri);
+    const currentConceptSnapshot = await conceptSnapshotRepository.findById(currentSnapshotId);
 
     return ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
 }
