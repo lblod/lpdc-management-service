@@ -59,7 +59,7 @@ describe('merges a new concept snapshot into a concept', () => {
         expect(newlyCreatedConcept.requirements)
             .toEqual(expect.arrayContaining([
                 expect.objectContaining({
-                    _id: conceptSnapshot.requirements[0].id,//TODO LPDC-916: id's are not changed - seems ok?
+                    _id: conceptSnapshot.requirements[0].id,
                     _uuid: expect.stringMatching(uuidRegex),
                     _title: conceptSnapshot.requirements[0].title,
                     _description: conceptSnapshot.requirements[0].description,
@@ -83,11 +83,102 @@ describe('merges a new concept snapshot into a concept', () => {
                     })
                 })
             ]));
+        expect(newlyCreatedConcept.procedures)
+            .toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    _id: conceptSnapshot.procedures[0].id,
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _title: conceptSnapshot.procedures[0].title,
+                    _description: conceptSnapshot.procedures[0].description,
+                    _websites: expect.arrayContaining([
+                        expect.objectContaining({
+                            _id: conceptSnapshot.procedures[0].websites[0].id,
+                            _uuid: expect.stringMatching(uuidRegex),
+                            _title: conceptSnapshot.procedures[0].websites[0].title,
+                            _description: conceptSnapshot.procedures[0].websites[0].description,
+                            _url: conceptSnapshot.procedures[0].websites[0].url,
+                        }),
+                        expect.objectContaining({
+                            _id: conceptSnapshot.procedures[0].websites[1].id,
+                            _uuid: expect.stringMatching(uuidRegex),
+                            _title: conceptSnapshot.procedures[0].websites[1].title,
+                            _description: conceptSnapshot.procedures[0].websites[1].description,
+                            _url: conceptSnapshot.procedures[0].websites[1].url,
+                        })
+                    ])
+                }),
+                expect.objectContaining({
+                    _id: conceptSnapshot.procedures[1].id,
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _title: conceptSnapshot.procedures[1].title,
+                    _description: conceptSnapshot.procedures[1].description,
+                    _websites: expect.arrayContaining([
+                        expect.objectContaining({
+                            _id: conceptSnapshot.procedures[1].websites[0].id,
+                            _uuid: expect.stringMatching(uuidRegex),
+                            _title: conceptSnapshot.procedures[1].websites[0].title,
+                            _description: conceptSnapshot.procedures[1].websites[0].description,
+                            _url: conceptSnapshot.procedures[1].websites[0].url,
+                        }),
+                        expect.objectContaining({
+                            _id: conceptSnapshot.procedures[1].websites[1].id,
+                            _uuid: expect.stringMatching(uuidRegex),
+                            _title: conceptSnapshot.procedures[1].websites[1].title,
+                            _description: conceptSnapshot.procedures[1].websites[1].description,
+                            _url: conceptSnapshot.procedures[1].websites[1].url,
+                        })
+                    ])
+                })
+            ]));
 
-        //TODO LPDC-916: add _procedures
-        //TODO LPDC-916: add _websites
-        //TODO LPDC-916: add _costs
-        //TODO LPDC-916: add _financialAdvantages
+        expect(newlyCreatedConcept.websites)
+            .toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    _id: conceptSnapshot.websites[0].id,
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _title: conceptSnapshot.websites[0].title,
+                    _description: conceptSnapshot.websites[0].description,
+                    _url: conceptSnapshot.websites[0].url,
+                }),
+                expect.objectContaining({
+                    _id: conceptSnapshot.websites[1].id,
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _title: conceptSnapshot.websites[1].title,
+                    _description: conceptSnapshot.websites[1].description,
+                    _url: conceptSnapshot.websites[1].url,
+                })
+            ]));
+
+        expect(newlyCreatedConcept.costs)
+            .toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    _id: conceptSnapshot.costs[0].id,
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _title: conceptSnapshot.costs[0].title,
+                    _description: conceptSnapshot.costs[0].description
+                }),
+                expect.objectContaining({
+                    _id: conceptSnapshot.costs[1].id,
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _title: conceptSnapshot.costs[1].title,
+                    _description: conceptSnapshot.costs[1].description
+                })
+            ]));
+        expect(newlyCreatedConcept.financialAdvantages)
+            .toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    _id: conceptSnapshot.financialAdvantages[0].id,
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _title: conceptSnapshot.financialAdvantages[0].title,
+                    _description: conceptSnapshot.financialAdvantages[0].description
+                }),
+                expect.objectContaining({
+                    _id: conceptSnapshot.financialAdvantages[1].id,
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _title: conceptSnapshot.financialAdvantages[1].title,
+                    _description: conceptSnapshot.financialAdvantages[1].description
+                })
+            ]));
         expect(newlyCreatedConcept.productId).toEqual(conceptSnapshot.productId);
         expect(newlyCreatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
         expect(newlyCreatedConcept.previousConceptSnapshots).toEqual(new Set());

@@ -11,7 +11,6 @@ export function aMinimalFinancialAdvantage(): FinancialAdvantageTestBuilder {
 export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
     return new FinancialAdvantageTestBuilder()
         .withId(FinancialAdvantageTestBuilder.buildIri(uuid()))
-        .withUuid(uuid())
         .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.TITLE_EN,
             FinancialAdvantageTestBuilder.TITLE_NL,
@@ -32,7 +31,6 @@ export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
 export function anotherFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
     return new FinancialAdvantageTestBuilder()
         .withId(FinancialAdvantageTestBuilder.buildIri(uuid()))
-        .withUuid(uuid())
         .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_EN,
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_NL,

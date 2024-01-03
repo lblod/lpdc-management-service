@@ -11,7 +11,6 @@ export function aMinimalWebsite(): WebsiteTestBuilder {
 export function aFullWebsite(): WebsiteTestBuilder {
     return new WebsiteTestBuilder()
         .withId(WebsiteTestBuilder.buildIri(uuid()))
-        .withUuid(uuid())
         .withTitle(LanguageString.of(
             WebsiteTestBuilder.TITLE_EN,
             WebsiteTestBuilder.TITLE_NL,
@@ -33,7 +32,6 @@ export function aFullWebsite(): WebsiteTestBuilder {
 export function anotherFullWebsite(aUuid: string): WebsiteTestBuilder {
     return new WebsiteTestBuilder()
         .withId(WebsiteTestBuilder.buildIri(aUuid))
-        .withUuid(uuid())
         .withTitle(LanguageString.of(
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_EN(aUuid),
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL(aUuid),

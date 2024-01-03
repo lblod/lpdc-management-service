@@ -11,7 +11,6 @@ export function aMinimalCost(): CostTestBuilder {
 export function aFullCost(): CostTestBuilder {
     return new CostTestBuilder()
         .withId(CostTestBuilder.buildIri(uuid()))
-        .withUuid(uuid())
         .withTitle(LanguageString.of(
             CostTestBuilder.TITLE_EN,
             CostTestBuilder.TITLE_NL,
@@ -32,7 +31,6 @@ export function aFullCost(): CostTestBuilder {
 export function anotherFullCost(): CostTestBuilder {
     return new CostTestBuilder()
         .withId(CostTestBuilder.buildIri(uuid()))
-        .withUuid(uuid())
         .withTitle(LanguageString.of(
             CostTestBuilder.ANOTHER_TITLE_EN,
             CostTestBuilder.ANOTHER_TITLE_NL,

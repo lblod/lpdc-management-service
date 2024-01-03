@@ -14,7 +14,7 @@ import {
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {aFullRequirement, anotherFullRequirement} from "./requirement-test-builder";
 import {aFullProcedure, anotherFullProcedure} from "./procedure-test-builder";
-import {anotherFullWebsite} from "./website-test-builder";
+import {aFullWebsite, anotherFullWebsite} from "./website-test-builder";
 import {aFullCost, anotherFullCost} from "./cost-test-builder";
 import {aFullFinancialAdvantage, anotherFullFinancialAdvantage} from "./financial-advantage-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
@@ -167,13 +167,19 @@ export class ConceptTestBuilder {
         anotherFullRequirement().withUuid(uuid()).withEvidence(anotherFullEvidence().withUuid(uuid()).build()).build()
     ];
 
-    public static readonly PROCEDURES = [aFullProcedure().build(), anotherFullProcedure().build()];
+    public static readonly PROCEDURES = [
+        aFullProcedure().withUuid(uuid()).withWebsites([aFullWebsite().withUuid(uuid()).build(), anotherFullWebsite(uuid()).withUuid(uuid()).build()]).build(),
+        anotherFullProcedure().withUuid(uuid()).withWebsites([anotherFullWebsite(uuid()).withUuid(uuid()).build(), anotherFullWebsite(uuid()).withUuid(uuid()).build()]).build()];
 
-    public static readonly WEBSITES = [anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()];
+    public static readonly WEBSITES = [
+        anotherFullWebsite(uuid()).withUuid(uuid()).build(),
+        anotherFullWebsite(uuid()).withUuid(uuid()).build()];
 
-    public static readonly COSTS = [aFullCost().build(), anotherFullCost().build()];
+    public static readonly COSTS = [aFullCost().withUuid(uuid()).build(), anotherFullCost().withUuid(uuid()).build()];
 
-    public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantage().build(), anotherFullFinancialAdvantage().build()];
+    public static readonly FINANCIAL_ADVANTAGES = [
+        aFullFinancialAdvantage().withUuid(uuid()).build(),
+        anotherFullFinancialAdvantage().withUuid(uuid()).build()];
 
     public static readonly PRODUCT_ID = "5468";
 

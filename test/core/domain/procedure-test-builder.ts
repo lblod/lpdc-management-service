@@ -13,7 +13,6 @@ export function aMinimalProcedure(): ProcedureTestBuilder {
 export function aFullProcedure(): ProcedureTestBuilder {
     return new ProcedureTestBuilder()
         .withId(ProcedureTestBuilder.buildIri(uuid()))
-        .withUUID(uuid())
         .withTitle(LanguageString.of(
             ProcedureTestBuilder.TITLE_EN,
             ProcedureTestBuilder.TITLE_NL,
@@ -35,7 +34,6 @@ export function aFullProcedure(): ProcedureTestBuilder {
 export function anotherFullProcedure(): ProcedureTestBuilder {
     return new ProcedureTestBuilder()
         .withId(ProcedureTestBuilder.buildIri(uuid()))
-        .withUUID(uuid())
         .withTitle(LanguageString.of(
             ProcedureTestBuilder.ANOTHER_TITLE_EN,
             ProcedureTestBuilder.ANOTHER_TITLE_NL,
@@ -102,7 +100,7 @@ export class ProcedureTestBuilder {
         return this;
     }
 
-    public withUUID(uuid: string): ProcedureTestBuilder {
+    public withUuid(uuid: string): ProcedureTestBuilder {
         this.uuid = uuid;
         return this;
     }
