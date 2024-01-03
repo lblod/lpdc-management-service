@@ -22,6 +22,7 @@ import {Requirement} from "../../core/domain/requirement";
 import {Procedure} from "../../core/domain/procedure";
 import {Cost} from "../../core/domain/cost";
 import {FinancialAdvantage} from "../../core/domain/financial-advantage";
+import {STATUS} from "./status";
 
 export class DomainToTriplesMapper {
 
@@ -56,6 +57,7 @@ export class DomainToTriplesMapper {
             ...this.previousConceptSnapshots(concept.id, concept.previousConceptSnapshots),
             this.latestFunctionallyChangedConceptSnapshot(concept.id, concept.latestFunctionallyChangedConceptSnapshot),
             ...this.conceptTags(concept.id, concept.conceptTags),
+            this.isArchived(concept.id, concept.isArchived),
         ].filter(t => t !== undefined);
     }
 
@@ -170,6 +172,10 @@ export class DomainToTriplesMapper {
 
     private conceptTags(id: Iri, values: Set<ConceptTagType>): Statement[] {
         return this.irisToTriples(namedNode(id), NS.lpdcExt('conceptTag'), this.enumsToIris(values, NS.concept.conceptTag));
+    }
+
+    private isArchived(id: Iri, isArchived: boolean): Statement | undefined {
+        return isArchived ? quad(namedNode(id), NS.adms('status'), STATUS.concept.archived) : undefined;
     }
 
     private latestConceptSnapshot(id: Iri, value: Iri): Statement {

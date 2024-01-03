@@ -32,5 +32,6 @@ export const NS = {
         snapshotType: Namespace(conceptNS('SnapshotType/').value),
         conceptTag: Namespace(conceptNS('ConceptTag/').value),
     },
+    concepts: Namespace('http://lblod.data.gift/concepts/'),
 
 };

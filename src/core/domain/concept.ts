@@ -50,7 +50,7 @@ export class Concept {
     private readonly _previousConceptSnapshots: Set<Iri>;
     private readonly _latestFunctionallyChangedConceptSnapshot: Iri;
     private readonly _conceptTags: Set<ConceptTagType>;
-    //TODO LPDC-916: add http://www.w3.org/ns/adms#status
+    private readonly _isArchived: boolean;
 
     constructor(id: Iri,
                 uuid: string | undefined,
@@ -81,6 +81,7 @@ export class Concept {
                 previousConceptSnapshots: Set<Iri>,
                 latestFunctionallyChangedConceptSnapshot: Iri,
                 conceptTags: Set<ConceptTagType>,
+                isArchived: boolean,
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -112,10 +113,12 @@ export class Concept {
         this._previousConceptSnapshots = asSortedSet(previousConceptSnapshots);
         this._latestFunctionallyChangedConceptSnapshot = latestFunctionallyChangedConceptSnapshot;
         this._conceptTags = asSortedSet(conceptTags);
+        this._isArchived = isArchived;
     }
 
-    get conceptLanguages(): Set<Language> {
-        return this._title.definedLanguages;
+    get conceptLanguages(): Set<Language> | undefined {
+        //TODO LPDC-916 don't use the optional operator anymore + remove | undefined from return type
+        return this._title?.definedLanguages;
         //TODO LPDC-916 validate title has 3 languageVersions
         //TODO LPDC-916 make title required
     }
@@ -234,6 +237,10 @@ export class Concept {
 
     get conceptTags(): Set<ConceptTagType> {
         return this._conceptTags;
+    }
+
+    get isArchived(): boolean {
+        return this._isArchived;
     }
 
 }

@@ -21,7 +21,7 @@ describe('Concept Data Integrity Validation', () => {
     const graph = CONCEPT_GRAPH;
     const domainToTriplesMapper = new DomainToTriplesMapper();
 
-    test.skip('Load all concepts; print errors to console.log', async () => {
+    test('Load all concepts; print errors to console.log', async () => {
 
         const conceptIdsQuery = `
             ${PREFIX.lpdcExt}

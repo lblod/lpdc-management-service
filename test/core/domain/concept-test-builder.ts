@@ -203,6 +203,7 @@ export class ConceptTestBuilder {
     private previousConceptSnapshots: Set<Iri> = new Set();
     private latestFunctionallyChangedConceptSnapshot: Iri;
     private conceptTags: Set<ConceptTagType> = new Set();
+    private isArchived: boolean = false;
 
     public withId(id: Iri): ConceptTestBuilder {
         this.id = id;
@@ -349,6 +350,11 @@ export class ConceptTestBuilder {
         return this;
     }
 
+    public withIsArchived(isArchived: boolean): ConceptTestBuilder {
+        this.isArchived = isArchived;
+        return this;
+    }
+
     public build(): Concept {
         return new Concept(
             this.id,
@@ -380,6 +386,7 @@ export class ConceptTestBuilder {
             this.previousConceptSnapshots,
             this.latestFunctionallyChangedConceptSnapshot,
             this.conceptTags,
+            this.isArchived,
         );
     }
 

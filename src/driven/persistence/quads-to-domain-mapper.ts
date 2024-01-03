@@ -25,6 +25,7 @@ import {
 } from '../../core/domain/types';
 import {Concept} from '../../core/domain/concept';
 import {Namespace} from "rdflib/lib/factories/factory-types";
+import {STATUS} from "./status";
 
 export class QuadsToDomainMapper {
 
@@ -108,6 +109,7 @@ export class QuadsToDomainMapper {
             this.previousConceptSnapshots(id),
             this.latestFunctionallyChangedConceptSnapshot(id),
             this.conceptTags(id),
+            this.isConceptArchived(id),
         );
     }
 
@@ -237,6 +239,10 @@ export class QuadsToDomainMapper {
 
     private conceptTags(id: Iri): Set<ConceptTagType> {
         return this.asEnums(ConceptTagType, NS.concept.conceptTag, this.store.statementsMatching(namedNode(id), NS.lpdcExt('conceptTag'), null, this.graphId), id);
+    }
+
+    private isConceptArchived(id: Iri): boolean {
+         return !!this.store.anyStatementMatching(namedNode(id), NS.adms('status'), STATUS.concept.archived, this.graphId);
     }
 
     private costs(id: Iri): Cost[] {
