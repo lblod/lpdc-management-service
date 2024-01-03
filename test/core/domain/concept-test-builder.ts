@@ -25,6 +25,7 @@ import {Cost} from "../../../src/core/domain/cost";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Concept} from "../../../src/core/domain/concept";
 import {buildCodexVlaanderenIri, buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
+import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
 
 export function aMinimalConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
@@ -161,7 +162,10 @@ export class ConceptTestBuilder {
 
     public static readonly KEYWORDS = new Set([LanguageString.of('overlijden - en'), LanguageString.of(undefined, 'overlijden - nl'), LanguageString.of(undefined, 'goederen verhandelen'), LanguageString.of('sacrale activiteiten')]);
 
-    public static readonly REQUIREMENTS = [aFullRequirement().build(), anotherFullRequirement().build()];
+    public static readonly REQUIREMENTS = [
+        aFullRequirement().withUuid(uuid()).withEvidence(aFullEvidence().withUuid(uuid()).build()).build(),
+        anotherFullRequirement().withUuid(uuid()).withEvidence(anotherFullEvidence().withUuid(uuid()).build()).build()
+    ];
 
     public static readonly PROCEDURES = [aFullProcedure().build(), anotherFullProcedure().build()];
 

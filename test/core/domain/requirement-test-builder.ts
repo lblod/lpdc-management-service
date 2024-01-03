@@ -14,7 +14,6 @@ export function aMinimalRequirement(): RequirementTestBuilder {
 export function aFullRequirement(): RequirementTestBuilder {
     return new RequirementTestBuilder()
         .withId(RequirementTestBuilder.buildIri(uuid()))
-        .withUuid(uuid())
         .withTitle(LanguageString.of(
             RequirementTestBuilder.TITLE_EN,
             RequirementTestBuilder.TITLE_NL,
@@ -36,7 +35,6 @@ export function aFullRequirement(): RequirementTestBuilder {
 export function anotherFullRequirement(): RequirementTestBuilder {
     return new RequirementTestBuilder()
         .withId(RequirementTestBuilder.buildIri(uuid()))
-        .withUuid(uuid())
         .withTitle(LanguageString.of(
             RequirementTestBuilder.ANOTHER_TITLE_EN,
             RequirementTestBuilder.ANOTHER_TITLE_NL,

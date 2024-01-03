@@ -12,7 +12,6 @@ export function aMinimalEvidence(): EvidenceTestBuilder {
 export function aFullEvidence(): EvidenceTestBuilder {
     return new EvidenceTestBuilder()
         .withId(EvidenceTestBuilder.buildIri(uuid()))
-        .withUuid(uuid())
         .withTitle(LanguageString.of(
             EvidenceTestBuilder.TITLE_EN,
             EvidenceTestBuilder.TITLE_NL,
@@ -33,7 +32,6 @@ export function aFullEvidence(): EvidenceTestBuilder {
 export function anotherFullEvidence(): EvidenceTestBuilder {
     return new EvidenceTestBuilder()
         .withId(EvidenceTestBuilder.buildIri(uuid()))
-        .withUuid(uuid())
         .withTitle(LanguageString.of(
             EvidenceTestBuilder.ANOTHER_TITLE_EN,
             EvidenceTestBuilder.ANOTHER_TITLE_NL,

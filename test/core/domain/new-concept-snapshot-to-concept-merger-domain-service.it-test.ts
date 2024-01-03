@@ -14,6 +14,9 @@ import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
 
 describe('merges a new concept snapshot into a concept', () => {
 
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlTestRepository(TEST_SPARQL_ENDPOINT);
 
@@ -53,7 +56,34 @@ describe('merges a new concept snapshot into a concept', () => {
         expect(newlyCreatedConcept.publicationMedia).toEqual(conceptSnapshot.publicationMedia);
         expect(newlyCreatedConcept.yourEuropeCategories).toEqual(conceptSnapshot.yourEuropeCategories);
         expect(newlyCreatedConcept.keywords).toEqual(conceptSnapshot.keywords);
-        //TODO LPDC-916: add _requirements
+        expect(newlyCreatedConcept.requirements)
+            .toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    _id: conceptSnapshot.requirements[0].id,//TODO LPDC-916: id's are not changed - seems ok?
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _title: conceptSnapshot.requirements[0].title,
+                    _description: conceptSnapshot.requirements[0].description,
+                    _evidence: expect.objectContaining({
+                        _id: conceptSnapshot.requirements[0].evidence.id,
+                        _uuid: expect.stringMatching(uuidRegex),
+                        _title: conceptSnapshot.requirements[0].evidence.title,
+                        _description: conceptSnapshot.requirements[0].evidence.description,
+                    })
+                }),
+                expect.objectContaining({
+                    _id: conceptSnapshot.requirements[1].id,
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _title: conceptSnapshot.requirements[1].title,
+                    _description: conceptSnapshot.requirements[1].description,
+                    _evidence: expect.objectContaining({
+                        _id: conceptSnapshot.requirements[1].evidence.id,
+                        _uuid: expect.stringMatching(uuidRegex),
+                        _title: conceptSnapshot.requirements[1].evidence.title,
+                        _description: conceptSnapshot.requirements[1].evidence.description,
+                    })
+                })
+            ]));
+
         //TODO LPDC-916: add _procedures
         //TODO LPDC-916: add _websites
         //TODO LPDC-916: add _costs
