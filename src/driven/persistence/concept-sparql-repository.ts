@@ -3,9 +3,10 @@ import {SparqlQuerying} from "./sparql-querying";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {Iri} from "../../core/domain/shared/iri";
 import {Concept} from "../../core/domain/concept";
-import {CONCEPT_GRAPH} from "../../../config";
+import {CONCEPT_GRAPH, PREFIX} from "../../../config";
 import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
+import {sparqlEscapeUri} from "../../../mu-helper";
 
 export class ConceptSparqlRepository implements ConceptRepository {
 
@@ -51,4 +52,15 @@ export class ConceptSparqlRepository implements ConceptRepository {
         return mapper.concept(id);
     }
 
+    async exists(id: Iri): Promise<boolean> {
+        const query = `
+            ${PREFIX.lpdcExt}
+            ASK WHERE {
+                GRAPH <${CONCEPT_GRAPH}> {
+                    ${sparqlEscapeUri(id)} a lpdcExt:ConceptualPublicService .
+                }
+            }
+        `;
+        return this.querying.ask(query);
+    }
 }

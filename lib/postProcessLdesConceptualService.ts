@@ -24,85 +24,59 @@ import {ConceptSnapshotRepository} from "../src/core/port/driven/persistence/con
 import {ConceptSnapshot} from "../src/core/domain/concept-snapshot";
 import {SnapshotType} from "../src/core/domain/types";
 import {Iri} from "../src/core/domain/shared/iri";
+import {ConceptSparqlRepository} from "../src/driven/persistence/concept-sparql-repository";
 
-type LdesDelta = {
-    conceptSnapshotId: Iri;
-    conceptId: Iri;
-}
+export async function processLdesDelta(newConceptSnapshotIds: Iri[], conceptRepository: ConceptSparqlRepository, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<void> {
+    for (const newConceptSnapshotId of newConceptSnapshotIds) {
+        const newConceptSnapshot = await conceptSnapshotRepository.findById(newConceptSnapshotId);
+        const conceptId = newConceptSnapshot.isVersionOfConcept;
 
-export async function processLdesDelta(delta: any, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<void> {
-    const versionedServices: LdesDelta[] = flatten(delta.map(changeSet => changeSet.inserts))
-        .filter(t => t?.graph.value === CONCEPT_SNAPSHOT_LDES_GRAPH && t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
-        .map((delta: any) => ({conceptSnapshotId: delta?.subject?.value, conceptId: delta?.object?.value } as LdesDelta));
+        if (await shouldConceptSnapshotBeAppliedToConcept(newConceptSnapshot, conceptRepository, conceptSnapshotRepository)) {
+            console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
+            try {
+                const currentSnapshotId: string | undefined = await getVersionedSourceOfConcept(conceptId);
 
-    const toProcess: LdesDelta[] = [];
+                const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
 
-    for (const entry of versionedServices) {
+                const isConceptFunctionallyChanged = await isConceptChanged(newConceptSnapshot, currentSnapshotId, conceptSnapshotRepository);
 
-        if (await isNewVersionConceptualPublicService(entry.conceptSnapshotId, entry.conceptId)) {
-            console.log(`New versioned resource found: ${entry.conceptSnapshotId} of service ${entry.conceptId}`);
-            toProcess.push(entry);
+                await upsertNewLdesVersion(newConceptSnapshotId, conceptId);
+                await updatedVersionInformation(newConceptSnapshotId, conceptId);
+                if (!currentSnapshotId || isConceptFunctionallyChanged) {
+                    await updateLatestFunctionalChange(newConceptSnapshotId, conceptId);
+                }
+
+                const instanceReviewStatus = determineInstanceReviewStatus(isConceptFunctionallyChanged, isArchiving);
+                await flagInstancesModifiedConcept(conceptId, instanceReviewStatus);
+
+                await ensureConceptDisplayConfigs(conceptId);
+
+                if (isArchiving) {
+                    await markConceptAsArchived(conceptId);
+                }
+            } catch (e) {
+                console.error(`Error processing: ${JSON.stringify(newConceptSnapshotId)}`);
+                console.error(e);
+            }
         } else {
-            console.log(`The versioned resource ${entry.conceptSnapshotId} is an older version of service ${entry.conceptId}`);
-        }
-    }
-
-    for (const entry of toProcess) {
-        try {
-            const newConceptSnapshotId = entry.conceptSnapshotId;
-            const conceptId = entry.conceptId;
-
-            const newConceptSnapshot = await conceptSnapshotRepository.findById(newConceptSnapshotId);
-            const currentSnapshotId: string | undefined = await getVersionedSourceOfConcept(conceptId);
-
-            const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
-
-            const isConceptFunctionallyChanged = await isConceptChanged(newConceptSnapshot, currentSnapshotId, conceptSnapshotRepository);
-
-            await upsertNewLdesVersion(newConceptSnapshotId, conceptId);
-            await updatedVersionInformation(newConceptSnapshotId, conceptId);
-            if (!currentSnapshotId || isConceptFunctionallyChanged) {
-                await updateLatestFunctionalChange(newConceptSnapshotId, conceptId);
-            }
-
-            const instanceReviewStatus = determineInstanceReviewStatus(isConceptFunctionallyChanged, isArchiving);
-            await flagInstancesModifiedConcept(conceptId, instanceReviewStatus);
-
-            await ensureConceptDisplayConfigs(conceptId);
-
-            if (isArchiving) {
-                await markConceptAsArchived(conceptId);
-            }
-        } catch (e) {
-            console.error(`Error processing: ${JSON.stringify(entry)}`);
-            console.error(e);
+            console.log(`The versioned resource ${newConceptSnapshotId} is an older version of service ${conceptId}`);
         }
     }
 }
 
-async function isNewVersionConceptualPublicService(conceptSnapshotUri: string, conceptUri: string): Promise<boolean> {
-    const queryStr = `
-    ${PREFIX.lpdcExt}
-    ${PREFIX.dct}
-    ${PREFIX.ext}
-    ASK {
-      GRAPH ${sparqlEscapeUri(CONCEPT_SNAPSHOT_LDES_GRAPH)} {
-        ${sparqlEscapeUri(conceptSnapshotUri)} a lpdcExt:ConceptualPublicService;
-          dct:isVersionOf ${sparqlEscapeUri(conceptUri)};
-          <http://www.w3.org/ns/prov#generatedAtTime> ?time.
-
-         FILTER NOT EXISTS {
-           ?otherVersion dct:isVersionOf ${sparqlEscapeUri(conceptUri)};
-             <http://www.w3.org/ns/prov#generatedAtTime> ?otherTime.
-           FILTER(?time < ?otherTime)
-         }
-       }
-       FILTER NOT EXISTS {
-         ${sparqlEscapeUri(conceptUri)} ext:hasVersionedSource | ext:previousVersionedSource ${sparqlEscapeUri(conceptSnapshotUri)}.
-       }
+async function shouldConceptSnapshotBeAppliedToConcept(conceptSnapshot: ConceptSnapshot, conceptRepository: ConceptSparqlRepository, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<boolean> {
+    const conceptId = conceptSnapshot.isVersionOfConcept;
+    if (!await conceptRepository.exists(conceptId)) {
+        return true;
     }
-  `;
-    return (await querySudo(queryStr)).boolean;
+    const concept = await conceptRepository.findById(conceptId);
+    const conceptSnapshotAlreadyLinkedToConcept = concept.appliedSnapshots.has(conceptSnapshot.id);
+    const conceptSnapshotIsGeneratedAfterAllLinkedSnapshots = Array.from(concept.appliedSnapshots)
+        .every(async conceptSnapshotId => {
+            const linkedSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
+            return linkedSnapshot.generatedAtTime.before(conceptSnapshot.generatedAtTime);
+        });
+    return !conceptSnapshotAlreadyLinkedToConcept && conceptSnapshotIsGeneratedAfterAllLinkedSnapshots;
 }
 
 async function upsertNewLdesVersion(versionedService: string, conceptualService: string): Promise<void> {

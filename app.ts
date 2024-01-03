@@ -1,6 +1,6 @@
 import {createApp, errorHandler, uuid} from './mu-helper';
 import bodyparser from 'body-parser';
-import {FEATURE_FLAG_ATOMIC_UPDATE, LOG_INCOMING_DELTA} from './config';
+import {CONCEPT_SNAPSHOT_LDES_GRAPH, FEATURE_FLAG_ATOMIC_UPDATE, LOG_INCOMING_DELTA} from './config';
 import {createEmptyForm, createForm} from './lib/createForm';
 import {retrieveForm} from './lib/retrieveForm';
 import {updateForm, updateFormAtomic} from './lib/updateForm';
@@ -20,6 +20,8 @@ import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurs
 import {ConceptSnapshotSparqlRepository} from "./src/driven/persistence/concept-snapshot-sparql-repository";
 import {ConceptSnapshot} from "./src/core/domain/concept-snapshot";
 import {ConceptSparqlRepository} from "./src/driven/persistence/concept-sparql-repository";
+import {Iri} from "./src/core/domain/shared/iri";
+import {flatten} from "lodash";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -42,14 +44,17 @@ app.get('/', function (req, res): void {
 
 app.post('/delta', async function (req, res): Promise<void> {
     try {
-        const body = req.body;
+        const delta = req.body;
 
         if (LOG_INCOMING_DELTA)
-            console.log(`Receiving delta ${JSON.stringify(body)}`);
+            console.log(`Receiving delta ${JSON.stringify(delta)}`);
 
         LdesPostProcessingQueue
             .addJob(async () => {
-                return await processLdesDelta(body, conceptSnapshotRepository);
+                const newConceptSnapshotIds: Iri[] = flatten(delta.map(changeSet => changeSet.inserts))
+                    .filter(t => t?.graph.value === CONCEPT_SNAPSHOT_LDES_GRAPH && t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
+                    .map((delta: any) => delta.subject.value as Iri);
+                return await processLdesDelta(newConceptSnapshotIds, conceptRepository, conceptSnapshotRepository);
             });
 
         res.status(202).send();

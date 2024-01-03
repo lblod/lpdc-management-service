@@ -44,6 +44,18 @@ export class SparqlQuerying {
         });
     }
 
+    public async ask(query: string): Promise<boolean> {
+        return retry(async () => {
+            const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
+            return result?.boolean;
+        }, {
+            retries: 10,
+            delay: 200,
+            backoff: "FIXED",
+            logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`)
+        });
+    }
+
     public asQuads(queryResults: unknown[], graph: string) {
         return queryResults.map(r => {
             const s = this.asNamedNode(r['s']);

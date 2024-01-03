@@ -4,7 +4,7 @@ import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {ConceptSparqlTestRepository} from "./concept-sparql-test-repository";
 import {aFullConcept, aMinimalConcept, ConceptTestBuilder} from "../../core/domain/concept-test-builder";
-import {CONCEPT_GRAPH} from "../../../config";
+import {CONCEPT_GRAPH, PREFIX} from "../../../config";
 import {NS} from "../../../src/driven/persistence/namespaces";
 
 import {buildConceptIri} from "../../core/domain/iri-test-builder";
@@ -58,6 +58,36 @@ describe('ConceptRepository', () => {
             const nonExistentConceptId = buildConceptIri('thisiddoesnotexist');
 
             await expect(repository.findById(nonExistentConceptId)).rejects.toThrow(new Error(`Could not find <https://ipdc.tni-vlaanderen.be/id/concept/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`));
+        });
+    });
+
+    describe('exists', () => {
+        test('Concept with id exists', async () => {
+            const concept = aFullConcept().build();
+            await repository.save(concept);
+
+            expect(await repository.exists(concept.id)).toBeTruthy();
+        });
+
+        test('Concept with id does not exist', async () => {
+            const concept = aFullConcept().build();
+            await repository.save(concept);
+
+            const nonExistentConceptId = buildConceptIri('thisiddoesnotexist');
+
+            expect(await repository.exists(nonExistentConceptId)).toBeFalsy();
+        });
+
+        test('When concept with id exists with different type then return false ', async () => {
+            const conceptId = buildConceptIri(uuid());
+            await directDatabaseAccess.insertData(
+                CONCEPT_GRAPH,
+                [
+                    `<${conceptId}> a ex:someType`,
+                ],
+                [PREFIX.ex]);
+
+            expect(await repository.exists(conceptId)).toBeFalsy();
         });
     });
 

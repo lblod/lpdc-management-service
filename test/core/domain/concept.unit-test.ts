@@ -1,6 +1,8 @@
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {aFullConcept, ConceptTestBuilder} from "./concept-test-builder";
 import {Language} from "../../../src/core/domain/language";
+import {buildConceptSnapshotIri} from "./iri-test-builder";
+import {uuid} from "../../../mu-helper";
 
 describe('constructing', () => {
 
@@ -40,6 +42,19 @@ describe('constructing', () => {
             Language.GENERATED_FORMAL,
             Language.GENERATED_INFORMAL
         ]));
+    });
+
+    test('applied snapshots', () => {
+        const latestConceptSnapshot = buildConceptSnapshotIri(uuid());
+        const previousConceptSnapshot1 = buildConceptSnapshotIri(uuid());
+        const previousConceptSnapshot2 = buildConceptSnapshotIri(uuid());
+        const aConcept =
+            aFullConcept()
+                .withLatestConceptSnapshot(latestConceptSnapshot)
+                .withPreviousConceptSnapshots(new Set([previousConceptSnapshot1, previousConceptSnapshot2]))
+                .build();
+
+        expect(aConcept.appliedSnapshots).toEqual(new Set([latestConceptSnapshot, previousConceptSnapshot1, previousConceptSnapshot2]));
     });
 
 });

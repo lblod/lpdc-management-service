@@ -126,6 +126,10 @@ export class Concept {
         //TODO LPDC-916 make title required
     }
 
+    get appliedSnapshots(): Set<Iri> {
+        return new Set([this._latestConceptSnapshot, ...this._previousConceptSnapshots]);
+    }
+
     get id(): Iri {
         return this._id;
     }

@@ -5,4 +5,6 @@ export interface ConceptRepository {
 
     findById(id: Iri): Promise<Concept>;
 
+    exists(id: Iri): Promise<boolean>;
+
 }
