@@ -107,6 +107,7 @@ export class QuadsToDomainMapper {
             this.latestConceptSnapshot(id),
             this.previousConceptSnapshots(id),
             this.latestFunctionallyChangedConceptSnapshot(id),
+            this.conceptTags(id),
         );
     }
 

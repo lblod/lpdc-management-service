@@ -9,6 +9,7 @@ import {FinancialAdvantage} from "./financial-advantage";
 import {asSortedSet} from "./shared/collections-helper";
 import {
     CompetentAuthorityLevelType,
+    ConceptTagType,
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
@@ -47,7 +48,7 @@ export class Concept {
     private readonly _latestConceptSnapshot: Iri;
     private readonly _previousConceptSnapshots: Set<Iri>;
     private readonly _latestFunctionallyChangedConceptSnapshot: Iri;
-    //TODO LPDC-916: add concept tag
+    private readonly _conceptTags: Set<ConceptTagType>;
     //TODO LPDC-916: add http://www.w3.org/ns/adms#status
 
     constructor(id: Iri,
@@ -78,6 +79,7 @@ export class Concept {
                 latestConceptSnapshot: Iri,
                 previousConceptSnapshots: Set<Iri>,
                 latestFunctionallyChangedConceptSnapshot: Iri,
+                conceptTags: Set<ConceptTagType>,
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -108,6 +110,7 @@ export class Concept {
         this._latestConceptSnapshot = latestConceptSnapshot;
         this._previousConceptSnapshots = asSortedSet(previousConceptSnapshots);
         this._latestFunctionallyChangedConceptSnapshot = latestFunctionallyChangedConceptSnapshot;
+        this._conceptTags = asSortedSet(conceptTags);
     }
 
     get id(): Iri {
@@ -220,6 +223,10 @@ export class Concept {
 
     get latestFunctionallyChangedConceptSnapshot(): Iri {
         return this._latestFunctionallyChangedConceptSnapshot;
+    }
+
+    get conceptTags(): Set<ConceptTagType> {
+        return this._conceptTags;
     }
 
 }

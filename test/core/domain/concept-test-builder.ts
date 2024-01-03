@@ -3,6 +3,7 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,
+    ConceptTagType,
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
@@ -97,7 +98,8 @@ export function aFullConcept(): ConceptTestBuilder {
         .withProductId(ConceptTestBuilder.PRODUCT_ID)
         .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()))
         .withPreviousConceptSnapshots(new Set([buildConceptSnapshotIri(uuid()), buildConceptSnapshotIri(uuid()), buildConceptSnapshotIri(uuid())]))
-        .withLatestFunctionallyChangedConceptSnapshot(buildConceptSnapshotIri(uuid()));
+        .withLatestFunctionallyChangedConceptSnapshot(buildConceptSnapshotIri(uuid()))
+        .withConceptTags(ConceptTestBuilder.CONCEPT_TAGS);
 }
 
 export class ConceptTestBuilder {
@@ -170,6 +172,8 @@ export class ConceptTestBuilder {
 
     public static readonly PRODUCT_ID = "5468";
 
+    public static readonly CONCEPT_TAGS = new Set([ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT]);
+
     private id: Iri;
     private uuid: string | undefined;
     private title: LanguageString | undefined;
@@ -198,6 +202,7 @@ export class ConceptTestBuilder {
     private latestConceptSnapshot: Iri;
     private previousConceptSnapshots: Set<Iri> = new Set();
     private latestFunctionallyChangedConceptSnapshot: Iri;
+    private conceptTags: Set<ConceptTagType> = new Set();
 
     public withId(id: Iri): ConceptTestBuilder {
         this.id = id;
@@ -339,6 +344,11 @@ export class ConceptTestBuilder {
         return this;
     }
 
+    public withConceptTags(conceptTags: Set<ConceptTagType>): ConceptTestBuilder {
+        this.conceptTags = conceptTags;
+        return this;
+    }
+
     public build(): Concept {
         return new Concept(
             this.id,
@@ -369,6 +379,7 @@ export class ConceptTestBuilder {
             this.latestConceptSnapshot,
             this.previousConceptSnapshots,
             this.latestFunctionallyChangedConceptSnapshot,
+            this.conceptTags,
         );
     }
 

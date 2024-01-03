@@ -10,6 +10,7 @@ import {Concept} from "../../core/domain/concept";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,
+    ConceptTagType,
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
@@ -54,6 +55,7 @@ export class DomainToTriplesMapper {
             this.latestConceptSnapshot(concept.id, concept.latestConceptSnapshot),
             ...this.previousConceptSnapshots(concept.id, concept.previousConceptSnapshots),
             this.latestFunctionallyChangedConceptSnapshot(concept.id, concept.latestFunctionallyChangedConceptSnapshot),
+            ...this.conceptTags(concept.id, concept.conceptTags),
         ].filter(t => t !== undefined);
     }
 
@@ -89,7 +91,7 @@ export class DomainToTriplesMapper {
             quad(namedNode(conceptSnapshot.id), NS.schema('identifier'), literal(conceptSnapshot.identifier)),
             this.productId(conceptSnapshot.id, conceptSnapshot.productId),
             conceptSnapshot.snapshotType ? quad(namedNode(conceptSnapshot.id), NS.lpdcExt('snapshotType'), namedNode(this.enumToIri(conceptSnapshot.snapshotType, NS.concept.snapshotType))) : undefined,
-            ...this.irisToTriples(namedNode(conceptSnapshot.id), NS.lpdcExt('conceptTag'), this.enumsToIris(conceptSnapshot.conceptTags, NS.concept.conceptTag)),
+            ...this.conceptTags(conceptSnapshot.id, conceptSnapshot.conceptTags),
         ].filter(t => t !== undefined);
     }
 
@@ -164,6 +166,10 @@ export class DomainToTriplesMapper {
     private keywords(id: Iri, values: Set<LanguageString>): Statement[] {
         return Array.from(values)
             .flatMap(keyword => this.languageStringToTriples(namedNode(id), namedNode(NS.dcat('keyword').value), keyword));
+    }
+
+    private conceptTags(id: Iri, values: Set<ConceptTagType>): Statement[] {
+        return this.irisToTriples(namedNode(id), NS.lpdcExt('conceptTag'), this.enumsToIris(values, NS.concept.conceptTag));
     }
 
     private latestConceptSnapshot(id: Iri, value: Iri): Statement {
@@ -285,7 +291,6 @@ export class DomainToTriplesMapper {
     }
 
     private enumToIri(value: any, namespace: (ln: string) => NamedNode): Iri {
-        value = namespace(value).value;
-        return value;
+        return namespace(value).value;
     }
 }
