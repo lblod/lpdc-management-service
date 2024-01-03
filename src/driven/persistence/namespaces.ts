@@ -35,5 +35,7 @@ export const NS = {
         conceptTag: Namespace(conceptNS('ConceptTag/').value),
     },
     concepts: Namespace('http://lblod.data.gift/concepts/'),
+    conceptscheme: Namespace('https://productencatalogus.data.vlaanderen.be/id/conceptscheme/'),
+
 
 };
