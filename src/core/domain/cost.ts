@@ -1,4 +1,4 @@
-import {Iri} from "./shared/iri";
+import {Iri, iriAsId} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
 
@@ -15,7 +15,7 @@ export class Cost {
                 description: LanguageString | undefined,
     ) {
         //TODO LPDC-917: add invariants
-        this._id = id;
+        this._id = iriAsId(id);
         this._uuid = uuid;
         this._title = title;
         this._description = description;

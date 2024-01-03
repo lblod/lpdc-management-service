@@ -1,4 +1,4 @@
-import {Iri} from "./shared/iri";
+import {Iri, iriAsId} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {Requirement} from "./requirement";
@@ -18,6 +18,7 @@ import {
     YourEuropeCategoryType
 } from "./types";
 import {Language} from "./language";
+import {Invariant} from "./shared/invariant";
 
 export class Concept {
 
@@ -86,7 +87,10 @@ export class Concept {
                 legalResources: Set<Iri>,
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
-        this._id = id;
+        const idInvariant = Invariant.require(id, 'id');
+        idInvariant.to(idInvariant.notBeUndefined(), idInvariant.notBeBlank());
+
+        this._id = iriAsId(id);
         this._uuid = uuid;
         this._title = title;
         this._description = description;

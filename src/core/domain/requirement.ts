@@ -1,5 +1,5 @@
 import {LanguageString} from "./language-string";
-import {Iri} from "./shared/iri";
+import {Iri, iriAsId} from "./shared/iri";
 import _ from 'lodash';
 import {Evidence} from "./evidence";
 
@@ -18,7 +18,7 @@ export class Requirement {
                 description: LanguageString | undefined,
                 evidence: Evidence | undefined,
     ) {
-        this._id = id;
+        this._id = iriAsId(id);
         this._uuid = uuid;
         this._title = title;
         this._description = description;

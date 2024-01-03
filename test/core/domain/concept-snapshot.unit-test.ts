@@ -48,6 +48,14 @@ describe('constructing', () => {
             LanguageString.of('def'),
         ]);
     });
+
+    test('Undefined id throws error', () => {
+        expect(() => aFullConceptSnapshot().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
+    });
+    test('Blank id throws error', () => {
+        expect(() => aFullConceptSnapshot().withId('   ').build()).toThrow(new Error('id should not be blank'));
+    });
+
 });
 
 describe('is functionally changed', () => {
@@ -83,7 +91,7 @@ describe('is functionally changed', () => {
                 .build(),
             aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2027-09-16 00:00:00.000Z'))
-                .build()],    ];
+                .build()],];
 
     for (const testCase of functionallyUnchangedTestCases) {
         test(`not functionally changed when ${testCase[0]}`, () => {
