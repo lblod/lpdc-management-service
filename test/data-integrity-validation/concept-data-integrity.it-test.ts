@@ -4,7 +4,7 @@ import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
 import {ConceptSparqlTestRepository} from "../driven/persistence/concept-sparql-test-repository";
 import {CONCEPT_GRAPH, PREFIX} from "../../config";
-import {isLiteral, namedNode} from "rdflib";
+import {isLiteral} from "rdflib";
 import {shuffle} from "lodash";
 import {asSortedSet} from "../../src/core/domain/shared/collections-helper";
 import fs from "fs";
@@ -21,7 +21,7 @@ describe('Concept Data Integrity Validation', () => {
     const graph = CONCEPT_GRAPH;
     const domainToTriplesMapper = new DomainToTriplesMapper();
 
-    test('Load all concepts; print errors to console.log', async () => {
+    test.skip('Load all concepts; print errors to console.log', async () => {
 
         const conceptIdsQuery = `
             ${PREFIX.lpdcExt}
@@ -109,14 +109,10 @@ describe('Concept Data Integrity Validation', () => {
         Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://publications.europa.eu/resource/authority/language/'))
             .forEach(q => allQuadsOfGraph.delete(q));
 
-        //TODO LPDC-916: we now filtered out legal resources; should we not delete them in the database ? And restore them later if properly modeled ?
-        //filter out legal resources (for now)
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith("https://codex.vlaanderen.be/") || q.predicate.equals(namedNode('http://data.europa.eu/m8g/hasLegalResource')))
-            .forEach(q => allQuadsOfGraph.delete(q));
 
         const delayTime = 0;
         const numberOfLoops = 1;
-        const alsoLoadRelatedConceptSnapshots = false;
+        const alsoLoadRelatedConceptSnapshots = true;
         const averageTimes = [];
         const technicalErrors = [];
         const dataErrors = [];
@@ -173,7 +169,7 @@ describe('Concept Data Integrity Validation', () => {
                 .forEach(q => allQuadsOfGraphAsTurtle.delete(q));
 
             //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
-            fs.writeFileSync(`/tmp/remaining-quads.txt`, Array.from(asSortedSet(allQuadsOfGraphAsTurtle)).join('\n'));
+            fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, Array.from(asSortedSet(allQuadsOfGraphAsTurtle)).join('\n'));
             //expect(asSortedSet(allQuadsOfGraphAsTurtle)).toEqual(new Set());
 
             const averageTime = (new Date().valueOf() - before - delayTime * conceptIds.length) / conceptIds.length;

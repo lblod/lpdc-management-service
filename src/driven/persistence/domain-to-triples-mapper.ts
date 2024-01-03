@@ -58,6 +58,7 @@ export class DomainToTriplesMapper {
             this.latestFunctionallyChangedConceptSnapshot(concept.id, concept.latestFunctionallyChangedConceptSnapshot),
             ...this.conceptTags(concept.id, concept.conceptTags),
             this.isArchived(concept.id, concept.isArchived),
+            ...this.legalResources(concept.id, concept.legalResources),
         ].filter(t => t !== undefined);
     }
 

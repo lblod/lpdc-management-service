@@ -111,6 +111,7 @@ export class QuadsToDomainMapper {
             this.latestFunctionallyChangedConceptSnapshot(id),
             this.conceptTags(id),
             this.isConceptArchived(id),
+            this.legalResources(id),
         );
     }
 

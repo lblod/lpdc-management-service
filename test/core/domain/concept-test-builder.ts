@@ -24,7 +24,7 @@ import {Website} from "../../../src/core/domain/website";
 import {Cost} from "../../../src/core/domain/cost";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Concept} from "../../../src/core/domain/concept";
-import {buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
+import {buildCodexVlaanderenIri, buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 
 export function aMinimalConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
@@ -99,7 +99,8 @@ export function aFullConcept(): ConceptTestBuilder {
         .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()))
         .withPreviousConceptSnapshots(new Set([buildConceptSnapshotIri(uuid()), buildConceptSnapshotIri(uuid()), buildConceptSnapshotIri(uuid())]))
         .withLatestFunctionallyChangedConceptSnapshot(buildConceptSnapshotIri(uuid()))
-        .withConceptTags(ConceptTestBuilder.CONCEPT_TAGS);
+        .withConceptTags(ConceptTestBuilder.CONCEPT_TAGS)
+        .withLegalResources(ConceptTestBuilder.LEGAL_RESOURCES);
 }
 
 export class ConceptTestBuilder {
@@ -174,6 +175,8 @@ export class ConceptTestBuilder {
 
     public static readonly CONCEPT_TAGS = new Set([ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT]);
 
+    public static readonly LEGAL_RESOURCES = new Set([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())]);
+
     private id: Iri;
     private uuid: string | undefined;
     private title: LanguageString | undefined;
@@ -204,6 +207,7 @@ export class ConceptTestBuilder {
     private latestFunctionallyChangedConceptSnapshot: Iri;
     private conceptTags: Set<ConceptTagType> = new Set();
     private isArchived: boolean = false;
+    private legalResources: Set<Iri> = new Set();
 
     public withId(id: Iri): ConceptTestBuilder {
         this.id = id;
@@ -355,6 +359,11 @@ export class ConceptTestBuilder {
         return this;
     }
 
+    public withLegalResources(legalResources: Set<Iri>): ConceptTestBuilder {
+        this.legalResources = legalResources;
+        return this;
+    }
+
     public build(): Concept {
         return new Concept(
             this.id,
@@ -387,6 +396,7 @@ export class ConceptTestBuilder {
             this.latestFunctionallyChangedConceptSnapshot,
             this.conceptTags,
             this.isArchived,
+            this.legalResources,
         );
     }
 

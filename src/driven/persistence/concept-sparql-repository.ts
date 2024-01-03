@@ -43,6 +43,8 @@ export class ConceptSparqlRepository implements ConceptRepository {
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
                 NS.besluit('Bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
+                NS.eli('LegalResource').value,
+                NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
         const mapper = new QuadsToDomainMapper(quads, CONCEPT_GRAPH);
 

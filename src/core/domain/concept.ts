@@ -51,6 +51,7 @@ export class Concept {
     private readonly _latestFunctionallyChangedConceptSnapshot: Iri;
     private readonly _conceptTags: Set<ConceptTagType>;
     private readonly _isArchived: boolean;
+    private readonly _legalResources: Set<Iri>;
 
     constructor(id: Iri,
                 uuid: string | undefined,
@@ -82,6 +83,7 @@ export class Concept {
                 latestFunctionallyChangedConceptSnapshot: Iri,
                 conceptTags: Set<ConceptTagType>,
                 isArchived: boolean,
+                legalResources: Set<Iri>,
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = id;
@@ -114,6 +116,7 @@ export class Concept {
         this._latestFunctionallyChangedConceptSnapshot = latestFunctionallyChangedConceptSnapshot;
         this._conceptTags = asSortedSet(conceptTags);
         this._isArchived = isArchived;
+        this._legalResources = asSortedSet(legalResources);
     }
 
     get conceptLanguages(): Set<Language> | undefined {
@@ -241,6 +244,10 @@ export class Concept {
 
     get isArchived(): boolean {
         return this._isArchived;
+    }
+
+    get legalResources(): Set<Iri> {
+        return this._legalResources;
     }
 
 }
