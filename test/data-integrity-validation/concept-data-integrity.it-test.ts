@@ -7,7 +7,6 @@ import {CONCEPT_GRAPH, PREFIX} from "../../config";
 import {isLiteral} from "rdflib";
 import {shuffle} from "lodash";
 import {asSortedSet} from "../../src/core/domain/shared/collections-helper";
-import fs from "fs";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 
 describe('Concept Data Integrity Validation', () => {
@@ -164,13 +163,13 @@ describe('Concept Data Integrity Validation', () => {
                 await wait(delayTime);
             }
 
-            const allQuadsOfGraphAsTurtle = new Set(Array.from(allQuadsOfGraph).map(q => q.toString()));
+            const allRemainingQuadsOfGraphAsTurtle = new Set(Array.from(allQuadsOfGraph).map(q => q.toString()));
             quadsFromRequeriedConcepts.map(q => q.toString())
-                .forEach(q => allQuadsOfGraphAsTurtle.delete(q));
+                .forEach(q => allRemainingQuadsOfGraphAsTurtle.delete(q));
 
             //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
-            fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, Array.from(asSortedSet(allQuadsOfGraphAsTurtle)).join('\n'));
-            //expect(asSortedSet(allQuadsOfGraphAsTurtle)).toEqual(new Set());
+            //fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, Array.from(asSortedSet(allRemainingQuadsOfGraphAsTurtle)).join('\n'));
+            expect(asSortedSet(allRemainingQuadsOfGraphAsTurtle)).toEqual(new Set());
 
             const averageTime = (new Date().valueOf() - before - delayTime * conceptIds.length) / conceptIds.length;
             averageTimes.push(averageTime);
