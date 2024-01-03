@@ -29,7 +29,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 .build();
         await conceptSnapshotRepository.save(conceptSnapshot);
 
-        insertAllConceptSchemeLinksToKeepOriginalQueryHappy(conceptSnapshot);
+        insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
         await merger.merge(conceptSnapshot.id);
 
@@ -44,15 +44,50 @@ describe('merges a new concept snapshot into a concept', () => {
         expect(newlyCreatedConcept.startDate).toEqual(conceptSnapshot.startDate);
         expect(newlyCreatedConcept.endDate).toEqual(conceptSnapshot.endDate);
         expect(newlyCreatedConcept.type).toEqual(conceptSnapshot.type);
-
+        expect(newlyCreatedConcept.targetAudiences).toEqual(conceptSnapshot.targetAudiences);
+        expect(newlyCreatedConcept.themes).toEqual(conceptSnapshot.themes);
+        expect(newlyCreatedConcept.competentAuthorityLevels).toEqual(conceptSnapshot.competentAuthorityLevels);
+        expect(newlyCreatedConcept.competentAuthorities).toEqual(conceptSnapshot.competentAuthorities);
+        expect(newlyCreatedConcept.executingAuthorityLevels).toEqual(conceptSnapshot.executingAuthorityLevels);
+        expect(newlyCreatedConcept.executingAuthorities).toEqual(conceptSnapshot.executingAuthorities);
+        expect(newlyCreatedConcept.publicationMedia).toEqual(conceptSnapshot.publicationMedia);
+        expect(newlyCreatedConcept.yourEuropeCategories).toEqual(conceptSnapshot.yourEuropeCategories);
+        expect(newlyCreatedConcept.keywords).toEqual(conceptSnapshot.keywords);
+        //TODO LPDC-916: add _requirements
+        //TODO LPDC-916: add _procedures
+        //TODO LPDC-916: add _websites
+        //TODO LPDC-916: add _costs
+        //TODO LPDC-916: add _financialAdvantages
+        expect(newlyCreatedConcept.productId).toEqual(conceptSnapshot.productId);
+        expect(newlyCreatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
+        expect(newlyCreatedConcept.previousConceptSnapshots).toEqual(new Set());
+        expect(newlyCreatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
+        expect(newlyCreatedConcept.conceptTags).toEqual(conceptSnapshot.conceptTags);
+        expect(newlyCreatedConcept.isArchived).toBeFalsy();
+        expect(newlyCreatedConcept.legalResources).toEqual(conceptSnapshot.legalResources);
     });
 
-    //TODO LDPC-916: do this for all other fields that are concepts ... (See commonQueries.loadPublicService  - middle union)
-    function insertAllConceptSchemeLinksToKeepOriginalQueryHappy(conceptSnapshot: ConceptSnapshot) {
+    function insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot: ConceptSnapshot) {
         directDatabaseAccess.insertData(
             CONCEPT_GRAPH,
             [
                 `<${NS.concept.type(conceptSnapshot.type).value}> skos:inScheme <${NS.conceptscheme('Type').value}>`,
+                ...Array.from(conceptSnapshot.targetAudiences)
+                    .map(v => `<${NS.concept.doelgroep(v).value}> skos:inScheme <${NS.conceptscheme('Doelgroep').value}>`),
+                ...Array.from(conceptSnapshot.themes)
+                    .map(v => `<${NS.concept.thema(v).value}> skos:inScheme <${NS.conceptscheme('Thema').value}>`),
+                ...Array.from(conceptSnapshot.competentAuthorityLevels)
+                    .map(v => `<${NS.concept.bevoegdBestuursniveau(v).value}> skos:inScheme <${NS.conceptscheme('BevoegdBestuursniveau').value}>`),
+                ...Array.from([...conceptSnapshot.competentAuthorities, ...conceptSnapshot.executingAuthorities])
+                    .map(v => `<${v}> skos:inScheme <${NS.conceptscheme('IPDCOrganisaties').value}>`),
+                ...Array.from(conceptSnapshot.executingAuthorityLevels)
+                    .map(v => `<${NS.concept.uitvoerendBestuursniveau(v).value}> skos:inScheme <${NS.conceptscheme('UitvoerendBestuursniveau').value}>`),
+                ...Array.from(conceptSnapshot.publicationMedia)
+                    .map(v => `<${NS.concept.publicatieKanaal(v).value}> skos:inScheme <${NS.conceptscheme('PublicatieKanaal').value}>`),
+                ...Array.from(conceptSnapshot.yourEuropeCategories)
+                    .map(v => `<${NS.concept.yourEuropeCategorie(v).value}> skos:inScheme <${NS.conceptscheme('YourEuropeCategorie').value}>`),
+                ...Array.from(conceptSnapshot.conceptTags)
+                    .map(v => `<${NS.concept.conceptTag(v).value}> skos:inScheme <${NS.conceptscheme('ConceptTag').value}>`),
             ],
             [
                 PREFIX.skos,
