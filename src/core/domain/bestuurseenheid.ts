@@ -1,4 +1,5 @@
 import {Iri} from "./shared/iri";
+import {Invariant} from "./shared/invariant";
 
 export class Bestuurseenheid {
     private readonly _id: Iri;
@@ -7,6 +8,9 @@ export class Bestuurseenheid {
 
     constructor(id: Iri, prefLabel: string, classificatieCode: BestuurseenheidClassificatieCode) {
         //TODO LPDC-917: enforce invariants
+        const idInvariant = Invariant.require(id, 'id');
+        idInvariant.to(idInvariant.notBeUndefined(), idInvariant.notBeBlank());
+
         this._id = id;
         this._prefLabel = prefLabel;
         this._classificatieCode = classificatieCode;
