@@ -17,7 +17,6 @@ import {
     YourEuropeCategoryType
 } from "./types";
 
-
 export class Concept {
 
     private readonly _id: Iri;
@@ -49,6 +48,7 @@ export class Concept {
     private readonly _previousConceptSnapshots: Set<Iri>;
     private readonly _latestFunctionallyChangedConceptSnapshot: Iri;
     //TODO LPDC-916: add concept tag
+    //TODO LPDC-916: add http://www.w3.org/ns/adms#status
 
     constructor(id: Iri,
                 uuid: string | undefined,

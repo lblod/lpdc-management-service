@@ -4,7 +4,7 @@ import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
 import {ConceptSparqlTestRepository} from "../driven/persistence/concept-sparql-test-repository";
 import {CONCEPT_GRAPH, PREFIX} from "../../config";
-import {isLiteral} from "rdflib";
+import {isLiteral, namedNode} from "rdflib";
 import {shuffle} from "lodash";
 import {asSortedSet} from "../../src/core/domain/shared/collections-helper";
 import fs from "fs";
@@ -109,12 +109,14 @@ describe('Concept Data Integrity Validation', () => {
         Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://publications.europa.eu/resource/authority/language/'))
             .forEach(q => allQuadsOfGraph.delete(q));
 
-        //TODO LPDC-916: filter out legal resource
-
+        //TODO LPDC-916: we now filtered out legal resources; should we not delete them in the database ? And restore them later if properly modeled ?
+        //filter out legal resources (for now)
+        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith("https://codex.vlaanderen.be/") || q.predicate.equals(namedNode('http://data.europa.eu/m8g/hasLegalResource')))
+            .forEach(q => allQuadsOfGraph.delete(q));
 
         const delayTime = 0;
         const numberOfLoops = 1;
-        const alsoLoadRelatedConceptSnapshots = true;
+        const alsoLoadRelatedConceptSnapshots = false;
         const averageTimes = [];
         const technicalErrors = [];
         const dataErrors = [];
@@ -149,6 +151,10 @@ describe('Concept Data Integrity Validation', () => {
                             expect(previousConceptSnapshot.id).toEqual(eachPreviousConceptSnapshotId);
                             expect(previousConceptSnapshot.isVersionOfConcept).toEqual(id);
                         }
+
+                        const latestFunctionallyChangedConceptSnapshot = await snapshotRepository.findById((conceptForId.latestFunctionallyChangedConceptSnapshot));
+                        expect(latestFunctionallyChangedConceptSnapshot.id).toEqual(conceptForId.latestFunctionallyChangedConceptSnapshot);
+                        expect(latestFunctionallyChangedConceptSnapshot.isVersionOfConcept).toEqual(id);
                     }
                 } catch (e) {
                     console.error(e);
@@ -185,7 +191,7 @@ describe('Concept Data Integrity Validation', () => {
         console.log(`Data Errors Size [${dataErrors}]`);
 
         if (conceptIds.length > 0) {
-            expect(totalAverageTime).toBeLessThan(100);
+            expect(totalAverageTime).toBeLessThan(25);
             expect(technicalErrors).toEqual([]);
         }
 

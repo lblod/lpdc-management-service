@@ -117,7 +117,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         console.log(`Data Errors Size [${dataErrors}]`);
 
         if(conceptSnapshotIds.length > 0) {
-            expect(totalAverageTime).toBeLessThan(100); //typically it is a lot less, but when querying only 2 or 3 concept snapshots, you might end up with more
+            expect(totalAverageTime).toBeLessThan(25);
             expect(technicalErrors).toEqual([]);
         }
 
