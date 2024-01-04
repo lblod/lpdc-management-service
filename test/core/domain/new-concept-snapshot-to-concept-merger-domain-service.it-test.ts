@@ -637,6 +637,7 @@ describe('merges a new concept snapshot into a concept', () => {
 
             const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
+            expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id].sort());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         });
 
@@ -661,7 +662,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         });
 
-        test('Does not update a concept when newer version already processed functionally changed', async () => {
+        test('Only updates the previousConceptSnapshot data of the concept when newer version already processed', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
@@ -695,11 +696,30 @@ describe('merges a new concept snapshot into a concept', () => {
 
             await merger.merge(updatedConceptSnapshot.id);
 
-            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
-            expect(updatedConcept.title).toEqual(conceptSnapshot.title);
-            expect(updatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([]);
-            expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
+            const notUpdatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(notUpdatedConcept.title).toEqual(conceptSnapshot.title);
+            expect(notUpdatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
+            expect(Array.from(notUpdatedConcept.previousConceptSnapshots).sort()).toEqual([updatedConceptSnapshot.id].sort());
+            expect(notUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
+
+            const anotherOldUpdatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withTitle(suffixUnique(conceptSnapshot.title))
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(anotherOldUpdatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(anotherOldUpdatedConceptSnapshot);
+
+            await merger.merge(anotherOldUpdatedConceptSnapshot.id);
+
+            const againNotUpdatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(againNotUpdatedConcept.title).toEqual(conceptSnapshot.title);
+            expect(againNotUpdatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
+            expect(Array.from(againNotUpdatedConcept.previousConceptSnapshots).sort()).toEqual([anotherOldUpdatedConceptSnapshot.id, updatedConceptSnapshot.id].sort());
+            expect(againNotUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         });
 
         test('Updates a concept from a concept snapshot that is archived', async () => {
@@ -805,7 +825,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(notUpdatedForThirdTimeUpdatedConcept.uuid).toMatch(uuidRegex);
             expect(notUpdatedForThirdTimeUpdatedConcept.title).toEqual(secondTimeUpdatedConceptSnapshot.title);
             expect(notUpdatedForThirdTimeUpdatedConcept.latestConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
-            expect(Array.from(notUpdatedForThirdTimeUpdatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id].sort());
+            expect(Array.from(notUpdatedForThirdTimeUpdatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, thirdTimeButOlderUpdatedConceptSnapshot.id].sort());
             expect(notUpdatedForThirdTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
 
             const fourthTimeUpdatedConceptSnapshot =
@@ -826,7 +846,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(fourthTimeUpdatedConcept.uuid).toMatch(uuidRegex);
             expect(fourthTimeUpdatedConcept.title).toEqual(fourthTimeUpdatedConceptSnapshot.title);
             expect(fourthTimeUpdatedConcept.latestConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
-            expect(Array.from(fourthTimeUpdatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, secondTimeUpdatedConceptSnapshot.id].sort());
+            expect(Array.from(fourthTimeUpdatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, secondTimeUpdatedConceptSnapshot.id, thirdTimeButOlderUpdatedConceptSnapshot.id].sort());
             expect(fourthTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
 
         });

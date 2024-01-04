@@ -29,17 +29,35 @@ export class NewConceptSnapshotToConceptMergerDomainService {
     }
 
     async merge(newConceptSnapshotId: Iri) {
-        const newConceptSnapshot = await this._conceptSnapshotRepository.findById(newConceptSnapshotId);
-        const conceptId = newConceptSnapshot.isVersionOfConcept;
-        const conceptExists = await this._conceptRepository.exists(conceptId);
-        const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
+        try {
+            const newConceptSnapshot = await this._conceptSnapshotRepository.findById(newConceptSnapshotId);
+            const conceptId = newConceptSnapshot.isVersionOfConcept;
+            const conceptExists = await this._conceptRepository.exists(conceptId);
+            const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
 
-        if (!conceptExists
-            || await this.shouldConceptSnapshotBeMergedToConcept(newConceptSnapshot, concept)) {
+            const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedSnapshots.has(newConceptSnapshot.id);
+            const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
 
-            console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
+            if (newConceptSnapshotAlreadyLinkedToConcept) {
 
-            try {
+                //TODO LPDC-916: when doing impotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
+                console.log(`The versioned resource ${newConceptSnapshotId} is already processed on service ${conceptId}`);
+
+            } else if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
+
+                console.log(`The versioned resource ${newConceptSnapshotId} is an older version of service ${conceptId}`);
+
+                const updatedConcept = this.addAsPreviousConceptSnapshot(newConceptSnapshot, concept);
+                await this._conceptRepository.update(updatedConcept, concept);
+
+            } else {
+
+                console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
+
+                //TODO LPDC-916: move to a separate repo?
+                //Some code list entries might be missing in our DB we insert these here
+                await this.ensureNewIpdcOrganisations(newConceptSnapshotId);
+
                 const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
                 const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
 
@@ -54,10 +72,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
                 }
 
                 //TODO LPDC-916: move to a separate repo?
-                //Some code list entries might be missing in our DB we insert these here
-                await this.ensureNewIpdcOrganisations(newConceptSnapshotId);
-
-                //TODO LPDC-916: move to a separate repo?
                 //instances (in user graphs)
                 const instanceReviewStatus: string | undefined = this.determineInstanceReviewStatus(isConceptFunctionallyChanged, isArchiving);
                 await this.flagInstancesModifiedConcept(conceptId, instanceReviewStatus);
@@ -65,30 +79,24 @@ export class NewConceptSnapshotToConceptMergerDomainService {
                 //TODO LPDC-916: move to a separate repo?
                 //concept display configs (in user graphs)
                 await this.ensureConceptDisplayConfigs(conceptId);
-            } catch (e) {
-                console.error(`Error processing: ${JSON.stringify(newConceptSnapshotId)}`);
-                console.error(e);
-            }
 
-        } else {
-            console.log(`The versioned resource ${newConceptSnapshotId} is an older version of service ${conceptId}`);
+            }
+        } catch (e) {
+            console.error(`Error processing: ${JSON.stringify(newConceptSnapshotId)}`);
+            console.error(e);
         }
     }
 
 
-    private async shouldConceptSnapshotBeMergedToConcept(conceptSnapshot: ConceptSnapshot, concept: Concept): Promise<boolean> {
-        const conceptSnapshotAlreadyLinkedToConcept = concept.appliedSnapshots.has(conceptSnapshot.id);
-        if (conceptSnapshotAlreadyLinkedToConcept) {
-            return false;
-        }
-
-        for (const appliedSnapshotId of concept.appliedSnapshots) {
-            const alreadyAppliedSnapshot = await this._conceptSnapshotRepository.findById(appliedSnapshotId);
-            if (conceptSnapshot.generatedAtTime.before(alreadyAppliedSnapshot.generatedAtTime)) {
-                return false;
+    private async isNewerSnapshotThanAllPreviouslyApplied(conceptSnapshot: ConceptSnapshot, concept: Concept | undefined): Promise<boolean> {
+        if (concept) {
+            for (const appliedSnapshotId of concept.appliedSnapshots) {
+                const alreadyAppliedSnapshot = await this._conceptSnapshotRepository.findById(appliedSnapshotId);
+                if (conceptSnapshot.generatedAtTime.before(alreadyAppliedSnapshot.generatedAtTime)) {
+                    return false;
+                }
             }
         }
-
         return true;
     }
 
@@ -162,6 +170,42 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.conceptTags,
             conceptSnapshot.snapshotType === SnapshotType.DELETE,
             conceptSnapshot.legalResources,
+        );
+    }
+
+    private addAsPreviousConceptSnapshot(conceptSnapshot: ConceptSnapshot, concept: Concept): Concept {
+        return new Concept(
+            concept.id,
+            uuid(),
+            concept.title,
+            concept.description,
+            concept.additionalDescription,
+            concept.exception,
+            concept.regulation,
+            concept.startDate,
+            concept.endDate,
+            concept.type,
+            concept.targetAudiences,
+            concept.themes,
+            concept.competentAuthorityLevels,
+            concept.competentAuthorities,
+            concept.executingAuthorityLevels,
+            concept.executingAuthorities,
+            concept.publicationMedia,
+            concept.yourEuropeCategories,
+            concept.keywords,
+            concept.requirements,
+            concept.procedures,
+            concept.websites,
+            concept.costs,
+            concept.financialAdvantages,
+            concept.productId,
+            concept.latestConceptSnapshot,
+            new Set([...concept.previousConceptSnapshots, conceptSnapshot.id]),
+            concept.latestConceptSnapshot,
+            concept.conceptTags,
+            concept.isArchived,
+            concept.legalResources,
         );
     }
 
