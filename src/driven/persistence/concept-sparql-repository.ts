@@ -65,6 +65,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
         return this.querying.ask(query);
     }
 
+    //TODO LPDC-916: test method directly
     async save(concept: Concept): Promise<void> {
         const triples = new DomainToTriplesMapper().conceptToTriples(concept).map(s => s.toNT());
 
@@ -79,6 +80,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
         await this.querying.update(query);
     }
 
+    //TODO LPDC-916: test method directly
     async update(concept: Concept, old: Concept): Promise<void> {
         const oldTriples = new DomainToTriplesMapper().conceptToTriples(old).map(s => s.toNT());
         const newTriples = new DomainToTriplesMapper().conceptToTriples(concept).map(s => s.toNT());

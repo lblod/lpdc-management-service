@@ -29,7 +29,7 @@ export class Procedure {
         return this._id;
     }
 
-    get uuid(): Iri {
+    get uuid(): Iri | undefined {
         return this._uuid;
     }
 
