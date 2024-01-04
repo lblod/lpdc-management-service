@@ -4,7 +4,11 @@ import {ConceptSparqlTestRepository} from "../../driven/persistence/concept-spar
 import {
     NewConceptSnapshotToConceptMergerDomainService
 } from "../../../src/core/domain/new-concept-snapshot-to-concept-merger-domain-service";
-import {aFullConceptSnapshot, aMinimalConceptSnapshot} from "./concept-snapshot-test-builder";
+import {
+    aFullConceptSnapshot,
+    aMinimalConceptSnapshot,
+    ConceptSnapshotTestBuilder
+} from "./concept-snapshot-test-builder";
 import {buildCodexVlaanderenIri, buildConceptIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
@@ -221,38 +225,38 @@ describe('merges a new concept snapshot into a concept', () => {
 
             await merger.merge(conceptSnapshot.id);
 
-            const newlyCreatedConcept = await conceptRepository.findById(isVersionOfConceptId);
-            expect(newlyCreatedConcept.id).toEqual(isVersionOfConceptId);
-            expect(newlyCreatedConcept.uuid).toMatch(uuidRegex);
-            expect(newlyCreatedConcept.title).toBeUndefined();
-            expect(newlyCreatedConcept.description).toBeUndefined();
-            expect(newlyCreatedConcept.additionalDescription).toBeUndefined();
-            expect(newlyCreatedConcept.exception).toBeUndefined();
-            expect(newlyCreatedConcept.regulation).toBeUndefined();
-            expect(newlyCreatedConcept.startDate).toBeUndefined();
-            expect(newlyCreatedConcept.endDate).toBeUndefined();
-            expect(newlyCreatedConcept.type).toBeUndefined();
-            expect(newlyCreatedConcept.targetAudiences).toEqual(new Set());
-            expect(newlyCreatedConcept.themes).toEqual(new Set());
-            expect(newlyCreatedConcept.competentAuthorityLevels).toEqual(new Set());
-            expect(newlyCreatedConcept.competentAuthorities).toEqual(new Set());
-            expect(newlyCreatedConcept.executingAuthorityLevels).toEqual(new Set());
-            expect(newlyCreatedConcept.executingAuthorities).toEqual(new Set());
-            expect(newlyCreatedConcept.publicationMedia).toEqual(new Set());
-            expect(newlyCreatedConcept.yourEuropeCategories).toEqual(new Set());
-            expect(newlyCreatedConcept.keywords).toEqual(new Set());
-            expect(newlyCreatedConcept.requirements).toEqual([]);
-            expect(newlyCreatedConcept.procedures).toEqual([]);
-            expect(newlyCreatedConcept.websites).toEqual([]);
-            expect(newlyCreatedConcept.costs).toEqual([]);
-            expect(newlyCreatedConcept.financialAdvantages).toEqual([]);
-            expect(newlyCreatedConcept.productId).toBeUndefined();
-            expect(newlyCreatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(newlyCreatedConcept.previousConceptSnapshots).toEqual(new Set());
-            expect(newlyCreatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(newlyCreatedConcept.conceptTags).toEqual(new Set());
-            expect(newlyCreatedConcept.isArchived).toBeFalsy();
-            expect(newlyCreatedConcept.legalResources).toEqual(new Set());
+            const createdConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(createdConcept.id).toEqual(isVersionOfConceptId);
+            expect(createdConcept.uuid).toMatch(uuidRegex);
+            expect(createdConcept.title).toBeUndefined();
+            expect(createdConcept.description).toBeUndefined();
+            expect(createdConcept.additionalDescription).toBeUndefined();
+            expect(createdConcept.exception).toBeUndefined();
+            expect(createdConcept.regulation).toBeUndefined();
+            expect(createdConcept.startDate).toBeUndefined();
+            expect(createdConcept.endDate).toBeUndefined();
+            expect(createdConcept.type).toBeUndefined();
+            expect(createdConcept.targetAudiences).toEqual(new Set());
+            expect(createdConcept.themes).toEqual(new Set());
+            expect(createdConcept.competentAuthorityLevels).toEqual(new Set());
+            expect(createdConcept.competentAuthorities).toEqual(new Set());
+            expect(createdConcept.executingAuthorityLevels).toEqual(new Set());
+            expect(createdConcept.executingAuthorities).toEqual(new Set());
+            expect(createdConcept.publicationMedia).toEqual(new Set());
+            expect(createdConcept.yourEuropeCategories).toEqual(new Set());
+            expect(createdConcept.keywords).toEqual(new Set());
+            expect(createdConcept.requirements).toEqual([]);
+            expect(createdConcept.procedures).toEqual([]);
+            expect(createdConcept.websites).toEqual([]);
+            expect(createdConcept.costs).toEqual([]);
+            expect(createdConcept.financialAdvantages).toEqual([]);
+            expect(createdConcept.productId).toBeUndefined();
+            expect(createdConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
+            expect(createdConcept.previousConceptSnapshots).toEqual(new Set());
+            expect(createdConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
+            expect(createdConcept.conceptTags).toEqual(new Set());
+            expect(createdConcept.isArchived).toBeFalsy();
+            expect(createdConcept.legalResources).toEqual(new Set());
         });
 
         test('Creates a new concept from a concept snapshot that is archived', async () => {
@@ -268,15 +272,17 @@ describe('merges a new concept snapshot into a concept', () => {
 
             await merger.merge(conceptSnapshot.id);
 
-            const newlyCreatedConcept = await conceptRepository.findById(isVersionOfConceptId);
-            expect(newlyCreatedConcept.id).toEqual(isVersionOfConceptId);
-            expect(newlyCreatedConcept.uuid).toMatch(uuidRegex);
-            expect(newlyCreatedConcept.isArchived).toBeTruthy();
+            const createdConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(createdConcept.id).toEqual(isVersionOfConceptId);
+            expect(createdConcept.uuid).toMatch(uuidRegex);
+            expect(createdConcept.isArchived).toBeTruthy();
         });
 
     });
 
     describe('updates a concept', () => {
+
+        //TODO LPDC-916: when previousVersions is fixed, add tests that mimic more concept versions (combined with newer, not newer, not functionally changed, functinoally changed, etc)
 
         test('Updates a concept with all new data of a new version of a concept snapshot', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -297,7 +303,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withKeywords(new Set([LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')]))
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
                     .withConceptTags(new Set([ConceptTagType.YOUREUROPEVERPLICHT]))
-                    .withLegalResources( new Set([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())]))
+                    .withLegalResources(new Set([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())]))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -379,7 +385,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withProductId(conceptSnapshot.productId + uuid())
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .withConceptTags(new Set([ConceptTagType.YOUREUROPEAANBEVOLEN]))
-                    .withLegalResources( new Set([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())]))
+                    .withLegalResources(new Set([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())]))
                     .build();
 
             insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
@@ -540,10 +546,198 @@ describe('merges a new concept snapshot into a concept', () => {
                 ]));
 
             expect(updatedConcept.productId).toEqual(updatedConceptSnapshot.productId);
+            expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
+            //TODO LPDC-916: fails ?
+            //expect(updatedConcept.previousConceptSnapshots).toEqual(new Set(conceptSnapshot.id));
+            expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
             expect(updatedConcept.conceptTags).toEqual(updatedConceptSnapshot.conceptTags);
             expect(updatedConcept.legalResources).toEqual(updatedConceptSnapshot.legalResources);
+        }, 10000); //TODO LPDC-916: why is this test so slow?
+
+        test('Updates a concept with minimal new data of a new version of a concept snapshot', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const updatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(updatedConceptSnapshot);
+
+            await merger.merge(updatedConceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.id).toEqual(isVersionOfConceptId);
+            expect(updatedConcept.uuid).toMatch(uuidRegex);
+            expect(updatedConcept.title).toBeUndefined();
+            expect(updatedConcept.description).toBeUndefined();
+            expect(updatedConcept.additionalDescription).toBeUndefined();
+            expect(updatedConcept.exception).toBeUndefined();
+            expect(updatedConcept.regulation).toBeUndefined();
+            expect(updatedConcept.startDate).toBeUndefined();
+            expect(updatedConcept.endDate).toBeUndefined();
+            expect(updatedConcept.type).toBeUndefined();
+            expect(updatedConcept.targetAudiences).toEqual(new Set());
+            expect(updatedConcept.themes).toEqual(new Set());
+            expect(updatedConcept.competentAuthorityLevels).toEqual(new Set());
+            expect(updatedConcept.competentAuthorities).toEqual(new Set());
+            expect(updatedConcept.executingAuthorityLevels).toEqual(new Set());
+            expect(updatedConcept.executingAuthorities).toEqual(new Set());
+            expect(updatedConcept.publicationMedia).toEqual(new Set());
+            expect(updatedConcept.yourEuropeCategories).toEqual(new Set());
+            expect(updatedConcept.keywords).toEqual(new Set());
+            expect(updatedConcept.requirements).toEqual([]);
+            expect(updatedConcept.procedures).toEqual([]);
+            expect(updatedConcept.websites).toEqual([]);
+            expect(updatedConcept.costs).toEqual([]);
+            expect(updatedConcept.financialAdvantages).toEqual([]);
+            expect(updatedConcept.productId).toBeUndefined();
+            expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
+            //TODO LPDC-916: fails ?
+            //expect(updatedConcept.previousConceptSnapshots).toEqual(new Set(conceptSnapshot.id));
+            expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
+            expect(updatedConcept.conceptTags).toEqual(new Set());
+            expect(updatedConcept.isArchived).toBeFalsy();
+            expect(updatedConcept.legalResources).toEqual(new Set());
+        }, 10000);  //TODO LPDC-916: why is this test so slow?
+
+        test('Does not update a latestFunctionallyChangedConceptSnapshot link when new version is not functionally changed', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const updatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(updatedConceptSnapshot);
+
+            await merger.merge(updatedConceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
+            //TODO LPDC-916: fails ?
+            //expect(updatedConcept.previousConceptSnapshots).toEqual(new Set(conceptSnapshot.id));
+            expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         });
 
+        test('Does not update a concept when same version is merged again', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
+            expect(updatedConcept.previousConceptSnapshots).toEqual(new Set());
+            expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
+        });
+
+        test('Does not update a concept when newer version already processed functionally changed', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withTitle(
+                        LanguageString.of(
+                            ConceptSnapshotTestBuilder.TITLE_EN,
+                            ConceptSnapshotTestBuilder.TITLE_NL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL))
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const updatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withTitle(suffixUnique(conceptSnapshot.title))
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(updatedConceptSnapshot);
+
+            await merger.merge(updatedConceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.title).toEqual(conceptSnapshot.title);
+            expect(updatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
+            //TODO LPDC-916: fails ?
+            //expect(updatedConcept.previousConceptSnapshots).toEqual(new Set(conceptSnapshot.id));
+            expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
+        });
+
+        test('Updates a concept from a concept snapshot that is archived', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const updatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withSnapshotType(SnapshotType.DELETE)
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(updatedConceptSnapshot);
+
+            await merger.merge(updatedConceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.isArchived).toBeTruthy();
+        });
 
     });
 

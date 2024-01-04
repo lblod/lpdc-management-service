@@ -45,15 +45,13 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
             try {
                 const currentSnapshotId: string | undefined = await this.getVersionedSourceOfConcept(conceptId);
-
-                const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
-
                 const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentSnapshotId);
                 await this.upsertNewLdesVersion(newConceptSnapshotId, conceptId);
                 await this.updatedVersionInformation(newConceptSnapshotId, conceptId);
                 if (!currentSnapshotId || isConceptFunctionallyChanged) {
                     await this.updateLatestFunctionalChange(newConceptSnapshotId, conceptId);
                 }
+                const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
                 if (isArchiving) {
                     await this.markConceptAsArchived(conceptId);
                 }
@@ -79,25 +77,30 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         if (!await this._conceptRepository.exists(conceptId)) {
             return true;
         }
-        //TODO LPDC-916: this is buggy ...
         const concept = await this._conceptRepository.findById(conceptId);
         const conceptSnapshotAlreadyLinkedToConcept = concept.appliedSnapshots.has(conceptSnapshot.id);
-        const conceptSnapshotIsGeneratedAfterAllLinkedSnapshots = Array.from(concept.appliedSnapshots)
-            .every(async conceptSnapshotId => {
-                const linkedSnapshot = await this._conceptSnapshotRepository.findById(conceptSnapshotId);
-                return linkedSnapshot.generatedAtTime.before(conceptSnapshot.generatedAtTime);
-            });
-        return !conceptSnapshotAlreadyLinkedToConcept && conceptSnapshotIsGeneratedAfterAllLinkedSnapshots;
+        if (conceptSnapshotAlreadyLinkedToConcept) {
+            return false;
+        }
+
+        for(const appliedSnapshotId of concept.appliedSnapshots) {
+            const alreadyAppliedSnapshot = await this._conceptSnapshotRepository.findById(appliedSnapshotId);
+            if(conceptSnapshot.generatedAtTime.before(alreadyAppliedSnapshot.generatedAtTime)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    private async upsertNewLdesVersion(versionedService: string, conceptualService: string): Promise<void> {
+    private async upsertNewLdesVersion(newConceptSnapshotId: Iri, conceptId: Iri): Promise<void> {
         let serviceId = (await querySudo(`
     ${PREFIX.lpdcExt}
     ${PREFIX.mu}
 
     SELECT DISTINCT ?uuid
     WHERE {
-      ${sparqlEscapeUri(conceptualService)} a lpdcExt:ConceptualPublicService;
+      ${sparqlEscapeUri(conceptId)} a lpdcExt:ConceptualPublicService;
         mu:uuid ?uuid.
     }
     LIMIT 1
@@ -109,7 +112,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         } else {
             serviceId = uuid();
         }
-        await this.insertConceptualService(versionedService, conceptualService, serviceId);
+        await this.insertConceptualService(newConceptSnapshotId, conceptId, serviceId);
 
     }
 
@@ -126,17 +129,72 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
         const results = [];
 
-        results.push(await loadEvidences(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
-        results.push(await loadRequirements(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
-        results.push(await loadOnlineProcedureRules(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
-        results.push(await loadRules(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
-        results.push(await loadCosts(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
-        results.push(await loadFinancialAdvantages(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
-        results.push(await loadContactPointsAddresses(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
-        results.push(await loadContactPoints(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
-        results.push(await loadWebsites(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
-        results.push(await loadPublicService(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
-        results.push(await loadAttachments(serviceUri, {graph, sudo, includeUuid: true, connectionOptions: this._connectionOptions}));
+        results.push(await loadEvidences(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
+        results.push(await loadRequirements(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
+        results.push(await loadOnlineProcedureRules(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
+        results.push(await loadRules(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
+        results.push(await loadCosts(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
+        results.push(await loadFinancialAdvantages(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
+        results.push(await loadContactPointsAddresses(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
+        results.push(await loadContactPoints(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
+        results.push(await loadWebsites(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
+        results.push(await loadPublicService(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
+        results.push(await loadAttachments(serviceUri, {
+            graph,
+            sudo,
+            includeUuid: true,
+            connectionOptions: this._connectionOptions
+        }));
 
         const sourceBindings = results
             .reduce((acc, b) => [...acc, ...b]);
@@ -164,7 +222,11 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
         const loadAndPostProcess = async (callBack, newType = null): Promise<any[]> => {
             let finalResults = [];
-            const bindings = await callBack(versionedServiceUri, {graph, sudo, connectionOptions: this._connectionOptions});
+            const bindings = await callBack(versionedServiceUri, {
+                graph,
+                sudo,
+                connectionOptions: this._connectionOptions
+            });
             const bindingsPerSubject = groupBySubject(bindings);
             for (const bindings of Object.values(bindingsPerSubject)) {
                 let updatedBindings = addUuidForSubject(bindings);
@@ -190,7 +252,11 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         results.push(await loadAndPostProcess(loadWebsites));
         results.push(await loadAndPostProcess(loadAttachments));
 
-        let serviceResultBindings = await loadPublicService(versionedServiceUri, {graph, sudo, connectionOptions: this._connectionOptions});
+        let serviceResultBindings = await loadPublicService(versionedServiceUri, {
+            graph,
+            sudo,
+            connectionOptions: this._connectionOptions
+        });
         serviceResultBindings = addUuidForSubject(serviceResultBindings, serviceId);
         for (const tripleData of serviceResultBindings) {
             tripleData.s.value = serviceUri;
@@ -214,7 +280,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         }
     }
 
-    private async updatedVersionInformation(versionedResource: string, resource: string): Promise<void> {
+    private async updatedVersionInformation(newConceptSnapshotId: Iri, conceptId: Iri): Promise<void> {
         const queryStr = `
    ${PREFIX.ext}
    DELETE {
@@ -225,11 +291,11 @@ export class NewConceptSnapshotToConceptMergerDomainService {
    INSERT {
      GRAPH ?g {
       ?s ext:previousVersionedSource ?version.
-      ?s ext:hasVersionedSource ${sparqlEscapeUri(versionedResource)}.
+      ?s ext:hasVersionedSource ${sparqlEscapeUri(newConceptSnapshotId)}.
      }
    }
    WHERE {
-     BIND(${sparqlEscapeUri(resource)} as ?s)
+     BIND(${sparqlEscapeUri(conceptId)} as ?s)
      GRAPH ?g {
       ?s a ?what.
       OPTIONAL { ?s ext:hasVersionedSource ?version. }
