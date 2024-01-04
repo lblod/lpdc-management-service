@@ -1,4 +1,4 @@
-import {Iri, iriAsId} from "./shared/iri";
+import {Iri, requiredIri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from 'lodash';
 import {Requirement} from "./requirement";
@@ -87,7 +87,7 @@ export class ConceptSnapshot {
                 legalResources: Set<Iri>,
     ) {
         //TODO LPDC-917: enforce invariants ? + do safe copies ?
-        this._id = iriAsId(id);
+        this._id = requiredIri(id, 'id');
         this._title = title;
         this._description = description;
         this._additionalDescription = additionalDescription;

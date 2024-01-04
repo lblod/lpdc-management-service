@@ -10,11 +10,11 @@ export class LanguageString {
     private readonly _nlGeneratedInformal: string | undefined;
 
     private constructor(en: string | undefined,
-                nl: string | undefined,
-                nlFormal: string | undefined,
-                nlInformal: string | undefined,
-                nlGeneratedFormal: string | undefined,
-                nlGeneratedInformal: string | undefined) {
+                        nl: string | undefined,
+                        nlFormal: string | undefined,
+                        nlInformal: string | undefined,
+                        nlGeneratedFormal: string | undefined,
+                        nlGeneratedInformal: string | undefined) {
         this._en = en;
         this._nl = nl;
         this._nlFormal = nlFormal;
@@ -30,9 +30,9 @@ export class LanguageString {
         nlInformal?: string | undefined,
         nlGeneratedFormal?: string | undefined,
         nlGeneratedInformal?: string | undefined): LanguageString {
-        if(!en && !nl && !nlFormal && !nlInformal && !nlGeneratedFormal && !nlGeneratedInformal) {
+        if (!en && !nl && !nlFormal && !nlInformal && !nlGeneratedFormal && !nlGeneratedInformal) {
             return undefined;
-        }
+        } //TODO: invariant check in constructor at least one needs to be present
         return new LanguageString(en, nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal);
     }
 
@@ -51,6 +51,7 @@ export class LanguageString {
     get nlInformal(): string | undefined {
         return this._nlInformal;
     }
+
     get nlGeneratedFormal(): string | undefined {
         return this._nlGeneratedFormal;
     }

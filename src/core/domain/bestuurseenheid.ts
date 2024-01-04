@@ -1,4 +1,4 @@
-import {Iri, iriAsId} from "./shared/iri";
+import {Iri, requiredIri} from "./shared/iri";
 
 
 export class Bestuurseenheid {
@@ -7,7 +7,7 @@ export class Bestuurseenheid {
     private readonly _classificatieCode: BestuurseenheidClassificatieCode;
 
     constructor(id: Iri, prefLabel: string, classificatieCode: BestuurseenheidClassificatieCode) {
-        this._id = iriAsId(id);
+        this._id = requiredIri(id, 'id');
         this._prefLabel = prefLabel;
         this._classificatieCode = classificatieCode;
     }

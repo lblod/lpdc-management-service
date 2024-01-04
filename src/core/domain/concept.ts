@@ -1,4 +1,4 @@
-import {Iri, iriAsId} from "./shared/iri";
+import {Iri, requiredIri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {Requirement} from "./requirement";
@@ -24,8 +24,8 @@ export class Concept {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
-    private readonly _title: LanguageString | undefined;
-    private readonly _description: LanguageString | undefined;
+    private readonly _title: LanguageString | undefined; //TODO: invariant nl present and cannot be blank or undefined and remove undefined
+    private readonly _description: LanguageString | undefined; //TODO: invariant nl present and cannot be blank or undefined and remove undefined
     private readonly _additionalDescription: LanguageString | undefined;
     private readonly _exception: LanguageString | undefined;
     private readonly _regulation: LanguageString | undefined;
@@ -43,7 +43,7 @@ export class Concept {
     private readonly _keywords: Set<LanguageString>;
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
-    private readonly _websites: Website[];
+    private readonly _websites: Website[]; //TODO: invariant id and title, url need to be present
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
     private readonly _productId: string | undefined;
@@ -87,10 +87,7 @@ export class Concept {
                 legalResources: Set<Iri>,
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
-        const idInvariant = Invariant.require(id, 'id');
-        idInvariant.to(idInvariant.notBeUndefined(), idInvariant.notBeBlank());
-
-        this._id = iriAsId(id);
+        this._id = requiredIri(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;

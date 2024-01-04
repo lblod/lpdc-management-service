@@ -1,4 +1,4 @@
-import {Iri, iriAsId} from "./shared/iri";
+import {Iri, requiredIri} from "./shared/iri";
 
 export class Session {
     private readonly _id: Iri;
@@ -6,8 +6,8 @@ export class Session {
     private readonly _sessionRol: SessionRole;
 
     constructor(id: Iri, bestuurseenheidId: Iri, sessionRole: SessionRole) {
-        this._id = iriAsId(id);
-        this._bestuurseenheidId = bestuurseenheidId;
+        this._id = requiredIri(id, 'id');
+        this._bestuurseenheidId = bestuurseenheidId; //TODO: make required
         this._sessionRol = sessionRole;
     }
 

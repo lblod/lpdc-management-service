@@ -1,4 +1,4 @@
-import {Iri, iriAsId} from "./shared/iri";
+import {Iri, requiredIri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {Website} from "./website";
@@ -18,7 +18,7 @@ export class Procedure {
                 websites: Website[],
     ) {
 //TODO LPDC-917: add invariants
-        this._id = iriAsId(id);
+        this._id = requiredIri(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
