@@ -78,4 +78,21 @@ export class ConceptSparqlRepository implements ConceptRepository {
 
         await this.querying.update(query);
     }
+
+    async update(concept: Concept, old: Concept): Promise<void> {
+        const oldTriples = new DomainToTriplesMapper().conceptToTriples(old).map(s => s.toNT());
+        const newTriples = new DomainToTriplesMapper().conceptToTriples(concept).map(s => s.toNT());
+
+        const query = `
+            WITH <${CONCEPT_GRAPH}>
+            DELETE {
+                ${[...oldTriples].join('\n')}
+            }
+            INSERT {
+                ${[...newTriples].join('\n')}
+            }
+        `;
+
+        await this.querying.update(query);
+    }
 }

@@ -1,24 +1,8 @@
 import {querySudo, updateSudo} from '@lblod/mu-auth-sudo';
 import {sparqlEscapeString, sparqlEscapeUri} from '../../../mu-helper';
-import {CONCEPT_GRAPH, CONCEPT_SNAPSHOT_LDES_GRAPH, PREFIX} from '../../../config';
+import {PREFIX} from '../../../config';
 import {v4 as uuid} from 'uuid';
-import {bindingsToNT} from '../../../utils/bindingsToNT';
-import {addTypeForSubject, addUuidForSubject, groupBySubject} from '../../../utils/common';
 import fetch from 'node-fetch';
-import {
-    loadAttachments,
-    loadContactPoints,
-    loadContactPointsAddresses,
-    loadCosts,
-    loadEvidences,
-    loadFinancialAdvantages,
-    loadOnlineProcedureRules,
-    loadPublicService,
-    loadRequirements,
-    loadRules,
-    loadWebsites,
-    serviceUriForId
-} from '../../../lib/commonQueries';
 import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snapshot-repository";
 import {ConceptSnapshot} from "./concept-snapshot";
 import {SnapshotType} from "./types";
@@ -65,23 +49,20 @@ export class NewConceptSnapshotToConceptMergerDomainService {
                     const newConcept = this.asNewConcept(newConceptSnapshot);
                     await this._conceptRepository.save(newConcept);
                 } else {
-
-                    await this.mergeNewConceptSnapshotIntoExistingConcept(newConceptSnapshotId, conceptId);
-                    await this.updatedVersionInformation(newConceptSnapshotId, conceptId);
-
-                    if (!currentConceptSnapshotId || isConceptFunctionallyChanged) {
-                        await this.updateLatestFunctionalChange(newConceptSnapshotId, conceptId);
-                    }
-                    const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
-                    if (isArchiving) {
-                        await this.markConceptAsArchived(conceptId);
-                    }
+                    const updatedConcept = this.asMergedConcept(newConceptSnapshot, concept, isConceptFunctionallyChanged);
+                    await this._conceptRepository.update(updatedConcept, concept);
                 }
 
+                //TODO LPDC-916: move to a separate repo?
+                //Some code list entries might be missing in our DB we insert these here
+                await this.ensureNewIpdcOrganisations(newConceptSnapshotId);
+
+                //TODO LPDC-916: move to a separate repo?
                 //instances (in user graphs)
                 const instanceReviewStatus: string | undefined = this.determineInstanceReviewStatus(isConceptFunctionallyChanged, isArchiving);
                 await this.flagInstancesModifiedConcept(conceptId, instanceReviewStatus);
 
+                //TODO LPDC-916: move to a separate repo?
                 //concept display configs (in user graphs)
                 await this.ensureConceptDisplayConfigs(conceptId);
             } catch (e) {
@@ -132,26 +113,11 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.publicationMedia,
             conceptSnapshot.yourEuropeCategories,
             conceptSnapshot.keywords,
-            conceptSnapshot.requirements.map(r =>
-                new Requirement(
-                    r.id,
-                    uuid(),
-                    r.title,
-                    r.description,
-                    r.evidence ? new Evidence(r.evidence.id, uuid(), r.evidence.title, r.evidence.description) : undefined)),
-            conceptSnapshot.procedures.map(p =>
-                new Procedure(
-                    p.id,
-                    uuid(),
-                    p.title,
-                    p.description,
-                    p.websites.map(w => new Website(w.id, uuid(), w.title, w.description, w.url)))),
-            conceptSnapshot.websites.map(w =>
-                new Website(w.id, uuid(), w.title, w.description, w.url)),
-            conceptSnapshot.costs.map(c =>
-                new Cost(c.id, uuid(), c.title, c.description)),
-            conceptSnapshot.financialAdvantages.map(fa =>
-                new FinancialAdvantage(fa.id, uuid(), fa.title, fa.description)),
+            this.copyRequirements(conceptSnapshot.requirements),
+            this.copyProcedures(conceptSnapshot.procedures),
+            this.copyWebsites(conceptSnapshot.websites),
+            this.copyCosts(conceptSnapshot.costs),
+            this.copyFinancialAdvantages(conceptSnapshot.financialAdvantages),
             conceptSnapshot.productId,
             conceptSnapshot.id,
             new Set(),
@@ -162,215 +128,76 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         );
     }
 
-    private async mergeNewConceptSnapshotIntoExistingConcept(newConceptSnapshotId: Iri, conceptId: Iri): Promise<void> {
-        let serviceId = (await querySudo(`
-    ${PREFIX.lpdcExt}
-    ${PREFIX.mu}
 
-    SELECT DISTINCT ?uuid
-    WHERE {
-      ${sparqlEscapeUri(conceptId)} a lpdcExt:ConceptualPublicService;
-        mu:uuid ?uuid.
-    }
-    LIMIT 1
-  `, {}, this._connectionOptions)).results.bindings[0]?.uuid?.value;
-
-        //TODO: we should/could refactor so we can roll back in case of problems
-        if (serviceId) {
-            await this.removeConceptualService(serviceId);
-        } else {
-            serviceId = uuid();
-        }
-        await this.insertConceptualService(newConceptSnapshotId, conceptId, serviceId);
-    }
-
-    private async removeConceptualService(serviceId: string): Promise<void> {
-        const type = 'lpdcExt:ConceptualPublicService';
-        const graph = CONCEPT_GRAPH;
-        const sudo = true;
-
-        const serviceUri = await serviceUriForId(serviceId, type, this._connectionOptions);
-
-        if (!serviceUri) {
-            throw `Service URI not found for id ${serviceId}`;
-        }
-
-        const results = [];
-
-        results.push(await loadEvidences(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-        results.push(await loadRequirements(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-        results.push(await loadOnlineProcedureRules(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-        results.push(await loadRules(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-        results.push(await loadCosts(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-        results.push(await loadFinancialAdvantages(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-        results.push(await loadContactPointsAddresses(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-        results.push(await loadContactPoints(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-        results.push(await loadWebsites(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-        results.push(await loadPublicService(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-        results.push(await loadAttachments(serviceUri, {
-            graph,
-            sudo,
-            includeUuid: true,
-            connectionOptions: this._connectionOptions
-        }));
-
-        const sourceBindings = results
-            .reduce((acc, b) => [...acc, ...b]);
-
-        const source = bindingsToNT(sourceBindings);
-
-        // Due to confirmed bug in virtuoso, we need to execute statements
-        // separatly: https://github.com/openlink/virtuoso-opensource/issues/1055
-        for (const statement of source) {
-            await updateSudo(`
-        DELETE DATA {
-          GRAPH ${sparqlEscapeUri(graph)} {
-            ${statement}
-          }
-        }`, {}, this._connectionOptions);
-        }
+    private asMergedConcept(conceptSnapshot: ConceptSnapshot, concept: Concept, isConceptFunctionallyChanged: boolean): Concept {
+        return new Concept(
+            concept.id,
+            uuid(),
+            conceptSnapshot.title,
+            conceptSnapshot.description,
+            conceptSnapshot.additionalDescription,
+            conceptSnapshot.exception,
+            conceptSnapshot.regulation,
+            conceptSnapshot.startDate,
+            conceptSnapshot.endDate,
+            conceptSnapshot.type,
+            conceptSnapshot.targetAudiences,
+            conceptSnapshot.themes,
+            conceptSnapshot.competentAuthorityLevels,
+            conceptSnapshot.competentAuthorities,
+            conceptSnapshot.executingAuthorityLevels,
+            conceptSnapshot.executingAuthorities,
+            conceptSnapshot.publicationMedia,
+            conceptSnapshot.yourEuropeCategories,
+            conceptSnapshot.keywords,
+            this.copyRequirements(conceptSnapshot.requirements),
+            this.copyProcedures(conceptSnapshot.procedures),
+            this.copyWebsites(conceptSnapshot.websites),
+            this.copyCosts(conceptSnapshot.costs),
+            this.copyFinancialAdvantages(conceptSnapshot.financialAdvantages),
+            conceptSnapshot.productId,
+            conceptSnapshot.id,
+            concept.appliedSnapshots,
+            isConceptFunctionallyChanged ? conceptSnapshot.id : concept.latestConceptSnapshot,
+            conceptSnapshot.conceptTags,
+            conceptSnapshot.snapshotType === SnapshotType.DELETE,
+            conceptSnapshot.legalResources,
+        );
     }
 
-    private async insertConceptualService(versionedServiceUri: string, serviceUri: string, serviceId: string): Promise<void> {
-        const graph = CONCEPT_SNAPSHOT_LDES_GRAPH;
-        const sudo = true;
-
-        //Some code list entries might be missing in our DB we insert these here
-        await this.ensureNewIpdcOrganisations(versionedServiceUri);
-
-        const loadAndPostProcess = async (callBack, newType = null): Promise<any[]> => {
-            let finalResults = [];
-            const bindings = await callBack(versionedServiceUri, {
-                graph,
-                sudo,
-                connectionOptions: this._connectionOptions
-            });
-            const bindingsPerSubject = groupBySubject(bindings);
-            for (const bindings of Object.values(bindingsPerSubject)) {
-                let updatedBindings = addUuidForSubject(bindings);
-                if (newType) {
-                    updatedBindings = addTypeForSubject(updatedBindings, newType);
-                }
-                finalResults = [...finalResults, ...updatedBindings];
-            }
-            return finalResults;
-        };
-
-        const results = [];
-
-        //TODO: probably we will be able to get rid of these extra typings, once IPDC cleans the data
-        results.push(await loadAndPostProcess(loadEvidences, 'http://data.europa.eu/m8g/Evidence'));
-        results.push(await loadAndPostProcess(loadRequirements));
-        results.push(await loadAndPostProcess(loadOnlineProcedureRules, 'http://schema.org/WebSite'));
-        results.push(await loadAndPostProcess(loadRules));
-        results.push(await loadAndPostProcess(loadCosts));
-        results.push(await loadAndPostProcess(loadFinancialAdvantages));
-        results.push(await loadAndPostProcess(loadContactPointsAddresses));
-        results.push(await loadAndPostProcess(loadContactPoints));
-        results.push(await loadAndPostProcess(loadWebsites));
-        results.push(await loadAndPostProcess(loadAttachments));
-
-        let serviceResultBindings = await loadPublicService(versionedServiceUri, {
-            graph,
-            sudo,
-            connectionOptions: this._connectionOptions
-        });
-        serviceResultBindings = addUuidForSubject(serviceResultBindings, serviceId);
-        for (const tripleData of serviceResultBindings) {
-            tripleData.s.value = serviceUri;
-        }
-
-        results.push(serviceResultBindings);
-
-        const sourceBindings = results
-            .reduce((acc, b) => [...acc, ...b]);
-
-        const source = bindingsToNT(sourceBindings);
-
-        //TODO: could be faster, but slow and steady?
-        for (const statement of source) {
-            await updateSudo(`
-        INSERT DATA {
-          GRAPH ${sparqlEscapeUri(CONCEPT_GRAPH)} {
-            ${statement}
-          }
-        }`, {}, this._connectionOptions);
-        }
+    private copyRequirements(requirements: Requirement[]) {
+        return requirements.map(r =>
+            new Requirement(
+                r.id,
+                uuid(),
+                r.title,
+                r.description,
+                r.evidence ? new Evidence(r.evidence.id, uuid(), r.evidence.title, r.evidence.description) : undefined));
     }
 
-    private async updatedVersionInformation(newConceptSnapshotId: Iri, conceptId: Iri): Promise<void> {
-        const queryStr = `
-   ${PREFIX.ext}
-   DELETE {
-     GRAPH ?g {
-      ?s ext:hasVersionedSource ?version.
+    private copyProcedures(procedures: Procedure[]) {
+        return procedures.map(p =>
+            new Procedure(
+                p.id,
+                uuid(),
+                p.title,
+                p.description,
+                this.copyWebsites(p.websites)));
     }
-   }
-   INSERT {
-     GRAPH ?g {
-      ?s ext:previousVersionedSource ?version.
-      ?s ext:hasVersionedSource ${sparqlEscapeUri(newConceptSnapshotId)}.
-     }
-   }
-   WHERE {
-     BIND(${sparqlEscapeUri(conceptId)} as ?s)
-     GRAPH ?g {
-      ?s a ?what.
-      OPTIONAL { ?s ext:hasVersionedSource ?version. }
+
+    private copyWebsites(websites: Website[]) {
+        return websites.map(w =>
+            new Website(w.id, uuid(), w.title, w.description, w.url));
     }
-   }
-  `;
-        await updateSudo(queryStr, {}, this._connectionOptions);
+
+    private copyCosts(costs: Cost[]) {
+        return costs.map(c =>
+            new Cost(c.id, uuid(), c.title, c.description));
+    }
+
+    private copyFinancialAdvantages(financialAdvantages: FinancialAdvantage[]) {
+        return financialAdvantages.map(fa =>
+            new FinancialAdvantage(fa.id, uuid(), fa.title, fa.description));
     }
 
     private async ensureNewIpdcOrganisations(service: string): Promise<void> {
@@ -595,21 +422,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         await updateSudo(insertConfigsQuery, {}, this._connectionOptions);
     }
 
-    private async markConceptAsArchived(conceptualService: string): Promise<void> {
-        const archivedStatusConcept = 'http://lblod.data.gift/concepts/3f2666df-1dae-4cc2-a8dc-e8213e713081';
-        const markAsArchivedQuery = `
-    ${PREFIX.adms}
-
-    INSERT DATA {
-      GRAPH ${sparqlEscapeUri(CONCEPT_GRAPH)} {
-        ${sparqlEscapeUri(conceptualService)} adms:status ${sparqlEscapeUri(archivedStatusConcept)} .
-      }
-    }
-  `;
-
-        await updateSudo(markAsArchivedQuery, {}, this._connectionOptions);
-    }
-
     private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: Iri): Promise<boolean> {
         if (!currentSnapshotId) {
             return false;
@@ -618,31 +430,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         const currentConceptSnapshot = await this._conceptSnapshotRepository.findById(currentSnapshotId);
 
         return ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
-    }
-
-    private async updateLatestFunctionalChange(conceptSnapshotUri: string, conceptUri: string): Promise<void> {
-        const queryStr = `
-   ${PREFIX.lpdcExt}
-   DELETE {
-        GRAPH <http://mu.semte.ch/graphs/public> {
-            ${sparqlEscapeUri(conceptUri)} lpdcExt:hasLatestFunctionalChange ?snapshot.
-        }
-   }
-   INSERT {
-        GRAPH <http://mu.semte.ch/graphs/public> {
-            ${sparqlEscapeUri(conceptUri)} lpdcExt:hasLatestFunctionalChange ${sparqlEscapeUri(conceptSnapshotUri)}.
-        }
-  }
-   WHERE {
-        GRAPH <http://mu.semte.ch/graphs/public> {
-            ${sparqlEscapeUri(conceptUri)} a lpdcExt:ConceptualPublicService.
-            OPTIONAL {
-                ${sparqlEscapeUri(conceptUri)} lpdcExt:hasLatestFunctionalChange ?snapshot.
-            }
-        }
-   }
-`;
-        await updateSudo(queryStr, {}, this._connectionOptions);
     }
 
 }

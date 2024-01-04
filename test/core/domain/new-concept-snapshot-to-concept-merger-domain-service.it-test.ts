@@ -282,8 +282,6 @@ describe('merges a new concept snapshot into a concept', () => {
 
     describe('updates a concept', () => {
 
-        //TODO LPDC-916: when previousVersions is fixed, add tests that mimic more concept versions (combined with newer, not newer, not functionally changed, functinoally changed, etc)
-
         test('Updates a concept with all new data of a new version of a concept snapshot', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
             const conceptSnapshot =
@@ -547,12 +545,11 @@ describe('merges a new concept snapshot into a concept', () => {
 
             expect(updatedConcept.productId).toEqual(updatedConceptSnapshot.productId);
             expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
-            //TODO LPDC-916: fails ?
-            //expect(updatedConcept.previousConceptSnapshots).toEqual(new Set(conceptSnapshot.id));
+            expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id].sort());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
             expect(updatedConcept.conceptTags).toEqual(updatedConceptSnapshot.conceptTags);
             expect(updatedConcept.legalResources).toEqual(updatedConceptSnapshot.legalResources);
-        }, 10000); //TODO LPDC-916: why is this test so slow?
+        });
 
         test('Updates a concept with minimal new data of a new version of a concept snapshot', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -606,13 +603,12 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.financialAdvantages).toEqual([]);
             expect(updatedConcept.productId).toBeUndefined();
             expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
-            //TODO LPDC-916: fails ?
-            //expect(updatedConcept.previousConceptSnapshots).toEqual(new Set(conceptSnapshot.id));
+            expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id].sort());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
             expect(updatedConcept.conceptTags).toEqual(new Set());
             expect(updatedConcept.isArchived).toBeFalsy();
             expect(updatedConcept.legalResources).toEqual(new Set());
-        }, 10000);  //TODO LPDC-916: why is this test so slow?
+        });
 
         test('Does not update a latestFunctionallyChangedConceptSnapshot link when new version is not functionally changed', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -641,8 +637,6 @@ describe('merges a new concept snapshot into a concept', () => {
 
             const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
-            //TODO LPDC-916: fails ?
-            //expect(updatedConcept.previousConceptSnapshots).toEqual(new Set(conceptSnapshot.id));
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         });
 
@@ -704,8 +698,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(updatedConcept.title).toEqual(conceptSnapshot.title);
             expect(updatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
-            //TODO LPDC-916: fails ?
-            //expect(updatedConcept.previousConceptSnapshots).toEqual(new Set(conceptSnapshot.id));
+            expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([]);
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         });
 
@@ -739,38 +732,156 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.isArchived).toBeTruthy();
         });
 
+        test('Multiple consecutive updates to a concept', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const updatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withTitle(suffixUnique(conceptSnapshot.title))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(updatedConceptSnapshot);
+
+            await merger.merge(updatedConceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.id).toEqual(isVersionOfConceptId);
+            expect(updatedConcept.uuid).toMatch(uuidRegex);
+            expect(updatedConcept.title).toEqual(updatedConceptSnapshot.title);
+            expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
+            expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id].sort());
+            expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
+
+            const secondTimeUpdatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withTitle(suffixUnique(updatedConceptSnapshot.title))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-18T00:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(secondTimeUpdatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(secondTimeUpdatedConceptSnapshot);
+
+            await merger.merge(secondTimeUpdatedConceptSnapshot.id);
+
+            const secondTimeUpdatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(secondTimeUpdatedConcept.id).toEqual(isVersionOfConceptId);
+            expect(secondTimeUpdatedConcept.uuid).toMatch(uuidRegex);
+            expect(secondTimeUpdatedConcept.title).toEqual(secondTimeUpdatedConceptSnapshot.title);
+            expect(secondTimeUpdatedConcept.latestConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
+            expect(Array.from(secondTimeUpdatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id].sort());
+            expect(secondTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
+
+            const thirdTimeButOlderUpdatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withTitle(suffixUnique(updatedConceptSnapshot.title))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T12:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(thirdTimeButOlderUpdatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(thirdTimeButOlderUpdatedConceptSnapshot);
+
+            await merger.merge(thirdTimeButOlderUpdatedConceptSnapshot.id);
+
+            const notUpdatedForThirdTimeUpdatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(notUpdatedForThirdTimeUpdatedConcept.id).toEqual(isVersionOfConceptId);
+            expect(notUpdatedForThirdTimeUpdatedConcept.uuid).toMatch(uuidRegex);
+            expect(notUpdatedForThirdTimeUpdatedConcept.title).toEqual(secondTimeUpdatedConceptSnapshot.title);
+            expect(notUpdatedForThirdTimeUpdatedConcept.latestConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
+            expect(Array.from(notUpdatedForThirdTimeUpdatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id].sort());
+            expect(notUpdatedForThirdTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
+
+            const fourthTimeUpdatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withTitle(suffixUnique(secondTimeUpdatedConceptSnapshot.title))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-19T00:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(fourthTimeUpdatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(fourthTimeUpdatedConceptSnapshot);
+
+            await merger.merge(fourthTimeUpdatedConceptSnapshot.id);
+
+            const fourthTimeUpdatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(fourthTimeUpdatedConcept.id).toEqual(isVersionOfConceptId);
+            expect(fourthTimeUpdatedConcept.uuid).toMatch(uuidRegex);
+            expect(fourthTimeUpdatedConcept.title).toEqual(fourthTimeUpdatedConceptSnapshot.title);
+            expect(fourthTimeUpdatedConcept.latestConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
+            expect(Array.from(fourthTimeUpdatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, secondTimeUpdatedConceptSnapshot.id].sort());
+            expect(fourthTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
+
+        });
+
     });
 
     function suffixUnique(aLangString: LanguageString): LanguageString {
         return LanguageString.of(
-            aLangString.en + uuid(),
-            aLangString.nl + uuid(),
-            aLangString.nlFormal + uuid(),
-            aLangString.nlInformal + uuid(),
-            aLangString.nlGeneratedFormal + uuid(),
-            aLangString.nlGeneratedInformal + uuid());
+            aLangString.en + '-' + uuid(),
+            aLangString.nl + '-' + uuid(),
+            aLangString.nlFormal + '-' + uuid(),
+            aLangString.nlInformal + '-' + uuid(),
+            aLangString.nlGeneratedFormal + '-' + uuid(),
+            aLangString.nlGeneratedInformal + '-' + uuid());
     }
 
 
     function insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot: ConceptSnapshot) {
         const triples = [
             conceptSnapshot.type ? `<${NS.concept.type(conceptSnapshot.type).value}> skos:inScheme <${NS.conceptscheme('Type').value}>` : undefined,
+            conceptSnapshot.type ? `<${NS.concept.type(conceptSnapshot.type).value}> a skos:Concept` : undefined,
             ...Array.from(conceptSnapshot.targetAudiences)
-                .map(v => `<${NS.concept.doelgroep(v).value}> skos:inScheme <${NS.conceptscheme('Doelgroep').value}>`),
+                .flatMap(v => [
+                    `<${NS.concept.doelgroep(v).value}> skos:inScheme <${NS.conceptscheme('Doelgroep').value}>`,
+                    `<${NS.concept.doelgroep(v).value}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.themes)
-                .map(v => `<${NS.concept.thema(v).value}> skos:inScheme <${NS.conceptscheme('Thema').value}>`),
+                .flatMap(v => [
+                    `<${NS.concept.thema(v).value}> skos:inScheme <${NS.conceptscheme('Thema').value}>`,
+                    `<${NS.concept.thema(v).value}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.competentAuthorityLevels)
-                .map(v => `<${NS.concept.bevoegdBestuursniveau(v).value}> skos:inScheme <${NS.conceptscheme('BevoegdBestuursniveau').value}>`),
+                .flatMap(v => [
+                    `<${NS.concept.bevoegdBestuursniveau(v).value}> skos:inScheme <${NS.conceptscheme('BevoegdBestuursniveau').value}>`,
+                    `<${NS.concept.bevoegdBestuursniveau(v).value}> a skos:Concept`,
+                ]),
             ...Array.from([...conceptSnapshot.competentAuthorities, ...conceptSnapshot.executingAuthorities])
-                .map(v => `<${v}> skos:inScheme <${NS.conceptscheme('IPDCOrganisaties').value}>`),
+                .flatMap(v => [
+                    `<${v}> skos:inScheme <${NS.conceptscheme('IPDCOrganisaties').value}>`,
+                    `<${v}> a besluit:Bestuurseenheid`,
+                    `<${v}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.executingAuthorityLevels)
-                .map(v => `<${NS.concept.uitvoerendBestuursniveau(v).value}> skos:inScheme <${NS.conceptscheme('UitvoerendBestuursniveau').value}>`),
+                .flatMap(v =>
+                    [`<${NS.concept.uitvoerendBestuursniveau(v).value}> skos:inScheme <${NS.conceptscheme('UitvoerendBestuursniveau').value}>`,
+                        `<${NS.concept.uitvoerendBestuursniveau(v).value}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.publicationMedia)
-                .map(v => `<${NS.concept.publicatieKanaal(v).value}> skos:inScheme <${NS.conceptscheme('PublicatieKanaal').value}>`),
+                .flatMap(v => [
+                    `<${NS.concept.publicatieKanaal(v).value}> skos:inScheme <${NS.conceptscheme('PublicatieKanaal').value}>`,
+                    `<${NS.concept.publicatieKanaal(v).value}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.yourEuropeCategories)
-                .map(v => `<${NS.concept.yourEuropeCategorie(v).value}> skos:inScheme <${NS.conceptscheme('YourEuropeCategorie').value}>`),
+                .flatMap(v => [
+                    `<${NS.concept.yourEuropeCategorie(v).value}> skos:inScheme <${NS.conceptscheme('YourEuropeCategorie').value}>`,
+                    `<${NS.concept.yourEuropeCategorie(v).value}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.conceptTags)
-                .map(v => `<${NS.concept.conceptTag(v).value}> skos:inScheme <${NS.conceptscheme('ConceptTag').value}>`),
+                .flatMap(v => [
+                    `<${NS.concept.conceptTag(v).value}> skos:inScheme <${NS.conceptscheme('ConceptTag').value}>`,
+                    `<${NS.concept.conceptTag(v).value}> a skos:Concept`]),
         ].filter(t => t !== undefined);
         if (triples.length > 0) {
             directDatabaseAccess.insertData(
@@ -778,6 +889,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 triples,
                 [
                     PREFIX.skos,
+                    PREFIX.besluit
                 ]
             );
         }
