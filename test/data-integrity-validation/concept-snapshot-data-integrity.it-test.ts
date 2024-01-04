@@ -23,7 +23,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
     const graph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
     const domainToTriplesMapper = new DomainToTriplesMapper();
 
-   test.skip('Load all concept snapshots; print errors to console.log', async () => {
+    test.skip('Load all concept snapshots; print errors to console.log', async () => {
 
         const conceptSnapshotIdsQuery = `
              ${PREFIX.lpdcExt}
@@ -55,9 +55,17 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         Array.from(allQuadsOfGraph).filter(q => q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/state')))
             .forEach(q => allQuadsOfGraph.delete(q));
 
+        //filter out language on conceptSnapshot
+        Array.from(allQuadsOfGraph).filter(q => q.predicate.equals(namedNode('https://publications.europa.eu/resource/authority/language')))
+            .forEach(q => allQuadsOfGraph.delete(q));
+
         //filter out legal resources data (iri reference still exists)
         Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith("https://codex.vlaanderen.be/"))
             .forEach(q => allQuadsOfGraph.delete(q));
+
+        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith("https://ipdc.be/regelgeving"))
+            .forEach(q => allQuadsOfGraph.delete(q));
+
 
         const delayTime = 0;
         const numberOfLoops = 1;
@@ -65,7 +73,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         const technicalErrors = [];
         const dataErrors = [];
 
-        for(let i = 0; i < numberOfLoops; i++) {
+        for (let i = 0; i < numberOfLoops; i++) {
             let quadsFromRequeriedConceptSnapshots = [];
 
             const before = new Date().valueOf();
@@ -84,9 +92,9 @@ describe('Concept Snapshot Data Integrity Validation', () => {
                         new DomainToTriplesMapper().conceptSnapshotToTriples(conceptSnapshotForId);
                     quadsFromRequeriedConceptSnapshots =
                         [...quadsForConceptSnapshotForId, ...quadsFromRequeriedConceptSnapshots];
-                } catch(e) {
+                } catch (e) {
                     console.error(e);
-                    if(!e.message.startsWith('could not map')) {
+                    if (!e.message.startsWith('could not map')) {
                         console.error(e);
                         technicalErrors.push(e);
                     } else {
@@ -111,19 +119,21 @@ describe('Concept Snapshot Data Integrity Validation', () => {
             // eslint-disable-next-line no-constant-condition
         }
 
-        const totalAverageTime = averageTimes.reduce((accumulator, currentValue) => {return accumulator + currentValue;}, 0) / averageTimes.length;
+        const totalAverageTime = averageTimes.reduce((accumulator, currentValue) => {
+            return accumulator + currentValue;
+        }, 0) / averageTimes.length;
         console.log(`Total average time: ${totalAverageTime}`);
         console.log(`Technical Errors [${technicalErrors}]`);
         console.log(`Data Errors Size [${dataErrors}]`);
 
-        if(conceptSnapshotIds.length > 0) {
+        if (conceptSnapshotIds.length > 0) {
             expect(totalAverageTime).toBeLessThan(25);
             expect(technicalErrors).toEqual([]);
         }
 
     }, 60000 * 15 * 100);
 
-    test.skip('Load one concept snapshot and print quads', async() => {
+    test.skip('Load one concept snapshot and print quads', async () => {
         const id: Iri = 'https://ipdc.vlaanderen.be/id/conceptsnapshot/0d2a2f5a-7213-483d-9fb9-abe0cbac0348';
 
         const allQuads = await fetcher.fetch(graph, id, [], [], []);
