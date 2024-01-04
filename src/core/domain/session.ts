@@ -7,7 +7,7 @@ export class Session {
 
     constructor(id: Iri, bestuurseenheidId: Iri, sessionRole: SessionRole) {
         this._id = requiredIri(id, 'id');
-        this._bestuurseenheidId = bestuurseenheidId; //TODO: make required
+        this._bestuurseenheidId = requiredIri(bestuurseenheidId, 'bestuurseenheidId');
         this._sessionRol = sessionRole;
     }
 

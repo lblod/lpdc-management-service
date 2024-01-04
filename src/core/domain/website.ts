@@ -1,6 +1,7 @@
 import {Iri, requiredIri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
+import {requiredValue} from "./shared/invariant";
 
 export class Website {
 
@@ -8,20 +9,20 @@ export class Website {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
-    private readonly _url: string | undefined;
+    private readonly _url: string;
 
     constructor(id: Iri,
                 uuid: string | undefined,
                 title: LanguageString | undefined,
                 description: LanguageString | undefined,
-                url: string | undefined,
+                url: string,
     ) {
         //TODO LPDC-917: add invariants
         this._id = requiredIri(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
-        this._url = url;
+        this._url = requiredValue(url, 'url');
     }
 
     get id(): Iri {

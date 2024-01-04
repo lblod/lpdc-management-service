@@ -577,13 +577,13 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
             const procedureId = ProcedureTestBuilder.buildIri(uuid());
             const websiteId = WebsiteTestBuilder.buildIri(uuid());
+            const websiteUrl = WebsiteTestBuilder.URL;
 
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
-                    .withProcedures([aMinimalProcedure().withId(procedureId).withWebsites([aMinimalWebsite().withId(websiteId).build()]).build()])
+                    .withProcedures([aMinimalProcedure().withId(procedureId).withWebsites([aMinimalWebsite().withId(websiteId).withUrl(websiteUrl).build()]).build()])
                     .build();
-
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
@@ -592,6 +592,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${procedureId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${procedureId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${websiteId}>`,
                     `<${websiteId}> a <http://schema.org/WebSite>`,
+                    `<${websiteId}> <http://schema.org/url> <${websiteUrl}>`,
                 ]);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshotId);

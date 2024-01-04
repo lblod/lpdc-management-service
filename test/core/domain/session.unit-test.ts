@@ -8,4 +8,11 @@ describe('constructing', () => {
         expect(() => aSession().withId('   ').build()).toThrow(new Error('id should not be blank'));
     });
 
+    test('Undefined bestuurseenheidId throws error', () => {
+        expect(() => aSession().withBestuurseenheidId(undefined).build()).toThrow(new Error('bestuurseenheidId should not be undefined'));
+    });
+    test('Blank bestuurseenheidId throws error', () => {
+        expect(() => aSession().withBestuurseenheidId('   ').build()).toThrow(new Error('bestuurseenheidId should not be blank'));
+    });
+
 });

@@ -623,20 +623,6 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url2.com').build()]).build()])
                 .build()],
-        ['procedure website url added',
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl(undefined).build()]).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
-                .build()],
-        ['procedure website url removed',
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl(undefined).build()]).build()])
-                .build()],
         ['procedure website added',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([]).build()])
@@ -720,20 +706,6 @@ describe('is functionally changed', () => {
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withUrl('https://url2.com').build()])
-                .build()],
-        ['website url added',
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withUrl(undefined).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()])
-                .build()],
-        ['website url removed',
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withUrl(null).build()])
                 .build()],
         ['website order changed',
             aFullConceptSnapshot()

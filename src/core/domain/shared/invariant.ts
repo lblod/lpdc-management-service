@@ -1,3 +1,5 @@
+import {Iri} from "./iri";
+
 type ValidationResult = string | null;
 type InvariantType<V> = (value: V) => ValidationResult;
 
@@ -40,3 +42,10 @@ export class Invariant<V> {
         return null;
     }
 }
+
+export const requiredValue = (value: Iri, name: string = 'object'): Iri => {
+    const invariant = Invariant.require(value, name);
+    invariant.to(invariant.notBeUndefined(), invariant.notBeBlank());
+
+    return value;
+};
