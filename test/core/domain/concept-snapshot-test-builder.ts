@@ -28,8 +28,9 @@ import {
 import {buildCodexVlaanderenIri, buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 
 
-export function aMinimalConcept(): ConceptSnapshotTestBuilder {
+export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
     return new ConceptSnapshotTestBuilder()
+        //TODO LPDC-916: define a 'minimal'
         .withId(buildConceptSnapshotIri(uuid()));
 }
 

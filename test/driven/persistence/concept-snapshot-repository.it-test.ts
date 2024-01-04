@@ -3,7 +3,7 @@ import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
 import {
     aFullConceptSnapshot,
-    aMinimalConcept,
+    aMinimalConceptSnapshot,
     ConceptSnapshotTestBuilder
 } from "../../core/domain/concept-snapshot-test-builder";
 import {ConceptSnapshotSparqlTestRepository} from "./concept-snapshot-sparql-test-repository";
@@ -45,10 +45,10 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         test('When minimal concept snapshot exists with id, then return concept snapshot', async () => {
-            const conceptSnapshot = aMinimalConcept().build();
+            const conceptSnapshot = aMinimalConceptSnapshot().build();
             await repository.save(conceptSnapshot);
 
-            const anotherConceptSnapshot = aMinimalConcept().build();
+            const anotherConceptSnapshot = aMinimalConceptSnapshot().build();
             await repository.save(anotherConceptSnapshot);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -57,10 +57,10 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         test('When minimal concept snapshot with incomplete title exists with id, then return concept snapshot', async () => {
-            const conceptSnapshot = aMinimalConcept().withTitle(LanguageString.of(undefined, ConceptSnapshotTestBuilder.TITLE_NL)).build();
+            const conceptSnapshot = aMinimalConceptSnapshot().withTitle(LanguageString.of(undefined, ConceptSnapshotTestBuilder.TITLE_NL)).build();
             await repository.save(conceptSnapshot);
 
-            const anotherConceptSnapshot = aMinimalConcept().build();
+            const anotherConceptSnapshot = aMinimalConceptSnapshot().build();
             await repository.save(anotherConceptSnapshot);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -94,7 +94,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
 
             const conceptSnapshot =
-                aMinimalConcept()
+                aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
                     .build();
 
@@ -111,7 +111,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
 
             const conceptSnapshot =
-                aMinimalConcept()
+                aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
                     .withTitle(LanguageString.of(undefined, ConceptSnapshotTestBuilder.TITLE_NL))
                     .build();
@@ -130,7 +130,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
 
             const conceptSnapshot =
-                aMinimalConcept()
+                aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
                     .withStartDate(ConceptSnapshotTestBuilder.START_DATE)
                     .withEndDate(undefined)
@@ -506,7 +506,7 @@ describe('ConceptSnapshotRepository', () => {
             const requirementId = RequirementTestBuilder.buildIri(uuid());
 
             const conceptSnapshot =
-                aMinimalConcept()
+                aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
                     .withRequirements([aMinimalRequirement().withId(requirementId).withEvidence(undefined).build()])
                     .build();
@@ -530,7 +530,7 @@ describe('ConceptSnapshotRepository', () => {
             const evidenceId = EvidenceTestBuilder.buildIri(uuid());
 
             const conceptSnapshot =
-                aMinimalConcept()
+                aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
                     .withRequirements([aMinimalRequirement().withId(requirementId).withEvidence(aMinimalEvidence().withId(evidenceId).build()).build()])
                     .build();
@@ -555,7 +555,7 @@ describe('ConceptSnapshotRepository', () => {
             const procedureId = ProcedureTestBuilder.buildIri(uuid());
 
             const conceptSnapshot =
-                aMinimalConcept()
+                aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
                     .withProcedures([aMinimalProcedure().withId(procedureId).withWebsites([]).build()])
                     .build();
@@ -579,7 +579,7 @@ describe('ConceptSnapshotRepository', () => {
             const websiteId = WebsiteTestBuilder.buildIri(uuid());
 
             const conceptSnapshot =
-                aMinimalConcept()
+                aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
                     .withProcedures([aMinimalProcedure().withId(procedureId).withWebsites([aMinimalWebsite().withId(websiteId).build()]).build()])
                     .build();
@@ -602,7 +602,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const type of Object.values(ProductType)) {
             test(`Product type ${type} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConcept().withType(type).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withType(type).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -625,7 +625,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const targetAudience of Object.values(TargetAudienceType)) {
             test(`TargetAudienceType ${targetAudience} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConcept().withTargetAudiences(new Set([targetAudience])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withTargetAudiences(new Set([targetAudience])).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -648,7 +648,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const theme of Object.values(ThemeType)) {
             test(`ThemeType ${theme} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConcept().withThemes(new Set([theme])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withThemes(new Set([theme])).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -671,7 +671,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
             test(`CompetentAuthorityLevelType ${competentAuthorityLevel} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConcept().withCompetentAuthorityLevels(new Set([competentAuthorityLevel])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withCompetentAuthorityLevels(new Set([competentAuthorityLevel])).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -694,7 +694,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const executingAuthorityLevel of Object.values(ExecutingAuthorityLevelType)) {
             test(`ExecutingAuthorityLevelType ${executingAuthorityLevel} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConcept().withExecutingAuthorityLevels(new Set([executingAuthorityLevel])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withExecutingAuthorityLevels(new Set([executingAuthorityLevel])).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -717,7 +717,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const publicationMedium of Object.values(PublicationMediumType)) {
             test(`PublicationMediumType ${publicationMedium} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConcept().withPublicationMedia(new Set([publicationMedium])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withPublicationMedia(new Set([publicationMedium])).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -740,7 +740,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
             test(`YourEuropeCategoryType ${yourEuropeCategory} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConcept().withYourEuropeCategories(new Set([yourEuropeCategory])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withYourEuropeCategories(new Set([yourEuropeCategory])).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -763,7 +763,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const type of Object.values(SnapshotType)) {
             test(`Snapshot type ${type} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConcept().withSnapshotType(type).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withSnapshotType(type).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -786,7 +786,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const type of Object.values(ConceptTagType)) {
             test(`Concept Tag type ${type} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConcept().withConceptTags(new Set([type])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withConceptTags(new Set([type])).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
