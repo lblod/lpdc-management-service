@@ -41,29 +41,29 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         const newConceptSnapshot = await this._conceptSnapshotRepository.findById(newConceptSnapshotId);
         const conceptId = newConceptSnapshot.isVersionOfConcept;
 
-        if (await this.shouldConceptSnapshotBeAppliedToConcept(newConceptSnapshot, this._conceptRepository, this._conceptSnapshotRepository)) {
+        if (await this.shouldConceptSnapshotBeMergedToConcept(newConceptSnapshot)) {
             console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
             try {
                 const currentSnapshotId: string | undefined = await this.getVersionedSourceOfConcept(conceptId);
 
                 const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
 
-                const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentSnapshotId, this._conceptSnapshotRepository);
-
+                const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentSnapshotId);
                 await this.upsertNewLdesVersion(newConceptSnapshotId, conceptId);
                 await this.updatedVersionInformation(newConceptSnapshotId, conceptId);
                 if (!currentSnapshotId || isConceptFunctionallyChanged) {
                     await this.updateLatestFunctionalChange(newConceptSnapshotId, conceptId);
                 }
-
-                const instanceReviewStatus = this.determineInstanceReviewStatus(isConceptFunctionallyChanged, isArchiving);
-                await this.flagInstancesModifiedConcept(conceptId, instanceReviewStatus);
-
-                await this.ensureConceptDisplayConfigs(conceptId);
-
                 if (isArchiving) {
                     await this.markConceptAsArchived(conceptId);
                 }
+
+                //instances (in user graphs)
+                const instanceReviewStatus: string | undefined = this.determineInstanceReviewStatus(isConceptFunctionallyChanged, isArchiving);
+                await this.flagInstancesModifiedConcept(conceptId, instanceReviewStatus);
+
+                //concept display configs (in user graphs)
+                await this.ensureConceptDisplayConfigs(conceptId);
             } catch (e) {
                 console.error(`Error processing: ${JSON.stringify(newConceptSnapshotId)}`);
                 console.error(e);
@@ -74,16 +74,17 @@ export class NewConceptSnapshotToConceptMergerDomainService {
     }
 
 
-    private async shouldConceptSnapshotBeAppliedToConcept(conceptSnapshot: ConceptSnapshot, conceptRepository: ConceptSparqlRepository, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<boolean> {
+    private async shouldConceptSnapshotBeMergedToConcept(conceptSnapshot: ConceptSnapshot): Promise<boolean> {
         const conceptId = conceptSnapshot.isVersionOfConcept;
-        if (!await conceptRepository.exists(conceptId)) {
+        if (!await this._conceptRepository.exists(conceptId)) {
             return true;
         }
-        const concept = await conceptRepository.findById(conceptId);
+        //TODO LPDC-916: this is buggy ...
+        const concept = await this._conceptRepository.findById(conceptId);
         const conceptSnapshotAlreadyLinkedToConcept = concept.appliedSnapshots.has(conceptSnapshot.id);
         const conceptSnapshotIsGeneratedAfterAllLinkedSnapshots = Array.from(concept.appliedSnapshots)
             .every(async conceptSnapshotId => {
-                const linkedSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
+                const linkedSnapshot = await this._conceptSnapshotRepository.findById(conceptSnapshotId);
                 return linkedSnapshot.generatedAtTime.before(conceptSnapshot.generatedAtTime);
             });
         return !conceptSnapshotAlreadyLinkedToConcept && conceptSnapshotIsGeneratedAfterAllLinkedSnapshots;
@@ -117,7 +118,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         const graph = CONCEPT_GRAPH;
         const sudo = true;
 
-        const serviceUri = await serviceUriForId(serviceId, type);
+        const serviceUri = await serviceUriForId(serviceId, type, this._connectionOptions);
 
         if (!serviceUri) {
             throw `Service URI not found for id ${serviceId}`;
@@ -395,7 +396,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
     }
 
 
-    private async flagInstancesModifiedConcept(service: string, reviewStatus?: string): Promise<void> {
+    private async flagInstancesModifiedConcept(conceptId: Iri, reviewStatus?: string): Promise<void> {
         if (reviewStatus) {
             const updateQueryStr = `
             ${PREFIX.ext}
@@ -413,7 +414,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             WHERE {
                 GRAPH ?g {
                     ?service a cpsv:PublicService;
-                    <http://purl.org/dc/terms/source> ${sparqlEscapeUri(service)}.
+                    <http://purl.org/dc/terms/source> ${sparqlEscapeUri(conceptId)}.
                 }
             }`;
             await updateSudo(updateQueryStr, {}, this._connectionOptions);
@@ -475,12 +476,12 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         await updateSudo(markAsArchivedQuery, {}, this._connectionOptions);
     }
 
-    private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: string, conceptSnapshotRepository: ConceptSnapshotRepository): Promise<boolean> {
+    private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: string): Promise<boolean> {
         if (!currentSnapshotId) {
             return false;
         }
 
-        const currentConceptSnapshot = await conceptSnapshotRepository.findById(currentSnapshotId);
+        const currentConceptSnapshot = await this._conceptSnapshotRepository.findById(currentSnapshotId);
 
         return ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
     }

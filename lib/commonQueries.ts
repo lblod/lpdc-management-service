@@ -549,8 +549,10 @@ export async function loadPublicService(service: string, {
     return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
-export async function serviceUriForId(publicServiceId: string, type: string = 'cpsv:PublicService'): Promise<string> {
-    return (await query(`
+export async function serviceUriForId(publicServiceId: string, type: string = 'cpsv:PublicService', connectionOptions?: object): Promise<string> {
+    connectionOptions = connectionOptions || {};
+
+    return (await querySudo(`
       ${PREFIXES}
 
       SELECT DISTINCT ?service
@@ -560,7 +562,7 @@ export async function serviceUriForId(publicServiceId: string, type: string = 'c
           mu:uuid ?uuid.
       }
       LIMIT 1
-    `)).results.bindings[0]?.service?.value;
+    `, {}, connectionOptions)).results.bindings[0]?.service?.value;
 }
 
 export async function loadFormalInformalChoice(): Promise<any> {

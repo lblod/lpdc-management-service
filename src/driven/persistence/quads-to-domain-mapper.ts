@@ -29,6 +29,8 @@ import {STATUS} from "./status";
 
 export class QuadsToDomainMapper {
 
+    //TODO LPDC-916: add error handling if we find double triples ... => log or throw error?
+
     private readonly store;
     private readonly graphId;
 
