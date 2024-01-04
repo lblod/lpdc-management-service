@@ -393,6 +393,8 @@ describe('merges a new concept snapshot into a concept', () => {
             await merger.merge(updatedConceptSnapshot.id);
 
             const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.id).toMatch(updatedConceptSnapshot.isVersionOfConcept);
+            expect(updatedConcept.uuid).toMatch(uuidRegex);
             expect(updatedConcept.title).toEqual(updatedConceptSnapshot.title);
             expect(updatedConcept.description).toEqual(updatedConceptSnapshot.description);
             expect(updatedConcept.additionalDescription).toEqual(updatedConceptSnapshot.additionalDescription);

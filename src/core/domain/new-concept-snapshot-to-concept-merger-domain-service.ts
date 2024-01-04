@@ -136,11 +136,10 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         );
     }
 
-
     private asMergedConcept(conceptSnapshot: ConceptSnapshot, concept: Concept, isConceptFunctionallyChanged: boolean): Concept {
         return new Concept(
             concept.id,
-            uuid(),
+            concept.uuid,
             conceptSnapshot.title,
             conceptSnapshot.description,
             conceptSnapshot.additionalDescription,
@@ -176,7 +175,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
     private addAsPreviousConceptSnapshot(conceptSnapshot: ConceptSnapshot, concept: Concept): Concept {
         return new Concept(
             concept.id,
-            uuid(),
+            concept.uuid,
             concept.title,
             concept.description,
             concept.additionalDescription,
