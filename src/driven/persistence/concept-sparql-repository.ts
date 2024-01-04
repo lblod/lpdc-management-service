@@ -7,6 +7,7 @@ import {CONCEPT_GRAPH, PREFIX} from "../../../config";
 import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {sparqlEscapeUri} from "../../../mu-helper";
+import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
 
 export class ConceptSparqlRepository implements ConceptRepository {
 
@@ -62,5 +63,19 @@ export class ConceptSparqlRepository implements ConceptRepository {
             }
         `;
         return this.querying.ask(query);
+    }
+
+    async save(concept: Concept): Promise<void> {
+        const triples = new DomainToTriplesMapper().conceptToTriples(concept).map(s => s.toNT());
+
+        const query = `
+            INSERT DATA { 
+                GRAPH <${CONCEPT_GRAPH}> {
+                    ${triples.join("\n")}
+                }
+            }
+        `;
+
+        await this.querying.update(query);
     }
 }

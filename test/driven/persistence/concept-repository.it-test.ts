@@ -2,15 +2,15 @@ import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {ConceptSparqlTestRepository} from "./concept-sparql-test-repository";
 import {aFullConcept, aMinimalConcept, ConceptTestBuilder} from "../../core/domain/concept-test-builder";
 import {CONCEPT_GRAPH, PREFIX} from "../../../config";
 import {NS} from "../../../src/driven/persistence/namespaces";
 
 import {buildConceptIri} from "../../core/domain/iri-test-builder";
+import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 
 describe('ConceptRepository', () => {
-    const repository = new ConceptSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const repository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
     describe('findById', () => {

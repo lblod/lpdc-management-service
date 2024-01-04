@@ -2,18 +2,18 @@ import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
-import {ConceptSparqlTestRepository} from "../driven/persistence/concept-sparql-test-repository";
 import {CONCEPT_GRAPH, PREFIX} from "../../config";
 import {isLiteral} from "rdflib";
 import {shuffle} from "lodash";
 import {asSortedSet} from "../../src/core/domain/shared/collections-helper";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
+import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 
 describe('Concept Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
 
-    const repository = new ConceptSparqlTestRepository(endPoint);
+    const repository = new ConceptSparqlRepository(endPoint);
     const snapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);

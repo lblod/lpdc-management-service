@@ -1,6 +1,5 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {ConceptSnapshotSparqlTestRepository} from "../../driven/persistence/concept-snapshot-sparql-test-repository";
-import {ConceptSparqlTestRepository} from "../../driven/persistence/concept-sparql-test-repository";
 import {
     NewConceptSnapshotToConceptMergerDomainService
 } from "../../../src/core/domain/new-concept-snapshot-to-concept-merger-domain-service";
@@ -35,13 +34,14 @@ import {aFullProcedure, anotherFullProcedure} from "./procedure-test-builder";
 import {anotherFullWebsite} from "./website-test-builder";
 import {aFullCost, anotherFullCost} from "./cost-test-builder";
 import {aFullFinancialAdvantage, anotherFullFinancialAdvantage} from "./financial-advantage-test-builder";
+import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 
 describe('merges a new concept snapshot into a concept', () => {
 
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const conceptRepository = new ConceptSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
 
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 

@@ -7,4 +7,6 @@ export interface ConceptRepository {
 
     exists(id: Iri): Promise<boolean>;
 
+    save(concept: Concept): Promise<void>;
+
 }

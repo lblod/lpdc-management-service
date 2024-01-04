@@ -22,16 +22,23 @@ import {
 import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snapshot-repository";
 import {ConceptSnapshot} from "./concept-snapshot";
 import {SnapshotType} from "./types";
-import {ConceptSparqlRepository} from "../../driven/persistence/concept-sparql-repository";
 import {Iri} from "./shared/iri";
+import {Concept} from "./concept";
+import {ConceptRepository} from "../port/driven/persistence/concept-repository";
+import {Requirement} from "./requirement";
+import {Evidence} from "./evidence";
+import {Procedure} from "./procedure";
+import {Website} from "./website";
+import {Cost} from "./cost";
+import {FinancialAdvantage} from "./financial-advantage";
 
 export class NewConceptSnapshotToConceptMergerDomainService {
 
     private readonly _conceptSnapshotRepository: ConceptSnapshotRepository;
-    private readonly _conceptRepository: ConceptSparqlRepository;
+    private readonly _conceptRepository: ConceptRepository;
     private readonly _connectionOptions: object; //TODO LPDC-916: remove when all replaced
 
-    constructor(conceptSnapshotRepository: ConceptSnapshotRepository, conceptRepository: ConceptSparqlRepository, endpoint: string = "http://database:8890/sparql") {
+    constructor(conceptSnapshotRepository: ConceptSnapshotRepository, conceptRepository: ConceptRepository, endpoint: string = "http://database:8890/sparql") {
         this._conceptSnapshotRepository = conceptSnapshotRepository;
         this._conceptRepository = conceptRepository;
         this._connectionOptions = {sparqlEndpoint: endpoint};
@@ -40,20 +47,35 @@ export class NewConceptSnapshotToConceptMergerDomainService {
     async merge(newConceptSnapshotId: Iri) {
         const newConceptSnapshot = await this._conceptSnapshotRepository.findById(newConceptSnapshotId);
         const conceptId = newConceptSnapshot.isVersionOfConcept;
+        const conceptExists = await this._conceptRepository.exists(conceptId);
+        const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
 
-        if (await this.shouldConceptSnapshotBeMergedToConcept(newConceptSnapshot)) {
+        if (!conceptExists
+            || await this.shouldConceptSnapshotBeMergedToConcept(newConceptSnapshot, concept)) {
+
             console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
+
             try {
-                const currentSnapshotId: string | undefined = await this.getVersionedSourceOfConcept(conceptId);
-                const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentSnapshotId);
-                await this.upsertNewLdesVersion(newConceptSnapshotId, conceptId);
-                await this.updatedVersionInformation(newConceptSnapshotId, conceptId);
-                if (!currentSnapshotId || isConceptFunctionallyChanged) {
-                    await this.updateLatestFunctionalChange(newConceptSnapshotId, conceptId);
-                }
+                const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
+                const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
+
                 const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
-                if (isArchiving) {
-                    await this.markConceptAsArchived(conceptId);
+
+                if (!conceptExists) {
+                    const newConcept = this.asNewConcept(newConceptSnapshot);
+                    await this._conceptRepository.save(newConcept);
+                } else {
+
+                    await this.mergeNewConceptSnapshotIntoExistingConcept(newConceptSnapshotId, conceptId);
+                    await this.updatedVersionInformation(newConceptSnapshotId, conceptId);
+
+                    if (!currentConceptSnapshotId || isConceptFunctionallyChanged) {
+                        await this.updateLatestFunctionalChange(newConceptSnapshotId, conceptId);
+                    }
+                    const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
+                    if (isArchiving) {
+                        await this.markConceptAsArchived(conceptId);
+                    }
                 }
 
                 //instances (in user graphs)
@@ -66,26 +88,22 @@ export class NewConceptSnapshotToConceptMergerDomainService {
                 console.error(`Error processing: ${JSON.stringify(newConceptSnapshotId)}`);
                 console.error(e);
             }
+
         } else {
             console.log(`The versioned resource ${newConceptSnapshotId} is an older version of service ${conceptId}`);
         }
     }
 
 
-    private async shouldConceptSnapshotBeMergedToConcept(conceptSnapshot: ConceptSnapshot): Promise<boolean> {
-        const conceptId = conceptSnapshot.isVersionOfConcept;
-        if (!await this._conceptRepository.exists(conceptId)) {
-            return true;
-        }
-        const concept = await this._conceptRepository.findById(conceptId);
+    private async shouldConceptSnapshotBeMergedToConcept(conceptSnapshot: ConceptSnapshot, concept: Concept): Promise<boolean> {
         const conceptSnapshotAlreadyLinkedToConcept = concept.appliedSnapshots.has(conceptSnapshot.id);
         if (conceptSnapshotAlreadyLinkedToConcept) {
             return false;
         }
 
-        for(const appliedSnapshotId of concept.appliedSnapshots) {
+        for (const appliedSnapshotId of concept.appliedSnapshots) {
             const alreadyAppliedSnapshot = await this._conceptSnapshotRepository.findById(appliedSnapshotId);
-            if(conceptSnapshot.generatedAtTime.before(alreadyAppliedSnapshot.generatedAtTime)) {
+            if (conceptSnapshot.generatedAtTime.before(alreadyAppliedSnapshot.generatedAtTime)) {
                 return false;
             }
         }
@@ -93,7 +111,58 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         return true;
     }
 
-    private async upsertNewLdesVersion(newConceptSnapshotId: Iri, conceptId: Iri): Promise<void> {
+    private asNewConcept(conceptSnapshot: ConceptSnapshot): Concept {
+        return new Concept(
+            conceptSnapshot.isVersionOfConcept,
+            uuid(),
+            conceptSnapshot.title,
+            conceptSnapshot.description,
+            conceptSnapshot.additionalDescription,
+            conceptSnapshot.exception,
+            conceptSnapshot.regulation,
+            conceptSnapshot.startDate,
+            conceptSnapshot.endDate,
+            conceptSnapshot.type,
+            conceptSnapshot.targetAudiences,
+            conceptSnapshot.themes,
+            conceptSnapshot.competentAuthorityLevels,
+            conceptSnapshot.competentAuthorities,
+            conceptSnapshot.executingAuthorityLevels,
+            conceptSnapshot.executingAuthorities,
+            conceptSnapshot.publicationMedia,
+            conceptSnapshot.yourEuropeCategories,
+            conceptSnapshot.keywords,
+            conceptSnapshot.requirements.map(r =>
+                new Requirement(
+                    r.id,
+                    uuid(),
+                    r.title,
+                    r.description,
+                    r.evidence ? new Evidence(r.evidence.id, uuid(), r.evidence.title, r.evidence.description) : undefined)),
+            conceptSnapshot.procedures.map(p =>
+                new Procedure(
+                    p.id,
+                    uuid(),
+                    p.title,
+                    p.description,
+                    p.websites.map(w => new Website(w.id, uuid(), w.title, w.description, w.url)))),
+            conceptSnapshot.websites.map(w =>
+                new Website(w.id, uuid(), w.title, w.description, w.url)),
+            conceptSnapshot.costs.map(c =>
+                new Cost(c.id, uuid(), c.title, c.description)),
+            conceptSnapshot.financialAdvantages.map(fa =>
+                new FinancialAdvantage(fa.id, uuid(), fa.title, fa.description)),
+            conceptSnapshot.productId,
+            conceptSnapshot.id,
+            new Set(),
+            conceptSnapshot.id,
+            conceptSnapshot.conceptTags,
+            conceptSnapshot.snapshotType === SnapshotType.DELETE,
+            conceptSnapshot.legalResources,
+        );
+    }
+
+    private async mergeNewConceptSnapshotIntoExistingConcept(newConceptSnapshotId: Iri, conceptId: Iri): Promise<void> {
         let serviceId = (await querySudo(`
     ${PREFIX.lpdcExt}
     ${PREFIX.mu}
@@ -113,7 +182,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             serviceId = uuid();
         }
         await this.insertConceptualService(newConceptSnapshotId, conceptId, serviceId);
-
     }
 
     private async removeConceptualService(serviceId: string): Promise<void> {
@@ -542,7 +610,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         await updateSudo(markAsArchivedQuery, {}, this._connectionOptions);
     }
 
-    private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: string): Promise<boolean> {
+    private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: Iri): Promise<boolean> {
         if (!currentSnapshotId) {
             return false;
         }
@@ -550,16 +618,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         const currentConceptSnapshot = await this._conceptSnapshotRepository.findById(currentSnapshotId);
 
         return ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
-    }
-
-    private async getVersionedSourceOfConcept(conceptUri: string): Promise<string> {
-        const query = `
-      ${PREFIX.ext}
-      SELECT ?snapshotUri WHERE {
-          ${sparqlEscapeUri(conceptUri)} ext:hasVersionedSource ?snapshotUri .
-      }
-  `;
-        return (await querySudo(query, {}, this._connectionOptions)).results.bindings[0]?.snapshotUri?.value;
     }
 
     private async updateLatestFunctionalChange(conceptSnapshotUri: string, conceptUri: string): Promise<void> {
