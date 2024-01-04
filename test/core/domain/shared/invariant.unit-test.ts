@@ -55,6 +55,31 @@ describe('notBeBlank', () => {
     });
 
 });
+describe('haveAtLeastOneValuePresent', () => {
+    const name = 'list';
+    test('Throws error when no value is present', () => {
+
+        const invariant: Invariant<any> = Invariant.require([undefined, '', "  \n  \t  "], name);
+        expect(() => invariant.to(invariant.haveAtLeastOneValuePresent())).toThrow(new Error(`${name} does not contain one value`));
+    });
+    test('Returns null when one value is present', () => {
+        const invariant: Invariant<any[]> = Invariant.require(['', undefined, 'correct value'], name);
+        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toBeNull();
+    });
+    test('Returns null when one value is present and other is blank', () => {
+        const invariant: Invariant<any[]> = Invariant.require(['', 'correct value'], name);
+        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toBeNull();
+    });
+    test('Returns null when one value is present and other is undefined', () => {
+        const invariant: Invariant<any[]> = Invariant.require([undefined, 'correct value'], name);
+        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toBeNull();
+    });
+    test('Returns null when multiple values are present', () => {
+        const invariant: Invariant<any> = Invariant.require(['correct value 1', '', 'correct value 2'], name);
+        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toBeNull();
+    });
+});
+
 
 describe('to', () => {
     test('returns first violation', () => {

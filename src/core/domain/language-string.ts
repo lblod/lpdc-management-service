@@ -1,4 +1,5 @@
 import {Language} from "./language";
+import {Invariant} from "./shared/invariant";
 
 export class LanguageString {
 
@@ -15,6 +16,10 @@ export class LanguageString {
                         nlInformal: string | undefined,
                         nlGeneratedFormal: string | undefined,
                         nlGeneratedInformal: string | undefined) {
+
+        const invariant = Invariant.require([en, nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal], 'language list');
+        invariant.to(invariant.haveAtLeastOneValuePresent());
+
         this._en = en;
         this._nl = nl;
         this._nlFormal = nlFormal;
@@ -30,9 +35,6 @@ export class LanguageString {
         nlInformal?: string | undefined,
         nlGeneratedFormal?: string | undefined,
         nlGeneratedInformal?: string | undefined): LanguageString {
-        if (!en && !nl && !nlFormal && !nlInformal && !nlGeneratedFormal && !nlGeneratedInformal) {
-            return undefined;
-        } //TODO: invariant check in constructor at least one needs to be present
         return new LanguageString(en, nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal);
     }
 

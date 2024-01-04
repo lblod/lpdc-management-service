@@ -16,17 +16,20 @@ export class Invariant<V> {
         return new Invariant(value, name ?? 'name');
     }
 
-    notBeUndefined(): InvariantType<boolean> {
-        return () => this._value !== undefined ? null : `${this._name} should not be undefined`;
+    notBeUndefined(): InvariantType<V> {
+        return () => !this.isUndefined(this._value) ? null : `${this._name} should not be undefined`;
     }
 
     notBeBlank(): InvariantType<V> {
+        return () => !this.isBlank(this._value) ? null : `${this._name} should not be blank`;
+    }
+
+    haveAtLeastOneValuePresent(): InvariantType<V> {
         return () => {
-            if (typeof this._value === 'string' && this._value.trim() !== '') {
+            if ((this._value as any[]).find(value => (!this.isUndefined(value) && !this.isBlank(value))) !== undefined) {
                 return null;
-            } else {
-                return `${this._name} should not be blank`;
             }
+            return `${this._name} does not contain one value`;
         };
     }
 
@@ -41,6 +44,15 @@ export class Invariant<V> {
 
         return null;
     }
+
+    private isUndefined(value: any): boolean {
+        return value === undefined;
+    }
+
+    private isBlank(value: any): boolean {
+        return (typeof value === 'string' && value.trim() === '');
+    }
+
 }
 
 export const requiredValue = (value: Iri, name: string = 'object'): Iri => {

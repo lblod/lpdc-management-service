@@ -246,7 +246,7 @@ export class QuadsToDomainMapper {
     }
 
     private isConceptArchived(id: Iri): boolean {
-         return !!this.store.anyStatementMatching(namedNode(id), NS.adms('status'), STATUS.concept.archived, this.graphId);
+        return !!this.store.anyStatementMatching(namedNode(id), NS.adms('status'), STATUS.concept.archived, this.graphId);
     }
 
     private legalResources(id: Iri): Set<Iri> {
@@ -361,6 +361,9 @@ export class QuadsToDomainMapper {
 
     private asLanguageString(statements: Statement[]): LanguageString | undefined {
         const literals: Literal[] | undefined = this.asLiterals(statements);
+        if (literals === undefined || (literals as []).length === 0) {
+            return undefined;
+        }
 
         return LanguageString.of(
             literals?.find(l => l.language === 'en')?.value,
@@ -389,14 +392,14 @@ export class QuadsToDomainMapper {
     }
 
     private asLiteral(statement: Statement): Literal {
-        if(!isLiteral(statement.object)) {
+        if (!isLiteral(statement.object)) {
             throw Error(`Expecting (${statement}) to have an object that is a literal.`);
         }
         return statement.object as Literal;
     }
 
     private asNamedNode(statement: Statement): NamedNode {
-        if(!isNamedNode(statement.object)) {
+        if (!isNamedNode(statement.object)) {
             throw Error(`Expecting (${statement}) to have an object that is a named node.`);
         }
         return statement.object as NamedNode;
