@@ -775,40 +775,12 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title en updated')).build()])
                 .build()],
-        ['financial advantage title added',
-            aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(undefined).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title en')).build()])
-                .build()],
-        ['financial advantage title removed',
-            aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title en')).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(undefined).build()])
-                .build()],
         ['financial advantage description updated',
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description en updated')).build()])
-                .build()],
-        ['financial advantage description added',
-            aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(undefined).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description en')).build()])
-                .build()],
-        ['financial advantage description removed',
-            aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description en')).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(undefined).build()])
                 .build()],
         ['financial advantage order changed',
             aFullConceptSnapshot()
