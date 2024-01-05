@@ -8,7 +8,7 @@ import {
     aMinimalConceptSnapshot,
     ConceptSnapshotTestBuilder
 } from "./concept-snapshot-test-builder";
-import {buildCodexVlaanderenIri, buildConceptIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildCodexVlaanderenIri, buildConceptIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 import {CONCEPT_GRAPH, PREFIX} from "../../../config";
@@ -27,7 +27,7 @@ import {
 } from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {aFullRequirement, anotherFullRequirement} from "./requirement-test-builder";
 import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
 import {aFullProcedure, anotherFullProcedure} from "./procedure-test-builder";
@@ -35,6 +35,7 @@ import {anotherFullWebsite} from "./website-test-builder";
 import {aFullCost, anotherFullCost} from "./cost-test-builder";
 import {aFullFinancialAdvantage, anotherFullFinancialAdvantage} from "./financial-advantage-test-builder";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
+import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 
 describe('merges a new concept snapshot into a concept', () => {
 
@@ -42,6 +43,7 @@ describe('merges a new concept snapshot into a concept', () => {
 
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
 
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
@@ -852,6 +854,39 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(fourthTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
 
         });
+
+    });
+
+    test('Creates a concept display configuration for each bestuurseenheid', async () => {
+
+        const bestuursEenheid1 =
+            aBestuurseenheid()
+                .withId(buildBestuurseenheidIri(uuid()))
+                .build();
+        bestuurseenheidRepository.save(bestuursEenheid1);
+
+        const bestuursEenheid2 =
+            aBestuurseenheid()
+                .withId(buildBestuurseenheidIri(uuid()))
+                .build();
+        bestuurseenheidRepository.save(bestuursEenheid2);
+
+        const isVersionOfConceptId = buildConceptIri(uuid());
+        const conceptSnapshot =
+            aMinimalConceptSnapshot()
+                .withIsVersionOfConcept(isVersionOfConceptId)
+                .build();
+        await conceptSnapshotRepository.save(conceptSnapshot);
+
+        insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+        await merger.merge(conceptSnapshot.id);
+
+        const createdConcept = await conceptRepository.findById(isVersionOfConceptId);
+        expect(createdConcept.id).toEqual(isVersionOfConceptId);
+        expect(createdConcept.uuid).toMatch(uuidRegex);
+
+        //TODO LPDC-916: add asserts about the concept display configuration
 
     });
 

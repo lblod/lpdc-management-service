@@ -18,7 +18,6 @@ import {
     YourEuropeCategoryType
 } from "./types";
 import {Language} from "./language";
-import {Invariant} from "./shared/invariant";
 
 export class Concept {
 

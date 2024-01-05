@@ -11,3 +11,11 @@ export function buildConceptIri(uniqueId: string): Iri {
 export function buildCodexVlaanderenIri(uniqueId: string): Iri {
     return `https://codex.vlaanderen.be/${uniqueId}`;
 }
+
+export function buildConceptDisplayConfigurationIri(uniqueId: string): Iri {
+    return `http://data.lblod.info/id/conceptual-display-configuration/${uniqueId}`;
+}
+
+export function buildBestuurseenheidIri(uniqueId: string): Iri {
+    return `http://data.lblod.info/id/bestuurseenheden/${uniqueId}`;
+}

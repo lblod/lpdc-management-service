@@ -3,6 +3,7 @@ import {Iri, requiredIri} from "./shared/iri";
 
 export class Bestuurseenheid {
     private readonly _id: Iri;
+    //TODO LPDC-916: also map the uuid (as in other classes)
     private readonly _prefLabel: string;
     private readonly _classificatieCode: BestuurseenheidClassificatieCode;
 

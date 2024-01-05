@@ -78,7 +78,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
                 //TODO LPDC-916: move to a separate repo?
                 //concept display configs (in user graphs)
-                await this.ensureConceptDisplayConfigs(conceptId);
+                await this.ensureConceptDisplayConfigurations(conceptId);
 
             }
         } catch (e) {
@@ -425,7 +425,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         }
     }
 
-    private async ensureConceptDisplayConfigs(conceptualService: string): Promise<void> {
+    private async ensureConceptDisplayConfigurations(conceptId: Iri): Promise<void> {
         const insertConfigsQuery = `
     ${PREFIX.lpdcExt}
     ${PREFIX.mu}
@@ -434,31 +434,31 @@ export class NewConceptSnapshotToConceptMergerDomainService {
     
     INSERT {
       GRAPH ?bestuurseenheidGraph {
-        ?concept lpdcExt:hasConceptDisplayConfiguration ?configUri .
-        ?configUri a lpdcExt:ConceptDisplayConfiguration ;
-          mu:uuid ?configId ;
+        ?conceptId lpdcExt:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
+        ?conceptDisplayConfigurationId a lpdcExt:ConceptDisplayConfiguration ;
+          mu:uuid ?conceptDisplayConfigurationUuid ;
           lpdcExt:conceptIsNew "true"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> ;
           lpdcExt:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> ;
-          dct:relation ?eenheid .
+          dct:relation ?bestuurseenheidId .
       }
     }
     WHERE {
-      ?eenheid a besluit:Bestuurseenheid ;
-        mu:uuid ?eenheidId .
+      ?bestuurseenheidId a besluit:Bestuurseenheid ;
+        mu:uuid ?bestuurseenheidUuid .
     
-      BIND(IRI(CONCAT("http://mu.semte.ch/graphs/organizations/", STR(?eenheidId), "/LoketLB-LPDCGebruiker")) as ?bestuurseenheidGraph)
-      BIND(${sparqlEscapeUri(conceptualService)} as ?concept)
+      BIND(IRI(CONCAT("http://mu.semte.ch/graphs/organizations/", STR(?bestuurseenheidUuid), "/LoketLB-LPDCGebruiker")) as ?bestuurseenheidGraph)
+      BIND(${sparqlEscapeUri(conceptId)} as ?conceptId)
     
       GRAPH ?bestuurseenheidGraph {
         FILTER NOT EXISTS {
-          ?concept lpdcExt:hasConceptDisplayConfiguration ?configUri .
-          ?configUri dct:relation ?eenheid .
+          ?conceptId lpdcExt:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
+          ?conceptDisplayConfigurationId dct:relation ?bestuurseenheidId .
         }
       }
     
       ${/*this is a bit of trickery to generate UUID and URI's since STRUUID doesn't work properly in Virtuoso: https://github.com/openlink/virtuoso-opensource/issues/515#issuecomment-456848368 */''}
-      BIND(SHA512(CONCAT(STR(?concept), STR(?eenheidId))) as ?configId) ${/* concept + eenheid should be unique per config object */''}
-      BIND(IRI(CONCAT('http://data.lblod.info/id/conceptual-display-configuration/', STR(?configId))) as ?configUri)
+      BIND(SHA512(CONCAT(STR(?conceptId), STR(?bestuurseenheidUuid))) as ?conceptDisplayConfigurationUuid) ${/* conceptId + bestuurseenheidId should be unique per config object */''}
+      BIND(IRI(CONCAT('http://data.lblod.info/id/conceptual-display-configuration/', STR(?conceptDisplayConfigurationUuid))) as ?conceptDisplayConfigurationId)
     }
   `;
 

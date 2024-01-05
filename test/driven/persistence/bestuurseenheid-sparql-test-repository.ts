@@ -17,11 +17,14 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
         const query = `
             ${PREFIX.skos}
             ${PREFIX.besluit}
+            ${PREFIX.mu}
+            
             INSERT DATA { 
                 GRAPH <http://mu.semte.ch/graphs/public> {
                     ${sparqlEscapeUri(bestuurseenheid.id)} a besluit:Bestuurseenheid .
                     ${sparqlEscapeUri(bestuurseenheid.id)} skos:prefLabel ${sparqlEscapeString(bestuurseenheid.prefLabel)} .
                     ${sparqlEscapeUri(bestuurseenheid.id)} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .
+                    ${sparqlEscapeUri(bestuurseenheid.id)} mu:uuid ${sparqlEscapeString(bestuurseenheid.uuid)} .
                 }
             }
         `;

@@ -1,10 +1,11 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {BestuurseenheidClassificatieCodeUri} from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
-import {aBestuurseenheid, BestuurseenheidTestBuilder} from "../../core/domain/bestuureenheid-test-builder";
+import {aBestuurseenheid} from "../../core/domain/bestuureenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
+import {buildBestuurseenheidIri} from "../../core/domain/iri-test-builder";
 
 describe('BestuurseenheidRepository', () => {
     const repository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -28,7 +29,7 @@ describe('BestuurseenheidRepository', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await repository.save(bestuurseenheid);
 
-            const nonExistentBestuurseenheidId = BestuurseenheidTestBuilder.buildIri("thisiddoesnotexist");
+            const nonExistentBestuurseenheidId = buildBestuurseenheidIri("thisiddoesnotexist");
 
             await expect(repository.findById(nonExistentBestuurseenheidId)).rejects.toThrow(new Error(`no bestuurseenheid found for iri: ${nonExistentBestuurseenheidId}`));
 

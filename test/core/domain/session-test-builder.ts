@@ -1,12 +1,12 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Session, SessionRole} from "../../../src/core/domain/session";
 import {uuid} from "../../../mu-helper";
-import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {buildBestuurseenheidIri} from "./iri-test-builder";
 
 export function aSession(): SessionTestBuilder {
     return new SessionTestBuilder()
         .withId(SessionTestBuilder.buildIri(uuid()))
-        .withBestuurseenheidId(BestuurseenheidTestBuilder.buildIri(uuid()))
+        .withBestuurseenheidId(buildBestuurseenheidIri(uuid()))
         .withSessionRole(SessionRole.LOKETLB_LPDCGEBRUIKER);
 }
 export class SessionTestBuilder {
