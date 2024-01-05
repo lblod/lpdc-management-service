@@ -120,7 +120,7 @@ export class Concept {
         this._previousConceptSnapshots = asSortedSet(previousConceptSnapshots);
         this._latestFunctionallyChangedConceptSnapshot = latestFunctionallyChangedConceptSnapshot;
         this._conceptTags = asSortedSet(conceptTags);
-        this._isArchived = isArchived;
+        this._isArchived = requiredValue(isArchived, 'isArchived');
         this._legalResources = asSortedSet(legalResources);
     }
 

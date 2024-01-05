@@ -83,5 +83,8 @@ describe('constructing', () => {
         expect(() => aFullConcept().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
     });
 
+    test('Undefined isArchived throws error', () => {
+        expect(() => aFullConcept().withIsArchived(undefined).build()).toThrow(new Error('isArchived should not be undefined'));
+    });
 
 });
