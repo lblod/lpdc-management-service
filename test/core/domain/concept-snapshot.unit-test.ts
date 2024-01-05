@@ -544,40 +544,12 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en updated')).build()])
                 .build()],
-        ['procedure title added',
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(undefined).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en updated')).build()])
-                .build()],
-        ['procedure title removed',
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en updated')).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(undefined).build()])
-                .build()],
         ['procedure description updated',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description en updated')).build()])
-                .build()],
-        ['procedure description added',
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withDescription(undefined).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description en updated')).build()])
-                .build()],
-        ['procedure description removed',
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description en')).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withDescription(undefined).build()])
                 .build()],
         ['procedure website title updated',
             aFullConceptSnapshot()

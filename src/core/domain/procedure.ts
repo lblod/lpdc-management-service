@@ -2,26 +2,27 @@ import {Iri, requiredIri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {Website} from "./website";
+import {requiredValue} from "./shared/invariant";
 
 export class Procedure {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
-    private readonly _title: LanguageString | undefined;
-    private readonly _description: LanguageString | undefined;
+    private readonly _title: LanguageString;
+    private readonly _description: LanguageString;
     private readonly _websites: Website[];
 
     constructor(id: Iri,
                 uuid: string | undefined,
-                title: LanguageString | undefined,
-                description: LanguageString | undefined,
+                title: LanguageString,
+                description: LanguageString,
                 websites: Website[],
     ) {
 //TODO LPDC-917: add invariants
         this._id = requiredIri(id, 'id');
         this._uuid = uuid;
-        this._title = title;
-        this._description = description;
+        this._title = requiredValue(title, 'title');
+        this._description = requiredValue(description, 'description');
         this._websites = [...websites];
     }
 
@@ -33,11 +34,11 @@ export class Procedure {
         return this._uuid;
     }
 
-    get title(): LanguageString | undefined {
+    get title(): LanguageString {
         return this._title;
     }
 
-    get description(): LanguageString | undefined {
+    get description(): LanguageString {
         return this._description;
     }
 

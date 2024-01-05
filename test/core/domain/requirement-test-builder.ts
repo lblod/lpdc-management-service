@@ -4,11 +4,14 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
 import {Evidence} from "../../../src/core/domain/evidence";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 
 
 export function aMinimalRequirement(): RequirementTestBuilder {
     return new RequirementTestBuilder()
-        .withId(RequirementTestBuilder.buildIri(uuid()));
+        .withId(RequirementTestBuilder.buildIri(uuid()))
+        .withTitle(aMinimalLanguageString(RequirementTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
 }
 
 export function aFullRequirement(): RequirementTestBuilder {
@@ -55,6 +58,7 @@ export function anotherFullRequirement(): RequirementTestBuilder {
 
 export class RequirementTestBuilder {
 
+    public static readonly TITLE = 'Requirement Title';
     public static readonly TITLE_EN = 'Requirement Title - en';
     public static readonly TITLE_NL = 'Requirement Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Requirement Title - nl-formal';
@@ -62,6 +66,7 @@ export class RequirementTestBuilder {
     public static readonly TITLE_NL_GENERATED_FORMAL = 'Requirement Title - nl-generated-formal';
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Requirement Title - nl-generated-informal';
 
+    public static readonly DESCRIPTION = 'Requirement Description';
     public static readonly DESCRIPTION_EN = 'Requirement Description - en';
     public static readonly DESCRIPTION_NL = 'Requirement Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Requirement Description - nl-formal';

@@ -4,10 +4,13 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {Procedure} from "../../../src/core/domain/procedure";
 import {aFullWebsite, anotherFullWebsite} from "./website-test-builder";
 import {Website} from "../../../src/core/domain/website";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 
 export function aMinimalProcedure(): ProcedureTestBuilder {
     return new ProcedureTestBuilder()
-        .withId(ProcedureTestBuilder.buildIri(uuid()));
+        .withId(ProcedureTestBuilder.buildIri(uuid()))
+        .withTitle(aMinimalLanguageString(ProcedureTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build());
 }
 
 export function aFullProcedure(): ProcedureTestBuilder {
@@ -54,6 +57,7 @@ export function anotherFullProcedure(): ProcedureTestBuilder {
 
 export class ProcedureTestBuilder {
 
+    public static readonly TITLE = 'Procedure Title';
     public static readonly TITLE_EN = 'Procedure Title - en';
     public static readonly TITLE_NL = 'Procedure Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Procedure Title - nl-formal';
@@ -61,6 +65,7 @@ export class ProcedureTestBuilder {
     public static readonly TITLE_NL_GENERATED_FORMAL = 'Procedure Title - nl-generated-formal';
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Procedure Title - nl-generated-informal';
 
+    public static readonly DESCRIPTION = 'Procedure Description';
     public static readonly DESCRIPTION_EN = 'Procedure Description - en';
     public static readonly DESCRIPTION_NL = 'Procedure Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Procedure Description - nl-formal';
