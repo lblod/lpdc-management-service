@@ -2,15 +2,20 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Cost} from "../../../src/core/domain/cost";
 import {uuid} from "../../../mu-helper";
+import {aMinimalLanguageString} from "./language-string-test-builder";
+
 
 export function aMinimalCost(): CostTestBuilder {
     return new CostTestBuilder()
-        .withId(CostTestBuilder.buildIri(uuid()));
+        .withId(CostTestBuilder.buildIri(uuid()))
+        .withTitle(aMinimalLanguageString(CostTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
 }
 
 export function aFullCost(): CostTestBuilder {
     return new CostTestBuilder()
         .withId(CostTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             CostTestBuilder.TITLE_EN,
             CostTestBuilder.TITLE_NL,
@@ -31,6 +36,7 @@ export function aFullCost(): CostTestBuilder {
 export function anotherFullCost(): CostTestBuilder {
     return new CostTestBuilder()
         .withId(CostTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(LanguageString.of(
             CostTestBuilder.ANOTHER_TITLE_EN,
             CostTestBuilder.ANOTHER_TITLE_NL,
@@ -50,6 +56,7 @@ export function anotherFullCost(): CostTestBuilder {
 
 export class CostTestBuilder {
 
+    public static readonly TITLE = 'Cost Title';
     public static readonly TITLE_EN = 'Cost Title - en';
     public static readonly TITLE_NL = 'Cost Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Cost Title - nl-formal';
@@ -57,6 +64,7 @@ export class CostTestBuilder {
     public static readonly TITLE_NL_GENERATED_FORMAL = 'Cost Title - nl-generated-formal';
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Cost Title - nl-generated-informal';
 
+    public static readonly DESCRIPTION = 'Cost Description';
     public static readonly DESCRIPTION_EN = 'Cost Description - en';
     public static readonly DESCRIPTION_NL = 'Cost Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Cost Description - nl-formal';

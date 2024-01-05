@@ -740,40 +740,12 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(LanguageString.of('cost title en updated')).build()])
                 .build()],
-        ['cost title added',
-            aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(undefined).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(LanguageString.of('cost title en')).build()])
-                .build()],
-        ['cost title removed',
-            aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(LanguageString.of('cost title en')).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(undefined).build()])
-                .build()],
         ['cost description updated',
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(LanguageString.of('cost description en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(LanguageString.of('cost description en updated')).build()])
-                .build()],
-        ['cost description added',
-            aFullConceptSnapshot()
-                .withCosts([aFullCost().withDescription(undefined).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withCosts([aFullCost().withDescription(LanguageString.of('cost description en')).build()])
-                .build()],
-        ['cost description removed',
-            aFullConceptSnapshot()
-                .withCosts([aFullCost().withDescription(LanguageString.of('cost description en')).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withCosts([aFullCost().withDescription(undefined).build()])
                 .build()],
         ['cost order changed',
             aFullConceptSnapshot()
