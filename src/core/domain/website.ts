@@ -8,20 +8,20 @@ export class Website {
     private readonly _id: Iri;
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString;
-    private readonly _description: LanguageString;
+    private readonly _description: LanguageString | undefined;
     private readonly _url: string;
 
     constructor(id: Iri,
                 uuid: string | undefined,
                 title: LanguageString,
-                description: LanguageString,
+                description: LanguageString | undefined,
                 url: string,
     ) {
         //TODO LPDC-917: add invariants
         this._id = requiredIri(id, 'id');
         this._uuid = uuid;
         this._title = requiredValue(title, 'title');
-        this._description = requiredValue(description, 'description');
+        this._description = description;
         this._url = requiredValue(url, 'url');
     }
 
@@ -37,7 +37,7 @@ export class Website {
         return this._title;
     }
 
-    get description(): LanguageString {
+    get description(): LanguageString | undefined {
         return this._description;
     }
 

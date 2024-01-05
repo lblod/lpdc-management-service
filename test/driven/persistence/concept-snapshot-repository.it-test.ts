@@ -635,7 +635,6 @@ describe('ConceptSnapshotRepository', () => {
             const procedureDescription = aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build();
             const websiteId = WebsiteTestBuilder.buildIri(uuid());
             const websiteTitle = aMinimalLanguageString(WebsiteTestBuilder.TITLE).build();
-            const websiteDescription = aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build();
             const websiteUrl = WebsiteTestBuilder.URL;
 
             const conceptSnapshot =
@@ -652,7 +651,6 @@ describe('ConceptSnapshotRepository', () => {
                                 aMinimalWebsite()
                                     .withId(websiteId)
                                     .withTitle(websiteTitle)
-                                    .withDescription(websiteDescription)
                                     .withUrl(websiteUrl).build()]).build()])
                     .build();
             await directDatabaseAccess.insertData(
@@ -668,7 +666,6 @@ describe('ConceptSnapshotRepository', () => {
                     `<${procedureId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${websiteId}>`,
                     `<${websiteId}> a <http://schema.org/WebSite>`,
                     `<${websiteId}> <http://purl.org/dc/terms/title> """${websiteTitle.nl}"""@nl`,
-                    `<${websiteId}> <http://purl.org/dc/terms/description> """${websiteDescription.nl}"""@nl`,
                     `<${websiteId}> <http://schema.org/url> <${websiteUrl}>`,
                 ]);
 

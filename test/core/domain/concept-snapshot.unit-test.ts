@@ -565,6 +565,20 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en updated')).build()]).build()])
                 .build()],
+        ['procedure website description added',
+            aFullConceptSnapshot()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
+                .build(),
+            aFullConceptSnapshot()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
+                .build()],
+        ['procedure website description removed',
+            aFullConceptSnapshot()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
+                .build(),
+            aFullConceptSnapshot()
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
+                .build()],
         ['procedure website url updated',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
@@ -620,6 +634,20 @@ describe('is functionally changed', () => {
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en updated')).build()])
+                .build()],
+        ['website description added',
+            aFullConceptSnapshot()
+                .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
+                .build(),
+            aFullConceptSnapshot()
+                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
+                .build()],
+        ['website description removed',
+            aFullConceptSnapshot()
+                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
+                .build(),
+            aFullConceptSnapshot()
+                .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
                 .build()],
         ['website url updated',
             aFullConceptSnapshot()

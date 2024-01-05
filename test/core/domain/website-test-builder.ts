@@ -8,7 +8,6 @@ export function aMinimalWebsite(): WebsiteTestBuilder {
     return new WebsiteTestBuilder()
         .withId(WebsiteTestBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(WebsiteTestBuilder.TITLE).build())
-        .withDescription(aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build())
         .withUrl(WebsiteTestBuilder.URL);
 }
 
