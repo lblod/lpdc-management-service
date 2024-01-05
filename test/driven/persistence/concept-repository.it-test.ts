@@ -106,12 +106,14 @@ describe('ConceptRepository', () => {
 
         test('Verify minimal mappings', async () => {
             const conceptId = buildConceptIri(uuid());
+            const conceptUuid = uuid();
             const conceptTitle = aMinimalLanguageString('title').build();
             const conceptDescription = aMinimalLanguageString('description').build();
 
             const concept =
                 aMinimalConcept()
                     .withId(conceptId)
+                    .withUuid(conceptUuid)
                     .withTitle(conceptTitle)
                     .withDescription(conceptDescription)
                     .withIsArchived(false)
@@ -121,6 +123,7 @@ describe('ConceptRepository', () => {
                 CONCEPT_GRAPH,
                 [
                     `<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptId}> <http://mu.semte.ch/vocabularies/core/uuid> """${concept.uuid}"""`,
                     `<${conceptId}> <http://purl.org/dc/terms/title> """${conceptTitle.nl}"""@nl`,
                     `<${conceptId}> <http://purl.org/dc/terms/description> """${conceptDescription.nl}"""@nl`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
@@ -131,7 +134,7 @@ describe('ConceptRepository', () => {
 
             expect(actualConcept).toEqual(concept);
         });
-        
+
         test('Verify full mappings', async () => {
             const id = uuid();
             const conceptId = buildConceptIri(id);

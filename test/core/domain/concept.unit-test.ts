@@ -63,6 +63,12 @@ describe('constructing', () => {
     test('Blank id throws error', () => {
         expect(() => aFullConcept().withId('   ').build()).toThrow(new Error('id should not be blank'));
     });
+    test('Undefined uuid throws error', () => {
+        expect(() => aFullConcept().withUuid(undefined).build()).toThrow(new Error('uuid should not be undefined'));
+    });
+    test('Blank uuid throws error', () => {
+        expect(() => aFullConcept().withUuid('   ').build()).toThrow(new Error('uuid should not be blank'));
+    });
 
     test('Undefined title throws error', () => {
         expect(() => aFullConcept().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));

@@ -88,7 +88,7 @@ export class Concept {
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = requiredIri(id, 'id');
-        this._uuid = uuid;
+        this._uuid = requiredValue(uuid, 'uuid');
         requiredValue(title, 'title');
         requiredValue(title.nl, 'nl version in title');
         this._title = title;
