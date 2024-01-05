@@ -2,11 +2,14 @@ import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Evidence} from "../../../src/core/domain/evidence";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 
 
 export function aMinimalEvidence(): EvidenceTestBuilder {
     return new EvidenceTestBuilder()
-        .withId(EvidenceTestBuilder.buildIri(uuid()));
+        .withId(EvidenceTestBuilder.buildIri(uuid()))
+        .withTitle(aMinimalLanguageString(EvidenceTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
 }
 
 export function aFullEvidence(): EvidenceTestBuilder {
@@ -51,6 +54,7 @@ export function anotherFullEvidence(): EvidenceTestBuilder {
 
 export class EvidenceTestBuilder {
 
+    public static readonly TITLE = 'Evidence Title';
     public static readonly TITLE_EN = 'Evidence Title - en';
     public static readonly TITLE_NL = 'Evidence Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Evidence Title - nl-formal';
@@ -58,6 +62,7 @@ export class EvidenceTestBuilder {
     public static readonly TITLE_NL_GENERATED_FORMAL = 'Evidence Title - nl-generated-formal';
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Evidence Title - nl-generated-informal';
 
+    public static readonly DESCRIPTION = 'Evidence Description';
     public static readonly DESCRIPTION_EN = 'Evidence Description - en';
     public static readonly DESCRIPTION_NL = 'Evidence Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Evidence Description - nl-formal';

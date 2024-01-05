@@ -529,29 +529,41 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - minimal requirement with minimal evidence', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const title = aMinimalLanguageString('title').build();
-            const description = aMinimalLanguageString('description').build();
+            const conceptSnapshotTitle = aMinimalLanguageString(ConceptSnapshotTestBuilder.TITLE).build();
+            const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const requirementId = RequirementTestBuilder.buildIri(uuid());
             const evidenceId = EvidenceTestBuilder.buildIri(uuid());
+            const evidenceTitle = aMinimalLanguageString(EvidenceTestBuilder.TITLE).build();
+            const evidenceDescription = aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build();
 
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
-                    .withTitle(title)
-                    .withDescription(description)
-                    .withRequirements([aMinimalRequirement().withId(requirementId).withEvidence(aMinimalEvidence().withId(evidenceId).build()).build()])
+                    .withTitle(conceptSnapshotTitle)
+                    .withDescription(conceptSnapshotDescription)
+                    .withRequirements([
+                        aMinimalRequirement()
+                            .withId(requirementId)
+                            .withEvidence(
+                                aMinimalEvidence()
+                                    .withId(evidenceId)
+                                    .withTitle(evidenceTitle)
+                                    .withDescription(evidenceDescription)
+                                    .build()).build()])
                     .build();
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
-                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${title.nl}"""@nl`,
-                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${description.nl}"""@nl`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${requirementId}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${requirementId}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${evidenceId}>`,
                     `<${requirementId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${evidenceId}> a <http://data.europa.eu/m8g/Evidence>`,
+                    `<${evidenceId}> <http://purl.org/dc/terms/title> """${evidenceTitle.nl}"""@nl`,
+                    `<${evidenceId}> <http://purl.org/dc/terms/description> """${evidenceDescription.nl}"""@nl`,
                 ]);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshotId);

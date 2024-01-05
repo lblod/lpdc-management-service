@@ -110,6 +110,7 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
 
 export class ConceptSnapshotTestBuilder {
 
+    public static readonly TITLE = 'Concept Snapshot Title';
     public static readonly TITLE_EN = 'Concept Snapshot Title - en';
     public static readonly TITLE_NL = 'Concept Snapshot Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Concept Snapshot Title - nl-formal';
@@ -117,6 +118,7 @@ export class ConceptSnapshotTestBuilder {
     public static readonly TITLE_NL_GENERATED_FORMAL = 'Concept Snapshot Title - nl-generated-formal';
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Concept Snapshot Title - nl-generated-informal';
 
+    public static readonly DESCRIPTION = 'Concept Snapshot Description';
     public static readonly DESCRIPTION_EN = 'Concept Snapshot Description - en';
     public static readonly DESCRIPTION_NL = 'Concept Snapshot Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Concept Snapshot Description - nl-formal';
