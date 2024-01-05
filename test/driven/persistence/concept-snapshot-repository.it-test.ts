@@ -634,6 +634,8 @@ describe('ConceptSnapshotRepository', () => {
             const procedureTitle = aMinimalLanguageString(ProcedureTestBuilder.TITLE).build();
             const procedureDescription = aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build();
             const websiteId = WebsiteTestBuilder.buildIri(uuid());
+            const websiteTitle = aMinimalLanguageString(WebsiteTestBuilder.TITLE).build();
+            const websiteDescription = aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build();
             const websiteUrl = WebsiteTestBuilder.URL;
 
             const conceptSnapshot =
@@ -646,7 +648,12 @@ describe('ConceptSnapshotRepository', () => {
                             .withId(procedureId)
                             .withTitle(procedureTitle)
                             .withDescription(procedureDescription)
-                            .withWebsites([aMinimalWebsite().withId(websiteId).withUrl(websiteUrl).build()]).build()])
+                            .withWebsites([
+                                aMinimalWebsite()
+                                    .withId(websiteId)
+                                    .withTitle(websiteTitle)
+                                    .withDescription(websiteDescription)
+                                    .withUrl(websiteUrl).build()]).build()])
                     .build();
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
@@ -660,6 +667,8 @@ describe('ConceptSnapshotRepository', () => {
                     `<${procedureId}> <http://purl.org/dc/terms/description> """${procedureDescription.nl}"""@nl`,
                     `<${procedureId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${websiteId}>`,
                     `<${websiteId}> a <http://schema.org/WebSite>`,
+                    `<${websiteId}> <http://purl.org/dc/terms/title> """${websiteTitle.nl}"""@nl`,
+                    `<${websiteId}> <http://purl.org/dc/terms/description> """${websiteDescription.nl}"""@nl`,
                     `<${websiteId}> <http://schema.org/url> <${websiteUrl}>`,
                 ]);
 

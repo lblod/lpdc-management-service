@@ -8,7 +8,12 @@ describe('constructing', () => {
     test('Blank id throws error', () => {
         expect(() => aFullWebsite().withId('   ').build()).toThrow(new Error('id should not be blank'));
     });
-
+    test('Undefined title throws error', () => {
+        expect(() => aFullWebsite().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));
+    });
+    test('Undefined description throws error', () => {
+        expect(() => aFullWebsite().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
+    });
     test('Undefined url throws error', () => {
         expect(() => aFullWebsite().withUrl(undefined).build()).toThrow(new Error('url should not be undefined'));
     });

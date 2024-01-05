@@ -558,40 +558,12 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(LanguageString.of('procedure website title en updated')).build()]).build()])
                 .build()],
-        ['procedure website title added',
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(undefined).build()]).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(LanguageString.of('procedure website title en')).build()]).build()])
-                .build()],
-        ['procedure website title removed',
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(LanguageString.of('procedure website title en')).build()]).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(undefined).build()]).build()])
-                .build()],
         ['procedure website description updated',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en updated')).build()]).build()])
-                .build()],
-        ['procedure website description added',
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
-                .build()],
-        ['procedure website description removed',
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
                 .build()],
         ['procedure website url updated',
             aFullConceptSnapshot()
@@ -642,40 +614,12 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withTitle(LanguageString.of('website title en updated')).build()])
                 .build()],
-        ['website title added',
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withTitle(undefined).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withTitle(LanguageString.of('website title en')).build()])
-                .build()],
-        ['website title removed',
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withTitle(LanguageString.of('website title en')).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withTitle(undefined).build()])
-                .build()],
         ['website description updated',
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en updated')).build()])
-                .build()],
-        ['website description added',
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
-                .build()],
-        ['website description removed',
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
                 .build()],
         ['website url updated',
             aFullConceptSnapshot()

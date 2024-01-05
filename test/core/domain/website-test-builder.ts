@@ -2,10 +2,13 @@ import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Website} from "../../../src/core/domain/website";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 
 export function aMinimalWebsite(): WebsiteTestBuilder {
     return new WebsiteTestBuilder()
         .withId(WebsiteTestBuilder.buildIri(uuid()))
+        .withTitle(aMinimalLanguageString(WebsiteTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build())
         .withUrl(WebsiteTestBuilder.URL);
 }
 
@@ -53,6 +56,7 @@ export function anotherFullWebsite(aUuid: string): WebsiteTestBuilder {
 
 export class WebsiteTestBuilder {
 
+    public static readonly TITLE = 'Website Title';
     public static readonly TITLE_EN = 'Website Title - en';
     public static readonly TITLE_NL = 'Website Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Website Title - nl-formal';
@@ -60,6 +64,7 @@ export class WebsiteTestBuilder {
     public static readonly TITLE_NL_GENERATED_FORMAL = 'Website Title - nl-generated-formal';
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Website Title - nl-generated-informal';
 
+    public static readonly DESCRIPTION = 'Website Description';
     public static readonly DESCRIPTION_EN = 'Website Description - en';
     public static readonly DESCRIPTION_NL = 'Website Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Website Description - nl-formal';
