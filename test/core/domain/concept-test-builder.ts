@@ -26,10 +26,12 @@ import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Concept} from "../../../src/core/domain/concept";
 import {buildCodexVlaanderenIri, buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 
 export function aMinimalConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
         .withId(buildConceptIri(uuid()))
+        .withTitle(aMinimalLanguageString('title').build())
         .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()))
         .withLatestFunctionallyChangedConceptSnapshot(buildConceptSnapshotIri(uuid()));
 }

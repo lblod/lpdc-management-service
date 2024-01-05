@@ -8,6 +8,7 @@ import {NS} from "../../../src/driven/persistence/namespaces";
 
 import {buildConceptIri} from "../../core/domain/iri-test-builder";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
+import {aMinimalLanguageString} from "../../core/domain/language-string-test-builder";
 
 describe('ConceptRepository', () => {
     const repository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -105,10 +106,12 @@ describe('ConceptRepository', () => {
 
         test('Verify minimal mappings', async () => {
             const conceptId = buildConceptIri(uuid());
+            const conceptTitle = aMinimalLanguageString('title').build();
 
             const concept =
                 aMinimalConcept()
                     .withId(conceptId)
+                    .withTitle(conceptTitle)
                     .withIsArchived(false)
                     .build();
 
@@ -116,6 +119,7 @@ describe('ConceptRepository', () => {
                 CONCEPT_GRAPH,
                 [
                     `<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptId}> <http://purl.org/dc/terms/title> """${conceptTitle.nl}"""@nl`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
                 ]);

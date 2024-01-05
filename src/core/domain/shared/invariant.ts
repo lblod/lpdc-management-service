@@ -55,7 +55,7 @@ export class Invariant<V> {
 
 }
 
-export const requiredValue = (value: Iri, name: string = 'object'): Iri => {
+export const requiredValue = (value: any, name: string = 'object'): any => {
     const invariant = Invariant.require(value, name);
     invariant.to(invariant.notBeUndefined(), invariant.notBeBlank());
 

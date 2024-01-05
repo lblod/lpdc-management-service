@@ -19,11 +19,12 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "./types";
+import {requiredValue} from "./shared/invariant";
 
 export class ConceptSnapshot {
 
     private readonly _id: Iri;
-    private readonly _title: LanguageString | undefined;
+    private readonly _title: LanguageString;
     private readonly _description: LanguageString | undefined;
     private readonly _additionalDescription: LanguageString | undefined;
     private readonly _exception: LanguageString | undefined;
@@ -55,7 +56,7 @@ export class ConceptSnapshot {
     private readonly _legalResources: Set<Iri>;
 
     constructor(id: Iri,
-                title: LanguageString | undefined,
+                title: LanguageString,
                 description: LanguageString | undefined,
                 additionalDescription: LanguageString | undefined,
                 exception: LanguageString | undefined,
@@ -88,7 +89,7 @@ export class ConceptSnapshot {
     ) {
         //TODO LPDC-917: enforce invariants ? + do safe copies ?
         this._id = requiredIri(id, 'id');
-        this._title = title;
+        this._title = requiredValue(title, 'title');
         this._description = description;
         this._additionalDescription = additionalDescription;
         this._exception = exception;
@@ -124,7 +125,7 @@ export class ConceptSnapshot {
         return this._id;
     }
 
-    get title(): LanguageString | undefined {
+    get title(): LanguageString {
         return this._title;
     }
 

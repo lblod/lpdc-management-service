@@ -35,6 +35,7 @@ import {anotherFullWebsite} from "./website-test-builder";
 import {aFullCost, anotherFullCost} from "./cost-test-builder";
 import {aFullFinancialAdvantage, anotherFullFinancialAdvantage} from "./financial-advantage-test-builder";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 
 describe('merges a new concept snapshot into a concept', () => {
@@ -230,7 +231,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const createdConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(createdConcept.id).toEqual(isVersionOfConceptId);
             expect(createdConcept.uuid).toMatch(uuidRegex);
-            expect(createdConcept.title).toBeUndefined();
+            expect(createdConcept.title).toEqual(conceptSnapshot.title);
             expect(createdConcept.description).toBeUndefined();
             expect(createdConcept.additionalDescription).toBeUndefined();
             expect(createdConcept.exception).toBeUndefined();
@@ -557,8 +558,10 @@ describe('merges a new concept snapshot into a concept', () => {
 
         test('Updates a concept with minimal new data of a new version of a concept snapshot', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
+            const title = aMinimalLanguageString('title').build();
             const conceptSnapshot =
                 aFullConceptSnapshot()
+                    .withTitle(title)
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
                     .build();
@@ -570,6 +573,7 @@ describe('merges a new concept snapshot into a concept', () => {
 
             const updatedConceptSnapshot =
                 aMinimalConceptSnapshot()
+                    .withTitle(title)
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .build();
@@ -583,7 +587,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(updatedConcept.id).toEqual(isVersionOfConceptId);
             expect(updatedConcept.uuid).toMatch(uuidRegex);
-            expect(updatedConcept.title).toBeUndefined();
+            expect(updatedConcept.title).toEqual(conceptSnapshot.title);
             expect(updatedConcept.description).toBeUndefined();
             expect(updatedConcept.additionalDescription).toBeUndefined();
             expect(updatedConcept.exception).toBeUndefined();

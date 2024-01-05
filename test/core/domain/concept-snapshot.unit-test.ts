@@ -55,7 +55,9 @@ describe('constructing', () => {
     test('Blank id throws error', () => {
         expect(() => aFullConceptSnapshot().withId('   ').build()).toThrow(new Error('id should not be blank'));
     });
-
+    test('Undefined title throws error', () => {
+        expect(() => aFullConceptSnapshot().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));
+    });
 });
 
 describe('is functionally changed', () => {

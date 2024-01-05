@@ -26,12 +26,14 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {buildCodexVlaanderenIri, buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 
 
 export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
     return new ConceptSnapshotTestBuilder()
         //TODO LPDC-916: define a 'minimal'
-        .withId(buildConceptSnapshotIri(uuid()));
+        .withId(buildConceptSnapshotIri(uuid()))
+        .withTitle(aMinimalLanguageString('title').build());
 }
 
 export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
@@ -407,7 +409,7 @@ export class ConceptSnapshotTestBuilder {
             this.snapshotType,
             this.conceptTags,
             this.legalResources,
-            );
+        );
     }
 
 }

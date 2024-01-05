@@ -25,6 +25,7 @@ import {
 } from "../../../src/core/domain/types";
 import {buildConceptSnapshotIri} from "../../core/domain/iri-test-builder";
 import {NS} from "../../../src/driven/persistence/namespaces";
+import {aMinimalLanguageString} from "../../core/domain/language-string-test-builder";
 
 describe('ConceptSnapshotRepository', () => {
     const repository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -92,15 +93,18 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-
+            const conceptSnapshotTitle = aMinimalLanguageString('title').build();
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
+                    .withTitle(conceptSnapshotTitle)
                     .build();
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
-                [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`]);
+                [
+                    `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`]);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
 
@@ -128,10 +132,12 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - with start date but no end date', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+            const conceptSnapshotTitle = aMinimalLanguageString('title').build();
 
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
+                    .withTitle(conceptSnapshotTitle)
                     .withStartDate(ConceptSnapshotTestBuilder.START_DATE)
                     .withEndDate(undefined)
                     .build();
@@ -139,6 +145,7 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/startDate> """${ConceptSnapshotTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
                 ]);
 
@@ -503,17 +510,21 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - requirement without evidence', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+            const conceptSnapshotTitle = aMinimalLanguageString('title').build();
+
             const requirementId = RequirementTestBuilder.buildIri(uuid());
 
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
+                    .withTitle(conceptSnapshotTitle)
                     .withRequirements([aMinimalRequirement().withId(requirementId).withEvidence(undefined).build()])
                     .build();
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
                     `<${requirementId}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${requirementId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
@@ -526,12 +537,14 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - minimal requirement with minimal evidence', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+            const title = aMinimalLanguageString('title').build();
             const requirementId = RequirementTestBuilder.buildIri(uuid());
             const evidenceId = EvidenceTestBuilder.buildIri(uuid());
 
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
+                    .withTitle(title)
                     .withRequirements([aMinimalRequirement().withId(requirementId).withEvidence(aMinimalEvidence().withId(evidenceId).build()).build()])
                     .build();
 
@@ -539,6 +552,7 @@ describe('ConceptSnapshotRepository', () => {
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${title.nl}"""@nl`,
                     `<${requirementId}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${requirementId}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${evidenceId}>`,
                     `<${requirementId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
@@ -552,17 +566,20 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - procedure without websites', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+            const title = aMinimalLanguageString('title').build();
             const procedureId = ProcedureTestBuilder.buildIri(uuid());
 
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
+                    .withTitle(title)
                     .withProcedures([aMinimalProcedure().withId(procedureId).withWebsites([]).build()])
                     .build();
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${title.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/vocab/cpsv#follows> <${procedureId}>`,
                     `<${procedureId}> a <http://purl.org/vocab/cpsv#Rule>`,
                     `<${procedureId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
@@ -575,6 +592,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - procedure with minimal website', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+            const title = aMinimalLanguageString('title').build();
             const procedureId = ProcedureTestBuilder.buildIri(uuid());
             const websiteId = WebsiteTestBuilder.buildIri(uuid());
             const websiteUrl = WebsiteTestBuilder.URL;
@@ -582,11 +600,13 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
+                    .withTitle(title)
                     .withProcedures([aMinimalProcedure().withId(procedureId).withWebsites([aMinimalWebsite().withId(websiteId).withUrl(websiteUrl).build()]).build()])
                     .build();
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${title.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/vocab/cpsv#follows> <${procedureId}>`,
                     `<${procedureId}> a <http://purl.org/vocab/cpsv#Rule>`,
                     `<${procedureId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,

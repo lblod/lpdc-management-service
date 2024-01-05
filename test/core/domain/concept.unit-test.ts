@@ -64,5 +64,9 @@ describe('constructing', () => {
         expect(() => aFullConcept().withId('   ').build()).toThrow(new Error('id should not be blank'));
     });
 
+    test('Undefined title throws error', () => {
+        expect(() => aFullConcept().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));
+    });
+
 
 });
