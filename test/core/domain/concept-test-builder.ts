@@ -31,7 +31,8 @@ import {aMinimalLanguageString} from "./language-string-test-builder";
 export function aMinimalConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
         .withId(buildConceptIri(uuid()))
-        .withTitle(aMinimalLanguageString('title').build())
+        .withTitle(aMinimalLanguageString('Concept Title').build())
+        .withDescription(aMinimalLanguageString('Concept Description').build())
         .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()))
         .withLatestFunctionallyChangedConceptSnapshot(buildConceptSnapshotIri(uuid()));
 }

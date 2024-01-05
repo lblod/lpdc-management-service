@@ -24,8 +24,8 @@ export class Concept {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
-    private readonly _title: LanguageString; //TODO: invariant nl present and cannot be blank or undefined and remove undefined
-    private readonly _description: LanguageString | undefined; //TODO: invariant nl present and cannot be blank or undefined and remove undefined
+    private readonly _title: LanguageString; //TODO: invariant nl present
+    private readonly _description: LanguageString; //TODO: invariant nl present
     private readonly _additionalDescription: LanguageString | undefined;
     private readonly _exception: LanguageString | undefined;
     private readonly _regulation: LanguageString | undefined;
@@ -57,7 +57,7 @@ export class Concept {
     constructor(id: Iri,
                 uuid: string | undefined,
                 title: LanguageString,
-                description: LanguageString | undefined,
+                description: LanguageString,
                 additionalDescription: LanguageString | undefined,
                 exception: LanguageString | undefined,
                 regulation: LanguageString | undefined,
@@ -90,7 +90,7 @@ export class Concept {
         this._id = requiredIri(id, 'id');
         this._uuid = uuid;
         this._title = requiredValue(title, 'title');
-        this._description = description;
+        this._description = requiredValue(description, 'description');
         this._additionalDescription = additionalDescription;
         this._exception = exception;
         this._regulation = regulation;
@@ -121,10 +121,8 @@ export class Concept {
     }
 
     get conceptLanguages(): Set<Language> {
-        //TODO LPDC-916 don't use the optional operator anymore + remove | undefined from return type
         return this._title.definedLanguages;
         //TODO LPDC-916 validate title has 3 languageVersions
-        //TODO LPDC-916 make title required
     }
 
     get appliedSnapshots(): Set<Iri> {
@@ -139,11 +137,11 @@ export class Concept {
         return this._uuid;
     }
 
-    get title(): LanguageString | undefined {
+    get title(): LanguageString {
         return this._title;
     }
 
-    get description(): LanguageString | undefined {
+    get description(): LanguageString {
         return this._description;
     }
 

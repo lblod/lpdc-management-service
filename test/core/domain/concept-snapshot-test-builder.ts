@@ -33,7 +33,8 @@ export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
     return new ConceptSnapshotTestBuilder()
         //TODO LPDC-916: define a 'minimal'
         .withId(buildConceptSnapshotIri(uuid()))
-        .withTitle(aMinimalLanguageString('title').build());
+        .withTitle(aMinimalLanguageString('Concept Snapshot Title').build())
+        .withDescription(aMinimalLanguageString('Concept Snapshot Description').build());
 }
 
 export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {

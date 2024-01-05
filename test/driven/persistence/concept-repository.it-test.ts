@@ -107,11 +107,13 @@ describe('ConceptRepository', () => {
         test('Verify minimal mappings', async () => {
             const conceptId = buildConceptIri(uuid());
             const conceptTitle = aMinimalLanguageString('title').build();
+            const conceptDescription = aMinimalLanguageString('description').build();
 
             const concept =
                 aMinimalConcept()
                     .withId(conceptId)
                     .withTitle(conceptTitle)
+                    .withDescription(conceptDescription)
                     .withIsArchived(false)
                     .build();
 
@@ -120,6 +122,7 @@ describe('ConceptRepository', () => {
                 [
                     `<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptId}> <http://purl.org/dc/terms/title> """${conceptTitle.nl}"""@nl`,
+                    `<${conceptId}> <http://purl.org/dc/terms/description> """${conceptDescription.nl}"""@nl`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
                 ]);
@@ -128,31 +131,7 @@ describe('ConceptRepository', () => {
 
             expect(actualConcept).toEqual(concept);
         });
-
-        test('Verify minimal mappings - with incomplete title', async () => {
-            const conceptId = buildConceptIri(uuid());
-
-            const concept =
-                aMinimalConcept()
-                    .withId(conceptId)
-                    .withTitle(LanguageString.of(undefined, ConceptTestBuilder.TITLE_NL))
-                    .build();
-
-            await directDatabaseAccess.insertData(
-                CONCEPT_GRAPH,
-                [
-                    `<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
-                    `<${conceptId}> <http://purl.org/dc/terms/title> """${ConceptTestBuilder.TITLE_NL}"""@nl`,
-                    `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
-                    `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
-                ]);
-
-            const actualConcept = await repository.findById(conceptId);
-
-            expect(actualConcept).toEqual(concept);
-        });
-
-
+        
         test('Verify full mappings', async () => {
             const id = uuid();
             const conceptId = buildConceptIri(id);

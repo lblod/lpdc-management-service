@@ -67,6 +67,9 @@ describe('constructing', () => {
     test('Undefined title throws error', () => {
         expect(() => aFullConcept().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));
     });
+    test('Undefined description throws error', () => {
+        expect(() => aFullConcept().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
+    });
 
 
 });

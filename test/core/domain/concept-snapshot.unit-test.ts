@@ -58,6 +58,9 @@ describe('constructing', () => {
     test('Undefined title throws error', () => {
         expect(() => aFullConceptSnapshot().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));
     });
+    test('Undefined description throws error', () => {
+        expect(() => aFullConceptSnapshot().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
+    });
 });
 
 describe('is functionally changed', () => {

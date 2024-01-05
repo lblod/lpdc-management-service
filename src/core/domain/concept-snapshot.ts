@@ -25,7 +25,7 @@ export class ConceptSnapshot {
 
     private readonly _id: Iri;
     private readonly _title: LanguageString;
-    private readonly _description: LanguageString | undefined;
+    private readonly _description: LanguageString;
     private readonly _additionalDescription: LanguageString | undefined;
     private readonly _exception: LanguageString | undefined;
     private readonly _regulation: LanguageString | undefined;
@@ -57,7 +57,7 @@ export class ConceptSnapshot {
 
     constructor(id: Iri,
                 title: LanguageString,
-                description: LanguageString | undefined,
+                description: LanguageString,
                 additionalDescription: LanguageString | undefined,
                 exception: LanguageString | undefined,
                 regulation: LanguageString | undefined,
@@ -90,7 +90,7 @@ export class ConceptSnapshot {
         //TODO LPDC-917: enforce invariants ? + do safe copies ?
         this._id = requiredIri(id, 'id');
         this._title = requiredValue(title, 'title');
-        this._description = description;
+        this._description = requiredValue(description, 'description');
         this._additionalDescription = additionalDescription;
         this._exception = exception;
         this._regulation = regulation;
@@ -129,7 +129,7 @@ export class ConceptSnapshot {
         return this._title;
     }
 
-    get description(): LanguageString | undefined {
+    get description(): LanguageString {
         return this._description;
     }
 

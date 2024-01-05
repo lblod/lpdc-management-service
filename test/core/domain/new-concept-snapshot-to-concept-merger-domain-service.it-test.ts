@@ -232,7 +232,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.id).toEqual(isVersionOfConceptId);
             expect(createdConcept.uuid).toMatch(uuidRegex);
             expect(createdConcept.title).toEqual(conceptSnapshot.title);
-            expect(createdConcept.description).toBeUndefined();
+            expect(createdConcept.description).toEqual(conceptSnapshot.description);
             expect(createdConcept.additionalDescription).toBeUndefined();
             expect(createdConcept.exception).toBeUndefined();
             expect(createdConcept.regulation).toBeUndefined();
@@ -559,9 +559,11 @@ describe('merges a new concept snapshot into a concept', () => {
         test('Updates a concept with minimal new data of a new version of a concept snapshot', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
             const title = aMinimalLanguageString('title').build();
+            const description = aMinimalLanguageString('description').build();
             const conceptSnapshot =
                 aFullConceptSnapshot()
                     .withTitle(title)
+                    .withDescription(description)
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
                     .build();
@@ -574,6 +576,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const updatedConceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withTitle(title)
+                    .withDescription(description)
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .build();
@@ -588,7 +591,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.id).toEqual(isVersionOfConceptId);
             expect(updatedConcept.uuid).toMatch(uuidRegex);
             expect(updatedConcept.title).toEqual(conceptSnapshot.title);
-            expect(updatedConcept.description).toBeUndefined();
+            expect(updatedConcept.description).toEqual(conceptSnapshot.description);
             expect(updatedConcept.additionalDescription).toBeUndefined();
             expect(updatedConcept.exception).toBeUndefined();
             expect(updatedConcept.regulation).toBeUndefined();
