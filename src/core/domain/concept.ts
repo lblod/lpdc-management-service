@@ -24,8 +24,8 @@ export class Concept {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
-    private readonly _title: LanguageString; //TODO: invariant nl present
-    private readonly _description: LanguageString; //TODO: invariant nl present
+    private readonly _title: LanguageString;
+    private readonly _description: LanguageString;
     private readonly _additionalDescription: LanguageString | undefined;
     private readonly _exception: LanguageString | undefined;
     private readonly _regulation: LanguageString | undefined;
@@ -43,7 +43,7 @@ export class Concept {
     private readonly _keywords: Set<LanguageString>;
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
-    private readonly _websites: Website[]; //TODO: invariant id and title, url need to be present
+    private readonly _websites: Website[];
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
     private readonly _productId: string | undefined;
@@ -89,8 +89,12 @@ export class Concept {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
         this._id = requiredIri(id, 'id');
         this._uuid = uuid;
-        this._title = requiredValue(title, 'title');
-        this._description = requiredValue(description, 'description');
+        requiredValue(title, 'title');
+        requiredValue(title.nl, 'nl version in title');
+        this._title = title;
+        requiredValue(description, 'description');
+        requiredValue(description.nl, 'nl version in description');
+        this._description = description;
         this._additionalDescription = additionalDescription;
         this._exception = exception;
         this._regulation = regulation;

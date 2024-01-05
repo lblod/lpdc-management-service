@@ -67,6 +67,12 @@ describe('constructing', () => {
     test('Undefined title throws error', () => {
         expect(() => aFullConcept().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));
     });
+    test('NL not present in title throws error', () => {
+        expect(() => aFullConcept().withTitle(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in title should not be undefined'));
+    });
+    test('NL not present in title throws error', () => {
+        expect(() => aFullConcept().withDescription(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in description should not be undefined'));
+    });
     test('Undefined description throws error', () => {
         expect(() => aFullConcept().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
     });

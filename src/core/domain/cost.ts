@@ -15,7 +15,6 @@ export class Cost {
                 title: LanguageString,
                 description: LanguageString,
     ) {
-        //TODO LPDC-917: add invariants
         this._id = requiredIri(id, 'id');
         this._uuid = uuid;
         this._title = requiredValue(title, 'title');
