@@ -1,4 +1,5 @@
 import {Iri, requiredIri} from "./shared/iri";
+import {SessionRole} from "./session";
 
 
 export class Bestuurseenheid {
@@ -30,6 +31,10 @@ export class Bestuurseenheid {
         const regex = new RegExp(`^${prefix}(.*)$`);
 
         return this._id.match(regex)[1];
+    }
+
+    userGraph(): Iri {
+        return `http://mu.semte.ch/graphs/organizations/${this.uuid}/${SessionRole.LOKETLB_LPDCGEBRUIKER}`;
     }
 }
 

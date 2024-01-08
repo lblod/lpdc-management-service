@@ -7,17 +7,20 @@ export class ConceptDisplayConfiguration {
     private readonly _conceptIsNew: boolean;
     private readonly _conceptIsInstantiated: boolean;
     private readonly _bestuurseenheidId: Iri;
+    private readonly _conceptId: Iri;
 
     public constructor(id: Iri,
                        uuid: string,
                        conceptIsNew: boolean,
                        conceptIsInstantiated: boolean,
-                       bestuurseenheidId: Iri) {
+                       bestuurseenheidId: Iri,
+                       conceptId: Iri) {
         this._id = id;
         this._uuid = uuid;
         this._conceptIsNew = conceptIsNew;
         this._conceptIsInstantiated = conceptIsInstantiated;
         this._bestuurseenheidId = bestuurseenheidId;
+        this._conceptId = conceptId;
         //TODO LPDC-916: invariants
     }
 
@@ -39,6 +42,10 @@ export class ConceptDisplayConfiguration {
 
     get bestuurseenheidId(): Iri {
         return this._bestuurseenheidId;
+    }
+
+    get conceptId(): Iri {
+        return this._conceptId;
     }
 
 }

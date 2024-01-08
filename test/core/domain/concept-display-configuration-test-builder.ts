@@ -1,5 +1,5 @@
 import {uuid} from "../../../mu-helper";
-import {buildBestuurseenheidIri, buildConceptDisplayConfigurationIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildConceptDisplayConfigurationIri, buildConceptIri} from "./iri-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {ConceptDisplayConfiguration} from "../../../src/core/domain/concept-display-configuration";
 
@@ -10,18 +10,21 @@ export function aFullConceptDisplayConfiguration(): ConceptDisplayConfigurationT
         .withUuid(id)
         .withConceptIsNew(ConceptDisplayConfigurationTestBuilder.CONCEPT_IS_NEW)
         .withConceptIsInstantiated(ConceptDisplayConfigurationTestBuilder.CONCEPT_IS_INSTANTIATED)
-        .withBestuurseenheidId(buildBestuurseenheidIri(uuid()));
+        .withBestuurseenheidId(buildBestuurseenheidIri(uuid()))
+        .withConceptId(buildConceptIri(uuid()));
 }
 
 export class ConceptDisplayConfigurationTestBuilder {
 
     public static readonly CONCEPT_IS_NEW = true;
     public static readonly CONCEPT_IS_INSTANTIATED = true;
+
     private id: Iri;
     private uuid: string;
     private conceptIsNew: boolean;
     private conceptIsInstantiated: boolean;
     private bestuurseenheidId: Iri;
+    private conceptId: Iri;
 
     public withId(id: Iri): ConceptDisplayConfigurationTestBuilder {
         this.id = id;
@@ -48,6 +51,11 @@ export class ConceptDisplayConfigurationTestBuilder {
         return this;
     }
 
+    public withConceptId(conceptId: Iri): ConceptDisplayConfigurationTestBuilder {
+        this.conceptId = conceptId;
+        return this;
+    }
+
     public build(): ConceptDisplayConfiguration {
         return new ConceptDisplayConfiguration(
             this.id,
@@ -55,6 +63,7 @@ export class ConceptDisplayConfigurationTestBuilder {
             this.conceptIsNew,
             this.conceptIsInstantiated,
             this.bestuurseenheidId,
+            this.conceptId,
         );
     }
 }

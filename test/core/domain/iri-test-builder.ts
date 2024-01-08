@@ -1,5 +1,7 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 
+//TODO LPDC-916: rename all methods to xxxId
+
 export function buildConceptSnapshotIri(uniqueId: string): Iri {
     return `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uniqueId}`;
 }
