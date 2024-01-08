@@ -33,8 +33,6 @@ export class ConceptDisplayConfigurationSparqlTestRepository extends ConceptDisp
             }
         `;
         await this.querying.update(query);
-
-
     }
 
     private sparqlEscapeTypedBool(value:boolean) {

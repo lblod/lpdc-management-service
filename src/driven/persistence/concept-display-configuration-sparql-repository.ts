@@ -59,4 +59,44 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         return conceptDisplayConfiguration;
     }
 
+    async ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void> {
+        const insertQuery = `
+        ${PREFIX.lpdcExt}
+        ${PREFIX.mu}
+        ${PREFIX.dct}
+        ${PREFIX.besluit}
+        
+        INSERT {
+          GRAPH ?bestuurseenheidGraph {
+            ?conceptId lpdcExt:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
+            ?conceptDisplayConfigurationId a lpdcExt:ConceptDisplayConfiguration ;
+              mu:uuid ?conceptDisplayConfigurationUuid ;
+              lpdcExt:conceptIsNew "true"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> ;
+              lpdcExt:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> ;
+              dct:relation ?bestuurseenheidId .
+          }
+        }
+        WHERE {
+          ?bestuurseenheidId a besluit:Bestuurseenheid ;
+            mu:uuid ?bestuurseenheidUuid .
+        
+          BIND(IRI(CONCAT("http://mu.semte.ch/graphs/organizations/", STR(?bestuurseenheidUuid), "/LoketLB-LPDCGebruiker")) as ?bestuurseenheidGraph)
+          BIND(${sparqlEscapeUri(conceptId)} as ?conceptId)
+        
+          GRAPH ?bestuurseenheidGraph {
+            FILTER NOT EXISTS {
+              ?conceptId lpdcExt:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
+              ?conceptDisplayConfigurationId dct:relation ?bestuurseenheidId .
+            }
+          }
+        
+          ${/*this is a bit of trickery to generate UUID and URI's since STRUUID doesn't work properly in Virtuoso: https://github.com/openlink/virtuoso-opensource/issues/515#issuecomment-456848368 */''}
+          BIND(SHA512(CONCAT(STR(?conceptId), STR(?bestuurseenheidUuid))) as ?conceptDisplayConfigurationUuid) ${/* conceptId + bestuurseenheidId should be unique per config object */''}
+          BIND(IRI(CONCAT('http://data.lblod.info/id/conceptual-display-configuration/', STR(?conceptDisplayConfigurationUuid))) as ?conceptDisplayConfigurationId)
+        }
+      `;
+
+        await this.querying.update(insertQuery);
+    }
+
 }

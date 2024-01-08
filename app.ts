@@ -24,6 +24,9 @@ import {flatten} from "lodash";
 import {
     NewConceptSnapshotToConceptMergerDomainService
 } from "./src/core/domain/new-concept-snapshot-to-concept-merger-domain-service";
+import {
+    ConceptDisplayConfigurationSparqlRepository
+} from "./src/driven/persistence/concept-display-configuration-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -38,7 +41,8 @@ const sessionRepository = new SessionSparqlRepository();
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository();
 const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository();
 const conceptRepository = new ConceptSparqlRepository();
-const newConceptSnapshotToConceptMergerDomainService = new NewConceptSnapshotToConceptMergerDomainService(conceptSnapshotRepository, conceptRepository);
+const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository();
+const newConceptSnapshotToConceptMergerDomainService = new NewConceptSnapshotToConceptMergerDomainService(conceptSnapshotRepository, conceptRepository, conceptDisplayConfigurationRepository);
 
 app.get('/', function (req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;

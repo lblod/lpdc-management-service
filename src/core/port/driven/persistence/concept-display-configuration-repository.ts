@@ -6,4 +6,6 @@ export interface ConceptDisplayConfigurationRepository {
 
     findByConceptId(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<ConceptDisplayConfiguration | undefined>;
 
+    ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void>;
+
 }

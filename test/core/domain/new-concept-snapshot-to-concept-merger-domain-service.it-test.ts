@@ -37,6 +37,9 @@ import {aFullFinancialAdvantage, anotherFullFinancialAdvantage} from "./financia
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
+import {
+    ConceptDisplayConfigurationSparqlRepository
+} from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
 
 describe('merges a new concept snapshot into a concept', () => {
 
@@ -45,10 +48,11 @@ describe('merges a new concept snapshot into a concept', () => {
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
 
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
-    const merger = new NewConceptSnapshotToConceptMergerDomainService(conceptSnapshotRepository, conceptRepository, TEST_SPARQL_ENDPOINT);
+    const merger = new NewConceptSnapshotToConceptMergerDomainService(conceptSnapshotRepository, conceptRepository, conceptDisplayConfigurationRepository, TEST_SPARQL_ENDPOINT);
 
     describe('create a new concept', () => {
 
@@ -866,17 +870,17 @@ describe('merges a new concept snapshot into a concept', () => {
 
     test('Creates a concept display configuration for each bestuurseenheid', async () => {
 
-        const bestuursEenheid1 =
+        const bestuurseenheid1 =
             aBestuurseenheid()
                 .withId(buildBestuurseenheidIri(uuid()))
                 .build();
-        bestuurseenheidRepository.save(bestuursEenheid1);
+        bestuurseenheidRepository.save(bestuurseenheid1);
 
-        const bestuursEenheid2 =
+        const bestuurseenheid2 =
             aBestuurseenheid()
                 .withId(buildBestuurseenheidIri(uuid()))
                 .build();
-        bestuurseenheidRepository.save(bestuursEenheid2);
+        bestuurseenheidRepository.save(bestuurseenheid2);
 
         const isVersionOfConceptId = buildConceptIri(uuid());
         const conceptSnapshot =
@@ -893,7 +897,21 @@ describe('merges a new concept snapshot into a concept', () => {
         expect(createdConcept.id).toEqual(isVersionOfConceptId);
         expect(createdConcept.uuid).toMatch(uuidRegex);
 
-        //TODO LPDC-916: add asserts about the concept display configuration
+        const createdConceptDisplayConfigurationForBestuurseenheid1 = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid1, isVersionOfConceptId);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid1.id).not.toBeUndefined();
+        expect(createdConceptDisplayConfigurationForBestuurseenheid1.uuid).not.toBeUndefined();
+        expect(createdConceptDisplayConfigurationForBestuurseenheid1.conceptIsNew).toEqual(true);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid1.conceptIsInstantiated).toEqual(false);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid1.bestuurseenheidId).toEqual(bestuurseenheid1.id);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid1.conceptId).toEqual(isVersionOfConceptId);
+
+        const createdConceptDisplayConfigurationForBestuurseenheid2 = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid2, isVersionOfConceptId);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid2.id).not.toBeUndefined();
+        expect(createdConceptDisplayConfigurationForBestuurseenheid2.uuid).not.toBeUndefined();
+        expect(createdConceptDisplayConfigurationForBestuurseenheid2.conceptIsNew).toEqual(true);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid2.conceptIsInstantiated).toEqual(false);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid2.bestuurseenheidId).toEqual(bestuurseenheid2.id);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid2.conceptId).toEqual(isVersionOfConceptId);
 
     });
 
