@@ -869,18 +869,17 @@ describe('merges a new concept snapshot into a concept', () => {
     });
 
     test('Creates a concept display configuration for each bestuurseenheid', async () => {
-
-        const bestuurseenheid1 =
+        const bestuurseenheid =
             aBestuurseenheid()
                 .withId(buildBestuurseenheidIri(uuid()))
                 .build();
-        bestuurseenheidRepository.save(bestuurseenheid1);
+        await bestuurseenheidRepository.save(bestuurseenheid);
 
-        const bestuurseenheid2 =
+        const anotherBestuurseenheid =
             aBestuurseenheid()
                 .withId(buildBestuurseenheidIri(uuid()))
                 .build();
-        bestuurseenheidRepository.save(bestuurseenheid2);
+        await bestuurseenheidRepository.save(anotherBestuurseenheid);
 
         const isVersionOfConceptId = buildConceptIri(uuid());
         const conceptSnapshot =
@@ -897,21 +896,21 @@ describe('merges a new concept snapshot into a concept', () => {
         expect(createdConcept.id).toEqual(isVersionOfConceptId);
         expect(createdConcept.uuid).toMatch(uuidRegex);
 
-        const createdConceptDisplayConfigurationForBestuurseenheid1 = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid1, isVersionOfConceptId);
-        expect(createdConceptDisplayConfigurationForBestuurseenheid1.id).not.toBeUndefined();
-        expect(createdConceptDisplayConfigurationForBestuurseenheid1.uuid).not.toBeUndefined();
-        expect(createdConceptDisplayConfigurationForBestuurseenheid1.conceptIsNew).toEqual(true);
-        expect(createdConceptDisplayConfigurationForBestuurseenheid1.conceptIsInstantiated).toEqual(false);
-        expect(createdConceptDisplayConfigurationForBestuurseenheid1.bestuurseenheidId).toEqual(bestuurseenheid1.id);
-        expect(createdConceptDisplayConfigurationForBestuurseenheid1.conceptId).toEqual(isVersionOfConceptId);
+        const createdConceptDisplayConfigurationForBestuurseenheid = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, isVersionOfConceptId);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid.id).not.toBeUndefined();
+        expect(createdConceptDisplayConfigurationForBestuurseenheid.uuid).not.toBeUndefined();
+        expect(createdConceptDisplayConfigurationForBestuurseenheid.conceptIsNew).toEqual(true);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid.conceptIsInstantiated).toEqual(false);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid.bestuurseenheidId).toEqual(bestuurseenheid.id);
+        expect(createdConceptDisplayConfigurationForBestuurseenheid.conceptId).toEqual(isVersionOfConceptId);
 
-        const createdConceptDisplayConfigurationForBestuurseenheid2 = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid2, isVersionOfConceptId);
-        expect(createdConceptDisplayConfigurationForBestuurseenheid2.id).not.toBeUndefined();
-        expect(createdConceptDisplayConfigurationForBestuurseenheid2.uuid).not.toBeUndefined();
-        expect(createdConceptDisplayConfigurationForBestuurseenheid2.conceptIsNew).toEqual(true);
-        expect(createdConceptDisplayConfigurationForBestuurseenheid2.conceptIsInstantiated).toEqual(false);
-        expect(createdConceptDisplayConfigurationForBestuurseenheid2.bestuurseenheidId).toEqual(bestuurseenheid2.id);
-        expect(createdConceptDisplayConfigurationForBestuurseenheid2.conceptId).toEqual(isVersionOfConceptId);
+        const createdConceptDisplayConfigurationForAnotherBestuurseenheid = await conceptDisplayConfigurationRepository.findByConceptId(anotherBestuurseenheid, isVersionOfConceptId);
+        expect(createdConceptDisplayConfigurationForAnotherBestuurseenheid.id).not.toBeUndefined();
+        expect(createdConceptDisplayConfigurationForAnotherBestuurseenheid.uuid).not.toBeUndefined();
+        expect(createdConceptDisplayConfigurationForAnotherBestuurseenheid.conceptIsNew).toEqual(true);
+        expect(createdConceptDisplayConfigurationForAnotherBestuurseenheid.conceptIsInstantiated).toEqual(false);
+        expect(createdConceptDisplayConfigurationForAnotherBestuurseenheid.bestuurseenheidId).toEqual(anotherBestuurseenheid.id);
+        expect(createdConceptDisplayConfigurationForAnotherBestuurseenheid.conceptId).toEqual(isVersionOfConceptId);
 
     });
 
