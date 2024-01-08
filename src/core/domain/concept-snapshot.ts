@@ -89,8 +89,8 @@ export class ConceptSnapshot {
     ) {
         //TODO LPDC-917: enforce invariants ? + do safe copies ?
         this._id = requiredIri(id, 'id');
-        this._title = requiredValue(title, 'title');
-        this._description = requiredValue(description, 'description');
+        this._title = requiredValue(title, 'title'); // TODO: min nl
+        this._description = requiredValue(description, 'description'); //TODO: min nl
         this._additionalDescription = additionalDescription;
         this._exception = exception;
         this._regulation = regulation;
@@ -109,7 +109,7 @@ export class ConceptSnapshot {
         this._requirements = [...requirements];
         this._procedures = [...procedures];
         this._websites = [...websites];
-        this._costs = [...costs];
+        this._costs = [...costs].map(cost => Cost.forConceptSnapshot(cost));
         this._financialAdvantages = [...financialAdvantages];
         this._isVersionOfConcept = isVersionOfConcept;
         this._dateCreated = dateCreated;

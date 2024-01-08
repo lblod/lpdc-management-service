@@ -34,15 +34,15 @@ describe('ConceptSnapshotRepository', () => {
     describe('findById', () => {
 
         test('When full concept snapshot exists with id, then return concept snapshot', async () => {
-            const conceptConcept = aFullConceptSnapshot().build();
-            await repository.save(conceptConcept);
+            const conceptSnapshot = aFullConceptSnapshot().build();
+            await repository.save(conceptSnapshot);
 
             const anotherConceptSnapshot = aFullConceptSnapshot().build();
             await repository.save(anotherConceptSnapshot);
 
-            const actualConceptSnapshot = await repository.findById(conceptConcept.id);
+            const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
 
-            expect(actualConceptSnapshot).toEqual(conceptConcept);
+            expect(actualConceptSnapshot).toEqual(conceptSnapshot);
         });
 
         test('When minimal concept snapshot exists with id, then return concept snapshot', async () => {

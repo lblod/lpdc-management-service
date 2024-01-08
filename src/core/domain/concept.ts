@@ -23,7 +23,7 @@ import {requiredValue} from "./shared/invariant";
 export class Concept {
 
     private readonly _id: Iri;
-    private readonly _uuid: string | undefined; //required for mu-cl-resources.
+    private readonly _uuid: string; //required for mu-cl-resources.
     private readonly _title: LanguageString;
     private readonly _description: LanguageString;
     private readonly _additionalDescription: LanguageString | undefined;
@@ -55,7 +55,7 @@ export class Concept {
     private readonly _legalResources: Set<Iri>;
 
     constructor(id: Iri,
-                uuid: string | undefined,
+                uuid: string,
                 title: LanguageString,
                 description: LanguageString,
                 additionalDescription: LanguageString | undefined,
@@ -113,7 +113,7 @@ export class Concept {
         this._requirements = [...requirements];
         this._procedures = [...procedures];
         this._websites = [...websites];
-        this._costs = [...costs];
+        this._costs = [...costs].map(cost => Cost.forConcept(cost));
         this._financialAdvantages = [...financialAdvantages];
         this._productId = productId;
         this._latestConceptSnapshot = latestConceptSnapshot;
@@ -137,7 +137,7 @@ export class Concept {
         return this._id;
     }
 
-    get uuid(): string | undefined {
+    get uuid(): string {
         return this._uuid;
     }
 

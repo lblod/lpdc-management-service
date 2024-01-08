@@ -5,9 +5,17 @@ import {uuid} from "../../../mu-helper";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
 
-export function aMinimalCost(): CostTestBuilder {
+export function aMinimalCostForConceptSnapshot(): CostTestBuilder {
     return new CostTestBuilder()
         .withId(CostTestBuilder.buildIri(uuid()))
+        .withTitle(aMinimalLanguageString(CostTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
+}
+
+export function aMinimalCostForConcept(): CostTestBuilder {
+    return new CostTestBuilder()
+        .withId(CostTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
         .withTitle(aMinimalLanguageString(CostTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
 }
@@ -116,12 +124,11 @@ export class CostTestBuilder {
     }
 
     public build(): Cost {
-        return new Cost(
+        return Cost.reconstitute(
             this.id,
             this.uuid,
             this.title,
             this.description,
         );
     }
-
 }

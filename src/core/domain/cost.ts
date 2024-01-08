@@ -6,19 +6,45 @@ import {requiredValue} from "./shared/invariant";
 export class Cost {
 
     private readonly _id: Iri;
-    private readonly _uuid: string | undefined; //required for mu-cl-resources. //TODO LPDC-916: make required when data is correct.
-    private readonly _title: LanguageString;
-    private readonly _description: LanguageString;
+    private readonly _uuid: string | undefined; //required for mu-cl-resources.
+    private readonly _title: LanguageString | undefined;
+    private readonly _description: LanguageString | undefined;
 
-    constructor(id: Iri,
-                uuid: string,
-                title: LanguageString,
-                description: LanguageString,
+    private constructor(id: Iri,
+                        uuid: string,
+                        title: LanguageString,
+                        description: LanguageString,
     ) {
         this._id = requiredIri(id, 'id');
         this._uuid = uuid;
-        this._title = requiredValue(title, 'title');
-        this._description = requiredValue(description, 'description');
+        this._title = title;
+        this._description = description;
+    }
+
+    static forConcept(cost: Cost): Cost {
+        return new Cost(
+            cost.id,
+            requiredValue(cost.uuid, 'uuid'),
+            requiredValue(cost.title, 'title'),
+            requiredValue(cost.description, 'description')
+        );
+    }
+
+    static forConceptSnapshot(cost: Cost): Cost {
+        return new Cost(
+            cost.id,
+            undefined,
+            requiredValue(cost.title, 'title'),
+            requiredValue(cost.description, 'description')
+        );
+    }
+
+    static reconstitute(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined): Cost {
+
+        return new Cost(id, uuid, title, description);
     }
 
     get id(): Iri {
@@ -29,11 +55,11 @@ export class Cost {
         return this._uuid;
     }
 
-    get title(): LanguageString {
+    get title(): LanguageString | undefined {
         return this._title;
     }
 
-    get description(): LanguageString {
+    get description(): LanguageString | undefined {
         return this._description;
     }
 

@@ -258,7 +258,7 @@ export class QuadsToDomainMapper {
             Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.m8g('hasCost'), null, this.graphId)));
         costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, NS.m8g('Cost')));
 
-        const costs = costIds.map(costId => new Cost(costId, this.uuid(costId), this.title(costId), this.description(costId)));
+        const costs = costIds.map(costId => Cost.reconstitute(costId, this.uuid(costId), this.title(costId), this.description(costId)));
 
         return this.sort(costs);
     }

@@ -242,7 +242,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
     private copyCosts(costs: Cost[]) {
         return costs.map(c =>
-            new Cost(c.id, uuid(), c.title, c.description));
+            Cost.reconstitute(c.id, uuid(), c.title, c.description));
     }
 
     private copyFinancialAdvantages(financialAdvantages: FinancialAdvantage[]) {

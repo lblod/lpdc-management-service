@@ -7,7 +7,7 @@ import {aMinimalRequirement} from "./requirement-test-builder";
 import {aFullEvidence, aMinimalEvidence} from "./evidence-test-builder";
 import {aFullProcedure} from "./procedure-test-builder";
 import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
-import {aFullCost} from "./cost-test-builder";
+import {aFullCost, CostTestBuilder} from "./cost-test-builder";
 import {aFullFinancialAdvantage} from "./financial-advantage-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
@@ -20,6 +20,9 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {buildConceptSnapshotIri} from "./iri-test-builder";
+import {Cost} from "../../../src/core/domain/cost";
+import {aMinimalLanguageString} from "./language-string-test-builder";
+import {aFullConcept} from "./concept-test-builder";
 
 describe('constructing', () => {
 
@@ -60,6 +63,21 @@ describe('constructing', () => {
     });
     test('Undefined description throws error', () => {
         expect(() => aFullConceptSnapshot().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
+    });
+
+    describe('cost ', () => {
+        test('valid cost for conceptSnapshot does not throw error', () => {
+            const validCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(CostTestBuilder.TITLE).build(),
+                aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
+
+            expect(() => aFullConceptSnapshot().withCosts([validCost]).build()).not.toThrow();
+        });
+
+        test('invalid cost for conceptSnapshot does throw error', () => {
+            const invalidCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
+
+            expect(() => aFullConceptSnapshot().withCosts([invalidCost]).build()).toThrow();
+        });
     });
 });
 

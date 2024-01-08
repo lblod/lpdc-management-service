@@ -3,6 +3,9 @@ import {aFullConcept, ConceptTestBuilder} from "./concept-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {buildConceptSnapshotIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
+import {aFullCost, CostTestBuilder} from "./cost-test-builder";
+import {Cost} from "../../../src/core/domain/cost";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 
 describe('constructing', () => {
 
@@ -87,4 +90,19 @@ describe('constructing', () => {
         expect(() => aFullConcept().withIsArchived(undefined).build()).toThrow(new Error('isArchived should not be undefined'));
     });
 
+    describe('cost ', () => {
+        test('valid cost for concept does not throw error', () => {
+            const uuidValue = uuid();
+            const validCost = Cost.reconstitute(CostTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(CostTestBuilder.TITLE).build(),
+                aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
+
+            expect(() => aFullConcept().withCosts([validCost]).build()).not.toThrow();
+        });
+
+        test('invalid cost for concept does throw error', () => {
+            const invalidCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
+
+            expect(() => aFullConcept().withCosts([invalidCost]).build()).toThrow();
+        });
+    });
 });
