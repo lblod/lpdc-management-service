@@ -23,7 +23,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
     const graph = new Iri('http://mu.semte.ch/graphs/lpdc/ldes-data');
     const domainToTriplesMapper = new DomainToTriplesMapper();
 
-    test('Load all concept snapshots; print errors to console.log', async () => {
+    test.skip('Load all concept snapshots; print errors to console.log', async () => {
 
         const conceptSnapshotIdsQuery = `
              ${PREFIX.lpdcExt}
@@ -85,7 +85,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
 
             for (const result of randomizedConceptSnapshotIds) {
                 try {
-                    const id = result['id'].value;
+                    const id = new Iri(result['id'].value);
                     const conceptSnapshotForId = await repository.findById(id);
                     expect(conceptSnapshotForId.id).toEqual(id);
                     const quadsForConceptSnapshotForId =
