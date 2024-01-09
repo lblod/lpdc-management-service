@@ -44,6 +44,7 @@ describe('Concept Data Integrity Validation', () => {
         const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
         const allQuadsOfGraph = new Set(sparqlQuerying.asQuads(allTriplesOfGraph, graph));
 
+        // TODO LPDC-916: remove test when fr and de languages are removed in prod
         //filter out fr and de language strings
         Array.from(allQuadsOfGraph).filter(q => isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr'))
             .forEach(q => allQuadsOfGraph.delete(q));
