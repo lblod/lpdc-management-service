@@ -93,7 +93,7 @@ export class DomainToTriplesMapper {
             conceptSnapshot.generatedAtTime ? quad(namedNode(conceptSnapshot.id.value), NS.prov('generatedAtTime'), literal(conceptSnapshot.generatedAtTime.value, NS.xsd('dateTime'))) : undefined,
             quad(namedNode(conceptSnapshot.id.value), NS.schema('identifier'), literal(conceptSnapshot.identifier)),
             this.productId(conceptSnapshot.id, conceptSnapshot.productId),
-            conceptSnapshot.snapshotType ? quad(namedNode(conceptSnapshot.id.value), NS.lpdcExt('snapshotType'), namedNode(this.enumToIri(conceptSnapshot.snapshotType, NS.concept.snapshotType).value)) : undefined,
+            conceptSnapshot.snapshotType ? quad(namedNode(conceptSnapshot.id.value), NS.lpdcExt('snapshotType'), namedNode(this.enumToIri(conceptSnapshot.snapshotType, NS.dvc.snapshotType).value)) : undefined,
             ...this.conceptTags(conceptSnapshot.id, conceptSnapshot.conceptTags),
             ...this.legalResources(conceptSnapshot.id, conceptSnapshot.legalResources),
         ].filter(t => t !== undefined);
@@ -112,7 +112,7 @@ export class DomainToTriplesMapper {
     }
 
     private type(id: Iri, value: ProductType): Statement | undefined {
-        return value ? quad(namedNode(id.value), NS.dct('type'), namedNode(this.enumToIri(value, NS.concept.type).value)) : undefined;
+        return value ? quad(namedNode(id.value), NS.dct('type'), namedNode(this.enumToIri(value, NS.dvc.type).value)) : undefined;
     }
 
     private title(id: Iri, value: LanguageString): Statement [] {
@@ -136,15 +136,15 @@ export class DomainToTriplesMapper {
     }
 
     private targetAudiences(id: Iri, values: Set<TargetAudienceType>): Statement [] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('targetAudience'), this.enumsToIris(values, NS.concept.doelgroep));
+        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('targetAudience'), this.enumsToIris(values, NS.dvc.doelgroep));
     }
 
     private themes(id: Iri, values: Set<ThemeType>): Statement [] {
-        return this.irisToTriples(namedNode(id.value), NS.m8g('thematicArea'), this.enumsToIris(values, NS.concept.thema));
+        return this.irisToTriples(namedNode(id.value), NS.m8g('thematicArea'), this.enumsToIris(values, NS.dvc.thema));
     }
 
     private competentAuthorityLevels(id: Iri, values: Set<CompetentAuthorityLevelType>): Statement [] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel'), this.enumsToIris(values, NS.concept.bevoegdBestuursniveau));
+        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel'), this.enumsToIris(values, NS.dvc.bevoegdBestuursniveau));
     }
 
     private competentAuthorities(id: Iri, values: Set<Iri>): Statement [] {
@@ -152,7 +152,7 @@ export class DomainToTriplesMapper {
     }
 
     private executingAuthorityLevels(id: Iri, values: Set<ExecutingAuthorityLevelType>): Statement [] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel'), this.enumsToIris(values, NS.concept.uitvoerendBestuursniveau));
+        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel'), this.enumsToIris(values, NS.dvc.uitvoerendBestuursniveau));
     }
 
     private executingAuthorities(id: Iri, values: Set<Iri>): Statement [] {
@@ -160,11 +160,11 @@ export class DomainToTriplesMapper {
     }
 
     private publicationMedia(id: Iri, values: Set<PublicationMediumType>): Statement [] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('publicationMedium'), this.enumsToIris(values, NS.concept.publicatieKanaal));
+        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('publicationMedium'), this.enumsToIris(values, NS.dvc.publicatieKanaal));
     }
 
     private yourEuropeCategories(id: Iri, values: Set<YourEuropeCategoryType>): Statement [] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), this.enumsToIris(values, NS.concept.yourEuropeCategorie));
+        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), this.enumsToIris(values, NS.dvc.yourEuropeCategorie));
     }
 
     private keywords(id: Iri, values: Set<LanguageString>): Statement[] {
@@ -173,7 +173,7 @@ export class DomainToTriplesMapper {
     }
 
     private conceptTags(id: Iri, values: Set<ConceptTagType>): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('conceptTag'), this.enumsToIris(values, NS.concept.conceptTag));
+        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('conceptTag'), this.enumsToIris(values, NS.dvc.conceptTag));
     }
 
     private isArchived(id: Iri, isArchived: boolean): Statement | undefined {

@@ -137,7 +137,7 @@ export class QuadsToDomainMapper {
     }
 
     private productType(id: Iri): ProductType | undefined {
-        return this.asEnum(ProductType, NS.concept.type, this.store.anyValue(namedNode(id.value), NS.dct('type'), null, this.graphId), id.value);
+        return this.asEnum(ProductType, NS.dvc.type, this.store.anyValue(namedNode(id.value), NS.dct('type'), null, this.graphId), id.value);
     }
 
     private title(id: Iri): LanguageString | undefined {
@@ -165,15 +165,15 @@ export class QuadsToDomainMapper {
     }
 
     private targetAudiences(id: Iri): Set<TargetAudienceType> {
-        return this.asEnums(TargetAudienceType, NS.concept.doelgroep, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('targetAudience'), null, this.graphId), id.value);
+        return this.asEnums(TargetAudienceType, NS.dvc.doelgroep, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('targetAudience'), null, this.graphId), id.value);
     }
 
     private themes(id: Iri): Set<ThemeType> {
-        return this.asEnums(ThemeType, NS.concept.thema, this.store.statementsMatching(namedNode(id.value), NS.m8g('thematicArea'), null, this.graphId), id.value);
+        return this.asEnums(ThemeType, NS.dvc.thema, this.store.statementsMatching(namedNode(id.value), NS.m8g('thematicArea'), null, this.graphId), id.value);
     }
 
     private competentAuthorityLevels(id: Iri): Set<CompetentAuthorityLevelType> {
-        return this.asEnums(CompetentAuthorityLevelType, NS.concept.bevoegdBestuursniveau, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel'), null, this.graphId), id.value);
+        return this.asEnums(CompetentAuthorityLevelType, NS.dvc.bevoegdBestuursniveau, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel'), null, this.graphId), id.value);
     }
 
     private competentAuthorities(id: Iri): Set<Iri> {
@@ -181,7 +181,7 @@ export class QuadsToDomainMapper {
     }
 
     private executingAuthorityLevels(id: Iri): Set<ExecutingAuthorityLevelType> {
-        return this.asEnums(ExecutingAuthorityLevelType, NS.concept.uitvoerendBestuursniveau, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel'), null, this.graphId), id.value);
+        return this.asEnums(ExecutingAuthorityLevelType, NS.dvc.uitvoerendBestuursniveau, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel'), null, this.graphId), id.value);
     }
 
     private executingAuthorities(id: Iri): Set<Iri> {
@@ -189,11 +189,11 @@ export class QuadsToDomainMapper {
     }
 
     private publicationMedia(id: Iri): Set<PublicationMediumType> {
-        return this.asEnums(PublicationMediumType, NS.concept.publicatieKanaal, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('publicationMedium'), null, this.graphId), id.value);
+        return this.asEnums(PublicationMediumType, NS.dvc.publicatieKanaal, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('publicationMedium'), null, this.graphId), id.value);
     }
 
     private yourEuropeCategories(id: Iri): Set<YourEuropeCategoryType> {
-        return this.asEnums(YourEuropeCategoryType, NS.concept.yourEuropeCategorie, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), null, this.graphId), id.value);
+        return this.asEnums(YourEuropeCategoryType, NS.dvc.yourEuropeCategorie, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), null, this.graphId), id.value);
     }
 
     private keywords(id: Iri): Set<LanguageString> {
@@ -239,11 +239,11 @@ export class QuadsToDomainMapper {
     }
 
     private snapshotType(id: Iri): SnapshotType | undefined {
-        return this.asEnum(SnapshotType, NS.concept.snapshotType, this.store.anyValue(namedNode(id.value), NS.lpdcExt('snapshotType'), null, this.graphId), id.value);
+        return this.asEnum(SnapshotType, NS.dvc.snapshotType, this.store.anyValue(namedNode(id.value), NS.lpdcExt('snapshotType'), null, this.graphId), id.value);
     }
 
     private conceptTags(id: Iri): Set<ConceptTagType> {
-        return this.asEnums(ConceptTagType, NS.concept.conceptTag, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('conceptTag'), null, this.graphId), id.value);
+        return this.asEnums(ConceptTagType, NS.dvc.conceptTag, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('conceptTag'), null, this.graphId), id.value);
     }
 
     private isConceptArchived(id: Iri): boolean {

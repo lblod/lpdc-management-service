@@ -27,6 +27,10 @@ import {
 import {
     ConceptDisplayConfigurationSparqlRepository
 } from "./src/driven/persistence/concept-display-configuration-sparql-repository";
+import {
+    BestuurseenheidRegistrationCodeThroughSubjectPageOrApiFetcher
+} from "./src/driven/external/bestuurseenheid-registration-code-through-subject-page-or-api-fetcher";
+import {CodeSparqlRepository} from "./src/driven/persistence/code-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -42,7 +46,15 @@ const bestuurseenheidRepository = new BestuurseenheidSparqlRepository();
 const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository();
 const conceptRepository = new ConceptSparqlRepository();
 const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository();
-const newConceptSnapshotToConceptMergerDomainService = new NewConceptSnapshotToConceptMergerDomainService(conceptSnapshotRepository, conceptRepository, conceptDisplayConfigurationRepository);
+const bestuurseenheidRegistrationCodeFetcher = new BestuurseenheidRegistrationCodeThroughSubjectPageOrApiFetcher();
+const codeRepository = new CodeSparqlRepository();
+const newConceptSnapshotToConceptMergerDomainService =
+    new NewConceptSnapshotToConceptMergerDomainService(
+        conceptSnapshotRepository,
+        conceptRepository,
+        conceptDisplayConfigurationRepository,
+        bestuurseenheidRegistrationCodeFetcher,
+        codeRepository);
 
 app.get('/', function (req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;

@@ -9,7 +9,7 @@ import {
     ConceptSnapshotTestBuilder
 } from "./concept-snapshot-test-builder";
 import {buildBestuurseenheidIri, buildCodexVlaanderenIri, buildConceptIri} from "./iri-test-builder";
-import {uuid} from "../../../mu-helper";
+import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 import {CONCEPT_GRAPH, PREFIX} from "../../../config";
 import {NS} from "../../../src/driven/persistence/namespaces";
@@ -40,6 +40,9 @@ import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/best
 import {
     ConceptDisplayConfigurationSparqlRepository
 } from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
+import {Iri} from "../../../src/core/domain/shared/iri";
+import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
+import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
 
 describe('merges a new concept snapshot into a concept', () => {
 
@@ -49,10 +52,21 @@ describe('merges a new concept snapshot into a concept', () => {
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const bestuurseenheidRegistrationCodeFetcher = {
+        fetchOrgRegistryCodelistEntry: jest.fn().mockReturnValue(Promise.resolve({}))
+    };
 
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
-    const merger = new NewConceptSnapshotToConceptMergerDomainService(conceptSnapshotRepository, conceptRepository, conceptDisplayConfigurationRepository, TEST_SPARQL_ENDPOINT);
+    const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
+
+    const merger = new NewConceptSnapshotToConceptMergerDomainService(
+        conceptSnapshotRepository,
+        conceptRepository,
+        conceptDisplayConfigurationRepository,
+        bestuurseenheidRegistrationCodeFetcher,
+        codeRepository,
+        TEST_SPARQL_ENDPOINT);
 
     describe('create a new concept', () => {
 
@@ -914,6 +928,57 @@ describe('merges a new concept snapshot into a concept', () => {
 
     });
 
+    test('Inserts Code Lists for competent and executing authorities if not existing', async () => {
+        const bestuurseenheidRegistrationCodeFetcher = {
+            fetchOrgRegistryCodelistEntry: jest.fn().mockImplementation((uriEntry: Iri) => Promise.resolve({
+                uri: uriEntry,
+                prefLabel: `preferred label for: ${uriEntry}`
+            }))
+        };
+        const merger = new NewConceptSnapshotToConceptMergerDomainService(
+            conceptSnapshotRepository,
+            conceptRepository,
+            conceptDisplayConfigurationRepository,
+            bestuurseenheidRegistrationCodeFetcher,
+            codeRepository,
+            TEST_SPARQL_ENDPOINT);
+
+        await directDatabaseAccess.insertData(
+            'http://mu.semte.ch/graphs/public',
+            [
+                `${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)} a skos:ConceptScheme`,
+            ],
+            [
+                PREFIX.skos,
+            ],
+        );
+
+        const competentAuthorityWithoutCodeList = buildBestuurseenheidIri(uuid());
+        const executingAuthorityWithoutCodeList = buildBestuurseenheidIri(uuid());
+
+        const isVersionOfConceptId = buildConceptIri(uuid());
+        const conceptSnapshot =
+            aMinimalConceptSnapshot()
+                .withIsVersionOfConcept(isVersionOfConceptId)
+                .withCompetentAuthorities(new Set([competentAuthorityWithoutCodeList]))
+                .withExecutingAuthorities(new Set([executingAuthorityWithoutCodeList]))
+                .build();
+        await conceptSnapshotRepository.save(conceptSnapshot);
+
+        await merger.merge(conceptSnapshot.id);
+
+        const createdConcept = await conceptRepository.findById(isVersionOfConceptId);
+        expect(createdConcept.id).toEqual(isVersionOfConceptId);
+        expect(createdConcept.uuid).toMatch(uuidRegex);
+
+        const createdCompetentAuthorityCode = await codeRepository.exists(CodeSchema.IPDCOrganisaties, competentAuthorityWithoutCodeList);
+        expect(createdCompetentAuthorityCode).toBeTruthy();
+
+        const createdExecutingAuthorityCode = await codeRepository.exists(CodeSchema.IPDCOrganisaties, executingAuthorityWithoutCodeList);
+        expect(createdExecutingAuthorityCode).toBeTruthy();
+
+    });
+
     function suffixUnique(aLangString: LanguageString): LanguageString {
         return LanguageString.of(
             aLangString.en + '-' + uuid(),
@@ -927,42 +992,42 @@ describe('merges a new concept snapshot into a concept', () => {
 
     function insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot: ConceptSnapshot) {
         const triples = [
-            conceptSnapshot.type ? `<${NS.concept.type(conceptSnapshot.type).value}> skos:inScheme <${NS.conceptscheme('Type').value}>` : undefined,
-            conceptSnapshot.type ? `<${NS.concept.type(conceptSnapshot.type).value}> a skos:Concept` : undefined,
+            conceptSnapshot.type ? `<${NS.dvc.type(conceptSnapshot.type).value}> skos:inScheme <${NS.dvcs('Type').value}>` : undefined,
+            conceptSnapshot.type ? `<${NS.dvc.type(conceptSnapshot.type).value}> a skos:Concept` : undefined,
             ...Array.from(conceptSnapshot.targetAudiences)
                 .flatMap(v => [
-                    `<${NS.concept.doelgroep(v).value}> skos:inScheme <${NS.conceptscheme('Doelgroep').value}>`,
-                    `<${NS.concept.doelgroep(v).value}> a skos:Concept`]),
+                    `<${NS.dvc.doelgroep(v).value}> skos:inScheme <${NS.dvcs('Doelgroep').value}>`,
+                    `<${NS.dvc.doelgroep(v).value}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.themes)
                 .flatMap(v => [
-                    `<${NS.concept.thema(v).value}> skos:inScheme <${NS.conceptscheme('Thema').value}>`,
-                    `<${NS.concept.thema(v).value}> a skos:Concept`]),
+                    `<${NS.dvc.thema(v).value}> skos:inScheme <${NS.dvcs('Thema').value}>`,
+                    `<${NS.dvc.thema(v).value}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.competentAuthorityLevels)
                 .flatMap(v => [
-                    `<${NS.concept.bevoegdBestuursniveau(v).value}> skos:inScheme <${NS.conceptscheme('BevoegdBestuursniveau').value}>`,
-                    `<${NS.concept.bevoegdBestuursniveau(v).value}> a skos:Concept`,
+                    `<${NS.dvc.bevoegdBestuursniveau(v).value}> skos:inScheme <${NS.dvcs('BevoegdBestuursniveau').value}>`,
+                    `<${NS.dvc.bevoegdBestuursniveau(v).value}> a skos:Concept`,
                 ]),
             ...Array.from([...conceptSnapshot.competentAuthorities, ...conceptSnapshot.executingAuthorities])
                 .flatMap(v => [
-                    `<${v}> skos:inScheme <${NS.conceptscheme('IPDCOrganisaties').value}>`,
+                    `<${v}> skos:inScheme <${NS.dvcs('IPDCOrganisaties').value}>`,
                     `<${v}> a besluit:Bestuurseenheid`,
                     `<${v}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.executingAuthorityLevels)
                 .flatMap(v =>
-                    [`<${NS.concept.uitvoerendBestuursniveau(v).value}> skos:inScheme <${NS.conceptscheme('UitvoerendBestuursniveau').value}>`,
-                        `<${NS.concept.uitvoerendBestuursniveau(v).value}> a skos:Concept`]),
+                    [`<${NS.dvc.uitvoerendBestuursniveau(v).value}> skos:inScheme <${NS.dvcs('UitvoerendBestuursniveau').value}>`,
+                        `<${NS.dvc.uitvoerendBestuursniveau(v).value}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.publicationMedia)
                 .flatMap(v => [
-                    `<${NS.concept.publicatieKanaal(v).value}> skos:inScheme <${NS.conceptscheme('PublicatieKanaal').value}>`,
-                    `<${NS.concept.publicatieKanaal(v).value}> a skos:Concept`]),
+                    `<${NS.dvc.publicatieKanaal(v).value}> skos:inScheme <${NS.dvcs('PublicatieKanaal').value}>`,
+                    `<${NS.dvc.publicatieKanaal(v).value}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.yourEuropeCategories)
                 .flatMap(v => [
-                    `<${NS.concept.yourEuropeCategorie(v).value}> skos:inScheme <${NS.conceptscheme('YourEuropeCategorie').value}>`,
-                    `<${NS.concept.yourEuropeCategorie(v).value}> a skos:Concept`]),
+                    `<${NS.dvc.yourEuropeCategorie(v).value}> skos:inScheme <${NS.dvcs('YourEuropeCategorie').value}>`,
+                    `<${NS.dvc.yourEuropeCategorie(v).value}> a skos:Concept`]),
             ...Array.from(conceptSnapshot.conceptTags)
                 .flatMap(v => [
-                    `<${NS.concept.conceptTag(v).value}> skos:inScheme <${NS.conceptscheme('ConceptTag').value}>`,
-                    `<${NS.concept.conceptTag(v).value}> a skos:Concept`]),
+                    `<${NS.dvc.conceptTag(v).value}> skos:inScheme <${NS.dvcs('ConceptTag').value}>`,
+                    `<${NS.dvc.conceptTag(v).value}> a skos:Concept`]),
         ].filter(t => t !== undefined);
         if (triples.length > 0) {
             directDatabaseAccess.insertData(

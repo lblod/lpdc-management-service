@@ -1,6 +1,6 @@
 import {Namespace} from "rdflib";
 
-const conceptNS = Namespace('https://productencatalogus.data.vlaanderen.be/id/concept/');
+const dataVlaanderenConceptNS = Namespace('https://productencatalogus.data.vlaanderen.be/id/concept/');
 
 export const NS = {
     schema: Namespace('http://schema.org/'),
@@ -23,19 +23,19 @@ export const NS = {
     ext: Namespace('http://mu.semte.ch/vocabularies/ext/'),
     eli: Namespace('http://data.europa.eu/eli/ontology#'),
     eliIncorrectlyInDatabase: Namespace('http://data.europa.eu/eli/ontology/#'), //we need a clean up in ipdc and in our database to be able remove this hack ...
-    concept: {
-        type: Namespace(conceptNS('Type/').value),
-        doelgroep: Namespace(conceptNS('Doelgroep/').value),
-        thema: Namespace(conceptNS('Thema/').value),
-        bevoegdBestuursniveau: Namespace(conceptNS('BevoegdBestuursniveau/').value),
-        uitvoerendBestuursniveau: Namespace(conceptNS('UitvoerendBestuursniveau/').value),
-        publicatieKanaal: Namespace(conceptNS('PublicatieKanaal/').value),
-        yourEuropeCategorie: Namespace(conceptNS('YourEuropeCategorie/').value),
-        snapshotType: Namespace(conceptNS('SnapshotType/').value),
-        conceptTag: Namespace(conceptNS('ConceptTag/').value),
+    dvc: {
+        type: Namespace(dataVlaanderenConceptNS('Type/').value),
+        doelgroep: Namespace(dataVlaanderenConceptNS('Doelgroep/').value),
+        thema: Namespace(dataVlaanderenConceptNS('Thema/').value),
+        bevoegdBestuursniveau: Namespace(dataVlaanderenConceptNS('BevoegdBestuursniveau/').value),
+        uitvoerendBestuursniveau: Namespace(dataVlaanderenConceptNS('UitvoerendBestuursniveau/').value),
+        publicatieKanaal: Namespace(dataVlaanderenConceptNS('PublicatieKanaal/').value),
+        yourEuropeCategorie: Namespace(dataVlaanderenConceptNS('YourEuropeCategorie/').value),
+        snapshotType: Namespace(dataVlaanderenConceptNS('SnapshotType/').value),
+        conceptTag: Namespace(dataVlaanderenConceptNS('ConceptTag/').value),
     },
+    dvcs: Namespace('https://productencatalogus.data.vlaanderen.be/id/conceptscheme/'),
     concepts: Namespace('http://lblod.data.gift/concepts/'),
-    conceptscheme: Namespace('https://productencatalogus.data.vlaanderen.be/id/conceptscheme/'),
 
 
 };
