@@ -10,6 +10,9 @@ import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {RequirementTestBuilder} from "./requirement-test-builder";
+import {Evidence} from "../../../src/core/domain/evidence";
+import {EvidenceTestBuilder} from "./evidence-test-builder";
+import {aFullRequirement} from "./requirement-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
@@ -132,7 +135,7 @@ describe('constructing', () => {
         });
     });
     describe('requirement ', () => {
-        test('valid requirement for concept does not throw error', () => {
+        test('valid requirement does not throw error', () => {
             const uuidValue = uuid();
             const validRequirement = Requirement.reconstitute(RequirementTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(RequirementTestBuilder.TITLE).build(),
                 aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build(), undefined);
@@ -140,10 +143,28 @@ describe('constructing', () => {
             expect(() => aFullConcept().withRequirements([validRequirement]).build()).not.toThrow();
         });
 
-        test('invalid financialAdvantage for concept does throw error', () => {
+        test('invalid requirement does throw error', () => {
             const invalidRequirement = Requirement.reconstitute(RequirementTestBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
 
             expect(() => aFullConcept().withRequirements([invalidRequirement]).build()).toThrow();
+        });
+        describe('evidence ', () => {
+            test('valid evidence does not throw error', () => {
+                const uuidValue = uuid();
+                const validEvidence = Evidence.reconstitute(EvidenceTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
+                    aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
+                const validRequirement = aFullRequirement().withEvidence(validEvidence);
+
+                expect(() => aFullConcept().withRequirements([validRequirement.build()])).not.toThrow();
+            });
+
+            test('invalid evidence does throw error', () => {
+                const uuidValue = uuid();
+                const invalidEvidence = Evidence.reconstitute(EvidenceTestBuilder.buildIri(uuidValue), uuidValue, undefined, undefined);
+                const invalidRequirement = aFullRequirement().withEvidence(invalidEvidence).build();
+
+                expect(() => aFullConcept().withRequirements([invalidRequirement]).build()).toThrow();
+            });
         });
     });
 });

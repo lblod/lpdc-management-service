@@ -3,8 +3,12 @@ import {uuid} from "../../../mu-helper";
 import {aFullConceptSnapshot} from "./concept-snapshot-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
-import {aMinimalRequirementForConceptSnapshot, RequirementTestBuilder} from "./requirement-test-builder";
-import {aFullEvidence, aMinimalEvidence} from "./evidence-test-builder";
+import {
+    aFullRequirement,
+    aMinimalRequirementForConceptSnapshot,
+    RequirementTestBuilder
+} from "./requirement-test-builder";
+import {aFullEvidence, aMinimalEvidenceForConceptSnapshot, EvidenceTestBuilder} from "./evidence-test-builder";
 import {aFullProcedure} from "./procedure-test-builder";
 import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
 import {aFullCost, CostTestBuilder} from "./cost-test-builder";
@@ -24,6 +28,8 @@ import {Cost} from "../../../src/core/domain/cost";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Requirement} from "../../../src/core/domain/requirement";
+import {Evidence} from "../../../src/core/domain/evidence";
+import {aFullConcept} from "./concept-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
@@ -99,7 +105,7 @@ describe('constructing', () => {
         });
     });
     describe('requirement ', () => {
-        test('valid requirement for concept does not throw error', () => {
+        test('valid requirement does not throw error', () => {
             const uuidValue = uuid();
             const validRequirement = Requirement.reconstitute(RequirementTestBuilder.buildIri(uuidValue), undefined, aMinimalLanguageString(RequirementTestBuilder.TITLE).build(),
                 aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build(), undefined);
@@ -107,10 +113,28 @@ describe('constructing', () => {
             expect(() => aFullConceptSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
         });
 
-        test('invalid financialAdvantage for concept does throw error', () => {
+        test('invalid financialAdvantage does throw error', () => {
             const invalidRequirement = Requirement.reconstitute(RequirementTestBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
 
             expect(() => aFullConceptSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
+        });
+        describe('evidence ', () => {
+            test('valid evidence does not throw error', () => {
+                const uuidValue = uuid();
+                const validEvidence = Evidence.reconstitute(EvidenceTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
+                    aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
+                const validRequirement = aFullRequirement().withEvidence(validEvidence).build();
+
+                expect(() => aFullConceptSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
+            });
+
+            test('invalid evidence does throw error', () => {
+                const uuidValue = uuid();
+                const invalidEvidence = Evidence.reconstitute(EvidenceTestBuilder.buildIri(uuidValue), uuidValue, undefined, undefined);
+                const invalidRequirement = aFullRequirement().withEvidence(invalidEvidence).build();
+
+                expect(() => aFullConceptSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
+            });
         });
     });
 });
@@ -554,17 +578,17 @@ describe('is functionally changed', () => {
                 .build()],
         ['requirement > evidence title updated',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidence().withTitle(LanguageString.of('evidence title en')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withTitle(LanguageString.of('evidence title en')).build()).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidence().withTitle(LanguageString.of('evidence title en updated')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withTitle(LanguageString.of('evidence title en updated')).build()).build()])
                 .build()],
         ['requirement > evidence description updated',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidence().withDescription(LanguageString.of('evidence description en')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withDescription(LanguageString.of('evidence description en')).build()).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidence().withDescription(LanguageString.of('evidence description en updated')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withDescription(LanguageString.of('evidence description en updated')).build()).build()])
                 .build()],
         ['procedure added',
             aFullConceptSnapshot()

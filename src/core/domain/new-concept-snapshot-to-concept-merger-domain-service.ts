@@ -222,7 +222,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
                 uuid(),
                 r.title,
                 r.description,
-                r.evidence ? new Evidence(r.evidence.id, uuid(), r.evidence.title, r.evidence.description) : undefined));
+                r.evidence ? Evidence.reconstitute(r.evidence.id, uuid(), r.evidence.title, r.evidence.description) : undefined));
     }
 
     private copyProcedures(procedures: Procedure[]) {

@@ -31,7 +31,7 @@ export class Requirement {
             requiredValue(requirement.uuid, 'uuid'),
             requiredValue(requirement.title, 'title'),
             requiredValue(requirement.description, 'description'),
-            requirement.evidence
+            requirement.evidence ? Evidence.forConcept(requirement.evidence) : undefined
         );
     }
 
@@ -41,7 +41,8 @@ export class Requirement {
             undefined,
             requiredValue(requirement.title, 'title'),
             requiredValue(requirement.description, 'description'),
-            requirement.evidence
+            requirement.evidence ?
+                Evidence.forConceptSnapshot(requirement.evidence) : undefined
         );
     }
 

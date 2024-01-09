@@ -6,20 +6,46 @@ export class Evidence {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
-    private readonly _title: LanguageString;
-    private readonly _description: LanguageString;
+    private readonly _title: LanguageString | undefined;
+    private readonly _description: LanguageString | undefined;
 
-    constructor(id: Iri,
-                uuid: string | undefined,
-                title: LanguageString,
-                description: LanguageString,
+    private constructor(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined,
     ) {
-//TODO LPDC-917: add invariants
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
-        this._title = requiredValue(title, 'title');
-        this._description = requiredValue(description, 'description');
+        this._title = title;
+        this._description = description;
     }
+
+    static forConcept(evidence: Evidence): Evidence {
+        return new Evidence(
+            evidence.id,
+            requiredValue(evidence.uuid, 'uuid'),
+            requiredValue(evidence.title, 'title'),
+            requiredValue(evidence.description, 'description')
+        );
+    }
+
+    static forConceptSnapshot(evidence: Evidence): Evidence {
+        return new Evidence(
+            evidence.id,
+            undefined,
+            requiredValue(evidence.title, 'title'),
+            requiredValue(evidence.description, 'description')
+        );
+    }
+
+    static reconstitute(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined): Evidence {
+
+        return new Evidence(id, uuid, title, description);
+    }
+
 
     get id(): Iri {
         return this._id;
@@ -29,11 +55,11 @@ export class Evidence {
         return this._uuid;
     }
 
-    get title(): LanguageString {
+    get title(): LanguageString | undefined {
         return this._title;
     }
 
-    get description(): LanguageString {
+    get description(): LanguageString | undefined {
         return this._description;
     }
 

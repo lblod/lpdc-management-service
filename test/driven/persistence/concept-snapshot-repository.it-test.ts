@@ -12,7 +12,7 @@ import {
     aMinimalRequirementForConceptSnapshot,
     RequirementTestBuilder
 } from "../../core/domain/requirement-test-builder";
-import {aMinimalEvidence, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
+import {aMinimalEvidenceForConceptSnapshot, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
 import {aMinimalProcedure, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
 import {aMinimalWebsite, WebsiteTestBuilder} from "../../core/domain/website-test-builder";
 import {
@@ -562,7 +562,7 @@ describe('ConceptSnapshotRepository', () => {
                             .withTitle(requirementTitle)
                             .withDescription(requirementDescription)
                             .withEvidence(
-                                aMinimalEvidence()
+                                aMinimalEvidenceForConceptSnapshot()
                                     .withId(evidenceId)
                                     .withTitle(evidenceTitle)
                                     .withDescription(evidenceDescription)

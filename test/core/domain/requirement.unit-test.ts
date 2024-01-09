@@ -1,5 +1,10 @@
 import {aFullRequirement} from "./requirement-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
+import {uuid} from "../../../mu-helper";
+import {Evidence} from "../../../src/core/domain/evidence";
+import {EvidenceTestBuilder} from "./evidence-test-builder";
+import {aMinimalLanguageString} from "./language-string-test-builder";
+import {aFullConcept} from "./concept-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 
@@ -32,6 +37,23 @@ describe('forConcept', () => {
         expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('description should not be undefined'));
     });
 
+    describe('evidence ', () => {
+        test('valid evidence does not throw error', () => {
+            const uuidValue = uuid();
+            const validEvidence = Evidence.reconstitute(EvidenceTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
+                aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
+            const requirement = aFullRequirement().withEvidence(validEvidence);
+            expect(() => Requirement.forConcept(requirement.build())).not.toThrow();
+        });
+
+        test('invalid evidence does throw error', () => {
+            const uuidValue = uuid();
+            const invalidEvidence = Evidence.reconstitute(EvidenceTestBuilder.buildIri(uuidValue), uuidValue, undefined, undefined);
+            const requirement = aFullRequirement().withEvidence(invalidEvidence);
+            expect(() => Requirement.forConcept(requirement.build())).toThrow();
+        });
+    });
+
 });
 
 describe('forConceptSnapshot', () => {
@@ -57,4 +79,20 @@ describe('forConceptSnapshot', () => {
         expect(() => Requirement.forConceptSnapshot(requirement)).toThrow(new Error('description should not be undefined'));
     });
 
+    describe('evidence ', () => {
+        test('valid evidence does not throw error', () => {
+            const uuidValue = uuid();
+            const validEvidence = Evidence.reconstitute(EvidenceTestBuilder.buildIri(uuidValue), undefined, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
+                aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
+            const requirement = aFullRequirement().withEvidence(validEvidence);
+            expect(() => Requirement.forConceptSnapshot(requirement.build())).not.toThrow();
+        });
+
+        test('invalid evidence does throw error', () => {
+            const uuidValue = uuid();
+            const invalidEvidence = Evidence.reconstitute(EvidenceTestBuilder.buildIri(uuidValue), undefined, undefined, undefined);
+            const requirement = aFullRequirement().withEvidence(invalidEvidence);
+            expect(() => Requirement.forConceptSnapshot(requirement.build())).toThrow();
+        });
+    });
 });

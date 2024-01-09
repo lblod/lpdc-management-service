@@ -5,16 +5,27 @@ import {Evidence} from "../../../src/core/domain/evidence";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
 
-export function aMinimalEvidence(): EvidenceTestBuilder {
+export function aMinimalEvidenceForConceptSnapshot(): EvidenceTestBuilder {
     return new EvidenceTestBuilder()
         .withId(EvidenceTestBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(EvidenceTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
 }
 
-export function aFullEvidence(): EvidenceTestBuilder {
+export function aMinimalEvidenceForConcept(): EvidenceTestBuilder {
+    const uniqueId = uuid();
     return new EvidenceTestBuilder()
-        .withId(EvidenceTestBuilder.buildIri(uuid()))
+        .withId(EvidenceTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(aMinimalLanguageString(EvidenceTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
+}
+
+export function aFullEvidence(): EvidenceTestBuilder {
+    const uniqueId = uuid();
+    return new EvidenceTestBuilder()
+        .withId(EvidenceTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             EvidenceTestBuilder.TITLE_EN,
             EvidenceTestBuilder.TITLE_NL,
@@ -114,7 +125,7 @@ export class EvidenceTestBuilder {
     }
 
     public build(): Evidence {
-        return new Evidence(
+        return Evidence.reconstitute(
             this.id,
             this.uuid,
             this.title,
