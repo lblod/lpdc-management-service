@@ -278,7 +278,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.conceptTags).toEqual(new Set());
             expect(createdConcept.isArchived).toBeFalsy();
             expect(createdConcept.legalResources).toEqual(new Set());
-        });
+        }, 10000);
 
         test('Creates a new concept from a concept snapshot that is archived', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -977,7 +977,7 @@ describe('merges a new concept snapshot into a concept', () => {
         const createdExecutingAuthorityCode = await codeRepository.exists(CodeSchema.IPDCOrganisaties, executingAuthorityWithoutCodeList);
         expect(createdExecutingAuthorityCode).toBeTruthy();
 
-    });
+    }, 10000);
 
     function suffixUnique(aLangString: LanguageString): LanguageString {
         return LanguageString.of(

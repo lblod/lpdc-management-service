@@ -110,6 +110,8 @@ describe('ConceptRepository', () => {
             const conceptUuid = uuid();
             const conceptTitle = aMinimalLanguageString('title').build();
             const conceptDescription = aMinimalLanguageString('description').build();
+            const conceptProductId = ConceptTestBuilder.PRODUCT_ID;
+
 
             const concept =
                 aMinimalConcept()
@@ -117,6 +119,7 @@ describe('ConceptRepository', () => {
                     .withUuid(conceptUuid)
                     .withTitle(conceptTitle)
                     .withDescription(conceptDescription)
+                    .withProductId(conceptProductId)
                     .withIsArchived(false)
                     .build();
 
@@ -127,6 +130,7 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/core/uuid> """${concept.uuid}"""`,
                     `<${conceptId}> <http://purl.org/dc/terms/title> """${conceptTitle.nl}"""@nl`,
                     `<${conceptId}> <http://purl.org/dc/terms/description> """${conceptDescription.nl}"""@nl`,
+                    `<${conceptId}> <http://schema.org/productID> """${conceptProductId}"""`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
                 ]);

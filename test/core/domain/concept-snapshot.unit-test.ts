@@ -73,8 +73,16 @@ describe('constructing', () => {
         expect(() => aFullConceptSnapshot().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));
     });
 
+    test('NL not present in title throws error', () => {
+        expect(() => aFullConceptSnapshot().withTitle(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in title should not be undefined'));
+    });
+
     test('Undefined description throws error', () => {
         expect(() => aFullConceptSnapshot().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
+    });
+
+    test('NL not present in description throws error', () => {
+        expect(() => aFullConceptSnapshot().withDescription(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in description should not be undefined'));
     });
 
     test('Undefined productId throws error', () => {
@@ -224,17 +232,17 @@ describe('is functionally changed', () => {
         = [
         ['title changed',
             aFullConceptSnapshot()
-                .withTitle(LanguageString.of("text-en"))
+                .withTitle(LanguageString.of("text-en", "text-nl"))
                 .build(),
             aFullConceptSnapshot()
-                .withTitle(LanguageString.of("text-en-changed"))
+                .withTitle(LanguageString.of("text-en-changed", "text-nl-veranderd"))
                 .build()],
         ['description changed',
             aFullConceptSnapshot()
-                .withDescription(LanguageString.of("text-en"))
+                .withDescription(LanguageString.of("text-en", "text-nl"))
                 .build(),
             aFullConceptSnapshot()
-                .withDescription(LanguageString.of("text-en-changed"))
+                .withDescription(LanguageString.of("text-en-changed", "text-nl-veranderd"))
                 .build()],
         ['additional description changed',
             aFullConceptSnapshot()

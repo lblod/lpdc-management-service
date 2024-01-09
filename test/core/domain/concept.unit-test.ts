@@ -96,7 +96,7 @@ describe('constructing', () => {
         expect(() => aFullConcept().withTitle(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in title should not be undefined'));
     });
 
-    test('NL not present in title throws error', () => {
+    test('NL not present in description throws error', () => {
         expect(() => aFullConcept().withDescription(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in description should not be undefined'));
     });
 
@@ -114,7 +114,7 @@ describe('constructing', () => {
     test('Blank productId throws error', () => {
         expect(() => aFullConcept().withProductId('   ').build()).toThrow(new Error('productId should not be blank'));
     });
-    
+
     describe('cost ', () => {
         test('valid cost for concept does not throw error', () => {
             const uuidValue = uuid();
