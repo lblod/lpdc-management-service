@@ -110,7 +110,7 @@ export class ConceptSnapshot {
         this._procedures = [...procedures];
         this._websites = [...websites];
         this._costs = [...costs].map(cost => Cost.forConceptSnapshot(cost));
-        this._financialAdvantages = [...financialAdvantages];
+        this._financialAdvantages = [...financialAdvantages].map(financialAdvantage => FinancialAdvantage.forConceptSnapshot(financialAdvantage));
         this._isVersionOfConcept = isVersionOfConcept;
         this._dateCreated = dateCreated;
         this._dateModified = dateModified;

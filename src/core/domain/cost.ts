@@ -11,9 +11,9 @@ export class Cost {
     private readonly _description: LanguageString | undefined;
 
     private constructor(id: Iri,
-                        uuid: string,
-                        title: LanguageString,
-                        description: LanguageString,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined,
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;

@@ -247,7 +247,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
     private copyFinancialAdvantages(financialAdvantages: FinancialAdvantage[]) {
         return financialAdvantages.map(fa =>
-            new FinancialAdvantage(fa.id, uuid(), fa.title, fa.description));
+            FinancialAdvantage.reconstitute(fa.id, uuid(), fa.title, fa.description));
     }
 
     private async ensureNewIpdcOrganisations(service: string): Promise<void> {

@@ -272,7 +272,7 @@ export class QuadsToDomainMapper {
 
         const financialAdvantages =
             financialAdvantageIds.map(financialAdvantageId =>
-                new FinancialAdvantage(financialAdvantageId, this.uuid(financialAdvantageId), this.title(financialAdvantageId), this.description(financialAdvantageId)));
+                FinancialAdvantage.reconstitute(financialAdvantageId, this.uuid(financialAdvantageId), this.title(financialAdvantageId), this.description(financialAdvantageId)));
 
         return this.sort(financialAdvantages);
     }

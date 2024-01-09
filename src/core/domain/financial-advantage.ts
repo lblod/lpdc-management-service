@@ -7,19 +7,44 @@ export class FinancialAdvantage {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
-    private readonly _title: LanguageString;
-    private readonly _description: LanguageString;
+    private readonly _title: LanguageString | undefined;
+    private readonly _description: LanguageString | undefined;
 
-    constructor(id: Iri,
-                uuid: string | undefined,
-                title: LanguageString,
-                description: LanguageString,
+    private constructor(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined,
     ) {
-        //TODO LPDC-917: add invariants
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
-        this._title = requiredValue(title, 'title');
-        this._description = requiredValue(description, 'description');
+        this._title = title;
+        this._description = description;
+    }
+
+    static forConcept(financialAdvantage: FinancialAdvantage): FinancialAdvantage {
+        return new FinancialAdvantage(
+            financialAdvantage.id,
+            requiredValue(financialAdvantage.uuid, 'uuid'),
+            requiredValue(financialAdvantage.title, 'title'),
+            requiredValue(financialAdvantage.description, 'description')
+        );
+    }
+
+    static forConceptSnapshot(financialAdvantage: FinancialAdvantage): FinancialAdvantage {
+        return new FinancialAdvantage(
+            financialAdvantage.id,
+            undefined,
+            requiredValue(financialAdvantage.title, 'title'),
+            requiredValue(financialAdvantage.description, 'description')
+        );
+    }
+
+    static reconstitute(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined): FinancialAdvantage {
+
+        return new FinancialAdvantage(id, uuid, title, description);
     }
 
     get id(): Iri {
@@ -30,11 +55,11 @@ export class FinancialAdvantage {
         return this._uuid;
     }
 
-    get title(): LanguageString {
+    get title(): LanguageString | undefined {
         return this._title;
     }
 
-    get description(): LanguageString {
+    get description(): LanguageString | undefined {
         return this._description;
     }
 

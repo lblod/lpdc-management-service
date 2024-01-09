@@ -114,7 +114,7 @@ export class Concept {
         this._procedures = [...procedures];
         this._websites = [...websites];
         this._costs = [...costs].map(cost => Cost.forConcept(cost));
-        this._financialAdvantages = [...financialAdvantages];
+        this._financialAdvantages = [...financialAdvantages].map(financialAdvantage => FinancialAdvantage.forConcept(financialAdvantage));
         this._productId = productId;
         this._latestConceptSnapshot = latestConceptSnapshot;
         this._previousConceptSnapshots = asSortedSet(previousConceptSnapshots);

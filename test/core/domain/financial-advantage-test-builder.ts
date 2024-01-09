@@ -4,16 +4,27 @@ import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {uuid} from "../../../mu-helper";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
-export function aMinimalFinancialAdvantage(): FinancialAdvantageTestBuilder {
+export function aMinimalFinancialAdvantageForConceptSnapshot(): FinancialAdvantageTestBuilder {
     return new FinancialAdvantageTestBuilder()
         .withId(FinancialAdvantageTestBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
 }
 
-export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
+export function aMinimalFinancialAdvantageForConcept(): FinancialAdvantageTestBuilder {
+    const uniqueId = uuid();
     return new FinancialAdvantageTestBuilder()
-        .withId(FinancialAdvantageTestBuilder.buildIri(uuid()))
+        .withId(FinancialAdvantageTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
+}
+
+export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
+    const uniqueId = uuid();
+    return new FinancialAdvantageTestBuilder()
+        .withId(FinancialAdvantageTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.TITLE_EN,
             FinancialAdvantageTestBuilder.TITLE_NL,
@@ -113,7 +124,7 @@ export class FinancialAdvantageTestBuilder {
     }
 
     public build(): FinancialAdvantage {
-        return new FinancialAdvantage(
+        return FinancialAdvantage.reconstitute(
             this.id,
             this.uuid,
             this.title,

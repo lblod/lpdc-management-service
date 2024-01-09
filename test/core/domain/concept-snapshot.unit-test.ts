@@ -8,7 +8,7 @@ import {aFullEvidence, aMinimalEvidence} from "./evidence-test-builder";
 import {aFullProcedure} from "./procedure-test-builder";
 import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
 import {aFullCost, CostTestBuilder} from "./cost-test-builder";
-import {aFullFinancialAdvantage} from "./financial-advantage-test-builder";
+import {aFullFinancialAdvantage, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,
@@ -22,6 +22,7 @@ import {
 import {buildConceptSnapshotIri} from "./iri-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
 import {aMinimalLanguageString} from "./language-string-test-builder";
+import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
@@ -80,6 +81,20 @@ describe('constructing', () => {
             const invalidCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
 
             expect(() => aFullConceptSnapshot().withCosts([invalidCost]).build()).toThrow();
+        });
+    });
+    describe('financialAdvantage ', () => {
+        test('valid financial advantage for conceptSnapshot does not throw error', () => {
+            const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
+                aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
+
+            expect(() => aFullConceptSnapshot().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
+        });
+
+        test('invalid financial advantage for conceptSnapshot does throw error', () => {
+            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
+
+            expect(() => aFullConceptSnapshot().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
         });
     });
 });

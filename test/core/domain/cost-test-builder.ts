@@ -13,9 +13,10 @@ export function aMinimalCostForConceptSnapshot(): CostTestBuilder {
 }
 
 export function aMinimalCostForConcept(): CostTestBuilder {
+    const uniqueId = uuid();
     return new CostTestBuilder()
-        .withId(CostTestBuilder.buildIri(uuid()))
-        .withUuid(uuid())
+        .withId(CostTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(CostTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
 }
