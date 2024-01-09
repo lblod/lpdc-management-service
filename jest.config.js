@@ -3,5 +3,6 @@ module.exports = {
     testEnvironment: "node",
     transform: {"^.+\\.[t|j]sx?$": "ts-jest"},
     testMatch: ["**/test/**/*.*-test.ts"],
-    globalSetup: './test/test-setup.ts'
+    globalSetup: './test/test-setup.ts',
+    maxWorkers: 1,
 };
