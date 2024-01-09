@@ -237,7 +237,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
     private copyWebsites(websites: Website[]) {
         return websites.map(w =>
-            new Website(w.id, uuid(), w.title, w.description, w.url));
+            Website.reconstitute(w.id, uuid(), w.title, w.description, w.url));
     }
 
     private copyCosts(costs: Cost[]) {

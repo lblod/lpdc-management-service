@@ -4,16 +4,27 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {Website} from "../../../src/core/domain/website";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
-export function aMinimalWebsite(): WebsiteTestBuilder {
+export function aMinimalWebsiteForConceptSnapshot(): WebsiteTestBuilder {
     return new WebsiteTestBuilder()
         .withId(WebsiteTestBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(WebsiteTestBuilder.TITLE).build())
         .withUrl(WebsiteTestBuilder.URL);
 }
 
-export function aFullWebsite(): WebsiteTestBuilder {
+export function aMinimalWebsiteForConcept(): WebsiteTestBuilder {
+    const uniqueId = uuid();
     return new WebsiteTestBuilder()
-        .withId(WebsiteTestBuilder.buildIri(uuid()))
+        .withId(WebsiteTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(aMinimalLanguageString(WebsiteTestBuilder.TITLE).build())
+        .withUrl(WebsiteTestBuilder.URL);
+}
+
+export function aFullWebsite(): WebsiteTestBuilder {
+    const uniqueId = uuid();
+    return new WebsiteTestBuilder()
+        .withId(WebsiteTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             WebsiteTestBuilder.TITLE_EN,
             WebsiteTestBuilder.TITLE_NL,
@@ -124,7 +135,7 @@ export class WebsiteTestBuilder {
     }
 
     public build(): Website {
-        return new Website(
+        return Website.reconstitute(
             this.id,
             this.uuid,
             this.title,

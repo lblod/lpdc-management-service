@@ -15,6 +15,8 @@ import {EvidenceTestBuilder} from "./evidence-test-builder";
 import {aFullRequirement} from "./requirement-test-builder";
 import {Procedure} from "../../../src/core/domain/procedure";
 import {ProcedureTestBuilder} from "./procedure-test-builder";
+import {Website} from "../../../src/core/domain/website";
+import {WebsiteTestBuilder} from "./website-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
@@ -151,6 +153,23 @@ describe('constructing', () => {
             expect(() => aFullConcept().withProcedures([invalidProcedure]).build()).toThrow();
         });
     });
+
+    describe('website ', () => {
+        test('valid website does not throw error', () => {
+            const uuidValue = uuid();
+            const validWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
+                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), WebsiteTestBuilder.URL);
+
+            expect(() => aFullConcept().withWebsites([validWebsite]).build()).not.toThrow();
+        });
+
+        test('invalid website does throw error', () => {
+            const invalidWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuid()), undefined, undefined, undefined, WebsiteTestBuilder.URL);
+
+            expect(() => aFullConcept().withWebsites([invalidWebsite]).build()).toThrow();
+        });
+    });
+
     describe('requirement ', () => {
         test('valid requirement does not throw error', () => {
             const uuidValue = uuid();

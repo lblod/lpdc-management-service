@@ -7,23 +7,52 @@ export class Website {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
-    private readonly _title: LanguageString;
+    private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _url: string;
 
-    constructor(id: Iri,
-                uuid: string | undefined,
-                title: LanguageString,
-                description: LanguageString | undefined,
-                url: string,
+    private constructor(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString,
+                        description: LanguageString | undefined,
+                        url: string,
     ) {
-        //TODO LPDC-917: add invariants
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
-        this._title = requiredValue(title, 'title');
+        this._title = title;
         this._description = description;
         this._url = requiredValue(url, 'url');
     }
+
+    static forConcept(website: Website): Website {
+        return new Website(
+            website.id,
+            requiredValue(website.uuid, 'uuid'),
+            requiredValue(website.title, 'title'),
+            website.description,
+            website.url
+        );
+    }
+
+    static forConceptSnapshot(website: Website): Website {
+        return new Website(
+            website.id,
+            undefined,
+            requiredValue(website.title, 'title'),
+            website.description,
+            website.url
+        );
+    }
+
+    static reconstitute(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined,
+                        url: string): Website {
+
+        return new Website(id, uuid, title, description, url);
+    }
+
 
     get id(): Iri {
         return this._id;
@@ -33,7 +62,7 @@ export class Website {
         return this._uuid;
     }
 
-    get title(): LanguageString {
+    get title(): LanguageString | undefined {
         return this._title;
     }
 

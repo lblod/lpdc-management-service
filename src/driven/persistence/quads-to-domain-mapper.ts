@@ -286,7 +286,7 @@ export class QuadsToDomainMapper {
 
         const websites =
             websiteIds.map(websiteId =>
-                new Website(websiteId, this.uuid(websiteId), this.title(websiteId), this.description(websiteId), this.url(websiteId)));
+                Website.reconstitute(websiteId, this.uuid(websiteId), this.title(websiteId), this.description(websiteId), this.url(websiteId)));
 
         return this.sort(websites);
     }

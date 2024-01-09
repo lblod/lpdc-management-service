@@ -1,6 +1,11 @@
 import {aFullProcedure} from "./procedure-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Procedure} from "../../../src/core/domain/procedure";
+import {uuid} from "../../../mu-helper";
+import {EvidenceTestBuilder} from "./evidence-test-builder";
+import {aMinimalLanguageString} from "./language-string-test-builder";
+import {Website} from "../../../src/core/domain/website";
+import {WebsiteTestBuilder} from "./website-test-builder";
 
 describe('forConcept', () => {
     test('Undefined id throws error', () => {
@@ -31,6 +36,23 @@ describe('forConcept', () => {
         expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('description should not be undefined'));
     });
 
+    describe('website ', () => {
+        test('valid website does not throw error', () => {
+            const uuidValue = uuid();
+            const validWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuidValue), uuid(), aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
+                aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build(), WebsiteTestBuilder.URL);
+            const procedure = aFullProcedure().withWebsites([validWebsite]);
+            expect(() => Procedure.forConcept(procedure.build())).not.toThrow();
+        });
+
+        test('invalid evidence does throw error', () => {
+            const uuidValue = uuid();
+            const validWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuidValue), undefined, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
+                aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build(), WebsiteTestBuilder.URL);
+            const procedure = aFullProcedure().withWebsites([validWebsite]);
+            expect(() => Procedure.forConcept(procedure.build())).toThrow();
+        });
+    });
 });
 
 describe('forConceptSnapshot', () => {
@@ -55,5 +77,20 @@ describe('forConceptSnapshot', () => {
         const procedure = aFullProcedure().withDescription(undefined).build();
         expect(() => Procedure.forConceptSnapshot(procedure)).toThrow(new Error('description should not be undefined'));
     });
+    describe('website ', () => {
+        test('valid website does not throw error', () => {
+            const uuidValue = uuid();
+            const validWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuidValue), undefined, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
+                aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build(), WebsiteTestBuilder.URL);
+            const procedure = aFullProcedure().withWebsites([validWebsite]);
+            expect(() => Procedure.forConceptSnapshot(procedure.build())).not.toThrow();
+        });
 
+        test('invalid evidence does throw error', () => {
+            const uuidValue = uuid();
+            const validWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuidValue), undefined, undefined, undefined, WebsiteTestBuilder.URL);
+            const procedure = aFullProcedure().withWebsites([validWebsite]);
+            expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrow();
+        });
+    });
 });

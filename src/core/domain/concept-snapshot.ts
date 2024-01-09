@@ -108,7 +108,7 @@ export class ConceptSnapshot {
         this._keywords = asSortedSet(keywords, LanguageString.compare);
         this._requirements = [...requirements].map(Requirement.forConceptSnapshot);
         this._procedures = [...procedures].map(Procedure.forConceptSnapshot);
-        this._websites = [...websites];
+        this._websites = [...websites].map(Website.forConceptSnapshot);
         this._costs = [...costs].map(Cost.forConceptSnapshot);
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConceptSnapshot);
         this._isVersionOfConcept = isVersionOfConcept;

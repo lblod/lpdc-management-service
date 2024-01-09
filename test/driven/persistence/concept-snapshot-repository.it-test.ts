@@ -14,7 +14,7 @@ import {
 } from "../../core/domain/requirement-test-builder";
 import {aMinimalEvidenceForConceptSnapshot, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
 import {aMinimalProcedureForConceptSnapshot, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
-import {aMinimalWebsite, WebsiteTestBuilder} from "../../core/domain/website-test-builder";
+import {aMinimalWebsiteForConceptSnapshot, WebsiteTestBuilder} from "../../core/domain/website-test-builder";
 import {
     CompetentAuthorityLevelType,
     ConceptTagType,
@@ -652,7 +652,7 @@ describe('ConceptSnapshotRepository', () => {
                             .withTitle(procedureTitle)
                             .withDescription(procedureDescription)
                             .withWebsites([
-                                aMinimalWebsite()
+                                aMinimalWebsiteForConceptSnapshot()
                                     .withId(websiteId)
                                     .withTitle(websiteTitle)
                                     .withUrl(websiteUrl).build()]).build()])

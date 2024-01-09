@@ -32,7 +32,7 @@ export class Procedure {
             requiredValue(procedure.uuid, 'uuid'),
             requiredValue(procedure.title, 'title'),
             requiredValue(procedure.description, 'description'),
-            procedure.websites
+            procedure.websites.map(Website.forConcept)
         );
     }
 
@@ -42,7 +42,7 @@ export class Procedure {
             undefined,
             requiredValue(procedure.title, 'title'),
             requiredValue(procedure.description, 'description'),
-            procedure.websites
+            procedure.websites.map(Website.forConceptSnapshot)
         );
     }
 

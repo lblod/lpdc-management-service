@@ -10,7 +10,7 @@ import {
 } from "./requirement-test-builder";
 import {aFullEvidence, aMinimalEvidenceForConceptSnapshot, EvidenceTestBuilder} from "./evidence-test-builder";
 import {aFullProcedure, ProcedureTestBuilder} from "./procedure-test-builder";
-import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
+import {aFullWebsite, aMinimalWebsiteForConceptSnapshot, WebsiteTestBuilder} from "./website-test-builder";
 import {aFullCost, CostTestBuilder} from "./cost-test-builder";
 import {aFullFinancialAdvantage, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
@@ -30,6 +30,7 @@ import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {Evidence} from "../../../src/core/domain/evidence";
 import {Procedure} from "../../../src/core/domain/procedure";
+import {Website} from "../../../src/core/domain/website";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
@@ -77,28 +78,28 @@ describe('constructing', () => {
     });
 
     describe('cost ', () => {
-        test('valid cost for conceptSnapshot does not throw error', () => {
+        test('valid cost does not throw error', () => {
             const validCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(CostTestBuilder.TITLE).build(),
                 aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
 
             expect(() => aFullConceptSnapshot().withCosts([validCost]).build()).not.toThrow();
         });
 
-        test('invalid cost for conceptSnapshot does throw error', () => {
+        test('invalid cost does throw error', () => {
             const invalidCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
 
             expect(() => aFullConceptSnapshot().withCosts([invalidCost]).build()).toThrow();
         });
     });
     describe('financialAdvantage ', () => {
-        test('valid financial advantage for conceptSnapshot does not throw error', () => {
+        test('valid financial advantage does not throw error', () => {
             const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
                 aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
 
             expect(() => aFullConceptSnapshot().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
         });
 
-        test('invalid financial advantage for conceptSnapshot does throw error', () => {
+        test('invalid financial advantage does throw error', () => {
             const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
 
             expect(() => aFullConceptSnapshot().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
@@ -106,7 +107,7 @@ describe('constructing', () => {
     });
 
     describe('procedure ', () => {
-        test('valid procedure for concept does not throw error', () => {
+        test('valid procedure does not throw error', () => {
             const uuidValue = uuid();
             const validProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(ProcedureTestBuilder.TITLE).build(),
                 aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(), []);
@@ -114,10 +115,25 @@ describe('constructing', () => {
             expect(() => aFullConceptSnapshot().withProcedures([validProcedure]).build()).not.toThrow();
         });
 
-        test('invalid procedure for concept does throw error', () => {
+        test('invalid procedure does throw error', () => {
             const invalidProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuid()), undefined, undefined, undefined, []);
 
             expect(() => aFullConceptSnapshot().withProcedures([invalidProcedure]).build()).toThrow();
+        });
+    });
+    describe('website ', () => {
+        test('valid website does not throw error', () => {
+            const uuidValue = uuid();
+            const validWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
+                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), WebsiteTestBuilder.URL);
+
+            expect(() => aFullConceptSnapshot().withWebsites([validWebsite]).build()).not.toThrow();
+        });
+
+        test('invalid website does throw error', () => {
+            const invalidWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuid()), undefined, undefined, undefined, WebsiteTestBuilder.URL);
+
+            expect(() => aFullConceptSnapshot().withWebsites([invalidWebsite]).build()).toThrow();
         });
     });
 
@@ -646,38 +662,38 @@ describe('is functionally changed', () => {
                 .build()],
         ['procedure website title updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(LanguageString.of('procedure website title en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('procedure website title en')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withTitle(LanguageString.of('procedure website title en updated')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('procedure website title en updated')).build()]).build()])
                 .build()],
         ['procedure website description updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en updated')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description en updated')).build()]).build()])
                 .build()],
         ['procedure website description added',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
                 .build()],
         ['procedure website description removed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withDescription(undefined).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()]).build()])
                 .build()],
         ['procedure website url updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url2.com').build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build()]).build()])
                 .build()],
         ['procedure website added',
             aFullConceptSnapshot()
@@ -695,10 +711,10 @@ describe('is functionally changed', () => {
                 .build()],
         ['procedure website order changed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url1.com').build(), aMinimalWebsite().withUrl('https://url2.com').build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsite().withUrl('https://url2.com').build(), aMinimalWebsite().withUrl('https://url1.com').build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build()]).build()])
                 .build()],
         ['website added',
             aFullConceptSnapshot()
@@ -716,45 +732,45 @@ describe('is functionally changed', () => {
                 .build()],
         ['website title updated',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withTitle(LanguageString.of('website title en')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('website title en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withTitle(LanguageString.of('website title en updated')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('website title en updated')).build()])
                 .build()],
         ['website description updated',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en updated')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description en updated')).build()])
                 .build()],
         ['website description added',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description en')).build()])
                 .build()],
         ['website description removed',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(LanguageString.of('website description en')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withDescription(undefined).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()])
                 .build()],
         ['website url updated',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withUrl('https://url2.com').build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build()])
                 .build()],
         ['website order changed',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withUrl('https://url1.com').build(), aMinimalWebsite().withUrl('https://url2.com').build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsite().withUrl('https://url2.com').build(), aMinimalWebsite().withUrl('https://url1.com').build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build()])
                 .build()],
         ['cost added',
             aFullConceptSnapshot()
