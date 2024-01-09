@@ -75,7 +75,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
                 const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
                 const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
 
-                const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
 
                 if (!conceptExists) {
                     const newConcept = this.asNewConcept(newConceptSnapshot);
@@ -87,7 +86,9 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
                 await this.ensureLinkedAuthoritiesExistAsCodeList(newConceptSnapshot);
 
-                //TODO LPDC-916: move to a separate repo?
+                const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
+
+                //TODO LPDC-916: move to a separate repo
                 //instances (in user graphs)
                 const instanceReviewStatus: string | undefined = this.determineInstanceReviewStatus(isConceptFunctionallyChanged, isArchiving);
                 await this.flagInstancesModifiedConcept(conceptId, instanceReviewStatus);

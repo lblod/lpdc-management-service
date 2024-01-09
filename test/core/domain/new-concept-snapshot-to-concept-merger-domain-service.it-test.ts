@@ -8,7 +8,7 @@ import {
     aMinimalConceptSnapshot,
     ConceptSnapshotTestBuilder
 } from "./concept-snapshot-test-builder";
-import {buildBestuurseenheidIri, buildCodexVlaanderenIri, buildConceptIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildCodexVlaanderenIri, buildConceptIri, buildInstanceIri} from "./iri-test-builder";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 import {CONCEPT_GRAPH, PREFIX} from "../../../config";
@@ -43,6 +43,7 @@ import {
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
 import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
+import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 
 describe('merges a new concept snapshot into a concept', () => {
 
@@ -978,6 +979,243 @@ describe('merges a new concept snapshot into a concept', () => {
         expect(createdExecutingAuthorityCode).toBeTruthy();
 
     }, 10000);
+
+    describe('Update instance review statuses', () => {
+
+        test('Updates instance review status to updated for each linked instance if concept is FunctionallyModified', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const title = aMinimalLanguageString('title').build();
+            const description = aMinimalLanguageString('description').build();
+            const conceptSnapshot =
+                aFullConceptSnapshot()
+                    .withTitle(title)
+                    .withDescription(description)
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const createdConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(createdConcept.id).toEqual(isVersionOfConceptId);
+
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .withId(buildBestuurseenheidIri(uuid()))
+                    .build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const anotherBestuurseenheid =
+                aBestuurseenheid()
+                    .withId(buildBestuurseenheidIri(uuid()))
+                    .build();
+            await bestuurseenheidRepository.save(anotherBestuurseenheid);
+
+            const instanceId = buildInstanceIri(uuid());
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `${sparqlEscapeUri(instanceId)} a cpsv:PublicService`,
+                    `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
+                ],
+                [
+                    PREFIX.cpsv,
+                    PREFIX.dct,
+                ],
+            );
+
+            const anotherInstanceId = buildInstanceIri(uuid());
+            await directDatabaseAccess.insertData(
+                anotherBestuurseenheid.userGraph().value,
+                [
+                    `${sparqlEscapeUri(anotherInstanceId)} a cpsv:PublicService`,
+                    `${sparqlEscapeUri(anotherInstanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
+                ],
+                [
+                    PREFIX.cpsv,
+                    PREFIX.dct,
+                ],
+            );
+
+            const updatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withTitle(title)
+                    .withDescription(description)
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(updatedConceptSnapshot);
+
+            await merger.merge(updatedConceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.id).toEqual(isVersionOfConceptId);
+
+            const reviewStatusForConceptInGraph = (be: Bestuurseenheid) => `           
+                ${PREFIX.cpsv}
+                ${PREFIX.dct}
+                ${PREFIX.ext}
+                SELECT ?reviewStatus WHERE {
+                    GRAPH ${sparqlEscapeUri(be.userGraph())} {
+                        ?instanceId a cpsv:PublicService ;
+                            dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
+                            ext:reviewStatus ?reviewStatus .
+                    }
+                }
+            `;
+            const reviewStatusResultForInstanceOfBestuurseenheid = await directDatabaseAccess.list(reviewStatusForConceptInGraph(bestuurseenheid));
+            expect(reviewStatusResultForInstanceOfBestuurseenheid.length).toEqual(1);
+
+            const reviewStatusForInstanceOfBestuurseenheid = reviewStatusResultForInstanceOfBestuurseenheid[0]['reviewStatus'].value;
+            expect(reviewStatusForInstanceOfBestuurseenheid).toEqual('http://lblod.data.gift/concepts/5a3168e2-f39b-4b5d-8638-29f935023c83');
+
+            const reviewStatusResultForInstanceOfAnotherBestuurseenheid = await directDatabaseAccess.list(reviewStatusForConceptInGraph(anotherBestuurseenheid));
+            expect(reviewStatusResultForInstanceOfAnotherBestuurseenheid.length).toEqual(1);
+
+            const reviewStatusForInstanceOfAnotherBestuurseenheid = reviewStatusResultForInstanceOfAnotherBestuurseenheid[0]['reviewStatus'].value;
+            expect(reviewStatusForInstanceOfAnotherBestuurseenheid).toEqual('http://lblod.data.gift/concepts/5a3168e2-f39b-4b5d-8638-29f935023c83');
+        });
+
+        test('Does not updates instance review status to updated for each linked instance if concept is not FunctionallyModified', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const createdConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(createdConcept.id).toEqual(isVersionOfConceptId);
+
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .withId(buildBestuurseenheidIri(uuid()))
+                    .build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instanceId = buildInstanceIri(uuid());
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `${sparqlEscapeUri(instanceId)} a cpsv:PublicService`,
+                    `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
+                ],
+                [
+                    PREFIX.cpsv,
+                    PREFIX.dct,
+                ],
+            );
+
+            const updatedConceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+
+            await conceptSnapshotRepository.save(updatedConceptSnapshot);
+
+            await merger.merge(updatedConceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.id).toEqual(isVersionOfConceptId);
+
+            const reviewStatusForConceptInGraph = (be: Bestuurseenheid) => `           
+                ${PREFIX.cpsv}
+                ${PREFIX.dct}
+                ${PREFIX.ext}
+                SELECT ?reviewStatus WHERE {
+                    GRAPH ${sparqlEscapeUri(be.userGraph())} {
+                        ?instanceId a cpsv:PublicService ;
+                            dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
+                            ext:reviewStatus ?reviewStatus .
+                    }
+                }
+            `;
+            const reviewStatusResultForInstance = await directDatabaseAccess.list(reviewStatusForConceptInGraph(bestuurseenheid));
+            expect(reviewStatusResultForInstance.length).toEqual(0);
+        });
+
+        test('Updates instance review status to archived for each linked instance if concept is archived', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const createdConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(createdConcept.id).toEqual(isVersionOfConceptId);
+
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .withId(buildBestuurseenheidIri(uuid()))
+                    .build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instanceId = buildInstanceIri(uuid());
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `${sparqlEscapeUri(instanceId)} a cpsv:PublicService`,
+                    `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
+                ],
+                [
+                    PREFIX.cpsv,
+                    PREFIX.dct,
+                ],
+            );
+
+            const updatedConceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withSnapshotType(SnapshotType.DELETE)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+
+            await conceptSnapshotRepository.save(updatedConceptSnapshot);
+
+            await merger.merge(updatedConceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.id).toEqual(isVersionOfConceptId);
+
+            const reviewStatusForConceptInGraph = (be: Bestuurseenheid) => `           
+                ${PREFIX.cpsv}
+                ${PREFIX.dct}
+                ${PREFIX.ext}
+                SELECT ?reviewStatus WHERE {
+                    GRAPH ${sparqlEscapeUri(be.userGraph())} {
+                        ?instanceId a cpsv:PublicService ;
+                            dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
+                            ext:reviewStatus ?reviewStatus .
+                    }
+                }
+            `;
+            const reviewStatusResultForInstance = await directDatabaseAccess.list(reviewStatusForConceptInGraph(bestuurseenheid));
+            expect(reviewStatusResultForInstance.length).toEqual(1);
+
+            const reviewStatusForInstance = reviewStatusResultForInstance[0]['reviewStatus'].value;
+            expect(reviewStatusForInstance).toEqual('http://lblod.data.gift/concepts/cf22e8d1-23c3-45da-89bc-00826eaf23c3');
+
+        });
+
+    });
 
     function suffixUnique(aLangString: LanguageString): LanguageString {
         return LanguageString.of(

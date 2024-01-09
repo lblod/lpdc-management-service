@@ -21,3 +21,7 @@ export function buildConceptDisplayConfigurationIri(uniqueId: string): Iri {
 export function buildBestuurseenheidIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/bestuurseenheden/${uniqueId}`);
 }
+
+export function buildInstanceIri(uniqueId: string): Iri {
+    return new Iri(`http://data.lblod.info/id/public-service/${uniqueId}`);
+}
