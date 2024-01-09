@@ -217,7 +217,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
     private copyRequirements(requirements: Requirement[]) {
         return requirements.map(r =>
-            new Requirement(
+            Requirement.reconstitute(
                 r.id,
                 uuid(),
                 r.title,

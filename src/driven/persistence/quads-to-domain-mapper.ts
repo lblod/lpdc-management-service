@@ -314,7 +314,7 @@ export class QuadsToDomainMapper {
 
         const requirements =
             requirementIds.map(requirementId =>
-                new Requirement(requirementId, this.uuid(requirementId), this.title(requirementId), this.description(requirementId), this.evidence(requirementId)));
+                Requirement.reconstitute(requirementId, this.uuid(requirementId), this.title(requirementId), this.description(requirementId), this.evidence(requirementId)));
 
         return this.sort(requirements);
     }

@@ -110,11 +110,11 @@ export class Concept {
         this._publicationMedia = asSortedSet(publicationMedia);
         this._yourEuropeCategories = asSortedSet(yourEuropeCategories);
         this._keywords = asSortedSet(keywords, LanguageString.compare);
-        this._requirements = [...requirements];
+        this._requirements = [...requirements].map(Requirement.forConcept);
         this._procedures = [...procedures];
         this._websites = [...websites];
-        this._costs = [...costs].map(cost => Cost.forConcept(cost));
-        this._financialAdvantages = [...financialAdvantages].map(financialAdvantage => FinancialAdvantage.forConcept(financialAdvantage));
+        this._costs = [...costs].map(Cost.forConcept);
+        this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConcept);
         this._productId = productId;
         this._latestConceptSnapshot = latestConceptSnapshot;
         this._previousConceptSnapshots = asSortedSet(previousConceptSnapshots);

@@ -8,22 +8,50 @@ export class Requirement {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
-    private readonly _title: LanguageString;
-    private readonly _description: LanguageString;
+    private readonly _title: LanguageString | undefined;
+    private readonly _description: LanguageString | undefined;
     private readonly _evidence: Evidence | undefined;
 
-    //TODO LPDC-917: add invariants
-    constructor(id: Iri,
-                uuid: string | undefined,
-                title: LanguageString,
-                description: LanguageString,
-                evidence: Evidence | undefined,
+    private constructor(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined,
+                        evidence: Evidence | undefined,
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
-        this._title = requiredValue(title, 'title');
-        this._description = requiredValue(description, 'description');
+        this._title = title;
+        this._description = description;
         this._evidence = evidence;
+    }
+
+    static forConcept(requirement: Requirement): Requirement {
+        return new Requirement(
+            requirement.id,
+            requiredValue(requirement.uuid, 'uuid'),
+            requiredValue(requirement.title, 'title'),
+            requiredValue(requirement.description, 'description'),
+            requirement.evidence
+        );
+    }
+
+    static forConceptSnapshot(requirement: Requirement): Requirement {
+        return new Requirement(
+            requirement.id,
+            undefined,
+            requiredValue(requirement.title, 'title'),
+            requiredValue(requirement.description, 'description'),
+            requirement.evidence
+        );
+    }
+
+    static reconstitute(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined,
+                        evidence: Evidence | undefined): Requirement {
+
+        return new Requirement(id, uuid, title, description, evidence);
     }
 
     get id(): Iri {
@@ -34,11 +62,11 @@ export class Requirement {
         return this._uuid;
     }
 
-    get title(): LanguageString {
+    get title(): LanguageString | undefined {
         return this._title;
     }
 
-    get description(): LanguageString {
+    get description(): LanguageString | undefined {
         return this._description;
     }
 

@@ -7,16 +7,27 @@ import {Evidence} from "../../../src/core/domain/evidence";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
 
-export function aMinimalRequirement(): RequirementTestBuilder {
+export function aMinimalRequirementForConceptSnapshot(): RequirementTestBuilder {
     return new RequirementTestBuilder()
         .withId(RequirementTestBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(RequirementTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
 }
 
-export function aFullRequirement(): RequirementTestBuilder {
+export function aMinimalRequirementForConcept(): RequirementTestBuilder {
+    const uniqueId = uuid();
     return new RequirementTestBuilder()
-        .withId(RequirementTestBuilder.buildIri(uuid()))
+        .withId(RequirementTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(aMinimalLanguageString(RequirementTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
+}
+
+export function aFullRequirement(): RequirementTestBuilder {
+    const uniqueId = uuid();
+    return new RequirementTestBuilder()
+        .withId(RequirementTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             RequirementTestBuilder.TITLE_EN,
             RequirementTestBuilder.TITLE_NL,
@@ -127,7 +138,7 @@ export class RequirementTestBuilder {
     }
 
     public build(): Requirement {
-        return new Requirement(
+        return Requirement.reconstitute(
             this.id,
             this.uuid,
             this.title,

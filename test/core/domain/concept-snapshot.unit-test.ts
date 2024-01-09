@@ -3,7 +3,7 @@ import {uuid} from "../../../mu-helper";
 import {aFullConceptSnapshot} from "./concept-snapshot-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
-import {aMinimalRequirement} from "./requirement-test-builder";
+import {aMinimalRequirementForConceptSnapshot, RequirementTestBuilder} from "./requirement-test-builder";
 import {aFullEvidence, aMinimalEvidence} from "./evidence-test-builder";
 import {aFullProcedure} from "./procedure-test-builder";
 import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
@@ -23,6 +23,7 @@ import {buildConceptSnapshotIri} from "./iri-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
+import {Requirement} from "../../../src/core/domain/requirement";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
@@ -95,6 +96,21 @@ describe('constructing', () => {
             const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
 
             expect(() => aFullConceptSnapshot().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
+        });
+    });
+    describe('requirement ', () => {
+        test('valid requirement for concept does not throw error', () => {
+            const uuidValue = uuid();
+            const validRequirement = Requirement.reconstitute(RequirementTestBuilder.buildIri(uuidValue), undefined, aMinimalLanguageString(RequirementTestBuilder.TITLE).build(),
+                aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build(), undefined);
+
+            expect(() => aFullConceptSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
+        });
+
+        test('invalid financialAdvantage for concept does throw error', () => {
+            const invalidRequirement = Requirement.reconstitute(RequirementTestBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
+
+            expect(() => aFullConceptSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
         });
     });
 });
@@ -448,107 +464,107 @@ describe('is functionally changed', () => {
                 .withRequirements([])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().build()])
                 .build()],
         ['requirement removed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([])
                 .build()],
         ['requirement order changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en-1')).build(),
-                    aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en-2')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-1')).build(),
+                    aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-2')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en-2')).build(),
-                    aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en-1')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-2')).build(),
+                    aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-1')).build()])
                 .build()],
         ['requirement title updated : en changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en - updated')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en - updated')).build()])
                 .build()],
         ['requirement title updated: nl added',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
                 .build()],
         ['requirement title updated: nl removed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en')).build()])
                 .build()],
         ['requirement title updated : nl changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-changed')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-changed')).build()])
                 .build()],
         ['requirement description updated : en changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en - updated')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en - updated')).build()])
                 .build()],
         ['requirement description updated: nl added',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
                 .build()],
         ['requirement description updated: nl removed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en')).build()])
                 .build()],
         ['requirement description updated : nl changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-changed')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-changed')).build()])
                 .build()],
         ['requirement > evidence : added',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(undefined).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(aFullEvidence().build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aFullEvidence().build()).build()])
                 .build()],
         ['requirement > evidence : removed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(aFullEvidence().build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aFullEvidence().build()).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(undefined).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(undefined).build()])
                 .build()],
         ['requirement > evidence title updated',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withTitle(LanguageString.of('evidence title en')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidence().withTitle(LanguageString.of('evidence title en')).build()).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withTitle(LanguageString.of('evidence title en updated')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidence().withTitle(LanguageString.of('evidence title en updated')).build()).build()])
                 .build()],
         ['requirement > evidence description updated',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(LanguageString.of('evidence description en')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidence().withDescription(LanguageString.of('evidence description en')).build()).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirement().withEvidence(aMinimalEvidence().withDescription(LanguageString.of('evidence description en updated')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidence().withDescription(LanguageString.of('evidence description en updated')).build()).build()])
                 .build()],
         ['procedure added',
             aFullConceptSnapshot()

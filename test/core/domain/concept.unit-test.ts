@@ -8,6 +8,8 @@ import {Cost} from "../../../src/core/domain/cost";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
+import {Requirement} from "../../../src/core/domain/requirement";
+import {RequirementTestBuilder} from "./requirement-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
@@ -127,6 +129,21 @@ describe('constructing', () => {
             const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
 
             expect(() => aFullConcept().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
+        });
+    });
+    describe('requirement ', () => {
+        test('valid requirement for concept does not throw error', () => {
+            const uuidValue = uuid();
+            const validRequirement = Requirement.reconstitute(RequirementTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(RequirementTestBuilder.TITLE).build(),
+                aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build(), undefined);
+
+            expect(() => aFullConcept().withRequirements([validRequirement]).build()).not.toThrow();
+        });
+
+        test('invalid financialAdvantage for concept does throw error', () => {
+            const invalidRequirement = Requirement.reconstitute(RequirementTestBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
+
+            expect(() => aFullConcept().withRequirements([invalidRequirement]).build()).toThrow();
         });
     });
 });

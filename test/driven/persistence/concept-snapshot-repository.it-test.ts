@@ -8,7 +8,10 @@ import {
 } from "../../core/domain/concept-snapshot-test-builder";
 import {ConceptSnapshotSparqlTestRepository} from "./concept-snapshot-sparql-test-repository";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {aMinimalRequirement, RequirementTestBuilder} from "../../core/domain/requirement-test-builder";
+import {
+    aMinimalRequirementForConceptSnapshot,
+    RequirementTestBuilder
+} from "../../core/domain/requirement-test-builder";
 import {aMinimalEvidence, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
 import {aMinimalProcedure, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
 import {aMinimalWebsite, WebsiteTestBuilder} from "../../core/domain/website-test-builder";
@@ -513,7 +516,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withRequirements([
-                        aMinimalRequirement()
+                        aMinimalRequirementForConceptSnapshot()
                             .withId(requirementId)
                             .withTitle(requirementTitle)
                             .withDescription(requirementDescription)
@@ -554,7 +557,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withRequirements([
-                        aMinimalRequirement()
+                        aMinimalRequirementForConceptSnapshot()
                             .withId(requirementId)
                             .withTitle(requirementTitle)
                             .withDescription(requirementDescription)
