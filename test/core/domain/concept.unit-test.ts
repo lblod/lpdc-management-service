@@ -108,6 +108,13 @@ describe('constructing', () => {
         expect(() => aFullConcept().withIsArchived(undefined).build()).toThrow(new Error('isArchived should not be undefined'));
     });
 
+    test('Undefined productId throws error', () => {
+        expect(() => aFullConcept().withProductId(undefined).build()).toThrow(new Error('productId should not be undefined'));
+    });
+    test('Blank productId throws error', () => {
+        expect(() => aFullConcept().withProductId('   ').build()).toThrow(new Error('productId should not be blank'));
+    });
+    
     describe('cost ', () => {
         test('valid cost for concept does not throw error', () => {
             const uuidValue = uuid();

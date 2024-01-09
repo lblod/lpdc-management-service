@@ -34,6 +34,7 @@ export function aMinimalConcept(): ConceptTestBuilder {
         .withUuid(uuid())
         .withTitle(aMinimalLanguageString('Concept Title').build())
         .withDescription(aMinimalLanguageString('Concept Description').build())
+        .withProductId(ConceptTestBuilder.PRODUCT_ID)
         .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()))
         .withLatestFunctionallyChangedConceptSnapshot(buildConceptSnapshotIri(uuid()));
 }

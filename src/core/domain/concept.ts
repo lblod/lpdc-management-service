@@ -46,7 +46,7 @@ export class Concept {
     private readonly _websites: Website[];
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
-    private readonly _productId: string | undefined;
+    private readonly _productId: string;
     private readonly _latestConceptSnapshot: Iri;
     private readonly _previousConceptSnapshots: Set<Iri>;
     private readonly _latestFunctionallyChangedConceptSnapshot: Iri;
@@ -78,7 +78,7 @@ export class Concept {
                 websites: Website[],
                 costs: Cost[],
                 financialAdvantages: FinancialAdvantage[],
-                productId: string | undefined,
+                productId: string,
                 latestConceptSnapshot: Iri,
                 previousConceptSnapshots: Set<Iri>,
                 latestFunctionallyChangedConceptSnapshot: Iri,
@@ -115,7 +115,7 @@ export class Concept {
         this._websites = [...websites].map(Website.forConcept);
         this._costs = [...costs].map(Cost.forConcept);
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConcept);
-        this._productId = productId;
+        this._productId = requiredValue(productId, 'productId');
         this._latestConceptSnapshot = latestConceptSnapshot;
         this._previousConceptSnapshots = asSortedSet(previousConceptSnapshots);
         this._latestFunctionallyChangedConceptSnapshot = latestFunctionallyChangedConceptSnapshot;
@@ -229,7 +229,7 @@ export class Concept {
         return this._financialAdvantages;
     }
 
-    get productId(): string | undefined {
+    get productId(): string {
         return this._productId;
     }
 

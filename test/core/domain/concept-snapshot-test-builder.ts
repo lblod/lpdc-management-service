@@ -34,7 +34,8 @@ export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
         //TODO LPDC-916: define a 'minimal'
         .withId(buildConceptSnapshotIri(uuid()))
         .withTitle(aMinimalLanguageString('Concept Snapshot Title').build())
-        .withDescription(aMinimalLanguageString('Concept Snapshot Description').build());
+        .withDescription(aMinimalLanguageString('Concept Snapshot Description').build())
+        .withProductId(ConceptSnapshotTestBuilder.PRODUCT_ID);
 }
 
 export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {

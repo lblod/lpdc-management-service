@@ -77,6 +77,13 @@ describe('constructing', () => {
         expect(() => aFullConceptSnapshot().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
     });
 
+    test('Undefined productId throws error', () => {
+        expect(() => aFullConceptSnapshot().withProductId(undefined).build()).toThrow(new Error('productId should not be undefined'));
+    });
+    test('Blank productId throws error', () => {
+        expect(() => aFullConceptSnapshot().withProductId('   ').build()).toThrow(new Error('productId should not be blank'));
+    });
+
     describe('cost ', () => {
         test('valid cost does not throw error', () => {
             const validCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(CostTestBuilder.TITLE).build(),

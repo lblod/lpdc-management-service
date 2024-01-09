@@ -50,7 +50,7 @@ export class ConceptSnapshot {
     private readonly _dateCreated: FormatPreservingDate | undefined;
     private readonly _dateModified: FormatPreservingDate | undefined;
     private readonly _generatedAtTime: FormatPreservingDate | undefined;
-    private readonly _productId: string | undefined;
+    private readonly _productId: string;
     private readonly _snapshotType: SnapshotType | undefined;
     private readonly _conceptTags: Set<ConceptTagType>;
     private readonly _legalResources: Set<Iri>;
@@ -82,7 +82,7 @@ export class ConceptSnapshot {
                 dateCreated: FormatPreservingDate | undefined,
                 dateModified: FormatPreservingDate | undefined,
                 generatedAtTime: FormatPreservingDate | undefined,
-                productId: string | undefined,
+                productId: string,
                 snapshotType: SnapshotType | undefined,
                 conceptTags: Set<ConceptTagType>,
                 legalResources: Set<Iri>,
@@ -115,7 +115,7 @@ export class ConceptSnapshot {
         this._dateCreated = dateCreated;
         this._dateModified = dateModified;
         this._generatedAtTime = generatedAtTime;
-        this._productId = productId;
+        this._productId = requiredValue(productId, 'productId');
         this._snapshotType = snapshotType;
         this._conceptTags = asSortedSet(conceptTags);
         this._legalResources = asSortedSet(legalResources);
@@ -233,7 +233,7 @@ export class ConceptSnapshot {
         return this.id.value.substring(this.id.value.lastIndexOf('/') + 1);
     }
 
-    get productId(): string | undefined {
+    get productId(): string {
         return this._productId;
     }
 

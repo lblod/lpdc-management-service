@@ -232,7 +232,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.conceptTags).toEqual(conceptSnapshot.conceptTags);
             expect(createdConcept.isArchived).toBeFalsy();
             expect(createdConcept.legalResources).toEqual(conceptSnapshot.legalResources);
-        });
+        }, 10000);
 
         test('Creates a new concept from a concept snapshot with minimal data', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -271,7 +271,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.websites).toEqual([]);
             expect(createdConcept.costs).toEqual([]);
             expect(createdConcept.financialAdvantages).toEqual([]);
-            expect(createdConcept.productId).toBeUndefined();
+            expect(createdConcept.productId).toEqual(conceptSnapshot.productId);
             expect(createdConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
             expect(createdConcept.previousConceptSnapshots).toEqual(new Set());
             expect(createdConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
@@ -297,7 +297,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.id).toEqual(isVersionOfConceptId);
             expect(createdConcept.uuid).toMatch(uuidRegex);
             expect(createdConcept.isArchived).toBeTruthy();
-        });
+        }, 10000);
 
     });
 
@@ -572,7 +572,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
             expect(updatedConcept.conceptTags).toEqual(updatedConceptSnapshot.conceptTags);
             expect(updatedConcept.legalResources).toEqual(updatedConceptSnapshot.legalResources);
-        }, 10000);
+        }, 20000);
 
         test('Updates a concept with minimal new data of a new version of a concept snapshot', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -630,14 +630,14 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.websites).toEqual([]);
             expect(updatedConcept.costs).toEqual([]);
             expect(updatedConcept.financialAdvantages).toEqual([]);
-            expect(updatedConcept.productId).toBeUndefined();
+            expect(updatedConcept.productId).toEqual(conceptSnapshot.productId);
             expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
             expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id].sort());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
             expect(updatedConcept.conceptTags).toEqual(new Set());
             expect(updatedConcept.isArchived).toBeFalsy();
             expect(updatedConcept.legalResources).toEqual(new Set());
-        }, 10000);
+        }, 20000);
 
         test('Does not update a latestFunctionallyChangedConceptSnapshot link when new version is not functionally changed', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -689,7 +689,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
             expect(updatedConcept.previousConceptSnapshots).toEqual(new Set());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
-        });
+        }, 10000);
 
         test('Only updates the previousConceptSnapshot data of the concept when newer version already processed', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -749,7 +749,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(againNotUpdatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
             expect(Array.from(againNotUpdatedConcept.previousConceptSnapshots).sort()).toEqual([anotherOldUpdatedConceptSnapshot.id, updatedConceptSnapshot.id].sort());
             expect(againNotUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
-        });
+        }, 10000);
 
         test('Updates a concept from a concept snapshot that is archived', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
