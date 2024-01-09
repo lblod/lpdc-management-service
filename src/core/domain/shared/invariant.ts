@@ -1,5 +1,3 @@
-import {Iri} from "./iri";
-
 type ValidationResult = string | null;
 type InvariantType<V> = (value: V) => ValidationResult;
 
@@ -33,8 +31,7 @@ export class Invariant<V> {
         };
     }
 
-
-    public to(...invariants: InvariantType<V>[]): ValidationResult {
+    public to(...invariants: InvariantType<V>[]): V {
         const violations = invariants.map(invariant => invariant(this._value));
         const firstViolation = violations.find(violation => violation !== null);
 
@@ -42,7 +39,7 @@ export class Invariant<V> {
             throw new Error(firstViolation);
         }
 
-        return null;
+        return this._value;
     }
 
     private isUndefined(value: any): boolean {
@@ -57,7 +54,5 @@ export class Invariant<V> {
 
 export const requiredValue = (value: any, name: string = 'object'): any => {
     const invariant = Invariant.require(value, name);
-    invariant.to(invariant.notBeUndefined(), invariant.notBeBlank());
-
-    return value;
+    return invariant.to(invariant.notBeUndefined(), invariant.notBeBlank());
 };

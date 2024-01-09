@@ -2,10 +2,8 @@ import {Invariant} from "./invariant";
 
 export type Iri = string;
 
-//TODO: add format validation ?
+//TODO LPDC-916: add format validation ?
 export const requiredIri = (iri: Iri, name: string = 'iri'): Iri => {
-    const idInvariant = Invariant.require(iri, name);
-    idInvariant.to(idInvariant.notBeUndefined(), idInvariant.notBeBlank());
-
-    return iri;
+    const invariant = Invariant.require(iri, name);
+    return invariant.to(invariant.notBeUndefined(), invariant.notBeBlank());
 };

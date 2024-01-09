@@ -2,11 +2,11 @@ import {Invariant} from "../../../../src/core/domain/shared/invariant";
 
 describe('notBeUndefined', () => {
 
-    test('Returns null when value is not undefined  ', () => {
+    test('Returns the value when value is not undefined  ', () => {
 
         const invariant: Invariant<any> = Invariant.require('not undefined');
 
-        expect(invariant.to(invariant.notBeUndefined())).toBeNull();
+        expect(invariant.to(invariant.notBeUndefined())).toEqual('not undefined');
     });
 
     test('Returns error when value is undefined  ', () => {
@@ -20,11 +20,11 @@ describe('notBeUndefined', () => {
 
 describe('notBeBlank', () => {
 
-    test('Returns null when value is not blank  ', () => {
+    test('Returns the value when value is not blank  ', () => {
 
         const invariant: Invariant<any> = Invariant.require('not blank');
 
-        expect(invariant.to(invariant.notBeBlank())).toBeNull();
+        expect(invariant.to(invariant.notBeBlank())).toEqual('not blank');
     });
 
     test('Returns error when value is blank  ', () => {
@@ -56,27 +56,32 @@ describe('notBeBlank', () => {
 
 });
 describe('haveAtLeastOneValuePresent', () => {
+
     const name = 'list';
     test('Throws error when no value is present', () => {
 
         const invariant: Invariant<any> = Invariant.require([undefined, '', "  \n  \t  "], name);
         expect(() => invariant.to(invariant.haveAtLeastOneValuePresent())).toThrow(new Error(`${name} does not contain one value`));
     });
-    test('Returns null when one value is present', () => {
+
+    test('Returns all values when one value is present', () => {
         const invariant: Invariant<any[]> = Invariant.require(['', undefined, 'correct value'], name);
-        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toBeNull();
+        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toEqual(['', undefined, 'correct value']);
     });
-    test('Returns null when one value is present and other is blank', () => {
+
+    test('Returns all values when one value is present and other is blank', () => {
         const invariant: Invariant<any[]> = Invariant.require(['', 'correct value'], name);
-        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toBeNull();
+        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toEqual(['', 'correct value']);
     });
-    test('Returns null when one value is present and other is undefined', () => {
+
+    test('Returns all values when one value is present and other is undefined', () => {
         const invariant: Invariant<any[]> = Invariant.require([undefined, 'correct value'], name);
-        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toBeNull();
+        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toEqual([undefined, 'correct value']);
     });
-    test('Returns null when multiple values are present', () => {
+
+    test('Returns the multiple values when multiple values are present', () => {
         const invariant: Invariant<any> = Invariant.require(['correct value 1', '', 'correct value 2'], name);
-        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toBeNull();
+        expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toEqual(['correct value 1', '', 'correct value 2']);
     });
 });
 
@@ -90,10 +95,10 @@ describe('to', () => {
         expect(() => invariant.to(invariant.notBeUndefined(), invariant.notBeBlank())).toThrow(new Error(`${name} should not be blank`));
     });
 
-    test('returns null when there are no violations', () => {
+    test('returns the value when there are no violations', () => {
         const name = 'name';
         const invariant: Invariant<any> = Invariant.require('value', name);
 
-        expect(invariant.to(invariant.notBeBlank(), invariant.notBeUndefined())).toBeNull();
+        expect(invariant.to(invariant.notBeBlank(), invariant.notBeUndefined())).toEqual('value');
     });
 });

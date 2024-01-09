@@ -1,4 +1,5 @@
-import {Iri} from "./shared/iri";
+import {Iri, requiredIri} from "./shared/iri";
+import {requiredValue} from "./shared/invariant";
 
 export class ConceptDisplayConfiguration {
 
@@ -15,13 +16,12 @@ export class ConceptDisplayConfiguration {
                        conceptIsInstantiated: boolean,
                        bestuurseenheidId: Iri,
                        conceptId: Iri) {
-        this._id = id;
-        this._uuid = uuid;
-        this._conceptIsNew = conceptIsNew;
-        this._conceptIsInstantiated = conceptIsInstantiated;
-        this._bestuurseenheidId = bestuurseenheidId;
-        this._conceptId = conceptId;
-        //TODO LPDC-916: invariants
+        this._id = requiredIri(id, 'id');
+        this._uuid = requiredValue(uuid, 'uuid');
+        this._conceptIsNew = requiredValue(conceptIsNew, 'conceptIsNew');
+        this._conceptIsInstantiated = requiredValue(conceptIsInstantiated, 'conceptIsInstantiated');
+        this._bestuurseenheidId = requiredIri(bestuurseenheidId, 'bestuurseenheidId');
+        this._conceptId = requiredIri(conceptId, 'conceptId');
     }
 
     get id(): Iri {
