@@ -5,6 +5,7 @@ import {CONCEPT_GRAPH, PREFIX} from "../../config";
 import {
     ConceptDisplayConfigurationSparqlTestRepository
 } from "../driven/persistence/concept-display-configuration-sparql-test-repository";
+import {Iri} from "../../src/core/domain/shared/iri";
 
 describe('Concept Display Configuration Data Integrity Validation', () => {
 
@@ -47,13 +48,13 @@ describe('Concept Display Configuration Data Integrity Validation', () => {
 
         for (const bestuursEenheidResult of bestuurseenheidIdsResult) {
             try {
-                const bestuurseenheidId = bestuursEenheidResult['id'].value;
+                const bestuurseenheidId = new Iri(bestuursEenheidResult['id'].value);
                 const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
 
                 console.log(`Verifying for ${bestuurseenheid.id}`);
 
                 for(const conceptResult of conceptIdsResult) {
-                    const conceptId = conceptResult['id'].value;
+                    const conceptId = new Iri(conceptResult['id'].value);
 
                     const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, conceptId);
                     expect(`concept display configuration found for ${conceptDisplayConfiguration?.conceptId} - ${conceptDisplayConfiguration?.bestuurseenheidId}`)

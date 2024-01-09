@@ -2,6 +2,7 @@ import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {PREFIX} from "../../config";
+import {Iri} from "../../src/core/domain/shared/iri";
 
 describe('Bestuurseenheid Data Integrity Validation', () => {
 
@@ -28,7 +29,7 @@ describe('Bestuurseenheid Data Integrity Validation', () => {
 
         for (const result of bestuurseenheidIds) {
             try {
-                const id = result['id'].value;
+                const id = new Iri(result['id'].value);
                 const bestuursEenheidForId = await repository.findById(id);
                 expect(bestuursEenheidForId.id).toEqual(id);
             } catch (e) {

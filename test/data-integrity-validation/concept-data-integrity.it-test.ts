@@ -8,6 +8,7 @@ import {shuffle} from "lodash";
 import {asSortedSet} from "../../src/core/domain/shared/collections-helper";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
+import {Iri} from "../../src/core/domain/shared/iri";
 
 describe('Concept Data Integrity Validation', () => {
 
@@ -129,7 +130,7 @@ describe('Concept Data Integrity Validation', () => {
 
             for (const result of randomizedConceptIds) {
                 try {
-                    const id = result['id'].value;
+                    const id = new Iri(result['id'].value);
                     const conceptForId = await repository.findById(id);
                     expect(conceptForId.id).toEqual(id);
                     const quadsForConceptForId =
