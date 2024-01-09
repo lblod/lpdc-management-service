@@ -60,7 +60,7 @@ app.post('/delta', async function (req, res): Promise<void> {
             .addJob(async () => {
                 const newConceptSnapshotIds: Iri[] = flatten(delta.map(changeSet => changeSet.inserts))
                     .filter(t => t?.graph.value === CONCEPT_SNAPSHOT_LDES_GRAPH && t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
-                    .map((delta: any) => delta.subject.value as Iri);
+                    .map((delta: any) => new Iri(delta.subject.value));
                 for (const newConceptSnapshotId of newConceptSnapshotIds) {
                     await newConceptSnapshotToConceptMergerDomainService.merge(newConceptSnapshotId);
                 }
@@ -347,8 +347,8 @@ app.get('/address/validate', async (req, res): Promise<any> => {
 
 app.get('/concept-snapshot-compare', async (req, res): Promise<any> => {
     try {
-        const currentConceptSnapshot = await conceptSnapshotRepository.findById(req.query.currentSnapshotUri as string);
-        const newConceptSnapshot = await conceptSnapshotRepository.findById(req.query.newSnapshotUri as string);
+        const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.currentSnapshotUri as string));
+        const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.newSnapshotUri as string));
 
         const isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
 

@@ -20,6 +20,7 @@ import {getScopedGraphsForStatement} from '../utils/common';
 import {updateSudo} from '@lblod/mu-auth-sudo';
 import {SessionSparqlRepository} from "../src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "../src/driven/persistence/bestuurseenheid-sparql-repository";
+import {Iri} from "../src/core/domain/shared/iri";
 
 export async function deleteForm(serviceId: string, sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
     const serviceUri = await serviceUriForId(serviceId);
@@ -53,10 +54,10 @@ export async function deleteForm(serviceId: string, sessionUri: string, sessionR
     // See updateForm.js for longer explanation.
     // Keep code in sync with updateForm.js
     const source = bindingsToNT(sourceBindings);
-    const session = await sessionRepository.findById(sessionUri);
+    const session = await sessionRepository.findById(new Iri(sessionUri));
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    if (!(await isAllowedForLPDC(session.id))) {
+    if (!(await isAllowedForLPDC(session.id.value))) {
         throw `Session ${session.id} is not an LPDC User`;
     }
 

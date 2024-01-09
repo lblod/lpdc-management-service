@@ -9,14 +9,15 @@ import {Quad} from "rdflib/lib/tf-types";
 import LPDCError from "../utils/lpdc-error";
 import {SessionSparqlRepository} from "../src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "../src/driven/persistence/bestuurseenheid-sparql-repository";
+import {Iri} from "../src/core/domain/shared/iri";
 
 
 export async function updateFormAtomic(data: any, sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<void> {
 
-    const session = await sessionRepository.findById(sessionUri);
+    const session = await sessionRepository.findById(new Iri(sessionUri));
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    if (!(await isAllowedForLPDC(session.id))) {
+    if (!(await isAllowedForLPDC(session.id.value))) {
         throw `Session ${session.id} is not an LPDC User`;
     }
 
@@ -63,10 +64,10 @@ function parseStatements(statements: Statement[]): Array<Quad> {
 
 
 export async function updateForm(data: any, sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository) {
-    const session = await sessionRepository.findById(sessionUri);
+    const session = await sessionRepository.findById(new Iri(sessionUri));
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    if (!(await isAllowedForLPDC(session.id))) {
+    if (!(await isAllowedForLPDC(session.id.value))) {
         throw `Session ${session.id} is not an LPDC User`;
     }
 
