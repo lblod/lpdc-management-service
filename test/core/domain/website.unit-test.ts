@@ -9,8 +9,7 @@ describe('forConcept', () => {
         expect(() => Website.forConcept(website.build())).toThrow(new Error('id should not be undefined'));
     });
     test('Invalid iri id throws error', () => {
-        const website = aFullWebsite().withId(new Iri('   '));
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('iri should not be blank'));
+        expect(() => Website.forConcept(aFullWebsite().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
 
     test('Undefined uuid throws error', () => {
@@ -43,9 +42,8 @@ describe('forConceptSnapshot', () => {
         const website = aFullWebsite().withId(undefined);
         expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('id should not be undefined'));
     });
-    test('Blank id throws error', () => {
-        const website = aFullWebsite().withId('   ');
-        expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('id should not be blank'));
+    test('Invalid iri id throws error', () => {
+        expect(() => Website.forConceptSnapshot(aFullWebsite().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
     test('Uuid is undefined ', () => {
         const website = aFullWebsite().build();

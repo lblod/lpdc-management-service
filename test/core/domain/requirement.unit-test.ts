@@ -4,7 +4,6 @@ import {uuid} from "../../../mu-helper";
 import {Evidence} from "../../../src/core/domain/evidence";
 import {EvidenceTestBuilder} from "./evidence-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
-import {aFullConcept} from "./concept-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 
@@ -13,9 +12,8 @@ describe('forConcept', () => {
         const requirement = aFullRequirement().withId(undefined);
         expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('id should not be undefined'));
     });
-    test('Blank id throws error', () => {
-        const requirement = aFullRequirement().withId('   ');
-        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('id should not be blank'));
+    test('Invalid iri id throws error', () => {
+        expect(() => Requirement.forConcept(aFullRequirement().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
 
     test('Undefined uuid throws error', () => {
@@ -63,8 +61,7 @@ describe('forConceptSnapshot', () => {
         expect(() => Requirement.forConceptSnapshot(requirement.build())).toThrow(new Error('id should not be undefined'));
     });
     test('Invalid iri id throws error', () => {
-        const requirement = aFullRequirement().withId(new Iri('   '));
-        expect(() => Requirement.forConceptSnapshot(requirement.build())).toThrow(new Error('iri should not be blank'));
+        expect(() => Requirement.forConceptSnapshot(aFullRequirement().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
     test('Uuid is undefined ', () => {
         const requirement = aFullRequirement().build();

@@ -12,9 +12,8 @@ describe('forConcept', () => {
         const procedure = aFullProcedure().withId(undefined);
         expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('id should not be undefined'));
     });
-    test('Blank id throws error', () => {
-        const procedure = aFullProcedure().withId('   ');
-        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('id should not be blank'));
+    test('Invalid iri id throws error', () => {
+        expect(() => Procedure.forConcept(aFullProcedure().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
 
     test('Undefined uuid throws error', () => {
@@ -62,8 +61,7 @@ describe('forConceptSnapshot', () => {
         expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrow(new Error('id should not be undefined'));
     });
     test('Invalid iri id throws error', () => {
-        const procedure = aFullProcedure().withId(new Iri('   '));
-        expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrow(new Error('iri should not be blank'));
+        expect(() => Procedure.forConceptSnapshot(aFullProcedure().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
     test('Uuid is undefined ', () => {
         const procedure = aFullProcedure().build();

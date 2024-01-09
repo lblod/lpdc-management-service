@@ -7,9 +7,8 @@ describe('forConcept', () => {
         const evidence = aFullEvidence().withId(undefined);
         expect(() => Evidence.forConcept(evidence.build())).toThrow(new Error('id should not be undefined'));
     });
-    test('Blank id throws error', () => {
-        const evidence = aFullEvidence().withId('   ');
-        expect(() => Evidence.forConcept(evidence.build())).toThrow(new Error('id should not be blank'));
+    test('Invalid iri id throws error', () => {
+        expect(() => Evidence.forConcept(aFullEvidence().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
 
     test('Undefined uuid throws error', () => {
@@ -40,8 +39,7 @@ describe('forConceptSnapshot', () => {
         expect(() => Evidence.forConceptSnapshot(evidence.build())).toThrow(new Error('id should not be undefined'));
     });
     test('Invalid iri id throws error', () => {
-        const evidence = aFullEvidence().withId(new Iri('   '));
-        expect(() => Evidence.forConceptSnapshot(evidence.build())).toThrow(new Error('iri should not be blank'));
+        expect(() => Evidence.forConceptSnapshot(aFullEvidence().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
     test('Uuid is undefined ', () => {
         const evidence = aFullEvidence().build();
