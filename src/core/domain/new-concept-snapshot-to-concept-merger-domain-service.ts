@@ -227,7 +227,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
     private copyProcedures(procedures: Procedure[]) {
         return procedures.map(p =>
-            new Procedure(
+            Procedure.reconstitute(
                 p.id,
                 uuid(),
                 p.title,

@@ -13,6 +13,8 @@ import {RequirementTestBuilder} from "./requirement-test-builder";
 import {Evidence} from "../../../src/core/domain/evidence";
 import {EvidenceTestBuilder} from "./evidence-test-builder";
 import {aFullRequirement} from "./requirement-test-builder";
+import {Procedure} from "../../../src/core/domain/procedure";
+import {ProcedureTestBuilder} from "./procedure-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
@@ -132,6 +134,21 @@ describe('constructing', () => {
             const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
 
             expect(() => aFullConcept().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
+        });
+    });
+    describe('procedure ', () => {
+        test('valid procedure for concept does not throw error', () => {
+            const uuidValue = uuid();
+            const validProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(ProcedureTestBuilder.TITLE).build(),
+                aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(), []);
+
+            expect(() => aFullConcept().withProcedures([validProcedure]).build()).not.toThrow();
+        });
+
+        test('invalid procedure for concept does throw error', () => {
+            const invalidProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuid()), undefined, undefined, undefined, []);
+
+            expect(() => aFullConcept().withProcedures([invalidProcedure]).build()).toThrow();
         });
     });
     describe('requirement ', () => {

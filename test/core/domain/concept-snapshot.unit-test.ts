@@ -9,7 +9,7 @@ import {
     RequirementTestBuilder
 } from "./requirement-test-builder";
 import {aFullEvidence, aMinimalEvidenceForConceptSnapshot, EvidenceTestBuilder} from "./evidence-test-builder";
-import {aFullProcedure} from "./procedure-test-builder";
+import {aFullProcedure, ProcedureTestBuilder} from "./procedure-test-builder";
 import {aFullWebsite, aMinimalWebsite} from "./website-test-builder";
 import {aFullCost, CostTestBuilder} from "./cost-test-builder";
 import {aFullFinancialAdvantage, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
@@ -29,7 +29,7 @@ import {aMinimalLanguageString} from "./language-string-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {Evidence} from "../../../src/core/domain/evidence";
-import {aFullConcept} from "./concept-test-builder";
+import {Procedure} from "../../../src/core/domain/procedure";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
@@ -104,6 +104,23 @@ describe('constructing', () => {
             expect(() => aFullConceptSnapshot().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
         });
     });
+
+    describe('procedure ', () => {
+        test('valid procedure for concept does not throw error', () => {
+            const uuidValue = uuid();
+            const validProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(ProcedureTestBuilder.TITLE).build(),
+                aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(), []);
+
+            expect(() => aFullConceptSnapshot().withProcedures([validProcedure]).build()).not.toThrow();
+        });
+
+        test('invalid procedure for concept does throw error', () => {
+            const invalidProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuid()), undefined, undefined, undefined, []);
+
+            expect(() => aFullConceptSnapshot().withProcedures([invalidProcedure]).build()).toThrow();
+        });
+    });
+
     describe('requirement ', () => {
         test('valid requirement does not throw error', () => {
             const uuidValue = uuid();

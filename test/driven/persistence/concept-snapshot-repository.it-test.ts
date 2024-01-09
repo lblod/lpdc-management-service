@@ -13,7 +13,7 @@ import {
     RequirementTestBuilder
 } from "../../core/domain/requirement-test-builder";
 import {aMinimalEvidenceForConceptSnapshot, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
-import {aMinimalProcedure, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
+import {aMinimalProcedureForConceptSnapshot, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
 import {aMinimalWebsite, WebsiteTestBuilder} from "../../core/domain/website-test-builder";
 import {
     CompetentAuthorityLevelType,
@@ -604,7 +604,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProcedures([
-                        aMinimalProcedure()
+                        aMinimalProcedureForConceptSnapshot()
                             .withId(procedureId)
                             .withTitle(procedureTitle)
                             .withDescription(procedureDescription)
@@ -647,7 +647,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProcedures([
-                        aMinimalProcedure()
+                        aMinimalProcedureForConceptSnapshot()
                             .withId(procedureId)
                             .withTitle(procedureTitle)
                             .withDescription(procedureDescription)

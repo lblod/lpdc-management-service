@@ -4,27 +4,57 @@ import _ from "lodash";
 import {Website} from "./website";
 import {requiredValue} from "./shared/invariant";
 
+
 export class Procedure {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
-    private readonly _title: LanguageString;
-    private readonly _description: LanguageString;
+    private readonly _title: LanguageString | undefined;
+    private readonly _description: LanguageString | undefined;
     private readonly _websites: Website[];
 
-    constructor(id: Iri,
-                uuid: string | undefined,
-                title: LanguageString,
-                description: LanguageString,
-                websites: Website[],
+    private constructor(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined,
+                        websites: Website[],
     ) {
-//TODO LPDC-917: add invariants
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
-        this._title = requiredValue(title, 'title');
-        this._description = requiredValue(description, 'description');
+        this._title = title;
+        this._description = description;
         this._websites = [...websites];
     }
+
+    static forConcept(procedure: Procedure): Procedure {
+        return new Procedure(
+            procedure.id,
+            requiredValue(procedure.uuid, 'uuid'),
+            requiredValue(procedure.title, 'title'),
+            requiredValue(procedure.description, 'description'),
+            procedure.websites
+        );
+    }
+
+    static forConceptSnapshot(procedure: Procedure): Procedure {
+        return new Procedure(
+            procedure.id,
+            undefined,
+            requiredValue(procedure.title, 'title'),
+            requiredValue(procedure.description, 'description'),
+            procedure.websites
+        );
+    }
+
+    static reconstitute(id: Iri,
+                        uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined,
+                        websites: Website[]): Procedure {
+
+        return new Procedure(id, uuid, title, description, websites);
+    }
+
 
     get id(): Iri {
         return this._id;
@@ -34,11 +64,11 @@ export class Procedure {
         return this._uuid;
     }
 
-    get title(): LanguageString {
+    get title(): LanguageString | undefined {
         return this._title;
     }
 
-    get description(): LanguageString {
+    get description(): LanguageString | undefined {
         return this._description;
     }
 

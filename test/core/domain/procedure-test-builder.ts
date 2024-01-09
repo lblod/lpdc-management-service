@@ -6,16 +6,27 @@ import {aFullWebsite, anotherFullWebsite} from "./website-test-builder";
 import {Website} from "../../../src/core/domain/website";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
-export function aMinimalProcedure(): ProcedureTestBuilder {
+export function aMinimalProcedureForConceptSnapshot(): ProcedureTestBuilder {
     return new ProcedureTestBuilder()
         .withId(ProcedureTestBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(ProcedureTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build());
 }
 
-export function aFullProcedure(): ProcedureTestBuilder {
+export function aMinimalProcedureForConcept(): ProcedureTestBuilder {
+    const uniqueId = uuid();
     return new ProcedureTestBuilder()
-        .withId(ProcedureTestBuilder.buildIri(uuid()))
+        .withId(ProcedureTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(aMinimalLanguageString(ProcedureTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build());
+}
+
+export function aFullProcedure(): ProcedureTestBuilder {
+    const uniqueId = uuid();
+    return new ProcedureTestBuilder()
+        .withId(ProcedureTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             ProcedureTestBuilder.TITLE_EN,
             ProcedureTestBuilder.TITLE_NL,
@@ -126,7 +137,7 @@ export class ProcedureTestBuilder {
     }
 
     public build(): Procedure {
-        return new Procedure(
+        return Procedure.reconstitute(
             this.id,
             this.uuid,
             this.title,

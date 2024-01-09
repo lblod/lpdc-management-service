@@ -111,7 +111,7 @@ export class Concept {
         this._yourEuropeCategories = asSortedSet(yourEuropeCategories);
         this._keywords = asSortedSet(keywords, LanguageString.compare);
         this._requirements = [...requirements].map(Requirement.forConcept);
-        this._procedures = [...procedures];
+        this._procedures = [...procedures].map(Procedure.forConcept);
         this._websites = [...websites];
         this._costs = [...costs].map(Cost.forConcept);
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConcept);
