@@ -1,12 +1,13 @@
 import {aFullWebsite} from "./website-test-builder";
+import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
 
     test('Undefined id throws error', () => {
         expect(() => aFullWebsite().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
     });
-    test('Blank id throws error', () => {
-        expect(() => aFullWebsite().withId('   ').build()).toThrow(new Error('id should not be blank'));
+    test('Invalid iri id throws error', () => {
+        expect(() => aFullWebsite().withId(new Iri('   ')).build()).toThrow(new Error('iri should not be blank'));
     });
     test('Undefined title throws error', () => {
         expect(() => aFullWebsite().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));

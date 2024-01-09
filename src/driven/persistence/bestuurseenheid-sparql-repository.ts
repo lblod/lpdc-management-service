@@ -34,7 +34,7 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
         }
 
         return new Bestuurseenheid(
-            result['id'].value,
+            new Iri(result['id'].value),
             result['prefLabel'].value,
             this.mapBestuurseenheidClassificatieUriToCode(result['classificatieUri'].value)
         );

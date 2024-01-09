@@ -32,8 +32,8 @@ export class SessionSparqlRepository implements SessionRepository {
         }
 
         return new Session(
-            result['id'].value,
-            result['bestuurseenheid'].value,
+            new Iri(result['id'].value),
+            new Iri(result['bestuurseenheid'].value),
             result['sessionRole'].value
         );
     }

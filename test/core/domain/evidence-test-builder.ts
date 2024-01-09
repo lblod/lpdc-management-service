@@ -90,7 +90,7 @@ export class EvidenceTestBuilder {
     private description: LanguageString | undefined;
 
     static buildIri(uniqueId: string): Iri {
-        return `http://data.lblod.info/id/evidence/${uniqueId}`;
+        return new Iri(`http://data.lblod.info/id/evidence/${uniqueId}`);
     }
 
     public withId(id: Iri): EvidenceTestBuilder {

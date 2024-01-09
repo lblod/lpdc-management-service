@@ -20,7 +20,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);
     const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endPoint);
-    const graph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
+    const graph = new Iri('http://mu.semte.ch/graphs/lpdc/ldes-data');
     const domainToTriplesMapper = new DomainToTriplesMapper();
 
     test.skip('Load all concept snapshots; print errors to console.log', async () => {
@@ -45,7 +45,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         `;
 
         const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
-        const allQuadsOfGraph = new Set(sparqlQuerying.asQuads(allTriplesOfGraph, graph));
+        const allQuadsOfGraph = new Set(sparqlQuerying.asQuads(allTriplesOfGraph, graph.value));
 
         //filter out fr and de language strings
         Array.from(allQuadsOfGraph).filter(q => isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr'))
@@ -134,7 +134,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
     }, 60000 * 15 * 100);
 
     test.skip('Load one concept snapshot and print quads', async () => {
-        const id: Iri = 'https://ipdc.vlaanderen.be/id/conceptsnapshot/0d2a2f5a-7213-483d-9fb9-abe0cbac0348';
+        const id = new Iri('https://ipdc.vlaanderen.be/id/conceptsnapshot/0d2a2f5a-7213-483d-9fb9-abe0cbac0348');
 
         const allQuads = await fetcher.fetch(graph, id, [], [], []);
         console.log('recursive queries');

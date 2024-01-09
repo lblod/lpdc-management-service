@@ -1,4 +1,4 @@
-import {Iri, requiredIri} from "./shared/iri";
+import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from 'lodash';
 import {Requirement} from "./requirement";
@@ -88,7 +88,7 @@ export class ConceptSnapshot {
                 legalResources: Set<Iri>,
     ) {
         //TODO LPDC-917: enforce invariants ? + do safe copies ?
-        this._id = requiredIri(id, 'id');
+        this._id = requiredValue(id, 'id');
         this._title = requiredValue(title, 'title'); // TODO: min nl
         this._description = requiredValue(description, 'description'); //TODO: min nl
         this._additionalDescription = additionalDescription;
@@ -230,7 +230,7 @@ export class ConceptSnapshot {
     }
 
     get identifier(): string | undefined {
-        return this.id.substring(this.id.lastIndexOf('/') + 1);
+        return this.id.value.substring(this.id.value.lastIndexOf('/') + 1);
     }
 
     get productId(): string | undefined {

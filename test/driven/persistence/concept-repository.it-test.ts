@@ -9,6 +9,7 @@ import {NS} from "../../../src/driven/persistence/namespaces";
 import {buildConceptIri} from "../../core/domain/iri-test-builder";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {aMinimalLanguageString} from "../../core/domain/language-string-test-builder";
+import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('ConceptRepository', () => {
     const repository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -95,7 +96,7 @@ describe('ConceptRepository', () => {
     describe('Verify ontology and mapping', () => {
 
         test('Verify correct type', async () => {
-            const idForIncorrectType = `https://ipdc.tni-vlaanderen.be/id/rule/${uuid()}`;
+            const idForIncorrectType = new Iri(`https://ipdc.tni-vlaanderen.be/id/rule/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 CONCEPT_GRAPH,

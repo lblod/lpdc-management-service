@@ -4,6 +4,7 @@ import {SessionSparqlTestRepository} from "./session-sparql-test-repository";
 import {uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {SessionRole} from "../../../src/core/domain/session";
+import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('SessionRepository', () => {
     const repository = new SessionSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -34,8 +35,8 @@ describe('SessionRepository', () => {
         });
 
         test('Verify ontology and mapping', async () => {
-            const sessionId = `http://mu.semte.ch/sessions/${uuid()}`;
-            const bestuurseenheidId = `http://data.lblod.info/id/bestuurseenheden/${uuid()}`;
+            const sessionId = new Iri(`http://mu.semte.ch/sessions/${uuid()}`);
+            const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${uuid()}`);
 
             const session =
                         aSession()

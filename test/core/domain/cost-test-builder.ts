@@ -100,7 +100,7 @@ export class CostTestBuilder {
     private description: LanguageString | undefined;
 
     static buildIri(uniqueId: string): Iri {
-        return `http://data.lblod.info/id/cost/${uniqueId}`;
+        return new Iri(`http://data.lblod.info/id/cost/${uniqueId}`);
     }
 
     public withId(id: Iri): CostTestBuilder {

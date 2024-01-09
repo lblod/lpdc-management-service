@@ -31,6 +31,12 @@ export class Invariant<V> {
         };
     }
 
+    startsWith(...startValues: any[]): InvariantType<V> {
+        return () => startValues.some(startValue => typeof this._value === 'string' && this._value.startsWith(startValue))
+            ? null
+            : `${this._name} does not start with one of [${startValues}]`;
+    }
+
     public to(...invariants: InvariantType<V>[]): V {
         const violations = invariants.map(invariant => invariant(this._value));
         const firstViolation = violations.find(violation => violation !== null);

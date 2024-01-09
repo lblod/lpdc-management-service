@@ -6,6 +6,7 @@ import {uuid} from "../../../mu-helper";
 import {CostTestBuilder} from "./cost-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
 import {aMinimalLanguageString} from "./language-string-test-builder";
+import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('constructing', () => {
 
@@ -63,12 +64,15 @@ describe('constructing', () => {
     test('Undefined id throws error', () => {
         expect(() => aFullConcept().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
     });
-    test('Blank id throws error', () => {
-        expect(() => aFullConcept().withId('   ').build()).toThrow(new Error('id should not be blank'));
+
+    test('Invalid iri id throws error', () => {
+        expect(() => aFullConcept().withId(new Iri('  ')).build()).toThrow(new Error('iri should not be blank'));
     });
+
     test('Undefined uuid throws error', () => {
         expect(() => aFullConcept().withUuid(undefined).build()).toThrow(new Error('uuid should not be undefined'));
     });
+
     test('Blank uuid throws error', () => {
         expect(() => aFullConcept().withUuid('   ').build()).toThrow(new Error('uuid should not be blank'));
     });
@@ -76,12 +80,15 @@ describe('constructing', () => {
     test('Undefined title throws error', () => {
         expect(() => aFullConcept().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));
     });
+
     test('NL not present in title throws error', () => {
         expect(() => aFullConcept().withTitle(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in title should not be undefined'));
     });
+
     test('NL not present in title throws error', () => {
         expect(() => aFullConcept().withDescription(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in description should not be undefined'));
     });
+
     test('Undefined description throws error', () => {
         expect(() => aFullConcept().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
     });

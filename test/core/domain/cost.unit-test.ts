@@ -1,14 +1,14 @@
 import {aFullCost} from "./cost-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
+import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('forConcept', () => {
     test('Undefined id throws error', () => {
         const cost = aFullCost().withId(undefined);
         expect(() => Cost.forConcept(cost.build())).toThrow(new Error('id should not be undefined'));
     });
-    test('Blank id throws error', () => {
-        const cost = aFullCost().withId('   ');
-        expect(() => Cost.forConcept(cost.build())).toThrow(new Error('id should not be blank'));
+    test('Invalid iri id throws error', () => {
+        expect(() => Cost.forConcept(aFullCost().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
 
     test('Undefined uuid throws error', () => {
@@ -37,10 +37,6 @@ describe('forConceptSnapshot', () => {
     test('Undefined id throws error', () => {
         const cost = aFullCost().withId(undefined);
         expect(() => Cost.forConceptSnapshot(cost.build())).toThrow(new Error('id should not be undefined'));
-    });
-    test('Blank id throws error', () => {
-        const cost = aFullCost().withId('   ');
-        expect(() => Cost.forConceptSnapshot(cost.build())).toThrow(new Error('id should not be blank'));
     });
     test('Uuid is undefined ', () => {
         const cost = aFullCost().build();

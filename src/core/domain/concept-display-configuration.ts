@@ -1,4 +1,4 @@
-import {Iri, requiredIri} from "./shared/iri";
+import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
 
 export class ConceptDisplayConfiguration {
@@ -16,12 +16,12 @@ export class ConceptDisplayConfiguration {
                        conceptIsInstantiated: boolean,
                        bestuurseenheidId: Iri,
                        conceptId: Iri) {
-        this._id = requiredIri(id, 'id');
+        this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         this._conceptIsNew = requiredValue(conceptIsNew, 'conceptIsNew');
         this._conceptIsInstantiated = requiredValue(conceptIsInstantiated, 'conceptIsInstantiated');
-        this._bestuurseenheidId = requiredIri(bestuurseenheidId, 'bestuurseenheidId');
-        this._conceptId = requiredIri(conceptId, 'conceptId');
+        this._bestuurseenheidId = requiredValue(bestuurseenheidId, 'bestuurseenheidId');
+        this._conceptId = requiredValue(conceptId, 'conceptId');
     }
 
     get id(): Iri {

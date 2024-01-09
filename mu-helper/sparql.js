@@ -107,7 +107,7 @@ function sparqlEscapeString(value) {
 }
 
 function sparqlEscapeUri(value) {
-    return '<' + value.replace(/[\\"<>]/g, function (match) {
+    return '<' + value.toString().replace(/[\\"<>]/g, function (match) {
         return '\\' + match;
     }) + '>';
 }

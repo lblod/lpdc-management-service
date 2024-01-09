@@ -26,6 +26,7 @@ import {
 import {buildConceptSnapshotIri} from "../../core/domain/iri-test-builder";
 import {NS} from "../../../src/driven/persistence/namespaces";
 import {aMinimalLanguageString} from "../../core/domain/language-string-test-builder";
+import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('ConceptSnapshotRepository', () => {
     const repository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -82,7 +83,7 @@ describe('ConceptSnapshotRepository', () => {
     describe('Verify ontology and mapping', () => {
 
         test('Verify correct type', async () => {
-            const idForIncorrectType = `https://ipdc.tni-vlaanderen.be/id/rule/${uuid()}`;
+            const idForIncorrectType = new Iri(`https://ipdc.tni-vlaanderen.be/id/rule/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
@@ -687,7 +688,7 @@ describe('ConceptSnapshotRepository', () => {
         }
 
         test('Unknown Product Type can not be mapped', async () => {
-            const conceptSnapshotId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
@@ -710,7 +711,7 @@ describe('ConceptSnapshotRepository', () => {
         }
 
         test('Unknown Target Audience Type can not be mapped', async () => {
-            const conceptSnapshotId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
@@ -733,7 +734,7 @@ describe('ConceptSnapshotRepository', () => {
         }
 
         test('Unknown Theme type can not be mapped', async () => {
-            const conceptSnapshotId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
@@ -756,7 +757,7 @@ describe('ConceptSnapshotRepository', () => {
         }
 
         test('Unknown Competent Authority Level type can not be mapped', async () => {
-            const conceptSnapshotId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
@@ -779,7 +780,7 @@ describe('ConceptSnapshotRepository', () => {
         }
 
         test('Unknown ExecutingAuthorityLevelType can not be mapped', async () => {
-            const conceptSnapshotId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
@@ -802,7 +803,7 @@ describe('ConceptSnapshotRepository', () => {
         }
 
         test('Unknown PublicationMediumType can not be mapped', async () => {
-            const conceptSnapshotId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
@@ -825,7 +826,7 @@ describe('ConceptSnapshotRepository', () => {
         }
 
         test('Unknown YourEuropeCategoryType can not be mapped', async () => {
-            const conceptSnapshotId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
@@ -848,7 +849,7 @@ describe('ConceptSnapshotRepository', () => {
         }
 
         test('Unknown Snapshot Type can not be mapped', async () => {
-            const conceptSnapshotId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
@@ -871,7 +872,7 @@ describe('ConceptSnapshotRepository', () => {
         }
 
         test('Unknown ConceptTag Type can not be mapped', async () => {
-            const conceptSnapshotId = `https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`;
+            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",

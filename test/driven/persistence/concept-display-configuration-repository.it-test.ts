@@ -172,7 +172,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                bestuurseenheid.userGraph(),
+                bestuurseenheid.userGraph().value,
                 [
                     `<${conceptDisplayConfiguration.conceptId}> lpdcExt:hasConceptDisplayConfiguration <${idForIncorrectType}>`,
                     `<${idForIncorrectType}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType>`,
@@ -206,7 +206,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                bestuurseenheid.userGraph(),
+                bestuurseenheid.userGraph().value,
                 [
                     `<${conceptDisplayConfiguration.conceptId}> lpdcExt:hasConceptDisplayConfiguration <${conceptDisplayConfiguration.id}>`,
                     `<${conceptDisplayConfiguration.id}> a lpdcExt:ConceptDisplayConfiguration`,

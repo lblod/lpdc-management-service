@@ -21,7 +21,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
 
     async findById(id: Iri): Promise<Concept> {
         const quads = await this.fetcher.fetch(
-            CONCEPT_GRAPH,
+            new Iri(CONCEPT_GRAPH),
             id,
             [
                 NS.lpdcExt('hasConceptDisplayConfiguration').value,
@@ -48,7 +48,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
                 NS.eli('LegalResource').value,
                 NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
-        const mapper = new QuadsToDomainMapper(quads, CONCEPT_GRAPH);
+        const mapper = new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH));
 
         return mapper.concept(id);
     }

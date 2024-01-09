@@ -44,7 +44,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             const conceptExists = await this._conceptRepository.exists(conceptId);
             const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
 
-            const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedSnapshots.has(newConceptSnapshot.id);
+            const newConceptSnapshotAlreadyLinkedToConcept = Array.from(concept?.appliedSnapshots || []).map(iri => iri.value).includes(newConceptSnapshot.id.value);
             const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
 
             if (newConceptSnapshotAlreadyLinkedToConcept) {
@@ -65,7 +65,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
                 //TODO LPDC-916: move to a separate repo?
                 //Some code list entries might be missing in our DB we insert these here
-                await this.ensureNewIpdcOrganisations(newConceptSnapshotId);
+                await this.ensureNewIpdcOrganisations(newConceptSnapshotId.value);
 
                 const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
                 const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);

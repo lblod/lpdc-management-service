@@ -13,11 +13,11 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
         this.querying = new SparqlQuerying(endpoint);
     }
 
-    async fetch(graph: Iri, from: Iri, predicatesToNotQuery: Iri[], predicatesToStopRecursion: Iri[], illegalTypesToRecurseInto: Iri[]): Promise<Quad[]> {
-        return await this.doFetch(graph, [from], [], predicatesToNotQuery, predicatesToStopRecursion, illegalTypesToRecurseInto);
+    async fetch(graph: Iri, from: Iri, predicatesToNotQuery: string[], predicatesToStopRecursion: string[], illegalTypesToRecurseInto: string[]): Promise<Quad[]> {
+        return await this.doFetch(graph.value, [from.value], [], predicatesToNotQuery, predicatesToStopRecursion, illegalTypesToRecurseInto);
     }
 
-    private async doFetch(graph: Iri, subjectIds: Iri[], previouslyQueriedIds: Iri[], predicatesToNotQuery: Iri[], predicatesToStopRecursion: Iri[], illegalTypesToRecurseInto: Iri[]): Promise<Quad[]> {
+    private async doFetch(graph: string, subjectIds: string[], previouslyQueriedIds: string[], predicatesToNotQuery: string[], predicatesToStopRecursion: string[], illegalTypesToRecurseInto: string[]): Promise<Quad[]> {
         if (subjectIds.length === 0) {
             return [];
         }

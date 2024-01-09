@@ -1,4 +1,4 @@
-import {Iri, requiredIri} from "./shared/iri";
+import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {requiredValue} from "./shared/invariant";
@@ -18,7 +18,7 @@ export class Website {
                 url: string,
     ) {
         //TODO LPDC-917: add invariants
-        this._id = requiredIri(id, 'id');
+        this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = requiredValue(title, 'title');
         this._description = description;

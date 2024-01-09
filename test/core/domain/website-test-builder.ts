@@ -95,7 +95,7 @@ export class WebsiteTestBuilder {
     private url: string | undefined;
 
     static buildIri(uniqueId: string): Iri {
-        return `http://data.lblod.info/id/website/${uniqueId}`;
+        return new Iri(`http://data.lblod.info/id/website/${uniqueId}`);
     }
 
     public withId(id: Iri): WebsiteTestBuilder {

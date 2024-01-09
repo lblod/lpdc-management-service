@@ -38,7 +38,7 @@ export class QuadsToDomainMapper {
     constructor(quads: Quad[], graphId: Iri) {
         this.store = graph();
         this.store.addAll(quads);
-        this.graphId = namedNode(graphId);
+        this.graphId = namedNode(graphId.value);
     }
 
     conceptSnapshot(id: Iri): ConceptSnapshot {
@@ -119,7 +119,7 @@ export class QuadsToDomainMapper {
     }
 
     private errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
-        const typeFoundForId: string = this.store.anyValue(namedNode(id), NS.rdf('type'), null, this.graphId);
+        const typeFoundForId: string = this.store.anyValue(namedNode(id.value), NS.rdf('type'), null, this.graphId);
         if (!typeFoundForId) {
             throw new Error(`Could not find <${id}> for type ${type}`);
         }
@@ -129,134 +129,134 @@ export class QuadsToDomainMapper {
     }
 
     private startDate(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id), NS.schema('startDate'), null, this.graphId));
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id.value), NS.schema('startDate'), null, this.graphId));
     }
 
     private endDate(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id), NS.schema('endDate'), null, this.graphId));
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id.value), NS.schema('endDate'), null, this.graphId));
     }
 
     private productType(id: Iri): ProductType | undefined {
-        return this.asEnum(ProductType, NS.concept.type, this.store.anyValue(namedNode(id), NS.dct('type'), null, this.graphId), id);
+        return this.asEnum(ProductType, NS.concept.type, this.store.anyValue(namedNode(id.value), NS.dct('type'), null, this.graphId), id.value);
     }
 
     private title(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.store.statementsMatching(namedNode(id), NS.dct('title'), null, this.graphId));
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id.value), NS.dct('title'), null, this.graphId));
     }
 
     private description(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.store.statementsMatching(namedNode(id), NS.dct('description'), null, this.graphId));
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id.value), NS.dct('description'), null, this.graphId));
     }
 
     private additionalDescription(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('additionalDescription'), null, this.graphId));
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('additionalDescription'), null, this.graphId));
     }
 
     private exception(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('exception'), null, this.graphId));
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('exception'), null, this.graphId));
     }
 
     private regulation(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.store.statementsMatching(namedNode(id), NS.lpdcExt('regulation'), null, this.graphId));
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('regulation'), null, this.graphId));
     }
 
     private uuid(id: Iri): string | undefined {
-        return this.store.anyValue(namedNode(id), NS.mu('uuid'), null, this.graphId);
+        return this.store.anyValue(namedNode(id.value), NS.mu('uuid'), null, this.graphId);
     }
 
     private targetAudiences(id: Iri): Set<TargetAudienceType> {
-        return this.asEnums(TargetAudienceType, NS.concept.doelgroep, this.store.statementsMatching(namedNode(id), NS.lpdcExt('targetAudience'), null, this.graphId), id);
+        return this.asEnums(TargetAudienceType, NS.concept.doelgroep, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('targetAudience'), null, this.graphId), id.value);
     }
 
     private themes(id: Iri): Set<ThemeType> {
-        return this.asEnums(ThemeType, NS.concept.thema, this.store.statementsMatching(namedNode(id), NS.m8g('thematicArea'), null, this.graphId), id);
+        return this.asEnums(ThemeType, NS.concept.thema, this.store.statementsMatching(namedNode(id.value), NS.m8g('thematicArea'), null, this.graphId), id.value);
     }
 
     private competentAuthorityLevels(id: Iri): Set<CompetentAuthorityLevelType> {
-        return this.asEnums(CompetentAuthorityLevelType, NS.concept.bevoegdBestuursniveau, this.store.statementsMatching(namedNode(id), NS.lpdcExt('competentAuthorityLevel'), null, this.graphId), id);
+        return this.asEnums(CompetentAuthorityLevelType, NS.concept.bevoegdBestuursniveau, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel'), null, this.graphId), id.value);
     }
 
     private competentAuthorities(id: Iri): Set<Iri> {
-        return this.asIris(this.store.statementsMatching(namedNode(id), NS.m8g('hasCompetentAuthority'), null, this.graphId));
+        return this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasCompetentAuthority'), null, this.graphId));
     }
 
     private executingAuthorityLevels(id: Iri): Set<ExecutingAuthorityLevelType> {
-        return this.asEnums(ExecutingAuthorityLevelType, NS.concept.uitvoerendBestuursniveau, this.store.statementsMatching(namedNode(id), NS.lpdcExt('executingAuthorityLevel'), null, this.graphId), id);
+        return this.asEnums(ExecutingAuthorityLevelType, NS.concept.uitvoerendBestuursniveau, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel'), null, this.graphId), id.value);
     }
 
     private executingAuthorities(id: Iri): Set<Iri> {
-        return this.asIris(this.store.statementsMatching(namedNode(id), NS.lpdcExt('hasExecutingAuthority'), null, this.graphId));
+        return this.asIris(this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('hasExecutingAuthority'), null, this.graphId));
     }
 
     private publicationMedia(id: Iri): Set<PublicationMediumType> {
-        return this.asEnums(PublicationMediumType, NS.concept.publicatieKanaal, this.store.statementsMatching(namedNode(id), NS.lpdcExt('publicationMedium'), null, this.graphId), id);
+        return this.asEnums(PublicationMediumType, NS.concept.publicatieKanaal, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('publicationMedium'), null, this.graphId), id.value);
     }
 
     private yourEuropeCategories(id: Iri): Set<YourEuropeCategoryType> {
-        return this.asEnums(YourEuropeCategoryType, NS.concept.yourEuropeCategorie, this.store.statementsMatching(namedNode(id), NS.lpdcExt('yourEuropeCategory'), null, this.graphId), id);
+        return this.asEnums(YourEuropeCategoryType, NS.concept.yourEuropeCategorie, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), null, this.graphId), id.value);
     }
 
     private keywords(id: Iri): Set<LanguageString> {
-        return new Set(this.store.statementsMatching(namedNode(id), NS.dcat('keyword'), null, this.graphId)
+        return new Set(this.store.statementsMatching(namedNode(id.value), NS.dcat('keyword'), null, this.graphId)
             .map(s => [s])
             .flatMap(statements => this.asLanguageString(statements)));
     }
 
     private url(id: Iri): string | undefined {
-        return this.store.anyValue(namedNode(id), NS.schema('url'), null, this.graphId);
+        return this.store.anyValue(namedNode(id.value), NS.schema('url'), null, this.graphId);
     }
 
     private isVersionOfConcept(id: Iri): Iri | undefined {
-        return this.asIri(this.store.anyStatementMatching(namedNode(id), NS.dct('isVersionOf'), null, this.graphId));
+        return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.dct('isVersionOf'), null, this.graphId));
     }
 
     private dateCreated(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id), NS.schema('dateCreated'), null, this.graphId));
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id.value), NS.schema('dateCreated'), null, this.graphId));
     }
 
     private dateModified(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id), NS.schema('dateModified'), null, this.graphId));
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id.value), NS.schema('dateModified'), null, this.graphId));
     }
 
     private generatedAtTime(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id), NS.prov('generatedAtTime'), null, this.graphId));
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id.value), NS.prov('generatedAtTime'), null, this.graphId));
     }
 
     private productId(id: Iri): string | undefined {
-        return this.store.anyValue(namedNode(id), NS.schema('productID'), null, this.graphId);
+        return this.store.anyValue(namedNode(id.value), NS.schema('productID'), null, this.graphId);
     }
 
     private latestConceptSnapshot(id: Iri): Iri {
-        return this.asIri(this.store.anyStatementMatching(namedNode(id), NS.ext('hasVersionedSource'), null, this.graphId));
+        return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.ext('hasVersionedSource'), null, this.graphId));
     }
 
     private previousConceptSnapshots(id: Iri): Set<Iri> {
-        return this.asIris(this.store.statementsMatching(namedNode(id), NS.ext('previousVersionedSource'), null, this.graphId));
+        return this.asIris(this.store.statementsMatching(namedNode(id.value), NS.ext('previousVersionedSource'), null, this.graphId));
     }
 
     private latestFunctionallyChangedConceptSnapshot(id: Iri): Iri {
-        return this.asIri(this.store.anyStatementMatching(namedNode(id), NS.lpdcExt('hasLatestFunctionalChange'), null, this.graphId));
+        return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.lpdcExt('hasLatestFunctionalChange'), null, this.graphId));
     }
 
     private snapshotType(id: Iri): SnapshotType | undefined {
-        return this.asEnum(SnapshotType, NS.concept.snapshotType, this.store.anyValue(namedNode(id), NS.lpdcExt('snapshotType'), null, this.graphId), id);
+        return this.asEnum(SnapshotType, NS.concept.snapshotType, this.store.anyValue(namedNode(id.value), NS.lpdcExt('snapshotType'), null, this.graphId), id.value);
     }
 
     private conceptTags(id: Iri): Set<ConceptTagType> {
-        return this.asEnums(ConceptTagType, NS.concept.conceptTag, this.store.statementsMatching(namedNode(id), NS.lpdcExt('conceptTag'), null, this.graphId), id);
+        return this.asEnums(ConceptTagType, NS.concept.conceptTag, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('conceptTag'), null, this.graphId), id.value);
     }
 
     private isConceptArchived(id: Iri): boolean {
-        return !!this.store.anyStatementMatching(namedNode(id), NS.adms('status'), STATUS.concept.archived, this.graphId);
+        return !!this.store.anyStatementMatching(namedNode(id.value), NS.adms('status'), STATUS.concept.archived, this.graphId);
     }
 
     private legalResources(id: Iri): Set<Iri> {
-        return this.asIris(this.store.statementsMatching(namedNode(id), NS.m8g('hasLegalResource'), null, this.graphId));
+        return this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasLegalResource'), null, this.graphId));
     }
 
     private costs(id: Iri): Cost[] {
         const costIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.m8g('hasCost'), null, this.graphId)));
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasCost'), null, this.graphId)));
         costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, NS.m8g('Cost')));
 
         const costs = costIds.map(costId => Cost.reconstitute(costId, this.uuid(costId), this.title(costId), this.description(costId)));
@@ -266,7 +266,7 @@ export class QuadsToDomainMapper {
 
     private financialAdvantages(id: Iri): FinancialAdvantage[] {
         const financialAdvantageIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.cpsv('produces'), null, this.graphId)));
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), NS.cpsv('produces'), null, this.graphId)));
         financialAdvantageIds.forEach(financialAdvantageId =>
             this.errorIfMissingOrIncorrectType(financialAdvantageId, NS.lpdcExt('FinancialAdvantage')));
 
@@ -279,7 +279,7 @@ export class QuadsToDomainMapper {
 
     private websites(id: Iri, predicate: NamedNode = NS.rdfs('seeAlso')): Website[] {
         const websiteIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), predicate, null, this.graphId)));
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), predicate, null, this.graphId)));
 
         websiteIds.forEach(websiteId =>
             this.errorIfMissingOrIncorrectType(websiteId, NS.schema('WebSite')));
@@ -293,7 +293,7 @@ export class QuadsToDomainMapper {
 
     private procedures(id: Iri): Procedure[] {
         const procedureIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.cpsv('follows'), null, this.graphId)));
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), NS.cpsv('follows'), null, this.graphId)));
 
         procedureIds.forEach(procedureId =>
             this.errorIfMissingOrIncorrectType(procedureId, NS.cpsv('Rule')));
@@ -307,7 +307,7 @@ export class QuadsToDomainMapper {
 
     private requirements(id: Iri): Requirement[] {
         const requirementIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.ps('hasRequirement'), null, this.graphId)));
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), NS.ps('hasRequirement'), null, this.graphId)));
 
         requirementIds.forEach(requirementId =>
             this.errorIfMissingOrIncorrectType(requirementId, NS.m8g('Requirement')));
@@ -321,7 +321,7 @@ export class QuadsToDomainMapper {
 
     private evidence(id: Iri): Evidence | undefined {
         const evidenceIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id), NS.m8g('hasSupportingEvidence'), null, this.graphId)));
+            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasSupportingEvidence'), null, this.graphId)));
 
         evidenceIds.forEach(evidenceId =>
             this.errorIfMissingOrIncorrectType(evidenceId, NS.m8g('Evidence')));
@@ -377,11 +377,11 @@ export class QuadsToDomainMapper {
     }
 
     private asIris(statements: Statement[]): Set<Iri> {
-        return new Set(this.asNamedNodes(statements).map(value => value.value));
+        return new Set(this.asNamedNodes(statements).map(value => new Iri(value.value)));
     }
 
     private asIri(statement: Statement | undefined): Iri | undefined {
-        return statement ? this.asNamedNode(statement).value : undefined;
+        return statement ? new Iri(this.asNamedNode(statement).value) : undefined;
     }
 
     private asLiterals(statements: Statement[]): Literal[] {

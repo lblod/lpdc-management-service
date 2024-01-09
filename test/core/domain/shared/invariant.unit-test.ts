@@ -55,6 +55,7 @@ describe('notBeBlank', () => {
     });
 
 });
+
 describe('haveAtLeastOneValuePresent', () => {
 
     const name = 'list';
@@ -82,6 +83,29 @@ describe('haveAtLeastOneValuePresent', () => {
     test('Returns the multiple values when multiple values are present', () => {
         const invariant: Invariant<any> = Invariant.require(['correct value 1', '', 'correct value 2'], name);
         expect(invariant.to(invariant.haveAtLeastOneValuePresent())).toEqual(['correct value 1', '', 'correct value 2']);
+    });
+});
+
+describe('startsWith', () => {
+    const name = 'Starts with';
+    test('Returns value when value starts with startValue', () => {
+        const invariant: Invariant<any> = Invariant.require('abc', name);
+        expect(invariant.to(invariant.startsWith('a'))).toEqual('abc');
+    });
+
+    test('Returns value when value starts with one of startValues', () => {
+        const invariant: Invariant<any> = Invariant.require('abc', name);
+        expect(invariant.to(invariant.startsWith('bc', 'ab'))).toEqual('abc');
+    });
+
+    test('throws error when value is not of type string', () => {
+        const invariant: Invariant<any> = Invariant.require([], name);
+        expect(() => invariant.to(invariant.startsWith('a'))).toThrow(new Error(`${name} does not start with one of [a]`));
+    });
+
+    test('throws error when value does not start with', () => {
+        const invariant: Invariant<any> = Invariant.require('abc', name);
+        expect(() => invariant.to(invariant.startsWith('b', 'c'))).toThrow(new Error(`${name} does not start with one of [b,c]`));
     });
 });
 

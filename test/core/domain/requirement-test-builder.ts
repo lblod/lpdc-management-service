@@ -98,7 +98,7 @@ export class RequirementTestBuilder {
     private evidence: Evidence | undefined;
 
     static buildIri(uniqueId: string): Iri {
-        return `http://data.lblod.info/id/requirement/${uniqueId}`;
+        return new Iri(`http://data.lblod.info/id/requirement/${uniqueId}`);
     }
 
     public withId(id: Iri): RequirementTestBuilder {

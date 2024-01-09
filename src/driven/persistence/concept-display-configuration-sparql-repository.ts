@@ -44,15 +44,15 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         }
 
         const conceptDisplayConfiguration = new ConceptDisplayConfiguration(
-            result['conceptDisplayConfigurationId'].value,
+            new Iri(result['conceptDisplayConfigurationId'].value),
             result['uuid'].value,
             result['conceptIsNew'].value === 'true',
             result['conceptInstantiated'].value === 'true',
-            result['bestuurseenheidId'].value,
-            result['conceptId'].value,
+            new Iri(result['bestuurseenheidId'].value),
+            new Iri(result['conceptId'].value),
         );
 
-        if(conceptDisplayConfiguration.bestuurseenheidId !== bestuurseenheid.id) {
+        if(!conceptDisplayConfiguration.bestuurseenheidId.equals(bestuurseenheid.id)) {
             throw Error(`concept display configuration found for concept id ${conceptId} in incorrect user graph`);
         }
 

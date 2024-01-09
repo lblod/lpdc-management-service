@@ -97,7 +97,7 @@ export class ProcedureTestBuilder {
     private websites: Website[] = [];
 
     static buildIri(uniqueId: string): Iri {
-        return `http://data.lblod.info/id/rule/${uniqueId}`;
+        return new Iri(`http://data.lblod.info/id/rule/${uniqueId}`);
     }
 
     public withId(id: Iri): ProcedureTestBuilder {

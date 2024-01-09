@@ -17,7 +17,7 @@ export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepositor
     }
 
     async findById(id: Iri): Promise<ConceptSnapshot> {
-        const ldesDataGraph = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
+        const ldesDataGraph = new Iri('http://mu.semte.ch/graphs/lpdc/ldes-data');
 
         const quads = await this.fetcher.fetch(
             ldesDataGraph,

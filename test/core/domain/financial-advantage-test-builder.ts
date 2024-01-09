@@ -89,7 +89,7 @@ export class FinancialAdvantageTestBuilder {
     private description: LanguageString | undefined;
 
     static buildIri(uniqueId: string): Iri {
-        return `http://data.lblod.info/id/financial-advantage/${uniqueId}`;
+        return new Iri(`http://data.lblod.info/id/financial-advantage/${uniqueId}`);
     }
 
     public withId(id: Iri): FinancialAdvantageTestBuilder {

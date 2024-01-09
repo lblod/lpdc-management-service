@@ -6,6 +6,7 @@ import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
 import {buildBestuurseenheidIri} from "../../core/domain/iri-test-builder";
+import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('BestuurseenheidRepository', () => {
     const repository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -39,7 +40,7 @@ describe('BestuurseenheidRepository', () => {
     describe('Verify ontology and mapping', () => {
 
         test('Verify mappings', async () => {
-            const bestuurseenheidId = `http://data.lblod.info/id/bestuurseenheden/${uuid()}`;
+            const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${uuid()}`);
 
             const bestuurseenheid =
                 aBestuurseenheid()
@@ -61,7 +62,7 @@ describe('BestuurseenheidRepository', () => {
         });
 
         test('Verify ontology and mapping - only query correct type', async () => {
-            const bestuurseenheidId = `http://data.lblod.info/id/bestuurseenheden/${uuid()}`;
+            const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${uuid()}`);
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/public",

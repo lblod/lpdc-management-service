@@ -15,7 +15,7 @@ export class SessionTestBuilder {
     private sessionRole: SessionRole;
 
     static buildIri(uniqueId: string): Iri {
-        return `http://mu.semte.ch/sessions/${uniqueId}`;
+        return new Iri(`http://mu.semte.ch/sessions/${uniqueId}`);
     }
 
     public withId(id: Iri): SessionTestBuilder {

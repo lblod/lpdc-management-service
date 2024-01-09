@@ -1,9 +1,21 @@
 import {Invariant} from "./invariant";
 
-export type Iri = string;
+export class Iri {
 
-//TODO LPDC-916: add format validation ?
-export const requiredIri = (iri: Iri, name: string = 'iri'): Iri => {
-    const invariant = Invariant.require(iri, name);
-    return invariant.to(invariant.notBeUndefined(), invariant.notBeBlank());
-};
+    constructor(private _value: string) {
+        const invariant = Invariant.require(_value, 'iri');
+        invariant.to(invariant.notBeUndefined(), invariant.notBeBlank(), invariant.startsWith('http://', 'https://'));
+    }
+
+    get value(): string {
+        return this._value;
+    }
+
+    toString(): string {
+        return this.value;
+    }
+
+    equals(other: Iri): boolean {
+        return this._value === other.value;
+    }
+}

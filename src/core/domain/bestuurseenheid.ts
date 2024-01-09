@@ -1,5 +1,6 @@
-import {Iri, requiredIri} from "./shared/iri";
+import {Iri} from "./shared/iri";
 import {SessionRole} from "./session";
+import {requiredValue} from "./shared/invariant";
 
 
 export class Bestuurseenheid {
@@ -9,7 +10,7 @@ export class Bestuurseenheid {
     private readonly _classificatieCode: BestuurseenheidClassificatieCode;
 
     constructor(id: Iri, prefLabel: string, classificatieCode: BestuurseenheidClassificatieCode) {
-        this._id = requiredIri(id, 'id');
+        this._id = requiredValue(id, 'id');
         this._prefLabel = prefLabel;
         this._classificatieCode = classificatieCode;
     }
@@ -30,11 +31,11 @@ export class Bestuurseenheid {
         const prefix = 'http://data.lblod.info/id/bestuurseenheden/';
         const regex = new RegExp(`^${prefix}(.*)$`);
 
-        return this._id.match(regex)[1];
+        return this._id.value.match(regex)[1];
     }
 
     userGraph(): Iri {
-        return `http://mu.semte.ch/graphs/organizations/${this.uuid}/${SessionRole.LOKETLB_LPDCGEBRUIKER}`;
+        return new Iri(`http://mu.semte.ch/graphs/organizations/${this.uuid}/${SessionRole.LOKETLB_LPDCGEBRUIKER}`);
     }
 }
 

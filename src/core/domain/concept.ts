@@ -1,4 +1,4 @@
-import {Iri, requiredIri} from "./shared/iri";
+import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {Requirement} from "./requirement";
@@ -87,7 +87,7 @@ export class Concept {
                 legalResources: Set<Iri>,
     ) {
         //TODO LPDC-916: enforce invariants ? + do safe copies ?
-        this._id = requiredIri(id, 'id');
+        this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         requiredValue(title, 'title');
         requiredValue(title.nl, 'nl version in title');
