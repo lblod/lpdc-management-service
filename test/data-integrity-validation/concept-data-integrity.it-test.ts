@@ -183,7 +183,7 @@ describe('Concept Data Integrity Validation', () => {
         }, 0) / averageTimes.length;
         console.log(`Total average time: ${totalAverageTime}`);
         console.log(`Technical Errors [${technicalErrors}]`);
-        console.log(`Data Errors Size [${dataErrors}]`);
+        console.log(`Data Errors [${dataErrors}]`);
 
         if (conceptIds.length > 0) {
             expect(totalAverageTime).toBeLessThan(25);
