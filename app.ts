@@ -31,6 +31,7 @@ import {
     BestuurseenheidRegistrationCodeThroughSubjectPageOrApiFetcher
 } from "./src/driven/external/bestuurseenheid-registration-code-through-subject-page-or-api-fetcher";
 import {CodeSparqlRepository} from "./src/driven/persistence/code-sparql-repository";
+import {InstanceSparqlRepository} from "./src/driven/persistence/instance-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -48,13 +49,16 @@ const conceptRepository = new ConceptSparqlRepository();
 const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository();
 const bestuurseenheidRegistrationCodeFetcher = new BestuurseenheidRegistrationCodeThroughSubjectPageOrApiFetcher();
 const codeRepository = new CodeSparqlRepository();
+const instanceRepository = new InstanceSparqlRepository();
+
 const newConceptSnapshotToConceptMergerDomainService =
     new NewConceptSnapshotToConceptMergerDomainService(
         conceptSnapshotRepository,
         conceptRepository,
         conceptDisplayConfigurationRepository,
         bestuurseenheidRegistrationCodeFetcher,
-        codeRepository);
+        codeRepository,
+        instanceRepository);
 
 app.get('/', function (req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;

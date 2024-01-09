@@ -44,6 +44,7 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
 import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 describe('merges a new concept snapshot into a concept', () => {
 
@@ -56,10 +57,9 @@ describe('merges a new concept snapshot into a concept', () => {
     const bestuurseenheidRegistrationCodeFetcher = {
         fetchOrgRegistryCodelistEntry: jest.fn().mockReturnValue(Promise.resolve({}))
     };
-
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
-
     const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
 
     const merger = new NewConceptSnapshotToConceptMergerDomainService(
         conceptSnapshotRepository,
@@ -67,7 +67,7 @@ describe('merges a new concept snapshot into a concept', () => {
         conceptDisplayConfigurationRepository,
         bestuurseenheidRegistrationCodeFetcher,
         codeRepository,
-        TEST_SPARQL_ENDPOINT);
+        instanceRepository);
 
     describe('create a new concept', () => {
 
@@ -942,7 +942,7 @@ describe('merges a new concept snapshot into a concept', () => {
             conceptDisplayConfigurationRepository,
             bestuurseenheidRegistrationCodeFetcher,
             codeRepository,
-            TEST_SPARQL_ENDPOINT);
+            instanceRepository);
 
         await directDatabaseAccess.insertData(
             'http://mu.semte.ch/graphs/public',

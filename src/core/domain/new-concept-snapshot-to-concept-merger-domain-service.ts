@@ -1,6 +1,3 @@
-import {updateSudo} from '@lblod/mu-auth-sudo';
-import {sparqlEscapeUri} from '../../../mu-helper';
-import {PREFIX} from '../../../config';
 import {v4 as uuid} from 'uuid';
 import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snapshot-repository";
 import {ConceptSnapshot} from "./concept-snapshot";
@@ -21,6 +18,7 @@ import {
     BestuurseenheidRegistrationCodeFetcher
 } from "../port/driven/external/bestuurseenheid-registration-code-fetcher";
 import {CodeRepository, CodeSchema} from "../port/driven/persistence/code-repository";
+import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 
 export class NewConceptSnapshotToConceptMergerDomainService {
 
@@ -29,7 +27,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
     private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
     private readonly _bestuurseenheidRegistrationCodeFetcher: BestuurseenheidRegistrationCodeFetcher;
     private readonly _codeRepository: CodeRepository;
-    private readonly _connectionOptions: object; //TODO LPDC-916: remove when all replaced
+    private readonly _instanceRepository: InstanceRepository;
 
     constructor(
         conceptSnapshotRepository: ConceptSnapshotRepository,
@@ -37,13 +35,13 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository,
         bestuurseenheidRegistrationCodeFetcher: BestuurseenheidRegistrationCodeFetcher,
         codeRepository: CodeRepository,
-        endpoint: string = "http://database:8890/sparql") {
+        instanceRepository: InstanceRepository) {
         this._conceptSnapshotRepository = conceptSnapshotRepository;
         this._conceptRepository = conceptRepository;
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
         this._bestuurseenheidRegistrationCodeFetcher = bestuurseenheidRegistrationCodeFetcher;
         this._codeRepository = codeRepository;
-        this._connectionOptions = {sparqlEndpoint: endpoint};
+        this._instanceRepository = instanceRepository;
     }
 
     async merge(newConceptSnapshotId: Iri) {
@@ -86,12 +84,9 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
                 await this.ensureLinkedAuthoritiesExistAsCodeList(newConceptSnapshot);
 
-                const isArchiving = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
+                const isConceptArchived = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
 
-                //TODO LPDC-916: move to a separate repo
-                //instances (in user graphs)
-                const instanceReviewStatus: string | undefined = this.determineInstanceReviewStatus(isConceptFunctionallyChanged, isArchiving);
-                await this.flagInstancesModifiedConcept(conceptId, instanceReviewStatus);
+                await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptFunctionallyChanged, isConceptArchived);
 
                 await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
 
@@ -273,46 +268,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
     private async insertCodeListData(codeListData: { uri?: Iri, prefLabel?: string }): Promise<void> {
         return this._codeRepository.save(CodeSchema.IPDCOrganisaties, codeListData.uri, codeListData.prefLabel, new Iri('https://wegwijs.vlaanderen.be'));
-    }
-
-    private determineInstanceReviewStatus(isFunctionallyModified: boolean, isArchiving: boolean): string | undefined {
-        const reviewStatus = {
-            conceptUpdated: 'http://lblod.data.gift/concepts/5a3168e2-f39b-4b5d-8638-29f935023c83',
-            conceptArchived: 'http://lblod.data.gift/concepts/cf22e8d1-23c3-45da-89bc-00826eaf23c3'
-        };
-
-        if (isArchiving) {
-            return reviewStatus.conceptArchived;
-        } else if (isFunctionallyModified) {
-            return reviewStatus.conceptUpdated;
-        } else {
-            return undefined;
-        }
-    }
-
-    private async flagInstancesModifiedConcept(conceptId: Iri, reviewStatus?: string): Promise<void> {
-        if (reviewStatus) {
-            const updateQueryStr = `
-            ${PREFIX.ext}
-            ${PREFIX.cpsv}
-            DELETE {
-                GRAPH ?g {
-                    ?service ext:reviewStatus ?status.
-                }
-            }
-            INSERT {
-                GRAPH ?g {
-                    ?service ext:reviewStatus ${sparqlEscapeUri(reviewStatus)}.
-                }
-            }
-            WHERE {
-                GRAPH ?g {
-                    ?service a cpsv:PublicService;
-                        <http://purl.org/dc/terms/source> ${sparqlEscapeUri(conceptId)}.
-                }
-            }`;
-            await updateSudo(updateQueryStr, {}, this._connectionOptions);
-        }
     }
 
     private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: Iri): Promise<boolean> {
