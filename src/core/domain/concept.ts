@@ -87,7 +87,7 @@ export class Concept {
                 isArchived: boolean,
                 legalResources: Iri[],
     ) {
-        //TODO LPDC-916: enforce invariants ? + do safe copies ? + list have only unique values
+        //TODO LPDC-916: do safe copies ? + list have only unique values
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
 

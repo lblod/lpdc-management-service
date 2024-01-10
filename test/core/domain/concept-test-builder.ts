@@ -32,7 +32,7 @@ export function aMinimalConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
         .withId(buildConceptIri(uuid()))
         .withUuid(uuid())
-        .withTitle(aMinimalLanguageString('Concept Title').build())
+        .withTitle(ConceptTestBuilder.MINIMAL_TITLE)
         .withDescription(aMinimalLanguageString('Concept Description').build())
         .withProductId(ConceptTestBuilder.PRODUCT_ID)
         .withLatestConceptSnapshot(buildConceptSnapshotIri(uuid()))
@@ -111,12 +111,17 @@ export function aFullConcept(): ConceptTestBuilder {
 
 export class ConceptTestBuilder {
 
+
     public static readonly TITLE_EN = 'Concept Title - en';
     public static readonly TITLE_NL = 'Concept Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Concept Title - nl-formal';
     public static readonly TITLE_NL_INFORMAL = 'Concept Title - nl-informal';
     public static readonly TITLE_NL_GENERATED_FORMAL = 'Concept Title - nl-generated-formal';
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Concept Title - nl-generated-informal';
+    public static readonly MINIMAL_TITLE = aMinimalLanguageString()
+        .withEn(ConceptTestBuilder.TITLE_EN)
+        .withNl(ConceptTestBuilder.TITLE_NL)
+        .withNlFormal(ConceptTestBuilder.TITLE_NL_FORMAL).build();
 
     public static readonly DESCRIPTION_EN = 'Concept Description - en';
     public static readonly DESCRIPTION_NL = 'Concept Description - nl';

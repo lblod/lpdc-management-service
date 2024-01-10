@@ -5,6 +5,7 @@ export function aMinimalLanguageString(value: string = ''): LanguageStringTestBu
         .withNl(`${value}${LanguageStringTestBuilder.NL}`);
 }
 
+
 export function aFullLanguageString(value: string = ''): LanguageStringTestBuilder {
     return new LanguageStringTestBuilder()
         .withEn(`${value}${LanguageStringTestBuilder.EN}`)

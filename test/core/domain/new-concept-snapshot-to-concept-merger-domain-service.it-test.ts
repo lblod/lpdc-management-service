@@ -577,7 +577,7 @@ describe('merges a new concept snapshot into a concept', () => {
 
         test('Updates a concept with minimal new data of a new version of a concept snapshot', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
-            const title = aMinimalLanguageString('title').build();
+            const title = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const description = aMinimalLanguageString('description').build();
             const conceptSnapshot =
                 aFullConceptSnapshot()
@@ -984,7 +984,7 @@ describe('merges a new concept snapshot into a concept', () => {
 
         test('Updates instance review status to updated for each linked instance if concept is FunctionallyModified', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
-            const title = aMinimalLanguageString('title').build();
+            const title = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const description = aMinimalLanguageString('description').build();
             const conceptSnapshot =
                 aFullConceptSnapshot()

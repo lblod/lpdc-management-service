@@ -19,7 +19,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "./types";
-import {requiredValue} from "./shared/invariant";
+import {Invariant, requiredValue} from "./shared/invariant";
 
 export class ConceptSnapshot {
 
@@ -87,11 +87,14 @@ export class ConceptSnapshot {
                 conceptTags: ConceptTagType[],
                 legalResources: Iri[],
     ) {
-        //TODO LPDC-917: enforce invariants ? + do safe copies ?
+        //TODO LPDC-917: do safe copies ?
         this._id = requiredValue(id, 'id');
         requiredValue(title, 'title');
         requiredValue(title.nl, 'nl version in title');
+        const invariant3ConceptLanguages = Invariant.require(title.definedLanguages, 'conceptLanguages');
+        invariant3ConceptLanguages.to(invariant3ConceptLanguages.haveAtLeastXAmountOfValues(3));
         this._title = title;
+
         requiredValue(description, 'description');
         requiredValue(description.nl, 'nl version in description');
         this._description = description;

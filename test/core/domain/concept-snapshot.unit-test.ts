@@ -25,7 +25,7 @@ import {
 } from "../../../src/core/domain/types";
 import {buildConceptSnapshotIri} from "./iri-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
-import {aMinimalLanguageString} from "./language-string-test-builder";
+import {aFullLanguageString, aMinimalLanguageString, LanguageStringTestBuilder} from "./language-string-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {Evidence} from "../../../src/core/domain/evidence";
@@ -95,7 +95,32 @@ describe('constructing', () => {
     test('Undefined snapshotType throws error', () => {
         expect(() => aFullConceptSnapshot().withSnapshotType(undefined).build()).toThrow(new Error('snapshotType should not be undefined'));
     });
-    
+
+    describe('conceptlanguages', () => {
+        test('when 3 languages are present, no error is thrown', () => {
+            const value = 'language';
+            const title = aMinimalLanguageString()
+                .withEn(`${value}${LanguageStringTestBuilder.EN}`)
+                .withNl(`${value}${LanguageStringTestBuilder.NL}`)
+                .withNlFormal(`${value}${LanguageStringTestBuilder.NL_FORMAL}`).build();
+            expect(() => aFullConceptSnapshot().withTitle(title).build()).not.toThrow();
+        });
+        test('when more then 3 languages are present, no error is thrown', () => {
+            const value = 'language';
+            const title = aFullLanguageString(value).build();
+            expect(() => aFullConceptSnapshot().withTitle(title).build()).not.toThrow();
+        });
+
+        test('when fewer then 3 languages are present, no error is thrown', () => {
+            const value = 'language';
+            const title = aMinimalLanguageString()
+                .withEn(`${value}${LanguageStringTestBuilder.EN}`)
+                .withNl(`${value}${LanguageStringTestBuilder.NL}`);
+
+            expect(() => aFullConceptSnapshot().withTitle(title.build()).build()).toThrow(new Error('conceptLanguages does not contain at least 3 values'));
+        });
+    });
+
     describe('cost ', () => {
         test('valid cost does not throw error', () => {
             const validCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(CostTestBuilder.TITLE).build(),
@@ -236,14 +261,14 @@ describe('is functionally changed', () => {
         = [
         ['title changed',
             aFullConceptSnapshot()
-                .withTitle(LanguageString.of("text-en", "text-nl"))
+                .withTitle(LanguageString.of("text-en", "text-nl", "text-nl-formal"))
                 .build(),
             aFullConceptSnapshot()
-                .withTitle(LanguageString.of("text-en-changed", "text-nl-veranderd"))
+                .withTitle(LanguageString.of("text-en-changed", "text-nl-veranderd", "text-nl-formal-veranderd",))
                 .build()],
         ['description changed',
             aFullConceptSnapshot()
-                .withDescription(LanguageString.of("text-en", "text-nl"))
+                .withDescription(LanguageString.of("text-en", "text-nl",))
                 .build(),
             aFullConceptSnapshot()
                 .withDescription(LanguageString.of("text-en-changed", "text-nl-veranderd"))

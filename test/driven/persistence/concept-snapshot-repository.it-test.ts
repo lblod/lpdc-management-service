@@ -7,7 +7,6 @@ import {
     ConceptSnapshotTestBuilder
 } from "../../core/domain/concept-snapshot-test-builder";
 import {ConceptSnapshotSparqlTestRepository} from "./concept-snapshot-sparql-test-repository";
-import {LanguageString} from "../../../src/core/domain/language-string";
 import {
     aMinimalRequirementForConceptSnapshot,
     RequirementTestBuilder
@@ -30,6 +29,7 @@ import {buildConceptSnapshotIri} from "../../core/domain/iri-test-builder";
 import {NS} from "../../../src/driven/persistence/namespaces";
 import {aMinimalLanguageString} from "../../core/domain/language-string-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {ConceptTestBuilder} from "../../core/domain/concept-test-builder";
 
 describe('ConceptSnapshotRepository', () => {
     const repository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -51,18 +51,6 @@ describe('ConceptSnapshotRepository', () => {
 
         test('When minimal concept snapshot exists with id, then return concept snapshot', async () => {
             const conceptSnapshot = aMinimalConceptSnapshot().build();
-            await repository.save(conceptSnapshot);
-
-            const anotherConceptSnapshot = aMinimalConceptSnapshot().build();
-            await repository.save(anotherConceptSnapshot);
-
-            const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
-
-            expect(actualConceptSnapshot).toEqual(conceptSnapshot);
-        });
-
-        test('When minimal concept snapshot with incomplete title exists with id, then return concept snapshot', async () => {
-            const conceptSnapshot = aMinimalConceptSnapshot().withTitle(LanguageString.of(undefined, ConceptSnapshotTestBuilder.TITLE_NL)).build();
             await repository.save(conceptSnapshot);
 
             const anotherConceptSnapshot = aMinimalConceptSnapshot().build();
@@ -97,7 +85,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = aMinimalLanguageString('title').build();
+            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString('description').build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -115,7 +103,9 @@ describe('ConceptSnapshotRepository', () => {
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [
                     `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.en}"""@en`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nlFormal}"""@nl-BE-x-formal`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
@@ -128,7 +118,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - with start date but no end date', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = aMinimalLanguageString('title').build();
+            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString('description').build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -148,7 +138,9 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.en}"""@en`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nlFormal}"""@nl-BE-x-formal`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
@@ -516,7 +508,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - requirement without evidence', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = aMinimalLanguageString(ConceptSnapshotTestBuilder.TITLE).build();
+            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -543,7 +535,9 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.en}"""@en`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nlFormal}"""@nl-BE-x-formal`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
@@ -561,7 +555,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - minimal requirement with minimal evidence', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = aMinimalLanguageString(ConceptSnapshotTestBuilder.TITLE).build();
+            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -597,7 +591,9 @@ describe('ConceptSnapshotRepository', () => {
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.en}"""@en`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nlFormal}"""@nl-BE-x-formal`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
@@ -618,7 +614,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - procedure without websites', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = aMinimalLanguageString(ConceptSnapshotTestBuilder.TITLE).build();
+            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -646,7 +642,9 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.en}"""@en`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nlFormal}"""@nl-BE-x-formal`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
                     `<${conceptSnapshotId}> <http://purl.org/vocab/cpsv#follows> <${procedureId}>`,
@@ -665,7 +663,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - procedure with minimal website', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = aMinimalLanguageString(ConceptSnapshotTestBuilder.TITLE).build();
+            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -698,7 +696,9 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.en}"""@en`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nlFormal}"""@nl-BE-x-formal`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
                     `<${conceptSnapshotId}> <http://purl.org/vocab/cpsv#follows> <${procedureId}>`,

@@ -27,13 +27,13 @@ import {
 } from "../../../src/core/domain/types";
 import {buildCodexVlaanderenIri, buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
+import {ConceptTestBuilder} from "./concept-test-builder";
 
 
 export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
     return new ConceptSnapshotTestBuilder()
-        //TODO LPDC-916: define a 'minimal'
         .withId(buildConceptSnapshotIri(uuid()))
-        .withTitle(aMinimalLanguageString('Concept Snapshot Title').build())
+        .withTitle(ConceptTestBuilder.MINIMAL_TITLE)
         .withDescription(aMinimalLanguageString('Concept Snapshot Description').build())
         .withProductId(ConceptSnapshotTestBuilder.PRODUCT_ID)
         .withSnapshotType(SnapshotType.CREATE);
@@ -119,6 +119,10 @@ export class ConceptSnapshotTestBuilder {
     public static readonly TITLE_NL_INFORMAL = 'Concept Snapshot Title - nl-informal';
     public static readonly TITLE_NL_GENERATED_FORMAL = 'Concept Snapshot Title - nl-generated-formal';
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Concept Snapshot Title - nl-generated-informal';
+    public static readonly MINIMAL_TITLE = aMinimalLanguageString()
+        .withEn(ConceptSnapshotTestBuilder.TITLE_EN)
+        .withNl(ConceptSnapshotTestBuilder.TITLE_NL)
+        .withNlFormal(ConceptSnapshotTestBuilder.TITLE_NL_FORMAL).build();
 
     public static readonly DESCRIPTION = 'Concept Snapshot Description';
     public static readonly DESCRIPTION_EN = 'Concept Snapshot Description - en';
