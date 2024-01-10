@@ -1,3 +1,5 @@
+import {isEqual, uniqWith} from "lodash";
+
 type ValidationResult = string | null;
 type InvariantType<V> = (value: V) => ValidationResult;
 
@@ -46,6 +48,13 @@ export class Invariant<V> {
             : `${this._name} does not start with one of [${startValues}]`;
     }
 
+    noDuplicates(): InvariantType<V> {
+        return () => uniqWith(this._value as any[], (a, b) => isEqual(a, b)).length === (this._value as any[]).length
+            ? null
+            : `${this._name} should not contain duplicates`;
+
+    }
+
     public to(...invariants: InvariantType<V>[]): V {
         const violations = invariants.map(invariant => invariant(this._value));
         const firstViolation = violations.find(violation => violation !== null);
@@ -70,4 +79,9 @@ export class Invariant<V> {
 export const requiredValue = (value: any, name: string = 'object'): any => {
     const invariant = Invariant.require(value, name);
     return invariant.to(invariant.notBeUndefined(), invariant.notBeBlank());
+};
+
+export const requireNoDuplicates = (values: any[], name: string = 'list'): any => {
+    const invariant = Invariant.require(values, name);
+    return invariant.to(invariant.noDuplicates());
 };

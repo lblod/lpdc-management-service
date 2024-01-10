@@ -15,7 +15,7 @@ import {aFullCost, CostTestBuilder} from "./cost-test-builder";
 import {aFullFinancialAdvantage, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
-    CompetentAuthorityLevelType,
+    CompetentAuthorityLevelType, ConceptTagType,
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
@@ -23,7 +23,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
-import {buildConceptSnapshotIri} from "./iri-test-builder";
+import {buildCodexVlaanderenIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
 import {aFullLanguageString, aMinimalLanguageString, LanguageStringTestBuilder} from "./language-string-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
@@ -88,12 +88,69 @@ describe('constructing', () => {
     test('Undefined productId throws error', () => {
         expect(() => aFullConceptSnapshot().withProductId(undefined).build()).toThrow(new Error('productId should not be undefined'));
     });
+
     test('Blank productId throws error', () => {
         expect(() => aFullConceptSnapshot().withProductId('   ').build()).toThrow(new Error('productId should not be blank'));
     });
 
     test('Undefined snapshotType throws error', () => {
         expect(() => aFullConceptSnapshot().withSnapshotType(undefined).build()).toThrow(new Error('snapshotType should not be undefined'));
+    });
+
+    test('TargetAudience with duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withTargetAudiences([TargetAudienceType.BURGER, TargetAudienceType.BURGER]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('targetAudiences should not contain duplicates'));
+    });
+
+    test('Themes with duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withThemes([ThemeType.BOUWENWONEN, ThemeType.BOUWENWONEN]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('themes should not contain duplicates'));
+    });
+
+    test('CompetentAuthorityLevels with duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withCompetentAuthorityLevels([CompetentAuthorityLevelType.EUROPEES, CompetentAuthorityLevelType.EUROPEES]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('competentAuthorityLevels should not contain duplicates'));
+    });
+
+    test('CompetentAuthorities with duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withCompetentAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('competentAuthorities should not contain duplicates'));
+    });
+
+    test('ExecutingAuthorityLevels with duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.LOKAAL]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('executingAuthorityLevels should not contain duplicates'));
+    });
+
+    test('ExecutingAuthorities with duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('executingAuthorities should not contain duplicates'));
+    });
+
+    test('PublicationMedia with duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withPublicationMedia([PublicationMediumType.YOUREUROPE, PublicationMediumType.YOUREUROPE]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('publicationMedia should not contain duplicates'));
+    });
+
+    test('YourEuropeCategories with duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF, YourEuropeCategoryType.BEDRIJF]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('yourEuropeCategories should not contain duplicates'));
+    });
+
+    test('keywords with duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('keywords should not contain duplicates'));
+    });
+
+    test('conceptTags with duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT, ConceptTagType.YOUREUROPEVERPLICHT]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('conceptTags should not contain duplicates'));
+    });
+
+    test('legalResources with duplicates throws error', () => {
+        const iri = uuid();
+        const conceptTestBuilder = aFullConceptSnapshot().withLegalResources([buildCodexVlaanderenIri(iri), buildCodexVlaanderenIri(iri)]);
+        expect(() => conceptTestBuilder.build()).toThrow(new Error('legalResources should not contain duplicates'));
     });
 
     describe('conceptlanguages', () => {
@@ -135,6 +192,7 @@ describe('constructing', () => {
             expect(() => aFullConceptSnapshot().withCosts([invalidCost]).build()).toThrow();
         });
     });
+
     describe('financialAdvantage ', () => {
         test('valid financial advantage does not throw error', () => {
             const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
@@ -165,6 +223,7 @@ describe('constructing', () => {
             expect(() => aFullConceptSnapshot().withProcedures([invalidProcedure]).build()).toThrow();
         });
     });
+
     describe('website ', () => {
         test('valid website does not throw error', () => {
             const uuidValue = uuid();

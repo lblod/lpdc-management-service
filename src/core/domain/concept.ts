@@ -18,7 +18,7 @@ import {
     YourEuropeCategoryType
 } from "./types";
 import {Language} from "./language";
-import {Invariant, requiredValue} from "./shared/invariant";
+import {Invariant, requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {uniqBy} from "lodash";
 
 export class Concept {
@@ -87,7 +87,7 @@ export class Concept {
                 isArchived: boolean,
                 legalResources: Iri[],
     ) {
-        //TODO LPDC-916: do safe copies ? + list have only unique values
+        //TODO LPDC-916: do safe copies ?
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
 
@@ -106,15 +106,15 @@ export class Concept {
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
-        this._targetAudiences = asSortedArray(targetAudiences);
-        this._themes = asSortedArray(themes);
-        this._competentAuthorityLevels = asSortedArray(competentAuthorityLevels);
-        this._competentAuthorities = asSortedArray(competentAuthorities, Iri.compare);
-        this._executingAuthorityLevels = asSortedArray(executingAuthorityLevels);
-        this._executingAuthorities = asSortedArray(executingAuthorities, Iri.compare);
-        this._publicationMedia = asSortedArray(publicationMedia);
-        this._yourEuropeCategories = asSortedArray(yourEuropeCategories);
-        this._keywords = asSortedArray(keywords, LanguageString.compare);
+        this._targetAudiences = requireNoDuplicates(asSortedArray(targetAudiences), 'targetAudiences');
+        this._themes = requireNoDuplicates(asSortedArray(themes), 'themes');
+        this._competentAuthorityLevels = requireNoDuplicates(asSortedArray(competentAuthorityLevels), 'competentAuthorityLevels');
+        this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities, Iri.compare), 'competentAuthorities');
+        this._executingAuthorityLevels = requireNoDuplicates(asSortedArray(executingAuthorityLevels), 'executingAuthorityLevels');
+        this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities, Iri.compare), 'executingAuthorities');
+        this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
+        this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
+        this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
         this._requirements = [...requirements].map(Requirement.forConcept);
         this._procedures = [...procedures].map(Procedure.forConcept);
         this._websites = [...websites].map(Website.forConcept);
@@ -122,11 +122,11 @@ export class Concept {
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConcept);
         this._productId = requiredValue(productId, 'productId');
         this._latestConceptSnapshot = requiredValue(latestConceptSnapshot, 'latestConceptSnapshot');
-        this._previousConceptSnapshots = asSortedArray(previousConceptSnapshots, Iri.compare);
+        this._previousConceptSnapshots = requireNoDuplicates(asSortedArray(previousConceptSnapshots, Iri.compare), 'previousConceptSnapshots');
         this._latestFunctionallyChangedConceptSnapshot = requiredValue(latestFunctionallyChangedConceptSnapshot, 'latestFunctionallyChangedConceptSnapshot');
-        this._conceptTags = asSortedArray(conceptTags);
+        this._conceptTags = requireNoDuplicates(asSortedArray(conceptTags), 'conceptTags');
         this._isArchived = requiredValue(isArchived, 'isArchived');
-        this._legalResources = asSortedArray(legalResources, Iri.compare);
+        this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
     }
 
     get conceptLanguages(): Language[] {

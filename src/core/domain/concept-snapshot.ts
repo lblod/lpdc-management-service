@@ -19,7 +19,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "./types";
-import {Invariant, requiredValue} from "./shared/invariant";
+import {Invariant, requiredValue, requireNoDuplicates} from "./shared/invariant";
 
 export class ConceptSnapshot {
 
@@ -104,15 +104,15 @@ export class ConceptSnapshot {
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
-        this._targetAudiences = asSortedArray(targetAudiences);
-        this._themes = asSortedArray(themes);
-        this._competentAuthorityLevels = asSortedArray(competentAuthorityLevels);
-        this._competentAuthorities = asSortedArray(competentAuthorities, Iri.compare);
-        this._executingAuthorityLevels = asSortedArray(executingAuthorityLevels);
-        this._executingAuthorities = asSortedArray(executingAuthorities, Iri.compare);
-        this._publicationMedia = asSortedArray(publicationMedia);
-        this._yourEuropeCategories = asSortedArray(yourEuropeCategories);
-        this._keywords = asSortedArray(keywords, LanguageString.compare);
+        this._targetAudiences = requireNoDuplicates(asSortedArray(targetAudiences), 'targetAudiences');
+        this._themes = requireNoDuplicates(asSortedArray(themes), 'themes');
+        this._competentAuthorityLevels = requireNoDuplicates(asSortedArray(competentAuthorityLevels), 'competentAuthorityLevels');
+        this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities, Iri.compare), 'competentAuthorities');
+        this._executingAuthorityLevels = requireNoDuplicates(asSortedArray(executingAuthorityLevels), 'executingAuthorityLevels');
+        this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities, Iri.compare), 'executingAuthorities');
+        this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
+        this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
+        this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
         this._requirements = [...requirements].map(Requirement.forConceptSnapshot);
         this._procedures = [...procedures].map(Procedure.forConceptSnapshot);
         this._websites = [...websites].map(Website.forConceptSnapshot);
@@ -124,8 +124,8 @@ export class ConceptSnapshot {
         this._generatedAtTime = generatedAtTime;
         this._productId = requiredValue(productId, 'productId');
         this._snapshotType = requiredValue(snapshotType, 'snapshotType');
-        this._conceptTags = asSortedArray(conceptTags);
-        this._legalResources = asSortedArray(legalResources, Iri.compare);
+        this._conceptTags = requireNoDuplicates(asSortedArray(conceptTags), 'conceptTags');
+        this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
     }
 
     get id(): Iri {

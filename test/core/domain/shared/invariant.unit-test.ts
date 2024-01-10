@@ -130,6 +130,35 @@ describe('startsWith', () => {
     });
 });
 
+describe('noDuplicates', () => {
+    const name = 'list';
+
+    test('Returns value when string list contains no duplicates', () => {
+        const invariant: Invariant<any> = Invariant.require(['a', 'b'], name);
+        expect(invariant.to(invariant.noDuplicates())).toEqual(['a', 'b']);
+    });
+
+    test('Returns value when object list contains no duplicates', () => {
+        const invariant: Invariant<any> = Invariant.require([{a: 0}, {a: 1}], name);
+        expect(invariant.to(invariant.noDuplicates())).toEqual([{a: 0}, {a: 1}]);
+    });
+
+    test('Returns value when object list contains different objects', () => {
+        const invariant: Invariant<any> = Invariant.require([{a: 0}, {b: 0}], name);
+        expect(invariant.to(invariant.noDuplicates())).toEqual([{a: 0}, {b: 0}]);
+    });
+
+    test('throws error when string list contains duplicates', () => {
+        const invariant: Invariant<any> = Invariant.require(['a', 'a'], name);
+        expect(() => invariant.to(invariant.noDuplicates())).toThrow(new Error(`${name} should not contain duplicates`));
+    });
+
+    test('throws error when object list contains duplicates', () => {
+        const invariant: Invariant<any> = Invariant.require([{a: 0}, {a: 0}], name);
+        expect(() => invariant.to(invariant.noDuplicates())).toThrow(new Error(`${name} should not contain duplicates`));
+    });
+});
+
 
 describe('to', () => {
     test('returns first violation', () => {
