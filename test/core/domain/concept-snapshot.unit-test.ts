@@ -92,6 +92,10 @@ describe('constructing', () => {
         expect(() => aFullConceptSnapshot().withProductId('   ').build()).toThrow(new Error('productId should not be blank'));
     });
 
+    test('Undefined snapshotType throws error', () => {
+        expect(() => aFullConceptSnapshot().withSnapshotType(undefined).build()).toThrow(new Error('snapshotType should not be undefined'));
+    });
+    
     describe('cost ', () => {
         test('valid cost does not throw error', () => {
             const validCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(CostTestBuilder.TITLE).build(),

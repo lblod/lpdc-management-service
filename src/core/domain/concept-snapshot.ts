@@ -120,7 +120,7 @@ export class ConceptSnapshot {
         this._dateModified = dateModified;
         this._generatedAtTime = generatedAtTime;
         this._productId = requiredValue(productId, 'productId');
-        this._snapshotType = snapshotType;
+        this._snapshotType = requiredValue(snapshotType, 'snapshotType');
         this._conceptTags = asSortedArray(conceptTags);
         this._legalResources = asSortedArray(legalResources);
     }

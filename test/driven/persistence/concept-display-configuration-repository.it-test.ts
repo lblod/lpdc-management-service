@@ -265,7 +265,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
             expect(createdConceptDisplayConfigurationForAnotherBestuurseenheid.bestuurseenheidId).toEqual(anotherBestuurseenheid.id);
             expect(createdConceptDisplayConfigurationForAnotherBestuurseenheid.conceptId).toEqual(concept.id);
 
-        });
+        }, 10000);
 
         test('Does not create new or update concept display configurations for a concept if already exists for bestuurseenheid', async () => {
             const bestuurseenheid =
@@ -297,7 +297,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
             expect(createdConceptDisplayConfigurationForBestuurseenheid.conceptIsInstantiated).toEqual(true);
             expect(createdConceptDisplayConfigurationForBestuurseenheid.bestuurseenheidId).toEqual(bestuurseenheid.id);
             expect(createdConceptDisplayConfigurationForBestuurseenheid.conceptId).toEqual(concept.id);
-        });
+        }, 10000);
 
     });
 

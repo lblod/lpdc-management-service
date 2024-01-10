@@ -35,7 +35,8 @@ export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
         .withId(buildConceptSnapshotIri(uuid()))
         .withTitle(aMinimalLanguageString('Concept Snapshot Title').build())
         .withDescription(aMinimalLanguageString('Concept Snapshot Description').build())
-        .withProductId(ConceptSnapshotTestBuilder.PRODUCT_ID);
+        .withProductId(ConceptSnapshotTestBuilder.PRODUCT_ID)
+        .withSnapshotType(SnapshotType.CREATE);
 }
 
 export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {

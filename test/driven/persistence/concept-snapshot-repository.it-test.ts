@@ -100,6 +100,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = aMinimalLanguageString('title').build();
             const conceptSnapshotDescription = aMinimalLanguageString('description').build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
+            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
 
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
@@ -107,6 +108,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
+                    .withSnapshotType(conceptSnapshotType)
                     .build();
 
             await directDatabaseAccess.insertData(
@@ -115,7 +117,9 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
-                    `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`]);
+                    `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
+                ]);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
 
@@ -127,6 +131,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = aMinimalLanguageString('title').build();
             const conceptSnapshotDescription = aMinimalLanguageString('description').build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
+            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
 
 
             const conceptSnapshot =
@@ -135,7 +140,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
-
+                    .withSnapshotType(conceptSnapshotType)
                     .withStartDate(ConceptSnapshotTestBuilder.START_DATE)
                     .withEndDate(undefined)
                     .build();
@@ -146,6 +151,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
                     `<${conceptSnapshotId}> <http://schema.org/startDate> """${ConceptSnapshotTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
                 ]);
 
@@ -513,7 +519,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = aMinimalLanguageString(ConceptSnapshotTestBuilder.TITLE).build();
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
-
+            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
 
             const requirementId = RequirementTestBuilder.buildIri(uuid());
             const requirementTitle = aMinimalLanguageString(RequirementTestBuilder.TITLE).build();
@@ -525,6 +531,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
+                    .withSnapshotType(conceptSnapshotType)
                     .withRequirements([
                         aMinimalRequirementForConceptSnapshot()
                             .withId(requirementId)
@@ -539,6 +546,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
                     `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
                     `<${requirementId}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${requirementId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
@@ -556,6 +564,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = aMinimalLanguageString(ConceptSnapshotTestBuilder.TITLE).build();
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
+            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
 
             const requirementId = RequirementTestBuilder.buildIri(uuid());
             const requirementTitle = aMinimalLanguageString(RequirementTestBuilder.TITLE).build();
@@ -570,6 +579,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
+                    .withSnapshotType(conceptSnapshotType)
                     .withRequirements([
                         aMinimalRequirementForConceptSnapshot()
                             .withId(requirementId)
@@ -590,6 +600,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
                     `<${requirementId}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${requirementId}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${evidenceId}>`,
                     `<${requirementId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
@@ -610,6 +621,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = aMinimalLanguageString(ConceptSnapshotTestBuilder.TITLE).build();
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
+            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
 
             const procedureId = ProcedureTestBuilder.buildIri(uuid());
             const procedureTitle = aMinimalLanguageString(ProcedureTestBuilder.TITLE).build();
@@ -621,6 +633,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
+                    .withSnapshotType(conceptSnapshotType)
                     .withProcedures([
                         aMinimalProcedureForConceptSnapshot()
                             .withId(procedureId)
@@ -637,6 +650,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
                     `<${conceptSnapshotId}> <http://purl.org/vocab/cpsv#follows> <${procedureId}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
                     `<${procedureId}> a <http://purl.org/vocab/cpsv#Rule>`,
                     `<${procedureId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${procedureId}> <http://purl.org/dc/terms/title> """${procedureTitle.nl}"""@nl`,
@@ -654,6 +668,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = aMinimalLanguageString(ConceptSnapshotTestBuilder.TITLE).build();
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
+            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
 
             const procedureId = ProcedureTestBuilder.buildIri(uuid());
             const procedureTitle = aMinimalLanguageString(ProcedureTestBuilder.TITLE).build();
@@ -668,6 +683,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
+                    .withSnapshotType(conceptSnapshotType)
                     .withProcedures([
                         aMinimalProcedureForConceptSnapshot()
                             .withId(procedureId)
@@ -686,6 +702,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
                     `<${conceptSnapshotId}> <http://purl.org/vocab/cpsv#follows> <${procedureId}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
                     `<${procedureId}> a <http://purl.org/vocab/cpsv#Rule>`,
                     `<${procedureId}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${procedureId}> <http://purl.org/dc/terms/title> """${procedureTitle.nl}"""@nl`,

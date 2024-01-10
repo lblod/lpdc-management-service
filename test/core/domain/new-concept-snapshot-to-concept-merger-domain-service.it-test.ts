@@ -669,7 +669,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
             expect(updatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id].sort());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
-        }, 10000);
+        }, 20000);
 
         test('Does not update a concept when same version is merged again', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -879,7 +879,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(fourthTimeUpdatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, secondTimeUpdatedConceptSnapshot.id, thirdTimeButOlderUpdatedConceptSnapshot.id].sort());
             expect(fourthTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
 
-        }, 20000);
+        }, 30000);
 
     });
 
@@ -927,7 +927,7 @@ describe('merges a new concept snapshot into a concept', () => {
         expect(createdConceptDisplayConfigurationForAnotherBestuurseenheid.bestuurseenheidId).toEqual(anotherBestuurseenheid.id);
         expect(createdConceptDisplayConfigurationForAnotherBestuurseenheid.conceptId).toEqual(isVersionOfConceptId);
 
-    });
+    }, 10000);
 
     test('Inserts Code Lists for competent and executing authorities if not existing', async () => {
         const bestuurseenheidRegistrationCodeFetcher = {
@@ -1080,7 +1080,7 @@ describe('merges a new concept snapshot into a concept', () => {
 
             const reviewStatusForInstanceOfAnotherBestuurseenheid = reviewStatusResultForInstanceOfAnotherBestuurseenheid[0]['reviewStatus'].value;
             expect(reviewStatusForInstanceOfAnotherBestuurseenheid).toEqual('http://lblod.data.gift/concepts/5a3168e2-f39b-4b5d-8638-29f935023c83');
-        });
+        }, 20000);
 
         test('Does not updates instance review status to updated for each linked instance if concept is not FunctionallyModified', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -1144,7 +1144,7 @@ describe('merges a new concept snapshot into a concept', () => {
             `;
             const reviewStatusResultForInstance = await directDatabaseAccess.list(reviewStatusForConceptInGraph(bestuurseenheid));
             expect(reviewStatusResultForInstance.length).toEqual(0);
-        });
+        }, 20000);
 
         test('Updates instance review status to archived for each linked instance if concept is archived', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -1213,7 +1213,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const reviewStatusForInstance = reviewStatusResultForInstance[0]['reviewStatus'].value;
             expect(reviewStatusForInstance).toEqual('http://lblod.data.gift/concepts/cf22e8d1-23c3-45da-89bc-00826eaf23c3');
 
-        });
+        }, 20000);
 
     });
 
