@@ -115,6 +115,20 @@ describe('constructing', () => {
         expect(() => aFullConcept().withProductId('   ').build()).toThrow(new Error('productId should not be blank'));
     });
 
+    test('Undefined latestConceptSnapshot throws error', () => {
+        expect(() => aFullConcept().withLatestConceptSnapshot(undefined).build()).toThrow(new Error('latestConceptSnapshot should not be undefined'));
+    });
+    test('invalid Iri latestConceptSnapshot throws error', () => {
+        expect(() => aFullConcept().withLatestConceptSnapshot(new Iri('   ')).build()).toThrow(new Error('iri should not be blank'));
+    });
+
+    test('Undefined LatestFunctionallyChangedConceptSnapshot throws error', () => {
+        expect(() => aFullConcept().withLatestFunctionallyChangedConceptSnapshot(undefined).build()).toThrow(new Error('latestFunctionallyChangedConceptSnapshot should not be undefined'));
+    });
+    test('invalid Iri LatestFunctionallyChangedConceptSnapshot throws error', () => {
+        expect(() => aFullConcept().withLatestFunctionallyChangedConceptSnapshot(new Iri('   ')).build()).toThrow(new Error('iri should not be blank'));
+    });
+
     describe('cost ', () => {
         test('valid cost for concept does not throw error', () => {
             const uuidValue = uuid();
