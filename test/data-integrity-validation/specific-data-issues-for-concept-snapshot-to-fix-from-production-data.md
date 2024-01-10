@@ -1,4 +1,4 @@
-# case 1: some concept snapshots websites have the a title with the same language (2 times nl, 2 times en)  (not solved)
+# case 1: some concept snapshots websites have a title with the same language (2 times nl, 2 times en)  (not solved)
 
 ![case1.png](img%2Fcase1.png)
 
@@ -7,8 +7,46 @@
 <http://mu.semte.ch/blank#2192c6c3-b88a-4a1e-b97d-85a5cda2ba4d> <http://purl.org/dc/terms/title> "Volmachtformulier"@nl .
 ```
 
-=> **still to solve in the data** 
-But it seems that these two are the only incorrect ones ...
+All of them occur in the ldes-data-graph; 
+this website is referenced by http://mu.semte.ch/blank#9fb6164b-c967-4d77-bacd-cbaf86bb4d13 ; which is a http://purl.org/vocab/cpsv#Rule.
+which is referenced by 	https://ipdc.vlaanderen.be/id/conceptsnapshot/635cfaf2-5de5-488b-82a5-3c16cd8cb2d1; which is a 	
+https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService . 
+
+Verified in original data: 
+
+```json
+"procedures": [
+    {
+      "naam": {
+        "en": "Procedure",
+        "nl": "Procedure"
+      },
+      "beschrijving": {
+        "en": "<p>First, you must fill in a <strong>proxy vote application form</strong>. You can download this form on the Verkiezingen.fgov.be website or request it free of charge from your local council.</p>\n\n<p>You must then give the completed proxy vote application form and the necessary documents in good time to a person entitled to vote who will vote on your behalf, i.e. the <strong>proxy</strong>.</p>\n\n<p>On election day, the proxy goes to the <strong>polling station stated on your polling card </strong>with the proxy vote form and the necessary documents.</p>\n\n<p>If you have not yet provided proof of absence during the voting, you must provide the Justice of the Peace with such proof as soon as possible after the elections.</p>\n\n<p>You will find more information on the evidence and certificates you must be able to submit on the Verkiezingen.fgov.be website.</p>",
+        "nl": "<p>Eerst vult u een <strong>volmachtformulier</strong> in. U kunt het <a data-entity-substitution=\"canonical\" data-entity-type=\"node\" data-entity-uuid=\"f29de5f5-042e-43f0-a6a8-17d90888d6f3\" href=\"/node/4106\">volmachtformulier downloaden</a> op de website Verkiezingen.fgov.be of gratis aanvragen bij uw gemeentebestuur.</p>\n\n<p>Vervolgens geeft u het ingevulde volmachtformulier en de nodige documenten tijdig aan een kiesgerechtigde persoon die voor u zal stemmen, de <strong>volmachtkrijger</strong>.</p>\n\n<p>Op de dag van de verkiezingen gaat de volmachtkrijger met het volmachtformulier en de nodige documenten naar het <strong>stembureau dat op uw oproepingsbrief vermeld staat</strong>.</p>\n\n<p>Als u tijdens de stemming nog geen bewijs van afwezigheid hebt bezorgd, moet u dat bewijs zo snel mogelijk na de verkiezingen bezorgen aan de vrederechter.</p>\n\n<p>Op de website Verkiezingen.fgov.be vindt u <a data-entity-substitution=\"canonical\" data-entity-type=\"node\" data-entity-uuid=\"f29de5f5-042e-43f0-a6a8-17d90888d6f3\" href=\"/node/4106\">meer informatie over de bewijzen en attesten</a> die u moet kunnen voorleggen.</p>"
+      },
+      "websites": [
+        {
+          "naam": {
+            "nl": "Meer info over de bewijzen en attesten",
+            "en": "Volmachtformulier",
+            "nl": "Volmachtformulier",
+            "en": "Meer info over de bewijzen en attesten"
+          },
+          "url": "https://verkiezingen.fgov.be/kiezers-wat-als-men-niet-beschikbaar-is-op-de-dag-van-de-stemming/stemming-bij-volmacht",
+          "@type": "website",
+          "order": 0.0
+        }
+      ],
+      "@type": "procedure",
+      "order": 0.0
+    }
+  ],
+
+```
+
+-> reported a problem @ ipdc
+
 
 # case 2: all legal resources are modeled incorrectly. (not solved)
 
