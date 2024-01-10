@@ -79,4 +79,5 @@ export enum BestuurseenheidClassificatieCodeUri {
     PROJECTVERENIGING = "http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/b156b67f-c5f4-4584-9b30-4c090be02fdc",
     WELZIJNSVERENIGING = "http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/e8294b73-87c9-4fa2-9441-1937350763c9",
     OCMW_VERENIGING = "http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/cc4e2d67-603b-4784-9b61-e50bac1ec089",
+    VLAAMSE_GEMEENSCHAPSCOMMISSIE = "http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/d90c511e-f827-488c-84ba-432c8f69561c",
 }

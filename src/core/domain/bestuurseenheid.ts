@@ -64,5 +64,6 @@ export enum BestuurseenheidClassificatieCode {
     POLITIEZONE = "Politiezone",
     PROJECTVERENIGING = "Projectvereniging",
     WELZIJNSVERENIGING = "Welzijnsvereniging",
-    OCMW_VERENIGING = "OCMW vereniging"
+    OCMW_VERENIGING = "OCMW vereniging",
+    VLAAMSE_GEMEENSCHAPSCOMMISSIE = "Vlaamse gemeenschapscommissie",
 }
