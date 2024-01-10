@@ -3,12 +3,11 @@ import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
 import {CONCEPT_GRAPH, PREFIX} from "../../config";
-import {isLiteral, Statement} from "rdflib";
-import {shuffle, uniq} from "lodash";
+import {Statement} from "rdflib";
+import {shuffle, sortedUniq, uniq} from "lodash";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {Iri} from "../../src/core/domain/shared/iri";
-import {sortedUniq} from "lodash";
 
 describe('Concept Data Integrity Validation', () => {
 
@@ -44,10 +43,6 @@ describe('Concept Data Integrity Validation', () => {
 
         const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
         let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, graph));
-
-        // TODO LPDC-916: remove test when fr and de languages are removed in prod
-        //filter out fr and de language strings
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !(isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr')));
 
         //filter out all triples linked to account subjects
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/account/'));
