@@ -40,6 +40,7 @@ describe('BestuurseenheidRepository', () => {
             const bestuurseenheid =
                 aBestuurseenheid()
                     .withId(Bestuurseenheid.abb)
+                    .withUuid("141d9d6b-54af-4d17-b313-8d1c30bc3f5b")
                     .withPrefLabel('Agentschap binnenlands bestuur')
                     .withClassificatieCode(undefined)
                     .build();
@@ -54,11 +55,13 @@ describe('BestuurseenheidRepository', () => {
     describe('Verify ontology and mapping', () => {
 
         test('Verify mappings', async () => {
-            const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${uuid()}`);
+            const bestuurseenheidUuid = uuid();
+            const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${bestuurseenheidUuid}`);
 
             const bestuurseenheid =
                 aBestuurseenheid()
                     .withId(bestuurseenheidId)
+                    .withUuid(bestuurseenheidUuid)
                     .withPrefLabel("preferred label")
                     .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
                     .build();
@@ -66,6 +69,7 @@ describe('BestuurseenheidRepository', () => {
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/public",
                 [`<${bestuurseenheidId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+                    `<${bestuurseenheidId}> <http://mu.semte.ch/vocabularies/core/uuid> """${bestuurseenheidUuid}"""`,
                     `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
                     `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
                 ]);

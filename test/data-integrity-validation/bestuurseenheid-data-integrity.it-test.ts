@@ -32,6 +32,7 @@ describe('Bestuurseenheid Data Integrity Validation', () => {
                 const id = new Iri(result['id'].value);
                 const bestuurseenheidForId = await repository.findById(id);
                 expect(bestuurseenheidForId.id).toEqual(id);
+                expect(bestuurseenheidForId.uuid).toEqual(deriveUuidFromIri(id));
             } catch (e) {
                 console.log(e);
                 dataErrors.push(e);
@@ -42,3 +43,10 @@ describe('Bestuurseenheid Data Integrity Validation', () => {
     });
 
 });
+
+function deriveUuidFromIri(id: Iri): string {
+    const prefix = 'http://data.lblod.info/id/bestuurseenheden/';
+    const regex = new RegExp(`^${prefix}(.*)$`);
+
+    return id.value.match(regex)[1];
+}

@@ -16,12 +16,14 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
         const query = `
             ${PREFIX.skos}
             ${PREFIX.besluit}
-            SELECT ?id ?prefLabel ?classificatieUri WHERE {
+            ${PREFIX.mu}
+            SELECT ?id ?uuid ?prefLabel ?classificatieUri WHERE {
                 GRAPH <http://mu.semte.ch/graphs/public> {
                     VALUES ?id {
                         ${sparqlEscapeUri(id)}
                     }
                     ?id a besluit:Bestuurseenheid .
+                    ?id mu:uuid ?uuid .
                     ?id skos:prefLabel ?prefLabel .
                     OPTIONAL {
                         ?id besluit:classificatie ?classificatieUri .
@@ -37,6 +39,7 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
 
         return new Bestuurseenheid(
             new Iri(result['id'].value),
+            result['uuid'].value,
             result['prefLabel'].value,
             this.mapBestuurseenheidClassificatieUriToCode(result['classificatieUri']?.value)
         );
