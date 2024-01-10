@@ -56,7 +56,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
             if (newConceptSnapshotAlreadyLinkedToConcept) {
 
-                //TODO LPDC-916: when doing idempotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
+                //TODO LPDC-848: when doing idempotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
                 console.log(`The versioned resource ${newConceptSnapshotId} is already processed on service ${conceptId}`);
 
             } else if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {

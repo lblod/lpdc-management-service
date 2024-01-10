@@ -9,7 +9,6 @@ export interface ConceptRepository {
 
     save(concept: Concept): Promise<void>;
 
-    //TODO LPDC-916: what about shacl:order ?
     update(concept: Concept, old: Concept): Promise<void>;
 
 }
