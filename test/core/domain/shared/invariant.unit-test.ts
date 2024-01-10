@@ -86,6 +86,27 @@ describe('haveAtLeastOneValuePresent', () => {
     });
 });
 
+describe('haveAtLeastXAmountOfValuesPresent', () => {
+    const name = 'list';
+    const expectedValues = 2;
+    test('Throws error when no fewer values are present', () => {
+        const invariant: Invariant<any> = Invariant.require([undefined, '', 'value 1', "  \n  \t  "], name);
+        expect(() => invariant.to(invariant.haveAtLeastXAmountOfValues(expectedValues))).toThrow(new Error(`${name} does not contain at least ${expectedValues} values`));
+    });
+
+    test('Returns all values when amount of expected values and present values are the same', () => {
+        const values = ['', undefined, 'value 1', undefined, 'value 2'];
+        const invariant: Invariant<any[]> = Invariant.require(values, name);
+        expect(invariant.to(invariant.haveAtLeastXAmountOfValues(expectedValues))).toEqual(values);
+    });
+
+    test('Returns all values when amount of present values is larger then expected values', () => {
+        const values = ['', undefined, 'value 1', undefined, 'value 2', 'value 3', 'value 4'];
+        const invariant: Invariant<any[]> = Invariant.require(values, name);
+        expect(invariant.to(invariant.haveAtLeastXAmountOfValues(expectedValues))).toEqual(values);
+    });
+});
+
 describe('startsWith', () => {
     const name = 'Starts with';
     test('Returns value when value starts with startValue', () => {

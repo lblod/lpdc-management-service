@@ -18,7 +18,7 @@ import {
     YourEuropeCategoryType
 } from "./types";
 import {Language} from "./language";
-import {requiredValue} from "./shared/invariant";
+import {Invariant, requiredValue} from "./shared/invariant";
 import {uniqBy} from "lodash";
 
 export class Concept {
@@ -90,9 +90,13 @@ export class Concept {
         //TODO LPDC-916: enforce invariants ? + do safe copies ? + list have only unique values
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
+
         requiredValue(title, 'title');
         requiredValue(title.nl, 'nl version in title');
+        const invariant3ConceptLanguages = Invariant.require(title.definedLanguages, 'conceptLanguages');
+        invariant3ConceptLanguages.to(invariant3ConceptLanguages.haveAtLeastXAmountOfValues(3));
         this._title = title;
+
         requiredValue(description, 'description');
         requiredValue(description.nl, 'nl version in description');
         this._description = description;
@@ -127,7 +131,6 @@ export class Concept {
 
     get conceptLanguages(): Language[] {
         return this._title.definedLanguages;
-        //TODO LPDC-916 validate title has 3 languageVersions
     }
 
     get appliedSnapshots(): Iri[] {

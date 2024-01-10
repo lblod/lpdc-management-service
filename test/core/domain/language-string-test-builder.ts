@@ -5,14 +5,14 @@ export function aMinimalLanguageString(value: string = ''): LanguageStringTestBu
         .withNl(`${value}${LanguageStringTestBuilder.NL}`);
 }
 
-export function aFullLanguageString(): LanguageStringTestBuilder {
+export function aFullLanguageString(value: string = ''): LanguageStringTestBuilder {
     return new LanguageStringTestBuilder()
-        .withEn(LanguageStringTestBuilder.EN)
-        .withNl(LanguageStringTestBuilder.NL)
-        .withNlFormal(LanguageStringTestBuilder.NL_FORMAL)
-        .withNlInformal(LanguageStringTestBuilder.NL_INFORMAL)
-        .withNlGeneratedFormal(LanguageStringTestBuilder.NL_GENERATED_FORMAL)
-        .withNlGeneratedInformal(LanguageStringTestBuilder.NL_GENERATED_INFORMAL);
+        .withEn(`${value}${LanguageStringTestBuilder.EN}`)
+        .withNl(`${value}${LanguageStringTestBuilder.NL}`)
+        .withNlFormal(`${value}${LanguageStringTestBuilder.NL_FORMAL}`)
+        .withNlInformal(`${value}${LanguageStringTestBuilder.NL_INFORMAL}`)
+        .withNlGeneratedFormal(`${value}${LanguageStringTestBuilder.NL_GENERATED_FORMAL}`)
+        .withNlGeneratedInformal(`${value}${LanguageStringTestBuilder.NL_GENERATED_INFORMAL}`);
 }
 
 export class LanguageStringTestBuilder {

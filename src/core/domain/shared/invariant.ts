@@ -31,6 +31,15 @@ export class Invariant<V> {
         };
     }
 
+    haveAtLeastXAmountOfValues(amountOfPresentValues: number): InvariantType<V> {
+        return () => {
+            if ((this._value as any[]).filter(value => (!this.isUndefined(value) && !this.isBlank(value))).length >= amountOfPresentValues) {
+                return null;
+            }
+            return `${this._name} does not contain at least ${amountOfPresentValues} values`;
+        };
+    }
+
     startsWith(...startValues: any[]): InvariantType<V> {
         return () => startValues.some(startValue => typeof this._value === 'string' && this._value.startsWith(startValue))
             ? null
