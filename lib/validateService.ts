@@ -4,6 +4,7 @@ import * as rdflib from 'rdflib';
 import {retrieveForm} from './retrieveForm';
 import {validateForm} from '@lblod/submission-form-helpers';
 import {loadContactPointsAddresses} from "./commonQueries";
+import {uniq} from "lodash";
 
 const FORM = rdflib.Namespace('http://lblod.data.gift/vocabularies/forms/');
 const RDF = rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
@@ -79,7 +80,7 @@ export async function validateService(publicServiceId: string): Promise<{ errors
 async function validateAddresses(serviceUri: string): Promise<boolean> {
     const addresses = await loadContactPointsAddresses(serviceUri, {type: 'cpsv:PublicService', includeUuid: true});
     if (addresses) {
-        const addressUris = [...new Set(addresses.map(triple => triple.s.value))];
+        const addressUris = uniq(addresses.map(triple => triple.s.value));
         const addressValidation = await Promise.all(addressUris.map(async addressUri => {
             const addressRegisterId = addresses.find(triple => triple.s.value === addressUri && triple.p.value === 'https://data.vlaanderen.be/ns/adres#verwijstNaar')?.o?.value;
             return !!addressRegisterId;

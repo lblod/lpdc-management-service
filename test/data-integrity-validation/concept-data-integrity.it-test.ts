@@ -3,12 +3,12 @@ import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
 import {CONCEPT_GRAPH, PREFIX} from "../../config";
-import {isLiteral} from "rdflib";
-import {shuffle} from "lodash";
-import {asSortedSet} from "../../src/core/domain/shared/collections-helper";
+import {isLiteral, Statement} from "rdflib";
+import {shuffle, uniq} from "lodash";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {Iri} from "../../src/core/domain/shared/iri";
+import {sortedUniq} from "lodash";
 
 describe('Concept Data Integrity Validation', () => {
 
@@ -43,72 +43,56 @@ describe('Concept Data Integrity Validation', () => {
         `;
 
         const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
-        const allQuadsOfGraph = new Set(sparqlQuerying.asQuads(allTriplesOfGraph, graph));
+        let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, graph));
 
         // TODO LPDC-916: remove test when fr and de languages are removed in prod
         //filter out fr and de language strings
-        Array.from(allQuadsOfGraph).filter(q => isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !(isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr')));
 
         //filter out all triples linked to account subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://data.lblod.info/id/account/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/account/'));
 
         //filter out all triples linked to adressen subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://data.lblod.info/id/adressen/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/adressen/'))
 
         //filter out all triples linked to persoon subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://data.lblod.info/id/persoon/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/persoon/'))
 
         //filter out all triples linked to bestuurseenheden subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://data.lblod.info/id/bestuurseenheden/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/bestuurseenheden/'))
 
         //filter out all triples linked to werkingsgebieden subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://data.lblod.info/id/werkingsgebieden/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/werkingsgebieden/'))
 
         //filter out all triples linked to werkingsgebieden subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://data.lblod.info/werkingsgebieden/id/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/werkingsgebieden/id/'))
 
         //filter out all triples linked to BestuurseenheidClassificatieCode subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/'))
 
         //filter out all triples linked to http://lblod.data.gift/concept-schemes/ subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://lblod.data.gift/concept-schemes/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/concept-schemes/'))
 
         //filter out all triples linked to http://lblod.data.gift/concepts/ subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://lblod.data.gift/concepts/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/concepts/'))
 
         //filter out all triples linked to http://vocab.belgif.be/auth/refnis2019/ subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://vocab.belgif.be/auth/refnis2019/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://vocab.belgif.be/auth/refnis2019/'))
 
         //filter out all triples linked to https://productencatalogus.data.vlaanderen.be/id/concept/ subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('https://productencatalogus.data.vlaanderen.be/id/concept/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://productencatalogus.data.vlaanderen.be/id/concept/'))
 
         //filter out all triples linked to https://productencatalogus.data.vlaanderen.be/id/conceptscheme/ subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('https://productencatalogus.data.vlaanderen.be/id/conceptscheme/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://productencatalogus.data.vlaanderen.be/id/conceptscheme/'))
 
         //filter out all triples linked to https://data.vlaanderen.be/id/organisatie/ subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('https://data.vlaanderen.be/id/organisatie/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://data.vlaanderen.be/id/organisatie/'))
 
         //filter out all triples linked to http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties'))
 
         //filter out all triples linked to http://publications.europa.eu/resource/authority/language/ subjects
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith('http://publications.europa.eu/resource/authority/language/'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://publications.europa.eu/resource/authority/language/'))
 
 
         const delayTime = 0;
@@ -165,13 +149,13 @@ describe('Concept Data Integrity Validation', () => {
                 await wait(delayTime);
             }
 
-            const allRemainingQuadsOfGraphAsTurtle = new Set(Array.from(allQuadsOfGraph).map(q => q.toString()));
-            quadsFromRequeriedConcepts.map(q => q.toString())
-                .forEach(q => allRemainingQuadsOfGraphAsTurtle.delete(q));
+            const allRemainingQuadsOfGraphAsTurtle = allQuadsOfGraph
+                .map(q => q.toString())
+                .filter(q => !quadsFromRequeriedConcepts.includes(q));
 
             //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
-            //fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, Array.from(asSortedSet(allRemainingQuadsOfGraphAsTurtle)).join('\n'));
-            expect(asSortedSet(allRemainingQuadsOfGraphAsTurtle)).toEqual(new Set());
+            //fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
+            expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
 
             const averageTime = (new Date().valueOf() - before - delayTime * conceptIds.length) / conceptIds.length;
             averageTimes.push(averageTime);

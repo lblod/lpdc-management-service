@@ -6,7 +6,7 @@ import {Procedure} from "./procedure";
 import {Website} from "./website";
 import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
-import {asSortedSet} from "./shared/collections-helper";
+import {asSortedArray} from "./shared/collections-helper";
 import {
     CompetentAuthorityLevelType,
     ConceptTagType,
@@ -19,6 +19,7 @@ import {
 } from "./types";
 import {Language} from "./language";
 import {requiredValue} from "./shared/invariant";
+import {uniqBy} from "lodash";
 
 export class Concept {
 
@@ -32,15 +33,15 @@ export class Concept {
     private readonly _startDate: FormatPreservingDate | undefined;
     private readonly _endDate: FormatPreservingDate | undefined;
     private readonly _type: ProductType | undefined;
-    private readonly _targetAudiences: Set<TargetAudienceType>;
-    private readonly _themes: Set<ThemeType>;
-    private readonly _competentAuthorityLevels: Set<CompetentAuthorityLevelType>;
-    private readonly _competentAuthorities: Set<Iri>;
-    private readonly _executingAuthorityLevels: Set<ExecutingAuthorityLevelType>;
-    private readonly _executingAuthorities: Set<Iri>;
-    private readonly _publicationMedia: Set<PublicationMediumType>;
-    private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>;
-    private readonly _keywords: Set<LanguageString>;
+    private readonly _targetAudiences: TargetAudienceType[];
+    private readonly _themes: ThemeType[];
+    private readonly _competentAuthorityLevels: CompetentAuthorityLevelType[];
+    private readonly _competentAuthorities: Iri[];
+    private readonly _executingAuthorityLevels: ExecutingAuthorityLevelType[];
+    private readonly _executingAuthorities: Iri[];
+    private readonly _publicationMedia: PublicationMediumType[];
+    private readonly _yourEuropeCategories: YourEuropeCategoryType[];
+    private readonly _keywords: LanguageString[];
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
     private readonly _websites: Website[];
@@ -48,11 +49,11 @@ export class Concept {
     private readonly _financialAdvantages: FinancialAdvantage[];
     private readonly _productId: string;
     private readonly _latestConceptSnapshot: Iri;
-    private readonly _previousConceptSnapshots: Set<Iri>;
+    private readonly _previousConceptSnapshots: Iri[];
     private readonly _latestFunctionallyChangedConceptSnapshot: Iri;
-    private readonly _conceptTags: Set<ConceptTagType>;
+    private readonly _conceptTags: ConceptTagType[];
     private readonly _isArchived: boolean;
-    private readonly _legalResources: Set<Iri>;
+    private readonly _legalResources: Iri[];
 
     constructor(id: Iri,
                 uuid: string,
@@ -64,15 +65,15 @@ export class Concept {
                 startDate: FormatPreservingDate | undefined,
                 endDate: FormatPreservingDate | undefined,
                 type: ProductType | undefined,
-                targetAudiences: Set<TargetAudienceType>,
-                themes: Set<ThemeType>,
-                competentAuthorityLevels: Set<CompetentAuthorityLevelType>,
-                competentAuthorities: Set<Iri>,
-                executingAuthorityLevels: Set<ExecutingAuthorityLevelType>,
-                executingAuthorities: Set<Iri>,
-                publicationMedia: Set<PublicationMediumType>,
-                yourEuropeCategories: Set<YourEuropeCategoryType>,
-                keywords: Set<LanguageString>,
+                targetAudiences: TargetAudienceType[],
+                themes: ThemeType[],
+                competentAuthorityLevels: CompetentAuthorityLevelType[],
+                competentAuthorities: Iri[],
+                executingAuthorityLevels: ExecutingAuthorityLevelType[],
+                executingAuthorities: Iri[],
+                publicationMedia: PublicationMediumType[],
+                yourEuropeCategories: YourEuropeCategoryType[],
+                keywords: LanguageString[],
                 requirements: Requirement[],
                 procedures: Procedure[],
                 websites: Website[],
@@ -80,13 +81,13 @@ export class Concept {
                 financialAdvantages: FinancialAdvantage[],
                 productId: string,
                 latestConceptSnapshot: Iri,
-                previousConceptSnapshots: Set<Iri>,
+                previousConceptSnapshots: Iri[],
                 latestFunctionallyChangedConceptSnapshot: Iri,
-                conceptTags: Set<ConceptTagType>,
+                conceptTags: ConceptTagType[],
                 isArchived: boolean,
-                legalResources: Set<Iri>,
+                legalResources: Iri[],
     ) {
-        //TODO LPDC-916: enforce invariants ? + do safe copies ?
+        //TODO LPDC-916: enforce invariants ? + do safe copies ? + list have only unique values
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         requiredValue(title, 'title');
@@ -101,15 +102,15 @@ export class Concept {
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
-        this._targetAudiences = asSortedSet(targetAudiences);
-        this._themes = asSortedSet(themes);
-        this._competentAuthorityLevels = asSortedSet(competentAuthorityLevels);
-        this._competentAuthorities = asSortedSet(competentAuthorities);
-        this._executingAuthorityLevels = asSortedSet(executingAuthorityLevels);
-        this._executingAuthorities = asSortedSet(executingAuthorities);
-        this._publicationMedia = asSortedSet(publicationMedia);
-        this._yourEuropeCategories = asSortedSet(yourEuropeCategories);
-        this._keywords = asSortedSet(keywords, LanguageString.compare);
+        this._targetAudiences = asSortedArray(targetAudiences);
+        this._themes = asSortedArray(themes);
+        this._competentAuthorityLevels = asSortedArray(competentAuthorityLevels);
+        this._competentAuthorities = asSortedArray(competentAuthorities);
+        this._executingAuthorityLevels = asSortedArray(executingAuthorityLevels);
+        this._executingAuthorities = asSortedArray(executingAuthorities);
+        this._publicationMedia = asSortedArray(publicationMedia);
+        this._yourEuropeCategories = asSortedArray(yourEuropeCategories);
+        this._keywords = asSortedArray(keywords, LanguageString.compare);
         this._requirements = [...requirements].map(Requirement.forConcept);
         this._procedures = [...procedures].map(Procedure.forConcept);
         this._websites = [...websites].map(Website.forConcept);
@@ -117,20 +118,20 @@ export class Concept {
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConcept);
         this._productId = requiredValue(productId, 'productId');
         this._latestConceptSnapshot = latestConceptSnapshot;
-        this._previousConceptSnapshots = asSortedSet(previousConceptSnapshots);
+        this._previousConceptSnapshots = asSortedArray(previousConceptSnapshots);
         this._latestFunctionallyChangedConceptSnapshot = latestFunctionallyChangedConceptSnapshot;
-        this._conceptTags = asSortedSet(conceptTags);
+        this._conceptTags = asSortedArray(conceptTags);
         this._isArchived = requiredValue(isArchived, 'isArchived');
-        this._legalResources = asSortedSet(legalResources);
+        this._legalResources = asSortedArray(legalResources);
     }
 
-    get conceptLanguages(): Set<Language> {
+    get conceptLanguages(): Language[] {
         return this._title.definedLanguages;
         //TODO LPDC-916 validate title has 3 languageVersions
     }
 
-    get appliedSnapshots(): Set<Iri> {
-        return new Set([this._latestConceptSnapshot, ...this._previousConceptSnapshots]);
+    get appliedSnapshots(): Iri[] {
+        return uniqBy([this._latestConceptSnapshot, ...this._previousConceptSnapshots], (iri) => iri.value);
     }
 
     get id(): Iri {
@@ -173,39 +174,39 @@ export class Concept {
         return this._type;
     }
 
-    get targetAudiences(): Set<TargetAudienceType> {
+    get targetAudiences(): TargetAudienceType[] {
         return this._targetAudiences;
     }
 
-    get themes(): Set<ThemeType> {
+    get themes(): ThemeType[] {
         return this._themes;
     }
 
-    get competentAuthorityLevels(): Set<CompetentAuthorityLevelType> {
+    get competentAuthorityLevels(): CompetentAuthorityLevelType[] {
         return this._competentAuthorityLevels;
     }
 
-    get competentAuthorities(): Set<Iri> {
+    get competentAuthorities(): Iri[] {
         return this._competentAuthorities;
     }
 
-    get executingAuthorityLevels(): Set<ExecutingAuthorityLevelType> {
+    get executingAuthorityLevels(): ExecutingAuthorityLevelType[] {
         return this._executingAuthorityLevels;
     }
 
-    get executingAuthorities(): Set<Iri> {
+    get executingAuthorities(): Iri[] {
         return this._executingAuthorities;
     }
 
-    get publicationMedia(): Set<PublicationMediumType> {
+    get publicationMedia(): PublicationMediumType[] {
         return this._publicationMedia;
     }
 
-    get yourEuropeCategories(): Set<YourEuropeCategoryType> {
+    get yourEuropeCategories(): YourEuropeCategoryType[] {
         return this._yourEuropeCategories;
     }
 
-    get keywords(): Set<LanguageString> {
+    get keywords(): LanguageString[] {
         return this._keywords;
     }
 
@@ -237,7 +238,7 @@ export class Concept {
         return this._latestConceptSnapshot;
     }
 
-    get previousConceptSnapshots(): Set<Iri> {
+    get previousConceptSnapshots(): Iri[] {
         return this._previousConceptSnapshots;
     }
 
@@ -245,7 +246,7 @@ export class Concept {
         return this._latestFunctionallyChangedConceptSnapshot;
     }
 
-    get conceptTags(): Set<ConceptTagType> {
+    get conceptTags(): ConceptTagType[] {
         return this._conceptTags;
     }
 
@@ -253,7 +254,7 @@ export class Concept {
         return this._isArchived;
     }
 
-    get legalResources(): Set<Iri> {
+    get legalResources(): Iri[] {
         return this._legalResources;
     }
 

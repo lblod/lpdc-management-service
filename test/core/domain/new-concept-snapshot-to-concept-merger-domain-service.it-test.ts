@@ -228,7 +228,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 ]));
             expect(createdConcept.productId).toEqual(conceptSnapshot.productId);
             expect(createdConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(createdConcept.previousConceptSnapshots).toEqual(new Set());
+            expect(createdConcept.previousConceptSnapshots).toEqual([]);
             expect(createdConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
             expect(createdConcept.conceptTags).toEqual(conceptSnapshot.conceptTags);
             expect(createdConcept.isArchived).toBeFalsy();
@@ -258,15 +258,15 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.startDate).toBeUndefined();
             expect(createdConcept.endDate).toBeUndefined();
             expect(createdConcept.type).toBeUndefined();
-            expect(createdConcept.targetAudiences).toEqual(new Set());
-            expect(createdConcept.themes).toEqual(new Set());
-            expect(createdConcept.competentAuthorityLevels).toEqual(new Set());
-            expect(createdConcept.competentAuthorities).toEqual(new Set());
-            expect(createdConcept.executingAuthorityLevels).toEqual(new Set());
-            expect(createdConcept.executingAuthorities).toEqual(new Set());
-            expect(createdConcept.publicationMedia).toEqual(new Set());
-            expect(createdConcept.yourEuropeCategories).toEqual(new Set());
-            expect(createdConcept.keywords).toEqual(new Set());
+            expect(createdConcept.targetAudiences).toEqual([]);
+            expect(createdConcept.themes).toEqual([]);
+            expect(createdConcept.competentAuthorityLevels).toEqual([]);
+            expect(createdConcept.competentAuthorities).toEqual([]);
+            expect(createdConcept.executingAuthorityLevels).toEqual([]);
+            expect(createdConcept.executingAuthorities).toEqual([]);
+            expect(createdConcept.publicationMedia).toEqual([]);
+            expect(createdConcept.yourEuropeCategories).toEqual([]);
+            expect(createdConcept.keywords).toEqual([]);
             expect(createdConcept.requirements).toEqual([]);
             expect(createdConcept.procedures).toEqual([]);
             expect(createdConcept.websites).toEqual([]);
@@ -274,11 +274,11 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.financialAdvantages).toEqual([]);
             expect(createdConcept.productId).toEqual(conceptSnapshot.productId);
             expect(createdConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(createdConcept.previousConceptSnapshots).toEqual(new Set());
+            expect(createdConcept.previousConceptSnapshots).toEqual([]);
             expect(createdConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(createdConcept.conceptTags).toEqual(new Set());
+            expect(createdConcept.conceptTags).toEqual([]);
             expect(createdConcept.isArchived).toBeFalsy();
-            expect(createdConcept.legalResources).toEqual(new Set());
+            expect(createdConcept.legalResources).toEqual([]);
         }, 10000);
 
         test('Creates a new concept from a concept snapshot that is archived', async () => {
@@ -312,18 +312,18 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withStartDate(FormatPreservingDate.of('2019-07-13T00:00:00'))
                     .withEndDate(FormatPreservingDate.of('2023-12-03T00:00:00'))
                     .withType(ProductType.ADVIESBEGELEIDING)
-                    .withTargetAudiences(new Set([TargetAudienceType.BURGER, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.ORGANISATIE]))
-                    .withThemes(new Set([ThemeType.CULTUURSPORTVRIJETIJD, ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]))
-                    .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.EUROPEES]))
-                    .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]))
-                    .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN]))
-                    .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI]))
-                    .withPublicationMedia(new Set([PublicationMediumType.YOUREUROPE]))
-                    .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE]))
-                    .withKeywords(new Set([LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')]))
+                    .withTargetAudiences([TargetAudienceType.BURGER, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.ORGANISATIE])
+                    .withThemes([ThemeType.CULTUURSPORTVRIJETIJD, ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID])
+                    .withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.EUROPEES])
+                    .withCompetentAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI])
+                    .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN])
+                    .withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI])
+                    .withPublicationMedia([PublicationMediumType.YOUREUROPE])
+                    .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE])
+                    .withKeywords([LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')])
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
-                    .withConceptTags(new Set([ConceptTagType.YOUREUROPEVERPLICHT]))
-                    .withLegalResources(new Set([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())]))
+                    .withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT])
+                    .withLegalResources([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())])
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -342,15 +342,15 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withStartDate(FormatPreservingDate.of('2024-01-06T00:00:00'))
                     .withEndDate(FormatPreservingDate.of('2025-04-17T00:00:00'))
                     .withType(ProductType.FINANCIEELVOORDEEL)
-                    .withTargetAudiences(new Set([TargetAudienceType.ONDERNEMING, TargetAudienceType.VERENIGING]))
-                    .withThemes(new Set([ThemeType.BOUWENWONEN, ThemeType.ONDERWIJSWETENSCHAP, ThemeType.MILIEUENERGIE]))
-                    .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.FEDERAAL, CompetentAuthorityLevelType.VLAAMS]))
-                    .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
-                    .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.VLAAMS, ExecutingAuthorityLevelType.FEDERAAL, ExecutingAuthorityLevelType.EUROPEES]))
-                    .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
-                    .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
-                    .withYourEuropeCategories(new Set([YourEuropeCategoryType.CONSUMENTENRECHTEN, YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFKENNISGEVING, YourEuropeCategoryType.BURGERENFAMILIERECHTEN]))
-                    .withKeywords(new Set([LanguageString.of('groenvoorziening'), LanguageString.of(undefined, 'green'), LanguageString.of(undefined, 'huis en tuin verwerking')]))
+                    .withTargetAudiences([TargetAudienceType.ONDERNEMING, TargetAudienceType.VERENIGING])
+                    .withThemes([ThemeType.BOUWENWONEN, ThemeType.ONDERWIJSWETENSCHAP, ThemeType.MILIEUENERGIE])
+                    .withCompetentAuthorityLevels([CompetentAuthorityLevelType.FEDERAAL, CompetentAuthorityLevelType.VLAAMS])
+                    .withCompetentAuthorities([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI])
+                    .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.VLAAMS, ExecutingAuthorityLevelType.FEDERAAL, ExecutingAuthorityLevelType.EUROPEES])
+                    .withExecutingAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
+                    .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
+                    .withYourEuropeCategories([YourEuropeCategoryType.CONSUMENTENRECHTEN, YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFKENNISGEVING, YourEuropeCategoryType.BURGERENFAMILIERECHTEN])
+                    .withKeywords([LanguageString.of('groenvoorziening'), LanguageString.of(undefined, 'green'), LanguageString.of(undefined, 'huis en tuin verwerking')])
                     .withRequirements([
                         anotherFullRequirement()
                             .withTitle(suffixUnique(conceptSnapshot.requirements[1].title))
@@ -404,8 +404,8 @@ describe('merges a new concept snapshot into a concept', () => {
                         ])
                     .withProductId(conceptSnapshot.productId + uuid())
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
-                    .withConceptTags(new Set([ConceptTagType.YOUREUROPEAANBEVOLEN]))
-                    .withLegalResources(new Set([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())]))
+                    .withConceptTags([ConceptTagType.YOUREUROPEAANBEVOLEN])
+                    .withLegalResources([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())])
                     .build();
 
             insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
@@ -569,7 +569,7 @@ describe('merges a new concept snapshot into a concept', () => {
 
             expect(updatedConcept.productId).toEqual(updatedConceptSnapshot.productId);
             expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
-            expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id].sort());
+            expect(updatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id].sort());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
             expect(updatedConcept.conceptTags).toEqual(updatedConceptSnapshot.conceptTags);
             expect(updatedConcept.legalResources).toEqual(updatedConceptSnapshot.legalResources);
@@ -617,15 +617,15 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.startDate).toBeUndefined();
             expect(updatedConcept.endDate).toBeUndefined();
             expect(updatedConcept.type).toBeUndefined();
-            expect(updatedConcept.targetAudiences).toEqual(new Set());
-            expect(updatedConcept.themes).toEqual(new Set());
-            expect(updatedConcept.competentAuthorityLevels).toEqual(new Set());
-            expect(updatedConcept.competentAuthorities).toEqual(new Set());
-            expect(updatedConcept.executingAuthorityLevels).toEqual(new Set());
-            expect(updatedConcept.executingAuthorities).toEqual(new Set());
-            expect(updatedConcept.publicationMedia).toEqual(new Set());
-            expect(updatedConcept.yourEuropeCategories).toEqual(new Set());
-            expect(updatedConcept.keywords).toEqual(new Set());
+            expect(updatedConcept.targetAudiences).toEqual([]);
+            expect(updatedConcept.themes).toEqual([]);
+            expect(updatedConcept.competentAuthorityLevels).toEqual([]);
+            expect(updatedConcept.competentAuthorities).toEqual([]);
+            expect(updatedConcept.executingAuthorityLevels).toEqual([]);
+            expect(updatedConcept.executingAuthorities).toEqual([]);
+            expect(updatedConcept.publicationMedia).toEqual([]);
+            expect(updatedConcept.yourEuropeCategories).toEqual([]);
+            expect(updatedConcept.keywords).toEqual([]);
             expect(updatedConcept.requirements).toEqual([]);
             expect(updatedConcept.procedures).toEqual([]);
             expect(updatedConcept.websites).toEqual([]);
@@ -633,11 +633,11 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.financialAdvantages).toEqual([]);
             expect(updatedConcept.productId).toEqual(conceptSnapshot.productId);
             expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
-            expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id].sort());
+            expect(updatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id].sort());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
-            expect(updatedConcept.conceptTags).toEqual(new Set());
+            expect(updatedConcept.conceptTags).toEqual([]);
             expect(updatedConcept.isArchived).toBeFalsy();
-            expect(updatedConcept.legalResources).toEqual(new Set());
+            expect(updatedConcept.legalResources).toEqual([]);
         }, 20000);
 
         test('Does not update a latestFunctionallyChangedConceptSnapshot link when new version is not functionally changed', async () => {
@@ -667,7 +667,7 @@ describe('merges a new concept snapshot into a concept', () => {
 
             const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
-            expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id].sort());
+            expect(updatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id].sort());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         }, 10000);
 
@@ -688,7 +688,7 @@ describe('merges a new concept snapshot into a concept', () => {
 
             const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(updatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(updatedConcept.previousConceptSnapshots).toEqual(new Set());
+            expect(updatedConcept.previousConceptSnapshots).toEqual([]);
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         }, 10000);
 
@@ -729,7 +729,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const notUpdatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(notUpdatedConcept.title).toEqual(conceptSnapshot.title);
             expect(notUpdatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(Array.from(notUpdatedConcept.previousConceptSnapshots).sort()).toEqual([updatedConceptSnapshot.id].sort());
+            expect(notUpdatedConcept.previousConceptSnapshots.sort()).toEqual([updatedConceptSnapshot.id].sort());
             expect(notUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
 
             const anotherOldUpdatedConceptSnapshot =
@@ -748,7 +748,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const againNotUpdatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(againNotUpdatedConcept.title).toEqual(conceptSnapshot.title);
             expect(againNotUpdatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(Array.from(againNotUpdatedConcept.previousConceptSnapshots).sort()).toEqual([anotherOldUpdatedConceptSnapshot.id, updatedConceptSnapshot.id].sort());
+            expect(againNotUpdatedConcept.previousConceptSnapshots.sort()).toEqual([anotherOldUpdatedConceptSnapshot.id, updatedConceptSnapshot.id].sort());
             expect(againNotUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         }, 10000);
 
@@ -813,7 +813,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.uuid).toMatch(uuidRegex);
             expect(updatedConcept.title).toEqual(updatedConceptSnapshot.title);
             expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
-            expect(Array.from(updatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id].sort());
+            expect(updatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id].sort());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
 
             const secondTimeUpdatedConceptSnapshot =
@@ -834,7 +834,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(secondTimeUpdatedConcept.uuid).toMatch(uuidRegex);
             expect(secondTimeUpdatedConcept.title).toEqual(secondTimeUpdatedConceptSnapshot.title);
             expect(secondTimeUpdatedConcept.latestConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
-            expect(Array.from(secondTimeUpdatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id].sort());
+            expect(secondTimeUpdatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id].sort());
             expect(secondTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
 
             const thirdTimeButOlderUpdatedConceptSnapshot =
@@ -855,7 +855,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(notUpdatedForThirdTimeUpdatedConcept.uuid).toMatch(uuidRegex);
             expect(notUpdatedForThirdTimeUpdatedConcept.title).toEqual(secondTimeUpdatedConceptSnapshot.title);
             expect(notUpdatedForThirdTimeUpdatedConcept.latestConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
-            expect(Array.from(notUpdatedForThirdTimeUpdatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, thirdTimeButOlderUpdatedConceptSnapshot.id].sort());
+            expect(notUpdatedForThirdTimeUpdatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, thirdTimeButOlderUpdatedConceptSnapshot.id].sort());
             expect(notUpdatedForThirdTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
 
             const fourthTimeUpdatedConceptSnapshot =
@@ -876,7 +876,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(fourthTimeUpdatedConcept.uuid).toMatch(uuidRegex);
             expect(fourthTimeUpdatedConcept.title).toEqual(fourthTimeUpdatedConceptSnapshot.title);
             expect(fourthTimeUpdatedConcept.latestConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
-            expect(Array.from(fourthTimeUpdatedConcept.previousConceptSnapshots).sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, secondTimeUpdatedConceptSnapshot.id, thirdTimeButOlderUpdatedConceptSnapshot.id].sort());
+            expect(fourthTimeUpdatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, secondTimeUpdatedConceptSnapshot.id, thirdTimeButOlderUpdatedConceptSnapshot.id].sort());
             expect(fourthTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
 
         }, 20000);
@@ -961,8 +961,8 @@ describe('merges a new concept snapshot into a concept', () => {
         const conceptSnapshot =
             aMinimalConceptSnapshot()
                 .withIsVersionOfConcept(isVersionOfConceptId)
-                .withCompetentAuthorities(new Set([competentAuthorityWithoutCodeList]))
-                .withExecutingAuthorities(new Set([executingAuthorityWithoutCodeList]))
+                .withCompetentAuthorities([competentAuthorityWithoutCodeList])
+                .withExecutingAuthorities([executingAuthorityWithoutCodeList])
                 .build();
         await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -1232,37 +1232,37 @@ describe('merges a new concept snapshot into a concept', () => {
         const triples = [
             conceptSnapshot.type ? `<${NS.dvc.type(conceptSnapshot.type).value}> skos:inScheme <${NS.dvcs('Type').value}>` : undefined,
             conceptSnapshot.type ? `<${NS.dvc.type(conceptSnapshot.type).value}> a skos:Concept` : undefined,
-            ...Array.from(conceptSnapshot.targetAudiences)
+            ...conceptSnapshot.targetAudiences
                 .flatMap(v => [
                     `<${NS.dvc.doelgroep(v).value}> skos:inScheme <${NS.dvcs('Doelgroep').value}>`,
                     `<${NS.dvc.doelgroep(v).value}> a skos:Concept`]),
-            ...Array.from(conceptSnapshot.themes)
+            ...conceptSnapshot.themes
                 .flatMap(v => [
                     `<${NS.dvc.thema(v).value}> skos:inScheme <${NS.dvcs('Thema').value}>`,
                     `<${NS.dvc.thema(v).value}> a skos:Concept`]),
-            ...Array.from(conceptSnapshot.competentAuthorityLevels)
+            ...conceptSnapshot.competentAuthorityLevels
                 .flatMap(v => [
                     `<${NS.dvc.bevoegdBestuursniveau(v).value}> skos:inScheme <${NS.dvcs('BevoegdBestuursniveau').value}>`,
                     `<${NS.dvc.bevoegdBestuursniveau(v).value}> a skos:Concept`,
                 ]),
-            ...Array.from([...conceptSnapshot.competentAuthorities, ...conceptSnapshot.executingAuthorities])
+            ...[...conceptSnapshot.competentAuthorities, ...conceptSnapshot.executingAuthorities]
                 .flatMap(v => [
                     `<${v}> skos:inScheme <${NS.dvcs('IPDCOrganisaties').value}>`,
                     `<${v}> a besluit:Bestuurseenheid`,
                     `<${v}> a skos:Concept`]),
-            ...Array.from(conceptSnapshot.executingAuthorityLevels)
+            ...conceptSnapshot.executingAuthorityLevels
                 .flatMap(v =>
                     [`<${NS.dvc.uitvoerendBestuursniveau(v).value}> skos:inScheme <${NS.dvcs('UitvoerendBestuursniveau').value}>`,
                         `<${NS.dvc.uitvoerendBestuursniveau(v).value}> a skos:Concept`]),
-            ...Array.from(conceptSnapshot.publicationMedia)
+            ...conceptSnapshot.publicationMedia
                 .flatMap(v => [
                     `<${NS.dvc.publicatieKanaal(v).value}> skos:inScheme <${NS.dvcs('PublicatieKanaal').value}>`,
                     `<${NS.dvc.publicatieKanaal(v).value}> a skos:Concept`]),
-            ...Array.from(conceptSnapshot.yourEuropeCategories)
+            ...conceptSnapshot.yourEuropeCategories
                 .flatMap(v => [
                     `<${NS.dvc.yourEuropeCategorie(v).value}> skos:inScheme <${NS.dvcs('YourEuropeCategorie').value}>`,
                     `<${NS.dvc.yourEuropeCategorie(v).value}> a skos:Concept`]),
-            ...Array.from(conceptSnapshot.conceptTags)
+            ...conceptSnapshot.conceptTags
                 .flatMap(v => [
                     `<${NS.dvc.conceptTag(v).value}> skos:inScheme <${NS.dvcs('ConceptTag').value}>`,
                     `<${NS.dvc.conceptTag(v).value}> a skos:Concept`]),

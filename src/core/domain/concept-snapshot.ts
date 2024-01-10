@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from 'lodash';
 import {Requirement} from "./requirement";
-import {asSortedSet} from "./shared/collections-helper";
+import {asSortedArray} from "./shared/collections-helper";
 import {Procedure} from "./procedure";
 import {Website} from "./website";
 import {Cost} from "./cost";
@@ -32,15 +32,15 @@ export class ConceptSnapshot {
     private readonly _startDate: FormatPreservingDate | undefined;
     private readonly _endDate: FormatPreservingDate | undefined;
     private readonly _type: ProductType | undefined;
-    private readonly _targetAudiences: Set<TargetAudienceType>;
-    private readonly _themes: Set<ThemeType>;
-    private readonly _competentAuthorityLevels: Set<CompetentAuthorityLevelType>;
-    private readonly _competentAuthorities: Set<Iri>;
-    private readonly _executingAuthorityLevels: Set<ExecutingAuthorityLevelType>;
-    private readonly _executingAuthorities: Set<Iri>;
-    private readonly _publicationMedia: Set<PublicationMediumType>;
-    private readonly _yourEuropeCategories: Set<YourEuropeCategoryType>;
-    private readonly _keywords: Set<LanguageString>;
+    private readonly _targetAudiences: TargetAudienceType[];
+    private readonly _themes: ThemeType[];
+    private readonly _competentAuthorityLevels: CompetentAuthorityLevelType[];
+    private readonly _competentAuthorities: Iri[];
+    private readonly _executingAuthorityLevels: ExecutingAuthorityLevelType[];
+    private readonly _executingAuthorities: Iri[];
+    private readonly _publicationMedia: PublicationMediumType[];
+    private readonly _yourEuropeCategories: YourEuropeCategoryType[];
+    private readonly _keywords: LanguageString[];
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
     private readonly _websites: Website[];
@@ -52,8 +52,8 @@ export class ConceptSnapshot {
     private readonly _generatedAtTime: FormatPreservingDate | undefined;
     private readonly _productId: string;
     private readonly _snapshotType: SnapshotType | undefined;
-    private readonly _conceptTags: Set<ConceptTagType>;
-    private readonly _legalResources: Set<Iri>;
+    private readonly _conceptTags: ConceptTagType[];
+    private readonly _legalResources: Iri[];
 
     constructor(id: Iri,
                 title: LanguageString,
@@ -64,15 +64,15 @@ export class ConceptSnapshot {
                 startDate: FormatPreservingDate | undefined,
                 endDate: FormatPreservingDate | undefined,
                 type: ProductType | undefined,
-                targetAudiences: Set<TargetAudienceType>,
-                themes: Set<ThemeType>,
-                competentAuthorityLevels: Set<CompetentAuthorityLevelType>,
-                competentAuthorities: Set<Iri>,
-                executingAuthorityLevels: Set<ExecutingAuthorityLevelType>,
-                executingAuthorities: Set<Iri>,
-                publicationMedia: Set<PublicationMediumType>,
-                yourEuropeCategories: Set<YourEuropeCategoryType>,
-                keywords: Set<LanguageString>,
+                targetAudiences: TargetAudienceType[],
+                themes: ThemeType[],
+                competentAuthorityLevels: CompetentAuthorityLevelType[],
+                competentAuthorities: Iri[],
+                executingAuthorityLevels: ExecutingAuthorityLevelType[],
+                executingAuthorities: Iri[],
+                publicationMedia: PublicationMediumType[],
+                yourEuropeCategories: YourEuropeCategoryType[],
+                keywords: LanguageString[],
                 requirements: Requirement[],
                 procedures: Procedure[],
                 websites: Website[],
@@ -84,8 +84,8 @@ export class ConceptSnapshot {
                 generatedAtTime: FormatPreservingDate | undefined,
                 productId: string,
                 snapshotType: SnapshotType | undefined,
-                conceptTags: Set<ConceptTagType>,
-                legalResources: Set<Iri>,
+                conceptTags: ConceptTagType[],
+                legalResources: Iri[],
     ) {
         //TODO LPDC-917: enforce invariants ? + do safe copies ?
         this._id = requiredValue(id, 'id');
@@ -101,15 +101,15 @@ export class ConceptSnapshot {
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
-        this._targetAudiences = asSortedSet(targetAudiences);
-        this._themes = asSortedSet(themes);
-        this._competentAuthorityLevels = asSortedSet(competentAuthorityLevels);
-        this._competentAuthorities = asSortedSet(competentAuthorities);
-        this._executingAuthorityLevels = asSortedSet(executingAuthorityLevels);
-        this._executingAuthorities = asSortedSet(executingAuthorities);
-        this._publicationMedia = asSortedSet(publicationMedia);
-        this._yourEuropeCategories = asSortedSet(yourEuropeCategories);
-        this._keywords = asSortedSet(keywords, LanguageString.compare);
+        this._targetAudiences = asSortedArray(targetAudiences);
+        this._themes = asSortedArray(themes);
+        this._competentAuthorityLevels = asSortedArray(competentAuthorityLevels);
+        this._competentAuthorities = asSortedArray(competentAuthorities);
+        this._executingAuthorityLevels = asSortedArray(executingAuthorityLevels);
+        this._executingAuthorities = asSortedArray(executingAuthorities);
+        this._publicationMedia = asSortedArray(publicationMedia);
+        this._yourEuropeCategories = asSortedArray(yourEuropeCategories);
+        this._keywords = asSortedArray(keywords, LanguageString.compare);
         this._requirements = [...requirements].map(Requirement.forConceptSnapshot);
         this._procedures = [...procedures].map(Procedure.forConceptSnapshot);
         this._websites = [...websites].map(Website.forConceptSnapshot);
@@ -121,8 +121,8 @@ export class ConceptSnapshot {
         this._generatedAtTime = generatedAtTime;
         this._productId = requiredValue(productId, 'productId');
         this._snapshotType = snapshotType;
-        this._conceptTags = asSortedSet(conceptTags);
-        this._legalResources = asSortedSet(legalResources);
+        this._conceptTags = asSortedArray(conceptTags);
+        this._legalResources = asSortedArray(legalResources);
     }
 
     get id(): Iri {
@@ -161,39 +161,39 @@ export class ConceptSnapshot {
         return this._type;
     }
 
-    get targetAudiences(): Set<TargetAudienceType> {
+    get targetAudiences(): TargetAudienceType[] {
         return this._targetAudiences;
     }
 
-    get themes(): Set<ThemeType> {
+    get themes(): ThemeType[] {
         return this._themes;
     }
 
-    get competentAuthorityLevels(): Set<CompetentAuthorityLevelType> {
+    get competentAuthorityLevels(): CompetentAuthorityLevelType[] {
         return this._competentAuthorityLevels;
     }
 
-    get competentAuthorities(): Set<Iri> {
+    get competentAuthorities(): Iri[] {
         return this._competentAuthorities;
     }
 
-    get executingAuthorityLevels(): Set<ExecutingAuthorityLevelType> {
+    get executingAuthorityLevels(): ExecutingAuthorityLevelType[] {
         return this._executingAuthorityLevels;
     }
 
-    get executingAuthorities(): Set<Iri> {
+    get executingAuthorities(): Iri[] {
         return this._executingAuthorities;
     }
 
-    get publicationMedia(): Set<PublicationMediumType> {
+    get publicationMedia(): PublicationMediumType[] {
         return this._publicationMedia;
     }
 
-    get yourEuropeCategories(): Set<YourEuropeCategoryType> {
+    get yourEuropeCategories(): YourEuropeCategoryType[] {
         return this._yourEuropeCategories;
     }
 
-    get keywords(): Set<LanguageString> {
+    get keywords(): LanguageString[] {
         return this._keywords;
     }
 
@@ -245,11 +245,11 @@ export class ConceptSnapshot {
         return this._snapshotType;
     }
 
-    get conceptTags(): Set<ConceptTagType> {
+    get conceptTags(): ConceptTagType[] {
         return this._conceptTags;
     }
 
-    get legalResources(): Set<Iri> {
+    get legalResources(): Iri[] {
         return this._legalResources;
     }
 

@@ -6,10 +6,9 @@ import {Iri} from "../src/core/domain/shared/iri";
 export async function getLanguageVersionOfConcept(conceptUUID: string, conceptRepository: ConceptSparqlRepository): Promise<string> {
     const conceptUri = await serviceUriForId(conceptUUID, 'lpdcExt:ConceptualPublicService');
     const concept = await conceptRepository.findById(new Iri(conceptUri));
-    const conceptLanguages = Array.from(concept.conceptLanguages);
 
     const formalInformalChoice = await loadFormalInformalChoice();
     const chosenForm = getChosenForm(formalInformalChoice);
 
-    return selectLanguageVersionForConcept(conceptLanguages, chosenForm);
+    return selectLanguageVersionForConcept(concept.conceptLanguages, chosenForm);
 }

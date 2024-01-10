@@ -153,21 +153,21 @@ export class ConceptSnapshotTestBuilder {
 
     public static readonly TYPE = ProductType.FINANCIEELVOORDEEL;
 
-    public static readonly TARGET_AUDIENCES = new Set([TargetAudienceType.BURGER, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.ORGANISATIE]);
+    public static readonly TARGET_AUDIENCES = [TargetAudienceType.BURGER, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.ORGANISATIE];
 
-    public static readonly THEMES = new Set([ThemeType.CULTUURSPORTVRIJETIJD, ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]);
+    public static readonly THEMES = [ThemeType.CULTUURSPORTVRIJETIJD, ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID];
 
-    public static readonly COMPETENT_AUTHORITY_LEVELS = new Set([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.EUROPEES]);
-    public static readonly COMPETENT_AUTHORITIES = new Set([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]);
+    public static readonly COMPETENT_AUTHORITY_LEVELS = [CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.EUROPEES];
+    public static readonly COMPETENT_AUTHORITIES = [BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI];
 
-    public static readonly EXECUTING_AUTHORITY_LEVELS = new Set([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN]);
-    public static readonly EXECUTING_AUTHORITIES = new Set([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI]);
+    public static readonly EXECUTING_AUTHORITY_LEVELS = [ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN];
+    public static readonly EXECUTING_AUTHORITIES = [BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI];
 
-    public static readonly PUBLICATION_MEDIA = new Set([PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER]);
+    public static readonly PUBLICATION_MEDIA = [PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER];
 
-    public static readonly YOUR_EUROPE_CATEGORIES = new Set([YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE]);
+    public static readonly YOUR_EUROPE_CATEGORIES = [YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE];
 
-    public static readonly KEYWORDS = new Set([LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')]);
+    public static readonly KEYWORDS = [LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')];
 
     public static readonly REQUIREMENTS = [aFullRequirement().build(), anotherFullRequirement().build()];
 
@@ -189,9 +189,9 @@ export class ConceptSnapshotTestBuilder {
 
     public static readonly SNAPSHOT_TYPE = SnapshotType.UPDATE;
 
-    public static readonly CONCEPT_TAGS = new Set([ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT]);
+    public static readonly CONCEPT_TAGS = [ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT];
 
-    public static readonly LEGAL_RESOURCES = new Set([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())]);
+    public static readonly LEGAL_RESOURCES = [buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())];
 
     private id: Iri;
     private title: LanguageString | undefined;
@@ -202,15 +202,15 @@ export class ConceptSnapshotTestBuilder {
     private startDate: FormatPreservingDate | undefined;
     private endDate: FormatPreservingDate | undefined;
     private type: ProductType | undefined;
-    private targetAudiences: Set<TargetAudienceType> = new Set();
-    private themes: Set<ThemeType> = new Set();
-    private competentAuthorityLevels: Set<CompetentAuthorityLevelType> = new Set();
-    private competentAuthorities: Set<Iri> = new Set();
-    private executingAuthorityLevels: Set<ExecutingAuthorityLevelType> = new Set();
-    private executingAuthorities: Set<Iri> = new Set();
-    private publicationMedia: Set<PublicationMediumType> = new Set();
-    private yourEuropeCategories: Set<YourEuropeCategoryType> = new Set();
-    private keywords: Set<LanguageString> = new Set();
+    private targetAudiences: TargetAudienceType[] = [];
+    private themes: ThemeType[] = [];
+    private competentAuthorityLevels: CompetentAuthorityLevelType[] = [];
+    private competentAuthorities: Iri[] = [];
+    private executingAuthorityLevels: ExecutingAuthorityLevelType[] = [];
+    private executingAuthorities: Iri[] = [];
+    private publicationMedia: PublicationMediumType[] = [];
+    private yourEuropeCategories: YourEuropeCategoryType[] = [];
+    private keywords: LanguageString[] = [];
     private requirements: Requirement[] = [];
     private procedures: Procedure[] = [];
     private websites: Website[] = [];
@@ -222,8 +222,8 @@ export class ConceptSnapshotTestBuilder {
     private generatedAtTime: FormatPreservingDate | undefined;
     private productId: string | undefined;
     private snapshotType: SnapshotType | undefined;
-    private conceptTags: Set<ConceptTagType> = new Set();
-    private legalResources: Set<Iri> = new Set();
+    private conceptTags: ConceptTagType[] = [];
+    private legalResources: Iri[] = [];
 
     public withId(id: Iri): ConceptSnapshotTestBuilder {
         this.id = id;
@@ -270,47 +270,47 @@ export class ConceptSnapshotTestBuilder {
         return this;
     }
 
-    public withTargetAudiences(targetAudiences: Set<TargetAudienceType>): ConceptSnapshotTestBuilder {
+    public withTargetAudiences(targetAudiences: TargetAudienceType[]): ConceptSnapshotTestBuilder {
         this.targetAudiences = targetAudiences;
         return this;
     }
 
-    public withThemes(themes: Set<ThemeType>): ConceptSnapshotTestBuilder {
+    public withThemes(themes: ThemeType[]): ConceptSnapshotTestBuilder {
         this.themes = themes;
         return this;
     }
 
-    public withCompetentAuthorityLevels(competentAuthorityLevels: Set<CompetentAuthorityLevelType>): ConceptSnapshotTestBuilder {
+    public withCompetentAuthorityLevels(competentAuthorityLevels: CompetentAuthorityLevelType[]): ConceptSnapshotTestBuilder {
         this.competentAuthorityLevels = competentAuthorityLevels;
         return this;
     }
 
-    public withCompetentAuthorities(competentAuthorities: Set<Iri>): ConceptSnapshotTestBuilder {
+    public withCompetentAuthorities(competentAuthorities: Iri[]): ConceptSnapshotTestBuilder {
         this.competentAuthorities = competentAuthorities;
         return this;
     }
 
-    public withExecutingAuthorityLevels(executingAuthorityLevels: Set<ExecutingAuthorityLevelType>): ConceptSnapshotTestBuilder {
+    public withExecutingAuthorityLevels(executingAuthorityLevels: ExecutingAuthorityLevelType[]): ConceptSnapshotTestBuilder {
         this.executingAuthorityLevels = executingAuthorityLevels;
         return this;
     }
 
-    public withExecutingAuthorities(executingAuthorities: Set<Iri>): ConceptSnapshotTestBuilder {
+    public withExecutingAuthorities(executingAuthorities: Iri[]): ConceptSnapshotTestBuilder {
         this.executingAuthorities = executingAuthorities;
         return this;
     }
 
-    public withPublicationMedia(publicationMedia: Set<PublicationMediumType>): ConceptSnapshotTestBuilder {
+    public withPublicationMedia(publicationMedia: PublicationMediumType[]): ConceptSnapshotTestBuilder {
         this.publicationMedia = publicationMedia;
         return this;
     }
 
-    public withYourEuropeCategories(yourEuropeCategories: Set<YourEuropeCategoryType>): ConceptSnapshotTestBuilder {
+    public withYourEuropeCategories(yourEuropeCategories: YourEuropeCategoryType[]): ConceptSnapshotTestBuilder {
         this.yourEuropeCategories = yourEuropeCategories;
         return this;
     }
 
-    public withKeywords(keywords: Set<LanguageString>): ConceptSnapshotTestBuilder {
+    public withKeywords(keywords: LanguageString[]): ConceptSnapshotTestBuilder {
         this.keywords = keywords;
         return this;
     }
@@ -370,12 +370,12 @@ export class ConceptSnapshotTestBuilder {
         return this;
     }
 
-    public withConceptTags(conceptTags: Set<ConceptTagType>): ConceptSnapshotTestBuilder {
+    public withConceptTags(conceptTags: ConceptTagType[]): ConceptSnapshotTestBuilder {
         this.conceptTags = conceptTags;
         return this;
     }
 
-    public withLegalResources(legalResources: Set<Iri>): ConceptSnapshotTestBuilder {
+    public withLegalResources(legalResources: Iri[]): ConceptSnapshotTestBuilder {
         this.legalResources = legalResources;
         return this;
     }

@@ -63,32 +63,32 @@ describe('get defined languages', () => {
 
     test('get defined language - en', () => {
         const languageString = LanguageString.of('text-en', undefined);
-        expect(languageString.definedLanguages).toEqual(new Set([Language.EN]));
+        expect(languageString.definedLanguages).toEqual([Language.EN]);
     });
 
     test('defined language - en & nl', () => {
         const languageString = LanguageString.of('text-en', 'nl');
-        expect(languageString.definedLanguages).toEqual(new Set([Language.EN, Language.NL]));
+        expect(languageString.definedLanguages).toEqual([Language.EN, Language.NL]);
     });
 
     test('defined language - formal', () => {
         const languageString = LanguageString.of(undefined, undefined, 'text-formal');
-        expect(languageString.definedLanguages).toEqual(new Set([Language.FORMAL]));
+        expect(languageString.definedLanguages).toEqual([Language.FORMAL]);
     });
 
     test('defined language - informal', () => {
         const languageString = LanguageString.of(undefined, undefined, undefined, 'text-informal');
-        expect(languageString.definedLanguages).toEqual(new Set([Language.INFORMAL]));
+        expect(languageString.definedLanguages).toEqual([Language.INFORMAL]);
     });
 
     test('defined language - generatedFormal', () => {
         const languageString = LanguageString.of(undefined, undefined, undefined, undefined, 'text-generated-formal');
-        expect(languageString.definedLanguages).toEqual(new Set([Language.GENERATED_FORMAL]));
+        expect(languageString.definedLanguages).toEqual([Language.GENERATED_FORMAL]);
     });
 
     test('defined language - generatedInFormal', () => {
         const languageString = LanguageString.of(undefined, undefined, undefined, undefined, undefined, 'text-generated-informal');
-        expect(languageString.definedLanguages).toEqual(new Set([Language.GENERATED_INFORMAL]));
+        expect(languageString.definedLanguages).toEqual([Language.GENERATED_INFORMAL]);
     });
 });
 

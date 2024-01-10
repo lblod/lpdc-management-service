@@ -209,33 +209,33 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://schema.org/startDate> """${ConceptSnapshotTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/endDate> """${ConceptSnapshotTestBuilder.END_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/type> <${NS.dvc.type(ConceptSnapshotTestBuilder.TYPE).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(Array.from(ConceptSnapshotTestBuilder.TARGET_AUDIENCES)[0]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(Array.from(ConceptSnapshotTestBuilder.TARGET_AUDIENCES)[1]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(Array.from(ConceptSnapshotTestBuilder.TARGET_AUDIENCES)[2]).value}>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(Array.from(ConceptSnapshotTestBuilder.THEMES)[0]).value}>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(Array.from(ConceptSnapshotTestBuilder.THEMES)[1]).value}>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(Array.from(ConceptSnapshotTestBuilder.THEMES)[2]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)[0]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)[1]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)[2]).value}>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITIES)[0]}>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITIES)[1]}>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${Array.from(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITIES)[2]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)[0]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)[1]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)[2]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITIES)[0]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITIES)[1]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${Array.from(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITIES)[2]}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(Array.from(ConceptSnapshotTestBuilder.PUBLICATION_MEDIA)[0]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(Array.from(ConceptSnapshotTestBuilder.PUBLICATION_MEDIA)[1]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(Array.from(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)[0]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(Array.from(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)[1]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(Array.from(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)[2]).value}>`,
-                    `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptSnapshotTestBuilder.KEYWORDS)[0].en}"""@en`,
-                    `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptSnapshotTestBuilder.KEYWORDS)[1].nl}"""@nl`,
-                    `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptSnapshotTestBuilder.KEYWORDS)[2].nl}"""@nl`,
-                    `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${Array.from(ConceptSnapshotTestBuilder.KEYWORDS)[3].en}"""@en`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(ConceptSnapshotTestBuilder.TARGET_AUDIENCES[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(ConceptSnapshotTestBuilder.TARGET_AUDIENCES[1]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(ConceptSnapshotTestBuilder.TARGET_AUDIENCES[2]).value}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(ConceptSnapshotTestBuilder.THEMES[0]).value}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(ConceptSnapshotTestBuilder.THEMES[1]).value}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(ConceptSnapshotTestBuilder.THEMES[2]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS[1]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS[2]).value}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${ConceptSnapshotTestBuilder.COMPETENT_AUTHORITIES[0]}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${ConceptSnapshotTestBuilder.COMPETENT_AUTHORITIES[1]}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${ConceptSnapshotTestBuilder.COMPETENT_AUTHORITIES[2]}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS[1]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS[2]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${ConceptSnapshotTestBuilder.EXECUTING_AUTHORITIES[0]}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${ConceptSnapshotTestBuilder.EXECUTING_AUTHORITIES[1]}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${ConceptSnapshotTestBuilder.EXECUTING_AUTHORITIES[2]}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(ConceptSnapshotTestBuilder.PUBLICATION_MEDIA[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(ConceptSnapshotTestBuilder.PUBLICATION_MEDIA[1]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES[1]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES[2]).value}>`,
+                    `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${ConceptSnapshotTestBuilder.KEYWORDS[0].en}"""@en`,
+                    `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${ConceptSnapshotTestBuilder.KEYWORDS[1].nl}"""@nl`,
+                    `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${ConceptSnapshotTestBuilder.KEYWORDS[2].nl}"""@nl`,
+                    `<${conceptSnapshotId}> <http://www.w3.org/ns/dcat#keyword> """${ConceptSnapshotTestBuilder.KEYWORDS[3].en}"""@en`,
                     `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${ConceptSnapshotTestBuilder.REQUIREMENTS[1].id}>`,
                     `<${ConceptSnapshotTestBuilder.REQUIREMENTS[1].id}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${ConceptSnapshotTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.REQUIREMENTS[1].title.en}"""@EN`,
@@ -487,20 +487,20 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://schema.org/identifier> """${id}"""`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${ConceptSnapshotTestBuilder.PRODUCT_ID}"""`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(ConceptSnapshotTestBuilder.SNAPSHOT_TYPE).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(Array.from(ConceptSnapshotTestBuilder.CONCEPT_TAGS)[0]).value}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(Array.from(ConceptSnapshotTestBuilder.CONCEPT_TAGS)[1]).value}>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasLegalResource> <${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[0]}>`,
-                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[0]}> a <http://data.europa.eu/eli/ontology/#LegalResource>`, // the actual data in the database contains an error ...
-                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[0]}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
-                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[0]}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasLegalResource> <${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[1]}>`,
-                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[1]}> a <http://data.europa.eu/eli/ontology/#LegalResource>`,
-                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[1]}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
-                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[1]}> <http://www.w3.org/ns/shacl#order> """3"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
-                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasLegalResource> <${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[2]}>`,
-                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[2]}> a <http://data.europa.eu/eli/ontology/#LegalResource>`,
-                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[2]}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
-                    `<${Array.from(ConceptSnapshotTestBuilder.LEGAL_RESOURCES)[2]}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(ConceptSnapshotTestBuilder.CONCEPT_TAGS[0]).value}>`,
+                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(ConceptSnapshotTestBuilder.CONCEPT_TAGS[1]).value}>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[0]}>`,
+                    `<${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[0]}> a <http://data.europa.eu/eli/ontology/#LegalResource>`, // the actual data in the database contains an error ...
+                    `<${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[0]}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[0]}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[1]}>`,
+                    `<${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[1]}> a <http://data.europa.eu/eli/ontology/#LegalResource>`,
+                    `<${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[1]}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[1]}> <http://www.w3.org/ns/shacl#order> """3"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[2]}>`,
+                    `<${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[2]}> a <http://data.europa.eu/eli/ontology/#LegalResource>`,
+                    `<${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[2]}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[2]}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                 ]);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
@@ -727,7 +727,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const targetAudience of Object.values(TargetAudienceType)) {
             test(`TargetAudienceType ${targetAudience} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConceptSnapshot().withTargetAudiences(new Set([targetAudience])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withTargetAudiences([targetAudience]).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -750,7 +750,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const theme of Object.values(ThemeType)) {
             test(`ThemeType ${theme} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConceptSnapshot().withThemes(new Set([theme])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withThemes([theme]).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -773,7 +773,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
             test(`CompetentAuthorityLevelType ${competentAuthorityLevel} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConceptSnapshot().withCompetentAuthorityLevels(new Set([competentAuthorityLevel])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withCompetentAuthorityLevels([competentAuthorityLevel]).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -796,7 +796,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const executingAuthorityLevel of Object.values(ExecutingAuthorityLevelType)) {
             test(`ExecutingAuthorityLevelType ${executingAuthorityLevel} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConceptSnapshot().withExecutingAuthorityLevels(new Set([executingAuthorityLevel])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withExecutingAuthorityLevels([executingAuthorityLevel]).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -819,7 +819,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const publicationMedium of Object.values(PublicationMediumType)) {
             test(`PublicationMediumType ${publicationMedium} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConceptSnapshot().withPublicationMedia(new Set([publicationMedium])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withPublicationMedia([publicationMedium]).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -842,7 +842,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
             test(`YourEuropeCategoryType ${yourEuropeCategory} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConceptSnapshot().withYourEuropeCategories(new Set([yourEuropeCategory])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withYourEuropeCategories([yourEuropeCategory]).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
@@ -888,7 +888,7 @@ describe('ConceptSnapshotRepository', () => {
 
         for (const type of Object.values(ConceptTagType)) {
             test(`Concept Tag type ${type} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConceptSnapshot().withConceptTags(new Set([type])).build();
+                const conceptSnapshot = aMinimalConceptSnapshot().withConceptTags([type]).build();
                 await repository.save(conceptSnapshot);
 
                 const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);

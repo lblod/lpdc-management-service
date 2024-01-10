@@ -49,13 +49,13 @@ describe('constructing', () => {
     test('keywords are sorted', () => {
         const aConceptSnapshot =
             aFullConceptSnapshot()
-                .withKeywords(new Set([
+                .withKeywords([
                     LanguageString.of('def'),
                     LanguageString.of('abc')
-                ]))
+                ])
                 .build();
 
-        expect(Array.from(aConceptSnapshot.keywords)).toEqual([
+        expect(aConceptSnapshot.keywords).toEqual([
             LanguageString.of('abc'),
             LanguageString.of('def'),
         ]);
@@ -330,206 +330,206 @@ describe('is functionally changed', () => {
                 .build()],
         ['target audience updated',
             aFullConceptSnapshot()
-                .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
+                .withTargetAudiences([TargetAudienceType.BURGER])
                 .build(),
             aFullConceptSnapshot()
-                .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID]))
+                .withTargetAudiences([TargetAudienceType.VLAAMSEOVERHEID])
                 .build()],
         ['target audience added',
             aFullConceptSnapshot()
-                .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
+                .withTargetAudiences([TargetAudienceType.BURGER])
                 .build(),
             aFullConceptSnapshot()
-                .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER]))
+                .withTargetAudiences([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER])
                 .build()],
         ['target audience removed',
             aFullConceptSnapshot()
-                .withTargetAudiences(new Set([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER]))
+                .withTargetAudiences([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER])
                 .build(),
             aFullConceptSnapshot()
-                .withTargetAudiences(new Set([TargetAudienceType.BURGER]))
+                .withTargetAudiences([TargetAudienceType.BURGER])
                 .build()],
         ['theme updated',
             aFullConceptSnapshot()
-                .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
+                .withThemes([ThemeType.WELZIJNGEZONDHEID])
                 .build(),
             aFullConceptSnapshot()
-                .withThemes(new Set([ThemeType.CULTUURSPORTVRIJETIJD]))
+                .withThemes([ThemeType.CULTUURSPORTVRIJETIJD])
                 .build()],
         ['theme added',
             aFullConceptSnapshot()
-                .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
+                .withThemes([ThemeType.WELZIJNGEZONDHEID])
                 .build(),
             aFullConceptSnapshot()
-                .withThemes(new Set([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]))
+                .withThemes([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID])
                 .build()],
         ['theme removed',
             aFullConceptSnapshot()
-                .withThemes(new Set([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID]))
+                .withThemes([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID])
                 .build(),
             aFullConceptSnapshot()
-                .withThemes(new Set([ThemeType.WELZIJNGEZONDHEID]))
+                .withThemes([ThemeType.WELZIJNGEZONDHEID])
                 .build()],
         ['competent Authority Level updated',
             aFullConceptSnapshot()
-                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.EUROPEES]))
+                .withCompetentAuthorityLevels([CompetentAuthorityLevelType.EUROPEES])
                 .build(),
             aFullConceptSnapshot()
-                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.LOKAAL]))
+                .withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL])
                 .build()],
         ['competent Authority Level added',
             aFullConceptSnapshot()
-                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.LOKAAL]))
+                .withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL])
                 .build(),
             aFullConceptSnapshot()
-                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.LOKAAL]))
+                .withCompetentAuthorityLevels([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.LOKAAL])
                 .build()],
         ['competent Authority Level removed',
             aFullConceptSnapshot()
-                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.FEDERAAL]))
+                .withCompetentAuthorityLevels([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.FEDERAAL])
                 .build(),
             aFullConceptSnapshot()
-                .withCompetentAuthorityLevels(new Set([CompetentAuthorityLevelType.FEDERAAL]))
+                .withCompetentAuthorityLevels([CompetentAuthorityLevelType.FEDERAAL])
                 .build()],
         ['competent authorities updated',
             aFullConceptSnapshot()
-                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
+                .withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI])
                 .build(),
             aFullConceptSnapshot()
-                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
+                .withCompetentAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
                 .build()],
         ['competent authorities added',
             aFullConceptSnapshot()
-                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
+                .withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI])
                 .build(),
             aFullConceptSnapshot()
-                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]))
+                .withCompetentAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI])
                 .build()],
         ['competent authorities removed',
             aFullConceptSnapshot()
-                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]))
+                .withCompetentAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI])
                 .build(),
             aFullConceptSnapshot()
-                .withCompetentAuthorities(new Set([BestuurseenheidTestBuilder.BORGLOON_IRI]))
+                .withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI])
                 .build()],
         ['executing Authority Level updated',
             aFullConceptSnapshot()
-                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.EUROPEES]))
+                .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.EUROPEES])
                 .build(),
             aFullConceptSnapshot()
-                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.LOKAAL]))
+                .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL])
                 .build()],
         ['executing Authority Level added',
             aFullConceptSnapshot()
-                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.LOKAAL]))
+                .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL])
                 .build(),
             aFullConceptSnapshot()
-                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.LOKAAL]))
+                .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.LOKAAL])
                 .build()],
         ['executing Authority Level removed',
             aFullConceptSnapshot()
-                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN]))
+                .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN])
                 .build(),
             aFullConceptSnapshot()
-                .withExecutingAuthorityLevels(new Set([ExecutingAuthorityLevelType.DERDEN]))
+                .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.DERDEN])
                 .build()],
         ['executing authorities updated',
             aFullConceptSnapshot()
-                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
+                .withExecutingAuthorities([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI])
                 .build(),
             aFullConceptSnapshot()
-                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
+                .withExecutingAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
                 .build()],
         ['executing authorities added',
             aFullConceptSnapshot()
-                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
+                .withExecutingAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
                 .build(),
             aFullConceptSnapshot()
-                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI]))
+                .withExecutingAuthorities([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
                 .build()],
         ['executing authorities removed',
             aFullConceptSnapshot()
-                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
+                .withExecutingAuthorities([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI])
                 .build(),
             aFullConceptSnapshot()
-                .withExecutingAuthorities(new Set([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI]))
+                .withExecutingAuthorities([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI])
                 .build()],
         ['publication medium updated',
             aFullConceptSnapshot()
-                .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
+                .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
                 .build(),
             aFullConceptSnapshot()
-                .withPublicationMedia(new Set([PublicationMediumType.YOUREUROPE]))
+                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build()],
         ['publication medium added',
             aFullConceptSnapshot()
-                .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
+                .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
                 .build(),
             aFullConceptSnapshot()
-                .withPublicationMedia(new Set([PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER]))
+                .withPublicationMedia([PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER])
                 .build()],
         ['publication medium removed',
             aFullConceptSnapshot()
-                .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER, PublicationMediumType.YOUREUROPE]))
+                .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER, PublicationMediumType.YOUREUROPE])
                 .build(),
             aFullConceptSnapshot()
-                .withPublicationMedia(new Set([PublicationMediumType.RECHTENVERKENNER]))
+                .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
                 .build()],
         ['your europe category updated',
             aFullConceptSnapshot()
-                .withYourEuropeCategories(new Set([YourEuropeCategoryType.GOEDERENRECYCLAGE]))
+                .withYourEuropeCategories([YourEuropeCategoryType.GOEDERENRECYCLAGE])
                 .build(),
             aFullConceptSnapshot()
-                .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFINTELLECTUELEEIGENDOMSRECHTEN]))
+                .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJFINTELLECTUELEEIGENDOMSRECHTEN])
                 .build()],
         ['your europe category added',
             aFullConceptSnapshot()
-                .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING]))
+                .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING])
                 .build(),
             aFullConceptSnapshot()
-                .withYourEuropeCategories(new Set([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING, YourEuropeCategoryType.GEZONDHEIDSZORG]))
+                .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING, YourEuropeCategoryType.GEZONDHEIDSZORG])
                 .build()],
         ['your europe category removed',
             aFullConceptSnapshot()
-                .withYourEuropeCategories(new Set([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE]))
+                .withYourEuropeCategories([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE])
                 .build(),
             aFullConceptSnapshot()
-                .withYourEuropeCategories(new Set([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING]))
+                .withYourEuropeCategories([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING])
                 .build()],
         ['keyword updated - en',
             aFullConceptSnapshot()
-                .withKeywords(new Set([LanguageString.of('abc')]))
+                .withKeywords([LanguageString.of('abc')])
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords(new Set([LanguageString.of('def')]))
+                .withKeywords([LanguageString.of('def')])
                 .build()],
         ['keyword updated - nl',
             aFullConceptSnapshot()
-                .withKeywords(new Set([LanguageString.of(undefined, 'abc')]))
+                .withKeywords([LanguageString.of(undefined, 'abc')])
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords(new Set([LanguageString.of(undefined, 'def')]))
+                .withKeywords([LanguageString.of(undefined, 'def')])
                 .build()],
         ['keyword updated - en became nl',
             aFullConceptSnapshot()
-                .withKeywords(new Set([LanguageString.of('abc')]))
+                .withKeywords([LanguageString.of('abc')])
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords(new Set([LanguageString.of(undefined, 'abc')]))
+                .withKeywords([LanguageString.of(undefined, 'abc')])
                 .build()],
         ['keyword added',
             aFullConceptSnapshot()
-                .withKeywords(new Set([LanguageString.of('abc')]))
+                .withKeywords([LanguageString.of('abc')])
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords(new Set([LanguageString.of('abc'), LanguageString.of('def')]))
+                .withKeywords([LanguageString.of('abc'), LanguageString.of('def')])
                 .build()],
         ['keyword removed',
             aFullConceptSnapshot()
-                .withKeywords(new Set([LanguageString.of('abc'), LanguageString.of('def')]))
+                .withKeywords([LanguageString.of('abc'), LanguageString.of('def')])
                 .build(),
             aFullConceptSnapshot()
-                .withKeywords(new Set([LanguageString.of('abc')]))
+                .withKeywords([LanguageString.of('abc')])
                 .build()],
         ['requirement added',
             aFullConceptSnapshot()

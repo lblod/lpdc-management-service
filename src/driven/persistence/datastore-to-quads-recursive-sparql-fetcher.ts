@@ -4,6 +4,7 @@ import {SparqlQuerying} from "./sparql-querying";
 import {isNamedNode} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";
 import {NS} from "./namespaces";
+import {uniq} from "lodash";
 
 export class DatastoreToQuadsRecursiveSparqlFetcher {
 
@@ -57,10 +58,9 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
                 })
                 .map(q => q.object.value);
 
-        const otherIdsToQuery = new Set(referencedIds);
-
-        subjectIds.forEach(subjectId => otherIdsToQuery.delete(subjectId));
-        previouslyQueriedIds.forEach(previouslyQueriedId => otherIdsToQuery.delete(previouslyQueriedId));
+        const otherIdsToQuery = uniq(referencedIds)
+            .filter(id => !subjectIds.includes(id))
+            .filter(id => !previouslyQueriedIds.includes(id));
 
         return [
             ...quads,

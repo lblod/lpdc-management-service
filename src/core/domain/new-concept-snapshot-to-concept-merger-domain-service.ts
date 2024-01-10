@@ -18,6 +18,7 @@ import {
     BestuurseenheidRegistrationCodeFetcher
 } from "../port/driven/external/bestuurseenheid-registration-code-fetcher";
 import {CodeRepository, CodeSchema} from "../port/driven/persistence/code-repository";
+import {uniqBy} from "lodash";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 
 export class NewConceptSnapshotToConceptMergerDomainService {
@@ -51,7 +52,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             const conceptExists = await this._conceptRepository.exists(conceptId);
             const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
 
-            const newConceptSnapshotAlreadyLinkedToConcept = Array.from(concept?.appliedSnapshots || []).map(iri => iri.value).includes(newConceptSnapshot.id.value);
+            const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedSnapshots.map(iri => iri.value).includes(newConceptSnapshot.id.value);
             const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
 
             if (newConceptSnapshotAlreadyLinkedToConcept) {
@@ -138,7 +139,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             this.copyFinancialAdvantages(conceptSnapshot.financialAdvantages),
             conceptSnapshot.productId,
             conceptSnapshot.id,
-            new Set(),
+            [],
             conceptSnapshot.id,
             conceptSnapshot.conceptTags,
             conceptSnapshot.snapshotType === SnapshotType.DELETE,
@@ -210,7 +211,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             concept.financialAdvantages,
             concept.productId,
             concept.latestConceptSnapshot,
-            new Set([...concept.previousConceptSnapshots, conceptSnapshot.id]),
+            uniqBy([...concept.previousConceptSnapshots, conceptSnapshot.id], (iri) => iri.value),
             concept.latestConceptSnapshot,
             concept.conceptTags,
             concept.isArchived,

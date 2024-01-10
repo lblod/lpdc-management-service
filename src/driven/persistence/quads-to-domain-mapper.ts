@@ -164,42 +164,42 @@ export class QuadsToDomainMapper {
         return this.store.anyValue(namedNode(id.value), NS.mu('uuid'), null, this.graphId);
     }
 
-    private targetAudiences(id: Iri): Set<TargetAudienceType> {
+    private targetAudiences(id: Iri): TargetAudienceType[] {
         return this.asEnums(TargetAudienceType, NS.dvc.doelgroep, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('targetAudience'), null, this.graphId), id.value);
     }
 
-    private themes(id: Iri): Set<ThemeType> {
+    private themes(id: Iri): ThemeType[] {
         return this.asEnums(ThemeType, NS.dvc.thema, this.store.statementsMatching(namedNode(id.value), NS.m8g('thematicArea'), null, this.graphId), id.value);
     }
 
-    private competentAuthorityLevels(id: Iri): Set<CompetentAuthorityLevelType> {
+    private competentAuthorityLevels(id: Iri): CompetentAuthorityLevelType[] {
         return this.asEnums(CompetentAuthorityLevelType, NS.dvc.bevoegdBestuursniveau, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel'), null, this.graphId), id.value);
     }
 
-    private competentAuthorities(id: Iri): Set<Iri> {
+    private competentAuthorities(id: Iri): Iri[] {
         return this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasCompetentAuthority'), null, this.graphId));
     }
 
-    private executingAuthorityLevels(id: Iri): Set<ExecutingAuthorityLevelType> {
+    private executingAuthorityLevels(id: Iri): ExecutingAuthorityLevelType[] {
         return this.asEnums(ExecutingAuthorityLevelType, NS.dvc.uitvoerendBestuursniveau, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel'), null, this.graphId), id.value);
     }
 
-    private executingAuthorities(id: Iri): Set<Iri> {
+    private executingAuthorities(id: Iri): Iri[] {
         return this.asIris(this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('hasExecutingAuthority'), null, this.graphId));
     }
 
-    private publicationMedia(id: Iri): Set<PublicationMediumType> {
+    private publicationMedia(id: Iri): PublicationMediumType[] {
         return this.asEnums(PublicationMediumType, NS.dvc.publicatieKanaal, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('publicationMedium'), null, this.graphId), id.value);
     }
 
-    private yourEuropeCategories(id: Iri): Set<YourEuropeCategoryType> {
+    private yourEuropeCategories(id: Iri): YourEuropeCategoryType[] {
         return this.asEnums(YourEuropeCategoryType, NS.dvc.yourEuropeCategorie, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), null, this.graphId), id.value);
     }
 
-    private keywords(id: Iri): Set<LanguageString> {
-        return new Set(this.store.statementsMatching(namedNode(id.value), NS.dcat('keyword'), null, this.graphId)
+    private keywords(id: Iri): LanguageString[] {
+        return this.store.statementsMatching(namedNode(id.value), NS.dcat('keyword'), null, this.graphId)
             .map(s => [s])
-            .flatMap(statements => this.asLanguageString(statements)));
+            .flatMap(statements => this.asLanguageString(statements));
     }
 
     private url(id: Iri): string | undefined {
@@ -230,7 +230,7 @@ export class QuadsToDomainMapper {
         return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.ext('hasVersionedSource'), null, this.graphId));
     }
 
-    private previousConceptSnapshots(id: Iri): Set<Iri> {
+    private previousConceptSnapshots(id: Iri): Iri[] {
         return this.asIris(this.store.statementsMatching(namedNode(id.value), NS.ext('previousVersionedSource'), null, this.graphId));
     }
 
@@ -242,7 +242,7 @@ export class QuadsToDomainMapper {
         return this.asEnum(SnapshotType, NS.dvc.snapshotType, this.store.anyValue(namedNode(id.value), NS.lpdcExt('snapshotType'), null, this.graphId), id.value);
     }
 
-    private conceptTags(id: Iri): Set<ConceptTagType> {
+    private conceptTags(id: Iri): ConceptTagType[] {
         return this.asEnums(ConceptTagType, NS.dvc.conceptTag, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('conceptTag'), null, this.graphId), id.value);
     }
 
@@ -250,13 +250,13 @@ export class QuadsToDomainMapper {
         return !!this.store.anyStatementMatching(namedNode(id.value), NS.adms('status'), STATUS.concept.archived, this.graphId);
     }
 
-    private legalResources(id: Iri): Set<Iri> {
+    private legalResources(id: Iri): Iri[] {
         return this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasLegalResource'), null, this.graphId));
     }
 
     private costs(id: Iri): Cost[] {
         const costIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasCost'), null, this.graphId)));
+            this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasCost'), null, this.graphId));
         costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, NS.m8g('Cost')));
 
         const costs = costIds.map(costId => Cost.reconstitute(costId, this.uuid(costId), this.title(costId), this.description(costId)));
@@ -266,7 +266,7 @@ export class QuadsToDomainMapper {
 
     private financialAdvantages(id: Iri): FinancialAdvantage[] {
         const financialAdvantageIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), NS.cpsv('produces'), null, this.graphId)));
+            this.asIris(this.store.statementsMatching(namedNode(id.value), NS.cpsv('produces'), null, this.graphId));
         financialAdvantageIds.forEach(financialAdvantageId =>
             this.errorIfMissingOrIncorrectType(financialAdvantageId, NS.lpdcExt('FinancialAdvantage')));
 
@@ -279,7 +279,7 @@ export class QuadsToDomainMapper {
 
     private websites(id: Iri, predicate: NamedNode = NS.rdfs('seeAlso')): Website[] {
         const websiteIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), predicate, null, this.graphId)));
+            this.asIris(this.store.statementsMatching(namedNode(id.value), predicate, null, this.graphId));
 
         websiteIds.forEach(websiteId =>
             this.errorIfMissingOrIncorrectType(websiteId, NS.schema('WebSite')));
@@ -293,7 +293,7 @@ export class QuadsToDomainMapper {
 
     private procedures(id: Iri): Procedure[] {
         const procedureIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), NS.cpsv('follows'), null, this.graphId)));
+            this.asIris(this.store.statementsMatching(namedNode(id.value), NS.cpsv('follows'), null, this.graphId));
 
         procedureIds.forEach(procedureId =>
             this.errorIfMissingOrIncorrectType(procedureId, NS.cpsv('Rule')));
@@ -307,7 +307,7 @@ export class QuadsToDomainMapper {
 
     private requirements(id: Iri): Requirement[] {
         const requirementIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), NS.ps('hasRequirement'), null, this.graphId)));
+            this.asIris(this.store.statementsMatching(namedNode(id.value), NS.ps('hasRequirement'), null, this.graphId));
 
         requirementIds.forEach(requirementId =>
             this.errorIfMissingOrIncorrectType(requirementId, NS.m8g('Requirement')));
@@ -321,7 +321,7 @@ export class QuadsToDomainMapper {
 
     private evidence(id: Iri): Evidence | undefined {
         const evidenceIds =
-            Array.from(this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasSupportingEvidence'), null, this.graphId)));
+            this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasSupportingEvidence'), null, this.graphId));
 
         evidenceIds.forEach(evidenceId =>
             this.errorIfMissingOrIncorrectType(evidenceId, NS.m8g('Evidence')));
@@ -343,9 +343,9 @@ export class QuadsToDomainMapper {
         return aValue ? Number.parseInt(aValue) : undefined;
     }
 
-    private asEnums<T>(enumObj: T, namespace: Namespace, statements: Statement[], id: string): Set<T[keyof T]> {
+    private asEnums<T>(enumObj: T, namespace: Namespace, statements: Statement[], id: string): T[keyof T][] {
         const namedNodes: NamedNode[] | undefined = this.asNamedNodes(statements);
-        return new Set(namedNodes.map(namedNode => this.asEnum(enumObj, namespace, namedNode?.value, id)));
+        return namedNodes.map(namedNode => this.asEnum(enumObj, namespace, namedNode?.value, id));
     }
 
     private asEnum<T>(enumObj: T, namespace: Namespace, value: any, id: string): T[keyof T] | undefined {
@@ -376,8 +376,8 @@ export class QuadsToDomainMapper {
         );
     }
 
-    private asIris(statements: Statement[]): Set<Iri> {
-        return new Set(this.asNamedNodes(statements).map(value => new Iri(value.value)));
+    private asIris(statements: Statement[]): Iri[] {
+        return this.asNamedNodes(statements).map(value => new Iri(value.value));
     }
 
     private asIri(statement: Statement | undefined): Iri | undefined {

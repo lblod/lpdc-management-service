@@ -10,7 +10,7 @@ export class SparqlQuerying {
     }
 
     public async update(query: string): Promise<void> {
-        //TODO LPDC-916: error handling: we should ensure that we have verified that we did not get any error ...
+        //TODO LPDC-917: error handling: we should ensure that we have verified that we did not get any error ...
         await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
     }
 

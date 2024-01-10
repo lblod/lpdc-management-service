@@ -75,7 +75,7 @@ app.post('/delta', async function (req, res): Promise<void> {
         LdesPostProcessingQueue
             .addJob(async () => {
                 const newConceptSnapshotIds: Iri[] = flatten(delta.map(changeSet => changeSet.inserts))
-                    .filter(t => t?.graph.value === CONCEPT_SNAPSHOT_LDES_GRAPH && t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
+                    .filter((t: any) => t?.graph.value === CONCEPT_SNAPSHOT_LDES_GRAPH && t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
                     .map((delta: any) => new Iri(delta.subject.value));
                 for (const newConceptSnapshotId of newConceptSnapshotIds) {
                     await newConceptSnapshotToConceptMergerDomainService.merge(newConceptSnapshotId);

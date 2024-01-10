@@ -24,13 +24,13 @@ describe('constructing', () => {
     test('keywords are sorted', () => {
         const aConcept =
             aFullConcept()
-                .withKeywords(new Set([
+                .withKeywords([
                     LanguageString.of('def'),
                     LanguageString.of('abc')
-                ]))
+                ])
                 .build();
 
-        expect(Array.from(aConcept.keywords)).toEqual([
+        expect(aConcept.keywords).toEqual([
             LanguageString.of('abc'),
             LanguageString.of('def')
         ]);
@@ -49,14 +49,14 @@ describe('constructing', () => {
                         ConceptTestBuilder.TITLE_NL_GENERATED_INFORMAL))
                 .build();
 
-        expect(aConcept.conceptLanguages).toEqual(new Set([
+        expect(aConcept.conceptLanguages).toEqual([
             Language.EN,
             Language.NL,
             Language.FORMAL,
             Language.INFORMAL,
             Language.GENERATED_FORMAL,
             Language.GENERATED_INFORMAL
-        ]));
+        ]);
     });
 
     test('applied snapshots', () => {
@@ -66,10 +66,10 @@ describe('constructing', () => {
         const aConcept =
             aFullConcept()
                 .withLatestConceptSnapshot(latestConceptSnapshot)
-                .withPreviousConceptSnapshots(new Set([previousConceptSnapshot1, previousConceptSnapshot2]))
+                .withPreviousConceptSnapshots([previousConceptSnapshot1, previousConceptSnapshot2])
                 .build();
 
-        expect(aConcept.appliedSnapshots).toEqual(new Set([latestConceptSnapshot, previousConceptSnapshot1, previousConceptSnapshot2]));
+        expect(aConcept.appliedSnapshots).toEqual([latestConceptSnapshot, previousConceptSnapshot1, previousConceptSnapshot2]);
     });
 
     test('Undefined id throws error', () => {

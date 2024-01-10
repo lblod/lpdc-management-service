@@ -131,48 +131,48 @@ export class DomainToTriplesMapper {
         return this.languageStringToTriples(namedNode(id.value), NS.lpdcExt('exception'), value);
     }
 
-    private regulation(id: Iri, value: LanguageString): Statement [] {
+    private regulation(id: Iri, value: LanguageString): Statement[] {
         return this.languageStringToTriples(namedNode(id.value), NS.lpdcExt('regulation'), value);
     }
 
-    private targetAudiences(id: Iri, values: Set<TargetAudienceType>): Statement [] {
+    private targetAudiences(id: Iri, values: TargetAudienceType[]): Statement[] {
         return this.irisToTriples(namedNode(id.value), NS.lpdcExt('targetAudience'), this.enumsToIris(values, NS.dvc.doelgroep));
     }
 
-    private themes(id: Iri, values: Set<ThemeType>): Statement [] {
+    private themes(id: Iri, values: ThemeType[]): Statement[] {
         return this.irisToTriples(namedNode(id.value), NS.m8g('thematicArea'), this.enumsToIris(values, NS.dvc.thema));
     }
 
-    private competentAuthorityLevels(id: Iri, values: Set<CompetentAuthorityLevelType>): Statement [] {
+    private competentAuthorityLevels(id: Iri, values: CompetentAuthorityLevelType[]): Statement[] {
         return this.irisToTriples(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel'), this.enumsToIris(values, NS.dvc.bevoegdBestuursniveau));
     }
 
-    private competentAuthorities(id: Iri, values: Set<Iri>): Statement [] {
+    private competentAuthorities(id: Iri, values: Iri[]): Statement [] {
         return this.irisToTriples(namedNode(id.value), NS.m8g('hasCompetentAuthority'), values);
     }
 
-    private executingAuthorityLevels(id: Iri, values: Set<ExecutingAuthorityLevelType>): Statement [] {
+    private executingAuthorityLevels(id: Iri, values: ExecutingAuthorityLevelType[]): Statement[] {
         return this.irisToTriples(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel'), this.enumsToIris(values, NS.dvc.uitvoerendBestuursniveau));
     }
 
-    private executingAuthorities(id: Iri, values: Set<Iri>): Statement [] {
+    private executingAuthorities(id: Iri, values: Iri[]): Statement[] {
         return this.irisToTriples(namedNode(id.value), NS.lpdcExt('hasExecutingAuthority'), values);
     }
 
-    private publicationMedia(id: Iri, values: Set<PublicationMediumType>): Statement [] {
+    private publicationMedia(id: Iri, values: PublicationMediumType[]): Statement[] {
         return this.irisToTriples(namedNode(id.value), NS.lpdcExt('publicationMedium'), this.enumsToIris(values, NS.dvc.publicatieKanaal));
     }
 
-    private yourEuropeCategories(id: Iri, values: Set<YourEuropeCategoryType>): Statement [] {
+    private yourEuropeCategories(id: Iri, values: YourEuropeCategoryType[]): Statement [] {
         return this.irisToTriples(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), this.enumsToIris(values, NS.dvc.yourEuropeCategorie));
     }
 
-    private keywords(id: Iri, values: Set<LanguageString>): Statement[] {
-        return Array.from(values)
+    private keywords(id: Iri, values: LanguageString[]): Statement[] {
+        return values
             .flatMap(keyword => this.languageStringToTriples(namedNode(id.value), namedNode(NS.dcat('keyword').value), keyword));
     }
 
-    private conceptTags(id: Iri, values: Set<ConceptTagType>): Statement[] {
+    private conceptTags(id: Iri, values: ConceptTagType[]): Statement[] {
         return this.irisToTriples(namedNode(id.value), NS.lpdcExt('conceptTag'), this.enumsToIris(values, NS.dvc.conceptTag));
     }
 
@@ -180,7 +180,7 @@ export class DomainToTriplesMapper {
         return isArchived ? quad(namedNode(id.value), NS.adms('status'), STATUS.concept.archived) : undefined;
     }
 
-    private legalResources(id: Iri, values: Set<Iri>): Statement[] {
+    private legalResources(id: Iri, values: Iri[]): Statement[] {
         return this.irisToTriples(namedNode(id.value), NS.m8g('hasLegalResource'), values);
     }
 
@@ -192,8 +192,8 @@ export class DomainToTriplesMapper {
         return quad(namedNode(id.value), NS.lpdcExt('hasLatestFunctionalChange'), namedNode(value.value));
     }
 
-    private previousConceptSnapshots(id: Iri, values: Set<Iri>): Statement[] {
-        return Array.from(values).map(v => quad(namedNode(id.value), NS.ext('previousVersionedSource'), namedNode(v.value)));
+    private previousConceptSnapshots(id: Iri, values: Iri[]): Statement[] {
+        return values.map(v => quad(namedNode(id.value), NS.ext('previousVersionedSource'), namedNode(v.value)));
     }
 
     private requirements(id: Iri, values: Requirement[]): Statement[] {
@@ -293,13 +293,12 @@ export class DomainToTriplesMapper {
                 .map(tuple => quad(subject, predicate, literal(tuple[1], tuple[0]))) : [];
     }
 
-    private irisToTriples(subject: NamedNode, predicate: NamedNode, values: Set<any>): Statement[] {
-        return Array.from(values)
-            .map(e => quad(subject, predicate, namedNode(e)));
+    private irisToTriples(subject: NamedNode, predicate: NamedNode, values: any[]): Statement[] {
+        return values.map(e => quad(subject, predicate, namedNode(e)));
     }
 
-    private enumsToIris(values: Set<any>, namespace: (ln: string) => NamedNode): Set<Iri> {
-        return new Set(Array.from(values).map(v => this.enumToIri(v, namespace)));
+    private enumsToIris(values: any[], namespace: (ln: string) => NamedNode): Iri[] {
+        return values.map(v => this.enumToIri(v, namespace));
     }
 
     private enumToIri(value: any, namespace: (ln: string) => NamedNode): Iri {

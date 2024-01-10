@@ -26,6 +26,7 @@
   "dependencies": {
     "@lblod/mu-auth-sudo": "^0.6.0",
     "@lblod/submission-form-helpers": "^2.0.1",
+    "@supercharge/promise-pool": "^3.1.0",
     "body-parser": "^1.20.0",
     "env-var": "^7.4.1",
     "express": "^4.18.2",
@@ -36,13 +37,13 @@
     "node-fetch": "^2.7.0",
     "rdflib": "^2.2.33",
     "sparql-client-2": "https://github.com/erikap/node-sparql-client.git",
-    "uuid": "^9.0.0",
-    "@supercharge/promise-pool": "^3.1.0",
-    "ts-retry-promise": "^0.7.1"
+    "ts-retry-promise": "^0.7.1",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.11",
+    "@types/lodash": "^4.14.202",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
     "eslint": "^8.55.0",

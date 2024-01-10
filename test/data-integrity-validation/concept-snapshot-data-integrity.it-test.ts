@@ -2,11 +2,11 @@ import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {PREFIX} from "../../config";
 import {ConceptSnapshotSparqlTestRepository} from "../driven/persistence/concept-snapshot-sparql-test-repository";
-import {shuffle} from "lodash";
+import {shuffle, sortedUniq, uniq} from "lodash";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
-import {asSortedArray, asSortedSet} from "../../src/core/domain/shared/collections-helper";
-import {isLiteral, namedNode} from "rdflib";
+import {asSortedArray} from "../../src/core/domain/shared/collections-helper";
+import {isLiteral, namedNode, Statement} from "rdflib";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {
     DatastoreToQuadsRecursiveSparqlFetcher
@@ -45,26 +45,21 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         `;
 
         const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
-        const allQuadsOfGraph = new Set(sparqlQuerying.asQuads(allTriplesOfGraph, graph.value));
+        let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, graph.value));
 
         //filter out fr and de language strings
-        Array.from(allQuadsOfGraph).filter(q => isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr'))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !(isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr')));
 
         //filter out the saving state of the ldes stream read
-        Array.from(allQuadsOfGraph).filter(q => q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/state')))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/state')));
 
         //filter out language on conceptSnapshot
-        Array.from(allQuadsOfGraph).filter(q => q.predicate.equals(namedNode('https://publications.europa.eu/resource/authority/language')))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://publications.europa.eu/resource/authority/language')));
 
         //filter out legal resources data (iri reference still exists)
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith("https://codex.vlaanderen.be/"))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith("https://codex.vlaanderen.be/"));
 
-        Array.from(allQuadsOfGraph).filter(q => q.subject.value.startsWith("https://ipdc.be/regelgeving"))
-            .forEach(q => allQuadsOfGraph.delete(q));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith("https://ipdc.be/regelgeving"));
 
 
         const delayTime = 0;
@@ -104,13 +99,13 @@ describe('Concept Snapshot Data Integrity Validation', () => {
                 await wait(delayTime);
             }
 
-            const allRemainingQuadsOfGraphAsTurtle = new Set(Array.from(allQuadsOfGraph).map(q => q.toString()));
-            quadsFromRequeriedConceptSnapshots.map(q => q.toString())
-                .forEach(q => allRemainingQuadsOfGraphAsTurtle.delete(q));
+            const allRemainingQuadsOfGraphAsTurtle = allQuadsOfGraph
+                .map(q => q.toString())
+                .filter(q => !quadsFromRequeriedConceptSnapshots.includes(q));
 
             //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
-            //fs.writeFileSync(`/tmp/remaining-quads.txt`, Array.from(asSortedSet(allRemainingQuadsOfGraphAsTurtle)).join('\n'));
-            expect(asSortedSet(allRemainingQuadsOfGraphAsTurtle)).toEqual(new Set());
+            //fs.writeFileSync(`/tmp/remaining-quads.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
+            expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
 
             const averageTime = (new Date().valueOf() - before - delayTime * conceptSnapshotIds.length) / conceptSnapshotIds.length;
             averageTimes.push(averageTime);

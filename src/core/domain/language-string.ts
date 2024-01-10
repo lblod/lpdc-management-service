@@ -1,5 +1,6 @@
 import {Language} from "./language";
 import {Invariant} from "./shared/invariant";
+import {uniq} from "lodash";
 
 export class LanguageString {
 
@@ -62,7 +63,7 @@ export class LanguageString {
         return this._nlGeneratedInformal;
     }
 
-    get definedLanguages(): Set<Language> {
+    get definedLanguages(): Language[] {
         const definedLanguages = [];
         if (this._en !== undefined) definedLanguages.push(Language.EN);
         if (this._nl !== undefined) definedLanguages.push(Language.NL);
@@ -70,7 +71,7 @@ export class LanguageString {
         if (this._nlInformal !== undefined) definedLanguages.push(Language.INFORMAL);
         if (this._nlGeneratedFormal !== undefined) definedLanguages.push(Language.GENERATED_FORMAL);
         if (this._nlGeneratedInformal !== undefined) definedLanguages.push(Language.GENERATED_INFORMAL);
-        return new Set(definedLanguages);
+        return uniq(definedLanguages);
     }
 
     static isFunctionallyChanged(value: LanguageString | undefined, other: LanguageString | undefined): boolean {
