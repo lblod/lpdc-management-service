@@ -17,6 +17,19 @@ test('Invalid iri id throws error', () => {
     expect(() => new Bestuurseenheid(new Iri('   '), 'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE)).toThrow(new Error('iri should not be blank'));
 });
 
+test('Undefined prefLabel throws error', () => {
+    expect(() => new Bestuurseenheid(new Iri('http://anIri'), undefined, BestuurseenheidClassificatieCode.GEMEENTE)).toThrow(new Error('prefLabel should not be undefined'));
+});
+
+test('Undefined classificatieCode throws error', () => {
+    expect(() => new Bestuurseenheid(new Iri('http://anIri'), 'prefLabel', undefined)).toThrow(new Error('classificatieCode should not be undefined'));
+});
+
+test('Undefined classificatieCode does not throw error for ABB', () => {
+    expect(new Bestuurseenheid(Bestuurseenheid.abb, 'prefLabel', undefined)).not.toBeUndefined();
+});
+
+
 test('userGraph', () => {
     const uniqueId = uuid();
     const bestuurseenheid =

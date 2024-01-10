@@ -30,8 +30,8 @@ describe('Bestuurseenheid Data Integrity Validation', () => {
         for (const result of bestuurseenheidIds) {
             try {
                 const id = new Iri(result['id'].value);
-                const bestuursEenheidForId = await repository.findById(id);
-                expect(bestuursEenheidForId.id).toEqual(id);
+                const bestuurseenheidForId = await repository.findById(id);
+                expect(bestuurseenheidForId.id).toEqual(id);
             } catch (e) {
                 console.log(e);
                 dataErrors.push(e);

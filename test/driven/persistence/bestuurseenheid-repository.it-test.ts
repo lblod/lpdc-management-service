@@ -1,6 +1,6 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {BestuurseenheidClassificatieCodeUri} from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
-import {BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
+import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
 import {aBestuurseenheid} from "../../core/domain/bestuureenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {DirectDatabaseAccess} from "./direct-database-access";
@@ -34,6 +34,20 @@ describe('BestuurseenheidRepository', () => {
 
             await expect(repository.findById(nonExistentBestuurseenheidId)).rejects.toThrow(new Error(`no bestuurseenheid found for iri: ${nonExistentBestuurseenheidId}`));
 
+        });
+
+        test('When bestuurseenheid abb exists with id, then return bestuurseenheid', async () => {
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .withId(Bestuurseenheid.abb)
+                    .withPrefLabel('Agentschap binnenlands bestuur')
+                    .withClassificatieCode(undefined)
+                    .build();
+            await repository.save(bestuurseenheid);
+
+            const actualBestuurseenheid = await repository.findById(bestuurseenheid.id);
+
+            expect(actualBestuurseenheid).toEqual(bestuurseenheid);
         });
     });
 

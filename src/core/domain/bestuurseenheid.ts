@@ -4,15 +4,20 @@ import {requiredValue} from "./shared/invariant";
 
 
 export class Bestuurseenheid {
+
+    public static readonly abb = new Iri('http://data.lblod.info/id/bestuurseenheden/141d9d6b-54af-4d17-b313-8d1c30bc3f5b');
+
     private readonly _id: Iri;
     //TODO LPDC-916: also map the uuid (as in other classes)
     private readonly _prefLabel: string;
-    private readonly _classificatieCode: BestuurseenheidClassificatieCode;
+    private readonly _classificatieCode: BestuurseenheidClassificatieCode | undefined;
 
-    constructor(id: Iri, prefLabel: string, classificatieCode: BestuurseenheidClassificatieCode) {
+    constructor(id: Iri,
+                prefLabel: string,
+                classificatieCode: BestuurseenheidClassificatieCode | undefined) {
         this._id = requiredValue(id, 'id');
-        this._prefLabel = prefLabel;
-        this._classificatieCode = classificatieCode;
+        this._prefLabel = requiredValue(prefLabel, 'prefLabel');
+        this._classificatieCode = id.equals(Bestuurseenheid.abb) ? classificatieCode : requiredValue(classificatieCode, 'classificatieCode');
     }
 
     get id(): Iri {
@@ -23,7 +28,7 @@ export class Bestuurseenheid {
         return this._prefLabel;
     }
 
-    get classificatieCode(): BestuurseenheidClassificatieCode {
+    get classificatieCode(): BestuurseenheidClassificatieCode | undefined {
         return this._classificatieCode;
     }
 

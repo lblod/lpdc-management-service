@@ -23,7 +23,7 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
                 GRAPH <http://mu.semte.ch/graphs/public> {
                     ${sparqlEscapeUri(bestuurseenheid.id)} a besluit:Bestuurseenheid .
                     ${sparqlEscapeUri(bestuurseenheid.id)} skos:prefLabel ${sparqlEscapeString(bestuurseenheid.prefLabel)} .
-                    ${sparqlEscapeUri(bestuurseenheid.id)} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .
+                    ${classificatieUri ? `${sparqlEscapeUri(bestuurseenheid.id)} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .` : ''}
                     ${sparqlEscapeUri(bestuurseenheid.id)} mu:uuid ${sparqlEscapeString(bestuurseenheid.uuid)} .
                 }
             }
@@ -31,7 +31,10 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
         await this.querying.update(query);
     }
 
-    mapBestuurseenheidClassificatieCodeToUri(classificatieCode: BestuurseenheidClassificatieCode): BestuurseenheidClassificatieCodeUri {
+    mapBestuurseenheidClassificatieCodeToUri(classificatieCode: BestuurseenheidClassificatieCode | undefined): BestuurseenheidClassificatieCodeUri | undefined {
+        if(!classificatieCode) {
+            return undefined;
+        }
         const key: string | undefined = Object.keys(BestuurseenheidClassificatieCode)
             .find(key => BestuurseenheidClassificatieCode[key] === classificatieCode);
 

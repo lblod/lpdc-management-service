@@ -23,7 +23,9 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
                     }
                     ?id a besluit:Bestuurseenheid .
                     ?id skos:prefLabel ?prefLabel .
-                    ?id besluit:classificatie ?classificatieUri . 
+                    OPTIONAL {
+                        ?id besluit:classificatie ?classificatieUri .
+                    } 
                 }
             }
         `;
@@ -36,11 +38,15 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
         return new Bestuurseenheid(
             new Iri(result['id'].value),
             result['prefLabel'].value,
-            this.mapBestuurseenheidClassificatieUriToCode(result['classificatieUri'].value)
+            this.mapBestuurseenheidClassificatieUriToCode(result['classificatieUri']?.value)
         );
     }
 
-    mapBestuurseenheidClassificatieUriToCode(classificatieCodeUri: BestuurseenheidClassificatieCodeUri): BestuurseenheidClassificatieCode {
+    mapBestuurseenheidClassificatieUriToCode(classificatieCodeUri: BestuurseenheidClassificatieCodeUri | undefined): BestuurseenheidClassificatieCode | undefined {
+        if(!classificatieCodeUri) {
+            return undefined;
+        }
+
         const key: string | undefined = Object.keys(BestuurseenheidClassificatieCodeUri)
             .find(key => BestuurseenheidClassificatieCodeUri[key] === classificatieCodeUri);
 
