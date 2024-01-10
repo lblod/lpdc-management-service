@@ -104,9 +104,9 @@ export class ConceptSnapshot {
         this._targetAudiences = asSortedArray(targetAudiences);
         this._themes = asSortedArray(themes);
         this._competentAuthorityLevels = asSortedArray(competentAuthorityLevels);
-        this._competentAuthorities = asSortedArray(competentAuthorities);
+        this._competentAuthorities = asSortedArray(competentAuthorities, Iri.compare);
         this._executingAuthorityLevels = asSortedArray(executingAuthorityLevels);
-        this._executingAuthorities = asSortedArray(executingAuthorities);
+        this._executingAuthorities = asSortedArray(executingAuthorities, Iri.compare);
         this._publicationMedia = asSortedArray(publicationMedia);
         this._yourEuropeCategories = asSortedArray(yourEuropeCategories);
         this._keywords = asSortedArray(keywords, LanguageString.compare);
@@ -122,7 +122,7 @@ export class ConceptSnapshot {
         this._productId = requiredValue(productId, 'productId');
         this._snapshotType = requiredValue(snapshotType, 'snapshotType');
         this._conceptTags = asSortedArray(conceptTags);
-        this._legalResources = asSortedArray(legalResources);
+        this._legalResources = asSortedArray(legalResources, Iri.compare);
     }
 
     get id(): Iri {

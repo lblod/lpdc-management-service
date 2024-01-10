@@ -18,4 +18,8 @@ export class Iri {
     equals(other: Iri): boolean {
         return this._value === other.value;
     }
+
+    static compare(a: Iri, b: Iri): number {
+        return a.value.localeCompare(b.value);
+    }
 }

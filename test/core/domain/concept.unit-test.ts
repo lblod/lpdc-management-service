@@ -60,9 +60,9 @@ describe('constructing', () => {
     });
 
     test('applied snapshots', () => {
-        const latestConceptSnapshot = buildConceptSnapshotIri(uuid());
-        const previousConceptSnapshot1 = buildConceptSnapshotIri(uuid());
-        const previousConceptSnapshot2 = buildConceptSnapshotIri(uuid());
+        const latestConceptSnapshot = buildConceptSnapshotIri('a');
+        const previousConceptSnapshot1 = buildConceptSnapshotIri('b');
+        const previousConceptSnapshot2 = buildConceptSnapshotIri('c');
         const aConcept =
             aFullConcept()
                 .withLatestConceptSnapshot(latestConceptSnapshot)

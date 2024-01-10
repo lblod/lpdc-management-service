@@ -105,9 +105,9 @@ export class Concept {
         this._targetAudiences = asSortedArray(targetAudiences);
         this._themes = asSortedArray(themes);
         this._competentAuthorityLevels = asSortedArray(competentAuthorityLevels);
-        this._competentAuthorities = asSortedArray(competentAuthorities);
+        this._competentAuthorities = asSortedArray(competentAuthorities, Iri.compare);
         this._executingAuthorityLevels = asSortedArray(executingAuthorityLevels);
-        this._executingAuthorities = asSortedArray(executingAuthorities);
+        this._executingAuthorities = asSortedArray(executingAuthorities, Iri.compare);
         this._publicationMedia = asSortedArray(publicationMedia);
         this._yourEuropeCategories = asSortedArray(yourEuropeCategories);
         this._keywords = asSortedArray(keywords, LanguageString.compare);
@@ -118,11 +118,11 @@ export class Concept {
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConcept);
         this._productId = requiredValue(productId, 'productId');
         this._latestConceptSnapshot = requiredValue(latestConceptSnapshot, 'latestConceptSnapshot');
-        this._previousConceptSnapshots = asSortedArray(previousConceptSnapshots);
+        this._previousConceptSnapshots = asSortedArray(previousConceptSnapshots, Iri.compare);
         this._latestFunctionallyChangedConceptSnapshot = requiredValue(latestFunctionallyChangedConceptSnapshot, 'latestFunctionallyChangedConceptSnapshot');
         this._conceptTags = asSortedArray(conceptTags);
         this._isArchived = requiredValue(isArchived, 'isArchived');
-        this._legalResources = asSortedArray(legalResources);
+        this._legalResources = asSortedArray(legalResources, Iri.compare);
     }
 
     get conceptLanguages(): Language[] {
