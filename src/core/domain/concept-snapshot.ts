@@ -83,7 +83,7 @@ export class ConceptSnapshot {
                 dateModified: FormatPreservingDate | undefined,
                 generatedAtTime: FormatPreservingDate | undefined,
                 productId: string,
-                snapshotType: SnapshotType | undefined,
+                snapshotType: SnapshotType,
                 conceptTags: ConceptTagType[],
                 legalResources: Iri[],
     ) {
