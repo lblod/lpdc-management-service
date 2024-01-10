@@ -29,8 +29,8 @@ import {STATUS} from "./status";
 
 export class QuadsToDomainMapper {
 
-    //TODO LPDC-916: add 'report double troubles' (which logs)
-    //TODO LPDC-916: add 'reject double troubles' (which throws)
+    //TODO LPDC-917: add 'report double triples' (which logs)
+    //TODO LPDC-917: add 'reject double triples' (which throws)
 
     private readonly store;
     private readonly graphId;
