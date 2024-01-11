@@ -80,7 +80,7 @@ describe('ConceptSnapshotRepository', () => {
 
             const nonExistentConceptSnapshotId = buildConceptSnapshotIri('thisiddoesnotexist');
 
-            await expect(repository.findById(nonExistentConceptSnapshotId)).rejects.toThrow(new Error(`Could not find <https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`));
+            await expect(repository.findById(nonExistentConceptSnapshotId)).rejects.toThrow(new Error(`Could not find <https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> in graph <http://mu.semte.ch/graphs/lpdc/ldes-data>`));
         });
     });
 
@@ -93,7 +93,7 @@ describe('ConceptSnapshotRepository', () => {
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",
                 [`<${idForIncorrectType}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType>`]);
 
-            await expect(repository.findById(idForIncorrectType)).rejects.toThrow(new Error(`Could not find <${idForIncorrectType}> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>, but found with type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType>`));
+            await expect(repository.findById(idForIncorrectType)).rejects.toThrow(new Error(`Could not find <${idForIncorrectType}> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>, but found with type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType> in graph <http://mu.semte.ch/graphs/lpdc/ldes-data>`));
         });
 
         test('Verify minimal mappings', async () => {

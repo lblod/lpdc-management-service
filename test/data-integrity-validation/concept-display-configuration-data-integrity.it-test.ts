@@ -7,7 +7,7 @@ import {
 } from "../driven/persistence/concept-display-configuration-sparql-test-repository";
 import {Iri} from "../../src/core/domain/shared/iri";
 
-describe.skip('Concept Display Configuration Data Integrity Validation', () => {
+describe('Concept Display Configuration Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
 

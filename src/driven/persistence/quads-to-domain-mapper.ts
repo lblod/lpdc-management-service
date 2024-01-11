@@ -121,10 +121,10 @@ export class QuadsToDomainMapper {
     private errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
         const typeFoundForId: string = this.store.anyValue(namedNode(id.value), NS.rdf('type'), null, this.graphId);
         if (!typeFoundForId) {
-            throw new Error(`Could not find <${id}> for type ${type}`);
+            throw new Error(`Could not find <${id}> for type ${type} in graph ${this.graphId}`);
         }
         if (!type.equals(namedNode(typeFoundForId))) {
-            throw new Error(`Could not find <${id}> for type ${type}, but found with type <${typeFoundForId}>`);
+            throw new Error(`Could not find <${id}> for type ${type}, but found with type <${typeFoundForId}> in graph ${this.graphId}`);
         }
     }
 
