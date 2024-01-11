@@ -221,27 +221,38 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
     private copyRequirements(requirements: Requirement[]) {
         return requirements.map(r =>
-            Requirement.reconstitute(
-                r.id,
-                uuid(),
-                r.title,
-                r.description,
-                r.evidence ? Evidence.reconstitute(r.evidence.id, uuid(), r.evidence.title, r.evidence.description) : undefined));
+            Requirement.forConcept(
+                Requirement.reconstitute(
+                    r.id,
+                    uuid(),
+                    r.title,
+                    r.description,
+                    r.evidence ? this.copyEvidence(r.evidence) : undefined
+                )
+            )
+        );
     }
 
     private copyProcedures(procedures: Procedure[]) {
         return procedures.map(p =>
-            Procedure.reconstitute(
-                p.id,
-                uuid(),
-                p.title,
-                p.description,
-                this.copyWebsites(p.websites)));
+            Procedure.forConcept(
+                Procedure.reconstitute(
+                    p.id,
+                    uuid(),
+                    p.title,
+                    p.description,
+                    this.copyWebsites(p.websites)
+                )
+            )
+        );
     }
 
     private copyWebsites(websites: Website[]) {
         return websites.map(w =>
-            Website.reconstitute(w.id, uuid(), w.title, w.description, w.url));
+            Website.forConcept(
+                Website.reconstitute(w.id, uuid(), w.title, w.description, w.url)
+            )
+        );
     }
 
     private copyCosts(costs: Cost[]) {
@@ -251,7 +262,16 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
     private copyFinancialAdvantages(financialAdvantages: FinancialAdvantage[]) {
         return financialAdvantages.map(fa =>
-            FinancialAdvantage.reconstitute(fa.id, uuid(), fa.title, fa.description));
+            FinancialAdvantage.forConcept(
+                FinancialAdvantage.reconstitute(fa.id, uuid(), fa.title, fa.description)
+            )
+        );
+    }
+
+    private copyEvidence(evidence: Evidence): Evidence {
+        return Evidence.forConcept(
+            Evidence.reconstitute(evidence.id, uuid(), evidence.title, evidence.description)
+        );
     }
 
     private async ensureLinkedAuthoritiesExistAsCodeList(conceptSnapshot: ConceptSnapshot): Promise<void> {
