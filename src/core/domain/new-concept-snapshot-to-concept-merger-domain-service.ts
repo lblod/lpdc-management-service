@@ -18,7 +18,6 @@ import {
     BestuurseenheidRegistrationCodeFetcher
 } from "../port/driven/external/bestuurseenheid-registration-code-fetcher";
 import {CodeRepository, CodeSchema} from "../port/driven/persistence/code-repository";
-import {uniqBy} from "lodash";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 
 export class NewConceptSnapshotToConceptMergerDomainService {
@@ -63,9 +62,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             } else if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
 
                 console.log(`The versioned resource ${newConceptSnapshotId} is an older version of service ${conceptId}`);
-
-                const updatedConcept = this.addAsPreviousConceptSnapshot(newConceptSnapshot, concept);
-                await this._conceptRepository.update(updatedConcept, concept);
 
             } else {
 
@@ -180,42 +176,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.conceptTags,
             conceptSnapshot.snapshotType === SnapshotType.DELETE,
             conceptSnapshot.legalResources,
-        );
-    }
-
-    private addAsPreviousConceptSnapshot(conceptSnapshot: ConceptSnapshot, concept: Concept): Concept {
-        return new Concept(
-            concept.id,
-            concept.uuid,
-            concept.title,
-            concept.description,
-            concept.additionalDescription,
-            concept.exception,
-            concept.regulation,
-            concept.startDate,
-            concept.endDate,
-            concept.type,
-            concept.targetAudiences,
-            concept.themes,
-            concept.competentAuthorityLevels,
-            concept.competentAuthorities,
-            concept.executingAuthorityLevels,
-            concept.executingAuthorities,
-            concept.publicationMedia,
-            concept.yourEuropeCategories,
-            concept.keywords,
-            concept.requirements,
-            concept.procedures,
-            concept.websites,
-            concept.costs,
-            concept.financialAdvantages,
-            concept.productId,
-            concept.latestConceptSnapshot,
-            uniqBy([...concept.previousConceptSnapshots, conceptSnapshot.id], (iri) => iri.value),
-            concept.latestConceptSnapshot,
-            concept.conceptTags,
-            concept.isArchived,
-            concept.legalResources,
         );
     }
 

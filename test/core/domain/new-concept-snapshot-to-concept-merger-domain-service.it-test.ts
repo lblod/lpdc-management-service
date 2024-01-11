@@ -692,7 +692,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         }, 10000);
 
-        test('Only updates the previousConceptSnapshot data of the concept when newer version already processed', async () => {
+        test('Does not update the previousConceptSnapshot data of the concept when newer version already processed', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
@@ -729,7 +729,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const notUpdatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(notUpdatedConcept.title).toEqual(conceptSnapshot.title);
             expect(notUpdatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(notUpdatedConcept.previousConceptSnapshots.sort()).toEqual([updatedConceptSnapshot.id].sort());
+            expect(notUpdatedConcept.previousConceptSnapshots.sort()).toEqual([]);
             expect(notUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
 
             const anotherOldUpdatedConceptSnapshot =
@@ -748,7 +748,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const againNotUpdatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(againNotUpdatedConcept.title).toEqual(conceptSnapshot.title);
             expect(againNotUpdatedConcept.latestConceptSnapshot).toEqual(conceptSnapshot.id);
-            expect(againNotUpdatedConcept.previousConceptSnapshots.sort()).toEqual([anotherOldUpdatedConceptSnapshot.id, updatedConceptSnapshot.id].sort());
+            expect(againNotUpdatedConcept.previousConceptSnapshots.sort()).toEqual([]);
             expect(againNotUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         }, 10000);
 
@@ -855,7 +855,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(notUpdatedForThirdTimeUpdatedConcept.uuid).toMatch(uuidRegex);
             expect(notUpdatedForThirdTimeUpdatedConcept.title).toEqual(secondTimeUpdatedConceptSnapshot.title);
             expect(notUpdatedForThirdTimeUpdatedConcept.latestConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
-            expect(notUpdatedForThirdTimeUpdatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, thirdTimeButOlderUpdatedConceptSnapshot.id].sort());
+            expect(notUpdatedForThirdTimeUpdatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id].sort());
             expect(notUpdatedForThirdTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(secondTimeUpdatedConceptSnapshot.id);
 
             const fourthTimeUpdatedConceptSnapshot =
@@ -876,7 +876,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(fourthTimeUpdatedConcept.uuid).toMatch(uuidRegex);
             expect(fourthTimeUpdatedConcept.title).toEqual(fourthTimeUpdatedConceptSnapshot.title);
             expect(fourthTimeUpdatedConcept.latestConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
-            expect(fourthTimeUpdatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, secondTimeUpdatedConceptSnapshot.id, thirdTimeButOlderUpdatedConceptSnapshot.id].sort());
+            expect(fourthTimeUpdatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id, updatedConceptSnapshot.id, secondTimeUpdatedConceptSnapshot.id].sort());
             expect(fourthTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
 
         }, 30000);
