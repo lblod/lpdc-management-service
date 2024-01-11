@@ -510,8 +510,6 @@ describe('ConceptRepository', () => {
                     `<${ConceptTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${conceptId}> <http://schema.org/productID> """${ConceptTestBuilder.PRODUCT_ID}"""`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${ConceptTestBuilder.PROCEDURES[0].websites[0].id}>`,
-                    `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration> <${conceptDisplayConfigurationId}>`,
-                    `<${conceptDisplayConfigurationId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptDisplayConfiguration>`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${concept.previousConceptSnapshots[0]}>`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${concept.previousConceptSnapshots[1]}>`,
