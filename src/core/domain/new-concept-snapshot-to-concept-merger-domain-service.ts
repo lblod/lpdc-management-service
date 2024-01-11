@@ -52,42 +52,37 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
 
             const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedConceptSnapshots.map(iri => iri.value).includes(newConceptSnapshot.id.value);
-            const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
-
             if (newConceptSnapshotAlreadyLinkedToConcept) {
-
                 //TODO LPDC-848: when doing idempotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
                 console.log(`The versioned resource ${newConceptSnapshotId} is already processed on service ${conceptId}`);
-
-            } else if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
-
-                console.log(`The versioned resource ${newConceptSnapshotId} is an older version of service ${conceptId}`);
-
-            } else {
-
-                console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
-
-                const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
-                const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
-
-
-                if (!conceptExists) {
-                    const newConcept = this.asNewConcept(newConceptSnapshot);
-                    await this._conceptRepository.save(newConcept);
-                } else {
-                    const updatedConcept = this.asMergedConcept(newConceptSnapshot, concept, isConceptFunctionallyChanged);
-                    await this._conceptRepository.update(updatedConcept, concept);
-                }
-
-                await this.ensureLinkedAuthoritiesExistAsCodeList(newConceptSnapshot);
-
-                const isConceptArchived = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
-
-                await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptFunctionallyChanged, isConceptArchived);
-
-                await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
-
+                return;
             }
+
+            const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
+            if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
+                console.log(`The versioned resource ${newConceptSnapshotId} is an older version of service ${conceptId}`);
+                return;
+            }
+
+            console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
+            const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
+            const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
+
+            if (!conceptExists) {
+                const newConcept = this.asNewConcept(newConceptSnapshot);
+                await this._conceptRepository.save(newConcept);
+            } else {
+                const updatedConcept = this.asMergedConcept(newConceptSnapshot, concept, isConceptFunctionallyChanged);
+                await this._conceptRepository.update(updatedConcept, concept);
+            }
+
+            await this.ensureLinkedAuthoritiesExistAsCodeList(newConceptSnapshot);
+
+            const isConceptArchived = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
+
+            await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptFunctionallyChanged, isConceptArchived);
+
+            await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
         } catch (e) {
             console.error(`Error processing: ${JSON.stringify(newConceptSnapshotId)}`);
             console.error(e);
@@ -98,7 +93,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
     private async isNewerSnapshotThanAllPreviouslyApplied(conceptSnapshot: ConceptSnapshot, concept: Concept | undefined): Promise<boolean> {
         if (concept) {
             for (const appliedSnapshotId of concept.appliedConceptSnapshots) {
-                if(!await this._conceptSnapshotRepository.exists(appliedSnapshotId)) {
+                if (!await this._conceptSnapshotRepository.exists(appliedSnapshotId)) {
                     //why? when we cleared the idpc ldes graph, and are reloading all of them, there is no concept snapshot yet in the ldes graph ...
                     // (but if none are loaded yet, we return true... so we save incorrect data temporarily ... so we cannot clear this graph without users accessing, and have to thread carefully).
                     continue;
