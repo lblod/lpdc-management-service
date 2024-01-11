@@ -87,7 +87,6 @@ export class ConceptSnapshot {
                 conceptTags: ConceptTagType[],
                 legalResources: Iri[],
     ) {
-        //TODO LPDC-917: do safe copies ?
         this._id = requiredValue(id, 'id');
         requiredValue(title, 'title');
         requiredValue(title.nl, 'nl version in title');
@@ -162,59 +161,59 @@ export class ConceptSnapshot {
     }
 
     get targetAudiences(): TargetAudienceType[] {
-        return this._targetAudiences;
+        return [...this._targetAudiences];
     }
 
     get themes(): ThemeType[] {
-        return this._themes;
+        return [...this._themes];
     }
 
     get competentAuthorityLevels(): CompetentAuthorityLevelType[] {
-        return this._competentAuthorityLevels;
+        return [...this._competentAuthorityLevels];
     }
 
     get competentAuthorities(): Iri[] {
-        return this._competentAuthorities;
+        return [...this._competentAuthorities];
     }
 
     get executingAuthorityLevels(): ExecutingAuthorityLevelType[] {
-        return this._executingAuthorityLevels;
+        return [...this._executingAuthorityLevels];
     }
 
     get executingAuthorities(): Iri[] {
-        return this._executingAuthorities;
+        return [...this._executingAuthorities];
     }
 
     get publicationMedia(): PublicationMediumType[] {
-        return this._publicationMedia;
+        return [...this._publicationMedia];
     }
 
     get yourEuropeCategories(): YourEuropeCategoryType[] {
-        return this._yourEuropeCategories;
+        return [...this._yourEuropeCategories];
     }
 
     get keywords(): LanguageString[] {
-        return this._keywords;
+        return [...this._keywords];
     }
 
     get requirements(): Requirement[] {
-        return this._requirements;
+        return [...this._requirements];
     }
 
     get procedures(): Procedure[] {
-        return this._procedures;
+        return [...this._procedures];
     }
 
     get websites(): Website[] {
-        return this._websites;
+        return [...this._websites];
     }
 
     get costs(): Cost[] {
-        return this._costs;
+        return [...this._costs];
     }
 
     get financialAdvantages(): FinancialAdvantage[] {
-        return this._financialAdvantages;
+        return [...this._financialAdvantages];
     }
 
     get isVersionOfConcept(): Iri | undefined {
@@ -246,11 +245,11 @@ export class ConceptSnapshot {
     }
 
     get conceptTags(): ConceptTagType[] {
-        return this._conceptTags;
+        return [...this._conceptTags];
     }
 
     get legalResources(): Iri[] {
-        return this._legalResources;
+        return [...this._legalResources];
     }
 
     static isFunctionallyChanged(value: ConceptSnapshot, other: ConceptSnapshot): boolean {

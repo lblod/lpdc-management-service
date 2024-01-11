@@ -87,7 +87,6 @@ export class Concept {
                 isArchived: boolean,
                 legalResources: Iri[],
     ) {
-        //TODO LPDC-916: do safe copies ?
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
 
@@ -127,11 +126,11 @@ export class Concept {
     }
 
     get conceptLanguages(): Language[] {
-        return this._title.definedLanguages;
+        return [...this._title.definedLanguages];
     }
 
     get appliedSnapshots(): Iri[] {
-        return uniqBy([this._latestConceptSnapshot, ...this._previousConceptSnapshots], (iri) => iri.value);
+        return [...uniqBy([this._latestConceptSnapshot, ...this._previousConceptSnapshots], (iri) => iri.value)];
     }
 
     get id(): Iri {
@@ -175,59 +174,59 @@ export class Concept {
     }
 
     get targetAudiences(): TargetAudienceType[] {
-        return this._targetAudiences;
+        return [...this._targetAudiences];
     }
 
     get themes(): ThemeType[] {
-        return this._themes;
+        return [...this._themes];
     }
 
     get competentAuthorityLevels(): CompetentAuthorityLevelType[] {
-        return this._competentAuthorityLevels;
+        return [...this._competentAuthorityLevels];
     }
 
     get competentAuthorities(): Iri[] {
-        return this._competentAuthorities;
+        return [...this._competentAuthorities];
     }
 
     get executingAuthorityLevels(): ExecutingAuthorityLevelType[] {
-        return this._executingAuthorityLevels;
+        return [...this._executingAuthorityLevels];
     }
 
     get executingAuthorities(): Iri[] {
-        return this._executingAuthorities;
+        return [...this._executingAuthorities];
     }
 
     get publicationMedia(): PublicationMediumType[] {
-        return this._publicationMedia;
+        return [...this._publicationMedia];
     }
 
     get yourEuropeCategories(): YourEuropeCategoryType[] {
-        return this._yourEuropeCategories;
+        return [...this._yourEuropeCategories];
     }
 
     get keywords(): LanguageString[] {
-        return this._keywords;
+        return [...this._keywords];
     }
 
     get requirements(): Requirement[] {
-        return this._requirements;
+        return [...this._requirements];
     }
 
     get procedures(): Procedure[] {
-        return this._procedures;
+        return [...this._procedures];
     }
 
     get websites(): Website[] {
-        return this._websites;
+        return [...this._websites];
     }
 
     get costs(): Cost[] {
-        return this._costs;
+        return [...this._costs];
     }
 
     get financialAdvantages(): FinancialAdvantage[] {
-        return this._financialAdvantages;
+        return [...this._financialAdvantages];
     }
 
     get productId(): string {
@@ -239,7 +238,7 @@ export class Concept {
     }
 
     get previousConceptSnapshots(): Iri[] {
-        return this._previousConceptSnapshots;
+        return [...this._previousConceptSnapshots];
     }
 
     get latestFunctionallyChangedConceptSnapshot(): Iri {
@@ -247,7 +246,7 @@ export class Concept {
     }
 
     get conceptTags(): ConceptTagType[] {
-        return this._conceptTags;
+        return [...this._conceptTags];
     }
 
     get isArchived(): boolean {
@@ -255,7 +254,7 @@ export class Concept {
     }
 
     get legalResources(): Iri[] {
-        return this._legalResources;
+        return [...this._legalResources];
     }
 
 }

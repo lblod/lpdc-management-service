@@ -73,7 +73,7 @@ export class Procedure {
     }
 
     get websites(): Website[] {
-        return this._websites;
+        return [...this._websites];
     }
 
     static isFunctionallyChanged(value: Procedure[], other: Procedure[]): boolean {
