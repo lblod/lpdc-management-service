@@ -66,7 +66,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
     }
 
     async save(concept: Concept): Promise<void> {
-        const triples = new DomainToTriplesMapper().conceptToTriples(concept).map(s => s.toNT());
+        const triples = new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(concept).map(s => s.toNT());
 
         const query = `
             INSERT DATA { 
@@ -80,8 +80,8 @@ export class ConceptSparqlRepository implements ConceptRepository {
     }
 
     async update(concept: Concept, old: Concept): Promise<void> {
-        const oldTriples = new DomainToTriplesMapper().conceptToTriples(old).map(s => s.toNT());
-        const newTriples = new DomainToTriplesMapper().conceptToTriples(concept).map(s => s.toNT());
+        const oldTriples = new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(old).map(s => s.toNT());
+        const newTriples = new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(concept).map(s => s.toNT());
 
         const query = `
             WITH <${CONCEPT_GRAPH}>

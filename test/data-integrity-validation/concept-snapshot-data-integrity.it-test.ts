@@ -23,7 +23,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
     const sparqlQuerying = new SparqlQuerying(endPoint);
     const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endPoint);
     const graph = new Iri('http://mu.semte.ch/graphs/lpdc/ldes-data');
-    const domainToTriplesMapper = new DomainToTriplesMapper();
+    const domainToTriplesMapper = new DomainToTriplesMapper(graph);
 
     test.skip('Load all concept snapshots; print errors to console.log', async () => {
 
@@ -71,7 +71,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         const dataErrors = [];
 
         for (let i = 0; i < numberOfLoops; i++) {
-            let quadsFromRequeriedConceptSnapshots = [];
+            let quadsFromRequeriedConceptSnapshots: Statement[] = [];
 
             const before = new Date().valueOf();
 
@@ -86,7 +86,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
                     const conceptSnapshotForId = await repository.findById(id);
                     expect(conceptSnapshotForId.id).toEqual(id);
                     const quadsForConceptSnapshotForId =
-                        new DomainToTriplesMapper().conceptSnapshotToTriples(conceptSnapshotForId);
+                        new DomainToTriplesMapper(graph).conceptSnapshotToTriples(conceptSnapshotForId);
                     quadsFromRequeriedConceptSnapshots =
                         [...quadsForConceptSnapshotForId, ...quadsFromRequeriedConceptSnapshots];
                 } catch (e) {
@@ -100,10 +100,11 @@ describe('Concept Snapshot Data Integrity Validation', () => {
                 }
                 await wait(delayTime);
             }
+            const quadsFromRequeriedConceptSnapshotsAsStrings = quadsFromRequeriedConceptSnapshots.map(quad => quad.toString());
 
             const allRemainingQuadsOfGraphAsTurtle = allQuadsOfGraph
                 .map(q => q.toString())
-                .filter(q => !quadsFromRequeriedConceptSnapshots.includes(q));
+                .filter(q => !quadsFromRequeriedConceptSnapshotsAsStrings.includes(q));
 
             //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
             //fs.writeFileSync(`/tmp/remaining-quads.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));

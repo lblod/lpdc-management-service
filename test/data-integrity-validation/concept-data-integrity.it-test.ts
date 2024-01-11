@@ -24,7 +24,7 @@ describe('Concept Data Integrity Validation', () => {
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);
     const graph = new Iri(CONCEPT_GRAPH);
-    const domainToTriplesMapper = new DomainToTriplesMapper();
+    const domainToTriplesMapper = new DomainToTriplesMapper(graph);
 
     test.skip('Load all concepts; print errors to console.log', async () => {
 
@@ -104,7 +104,7 @@ describe('Concept Data Integrity Validation', () => {
         const dataErrors = [];
 
         for (let i = 0; i < numberOfLoops; i++) {
-            let quadsFromRequeriedConcepts = [];
+            let quadsFromRequeriedConcepts: Statement[] = [];
 
             const before = new Date().valueOf();
 
@@ -150,9 +150,11 @@ describe('Concept Data Integrity Validation', () => {
                 await wait(delayTime);
             }
 
+            const quadsFromRequeriedConceptsAsStrings = quadsFromRequeriedConcepts.map(quad => quad.toString());
+
             const allRemainingQuadsOfGraphAsTurtle = allQuadsOfGraph
                 .map(q => q.toString())
-                .filter(q => !quadsFromRequeriedConcepts.includes(q.toString()));
+                .filter(q => !quadsFromRequeriedConceptsAsStrings.includes(q));
 
             //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
             //fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
