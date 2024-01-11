@@ -47,9 +47,9 @@ export class ConceptSnapshot {
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
     private readonly _isVersionOfConcept: Iri | undefined;
-    private readonly _dateCreated: FormatPreservingDate | undefined;
-    private readonly _dateModified: FormatPreservingDate | undefined;
-    private readonly _generatedAtTime: FormatPreservingDate | undefined;
+    private readonly _dateCreated: FormatPreservingDate;
+    private readonly _dateModified: FormatPreservingDate;
+    private readonly _generatedAtTime: FormatPreservingDate;
     private readonly _productId: string;
     private readonly _snapshotType: SnapshotType | undefined;
     private readonly _conceptTags: ConceptTagType[];
@@ -79,9 +79,9 @@ export class ConceptSnapshot {
                 costs: Cost[],
                 financialAdvantages: FinancialAdvantage[],
                 isVersionOfConcept: Iri,
-                dateCreated: FormatPreservingDate | undefined,
-                dateModified: FormatPreservingDate | undefined,
-                generatedAtTime: FormatPreservingDate | undefined,
+                dateCreated: FormatPreservingDate,
+                dateModified: FormatPreservingDate,
+                generatedAtTime: FormatPreservingDate,
                 productId: string,
                 snapshotType: SnapshotType,
                 conceptTags: ConceptTagType[],
@@ -119,9 +119,9 @@ export class ConceptSnapshot {
         this._costs = [...costs].map(Cost.forConceptSnapshot);
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConceptSnapshot);
         this._isVersionOfConcept = isVersionOfConcept;
-        this._dateCreated = dateCreated;
-        this._dateModified = dateModified;
-        this._generatedAtTime = generatedAtTime;
+        this._dateCreated = requiredValue(dateCreated, 'dateCreated');
+        this._dateModified = requiredValue(dateModified, 'dateModified');
+        this._generatedAtTime = requiredValue(generatedAtTime, 'generatedAtTime');
         this._productId = requiredValue(productId, 'productId');
         this._snapshotType = requiredValue(snapshotType, 'snapshotType');
         this._conceptTags = requireNoDuplicates(asSortedArray(conceptTags), 'conceptTags');
@@ -224,15 +224,15 @@ export class ConceptSnapshot {
         return this._isVersionOfConcept;
     }
 
-    get dateCreated(): FormatPreservingDate | undefined {
+    get dateCreated(): FormatPreservingDate {
         return this._dateCreated;
     }
 
-    get dateModified(): FormatPreservingDate | undefined {
+    get dateModified(): FormatPreservingDate {
         return this._dateModified;
     }
 
-    get generatedAtTime(): FormatPreservingDate | undefined {
+    get generatedAtTime(): FormatPreservingDate {
         return this._generatedAtTime;
     }
 

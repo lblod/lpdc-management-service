@@ -142,6 +142,47 @@ describe('constructing', () => {
         expect(() => conceptTestBuilder.build()).toThrow(new Error('keywords should not contain duplicates'));
     });
 
+    describe('dateCreated', () => {
+
+        test('Invalid dateCreated throws error', () => {
+            expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateCreated should not be undefined'));
+        });
+
+        test('Undefined dateCreated throws error', () => {
+            expect(() => aFullConceptSnapshot().withDateCreated(undefined).build()).toThrow(new Error('dateCreated should not be undefined'));
+        });
+        test('Blank dateCreated throws error', () => {
+            expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of('')).build()).toThrow(new Error('dateCreated should not be undefined'));
+        });
+    });
+
+    describe('dateModified', () => {
+
+        test('Invalid dateModified throws error', () => {
+            expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateModified should not be undefined'));
+        });
+
+        test('Undefined dateModified throws error', () => {
+            expect(() => aFullConceptSnapshot().withDateModified(undefined).build()).toThrow(new Error('dateModified should not be undefined'));
+        });
+        test('Blank dateModified throws error', () => {
+            expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of('')).build()).toThrow(new Error('dateModified should not be undefined'));
+        });
+    });
+
+    describe('generatedAtTime', () => {
+
+        test('Invalid generatedAtTime throws error', () => {
+            expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('generatedAtTime should not be undefined'));
+        });
+
+        test('Undefined generatedAtTime throws error', () => {
+            expect(() => aFullConceptSnapshot().withGeneratedAtTime(undefined).build()).toThrow(new Error('generatedAtTime should not be undefined'));
+        });
+        test('Blank generatedAtTime throws error', () => {
+            expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of('')).build()).toThrow(new Error('generatedAtTime should not be undefined'));
+        });
+    });
     test('conceptTags with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT, ConceptTagType.YOUREUROPEVERPLICHT]);
         expect(() => conceptTestBuilder.build()).toThrow(new Error('conceptTags should not contain duplicates'));

@@ -36,7 +36,11 @@ export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
         .withTitle(ConceptTestBuilder.MINIMAL_TITLE)
         .withDescription(aMinimalLanguageString('Concept Snapshot Description').build())
         .withProductId(ConceptSnapshotTestBuilder.PRODUCT_ID)
-        .withSnapshotType(SnapshotType.CREATE);
+        .withSnapshotType(SnapshotType.CREATE)
+        .withDateCreated(ConceptSnapshotTestBuilder.DATE_CREATED)
+        .withDateModified(ConceptSnapshotTestBuilder.DATE_MODIFIED)
+        .withGeneratedAtTime(ConceptSnapshotTestBuilder.GENERATED_AT_TIME)
+        ;
 }
 
 export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {

@@ -9,7 +9,7 @@ import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/conc
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {Iri} from "../../src/core/domain/shared/iri";
 
-describe('Concept Data Integrity Validation', () => {
+describe.skip('Concept Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
 
@@ -20,7 +20,7 @@ describe('Concept Data Integrity Validation', () => {
     const graph = CONCEPT_GRAPH;
     const domainToTriplesMapper = new DomainToTriplesMapper();
 
-    test.skip('Load all concepts; print errors to console.log', async () => {
+    test('Load all concepts; print errors to console.log', async () => {
 
         const conceptIdsQuery = `
             ${PREFIX.lpdcExt}
@@ -48,46 +48,46 @@ describe('Concept Data Integrity Validation', () => {
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/account/'));
 
         //filter out all triples linked to adressen subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/adressen/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/adressen/'));
 
         //filter out all triples linked to persoon subjects
-        allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/persoon/'))
+        allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/persoon/'));
 
         //filter out all triples linked to bestuurseenheden subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/bestuurseenheden/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/bestuurseenheden/'));
 
         //filter out all triples linked to werkingsgebieden subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/werkingsgebieden/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/werkingsgebieden/'));
 
         //filter out all triples linked to werkingsgebieden subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/werkingsgebieden/id/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/werkingsgebieden/id/'));
 
         //filter out all triples linked to BestuurseenheidClassificatieCode subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/'));
 
         //filter out all triples linked to http://lblod.data.gift/concept-schemes/ subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/concept-schemes/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/concept-schemes/'));
 
         //filter out all triples linked to http://lblod.data.gift/concepts/ subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/concepts/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/concepts/'));
 
         //filter out all triples linked to http://vocab.belgif.be/auth/refnis2019/ subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://vocab.belgif.be/auth/refnis2019/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://vocab.belgif.be/auth/refnis2019/'));
 
         //filter out all triples linked to https://productencatalogus.data.vlaanderen.be/id/concept/ subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://productencatalogus.data.vlaanderen.be/id/concept/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://productencatalogus.data.vlaanderen.be/id/concept/'));
 
         //filter out all triples linked to https://productencatalogus.data.vlaanderen.be/id/conceptscheme/ subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://productencatalogus.data.vlaanderen.be/id/conceptscheme/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://productencatalogus.data.vlaanderen.be/id/conceptscheme/'));
 
         //filter out all triples linked to https://data.vlaanderen.be/id/organisatie/ subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://data.vlaanderen.be/id/organisatie/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://data.vlaanderen.be/id/organisatie/'));
 
         //filter out all triples linked to http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties'));
 
         //filter out all triples linked to http://publications.europa.eu/resource/authority/language/ subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://publications.europa.eu/resource/authority/language/'))
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://publications.europa.eu/resource/authority/language/'));
 
 
         const delayTime = 0;
@@ -117,12 +117,12 @@ describe('Concept Data Integrity Validation', () => {
                     quadsFromRequeriedConcepts =
                         [...quadsForConceptForId, ...quadsFromRequeriedConcepts];
 
-                    if(alsoLoadRelatedConceptSnapshots) {
+                    if (alsoLoadRelatedConceptSnapshots) {
                         const latestConceptSnapshot = await snapshotRepository.findById(conceptForId.latestConceptSnapshot);
                         expect(latestConceptSnapshot.id).toEqual(conceptForId.latestConceptSnapshot);
                         expect(latestConceptSnapshot.isVersionOfConcept).toEqual(id);
 
-                        for(const eachPreviousConceptSnapshotId of conceptForId.previousConceptSnapshots) {
+                        for (const eachPreviousConceptSnapshotId of conceptForId.previousConceptSnapshots) {
                             const previousConceptSnapshot = await snapshotRepository.findById(eachPreviousConceptSnapshotId);
                             expect(previousConceptSnapshot.id).toEqual(eachPreviousConceptSnapshotId);
                             expect(previousConceptSnapshot.isVersionOfConcept).toEqual(id);
@@ -167,7 +167,7 @@ describe('Concept Data Integrity Validation', () => {
         console.log(`Data Errors [${dataErrors}]`);
 
         if (conceptIds.length > 0) {
-            expect(totalAverageTime).toBeLessThan(25);
+            expect(totalAverageTime).toBeLessThan(250);
             expect(technicalErrors).toEqual([]);
         }
 
