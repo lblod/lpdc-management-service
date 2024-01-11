@@ -15,7 +15,7 @@ describe.skip('Concept Display Configuration Data Integrity Validation', () => {
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(endPoint);
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 
-    test('Load all concept display configurations; print errors to console.log', async () => {
+    test.skip('Load all concept display configurations; print errors to console.log', async () => {
 
         const query = `
             ${PREFIX.besluit}
