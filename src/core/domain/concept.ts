@@ -129,7 +129,7 @@ export class Concept {
         return [...this._title.definedLanguages];
     }
 
-    get appliedSnapshots(): Iri[] {
+    get appliedConceptSnapshots(): Iri[] {
         return [...uniqBy([this._latestConceptSnapshot, ...this._previousConceptSnapshots], (iri) => iri.value)];
     }
 

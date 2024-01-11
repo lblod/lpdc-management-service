@@ -220,7 +220,7 @@ export class ConceptTestBuilder {
     private financialAdvantages: FinancialAdvantage[] = [];
     private productId: string | undefined;
     private latestConceptSnapshot: Iri;
-    private previousConceptSnapshots: Iri[] = [];
+    private previousConceptSnapshots: Iri[] = []; //TODO LPDC-916: rename to previouslyAppliedConceptSnapshots
     private latestFunctionallyChangedConceptSnapshot: Iri;
     private conceptTags: ConceptTagType[] = [];
     private isArchived: boolean = false;

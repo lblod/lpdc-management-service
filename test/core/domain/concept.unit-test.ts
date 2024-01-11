@@ -18,10 +18,13 @@ import {Website} from "../../../src/core/domain/website";
 import {WebsiteTestBuilder} from "./website-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {
-    CompetentAuthorityLevelType, ConceptTagType,
-    ExecutingAuthorityLevelType, PublicationMediumType,
+    CompetentAuthorityLevelType,
+    ConceptTagType,
+    ExecutingAuthorityLevelType,
+    PublicationMediumType,
     TargetAudienceType,
-    ThemeType, YourEuropeCategoryType
+    ThemeType,
+    YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 
@@ -65,7 +68,7 @@ describe('constructing', () => {
         ]);
     });
 
-    test('applied snapshots', () => {
+    test('applied concept snapshots', () => {
         const latestConceptSnapshot = buildConceptSnapshotIri('a');
         const previousConceptSnapshot1 = buildConceptSnapshotIri('b');
         const previousConceptSnapshot2 = buildConceptSnapshotIri('c');
@@ -75,7 +78,7 @@ describe('constructing', () => {
                 .withPreviousConceptSnapshots([previousConceptSnapshot1, previousConceptSnapshot2])
                 .build();
 
-        expect(aConcept.appliedSnapshots).toEqual([latestConceptSnapshot, previousConceptSnapshot1, previousConceptSnapshot2]);
+        expect(aConcept.appliedConceptSnapshots).toEqual([latestConceptSnapshot, previousConceptSnapshot1, previousConceptSnapshot2]);
     });
 
     test('Undefined id throws error', () => {

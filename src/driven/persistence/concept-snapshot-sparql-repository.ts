@@ -5,6 +5,8 @@ import {Iri} from "../../core/domain/shared/iri";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
+import {CONCEPT_SNAPSHOT_LDES_GRAPH, PREFIX} from "../../../config";
+import {sparqlEscapeUri} from "../../../mu-helper";
 
 export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepository {
 
@@ -17,7 +19,7 @@ export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepositor
     }
 
     async findById(id: Iri): Promise<ConceptSnapshot> {
-        const ldesDataGraph = new Iri('http://mu.semte.ch/graphs/lpdc/ldes-data');
+        const ldesDataGraph = new Iri(CONCEPT_SNAPSHOT_LDES_GRAPH);
 
         const quads = await this.fetcher.fetch(
             ldesDataGraph,
@@ -39,5 +41,18 @@ export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepositor
 
         return mapper.conceptSnapshot(id);
     }
+
+    async exists(id: Iri): Promise<boolean> {
+        const query = `
+            ${PREFIX.lpdcExt}
+            ASK WHERE {
+                GRAPH ${sparqlEscapeUri(CONCEPT_SNAPSHOT_LDES_GRAPH)} {
+                    ${sparqlEscapeUri(id)} a lpdcExt:ConceptualPublicService .
+                }
+            }
+        `;
+        return this.querying.ask(query);
+    }
+
 
 }

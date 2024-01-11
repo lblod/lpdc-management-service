@@ -29,8 +29,8 @@ import {buildConceptSnapshotIri} from "../../core/domain/iri-test-builder";
 import {NS} from "../../../src/driven/persistence/namespaces";
 import {aMinimalLanguageString} from "../../core/domain/language-string-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {ConceptTestBuilder} from "../../core/domain/concept-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {CONCEPT_SNAPSHOT_LDES_GRAPH, PREFIX} from "../../../config";
 
 describe('ConceptSnapshotRepository', () => {
     const repository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -84,6 +84,36 @@ describe('ConceptSnapshotRepository', () => {
         });
     });
 
+    describe('exists', () => {
+        test('Concept snapshot with id exists', async () => {
+            const conceptSnapshot = aFullConceptSnapshot().build();
+            await repository.save(conceptSnapshot);
+
+            expect(await repository.exists(conceptSnapshot.id)).toBeTruthy();
+        });
+
+        test('Concept snapshot with id does not exist', async () => {
+            const concept = aFullConceptSnapshot().build();
+            await repository.save(concept);
+
+            const nonExistentConceptSnapshotId = buildConceptSnapshotIri('thisiddoesnotexist');
+
+            expect(await repository.exists(nonExistentConceptSnapshotId)).toBeFalsy();
+        });
+
+        test('When concept with id exists with different type then return false ', async () => {
+            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+            await directDatabaseAccess.insertData(
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
+                [
+                    `<${conceptSnapshotId}> a ex:someType`,
+                ],
+                [PREFIX.ex]);
+
+            expect(await repository.exists(conceptSnapshotId)).toBeFalsy();
+        });
+    });
+
     describe('Verify ontology and mapping', () => {
 
         test('Verify correct type', async () => {
@@ -98,7 +128,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
+            const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString('description').build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -139,7 +169,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - with start date but no end date', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
+            const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString('description').build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -536,7 +566,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - requirement without evidence', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
+            const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -591,7 +621,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - minimal requirement with minimal evidence', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
+            const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -658,7 +688,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - procedure without websites', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
+            const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
@@ -715,7 +745,7 @@ describe('ConceptSnapshotRepository', () => {
 
         test('Verify minimal mappings - procedure with minimal website', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            const conceptSnapshotTitle = ConceptTestBuilder.MINIMAL_TITLE;
+            const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
             const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;

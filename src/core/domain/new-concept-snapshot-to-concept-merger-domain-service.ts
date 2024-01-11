@@ -51,7 +51,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             const conceptExists = await this._conceptRepository.exists(conceptId);
             const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
 
-            const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedSnapshots.map(iri => iri.value).includes(newConceptSnapshot.id.value);
+            const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedConceptSnapshots.map(iri => iri.value).includes(newConceptSnapshot.id.value);
             const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
 
             if (newConceptSnapshotAlreadyLinkedToConcept) {
@@ -97,7 +97,12 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
     private async isNewerSnapshotThanAllPreviouslyApplied(conceptSnapshot: ConceptSnapshot, concept: Concept | undefined): Promise<boolean> {
         if (concept) {
-            for (const appliedSnapshotId of concept.appliedSnapshots) {
+            for (const appliedSnapshotId of concept.appliedConceptSnapshots) {
+                if(!await this._conceptSnapshotRepository.exists(appliedSnapshotId)) {
+                    //why? when we cleared the idpc ldes graph, and are reloading all of them, there is no concept snapshot yet in the ldes graph ...
+                    // (but if none are loaded yet, we return true... so we save incorrect data temporarily ... so we cannot clear this graph without users accessing, and have to thread carefully).
+                    continue;
+                }
                 const alreadyAppliedSnapshot = await this._conceptSnapshotRepository.findById(appliedSnapshotId);
                 if (conceptSnapshot.generatedAtTime.before(alreadyAppliedSnapshot.generatedAtTime)) {
                     return false;
@@ -171,7 +176,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             this.copyFinancialAdvantages(conceptSnapshot.financialAdvantages),
             conceptSnapshot.productId,
             conceptSnapshot.id,
-            concept.appliedSnapshots,
+            concept.appliedConceptSnapshots,
             isConceptFunctionallyChanged ? conceptSnapshot.id : concept.latestConceptSnapshot,
             conceptSnapshot.conceptTags,
             conceptSnapshot.snapshotType === SnapshotType.DELETE,
@@ -251,8 +256,9 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         return this._codeRepository.save(CodeSchema.IPDCOrganisaties, codeListData.uri, codeListData.prefLabel, new Iri('https://wegwijs.vlaanderen.be'));
     }
 
-    private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: Iri): Promise<boolean> {
-        if (!currentSnapshotId) {
+    private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: Iri | undefined): Promise<boolean> {
+        if (!currentSnapshotId
+            || !await this._conceptSnapshotRepository.exists(currentSnapshotId)) {
             return false;
         }
 

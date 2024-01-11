@@ -8,7 +8,13 @@ import {
     aMinimalConceptSnapshot,
     ConceptSnapshotTestBuilder
 } from "./concept-snapshot-test-builder";
-import {buildBestuurseenheidIri, buildCodexVlaanderenIri, buildConceptIri, buildInstanceIri} from "./iri-test-builder";
+import {
+    buildBestuurseenheidIri,
+    buildCodexVlaanderenIri,
+    buildConceptIri,
+    buildConceptSnapshotIri,
+    buildInstanceIri
+} from "./iri-test-builder";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 import {CONCEPT_GRAPH, PREFIX} from "../../../config";
@@ -45,6 +51,7 @@ import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-
 import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+import {aMinimalConcept} from "./concept-test-builder";
 
 describe('merges a new concept snapshot into a concept', () => {
 
@@ -751,6 +758,100 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(againNotUpdatedConcept.previousConceptSnapshots.sort()).toEqual([]);
             expect(againNotUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
         }, 10000);
+
+        test('Can handle updating a concept where the linked conceptsnapshots do not exist yet (because we are reloading entire ldes stream again)', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+
+            const previousConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(previousConceptSnapshot);
+
+            const concept = aMinimalConcept()
+                .withId(isVersionOfConceptId)
+                .withLatestConceptSnapshot(previousConceptSnapshot.id)
+                .withLatestFunctionallyChangedConceptSnapshot(previousConceptSnapshot.id)
+                .withPreviousConceptSnapshots(
+                    [
+                        buildConceptSnapshotIri(uuid()),
+                        buildConceptSnapshotIri(uuid()),
+                        buildConceptSnapshotIri(uuid()),
+                        buildConceptSnapshotIri(uuid()),
+                        buildConceptSnapshotIri(uuid()),
+                    ]
+                )
+                .build();
+            await conceptRepository.save(concept);
+
+            const conceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withTitle(
+                        suffixUnique(
+                            LanguageString.of(
+                                ConceptSnapshotTestBuilder.TITLE_EN,
+                                ConceptSnapshotTestBuilder.TITLE_NL,
+                                ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
+                                ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL,
+                                ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL,
+                                ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL)))
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.title).toEqual(conceptSnapshot.title);
+        });
+
+        test('Can handle updating a concept where the linked conceptsnapshots do not exist yet, even the previous one (because we are reloading entire ldes stream again)', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const previousConceptSnapshotId = buildConceptSnapshotIri(uuid());
+
+            const concept = aMinimalConcept()
+                .withId(isVersionOfConceptId)
+                .withLatestConceptSnapshot(previousConceptSnapshotId)
+                .withLatestFunctionallyChangedConceptSnapshot(previousConceptSnapshotId)
+                .withPreviousConceptSnapshots(
+                    [
+                        buildConceptSnapshotIri(uuid()),
+                        buildConceptSnapshotIri(uuid()),
+                        buildConceptSnapshotIri(uuid()),
+                        buildConceptSnapshotIri(uuid()),
+                        buildConceptSnapshotIri(uuid()),
+                    ]
+                )
+                .build();
+            await conceptRepository.save(concept);
+
+            const conceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withTitle(
+                        suffixUnique(
+                            LanguageString.of(
+                                ConceptSnapshotTestBuilder.TITLE_EN,
+                                ConceptSnapshotTestBuilder.TITLE_NL,
+                                ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
+                                ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL,
+                                ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL,
+                                ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL)))
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.title).toEqual(conceptSnapshot.title);
+        });
 
         test('Updates a concept from a concept snapshot that is archived', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
