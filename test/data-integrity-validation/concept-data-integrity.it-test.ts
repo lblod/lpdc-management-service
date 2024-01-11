@@ -8,8 +8,14 @@ import {shuffle, sortedUniq, uniq} from "lodash";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {Iri} from "../../src/core/domain/shared/iri";
+import {asSortedArray} from "../../src/core/domain/shared/collections-helper";
+import {
+    DatastoreToQuadsRecursiveSparqlFetcher
+} from "../../src/driven/persistence/datastore-to-quads-recursive-sparql-fetcher";
+import {NS} from "../../src/driven/persistence/namespaces";
+import {sparqlEscapeUri} from "../../mu-helper";
 
-describe.skip('Concept Data Integrity Validation', () => {
+describe('Concept Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
 
@@ -17,15 +23,15 @@ describe.skip('Concept Data Integrity Validation', () => {
     const snapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);
-    const graph = CONCEPT_GRAPH;
+    const graph = new Iri(CONCEPT_GRAPH);
     const domainToTriplesMapper = new DomainToTriplesMapper();
 
-    test('Load all concepts; print errors to console.log', async () => {
+    test.skip('Load all concepts; print errors to console.log', async () => {
 
         const conceptIdsQuery = `
             ${PREFIX.lpdcExt}
             SELECT ?id WHERE {
-                GRAPH <${graph}> {
+                GRAPH ${sparqlEscapeUri(graph)} {
                     ?id a lpdcExt:ConceptualPublicService .
                 }
             }
@@ -35,14 +41,14 @@ describe.skip('Concept Data Integrity Validation', () => {
         const allTriplesOfGraphQuery = `
              ${PREFIX.lpdcExt}
             SELECT ?s ?p ?o WHERE {
-                GRAPH <${graph}> {
+                GRAPH ${sparqlEscapeUri(graph)} {
                     ?s ?p ?o
                 }
             }
         `;
 
         const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
-        let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, graph));
+        let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, graph.value));
 
         //filter out all triples linked to account subjects
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/account/'));
@@ -51,7 +57,7 @@ describe.skip('Concept Data Integrity Validation', () => {
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/adressen/'));
 
         //filter out all triples linked to persoon subjects
-        allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/persoon/'));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/persoon/'));
 
         //filter out all triples linked to bestuurseenheden subjects
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/bestuurseenheden/'));
@@ -146,7 +152,7 @@ describe.skip('Concept Data Integrity Validation', () => {
 
             const allRemainingQuadsOfGraphAsTurtle = allQuadsOfGraph
                 .map(q => q.toString())
-                .filter(q => !quadsFromRequeriedConcepts.includes(q));
+                .filter(q => !quadsFromRequeriedConcepts.includes(q.toString()));
 
             //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
             //fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
@@ -172,6 +178,49 @@ describe.skip('Concept Data Integrity Validation', () => {
         }
 
     }, 60000 * 15 * 100);
+
+    test.skip('Load one concept and print quads', async () => {
+        const id = new Iri('https://ipdc.vlaanderen.be/id/concept/0b0b6fe0-995a-49ef-a596-3267d9bf5c97');
+        const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endPoint);
+
+        const allQuads = await fetcher.fetch(graph, id, [
+                NS.lpdcExt('hasConceptDisplayConfiguration').value,
+            ],
+            [
+                NS.lpdcExt('yourEuropeCategory').value,
+                NS.lpdcExt('targetAudience').value,
+                NS.m8g('thematicArea').value,
+                NS.lpdcExt('competentAuthorityLevel').value,
+                NS.m8g('hasCompetentAuthority').value,
+                NS.lpdcExt('executingAuthorityLevel').value,
+                NS.lpdcExt('hasExecutingAuthority').value,
+                NS.lpdcExt('publicationMedium').value,
+                NS.dct("type").value,
+                NS.lpdcExt("conceptTag").value,
+                NS.adms('status').value,
+                NS.m8g('hasLegalResource').value,
+            ],
+            [
+                NS.skos('Concept').value,
+                NS.lpdcExt('ConceptDisplayConfiguration').value,
+                NS.besluit('Bestuurseenheid').value,
+                NS.m8g('PublicOrganisation').value,
+                NS.eli('LegalResource').value,
+                NS.eliIncorrectlyInDatabase('LegalResource').value,
+            ]);
+        console.log('recursive queries');
+        const allQuadsAsStrings = asSortedArray(allQuads.map(q => q.toString()));
+        console.log(allQuadsAsStrings.join('\n'));
+
+        const concept = await repository.findById(id);
+        const conceptToTriples = domainToTriplesMapper.conceptToTriples(concept);
+        console.log('saving back');
+        const allConceptsToTriplesAsStrings = asSortedArray(conceptToTriples.map(q => q.toString()));
+        console.log(allConceptsToTriplesAsStrings.join('\n'));
+
+        expect(allQuadsAsStrings).toEqual(allConceptsToTriplesAsStrings);
+
+    });
 
     function wait(milliseconds: number) {
         return new Promise(resolve => {

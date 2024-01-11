@@ -11,6 +11,8 @@ import {Iri} from "../../src/core/domain/shared/iri";
 import {
     DatastoreToQuadsRecursiveSparqlFetcher
 } from "../../src/driven/persistence/datastore-to-quads-recursive-sparql-fetcher";
+import {NS} from "../../src/driven/persistence/namespaces";
+import {sparqlEscapeUri} from "../../mu-helper";
 
 describe('Concept Snapshot Data Integrity Validation', () => {
 
@@ -28,7 +30,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         const conceptSnapshotIdsQuery = `
              ${PREFIX.lpdcExt}
             SELECT ?id WHERE {
-                GRAPH <${graph}> {
+                GRAPH ${sparqlEscapeUri(graph)} {
                     ?id a lpdcExt:ConceptualPublicService .
                 }
             }
@@ -38,7 +40,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         const allTriplesOfGraphQuery = `
              ${PREFIX.lpdcExt}
             SELECT ?s ?p ?o WHERE {
-                GRAPH <${graph}> {
+                GRAPH ${sparqlEscapeUri(graph)} {
                     ?s ?p ?o
                 }
             }
@@ -131,7 +133,18 @@ describe('Concept Snapshot Data Integrity Validation', () => {
     test.skip('Load one concept snapshot and print quads', async () => {
         const id = new Iri('https://ipdc.vlaanderen.be/id/conceptsnapshot/0d2a2f5a-7213-483d-9fb9-abe0cbac0348');
 
-        const allQuads = await fetcher.fetch(graph, id, [], [], []);
+        const allQuads = await fetcher.fetch(graph, id, [],
+            [
+                NS.m8g('hasLegalResource').value,
+            ],
+            [
+                NS.skos('Concept').value,
+                NS.lpdcExt('ConceptDisplayConfiguration').value,
+                NS.besluit('bestuurseenheid').value,
+                NS.m8g('PublicOrganisation').value,
+                NS.eli('LegalResource').value,
+                NS.eliIncorrectlyInDatabase('LegalResource').value,
+            ]);
         console.log('recursive queries');
         const allQuadsAsStrings = asSortedArray(allQuads.map(q => q.toString()));
         console.log(allQuadsAsStrings.join('\n'));
