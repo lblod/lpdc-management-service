@@ -23,9 +23,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
         const quads = await this.fetcher.fetch(
             new Iri(CONCEPT_GRAPH),
             id,
-            [
-                NS.lpdcExt('hasConceptDisplayConfiguration').value,
-            ],
+            [],
             [
                 NS.lpdcExt('yourEuropeCategory').value,
                 NS.lpdcExt('targetAudience').value,
