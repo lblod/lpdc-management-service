@@ -9,6 +9,7 @@ import {buildConceptIri} from "../../core/domain/iri-test-builder";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {aMinimalLanguageString} from "../../core/domain/language-string-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {LanguageString} from "../../../src/core/domain/language-string";
 
 describe('ConceptRepository', () => {
     const repository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -40,6 +41,17 @@ describe('ConceptRepository', () => {
             expect(actualConcept).toEqual(concept);
         });
 
+        test('When minimal concept with incomplete title exists with id, then return concept', async () => {
+            const concept = aMinimalConcept().withTitle(LanguageString.of(undefined, ConceptTestBuilder.TITLE_NL)).build();
+            await repository.save(concept);
+
+            const anotherConcept = aMinimalConcept().build();
+            await repository.save(anotherConcept);
+
+            const actualConcept = await repository.findById(concept.id);
+
+            expect(actualConcept).toEqual(concept);
+        });
 
         test('When concept does not exist with id, then throw error', async () => {
             const concept = aFullConcept().build();
@@ -116,9 +128,7 @@ describe('ConceptRepository', () => {
                 [
                     `<${conceptId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/core/uuid> """${concept.uuid}"""`,
-                    `<${conceptId}> <http://purl.org/dc/terms/title> """${conceptTitle.en}"""@en`,
                     `<${conceptId}> <http://purl.org/dc/terms/title> """${conceptTitle.nl}"""@nl`,
-                    `<${conceptId}> <http://purl.org/dc/terms/title> """${conceptTitle.nlFormal}"""@nl-BE-x-formal`,
                     `<${conceptId}> <http://purl.org/dc/terms/description> """${conceptDescription.nl}"""@nl`,
                     `<${conceptId}> <http://schema.org/productID> """${conceptProductId}"""`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,

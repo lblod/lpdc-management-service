@@ -118,10 +118,7 @@ export class ConceptTestBuilder {
     public static readonly TITLE_NL_INFORMAL = 'Concept Title - nl-informal';
     public static readonly TITLE_NL_GENERATED_FORMAL = 'Concept Title - nl-generated-formal';
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Concept Title - nl-generated-informal';
-    public static readonly MINIMAL_TITLE = aMinimalLanguageString()
-        .withEn(ConceptTestBuilder.TITLE_EN)
-        .withNl(ConceptTestBuilder.TITLE_NL)
-        .withNlFormal(ConceptTestBuilder.TITLE_NL_FORMAL).build();
+    public static readonly MINIMAL_TITLE = aMinimalLanguageString().withNl(ConceptTestBuilder.TITLE_NL).build();
 
     public static readonly DESCRIPTION_EN = 'Concept Description - en';
     public static readonly DESCRIPTION_NL = 'Concept Description - nl';

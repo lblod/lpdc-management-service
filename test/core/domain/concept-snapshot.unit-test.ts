@@ -25,7 +25,7 @@ import {
 } from "../../../src/core/domain/types";
 import {buildCodexVlaanderenIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
-import {aFullLanguageString, aMinimalLanguageString, LanguageStringTestBuilder} from "./language-string-test-builder";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {Evidence} from "../../../src/core/domain/evidence";
@@ -193,32 +193,7 @@ describe('constructing', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withLegalResources([buildCodexVlaanderenIri(iri), buildCodexVlaanderenIri(iri)]);
         expect(() => conceptTestBuilder.build()).toThrow(new Error('legalResources should not contain duplicates'));
     });
-
-    describe('conceptlanguages', () => {
-        test('when 3 languages are present, no error is thrown', () => {
-            const value = 'language';
-            const title = aMinimalLanguageString()
-                .withEn(`${value}${LanguageStringTestBuilder.EN}`)
-                .withNl(`${value}${LanguageStringTestBuilder.NL}`)
-                .withNlFormal(`${value}${LanguageStringTestBuilder.NL_FORMAL}`).build();
-            expect(() => aFullConceptSnapshot().withTitle(title).build()).not.toThrow();
-        });
-        test('when more then 3 languages are present, no error is thrown', () => {
-            const value = 'language';
-            const title = aFullLanguageString(value).build();
-            expect(() => aFullConceptSnapshot().withTitle(title).build()).not.toThrow();
-        });
-
-        test('when fewer then 3 languages are present, no error is thrown', () => {
-            const value = 'language';
-            const title = aMinimalLanguageString()
-                .withEn(`${value}${LanguageStringTestBuilder.EN}`)
-                .withNl(`${value}${LanguageStringTestBuilder.NL}`);
-
-            expect(() => aFullConceptSnapshot().withTitle(title.build()).build()).toThrow(new Error('conceptLanguages does not contain at least 3 values'));
-        });
-    });
-
+    
     describe('cost ', () => {
         test('valid cost does not throw error', () => {
             const validCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(CostTestBuilder.TITLE).build(),

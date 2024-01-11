@@ -5,7 +5,7 @@ import {buildCodexVlaanderenIri, buildConceptSnapshotIri} from "./iri-test-build
 import {uuid} from "../../../mu-helper";
 import {CostTestBuilder} from "./cost-test-builder";
 import {Cost} from "../../../src/core/domain/cost";
-import {aFullLanguageString, aMinimalLanguageString, LanguageStringTestBuilder} from "./language-string-test-builder";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
@@ -294,31 +294,6 @@ describe('constructing', () => {
                 const invalidRequirement = aFullRequirement().withEvidence(invalidEvidence).build();
 
                 expect(() => aFullConcept().withRequirements([invalidRequirement]).build()).toThrow();
-            });
-        });
-
-        describe('conceptlanguages', () => {
-            test('when 3 languages are present, no error is thrown', () => {
-                const value = 'language';
-                const title = aMinimalLanguageString()
-                    .withEn(`${value}${LanguageStringTestBuilder.EN}`)
-                    .withNl(`${value}${LanguageStringTestBuilder.NL}`)
-                    .withNlFormal(`${value}${LanguageStringTestBuilder.NL_FORMAL}`).build();
-                expect(() => aFullConcept().withTitle(title).build()).not.toThrow();
-            });
-            test('when more then 3 languages are present, no error is thrown', () => {
-                const value = 'language';
-                const title = aFullLanguageString(value).build();
-                expect(() => aFullConcept().withTitle(title).build()).not.toThrow();
-            });
-
-            test('when fewer then 3 languages are present, no error is thrown', () => {
-                const value = 'language';
-                const title = aMinimalLanguageString()
-                    .withEn(`${value}${LanguageStringTestBuilder.EN}`)
-                    .withNl(`${value}${LanguageStringTestBuilder.NL}`);
-
-                expect(() => aFullConcept().withTitle(title.build()).build()).toThrow(new Error('conceptLanguages does not contain at least 3 values'));
             });
         });
     });

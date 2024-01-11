@@ -18,7 +18,7 @@ import {
     YourEuropeCategoryType
 } from "./types";
 import {Language} from "./language";
-import {Invariant, requiredValue, requireNoDuplicates} from "./shared/invariant";
+import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {uniqBy} from "lodash";
 
 export class Concept {
@@ -93,10 +93,7 @@ export class Concept {
 
         requiredValue(title, 'title');
         requiredValue(title.nl, 'nl version in title');
-        const invariant3ConceptLanguages = Invariant.require(title.definedLanguages, 'conceptLanguages');
-        invariant3ConceptLanguages.to(invariant3ConceptLanguages.haveAtLeastXAmountOfValues(3));
         this._title = title;
-
         requiredValue(description, 'description');
         requiredValue(description.nl, 'nl version in description');
         this._description = description;
