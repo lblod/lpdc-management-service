@@ -1,8 +1,9 @@
 import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
-import {PREFIX} from "../../config";
+import {PREFIX, PUBLIC_GRAPH} from "../../config";
 import {Iri} from "../../src/core/domain/shared/iri";
+import {sparqlEscapeUri} from "../../mu-helper";
 
 describe('Bestuurseenheid Data Integrity Validation', () => {
 
@@ -16,7 +17,7 @@ describe('Bestuurseenheid Data Integrity Validation', () => {
         const query = `
             ${PREFIX.besluit}
             SELECT ?id WHERE {
-                GRAPH <http://mu.semte.ch/graphs/public> {
+                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                     ?id a besluit:Bestuurseenheid .
                 }
             }

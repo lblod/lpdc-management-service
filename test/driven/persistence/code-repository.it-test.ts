@@ -2,7 +2,7 @@ import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
-import {PREFIX} from "../../../config";
+import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
@@ -17,7 +17,7 @@ describe('Code Repository', () => {
             const someIri = new Iri(`http://some-iri/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/public",
+                PUBLIC_GRAPH,
                 [`<${someIri}> a skos:Concept`,
                     `<${someIri}> skos:inScheme dvcs:IPDCOrganisaties`,
 
@@ -36,7 +36,7 @@ describe('Code Repository', () => {
             const anotherIri = new Iri(`http://some-iri/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/public",
+                PUBLIC_GRAPH,
                 [`<${someIri}> a skos:Concept`,
                     `<${someIri}> skos:inScheme dvcs:IPDCOrganisaties`,
 
@@ -55,7 +55,7 @@ describe('Code Repository', () => {
             const someIri = new Iri(`http://some-iri/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/public",
+                PUBLIC_GRAPH,
                 [`<${someIri}> a skos:SomeOtherType`,
                     `<${someIri}> skos:inScheme dvcs:IPDCOrganisaties`,
 
@@ -73,7 +73,7 @@ describe('Code Repository', () => {
             const someIri = new Iri(`http://some-iri/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/public",
+                PUBLIC_GRAPH,
                 [`<${someIri}> a skos:Concept`,
                     `<${someIri}> skos:inScheme dvcs:SomeOtherScheme`,
 
@@ -102,7 +102,7 @@ describe('Code Repository', () => {
             ${PREFIX.mu}
             ${PREFIX.rdfs}            
             SELECT ?uuid WHERE {
-                GRAPH <http://mu.semte.ch/graphs/public> {
+                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                     ${sparqlEscapeUri(someIri)} a skos:Concept;
                         skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties> ;
                         skos:topConceptOf <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties> ;

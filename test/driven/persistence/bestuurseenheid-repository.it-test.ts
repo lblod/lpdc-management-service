@@ -7,6 +7,7 @@ import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
 import {buildBestuurseenheidIri} from "../../core/domain/iri-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {PUBLIC_GRAPH} from "../../../config";
 
 describe('BestuurseenheidRepository', () => {
     const repository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -67,7 +68,7 @@ describe('BestuurseenheidRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/public",
+                PUBLIC_GRAPH,
                 [`<${bestuurseenheidId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
                     `<${bestuurseenheidId}> <http://mu.semte.ch/vocabularies/core/uuid> """${bestuurseenheidUuid}"""`,
                     `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
@@ -83,7 +84,7 @@ describe('BestuurseenheidRepository', () => {
             const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/public",
+                PUBLIC_GRAPH,
                 [`<${bestuurseenheidId}> a <http://example.com/ns#SomeOtherType>`,
                     `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
                     `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,

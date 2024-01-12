@@ -11,7 +11,7 @@ import {
 import {buildBestuurseenheidIri, buildCodexVlaanderenIri, buildConceptIri, buildInstanceIri} from "./iri-test-builder";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
-import {CONCEPT_GRAPH, PREFIX} from "../../../config";
+import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {NS} from "../../../src/driven/persistence/namespaces";
 import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
 import {
@@ -945,7 +945,7 @@ describe('merges a new concept snapshot into a concept', () => {
             instanceRepository);
 
         await directDatabaseAccess.insertData(
-            'http://mu.semte.ch/graphs/public',
+            PUBLIC_GRAPH,
             [
                 `${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)} a skos:ConceptScheme`,
             ],
@@ -1269,7 +1269,7 @@ describe('merges a new concept snapshot into a concept', () => {
         ].filter(t => t !== undefined);
         if (triples.length > 0) {
             directDatabaseAccess.insertData(
-                CONCEPT_GRAPH,
+                PUBLIC_GRAPH,
                 triples,
                 [
                     PREFIX.skos,

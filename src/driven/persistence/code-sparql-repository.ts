@@ -1,6 +1,6 @@
 import {CodeRepository, CodeSchema} from "../../core/port/driven/persistence/code-repository";
 import {SparqlQuerying} from "./sparql-querying";
-import {PREFIX} from "../../../config";
+import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {sparqlEscapeString, sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {Iri} from "../../core/domain/shared/iri";
 import {NS} from "./namespaces";
@@ -32,7 +32,7 @@ export class CodeSparqlRepository implements CodeRepository {
         ${PREFIX.mu}
         ${PREFIX.rdfs}
         INSERT DATA {
-          GRAPH <http://mu.semte.ch/graphs/public> {
+          GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
             ${sparqlEscapeUri(id)} a skos:Concept.
             ${sparqlEscapeUri(id)} skos:inScheme ${sparqlEscapeUri(NS.dvcs(schema).value)}.
             ${sparqlEscapeUri(id)} skos:topConceptOf ${sparqlEscapeUri(NS.dvcs(schema).value)}.

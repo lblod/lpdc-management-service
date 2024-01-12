@@ -23,15 +23,15 @@ describe('Concept Data Integrity Validation', () => {
     const snapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);
-    const graph = new Iri(CONCEPT_GRAPH);
-    const domainToTriplesMapper = new DomainToTriplesMapper(graph);
+    const conceptGraph = new Iri(CONCEPT_GRAPH);
+    const domainToTriplesMapper = new DomainToTriplesMapper(conceptGraph);
 
     test.skip('Load all concepts; print errors to console.log', async () => {
 
         const conceptIdsQuery = `
             ${PREFIX.lpdcExt}
             SELECT ?id WHERE {
-                GRAPH ${sparqlEscapeUri(graph)} {
+                GRAPH ${sparqlEscapeUri(conceptGraph)} {
                     ?id a lpdcExt:ConceptualPublicService .
                 }
             }
@@ -41,14 +41,14 @@ describe('Concept Data Integrity Validation', () => {
         const allTriplesOfGraphQuery = `
              ${PREFIX.lpdcExt}
             SELECT ?s ?p ?o WHERE {
-                GRAPH ${sparqlEscapeUri(graph)} {
+                GRAPH ${sparqlEscapeUri(conceptGraph)} {
                     ?s ?p ?o
                 }
             }
         `;
 
         const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
-        let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, graph.value));
+        let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, conceptGraph.value));
 
         //filter out all triples linked to account subjects
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/account/'));
@@ -185,7 +185,7 @@ describe('Concept Data Integrity Validation', () => {
         const id = new Iri('https://ipdc.vlaanderen.be/id/concept/0b0b6fe0-995a-49ef-a596-3267d9bf5c97');
         const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endPoint);
 
-        const allQuads = await fetcher.fetch(graph, id, [
+        const allQuads = await fetcher.fetch(conceptGraph, id, [
                 NS.lpdcExt('hasConceptDisplayConfiguration').value,
             ],
             [

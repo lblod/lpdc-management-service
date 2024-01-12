@@ -1,11 +1,12 @@
 import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
-import {CONCEPT_GRAPH, PREFIX} from "../../config";
+import {CONCEPT_GRAPH, PREFIX, PUBLIC_GRAPH} from "../../config";
 import {
     ConceptDisplayConfigurationSparqlTestRepository
 } from "../driven/persistence/concept-display-configuration-sparql-test-repository";
 import {Iri} from "../../src/core/domain/shared/iri";
+import {sparqlEscapeUri} from "../../mu-helper";
 
 describe('Concept Display Configuration Data Integrity Validation', () => {
 
@@ -20,7 +21,7 @@ describe('Concept Display Configuration Data Integrity Validation', () => {
         const query = `
             ${PREFIX.besluit}
             SELECT ?id WHERE {
-                GRAPH <http://mu.semte.ch/graphs/public> {
+                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                     ?id a besluit:Bestuurseenheid .
                 }
             }

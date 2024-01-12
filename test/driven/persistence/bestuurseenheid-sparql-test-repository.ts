@@ -3,7 +3,7 @@ import {
     BestuurseenheidSparqlRepository
 } from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
-import {PREFIX} from "../../../config";
+import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {sparqlEscapeString, sparqlEscapeUri} from "../../../mu-helper";
 
 export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRepository {
@@ -20,7 +20,7 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
             ${PREFIX.mu}
             
             INSERT DATA { 
-                GRAPH <http://mu.semte.ch/graphs/public> {
+                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                     ${sparqlEscapeUri(bestuurseenheid.id)} a besluit:Bestuurseenheid .
                     ${sparqlEscapeUri(bestuurseenheid.id)} skos:prefLabel ${sparqlEscapeString(bestuurseenheid.prefLabel)} .
                     ${classificatieUri ? `${sparqlEscapeUri(bestuurseenheid.id)} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .` : ''}

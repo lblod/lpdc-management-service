@@ -3,11 +3,12 @@ import {Iri} from "../../core/domain/shared/iri";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode,} from "../../core/domain/bestuurseenheid";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {SparqlQuerying} from "./sparql-querying";
-import {PREFIX} from "../../../config";
+import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 
 export class BestuurseenheidSparqlRepository implements BestuurseenheidRepository {
 
     protected readonly querying: SparqlQuerying;
+
     constructor(endpoint?: string) {
         this.querying = new SparqlQuerying(endpoint);
     }
@@ -18,7 +19,7 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
             ${PREFIX.besluit}
             ${PREFIX.mu}
             SELECT ?id ?uuid ?prefLabel ?classificatieUri WHERE {
-                GRAPH <http://mu.semte.ch/graphs/public> {
+                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                     VALUES ?id {
                         ${sparqlEscapeUri(id)}
                     }
@@ -46,7 +47,7 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
     }
 
     mapBestuurseenheidClassificatieUriToCode(classificatieCodeUri: BestuurseenheidClassificatieCodeUri | undefined): BestuurseenheidClassificatieCode | undefined {
-        if(!classificatieCodeUri) {
+        if (!classificatieCodeUri) {
             return undefined;
         }
 
