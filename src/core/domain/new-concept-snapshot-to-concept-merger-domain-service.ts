@@ -18,6 +18,7 @@ import {
     BestuurseenheidRegistrationCodeFetcher
 } from "../port/driven/external/bestuurseenheid-registration-code-fetcher";
 import {CodeRepository, CodeSchema} from "../port/driven/persistence/code-repository";
+import {uniqBy} from "lodash";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 
 export class NewConceptSnapshotToConceptMergerDomainService {
@@ -51,13 +52,26 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             const conceptExists = await this._conceptRepository.exists(conceptId);
             const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
 
+            const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedConceptSnapshots.map(iri => iri.value).includes(newConceptSnapshot.id.value);
+
+            if (newConceptSnapshotAlreadyLinkedToConcept) {
+                //TODO LPDC-848: when doing idempotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
+                console.log(`The versioned resource <${newConceptSnapshotId}> is already processed on service <${conceptId}>`);
+
+                return;
+            }
+
             const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
             if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
-                console.log(`The versioned resource ${newConceptSnapshotId} is an older version of service ${conceptId}`);
+                console.log(`The versioned resource <${newConceptSnapshotId}> is an older version of service <${conceptId}>`);
+                const updatedConcept = this.addAsPreviousConceptSnapshot(newConceptSnapshot, concept);
+                await this._conceptRepository.update(updatedConcept, concept);
+
                 return;
             }
 
             console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
+
             const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
             const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
 
@@ -76,23 +90,18 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptFunctionallyChanged, isConceptArchived);
 
             await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
+
         } catch (e) {
             console.error(`Error processing: ${JSON.stringify(newConceptSnapshotId)}`);
             console.error(e);
         }
     }
 
-
     private async isNewerSnapshotThanAllPreviouslyApplied(conceptSnapshot: ConceptSnapshot, concept: Concept | undefined): Promise<boolean> {
         if (concept) {
             for (const appliedSnapshotId of concept.appliedConceptSnapshots) {
-                if (!await this._conceptSnapshotRepository.exists(appliedSnapshotId)) {
-                    //why? when we cleared the idpc ldes graph, and are reloading all of them, there is no concept snapshot yet in the ldes graph ...
-                    //so to get the state of concepts eventually consistent with the state of the concept snapshots, we err on the safe side and apply them if it is unknown
-                    continue;
-                }
                 const alreadyAppliedSnapshot = await this._conceptSnapshotRepository.findById(appliedSnapshotId);
-                if (conceptSnapshot.generatedAtTime.beforeOrEqual(alreadyAppliedSnapshot.generatedAtTime)) {
+                if (conceptSnapshot.generatedAtTime.before(alreadyAppliedSnapshot.generatedAtTime)) {
                     return false;
                 }
             }
@@ -172,6 +181,42 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         );
     }
 
+    private addAsPreviousConceptSnapshot(conceptSnapshot: ConceptSnapshot, concept: Concept): Concept {
+        return new Concept(
+            concept.id,
+            concept.uuid,
+            concept.title,
+            concept.description,
+            concept.additionalDescription,
+            concept.exception,
+            concept.regulation,
+            concept.startDate,
+            concept.endDate,
+            concept.type,
+            concept.targetAudiences,
+            concept.themes,
+            concept.competentAuthorityLevels,
+            concept.competentAuthorities,
+            concept.executingAuthorityLevels,
+            concept.executingAuthorities,
+            concept.publicationMedia,
+            concept.yourEuropeCategories,
+            concept.keywords,
+            concept.requirements,
+            concept.procedures,
+            concept.websites,
+            concept.costs,
+            concept.financialAdvantages,
+            concept.productId,
+            concept.latestConceptSnapshot,
+            uniqBy([...concept.previousConceptSnapshots, conceptSnapshot.id], (iri) => iri.value),
+            concept.latestConceptSnapshot,
+            concept.conceptTags,
+            concept.isArchived,
+            concept.legalResources,
+        );
+    }
+
     private copyRequirements(requirements: Requirement[]) {
         return requirements.map(r =>
             Requirement.forConcept(
@@ -244,9 +289,8 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         return this._codeRepository.save(CodeSchema.IPDCOrganisaties, codeListData.uri, codeListData.prefLabel, new Iri('https://wegwijs.vlaanderen.be'));
     }
 
-    private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: Iri | undefined): Promise<boolean> {
-        if (!currentSnapshotId
-            || !await this._conceptSnapshotRepository.exists(currentSnapshotId)) {
+    private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: Iri): Promise<boolean> {
+        if (!currentSnapshotId) {
             return false;
         }
 

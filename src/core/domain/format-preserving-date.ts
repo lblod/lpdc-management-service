@@ -17,9 +17,8 @@ export class FormatPreservingDate {
         return this._value;
     }
 
-    beforeOrEqual(other: FormatPreservingDate): boolean {
-        return this.fullyPadded < other.fullyPadded
-            || this.fullyPadded === other.fullyPadded;
+    before(other: FormatPreservingDate): boolean {
+        return this.fullyPadded < other.fullyPadded;
     }
 
     static isFunctionallyChanged(value: FormatPreservingDate | undefined, other: FormatPreservingDate | undefined): boolean {

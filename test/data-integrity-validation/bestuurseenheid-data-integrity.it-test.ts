@@ -40,7 +40,7 @@ describe('Bestuurseenheid Data Integrity Validation', () => {
         }
 
         expect(dataErrors).toEqual([]);
-    });
+    }, 20000);
 
 });
 

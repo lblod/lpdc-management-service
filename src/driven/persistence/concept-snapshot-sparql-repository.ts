@@ -5,8 +5,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
-import {CONCEPT_SNAPSHOT_LDES_GRAPH, PREFIX} from "../../../config";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {CONCEPT_SNAPSHOT_LDES_GRAPH} from "../../../config";
 
 export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepository {
 
@@ -41,18 +40,5 @@ export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepositor
 
         return mapper.conceptSnapshot(id);
     }
-
-    async exists(id: Iri): Promise<boolean> {
-        const query = `
-            ${PREFIX.lpdcExt}
-            ASK WHERE {
-                GRAPH ${sparqlEscapeUri(CONCEPT_SNAPSHOT_LDES_GRAPH)} {
-                    ${sparqlEscapeUri(id)} a lpdcExt:ConceptualPublicService .
-                }
-            }
-        `;
-        return this.querying.ask(query);
-    }
-
 
 }

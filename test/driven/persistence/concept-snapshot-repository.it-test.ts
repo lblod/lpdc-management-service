@@ -30,7 +30,6 @@ import {NS} from "../../../src/driven/persistence/namespaces";
 import {aMinimalLanguageString} from "../../core/domain/language-string-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {CONCEPT_SNAPSHOT_LDES_GRAPH, PREFIX} from "../../../config";
 
 describe('ConceptSnapshotRepository', () => {
     const repository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -81,36 +80,6 @@ describe('ConceptSnapshotRepository', () => {
             const nonExistentConceptSnapshotId = buildConceptSnapshotIri('thisiddoesnotexist');
 
             await expect(repository.findById(nonExistentConceptSnapshotId)).rejects.toThrow(new Error(`Could not find <https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> in graph <http://mu.semte.ch/graphs/lpdc/ldes-data>`));
-        });
-    });
-
-    describe('exists', () => {
-        test('Concept snapshot with id exists', async () => {
-            const conceptSnapshot = aFullConceptSnapshot().build();
-            await repository.save(conceptSnapshot);
-
-            expect(await repository.exists(conceptSnapshot.id)).toBeTruthy();
-        });
-
-        test('Concept snapshot with id does not exist', async () => {
-            const concept = aFullConceptSnapshot().build();
-            await repository.save(concept);
-
-            const nonExistentConceptSnapshotId = buildConceptSnapshotIri('thisiddoesnotexist');
-
-            expect(await repository.exists(nonExistentConceptSnapshotId)).toBeFalsy();
-        });
-
-        test('When concept with id exists with different type then return false ', async () => {
-            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
-            await directDatabaseAccess.insertData(
-                CONCEPT_SNAPSHOT_LDES_GRAPH,
-                [
-                    `<${conceptSnapshotId}> a ex:someType`,
-                ],
-                [PREFIX.ex]);
-
-            expect(await repository.exists(conceptSnapshotId)).toBeFalsy();
         });
     });
 

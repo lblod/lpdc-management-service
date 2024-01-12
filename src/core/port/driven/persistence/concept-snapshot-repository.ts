@@ -5,6 +5,4 @@ export interface ConceptSnapshotRepository {
 
     findById(id: Iri): Promise<ConceptSnapshot>;
 
-    exists(id: Iri): Promise<boolean>;
-
 }

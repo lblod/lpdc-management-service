@@ -1,6 +1,5 @@
 import {aBestuurseenheid, pepingenBestuurseenheid} from "./bestuureenheid-test-builder";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
-import {buildBestuurseenheidIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
