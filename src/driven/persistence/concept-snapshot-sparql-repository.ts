@@ -31,7 +31,7 @@ export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepositor
             [
                 NS.skos('Concept').value,
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
-                NS.besluit('bestuurseenheid').value,
+                NS.besluit('Bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
                 NS.eli('LegalResource').value,
                 NS.eliIncorrectlyInDatabase('LegalResource').value,

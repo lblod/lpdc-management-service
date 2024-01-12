@@ -34,7 +34,7 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
         const result = await this.querying.singleRow(query);
 
         if (!result) {
-            throw new Error(`no bestuurseenheid found for iri: ${id}`);
+            throw new Error(`no Bestuurseenheid found for iri: ${id}`);
         }
 
         return new Bestuurseenheid(

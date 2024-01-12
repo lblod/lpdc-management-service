@@ -51,13 +51,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             const conceptExists = await this._conceptRepository.exists(conceptId);
             const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
 
-            const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedConceptSnapshots.map(iri => iri.value).includes(newConceptSnapshot.id.value);
-            if (newConceptSnapshotAlreadyLinkedToConcept) {
-                //TODO LPDC-848: when doing idempotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
-                console.log(`The versioned resource ${newConceptSnapshotId} is already processed on service ${conceptId}`);
-                return;
-            }
-
             const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
             if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
                 console.log(`The versioned resource ${newConceptSnapshotId} is an older version of service ${conceptId}`);
@@ -95,11 +88,11 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             for (const appliedSnapshotId of concept.appliedConceptSnapshots) {
                 if (!await this._conceptSnapshotRepository.exists(appliedSnapshotId)) {
                     //why? when we cleared the idpc ldes graph, and are reloading all of them, there is no concept snapshot yet in the ldes graph ...
-                    // (but if none are loaded yet, we return true... so we save incorrect data temporarily ... so we cannot clear this graph without users accessing, and have to thread carefully).
+                    //so to get the state of concepts eventually consistent with the state of the concept snapshots, we err on the safe side and apply them if it is unknown
                     continue;
                 }
                 const alreadyAppliedSnapshot = await this._conceptSnapshotRepository.findById(appliedSnapshotId);
-                if (conceptSnapshot.generatedAtTime.before(alreadyAppliedSnapshot.generatedAtTime)) {
+                if (conceptSnapshot.generatedAtTime.beforeOrEqual(alreadyAppliedSnapshot.generatedAtTime)) {
                     return false;
                 }
             }
