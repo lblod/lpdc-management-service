@@ -106,24 +106,24 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.requirements)
                 .toEqual(expect.arrayContaining([
                     expect.objectContaining({
-                        _id: conceptSnapshot.requirements[0].id,
+                        _id: expect.not.objectContaining(conceptSnapshot.requirements[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.requirements[0].title,
                         _description: conceptSnapshot.requirements[0].description,
                         _evidence: expect.objectContaining({
-                            _id: conceptSnapshot.requirements[0].evidence.id,
+                            _id: expect.not.objectContaining(conceptSnapshot.requirements[0].evidence.id),
                             _uuid: expect.stringMatching(uuidRegex),
                             _title: conceptSnapshot.requirements[0].evidence.title,
                             _description: conceptSnapshot.requirements[0].evidence.description,
                         })
                     }),
                     expect.objectContaining({
-                        _id: conceptSnapshot.requirements[1].id,
+                        _id: expect.not.objectContaining(conceptSnapshot.requirements[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.requirements[1].title,
                         _description: conceptSnapshot.requirements[1].description,
                         _evidence: expect.objectContaining({
-                            _id: conceptSnapshot.requirements[1].evidence.id,
+                            _id: expect.not.objectContaining(conceptSnapshot.requirements[1].evidence.id),
                             _uuid: expect.stringMatching(uuidRegex),
                             _title: conceptSnapshot.requirements[1].evidence.title,
                             _description: conceptSnapshot.requirements[1].evidence.description,
@@ -133,20 +133,20 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.procedures)
                 .toEqual(expect.arrayContaining([
                     expect.objectContaining({
-                        _id: conceptSnapshot.procedures[0].id,
+                        _id: expect.not.objectContaining(conceptSnapshot.procedures[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.procedures[0].title,
                         _description: conceptSnapshot.procedures[0].description,
                         _websites: expect.arrayContaining([
                             expect.objectContaining({
-                                _id: conceptSnapshot.procedures[0].websites[0].id,
+                                _id: expect.not.objectContaining(conceptSnapshot.procedures[0].websites[0].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: conceptSnapshot.procedures[0].websites[0].title,
                                 _description: conceptSnapshot.procedures[0].websites[0].description,
                                 _url: conceptSnapshot.procedures[0].websites[0].url,
                             }),
                             expect.objectContaining({
-                                _id: conceptSnapshot.procedures[0].websites[1].id,
+                                _id: expect.not.objectContaining(conceptSnapshot.procedures[0].websites[1].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: conceptSnapshot.procedures[0].websites[1].title,
                                 _description: conceptSnapshot.procedures[0].websites[1].description,
@@ -155,20 +155,20 @@ describe('merges a new concept snapshot into a concept', () => {
                         ])
                     }),
                     expect.objectContaining({
-                        _id: conceptSnapshot.procedures[1].id,
+                        _id: expect.not.objectContaining(conceptSnapshot.procedures[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.procedures[1].title,
                         _description: conceptSnapshot.procedures[1].description,
                         _websites: expect.arrayContaining([
                             expect.objectContaining({
-                                _id: conceptSnapshot.procedures[1].websites[0].id,
+                                _id: expect.not.objectContaining(conceptSnapshot.procedures[1].websites[0].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: conceptSnapshot.procedures[1].websites[0].title,
                                 _description: conceptSnapshot.procedures[1].websites[0].description,
                                 _url: conceptSnapshot.procedures[1].websites[0].url,
                             }),
                             expect.objectContaining({
-                                _id: conceptSnapshot.procedures[1].websites[1].id,
+                                _id: expect.not.objectContaining(conceptSnapshot.procedures[1].websites[1].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: conceptSnapshot.procedures[1].websites[1].title,
                                 _description: conceptSnapshot.procedures[1].websites[1].description,
@@ -181,14 +181,14 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.websites)
                 .toEqual(expect.arrayContaining([
                     expect.objectContaining({
-                        _id: conceptSnapshot.websites[0].id,
+                        _id: expect.not.objectContaining(conceptSnapshot.websites[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.websites[0].title,
                         _description: conceptSnapshot.websites[0].description,
                         _url: conceptSnapshot.websites[0].url,
                     }),
                     expect.objectContaining({
-                        _id: conceptSnapshot.websites[1].id,
+                        _id: expect.not.objectContaining(conceptSnapshot.websites[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.websites[1].title,
                         _description: conceptSnapshot.websites[1].description,
@@ -199,13 +199,13 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.costs)
                 .toEqual(expect.arrayContaining([
                     expect.objectContaining({
-                        _id: conceptSnapshot.costs[0].id,
+                        _id: expect.not.objectContaining(conceptSnapshot.costs[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.costs[0].title,
                         _description: conceptSnapshot.costs[0].description
                     }),
                     expect.objectContaining({
-                        _id: conceptSnapshot.costs[1].id,
+                        _id: expect.not.objectContaining(conceptSnapshot.costs[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.costs[1].title,
                         _description: conceptSnapshot.costs[1].description
@@ -214,13 +214,13 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.financialAdvantages)
                 .toEqual(expect.arrayContaining([
                     expect.objectContaining({
-                        _id: conceptSnapshot.financialAdvantages[0].id,
+                        _id: expect.not.objectContaining(conceptSnapshot.financialAdvantages[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.financialAdvantages[0].title,
                         _description: conceptSnapshot.financialAdvantages[0].description
                     }),
                     expect.objectContaining({
-                        _id: conceptSnapshot.financialAdvantages[1].id,
+                        _id: expect.not.objectContaining(conceptSnapshot.financialAdvantages[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.financialAdvantages[1].title,
                         _description: conceptSnapshot.financialAdvantages[1].description
@@ -437,24 +437,24 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.requirements)
                 .toEqual(expect.arrayContaining([
                     expect.objectContaining({
-                        _id: updatedConceptSnapshot.requirements[0].id,
+                        _id: expect.not.objectContaining(updatedConceptSnapshot.requirements[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.requirements[0].title,
                         _description: updatedConceptSnapshot.requirements[0].description,
                         _evidence: expect.objectContaining({
-                            _id: updatedConceptSnapshot.requirements[0].evidence.id,
+                            _id: expect.not.objectContaining(updatedConceptSnapshot.requirements[0].evidence.id),
                             _uuid: expect.stringMatching(uuidRegex),
                             _title: updatedConceptSnapshot.requirements[0].evidence.title,
                             _description: updatedConceptSnapshot.requirements[0].evidence.description,
                         })
                     }),
                     expect.objectContaining({
-                        _id: updatedConceptSnapshot.requirements[1].id,
+                        _id: expect.not.objectContaining(updatedConceptSnapshot.requirements[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.requirements[1].title,
                         _description: updatedConceptSnapshot.requirements[1].description,
                         _evidence: expect.objectContaining({
-                            _id: updatedConceptSnapshot.requirements[1].evidence.id,
+                            _id: expect.not.objectContaining(updatedConceptSnapshot.requirements[1].evidence.id),
                             _uuid: expect.stringMatching(uuidRegex),
                             _title: updatedConceptSnapshot.requirements[1].evidence.title,
                             _description: updatedConceptSnapshot.requirements[1].evidence.description,
@@ -465,27 +465,27 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.procedures)
                 .toEqual(expect.arrayContaining([
                     expect.objectContaining({
-                        _id: updatedConceptSnapshot.procedures[0].id,
+                        _id: expect.not.objectContaining(updatedConceptSnapshot.procedures[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.procedures[0].title,
                         _description: updatedConceptSnapshot.procedures[0].description,
                         _websites: expect.arrayContaining([
                             expect.objectContaining({
-                                _id: updatedConceptSnapshot.procedures[0].websites[0].id,
+                                _id: expect.not.objectContaining(updatedConceptSnapshot.procedures[0].websites[0].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: updatedConceptSnapshot.procedures[0].websites[0].title,
                                 _description: updatedConceptSnapshot.procedures[0].websites[0].description,
                                 _url: updatedConceptSnapshot.procedures[0].websites[0].url,
                             }),
                             expect.objectContaining({
-                                _id: updatedConceptSnapshot.procedures[0].websites[1].id,
+                                _id: expect.not.objectContaining(updatedConceptSnapshot.procedures[0].websites[1].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: updatedConceptSnapshot.procedures[0].websites[1].title,
                                 _description: updatedConceptSnapshot.procedures[0].websites[1].description,
                                 _url: updatedConceptSnapshot.procedures[0].websites[1].url,
                             }),
                             expect.objectContaining({
-                                _id: updatedConceptSnapshot.procedures[0].websites[2].id,
+                                _id: expect.not.objectContaining(updatedConceptSnapshot.procedures[0].websites[2].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: updatedConceptSnapshot.procedures[0].websites[2].title,
                                 _description: updatedConceptSnapshot.procedures[0].websites[2].description,
@@ -494,20 +494,20 @@ describe('merges a new concept snapshot into a concept', () => {
                         ])
                     }),
                     expect.objectContaining({
-                        _id: updatedConceptSnapshot.procedures[1].id,
+                        _id: expect.not.objectContaining(updatedConceptSnapshot.procedures[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.procedures[1].title,
                         _description: updatedConceptSnapshot.procedures[1].description,
                         _websites: expect.arrayContaining([
                             expect.objectContaining({
-                                _id: updatedConceptSnapshot.procedures[1].websites[0].id,
+                                _id: expect.not.objectContaining(updatedConceptSnapshot.procedures[1].websites[0].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: updatedConceptSnapshot.procedures[1].websites[0].title,
                                 _description: updatedConceptSnapshot.procedures[1].websites[0].description,
                                 _url: updatedConceptSnapshot.procedures[1].websites[0].url,
                             }),
                             expect.objectContaining({
-                                _id: updatedConceptSnapshot.procedures[1].websites[1].id,
+                                _id: expect.not.objectContaining(updatedConceptSnapshot.procedures[1].websites[1].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: updatedConceptSnapshot.procedures[1].websites[1].title,
                                 _description: updatedConceptSnapshot.procedures[1].websites[1].description,
@@ -520,14 +520,14 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.websites)
                 .toEqual(expect.arrayContaining([
                     expect.objectContaining({
-                        _id: updatedConceptSnapshot.websites[0].id,
+                        _id: expect.not.objectContaining(updatedConceptSnapshot.websites[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.websites[0].title,
                         _description: updatedConceptSnapshot.websites[0].description,
                         _url: updatedConceptSnapshot.websites[0].url,
                     }),
                     expect.objectContaining({
-                        _id: updatedConceptSnapshot.websites[1].id,
+                        _id: expect.not.objectContaining(updatedConceptSnapshot.websites[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.websites[1].title,
                         _description: updatedConceptSnapshot.websites[1].description,
@@ -538,13 +538,13 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.costs)
                 .toEqual(expect.arrayContaining([
                     expect.objectContaining({
-                        _id: updatedConceptSnapshot.costs[0].id,
+                        _id: expect.not.objectContaining(updatedConceptSnapshot.costs[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.costs[0].title,
                         _description: updatedConceptSnapshot.costs[0].description
                     }),
                     expect.objectContaining({
-                        _id: updatedConceptSnapshot.costs[1].id,
+                        _id: expect.not.objectContaining(updatedConceptSnapshot.costs[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.costs[1].title,
                         _description: updatedConceptSnapshot.costs[1].description
@@ -554,13 +554,13 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.financialAdvantages)
                 .toEqual(expect.arrayContaining([
                     expect.objectContaining({
-                        _id: updatedConceptSnapshot.financialAdvantages[0].id,
+                        _id: expect.not.objectContaining(updatedConceptSnapshot.financialAdvantages[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.financialAdvantages[0].title,
                         _description: updatedConceptSnapshot.financialAdvantages[0].description
                     }),
                     expect.objectContaining({
-                        _id: updatedConceptSnapshot.financialAdvantages[1].id,
+                        _id: expect.not.objectContaining(updatedConceptSnapshot.financialAdvantages[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.financialAdvantages[1].title,
                         _description: updatedConceptSnapshot.financialAdvantages[1].description
