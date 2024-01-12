@@ -26,6 +26,7 @@ import {
 import {Concept} from '../../core/domain/concept';
 import {Namespace} from "rdflib/lib/factories/factory-types";
 import {STATUS} from "./status";
+import {Instance} from "../../core/domain/instance";
 
 export class QuadsToDomainMapper {
 
@@ -118,6 +119,18 @@ export class QuadsToDomainMapper {
         );
     }
 
+    instance(id: Iri): Instance {
+        this.errorIfMissingOrIncorrectType(id, NS.cpsv('PublicService'));
+
+        return new Instance(
+            id,
+            this.uuid(id),
+            this.bestuurseenheidId(id),
+            this.title(id),
+            this.description(id)
+        );
+    }
+
     private errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
         const typeFoundForId: string = this.store.anyValue(namedNode(id.value), NS.rdf('type'), null, this.graphId);
         if (!typeFoundForId) {
@@ -162,6 +175,10 @@ export class QuadsToDomainMapper {
 
     private uuid(id: Iri): string | undefined {
         return this.store.anyValue(namedNode(id.value), NS.mu('uuid'), null, this.graphId);
+    }
+
+    private bestuurseenheidId(id: Iri): Iri | undefined {
+        return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.pav('createdBy'), null, this.graphId));
     }
 
     private targetAudiences(id: Iri): TargetAudienceType[] {

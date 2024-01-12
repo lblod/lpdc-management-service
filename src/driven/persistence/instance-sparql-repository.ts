@@ -3,12 +3,48 @@ import {InstanceRepository} from "../../core/port/driven/persistence/instance-re
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX} from "../../../config";
 import {sparqlEscapeUri} from "../../../mu-helper";
+import {Instance} from "../../core/domain/instance";
+import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
+import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
+import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
+import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
+    protected readonly fetcher: DatastoreToQuadsRecursiveSparqlFetcher;
 
     constructor(endpoint?: string) {
         this.querying = new SparqlQuerying(endpoint);
+        this.fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endpoint);
+    }
+
+    async findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<Instance> {
+
+
+        const quads = await this.fetcher.fetch(
+            bestuurseenheid.userGraph(),
+            id,
+            [],
+            [],
+            []);
+
+        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph());
+
+        return mapper.instance(id);
+
+    }
+
+    async save(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void> {
+        const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
+
+        const query = `
+            INSERT DATA { 
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    ${triples.join("\n")}
+                }
+            }
+        `;
+        await this.querying.update(query);
     }
 
     async updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void> {

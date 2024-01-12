@@ -23,6 +23,7 @@ import {Procedure} from "../../core/domain/procedure";
 import {Cost} from "../../core/domain/cost";
 import {FinancialAdvantage} from "../../core/domain/financial-advantage";
 import {STATUS} from "./status";
+import {Instance} from "../../core/domain/instance";
 
 export class DomainToTriplesMapper {
     private readonly graphId;
@@ -104,6 +105,16 @@ export class DomainToTriplesMapper {
         ].filter(t => t !== undefined);
     }
 
+    public instanceToTriples(instance: Instance): Statement[] {
+        return [
+            this.rdfType(instance.id, NS.cpsv('PublicService')),
+            instance.uuid ? this.buildQuad(namedNode(instance.id.value), NS.mu('uuid'), literal(instance.uuid)) : undefined,
+            this.bestuurseenheidId(instance.id, instance.bestuurseenheidId),
+            ...this.title(instance.id, instance.title),
+            ...this.description(instance.id, instance.description),
+        ].filter(t => t !== undefined);
+    }
+
     private buildQuad(subject: any,
                       predicate: any,
                       object: any) {
@@ -124,6 +135,11 @@ export class DomainToTriplesMapper {
 
     private type(id: Iri, value: ProductType): Statement | undefined {
         return value ? this.buildQuad(namedNode(id.value), NS.dct('type'), namedNode(this.enumToIri(value, NS.dvc.type).value)) : undefined;
+    }
+
+    private bestuurseenheidId(id: Iri, value: Iri): Statement {
+        return this.buildQuad(namedNode(id.value), NS.pav('createdBy'), namedNode(value.value));
+
     }
 
     private title(id: Iri, value: LanguageString): Statement [] {

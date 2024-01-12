@@ -9,6 +9,7 @@ export const NS = {
     lpdcExt: Namespace('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#'),
     m8g: Namespace('http://data.europa.eu/m8g/'),
     dcat: Namespace('http://www.w3.org/ns/dcat#'),
+    pav: Namespace('http://purl.org/pav/'),
     sh: Namespace('http://www.w3.org/ns/shacl#'),
     cpsv: Namespace('http://purl.org/vocab/cpsv#'),
     rdfs: Namespace('http://www.w3.org/2000/01/rdf-schema#'),
