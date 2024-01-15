@@ -780,6 +780,8 @@ describe('merges a new concept snapshot into a concept', () => {
 
             const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(updatedConcept.isArchived).toBeTruthy();
+            expect(updatedConcept.latestConceptSnapshot).toEqual(updatedConceptSnapshot.id);
+            expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
         }, 20000);
 
         test('Multiple consecutive updates to a concept', async () => {

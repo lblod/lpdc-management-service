@@ -73,21 +73,21 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
 
             const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
-            const isConceptFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
+            const isConceptSnapshotFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
+            const shouldConceptBeArchived = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
 
             if (!conceptExists) {
-                const newConcept = this.asNewConcept(newConceptSnapshot);
+                const newConcept = this.asNewConcept(newConceptSnapshot, shouldConceptBeArchived);
                 await this._conceptRepository.save(newConcept);
             } else {
-                const updatedConcept = this.asMergedConcept(newConceptSnapshot, concept, isConceptFunctionallyChanged);
+                const updatedConcept = this.asMergedConcept(newConceptSnapshot, concept, isConceptSnapshotFunctionallyChanged, shouldConceptBeArchived);
                 await this._conceptRepository.update(updatedConcept, concept);
             }
 
             await this.ensureLinkedAuthoritiesExistAsCodeList(newConceptSnapshot);
 
-            const isConceptArchived = newConceptSnapshot.snapshotType === SnapshotType.DELETE;
 
-            await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptFunctionallyChanged, isConceptArchived);
+            await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptSnapshotFunctionallyChanged, shouldConceptBeArchived);
 
             await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
 
@@ -109,7 +109,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         return true;
     }
 
-    private asNewConcept(conceptSnapshot: ConceptSnapshot): Concept {
+    private asNewConcept(conceptSnapshot: ConceptSnapshot, shouldConceptBeArchived: boolean): Concept {
         return new Concept(
             conceptSnapshot.isVersionOfConcept,
             uuid(),
@@ -140,12 +140,12 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             [],
             conceptSnapshot.id,
             conceptSnapshot.conceptTags,
-            conceptSnapshot.snapshotType === SnapshotType.DELETE,
+            shouldConceptBeArchived,
             conceptSnapshot.legalResources,
         );
     }
 
-    private asMergedConcept(conceptSnapshot: ConceptSnapshot, concept: Concept, isConceptFunctionallyChanged: boolean): Concept {
+    private asMergedConcept(conceptSnapshot: ConceptSnapshot, concept: Concept, isConceptSnapshotFunctionallyChanged: boolean, shouldConceptBeArchived: boolean): Concept {
         return new Concept(
             concept.id,
             concept.uuid,
@@ -174,9 +174,9 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.productId,
             conceptSnapshot.id,
             concept.appliedConceptSnapshots,
-            isConceptFunctionallyChanged ? conceptSnapshot.id : concept.latestConceptSnapshot,
+            (isConceptSnapshotFunctionallyChanged || shouldConceptBeArchived) ? conceptSnapshot.id : concept.latestConceptSnapshot,
             conceptSnapshot.conceptTags,
-            conceptSnapshot.snapshotType === SnapshotType.DELETE,
+            shouldConceptBeArchived,
             conceptSnapshot.legalResources,
         );
     }
