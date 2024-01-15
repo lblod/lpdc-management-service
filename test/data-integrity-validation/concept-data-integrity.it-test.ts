@@ -4,7 +4,7 @@ import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
 import {CONCEPT_GRAPH, PREFIX} from "../../config";
 import {Statement} from "rdflib";
-import {shuffle, sortedUniq, uniq} from "lodash";
+import _, {shuffle, sortedUniq, uniq} from "lodash";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {Iri} from "../../src/core/domain/shared/iri";
@@ -14,6 +14,15 @@ import {
 } from "../../src/driven/persistence/datastore-to-quads-recursive-sparql-fetcher";
 import {NS} from "../../src/driven/persistence/namespaces";
 import {sparqlEscapeUri} from "../../mu-helper";
+import {Concept} from "../../src/core/domain/concept";
+import {ConceptSnapshot} from "../../src/core/domain/concept-snapshot";
+import {LanguageString} from "../../src/core/domain/language-string";
+import {FormatPreservingDate} from "../../src/core/domain/format-preserving-date";
+import {Requirement} from "../../src/core/domain/requirement";
+import {Procedure} from "../../src/core/domain/procedure";
+import {Website} from "../../src/core/domain/website";
+import {Cost} from "../../src/core/domain/cost";
+import {FinancialAdvantage} from "../../src/core/domain/financial-advantage";
 
 describe('Concept Data Integrity Validation', () => {
 
@@ -114,8 +123,8 @@ describe('Concept Data Integrity Validation', () => {
             shuffle(randomizedConceptIds);
 
             for (const result of randomizedConceptIds) {
+                const id = new Iri(result['id'].value);
                 try {
-                    const id = new Iri(result['id'].value);
                     const conceptForId = await repository.findById(id);
                     expect(conceptForId.id).toEqual(id);
                     const quadsForConceptForId =
@@ -137,9 +146,11 @@ describe('Concept Data Integrity Validation', () => {
                         const latestFunctionallyChangedConceptSnapshot = await snapshotRepository.findById((conceptForId.latestFunctionallyChangedConceptSnapshot));
                         expect(latestFunctionallyChangedConceptSnapshot.id).toEqual(conceptForId.latestFunctionallyChangedConceptSnapshot);
                         expect(latestFunctionallyChangedConceptSnapshot.isVersionOfConcept).toEqual(id);
+
+                        validateThatConceptDataIsInSyncWithLatestConceptSnapshot(conceptForId, latestConceptSnapshot, latestFunctionallyChangedConceptSnapshot);
                     }
                 } catch (e) {
-                    console.error(e);
+                    console.error(`Error while verifying concept ${sparqlEscapeUri(id)}`, e);
                     if (!e.message.startsWith('could not map')) {
                         console.error(e);
                         technicalErrors.push(e);
@@ -182,7 +193,7 @@ describe('Concept Data Integrity Validation', () => {
     }, 60000 * 15 * 100);
 
     test.skip('Load one concept and print quads', async () => {
-        const id = new Iri('https://ipdc.vlaanderen.be/id/concept/0b0b6fe0-995a-49ef-a596-3267d9bf5c97');
+        const id = new Iri('https://ipdc.vlaanderen.be/id/concept/26bfa5c8-f099-44c8-8765-37b1ab095850');
         const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endPoint);
 
         const allQuads = await fetcher.fetch(conceptGraph, id, [
@@ -222,7 +233,43 @@ describe('Concept Data Integrity Validation', () => {
 
         expect(allQuadsAsStrings).toEqual(allConceptsToTriplesAsStrings);
 
+        const latestConceptSnapshot = await snapshotRepository.findById(concept.latestConceptSnapshot);
+        const latestFunctionallyChangedConceptSnapshot = await snapshotRepository.findById(concept.latestFunctionallyChangedConceptSnapshot);
+
+        validateThatConceptDataIsInSyncWithLatestConceptSnapshot(concept, latestConceptSnapshot, latestFunctionallyChangedConceptSnapshot);
+
     });
+
+    function validateThatConceptDataIsInSyncWithLatestConceptSnapshot(concept: Concept, latestConceptSnapshot: ConceptSnapshot, latestFunctionallyChangedConceptSnapshot: ConceptSnapshot) {
+        expect(isConceptFunctionallyChangedComparedToConceptSnapshot(concept, latestFunctionallyChangedConceptSnapshot)).toBeFalsy();
+        expect(isConceptFunctionallyChangedComparedToConceptSnapshot(concept, latestConceptSnapshot)).toBeFalsy();
+        expect(ConceptSnapshot.isFunctionallyChanged(latestConceptSnapshot, latestFunctionallyChangedConceptSnapshot)).toBeFalsy();
+    }
+
+    function isConceptFunctionallyChangedComparedToConceptSnapshot(value: Concept, other: ConceptSnapshot): boolean {
+        return LanguageString.isFunctionallyChanged(value.title, other.title)
+            || LanguageString.isFunctionallyChanged(value.description, other.description)
+            || LanguageString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription)
+            || LanguageString.isFunctionallyChanged(value.exception, other.exception)
+            || LanguageString.isFunctionallyChanged(value.regulation, other.regulation)
+            || FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate)
+            || FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate)
+            || value.type !== other.type
+            || !_.isEqual(value.targetAudiences, other.targetAudiences)
+            || !_.isEqual(value.themes, other.themes)
+            || !_.isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels)
+            || !_.isEqual(value.competentAuthorities, other.competentAuthorities)
+            || !_.isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels)
+            || !_.isEqual(value.executingAuthorities, other.executingAuthorities)
+            || !_.isEqual(value.publicationMedia, other.publicationMedia)
+            || !_.isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
+            || !_.isEqual(value.keywords, other.keywords)
+            || Requirement.isFunctionallyChanged(value.requirements, other.requirements)
+            || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
+            || Website.isFunctionallyChanged(value.websites, other.websites)
+            || Cost.isFunctionallyChanged(value.costs, other.costs)
+            || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages);
+    }
 
     function wait(milliseconds: number) {
         return new Promise(resolve => {
