@@ -24,8 +24,11 @@ export class InstanceSparqlRepository implements InstanceRepository {
         const quads = await this.fetcher.fetch(
             bestuurseenheid.userGraph(),
             id,
+            //TODO LPDC-917: add a list of predicatesToNotQuery
             [],
+            //TODO LPDC-917: add a list of predicatesToStopRecursion
             [],
+            //TODO LPDC-917: add a list of illegalTypesToRecurseInto
             []);
 
         const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph());

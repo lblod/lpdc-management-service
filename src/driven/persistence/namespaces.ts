@@ -1,6 +1,7 @@
 import {Namespace} from "rdflib";
 
 const dataVlaanderenConceptNS = Namespace('https://productencatalogus.data.vlaanderen.be/id/concept/');
+const lblodConceptsNS = Namespace('http://lblod.data.gift/concepts/');
 
 export const NS = {
     schema: Namespace('http://schema.org/'),
@@ -36,7 +37,8 @@ export const NS = {
         conceptTag: Namespace(dataVlaanderenConceptNS('ConceptTag/').value),
     },
     dvcs: Namespace('https://productencatalogus.data.vlaanderen.be/id/conceptscheme/'),
-    concepts: Namespace('http://lblod.data.gift/concepts/'),
-
-
+    concepts: {
+        identity: lblodConceptsNS,
+        instanceStatus: Namespace(lblodConceptsNS('instance-status/').value),
+    },
 };

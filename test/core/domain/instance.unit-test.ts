@@ -54,4 +54,9 @@ describe('constructing', () => {
         });
     });
 
+    test('Absent status throws error', () => {
+        expect(() => aFullInstance().withStatus(undefined).build()).toThrow(new Error('status should not be undefined'));
+    });
+
+
 });

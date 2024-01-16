@@ -4,6 +4,7 @@ import {Instance} from "../../../src/core/domain/instance";
 import {buildBestuurseenheidIri, buildInstanceIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
+import {InstanceStatusType} from "../../../src/core/domain/types";
 
 export function aMinimalInstance(): InstanceTestBuilder {
     const uniqueId = uuid();
@@ -12,7 +13,8 @@ export function aMinimalInstance(): InstanceTestBuilder {
         .withUuid(uniqueId)
         .withBestuurseenheidId(buildBestuurseenheidIri(uuid()))
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
-        .withDateModified(InstanceTestBuilder.DATE_MODIFIED);
+        .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
+        .withStatus(InstanceTestBuilder.STATUS);
 }
 
 export function aFullInstance(): InstanceTestBuilder {
@@ -38,7 +40,8 @@ export function aFullInstance(): InstanceTestBuilder {
                 InstanceTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
                 InstanceTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
-        .withDateModified(InstanceTestBuilder.DATE_MODIFIED);
+        .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
+        .withStatus(InstanceTestBuilder.STATUS);
 
 }
 
@@ -64,6 +67,8 @@ export class InstanceTestBuilder {
     public static readonly DATE_CREATED = FormatPreservingDate.of('2022-10-01T13:00:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2023-10-02T20:00:20.242928Z');
 
+    public static readonly STATUS = InstanceStatusType.ONTWERP;
+
     private id: Iri;
     private uuid: string;
     private bestuurseenheidId: Iri;
@@ -71,7 +76,7 @@ export class InstanceTestBuilder {
     private description: LanguageString | undefined;
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
-
+    private status: InstanceStatusType;
 
     public withId(id: Iri): InstanceTestBuilder {
         this.id = id;
@@ -108,6 +113,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withStatus(status: InstanceStatusType): InstanceTestBuilder {
+        this.status = status;
+        return this;
+    }
+
     public build(): Instance {
         return new Instance(
             this.id,
@@ -116,7 +126,8 @@ export class InstanceTestBuilder {
             this.title,
             this.description,
             this.dateCreated,
-            this.dateModified
+            this.dateModified,
+            this.status,
         );
     }
 }

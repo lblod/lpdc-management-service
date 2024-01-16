@@ -16,6 +16,7 @@ import {
     CompetentAuthorityLevelType,
     ConceptTagType,
     ExecutingAuthorityLevelType,
+    InstanceStatusType,
     ProductType,
     PublicationMediumType,
     SnapshotType,
@@ -82,6 +83,7 @@ export class QuadsToDomainMapper {
     }
 
     concept(id: Iri): Concept {
+
         this.errorIfMissingOrIncorrectType(id, NS.lpdcExt('ConceptualPublicService'));
 
         return new Concept(
@@ -120,6 +122,7 @@ export class QuadsToDomainMapper {
     }
 
     instance(id: Iri): Instance {
+
         this.errorIfMissingOrIncorrectType(id, NS.cpsv('PublicService'));
 
         return new Instance(
@@ -130,6 +133,7 @@ export class QuadsToDomainMapper {
             this.description(id),
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
+            this.instanceStatusType(id),
         );
     }
 
@@ -279,6 +283,10 @@ export class QuadsToDomainMapper {
 
     private legalResources(id: Iri): Iri[] {
         return this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasLegalResource'), null, this.graphId));
+    }
+
+    private instanceStatusType(id: Iri): InstanceStatusType | undefined {
+        return this.asEnum(InstanceStatusType, NS.concepts.instanceStatus, this.store.anyValue(namedNode(id.value), NS.adms('status'), null, this.graphId), id.value);
     }
 
     private costs(id: Iri): Cost[] {

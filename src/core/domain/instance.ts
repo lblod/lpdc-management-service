@@ -2,6 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {requiredValue} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
+import {InstanceStatusType} from "./types";
 
 export class Instance {
     private readonly _id: Iri;
@@ -11,7 +12,7 @@ export class Instance {
     private readonly _description: LanguageString | undefined;
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
-
+    private readonly _status: InstanceStatusType;
 
     constructor(id: Iri,
                 uuid: string,
@@ -20,6 +21,7 @@ export class Instance {
                 description: LanguageString | undefined,
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
+                status: InstanceStatusType,
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -28,6 +30,7 @@ export class Instance {
         this._description = description;
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
+        this._status = requiredValue(status, 'status');
     }
 
     get id(): Iri {
@@ -56,5 +59,9 @@ export class Instance {
 
     get dateModified(): FormatPreservingDate {
         return this._dateModified;
+    }
+
+    get status(): InstanceStatusType {
+        return this._status;
     }
 }

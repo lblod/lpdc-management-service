@@ -6,12 +6,13 @@ import {aBestuurseenheid} from "../../core/domain/bestuureenheid-test-builder";
 import {uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {buildInstanceIri} from "../../core/domain/iri-test-builder";
+import {InstanceStatusType} from "../../../src/core/domain/types";
 
 describe('InstanceRepository', () => {
+
     const repository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
-
 
     describe('findById', () => {
 
@@ -59,7 +60,6 @@ describe('InstanceRepository', () => {
             const instance = aMinimalInstance().withBestuurseenheidId(bestuurseenheid.id).build();
             await repository.save(bestuurseenheid, instance);
 
-
             const nonExistentInstanceId = buildInstanceIri('thisiddoesnotexist');
 
             await expect(repository.findById(bestuurseenheid, nonExistentInstanceId)).rejects.toThrow(new Error(`Could not find <http://data.lblod.info/id/public-service/thisiddoesnotexist> for type <http://purl.org/vocab/cpsv#PublicService> in graph <http://mu.semte.ch/graphs/organizations/${bestuurseenheid.uuid}/LoketLB-LPDCGebruiker>`));
@@ -72,7 +72,6 @@ describe('InstanceRepository', () => {
             const instanceUUID = uuid();
             const instanceId = buildInstanceIri(instanceUUID);
             const bestuurseenheid = aBestuurseenheid().build();
-            bestuurseenheidRepository.save(bestuurseenheid);
             const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
             const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
 
@@ -83,8 +82,8 @@ describe('InstanceRepository', () => {
                     .withBestuurseenheidId(bestuurseenheid.id)
                     .withDateCreated(instanceDateCreated)
                     .withDateModified(instanceDateModified)
+                    .withStatus(InstanceStatusType.ONTWERP)
                     .build();
-
 
             await directDatabaseAccess.insertData(
                 `${bestuurseenheid.userGraph()}`,
@@ -94,6 +93,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${instanceUUID}"""`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${instanceDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${instanceDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
                 ]);
 
 
@@ -106,13 +106,13 @@ describe('InstanceRepository', () => {
             const instanceUUID = uuid();
             const instanceId = buildInstanceIri(instanceUUID);
             const bestuurseenheid = aBestuurseenheid().build();
-            bestuurseenheidRepository.save(bestuurseenheid);
 
             const instance =
                 aFullInstance()
                     .withId(instanceId)
                     .withUuid(instanceUUID)
                     .withBestuurseenheidId(bestuurseenheid.id)
+                    .withStatus(InstanceStatusType.VERSTUURD)
                     .build();
 
 
@@ -136,6 +136,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,
                 ]);
 
 

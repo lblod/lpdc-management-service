@@ -196,3 +196,8 @@ export enum ConceptTagType {
     YOUREUROPEVERPLICHT = 'YourEuropeVerplicht',
     YOUREUROPEAANBEVOLEN = 'YourEuropeAanbevolen',
 }
+
+export enum InstanceStatusType {
+    ONTWERP = 'ontwerp',
+    VERSTUURD = 'verstuurd',
+}
