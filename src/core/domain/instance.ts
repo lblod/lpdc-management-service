@@ -15,6 +15,8 @@ export class Instance {
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
     private readonly _spatials: Iri[];
+    private readonly _competentAuthorities: Iri[];
+    private readonly _executingAuthorities: Iri[];
 
     constructor(id: Iri,
                 uuid: string,
@@ -25,6 +27,8 @@ export class Instance {
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
                 spatials: Iri[],
+                competentAuthorities: Iri[],
+                executingAuthorities: Iri[],
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -35,6 +39,8 @@ export class Instance {
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
+        this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities), 'competentAuthorities');
+        this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities), 'executingAuthorities');
     }
 
     get id(): Iri {
@@ -72,4 +78,14 @@ export class Instance {
     get spatials(): Iri[] {
         return [...this._spatials];
     }
+
+    get competentAuthorities(): Iri[] {
+        return [...this._competentAuthorities];
+    }
+
+    get executingAuthorities(): Iri[] {
+        return [...this._executingAuthorities];
+    }
+
+
 }

@@ -146,11 +146,47 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[0].value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[1].value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[2].value}>`,
+                    `<${instanceId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceTestBuilder.COMPETENT_AUTHORITIES[0]}>`,
+                    `<${InstanceTestBuilder.COMPETENT_AUTHORITIES[0]}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+                    `<${instanceId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceTestBuilder.COMPETENT_AUTHORITIES[1]}>`,
+                    `<${InstanceTestBuilder.COMPETENT_AUTHORITIES[1]}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+                    `<${instanceId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceTestBuilder.COMPETENT_AUTHORITIES[2]}>`,
+                    `<${InstanceTestBuilder.COMPETENT_AUTHORITIES[2]}> a <http://data.europa.eu/m8g/PublicOrganisation>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${InstanceTestBuilder.EXECUTING_AUTHORITIES[0]}>`,
+                    `<${InstanceTestBuilder.EXECUTING_AUTHORITIES[0]}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${InstanceTestBuilder.EXECUTING_AUTHORITIES[1]}>`,
+                    `<${InstanceTestBuilder.EXECUTING_AUTHORITIES[1]}> a <http://data.europa.eu/m8g/PublicOrganisation>`,
                 ]);
 
             const actualInstance = await repository.findById(bestuurseenheid, instanceId);
 
             expect(actualInstance).toEqual(instance);
+        });
+
+        for (const type of Object.values(InstanceStatusType)) {
+            test(`Instance Status type ${type} can be mapped`, async () => {
+                const instance = aMinimalInstance().withStatus(type).build();
+                const bestuurseenheid = aBestuurseenheid().build();
+                await repository.save(bestuurseenheid, instance);
+
+                const actualInstance = await repository.findById(bestuurseenheid, instance.id);
+
+                expect(actualInstance).toEqual(instance);
+            });
+        }
+
+        test('Unknown Instance Status Type can not be mapped', async () => {
+            const instanceId = buildInstanceIri(uuid());
+
+            const bestuurseenheid = aBestuurseenheid().build();
+
+            await directDatabaseAccess.insertData(
+                        bestuurseenheid.userGraph().value,
+                [`<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/unknown-instance-status>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrow(new Error(`could not map <http://lblod.data.gift/concepts/instance-status/unknown-instance-status> for iri: <${instanceId}>`));
         });
     });
 });

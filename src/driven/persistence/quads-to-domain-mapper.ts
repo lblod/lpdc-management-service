@@ -135,6 +135,8 @@ export class QuadsToDomainMapper {
             this.instanceDateModified(id),
             this.instanceStatusType(id),
             this.spatials(id),
+            this.competentAuthorities(id),
+            this.executingAuthorities(id),
         );
     }
 

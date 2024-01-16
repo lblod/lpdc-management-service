@@ -5,6 +5,7 @@ import {buildBestuurseenheidIri, buildInstanceIri, buildSpatialRefNis2019Iri, ra
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {InstanceStatusType} from "../../../src/core/domain/types";
+import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 
 export function aMinimalInstance(): InstanceTestBuilder {
     const uniqueId = uuid();
@@ -42,10 +43,10 @@ export function aFullInstance(): InstanceTestBuilder {
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
-        .withSpatials(InstanceTestBuilder.SPATIALS);
-
+        .withSpatials(InstanceTestBuilder.SPATIALS)
+        .withCompetentAuthorities(InstanceTestBuilder.COMPETENT_AUTHORITIES)
+        .withExecutingAuthorities(InstanceTestBuilder.EXECUTING_AUTHORITIES);
 }
-
 
 export class InstanceTestBuilder {
 
@@ -70,6 +71,11 @@ export class InstanceTestBuilder {
 
     public static readonly SPATIALS = [buildSpatialRefNis2019Iri(randomNumber(10000, 19999)), buildSpatialRefNis2019Iri(randomNumber(20000, 29999))];
 
+    public static readonly COMPETENT_AUTHORITIES = [BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI];
+
+    public static readonly EXECUTING_AUTHORITIES = [BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI];
+
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -79,6 +85,8 @@ export class InstanceTestBuilder {
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
     private spatials: Iri[] = [];
+    private competentAuthorities: Iri[] = [];
+    private executingAuthorities: Iri[] = [];
 
     public withId(id: Iri): InstanceTestBuilder {
         this.id = id;
@@ -125,6 +133,16 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withCompetentAuthorities(competentAuthorities: Iri[]): InstanceTestBuilder {
+        this.competentAuthorities = competentAuthorities;
+        return this;
+    }
+
+    public withExecutingAuthorities(executingAuthorities: Iri[]): InstanceTestBuilder {
+        this.executingAuthorities = executingAuthorities;
+        return this;
+    }
+
     public build(): Instance {
         return new Instance(
             this.id,
@@ -136,6 +154,8 @@ export class InstanceTestBuilder {
             this.dateModified,
             this.status,
             this.spatials,
+            this.competentAuthorities,
+            this.executingAuthorities,
         );
     }
 }

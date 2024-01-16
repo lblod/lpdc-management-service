@@ -143,7 +143,6 @@ describe('ConceptRepository', () => {
         test('Verify full mappings', async () => {
             const id = uuid();
             const conceptId = buildConceptIri(id);
-            const conceptDisplayConfigurationId = `http://data.lblod.info/id/conceptual-display-configuration/${uuid()}`;
 
             const concept =
                 aFullConcept()

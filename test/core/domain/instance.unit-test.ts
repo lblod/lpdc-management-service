@@ -2,6 +2,7 @@ import {aFullInstance} from "./instance-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {buildSpatialRefNis2019Iri} from "./iri-test-builder";
+import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -61,6 +62,14 @@ describe('constructing', () => {
 
     test('Spatials with duplicates throws error', () => {
         expect(() => aFullInstance().withSpatials([buildSpatialRefNis2019Iri(1), buildSpatialRefNis2019Iri(1)]).build()).toThrow(new Error('spatials should not contain duplicates'));
+    });
+
+    test('CompetentAuthorities with duplicates throws error', () => {
+        expect(() => aFullInstance().withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]).build()).toThrow(new Error('competentAuthorities should not contain duplicates'));
+    });
+
+    test('ExecutingAuthorities with duplicates throws error', () => {
+        expect(() => aFullInstance().withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]).build()).toThrow(new Error('executingAuthorities should not contain duplicates'));
     });
 
 
