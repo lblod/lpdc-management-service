@@ -134,6 +134,7 @@ export class QuadsToDomainMapper {
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
             this.instanceStatusType(id),
+            this.spatials(id),
         );
     }
 
@@ -287,6 +288,10 @@ export class QuadsToDomainMapper {
 
     private instanceStatusType(id: Iri): InstanceStatusType | undefined {
         return this.asEnum(InstanceStatusType, NS.concepts.instanceStatus, this.store.anyValue(namedNode(id.value), NS.adms('status'), null, this.graphId), id.value);
+    }
+
+    private spatials(id: Iri): Iri[] {
+        return this.asIris(this.store.statementsMatching(namedNode(id.value), NS.dct('spatial'), null, this.graphId));
     }
 
     private costs(id: Iri): Cost[] {

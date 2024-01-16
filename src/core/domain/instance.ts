@@ -1,8 +1,9 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
-import {requiredValue} from "./shared/invariant";
+import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {InstanceStatusType} from "./types";
+import {asSortedArray} from "./shared/collections-helper";
 
 export class Instance {
     private readonly _id: Iri;
@@ -13,6 +14,7 @@ export class Instance {
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
+    private readonly _spatials: Iri[];
 
     constructor(id: Iri,
                 uuid: string,
@@ -22,6 +24,7 @@ export class Instance {
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
+                spatials: Iri[],
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -31,6 +34,7 @@ export class Instance {
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
+        this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
     }
 
     get id(): Iri {
@@ -63,5 +67,9 @@ export class Instance {
 
     get status(): InstanceStatusType {
         return this._status;
+    }
+
+    get spatials(): Iri[] {
+        return [...this._spatials];
     }
 }

@@ -5,7 +5,7 @@ import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test
 import {aBestuurseenheid} from "../../core/domain/bestuureenheid-test-builder";
 import {uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
-import {buildInstanceIri} from "../../core/domain/iri-test-builder";
+import {buildInstanceIri, buildSpatialRefNis2019Iri} from "../../core/domain/iri-test-builder";
 import {InstanceStatusType} from "../../../src/core/domain/types";
 
 describe('InstanceRepository', () => {
@@ -113,6 +113,12 @@ describe('InstanceRepository', () => {
                     .withUuid(instanceUUID)
                     .withCreatedBy(bestuurseenheid.id)
                     .withStatus(InstanceStatusType.VERSTUURD)
+                    .withSpatials(
+                        [
+                            buildSpatialRefNis2019Iri(45700),
+                            buildSpatialRefNis2019Iri(52000),
+                            buildSpatialRefNis2019Iri(98786)]
+                    )
                     .build();
 
 
@@ -137,8 +143,10 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,
+                    `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[0].value}>`,
+                    `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[1].value}>`,
+                    `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[2].value}>`,
                 ]);
-
 
             const actualInstance = await repository.findById(bestuurseenheid, instanceId);
 

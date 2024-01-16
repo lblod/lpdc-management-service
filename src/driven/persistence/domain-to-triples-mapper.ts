@@ -115,6 +115,7 @@ export class DomainToTriplesMapper {
             instance.dateCreated ? this.buildQuad(namedNode(instance.id.value), NS.dct('created'), literal(instance.dateCreated.value, NS.xsd('dateTime'))) : undefined,
             instance.dateModified ? this.buildQuad(namedNode(instance.id.value), NS.dct('modified'), literal(instance.dateModified.value, NS.xsd('dateTime'))) : undefined,
             this.buildQuad(namedNode(instance.id.value), NS.adms('status'), namedNode(this.enumToIri(instance.status, NS.concepts.instanceStatus).value)),
+            ...this.spatials(instance.id, instance.spatials),
         ].filter(t => t !== undefined);
     }
 
@@ -212,6 +213,10 @@ export class DomainToTriplesMapper {
 
     private legalResources(id: Iri, values: Iri[]): Statement[] {
         return this.irisToTriples(namedNode(id.value), NS.m8g('hasLegalResource'), values);
+    }
+
+    private spatials(id: Iri, values: Iri[]): Statement[] {
+        return this.irisToTriples(namedNode(id.value), NS.dct('spatial'), values);
     }
 
     private latestConceptSnapshot(id: Iri, value: Iri): Statement {

@@ -1,7 +1,7 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Instance} from "../../../src/core/domain/instance";
-import {buildBestuurseenheidIri, buildInstanceIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildInstanceIri, buildSpatialRefNis2019Iri, randomNumber} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {InstanceStatusType} from "../../../src/core/domain/types";
@@ -41,7 +41,8 @@ export function aFullInstance(): InstanceTestBuilder {
                 InstanceTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
-        .withStatus(InstanceTestBuilder.STATUS);
+        .withStatus(InstanceTestBuilder.STATUS)
+        .withSpatials(InstanceTestBuilder.SPATIALS);
 
 }
 
@@ -67,6 +68,8 @@ export class InstanceTestBuilder {
 
     public static readonly STATUS = InstanceStatusType.ONTWERP;
 
+    public static readonly SPATIALS = [buildSpatialRefNis2019Iri(randomNumber(10000, 19999)), buildSpatialRefNis2019Iri(randomNumber(20000, 29999))];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -75,6 +78,7 @@ export class InstanceTestBuilder {
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
+    private spatials: Iri[] = [];
 
     public withId(id: Iri): InstanceTestBuilder {
         this.id = id;
@@ -116,6 +120,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withSpatials(spatials: Iri[]): InstanceTestBuilder {
+        this.spatials = spatials;
+        return this;
+    }
+
     public build(): Instance {
         return new Instance(
             this.id,
@@ -126,6 +135,7 @@ export class InstanceTestBuilder {
             this.dateCreated,
             this.dateModified,
             this.status,
+            this.spatials,
         );
     }
 }
