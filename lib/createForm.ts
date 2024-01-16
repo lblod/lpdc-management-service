@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {query, sparqlEscapeDateTime, sparqlEscapeString, sparqlEscapeUri, update} from '../mu-helper';
 import {v4 as uuid} from 'uuid';
-import {APPLICATION_GRAPH, CONCEPT_GRAPH, FORM_STATUS_CONCEPT, PREFIX} from '../config';
+import {APPLICATION_GRAPH, CONCEPT_GRAPH, FORM_STATUS_ONTWERP, PREFIX} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
 import {addUuidForSubject, groupBySubject, replaceType} from '../utils/common';
 import {
@@ -33,11 +33,10 @@ export async function createEmptyForm(sessionUri: string, sessionRepository: Ses
     const session = await sessionRepository.findById(new Iri(sessionUri));
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-
     const publicServiceId = uuid();
     const publicServiceUri = `http://data.lblod.info/id/public-service/${publicServiceId}`;
 
-    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.id.value);
+    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.id);
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
 
     const now = new Date().toISOString();
@@ -55,7 +54,7 @@ export async function createEmptyForm(sessionUri: string, sessionRepository: Ses
         dct:created ${sparqlEscapeDateTime(now)} ;
         dct:modified ${sparqlEscapeDateTime(now)} ;
         mu:uuid """${publicServiceId}""" ;
-        adms:status <http://lblod.data.gift/concepts/79a52da4-f491-4e2f-9374-89a13cde8ecd> ;
+        adms:status ${sparqlEscapeUri(FORM_STATUS_ONTWERP)} ;
         ${spatialsPreparedStatement.length ? spatialsPreparedStatement : ''}
         pav:createdBy ${sparqlEscapeUri(bestuurseenheid.id)};
         m8g:hasCompetentAuthority ${sparqlEscapeUri(bestuurseenheid.id)};
@@ -155,7 +154,7 @@ export async function createForm(conceptId: string, sessionUri: string, sessionR
     const now = new Date().toISOString();
     const session = await sessionRepository.findById(new Iri(sessionUri));
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.id.value);
+    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.id);
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
     const extraDataQuery = `
     ${PREFIX.adms}
@@ -166,7 +165,7 @@ export async function createForm(conceptId: string, sessionUri: string, sessionR
 
     INSERT {
       GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
-        ?service adms:status ${sparqlEscapeUri(FORM_STATUS_CONCEPT)};
+        ?service adms:status ${sparqlEscapeUri(FORM_STATUS_ONTWERP)};
           ${spatialsPreparedStatement.length ? spatialsPreparedStatement : ''}
           dct:created ${sparqlEscapeDateTime(now)};
           dct:modified ${sparqlEscapeDateTime(now)};
@@ -275,14 +274,14 @@ async function getConceptUri(conceptUuid: string): Promise<string> {
     } else throw `No exact match found for lpdcExt:ConceptualPublicService ${conceptUuid}`;
 }
 
-async function getSpatialsForBestuurseenheidUri(bestuurseenheid: string): Promise<string[]> {
+async function getSpatialsForBestuurseenheidUri(bestuurseenheidId: Iri): Promise<string[]> {
     const queryStr = `
     SELECT DISTINCT ?spatial WHERE {
       VALUES ?werkingsGebiedP {
         <http://data.vlaanderen.be/ns/besluit#werkingsgebied>
       }
 
-      ${sparqlEscapeUri(bestuurseenheid)} ?werkingsGebiedP ?werkingsgebied.
+      ${sparqlEscapeUri(bestuurseenheidId)} ?werkingsGebiedP ?werkingsgebied.
 
       ?werkingsgebied <http://www.w3.org/2004/02/skos/core#exactMatch> ?spatial.
 

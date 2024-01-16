@@ -1,4 +1,4 @@
-const FORM_STATUS_CONCEPT = 'http://lblod.data.gift/concepts/79a52da4-f491-4e2f-9374-89a13cde8ecd';
+const FORM_STATUS_ONTWERP = 'http://lblod.data.gift/concepts/instance-status/ontwerp';
 const APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH;
 
 const PUBLIC_GRAPH = 'http://mu.semte.ch/graphs/public';
@@ -103,7 +103,7 @@ export {
     CONCEPT_GRAPH,
     PUBLIC_GRAPH,
     CONCEPT_SNAPSHOT_LDES_GRAPH,
-    FORM_STATUS_CONCEPT,
+    FORM_STATUS_ONTWERP,
     APPLICATION_GRAPH,
     FORM_MAPPING,
     FORM_MAPPING_TRANSLATIONS,
