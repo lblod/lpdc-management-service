@@ -16,21 +16,6 @@ export function addUuidForSubject(bindings: any[], newUuid: string = uuid()): an
     return bindings;
 }
 
-export function addTypeForSubject(bindings: any[], newType: string): any[] {
-    if (bindings.length) {
-        const subject = bindings[0].s.value;
-
-        bindings.push(
-            {
-                s: {value: subject, type: 'uri'},
-                p: {value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', type: 'uri'},
-                o: {value: newType, type: 'uri'}
-            }
-        );
-    }
-    return bindings;
-}
-
 export function groupBySubject(bindings: any[]): any[] {
     const groupedBySubject = bindings.reduce((acc, triple) => {
         if (!acc[triple.s.value]) {
