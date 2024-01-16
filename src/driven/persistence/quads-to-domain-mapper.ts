@@ -127,7 +127,9 @@ export class QuadsToDomainMapper {
             this.uuid(id),
             this.bestuurseenheidId(id),
             this.title(id),
-            this.description(id)
+            this.description(id),
+            this.instanceDateCreated(id),
+            this.instanceDateModified(id),
         );
     }
 
@@ -233,6 +235,14 @@ export class QuadsToDomainMapper {
 
     private dateModified(id: Iri): FormatPreservingDate | undefined {
         return this.asFormatPreservingDate(this.store.anyValue(namedNode(id.value), NS.schema('dateModified'), null, this.graphId));
+    }
+
+    private instanceDateCreated(id: Iri): FormatPreservingDate | undefined {
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id.value), NS.dct('created'), null, this.graphId));
+    }
+
+    private instanceDateModified(id: Iri): FormatPreservingDate | undefined {
+        return this.asFormatPreservingDate(this.store.anyValue(namedNode(id.value), NS.dct('modified'), null, this.graphId));
     }
 
     private generatedAtTime(id: Iri): FormatPreservingDate | undefined {

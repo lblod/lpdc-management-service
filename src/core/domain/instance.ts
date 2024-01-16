@@ -1,6 +1,7 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {requiredValue} from "./shared/invariant";
+import {FormatPreservingDate} from "./format-preserving-date";
 
 export class Instance {
     private readonly _id: Iri;
@@ -8,19 +9,25 @@ export class Instance {
     private readonly _bestuurseenheidId: Iri;
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
+    private readonly _dateCreated: FormatPreservingDate;
+    private readonly _dateModified: FormatPreservingDate;
 
 
     constructor(id: Iri,
                 uuid: string,
                 bestuurseenheidId: Iri,
                 title: LanguageString | undefined,
-                description: LanguageString | undefined
+                description: LanguageString | undefined,
+                dateCreated: FormatPreservingDate,
+                dateModified: FormatPreservingDate,
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         this._bestuurseenheidId = requiredValue(bestuurseenheidId, 'bestuurseenheidId');
         this._title = title;
         this._description = description;
+        this._dateCreated = requiredValue(dateCreated, 'dateCreated');
+        this._dateModified = requiredValue(dateModified, 'dateModified');
     }
 
     get id(): Iri {
@@ -41,5 +48,13 @@ export class Instance {
 
     get description(): LanguageString | undefined {
         return this._description;
+    }
+
+    get dateCreated(): FormatPreservingDate {
+        return this._dateCreated;
+    }
+
+    get dateModified(): FormatPreservingDate {
+        return this._dateModified;
     }
 }

@@ -112,6 +112,8 @@ export class DomainToTriplesMapper {
             this.bestuurseenheidId(instance.id, instance.bestuurseenheidId),
             ...this.title(instance.id, instance.title),
             ...this.description(instance.id, instance.description),
+            instance.dateCreated ? this.buildQuad(namedNode(instance.id.value), NS.dct('created'), literal(instance.dateCreated.value, NS.xsd('dateTime'))) : undefined,
+            instance.dateModified ? this.buildQuad(namedNode(instance.id.value), NS.dct('modified'), literal(instance.dateModified.value, NS.xsd('dateTime'))) : undefined,
         ].filter(t => t !== undefined);
     }
 

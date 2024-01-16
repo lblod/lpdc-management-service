@@ -3,13 +3,16 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {Instance} from "../../../src/core/domain/instance";
 import {buildBestuurseenheidIri, buildInstanceIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
+import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 
 export function aMinimalInstance(): InstanceTestBuilder {
     const uniqueId = uuid();
     return new InstanceTestBuilder()
         .withId(buildInstanceIri(uniqueId))
         .withUuid(uniqueId)
-        .withBestuurseenheidId(buildBestuurseenheidIri(uuid()));
+        .withBestuurseenheidId(buildBestuurseenheidIri(uuid()))
+        .withDateCreated(InstanceTestBuilder.DATE_CREATED)
+        .withDateModified(InstanceTestBuilder.DATE_MODIFIED);
 }
 
 export function aFullInstance(): InstanceTestBuilder {
@@ -33,7 +36,9 @@ export function aFullInstance(): InstanceTestBuilder {
                 InstanceTestBuilder.DESCRIPTION_NL_FORMAL,
                 InstanceTestBuilder.DESCRIPTION_NL_INFORMAL,
                 InstanceTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
-                InstanceTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL));
+                InstanceTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withDateCreated(InstanceTestBuilder.DATE_CREATED)
+        .withDateModified(InstanceTestBuilder.DATE_MODIFIED);
 
 }
 
@@ -56,12 +61,16 @@ export class InstanceTestBuilder {
     public static readonly DESCRIPTION_NL_GENERATED_FORMAL = 'Instance Description - nl-generated-formal';
     public static readonly DESCRIPTION_NL_GENERATED_INFORMAL = 'Instance Description - nl-generated-informal';
 
+    public static readonly DATE_CREATED = FormatPreservingDate.of('2022-10-01T13:00:42.074442Z');
+    public static readonly DATE_MODIFIED = FormatPreservingDate.of('2023-10-02T20:00:20.242928Z');
 
     private id: Iri;
     private uuid: string;
     private bestuurseenheidId: Iri;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
+    private dateCreated: FormatPreservingDate;
+    private dateModified: FormatPreservingDate;
 
 
     public withId(id: Iri): InstanceTestBuilder {
@@ -89,13 +98,25 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
+        this.dateCreated = dateCreated;
+        return this;
+    }
+
+    public withDateModified(dateModified: FormatPreservingDate): InstanceTestBuilder {
+        this.dateModified = dateModified;
+        return this;
+    }
+
     public build(): Instance {
         return new Instance(
             this.id,
             this.uuid,
             this.bestuurseenheidId,
             this.title,
-            this.description
+            this.description,
+            this.dateCreated,
+            this.dateModified
         );
     }
 }
