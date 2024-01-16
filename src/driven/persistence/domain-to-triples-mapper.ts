@@ -109,7 +109,7 @@ export class DomainToTriplesMapper {
         return [
             this.rdfType(instance.id, NS.cpsv('PublicService')),
             instance.uuid ? this.buildQuad(namedNode(instance.id.value), NS.mu('uuid'), literal(instance.uuid)) : undefined,
-            this.bestuurseenheidId(instance.id, instance.bestuurseenheidId),
+            this.bestuurseenheidId(instance.id, instance.createdBy),
             ...this.title(instance.id, instance.title),
             ...this.description(instance.id, instance.description),
             instance.dateCreated ? this.buildQuad(namedNode(instance.id.value), NS.dct('created'), literal(instance.dateCreated.value, NS.xsd('dateTime'))) : undefined,

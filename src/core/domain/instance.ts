@@ -7,7 +7,7 @@ import {InstanceStatusType} from "./types";
 export class Instance {
     private readonly _id: Iri;
     private readonly _uuid: string; //required for mu-cl-resources.
-    private readonly _bestuurseenheidId: Iri;
+    private readonly _createdBy: Iri;
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _dateCreated: FormatPreservingDate;
@@ -16,7 +16,7 @@ export class Instance {
 
     constructor(id: Iri,
                 uuid: string,
-                bestuurseenheidId: Iri,
+                createdBy: Iri,
                 title: LanguageString | undefined,
                 description: LanguageString | undefined,
                 dateCreated: FormatPreservingDate,
@@ -25,7 +25,7 @@ export class Instance {
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
-        this._bestuurseenheidId = requiredValue(bestuurseenheidId, 'bestuurseenheidId');
+        this._createdBy = requiredValue(createdBy, 'createdBy');
         this._title = title;
         this._description = description;
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
@@ -41,8 +41,8 @@ export class Instance {
         return this._uuid;
     }
 
-    get bestuurseenheidId(): Iri {
-        return this._bestuurseenheidId;
+    get createdBy(): Iri {
+        return this._createdBy;
     }
 
     get title(): LanguageString | undefined {

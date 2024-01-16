@@ -10,12 +10,12 @@ describe('constructing', () => {
     test('Invalid iri id throws error', () => {
         expect(() => aFullInstance().withId(new Iri('  ')).build()).toThrow(new Error('iri should not be blank'));
     });
-    test('Undefined bestuurseenheidId throws error', () => {
-        expect(() => aFullInstance().withBestuurseenheidId(undefined).build()).toThrow(new Error('bestuurseenheidId should not be undefined'));
+    test('Undefined createdBy throws error', () => {
+        expect(() => aFullInstance().withCreatedBy(undefined).build()).toThrow(new Error('createdBy should not be undefined'));
     });
 
-    test('Invalid iri bestuurseenheidId throws error', () => {
-        expect(() => aFullInstance().withBestuurseenheidId(new Iri('  ')).build()).toThrow(new Error('iri should not be blank'));
+    test('Invalid iri createdBy throws error', () => {
+        expect(() => aFullInstance().withCreatedBy(new Iri('  ')).build()).toThrow(new Error('iri should not be blank'));
     });
 
     test('Undefined uuid throws error', () => {

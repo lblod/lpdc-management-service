@@ -128,7 +128,7 @@ export class QuadsToDomainMapper {
         return new Instance(
             id,
             this.uuid(id),
-            this.bestuurseenheidId(id),
+            this.createdBy(id),
             this.title(id),
             this.description(id),
             this.instanceDateCreated(id),
@@ -183,7 +183,7 @@ export class QuadsToDomainMapper {
         return this.store.anyValue(namedNode(id.value), NS.mu('uuid'), null, this.graphId);
     }
 
-    private bestuurseenheidId(id: Iri): Iri | undefined {
+    private createdBy(id: Iri): Iri | undefined {
         return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.pav('createdBy'), null, this.graphId));
     }
 

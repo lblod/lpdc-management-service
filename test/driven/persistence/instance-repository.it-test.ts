@@ -22,11 +22,11 @@ describe('InstanceRepository', () => {
             await bestuurseenheidRepository.save(bestuurseenheid);
             await bestuurseenheidRepository.save(anotherBestuurseenheid);
 
-            const instance = aFullInstance().withBestuurseenheidId(bestuurseenheid.id).build();
+            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
 
             await repository.save(bestuurseenheid, instance);
 
-            const anotherInstance = aFullInstance().withBestuurseenheidId(anotherBestuurseenheid.id).build();
+            const anotherInstance = aFullInstance().withCreatedBy(anotherBestuurseenheid.id).build();
             await repository.save(bestuurseenheid, anotherInstance);
 
             const actualConcept = await repository.findById(bestuurseenheid, instance.id);
@@ -40,11 +40,11 @@ describe('InstanceRepository', () => {
             await bestuurseenheidRepository.save(bestuurseenheid);
             await bestuurseenheidRepository.save(anotherBestuurseenheid);
 
-            const instance = aMinimalInstance().withBestuurseenheidId(bestuurseenheid.id).build();
+            const instance = aMinimalInstance().withCreatedBy(bestuurseenheid.id).build();
 
             await repository.save(bestuurseenheid, instance);
 
-            const anotherInstance = aMinimalInstance().withBestuurseenheidId(anotherBestuurseenheid.id).build();
+            const anotherInstance = aMinimalInstance().withCreatedBy(anotherBestuurseenheid.id).build();
             await repository.save(bestuurseenheid, anotherInstance);
 
             const actualConcept = await repository.findById(bestuurseenheid, instance.id);
@@ -57,7 +57,7 @@ describe('InstanceRepository', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
-            const instance = aMinimalInstance().withBestuurseenheidId(bestuurseenheid.id).build();
+            const instance = aMinimalInstance().withCreatedBy(bestuurseenheid.id).build();
             await repository.save(bestuurseenheid, instance);
 
             const nonExistentInstanceId = buildInstanceIri('thisiddoesnotexist');
@@ -79,7 +79,7 @@ describe('InstanceRepository', () => {
                 aMinimalInstance()
                     .withId(instanceId)
                     .withUuid(instanceUUID)
-                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withCreatedBy(bestuurseenheid.id)
                     .withDateCreated(instanceDateCreated)
                     .withDateModified(instanceDateModified)
                     .withStatus(InstanceStatusType.ONTWERP)
@@ -111,7 +111,7 @@ describe('InstanceRepository', () => {
                 aFullInstance()
                     .withId(instanceId)
                     .withUuid(instanceUUID)
-                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withCreatedBy(bestuurseenheid.id)
                     .withStatus(InstanceStatusType.VERSTUURD)
                     .build();
 

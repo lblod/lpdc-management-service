@@ -11,7 +11,7 @@ export function aMinimalInstance(): InstanceTestBuilder {
     return new InstanceTestBuilder()
         .withId(buildInstanceIri(uniqueId))
         .withUuid(uniqueId)
-        .withBestuurseenheidId(buildBestuurseenheidIri(uuid()))
+        .withCreatedBy(buildBestuurseenheidIri(uuid()))
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS);
@@ -22,7 +22,7 @@ export function aFullInstance(): InstanceTestBuilder {
     return new InstanceTestBuilder()
         .withId(buildInstanceIri(uniqueId))
         .withUuid(uniqueId)
-        .withBestuurseenheidId(uuid())
+        .withCreatedBy(buildBestuurseenheidIri(uuid()))
         .withTitle(
             LanguageString.of(
                 InstanceTestBuilder.TITLE_EN,
@@ -48,14 +48,12 @@ export function aFullInstance(): InstanceTestBuilder {
 
 export class InstanceTestBuilder {
 
-
     public static readonly TITLE_EN = 'Instance Title - en';
     public static readonly TITLE_NL = 'Instance Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Instance Title - nl-formal';
     public static readonly TITLE_NL_INFORMAL = 'Instance Title - nl-informal';
     public static readonly TITLE_NL_GENERATED_FORMAL = 'Instance Title - nl-generated-formal';
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Instance Title - nl-generated-informal';
-
 
     public static readonly DESCRIPTION_EN = 'Instance Description - en';
     public static readonly DESCRIPTION_NL = 'Instance Description - nl';
@@ -71,7 +69,7 @@ export class InstanceTestBuilder {
 
     private id: Iri;
     private uuid: string;
-    private bestuurseenheidId: Iri;
+    private createdBy: Iri;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
     private dateCreated: FormatPreservingDate;
@@ -88,8 +86,8 @@ export class InstanceTestBuilder {
         return this;
     }
 
-    public withBestuurseenheidId(bestuurseenheidId: Iri): InstanceTestBuilder {
-        this.bestuurseenheidId = bestuurseenheidId;
+    public withCreatedBy(createdBy: Iri): InstanceTestBuilder {
+        this.createdBy = createdBy;
         return this;
     }
 
@@ -122,7 +120,7 @@ export class InstanceTestBuilder {
         return new Instance(
             this.id,
             this.uuid,
-            this.bestuurseenheidId,
+            this.createdBy,
             this.title,
             this.description,
             this.dateCreated,
