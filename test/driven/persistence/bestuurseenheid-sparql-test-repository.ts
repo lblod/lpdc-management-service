@@ -4,7 +4,8 @@ import {
 } from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
-import {sparqlEscapeString, sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeString, sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {buildWerkingsgebiedenIri} from "../../core/domain/iri-test-builder";
 
 export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRepository {
 
@@ -14,10 +15,15 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
 
     async save(bestuurseenheid: Bestuurseenheid): Promise<void> {
         const classificatieUri = this.mapBestuurseenheidClassificatieCodeToUri(bestuurseenheid.classificatieCode);
+
+        const werkingsgebiedenSpatials = bestuurseenheid.spatials.map(sp => [sp, buildWerkingsgebiedenIri(uuid())]);
+
         const query = `
             ${PREFIX.skos}
             ${PREFIX.besluit}
             ${PREFIX.mu}
+            ${PREFIX.skos}
+            ${PREFIX.lblodIpdcLpdc}
             
             INSERT DATA { 
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
@@ -25,6 +31,11 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
                     ${sparqlEscapeUri(bestuurseenheid.id)} skos:prefLabel ${sparqlEscapeString(bestuurseenheid.prefLabel)} .
                     ${classificatieUri ? `${sparqlEscapeUri(bestuurseenheid.id)} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .` : ''}
                     ${sparqlEscapeUri(bestuurseenheid.id)} mu:uuid ${sparqlEscapeString(bestuurseenheid.uuid)} .
+                    ${werkingsgebiedenSpatials.flatMap(wgs => [
+                        `${sparqlEscapeUri(bestuurseenheid.id)} besluit:werkingsgebied ${sparqlEscapeUri(wgs[1])}`,
+                        `${sparqlEscapeUri(wgs[1])} skos:exactMatch ${sparqlEscapeUri(wgs[0])}`,
+                        `${sparqlEscapeUri(wgs[0])} skos:inScheme lblodIpdcLpdc:IPDCLocaties`,
+        ]).join(' .\n')} .
                 }
             }
         `;
@@ -32,7 +43,7 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
     }
 
     mapBestuurseenheidClassificatieCodeToUri(classificatieCode: BestuurseenheidClassificatieCode | undefined): BestuurseenheidClassificatieCodeUri | undefined {
-        if(!classificatieCode) {
+        if (!classificatieCode) {
             return undefined;
         }
         const key: string | undefined = Object.keys(BestuurseenheidClassificatieCode)

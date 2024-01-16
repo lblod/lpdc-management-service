@@ -5,7 +5,12 @@ import {aBestuurseenheid} from "../../core/domain/bestuureenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
-import {buildBestuurseenheidIri} from "../../core/domain/iri-test-builder";
+import {
+    buildBestuurseenheidIri,
+    buildSpatialRefNis2019Iri,
+    buildWerkingsgebiedenIri,
+    randomNumber
+} from "../../core/domain/iri-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {PUBLIC_GRAPH} from "../../../config";
 
@@ -49,7 +54,9 @@ describe('BestuurseenheidRepository', () => {
 
             const actualBestuurseenheid = await repository.findById(bestuurseenheid.id);
 
-            expect(actualBestuurseenheid).toEqual(bestuurseenheid);
+            expect(actualBestuurseenheid.id).toEqual(Bestuurseenheid.abb);
+            expect(actualBestuurseenheid.prefLabel).toEqual('Agentschap binnenlands bestuur');
+            expect(actualBestuurseenheid.classificatieCode).toBeUndefined();
         });
     });
 
@@ -59,12 +66,26 @@ describe('BestuurseenheidRepository', () => {
             const bestuurseenheidUuid = uuid();
             const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${bestuurseenheidUuid}`);
 
+            const werkingsgebied1Id = buildWerkingsgebiedenIri(uuid());
+            const werkingsgebied2Id = buildWerkingsgebiedenIri(uuid());
+
+            const spatial1Id = buildSpatialRefNis2019Iri(randomNumber(10000, 19999));
+            const spatial2Id = buildSpatialRefNis2019Iri(randomNumber(20000, 29999));
+            const spatial3Id = buildSpatialRefNis2019Iri(randomNumber(30000, 39999));
+            const spatial4Id = buildSpatialRefNis2019Iri(randomNumber(40000, 49999));
+
             const bestuurseenheid =
                 aBestuurseenheid()
                     .withId(bestuurseenheidId)
                     .withUuid(bestuurseenheidUuid)
                     .withPrefLabel("preferred label")
                     .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+                    .withSpatials([
+                        spatial1Id,
+                        spatial2Id,
+                        spatial3Id,
+                        spatial4Id,
+                    ])
                     .build();
 
             await directDatabaseAccess.insertData(
@@ -73,14 +94,25 @@ describe('BestuurseenheidRepository', () => {
                     `<${bestuurseenheidId}> <http://mu.semte.ch/vocabularies/core/uuid> """${bestuurseenheidUuid}"""`,
                     `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
                     `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
+                    `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#werkingsgebied> <${werkingsgebied1Id}>`,
+                    `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#werkingsgebied> <${werkingsgebied2Id}>`,
+                    `<${werkingsgebied1Id}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial1Id}>`,
+                    `<${werkingsgebied1Id}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial2Id}>`,
+                    `<${werkingsgebied2Id}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial3Id}>`,
+                    `<${werkingsgebied2Id}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial4Id}>`,
+                    `<${spatial1Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties>`,
+                    `<${spatial2Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties>`,
+                    `<${spatial3Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties>`,
+                    `<${spatial4Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties>`,
                 ]);
+            //TODO LPDC-917: what happens if there are no spatials attached ? is that a valiation error? or just a remark in the data integrityt est ?
 
             const actualBestuurseenheid = await repository.findById(bestuurseenheidId);
 
             expect(actualBestuurseenheid).toEqual(bestuurseenheid);
         });
 
-        test('Verify ontology and mapping - only query correct type', async () => {
+        test('Only query correct type', async () => {
             const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${uuid()}`);
 
             await directDatabaseAccess.insertData(
@@ -92,6 +124,46 @@ describe('BestuurseenheidRepository', () => {
 
             await expect(repository.findById(bestuurseenheidId)).rejects.toThrow(new Error(`no Bestuurseenheid found for iri: ${bestuurseenheidId}`));
 
+        });
+
+        test('a bestuurseenheid not linked to a werkingsgebied is returned', async () => {
+            const bestuurseenheidUuid = uuid();
+            const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${bestuurseenheidUuid}`);
+
+            await directDatabaseAccess.insertData(
+                PUBLIC_GRAPH,
+                [`<${bestuurseenheidId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+                    `<${bestuurseenheidId}> <http://mu.semte.ch/vocabularies/core/uuid> """${bestuurseenheidUuid}"""`,
+                    `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
+                    `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
+                ]);
+
+            const actualBestuurseenheid = await repository.findById(bestuurseenheidId);
+
+            expect(actualBestuurseenheid.id).toEqual(bestuurseenheidId);
+        });
+
+        test('a spatial not linked to a ipdc locatie is not returned', async () => {
+            const bestuurseenheidUuid = uuid();
+            const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${bestuurseenheidUuid}`);
+
+            const werkingsgebied1Id = buildWerkingsgebiedenIri(uuid());
+
+            const spatial1Id = buildSpatialRefNis2019Iri(randomNumber(10000, 19999));
+
+            await directDatabaseAccess.insertData(
+                PUBLIC_GRAPH,
+                [`<${bestuurseenheidId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+                    `<${bestuurseenheidId}> <http://mu.semte.ch/vocabularies/core/uuid> """${bestuurseenheidUuid}"""`,
+                    `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
+                    `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
+                    `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#werkingsgebied> <${werkingsgebied1Id}>`,
+                    `<${werkingsgebied1Id}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial1Id}>`,
+                ]);
+
+            const actualBestuurseenheid = await repository.findById(bestuurseenheidId);
+
+            expect(actualBestuurseenheid.spatials).toEqual([]);
         });
 
     });

@@ -1,6 +1,7 @@
 import {Iri} from "./shared/iri";
 import {SessionRole} from "./session";
-import {requiredValue} from "./shared/invariant";
+import {requiredValue, requireNoDuplicates} from "./shared/invariant";
+import {asSortedArray} from "./shared/collections-helper";
 
 
 export class Bestuurseenheid {
@@ -11,15 +12,18 @@ export class Bestuurseenheid {
     private readonly _uuid: string;
     private readonly _prefLabel: string;
     private readonly _classificatieCode: BestuurseenheidClassificatieCode | undefined;
+    private readonly _spatials: Iri[];
 
     constructor(id: Iri,
                 uuid: string,
                 prefLabel: string,
-                classificatieCode: BestuurseenheidClassificatieCode | undefined) {
+                classificatieCode: BestuurseenheidClassificatieCode | undefined,
+                spatials: Iri[]) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         this._prefLabel = requiredValue(prefLabel, 'prefLabel');
         this._classificatieCode = id.equals(Bestuurseenheid.abb) ? classificatieCode : requiredValue(classificatieCode, 'classificatieCode');
+        this._spatials = requireNoDuplicates(asSortedArray(spatials, Iri.compare), 'spatials');
     }
 
     get id(): Iri {
@@ -36,6 +40,10 @@ export class Bestuurseenheid {
 
     get classificatieCode(): BestuurseenheidClassificatieCode | undefined {
         return this._classificatieCode;
+    }
+
+    get spatials(): Iri[] {
+        return [...this._spatials];
     }
 
     userGraph(): Iri {

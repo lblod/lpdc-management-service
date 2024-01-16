@@ -38,11 +38,25 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
             throw new Error(`no Bestuurseenheid found for iri: ${id}`);
         }
 
+        const spatialsQuery = `
+            ${PREFIX.besluit}
+            ${PREFIX.skos}
+            ${PREFIX.lblodIpdcLpdc}
+            SELECT DISTINCT ?spatialId WHERE {
+              ${sparqlEscapeUri(id)} besluit:werkingsgebied ?werkingsgebiedId.
+              ?werkingsgebiedId skos:exactMatch ?spatialId.
+              ?spatialId skos:inScheme lblodIpdcLpdc:IPDCLocaties
+            }        
+        `;
+
+        const resultSpatials = await this.querying.list(spatialsQuery);
+
         return new Bestuurseenheid(
             new Iri(result['id'].value),
             result['uuid'].value,
             result['prefLabel'].value,
-            this.mapBestuurseenheidClassificatieUriToCode(result['classificatieUri']?.value)
+            this.mapBestuurseenheidClassificatieUriToCode(result['classificatieUri']?.value),
+            resultSpatials.map(r => new Iri(r['spatialId'].value))
         );
     }
 
