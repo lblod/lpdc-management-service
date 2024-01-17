@@ -55,6 +55,8 @@ export function aFullInstance(): InstanceTestBuilder {
                 InstanceTestBuilder.REGULATION_EN,
                 undefined,
                 InstanceTestBuilder.REGULATION_NL_FORMAL))
+        .withStartDate(InstanceTestBuilder.START_DATE)
+        .withEndDate(InstanceTestBuilder.END_DATE)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -102,6 +104,9 @@ export class InstanceTestBuilder {
     public static readonly REGULATION_NL_FORMAL = 'Instance Regulation - nl-formal';
     public static readonly REGULATION_NL_INFORMAL = 'Instance Regulation - nl-informal';
 
+    public static readonly START_DATE = FormatPreservingDate.of('2023-10-21 00:00:00Z');
+    public static readonly END_DATE = FormatPreservingDate.of('2027-09-17 00:00:00.000Z');
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -110,6 +115,8 @@ export class InstanceTestBuilder {
     private additionalDescription: LanguageString | undefined;
     private exception: LanguageString | undefined;
     private regulation: LanguageString | undefined;
+    private startDate: FormatPreservingDate | undefined;
+    private endDate: FormatPreservingDate | undefined;
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -157,6 +164,16 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withStartDate(startDate: FormatPreservingDate): InstanceTestBuilder {
+        this.startDate = startDate;
+        return this;
+    }
+
+    public withEndDate(endDate: FormatPreservingDate): InstanceTestBuilder {
+        this.endDate = endDate;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -197,6 +214,8 @@ export class InstanceTestBuilder {
             this.additionalDescription,
             this.exception,
             this.regulation,
+            this.startDate,
+            this.endDate,
             this.dateCreated,
             this.dateModified,
             this.status,
