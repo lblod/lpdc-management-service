@@ -6,7 +6,7 @@ import {aBestuurseenheid} from "../../core/domain/bestuureenheid-test-builder";
 import {uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {buildInstanceIri, buildSpatialRefNis2019Iri} from "../../core/domain/iri-test-builder";
-import {InstanceStatusType, ProductType} from "../../../src/core/domain/types";
+import {InstanceStatusType, ProductType, TargetAudienceType} from "../../../src/core/domain/types";
 import {NS} from "../../../src/driven/persistence/namespaces";
 
 describe('InstanceRepository', () => {
@@ -149,6 +149,9 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://schema.org/startDate> """${InstanceTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/endDate> """${InstanceTestBuilder.END_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/type> <${NS.dvc.type(InstanceTestBuilder.TYPE).value}>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(InstanceTestBuilder.TARGET_AUDIENCES[0]).value}>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(InstanceTestBuilder.TARGET_AUDIENCES[1]).value}>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(InstanceTestBuilder.TARGET_AUDIENCES[2]).value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,
@@ -227,6 +230,31 @@ describe('InstanceRepository', () => {
                 ]);
 
             await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> for iri: <${instanceIri}>`));
+        });
+
+        for (const targetAudience of Object.values(TargetAudienceType)) {
+            test(`TargetAudienceType ${targetAudience} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instance = aMinimalInstance().withTargetAudiences([targetAudience]).build();
+                await repository.save(bestuurseenheid, instance);
+
+                const actualConceptSnapshot = await repository.findById(bestuurseenheid, instance.id);
+
+                expect(actualConceptSnapshot).toEqual(instance);
+            });
+        }
+
+        test('Unknown Target Audience Type can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceIri = buildInstanceIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [`<${instanceIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience> for iri: <${instanceIri}>`));
         });
     });
 });

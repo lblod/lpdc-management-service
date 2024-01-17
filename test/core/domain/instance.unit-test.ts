@@ -3,6 +3,7 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {buildSpatialRefNis2019Iri} from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {TargetAudienceType} from "../../../src/core/domain/types";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -27,6 +28,11 @@ describe('constructing', () => {
 
     test('Blank uuid throws error', () => {
         expect(() => aFullInstance().withUuid('   ').build()).toThrow(new Error('uuid should not be blank'));
+    });
+
+    test('TargetAudience with duplicates throws error', () => {
+        const instanceTestBuilder = aFullInstance().withTargetAudiences([TargetAudienceType.BURGER, TargetAudienceType.BURGER]);
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('targetAudiences should not contain duplicates'));
     });
 
     describe('dateCreated', () => {

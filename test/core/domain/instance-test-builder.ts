@@ -4,7 +4,7 @@ import {Instance} from "../../../src/core/domain/instance";
 import {buildBestuurseenheidIri, buildInstanceIri, buildSpatialRefNis2019Iri, randomNumber} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {InstanceStatusType, ProductType} from "../../../src/core/domain/types";
+import {InstanceStatusType, ProductType, TargetAudienceType} from "../../../src/core/domain/types";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 
 export function aMinimalInstance(): InstanceTestBuilder {
@@ -55,9 +55,10 @@ export function aFullInstance(): InstanceTestBuilder {
                 InstanceTestBuilder.REGULATION_EN,
                 undefined,
                 InstanceTestBuilder.REGULATION_NL_FORMAL))
-        .withType(InstanceTestBuilder.TYPE)
         .withStartDate(InstanceTestBuilder.START_DATE)
         .withEndDate(InstanceTestBuilder.END_DATE)
+        .withType(InstanceTestBuilder.TYPE)
+        .withTargetAudiences(InstanceTestBuilder.TARGET_AUDIENCES)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -110,6 +111,8 @@ export class InstanceTestBuilder {
 
     public static readonly TYPE = ProductType.BEWIJS;
 
+    public static readonly TARGET_AUDIENCES = [TargetAudienceType.ORGANISATIE, TargetAudienceType.VERENIGING, TargetAudienceType.BURGER];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -121,6 +124,7 @@ export class InstanceTestBuilder {
     private startDate: FormatPreservingDate | undefined;
     private endDate: FormatPreservingDate | undefined;
     private type: ProductType | undefined;
+    private targetAudiences: TargetAudienceType[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -183,6 +187,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withTargetAudiences(targetAudiences: TargetAudienceType[]): InstanceTestBuilder {
+        this.targetAudiences = targetAudiences;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -226,6 +235,7 @@ export class InstanceTestBuilder {
             this.startDate,
             this.endDate,
             this.type,
+            this.targetAudiences,
             this.dateCreated,
             this.dateModified,
             this.status,
