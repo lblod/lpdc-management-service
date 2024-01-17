@@ -4,7 +4,7 @@ import {Instance} from "../../../src/core/domain/instance";
 import {buildBestuurseenheidIri, buildInstanceIri, buildSpatialRefNis2019Iri, randomNumber} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {InstanceStatusType} from "../../../src/core/domain/types";
+import {InstanceStatusType, ProductType} from "../../../src/core/domain/types";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 
 export function aMinimalInstance(): InstanceTestBuilder {
@@ -55,6 +55,7 @@ export function aFullInstance(): InstanceTestBuilder {
                 InstanceTestBuilder.REGULATION_EN,
                 undefined,
                 InstanceTestBuilder.REGULATION_NL_FORMAL))
+        .withType(InstanceTestBuilder.TYPE)
         .withStartDate(InstanceTestBuilder.START_DATE)
         .withEndDate(InstanceTestBuilder.END_DATE)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
@@ -107,6 +108,8 @@ export class InstanceTestBuilder {
     public static readonly START_DATE = FormatPreservingDate.of('2023-10-21 00:00:00Z');
     public static readonly END_DATE = FormatPreservingDate.of('2027-09-17 00:00:00.000Z');
 
+    public static readonly TYPE = ProductType.BEWIJS;
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -117,6 +120,7 @@ export class InstanceTestBuilder {
     private regulation: LanguageString | undefined;
     private startDate: FormatPreservingDate | undefined;
     private endDate: FormatPreservingDate | undefined;
+    private type: ProductType | undefined;
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -174,6 +178,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withType(type: ProductType): InstanceTestBuilder {
+        this.type = type;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -216,6 +225,7 @@ export class InstanceTestBuilder {
             this.regulation,
             this.startDate,
             this.endDate,
+            this.type,
             this.dateCreated,
             this.dateModified,
             this.status,

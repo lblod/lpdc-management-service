@@ -790,7 +790,7 @@ describe('ConceptSnapshotRepository', () => {
         }
 
         test('Unknown Product Type can not be mapped', async () => {
-            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
+            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
 
             await directDatabaseAccess.insertData(
                 "http://mu.semte.ch/graphs/lpdc/ldes-data",

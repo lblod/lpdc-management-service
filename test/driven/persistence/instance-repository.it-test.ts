@@ -6,7 +6,8 @@ import {aBestuurseenheid} from "../../core/domain/bestuureenheid-test-builder";
 import {uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {buildInstanceIri, buildSpatialRefNis2019Iri} from "../../core/domain/iri-test-builder";
-import {InstanceStatusType} from "../../../src/core/domain/types";
+import {InstanceStatusType, ProductType} from "../../../src/core/domain/types";
+import {NS} from "../../../src/driven/persistence/namespaces";
 
 describe('InstanceRepository', () => {
 
@@ -147,6 +148,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """${InstanceTestBuilder.REGULATION_NL_FORMAL}"""@nl-BE-x-formal`,
                     `<${instanceId}> <http://schema.org/startDate> """${InstanceTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/endDate> """${InstanceTestBuilder.END_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <http://purl.org/dc/terms/type> <${NS.dvc.type(InstanceTestBuilder.TYPE).value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,
@@ -188,12 +190,43 @@ describe('InstanceRepository', () => {
             const bestuurseenheid = aBestuurseenheid().build();
 
             await directDatabaseAccess.insertData(
-                        bestuurseenheid.userGraph().value,
-                [`<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                bestuurseenheid.userGraph().value,
+                [
+                    `<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/unknown-instance-status>`,
                 ]);
 
             await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrow(new Error(`could not map <http://lblod.data.gift/concepts/instance-status/unknown-instance-status> for iri: <${instanceId}>`));
+        });
+
+        for (const type of Object.values(ProductType)) {
+            test(`Product type ${type} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instance = aMinimalInstance()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withType(type)
+                    .build();
+
+                await repository.save(bestuurseenheid, instance);
+
+                const actualConceptSnapshot = await repository.findById(bestuurseenheid, instance.id);
+
+                expect(actualConceptSnapshot).toEqual(instance);
+            });
+        }
+
+        test('Unknown Product Type can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceIri = buildInstanceIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `<${instanceIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceIri}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> for iri: <${instanceIri}>`));
         });
     });
 });

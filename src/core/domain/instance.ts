@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
-import {InstanceStatusType} from "./types";
+import {InstanceStatusType, ProductType} from "./types";
 import {asSortedArray} from "./shared/collections-helper";
 
 export class Instance {
@@ -17,6 +17,7 @@ export class Instance {
     private readonly _regulation: LanguageString | undefined;
     private readonly _startDate: FormatPreservingDate | undefined;
     private readonly _endDate: FormatPreservingDate | undefined;
+    private readonly _type: ProductType | undefined;
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -35,6 +36,7 @@ export class Instance {
                 regulation: LanguageString | undefined,
                 startDate: FormatPreservingDate | undefined,
                 endDate: FormatPreservingDate | undefined,
+                type: ProductType | undefined,
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -53,6 +55,7 @@ export class Instance {
         this._regulation = regulation;
         this._startDate = startDate;
         this._endDate = endDate;
+        this._type = type;
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -99,6 +102,10 @@ export class Instance {
 
     get endDate(): FormatPreservingDate | undefined {
         return this._endDate;
+    }
+
+    get type(): ProductType | undefined {
+        return this._type;
     }
 
     get dateCreated(): FormatPreservingDate {
