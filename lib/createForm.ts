@@ -25,7 +25,7 @@ import {Iri} from "../src/core/domain/shared/iri";
 import {SessionRepository} from "../src/core/port/driven/persistence/session-repository";
 import {BestuurseenheidRepository} from "../src/core/port/driven/persistence/bestuurseenheid-repository";
 
-export async function createForm(conceptId: string, sessionUri: string, sessionRepository: SessionRepository, bestuurseenheidRepository: BestuurseenheidRepository): Promise<{
+export async function createForm(conceptId: string, sessionId: Iri, sessionRepository: SessionRepository, bestuurseenheidRepository: BestuurseenheidRepository): Promise<{
     uuid: string,
     uri: string
 }> {
@@ -107,7 +107,7 @@ export async function createForm(conceptId: string, sessionUri: string, sessionR
     }
 
     const now = new Date().toISOString();
-    const session = await sessionRepository.findById(new Iri(sessionUri));
+    const session = await sessionRepository.findById(sessionId);
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.id);
     const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');

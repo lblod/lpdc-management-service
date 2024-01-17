@@ -33,7 +33,8 @@ import {
 import {CodeSparqlRepository} from "./src/driven/persistence/code-sparql-repository";
 import {InstanceSparqlRepository} from "./src/driven/persistence/instance-sparql-repository";
 import {NewInstanceDomainService} from "./src/core/domain/new-instance-domain-service";
-import {SessionRoleType} from "./src/core/domain/session";
+import {Session, SessionRoleType} from "./src/core/domain/session";
+import {Bestuurseenheid} from "./src/core/domain/bestuurseenheid";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -42,6 +43,7 @@ const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 //      send its data as such.
 const app = createApp();
 const bodySizeLimit = process.env.MAX_BODY_SIZE || '5Mb';
+
 app.use(bodyparser.json({limit: bodySizeLimit}));
 
 const sessionRepository = new SessionSparqlRepository();
@@ -97,6 +99,8 @@ app.post('/delta', async function (req, res): Promise<void> {
     }
 });
 
+//TODO LPDC-917: rename all 'semantic forms urls to /public-services/'
+
 app.post('/semantic-forms/:publicServiceId/submit', async function (req, res): Promise<any> {
 
     const publicServiceId = req.params["publicServiceId"];
@@ -125,47 +129,64 @@ app.post('/semantic-forms/:publicServiceId/submit', async function (req, res): P
 
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization ... of all other requests
+
+const authenticateAndAuthorizeRequest = async (req, res, next) => {
+    try {
+        const sessionIri: string | undefined = req.headers['mu-session-id'] as string;
+        if (!sessionIri) {
+            const response = {
+                status: 401,
+                message: `Not authenticated for this request`
+            };
+            return res.status(response.status).set('content-type', 'application/json').send(response.message);
+        }
+        const sessionId = new Iri(sessionIri);
+        const sessionExists = await sessionRepository.exists(sessionId);
+        if (!sessionExists) {
+            const response = {
+                status: 401,
+                message: `Not authenticated for this request`
+            };
+            return res.status(response.status).set('content-type', 'application/json').send(response.message);
+        }
+        const session = await sessionRepository.findById(sessionId);
+        if (!session.hasRole(SessionRoleType.LOKETLB_LPDCGEBRUIKER)) {
+            const response = {
+                status: 403,
+                message: `Forbidden for this request`
+            };
+            return res.status(response.status).set('content-type', 'application/json').send(response.message);
+        }
+
+        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+        req['session'] = session;
+        req['bestuurseenheid'] = bestuurseenheid;
+
+        next();
+    } catch (e) {
+        console.error(e);
+        const response = {
+            status: 500,
+            message: `Could not validate session.`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
+};
+
+app.use('/public-services/', authenticateAndAuthorizeRequest);
+
 app.post('/public-services/', async function (req, res): Promise<any> {
     const body = req.body;
-
     const conceptId = body?.data?.relationships?.["concept"]?.data?.id;
 
-    //TODO LPDC-917: implement unit tests for following code
-    //TODO LPDC-917: and a big fat catch around the code if anything would fail -> http 500 to be sent
-
-    const sessionIri: string | undefined = req.headers['mu-session-id'] as string;
-    if(!sessionIri) {
-        const response = {
-            status: 401,
-            message: `Not authenticated for this request`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-    const sessionId = new Iri(sessionIri);
-    const sessionExists = await sessionRepository.exists(sessionId);
-    if(!sessionExists) {
-        const response = {
-            status: 401,
-            message: `Not authenticated for this request`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-    const session = await sessionRepository.findById(sessionId);
-    if(!session.hasRole(SessionRoleType.LOKETLB_LPDCGEBRUIKER)) {
-        const response = {
-            status: 403,
-            message: `Forbidden for this request`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-
-    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-
-    //TODO LPDC-917: verify access rights. only logged in users that have access to lpdc can execute this command ...
+    const session :Session = req['session'];
+    const bestuurseenheid :Bestuurseenheid = req['bestuurseenheid'];
 
     try {
         if(conceptId) {
-            const {uuid, uri} = await createForm(conceptId, sessionIri, sessionRepository, bestuurseenheidRepository);
+            const {uuid, uri} = await createForm(conceptId, session.id, sessionRepository, bestuurseenheidRepository);
             return res.status(201).json({
                 data: {
                     "type": "public-service",
