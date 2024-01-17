@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
-import {InstanceStatusType, ProductType, TargetAudienceType} from "./types";
+import {InstanceStatusType, ProductType, TargetAudienceType, ThemeType} from "./types";
 import {asSortedArray} from "./shared/collections-helper";
 
 export class Instance {
@@ -19,6 +19,7 @@ export class Instance {
     private readonly _endDate: FormatPreservingDate | undefined;
     private readonly _type: ProductType | undefined;
     private readonly _targetAudiences: TargetAudienceType[];
+    private readonly _themes: ThemeType[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -39,6 +40,7 @@ export class Instance {
                 endDate: FormatPreservingDate | undefined,
                 type: ProductType | undefined,
                 targetAudiences: TargetAudienceType[],
+                themes: ThemeType[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -59,6 +61,7 @@ export class Instance {
         this._endDate = endDate;
         this._type = type;
         this._targetAudiences = requireNoDuplicates(asSortedArray(targetAudiences), 'targetAudiences');
+        this._themes = requireNoDuplicates(asSortedArray(themes), 'themes');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -113,6 +116,10 @@ export class Instance {
 
     get targetAudiences(): TargetAudienceType[] {
         return this._targetAudiences;
+    }
+
+    get themes(): ThemeType[] {
+        return this._themes;
     }
 
     get dateCreated(): FormatPreservingDate {
