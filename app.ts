@@ -33,7 +33,8 @@ import {
 import {CodeSparqlRepository} from "./src/driven/persistence/code-sparql-repository";
 import {InstanceSparqlRepository} from "./src/driven/persistence/instance-sparql-repository";
 import {NewInstanceDomainService} from "./src/core/domain/new-instance-domain-service";
-import {Session, SessionRoleType} from "./src/core/domain/session";
+import {Session} from "./src/core/domain/session";
+import {authenticateAndAuthorizeRequest} from "./utils/session-utils";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -128,50 +129,7 @@ app.post('/semantic-forms/:publicServiceId/submit', async function (req, res): P
 
 });
 
-//TODO LPDC-917: add unit test for function
-//TODO LPDC-917: extract into separate file ?
-const authenticateAndAuthorizeRequest = async (req, res, next) => {
-    try {
-        const sessionIri: string | undefined = req.headers['mu-session-id'] as string;
-        if (!sessionIri) {
-            const response = {
-                status: 401,
-                message: `Not authenticated for this request`
-            };
-            return res.status(response.status).set('content-type', 'application/json').send(response.message);
-        }
-        const sessionId = new Iri(sessionIri);
-        const sessionExists = await sessionRepository.exists(sessionId);
-        if (!sessionExists) {
-            const response = {
-                status: 401,
-                message: `Not authenticated for this request`
-            };
-            return res.status(response.status).set('content-type', 'application/json').send(response.message);
-        }
-        const session = await sessionRepository.findById(sessionId);
-        if (!session.hasRole(SessionRoleType.LOKETLB_LPDCGEBRUIKER)) {
-            const response = {
-                status: 403,
-                message: `Forbidden for this request`
-            };
-            return res.status(response.status).set('content-type', 'application/json').send(response.message);
-        }
-
-        req['session'] = session;
-
-        next();
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Could not validate session.`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-};
-
-app.use('/public-services/', authenticateAndAuthorizeRequest);
+app.use('/public-services/', authenticateAndAuthorizeRequest(sessionRepository));
 
 app.post('/public-services/', async function (req, res): Promise<any> {
     const body = req.body;
@@ -346,7 +304,7 @@ app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function 
     }
 });
 
-app.use('/conceptual-public-services/', authenticateAndAuthorizeRequest);
+app.use('/conceptual-public-services/', authenticateAndAuthorizeRequest(sessionRepository));
 
 app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version', async (req, res): Promise<any> => {
     try {
@@ -365,7 +323,7 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version
     }
 });
 
-app.use('/contact-info-options/', authenticateAndAuthorizeRequest);
+app.use('/contact-info-options/', authenticateAndAuthorizeRequest(sessionRepository));
 
 app.get('/contact-info-options/:fieldName', async (req, res): Promise<any> => {
     try {
@@ -386,7 +344,7 @@ app.get('/contact-info-options/:fieldName', async (req, res): Promise<any> => {
     }
 });
 
-app.use('/address', authenticateAndAuthorizeRequest);
+app.use('/address', authenticateAndAuthorizeRequest(sessionRepository));
 
 app.get('/address/municipalities', async (req, res): Promise<any> => {
     try {
