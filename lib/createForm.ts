@@ -21,56 +21,11 @@ import {
     getLanguageVersionForInstance,
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
-import {SessionSparqlRepository} from "../src/driven/persistence/session-sparql-repository";
-import {BestuurseenheidSparqlRepository} from "../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {Iri} from "../src/core/domain/shared/iri";
+import {SessionRepository} from "../src/core/port/driven/persistence/session-repository";
+import {BestuurseenheidRepository} from "../src/core/port/driven/persistence/bestuurseenheid-repository";
 
-export async function createEmptyForm(sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<{
-    uuid: string,
-    uri: string
-}> {
-
-    const session = await sessionRepository.findById(new Iri(sessionUri));
-    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-
-    const publicServiceId = uuid();
-    const publicServiceUri = `http://data.lblod.info/id/public-service/${publicServiceId}`;
-
-    const spatials = await getSpatialsForBestuurseenheidUri(bestuurseenheid.id);
-    const spatialsPreparedStatement = spatials.map(s => `dct:spatial ${sparqlEscapeUri(s)};`).join('\n');
-
-    const now = new Date().toISOString();
-    const query = `
-  ${PREFIX.cpsv}
-  ${PREFIX.dct}
-  ${PREFIX.mu}
-  ${PREFIX.adms}
-  ${PREFIX.pav}
-  ${PREFIX.m8g}
-  ${PREFIX.lpdcExt}
-  INSERT DATA {
-    GRAPH <http://mu.semte.ch/graphs/application> {
-      ${sparqlEscapeUri(publicServiceUri)} a cpsv:PublicService ;
-        dct:created ${sparqlEscapeDateTime(now)} ;
-        dct:modified ${sparqlEscapeDateTime(now)} ;
-        mu:uuid """${publicServiceId}""" ;
-        adms:status ${sparqlEscapeUri(FORM_STATUS_ONTWERP)} ;
-        ${spatialsPreparedStatement.length ? spatialsPreparedStatement : ''}
-        pav:createdBy ${sparqlEscapeUri(bestuurseenheid.id)};
-        m8g:hasCompetentAuthority ${sparqlEscapeUri(bestuurseenheid.id)};
-        lpdcExt:hasExecutingAuthority ${sparqlEscapeUri(bestuurseenheid.id)}.
-    }
-  }`;
-
-    await update(query);
-
-    return {
-        uuid: publicServiceId,
-        uri: publicServiceUri
-    };
-}
-
-export async function createForm(conceptId: string, sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository): Promise<{
+export async function createForm(conceptId: string, sessionUri: string, sessionRepository: SessionRepository, bestuurseenheidRepository: BestuurseenheidRepository): Promise<{
     uuid: string,
     uri: string
 }> {

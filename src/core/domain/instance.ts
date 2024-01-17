@@ -6,6 +6,7 @@ import {InstanceStatusType} from "./types";
 import {asSortedArray} from "./shared/collections-helper";
 
 export class Instance {
+
     private readonly _id: Iri;
     private readonly _uuid: string; //required for mu-cl-resources.
     private readonly _createdBy: Iri;

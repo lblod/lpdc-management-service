@@ -1,7 +1,7 @@
 import {createApp, errorHandler, uuid} from './mu-helper';
 import bodyparser from 'body-parser';
 import {CONCEPT_SNAPSHOT_LDES_GRAPH, FEATURE_FLAG_ATOMIC_UPDATE, LOG_INCOMING_DELTA} from './config';
-import {createEmptyForm, createForm} from './lib/createForm';
+import {createForm} from './lib/createForm';
 import {retrieveForm} from './lib/retrieveForm';
 import {updateForm, updateFormAtomic} from './lib/updateForm';
 import {deleteForm} from './lib/deleteForm';
@@ -32,6 +32,7 @@ import {
 } from "./src/driven/external/bestuurseenheid-registration-code-through-subject-page-or-api-fetcher";
 import {CodeSparqlRepository} from "./src/driven/persistence/code-sparql-repository";
 import {InstanceSparqlRepository} from "./src/driven/persistence/instance-sparql-repository";
+import {NewInstanceDomainService} from "./src/core/domain/new-instance-domain-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -59,6 +60,11 @@ const newConceptSnapshotToConceptMergerDomainService =
         bestuurseenheidRegistrationCodeFetcher,
         codeRepository,
         instanceRepository);
+
+const newInstanceDomainService =
+    new NewInstanceDomainService(
+        instanceRepository
+    );
 
 app.get('/', function (req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -122,18 +128,32 @@ app.post('/public-services/', async function (req, res): Promise<any> {
     const body = req.body;
     const conceptId = body?.data?.relationships?.["concept"]?.data?.id;
     const sessionUri = req.headers['mu-session-id'] as string;
-    try {
-        const {uuid, uri} = conceptId ?
-            await createForm(conceptId, sessionUri, sessionRepository, bestuurseenheidRepository)
-            : await createEmptyForm(sessionUri, sessionRepository, bestuurseenheidRepository);
 
-        return res.status(201).json({
-            data: {
-                "type": "public-service",
-                "id": uuid,
-                "uri": uri
-            }
-        });
+    //TODO LPDC-917: verify access rights. only logged in users that have access to lpdc can execute this command ...
+
+    try {
+        if(conceptId) {
+            const {uuid, uri} = await createForm(conceptId, sessionUri, sessionRepository, bestuurseenheidRepository);
+            return res.status(201).json({
+                data: {
+                    "type": "public-service",
+                    "id": uuid,
+                    "uri": uri
+                }
+            });
+        } else {
+            const session = await sessionRepository.findById(new Iri(sessionUri));
+            const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+            const newInstance = await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+            return res.status(201).json({
+                data: {
+                    "type": "public-service",
+                    "id": newInstance.uuid,
+                    "uri": newInstance.id.value
+                }
+            });
+        }
     } catch (e) {
         console.error(e);
         if (e.status) {
