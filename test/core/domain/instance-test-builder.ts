@@ -50,6 +50,11 @@ export function aFullInstance(): InstanceTestBuilder {
                 InstanceTestBuilder.EXCEPTION_EN,
                 undefined,
                 InstanceTestBuilder.EXCEPTION_NL_FORMAL))
+        .withRegulation(
+            LanguageString.of(
+                InstanceTestBuilder.REGULATION_EN,
+                undefined,
+                InstanceTestBuilder.REGULATION_NL_FORMAL))
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -93,6 +98,10 @@ export class InstanceTestBuilder {
     public static readonly EXCEPTION_NL_FORMAL = 'Instance Exception - nl-formal';
     public static readonly EXCEPTION_NL_INFORMAL = 'Instance Exception - nl-informal';
 
+    public static readonly REGULATION_EN = 'Instance Regulation - en';
+    public static readonly REGULATION_NL_FORMAL = 'Instance Regulation - nl-formal';
+    public static readonly REGULATION_NL_INFORMAL = 'Instance Regulation - nl-informal';
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -100,6 +109,7 @@ export class InstanceTestBuilder {
     private description: LanguageString | undefined;
     private additionalDescription: LanguageString | undefined;
     private exception: LanguageString | undefined;
+    private regulation: LanguageString | undefined;
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -142,6 +152,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withRegulation(regulation: LanguageString): InstanceTestBuilder {
+        this.regulation = regulation;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -181,6 +196,7 @@ export class InstanceTestBuilder {
             this.description,
             this.additionalDescription,
             this.exception,
+            this.regulation,
             this.dateCreated,
             this.dateModified,
             this.status,

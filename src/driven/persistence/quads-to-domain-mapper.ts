@@ -133,6 +133,7 @@ export class QuadsToDomainMapper {
             this.description(id),
             this.additionalDescription(id),
             this.exception(id),
+            this.regulation(id),
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
             this.instanceStatusType(id),
