@@ -131,6 +131,8 @@ app.post('/semantic-forms/:publicServiceId/submit', async function (req, res): P
 
 //TODO LPDC-917: add end to end api test for the authentication / authorization ... of all other requests
 
+//TODO LPDC-917: add unit test for function
+//TODO LPDC-917: extract function in separate file
 const authenticateAndAuthorizeRequest = async (req, res, next) => {
     try {
         const sessionIri: string | undefined = req.headers['mu-session-id'] as string;
@@ -181,8 +183,8 @@ app.post('/public-services/', async function (req, res): Promise<any> {
     const body = req.body;
     const conceptId = body?.data?.relationships?.["concept"]?.data?.id;
 
-    const session :Session = req['session'];
-    const bestuurseenheid :Bestuurseenheid = req['bestuurseenheid'];
+    const session: Session = req['session'];
+    const bestuurseenheid: Bestuurseenheid = req['bestuurseenheid'];
 
     try {
         if(conceptId) {
@@ -218,6 +220,8 @@ app.post('/public-services/', async function (req, res): Promise<any> {
     }
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization
+//TODO LPDC-917: also use public-services url prefix
 app.get('/semantic-forms/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
     const publicServiceId = req.params["publicServiceId"];
     const formId = req.params["formId"];
@@ -239,6 +243,8 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
     }
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization
+//TODO LPDC-917: also use public-services url prefix
 app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
     const delta = req.body;
     const header = req.headers['mu-session-id'] as string;
@@ -300,6 +306,7 @@ app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, re
     }
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization
 app.get('/public-services/:publicServiceId/language-version', async function (req, res): Promise<any> {
     const instanceUUID = req.params.publicServiceId;
     try {
@@ -315,6 +322,7 @@ app.get('/public-services/:publicServiceId/language-version', async function (re
     }
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization
 app.post('/public-services/:publicServiceId/confirm-bijgewerkt-tot', async function (req, res): Promise<any> {
     const instanceUUID = req.params.publicServiceId;
     try {
@@ -346,6 +354,7 @@ app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function 
     }
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization
 app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version', async (req, res): Promise<any> => {
     try {
         const languageVersion = await getLanguageVersionOfConcept(req.params.conceptualPublicServiceId, conceptRepository);
@@ -363,6 +372,7 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version
     }
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization
 app.get('/contact-info-options/:fieldName', async (req, res): Promise<any> => {
     try {
         const result = await getContactPointOptions(req.params.fieldName);
@@ -382,6 +392,7 @@ app.get('/contact-info-options/:fieldName', async (req, res): Promise<any> => {
     }
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization
 app.get('/address/municipalities', async (req, res): Promise<any> => {
     try {
         const municipalities = await fetchMunicipalities(req.query.search as string);
@@ -396,6 +407,7 @@ app.get('/address/municipalities', async (req, res): Promise<any> => {
     }
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization
 app.get('/address/streets', async (req, res): Promise<any> => {
     try {
         const streets = await fetchStreets(req.query.municipality as string, req.query.search as string);
@@ -410,6 +422,7 @@ app.get('/address/streets', async (req, res): Promise<any> => {
     }
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization
 app.get('/address/validate', async (req, res): Promise<any> => {
     try {
         const address = await findAddressMatch(
@@ -432,6 +445,7 @@ app.get('/address/validate', async (req, res): Promise<any> => {
     }
 });
 
+//TODO LPDC-917: add end to end api test for the authentication / authorization
 app.get('/concept-snapshot-compare', async (req, res): Promise<any> => {
     try {
         const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.currentSnapshotUri as string));
