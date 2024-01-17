@@ -12,6 +12,7 @@ describe('constructing', () => {
     test('Invalid iri id throws error', () => {
         expect(() => aFullInstance().withId(new Iri('  ')).build()).toThrow(new Error('iri should not be blank'));
     });
+
     test('Undefined createdBy throws error', () => {
         expect(() => aFullInstance().withCreatedBy(undefined).build()).toThrow(new Error('createdBy should not be undefined'));
     });

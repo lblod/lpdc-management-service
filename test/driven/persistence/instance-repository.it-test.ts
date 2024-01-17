@@ -29,9 +29,9 @@ describe('InstanceRepository', () => {
             const anotherInstance = aFullInstance().withCreatedBy(anotherBestuurseenheid.id).build();
             await repository.save(bestuurseenheid, anotherInstance);
 
-            const actualConcept = await repository.findById(bestuurseenheid, instance.id);
+            const actualInstance = await repository.findById(bestuurseenheid, instance.id);
 
-            expect(actualConcept).toEqual(instance);
+            expect(actualInstance).toEqual(instance);
         });
 
         test('When minimal instance exists with id, then return instance', async () => {
@@ -47,9 +47,9 @@ describe('InstanceRepository', () => {
             const anotherInstance = aMinimalInstance().withCreatedBy(anotherBestuurseenheid.id).build();
             await repository.save(bestuurseenheid, anotherInstance);
 
-            const actualConcept = await repository.findById(bestuurseenheid, instance.id);
+            const actualInstance = await repository.findById(bestuurseenheid, instance.id);
 
-            expect(actualConcept).toEqual(instance);
+            expect(actualInstance).toEqual(instance);
         });
 
 
@@ -140,6 +140,8 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
                     `<${instanceId}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL}"""@nl-BE-x-generated-formal`,
                     `<${instanceId}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${InstanceTestBuilder.ADDITIONAL_DESCRIPTION_EN}"""@en`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${InstanceTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL}"""@nl-BE-x-formal`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,

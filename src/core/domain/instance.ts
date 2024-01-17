@@ -12,6 +12,7 @@ export class Instance {
     private readonly _createdBy: Iri;
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
+    private readonly _additionalDescription: LanguageString;
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -19,23 +20,27 @@ export class Instance {
     private readonly _competentAuthorities: Iri[];
     private readonly _executingAuthorities: Iri[];
 
+    // TODO LPDC-917: title, description - languageStrings should contain only one language version and should be the same for all
     constructor(id: Iri,
                 uuid: string,
                 createdBy: Iri,
                 title: LanguageString | undefined,
                 description: LanguageString | undefined,
+                additionalDescription: LanguageString | undefined,
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
                 spatials: Iri[],
                 competentAuthorities: Iri[],
                 executingAuthorities: Iri[],
+
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         this._createdBy = requiredValue(createdBy, 'createdBy');
         this._title = title;
         this._description = description;
+        this._additionalDescription = additionalDescription;
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -64,6 +69,10 @@ export class Instance {
         return this._description;
     }
 
+    get additionalDescription(): LanguageString | undefined {
+        return this._additionalDescription;
+    }
+
     get dateCreated(): FormatPreservingDate {
         return this._dateCreated;
     }
@@ -87,6 +96,5 @@ export class Instance {
     get executingAuthorities(): Iri[] {
         return [...this._executingAuthorities];
     }
-
 
 }

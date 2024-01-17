@@ -40,6 +40,11 @@ export function aFullInstance(): InstanceTestBuilder {
                 InstanceTestBuilder.DESCRIPTION_NL_INFORMAL,
                 InstanceTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
                 InstanceTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withAdditionalDescription(
+            LanguageString.of(
+                InstanceTestBuilder.ADDITIONAL_DESCRIPTION_EN,
+                undefined,
+                InstanceTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL))
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -75,12 +80,16 @@ export class InstanceTestBuilder {
 
     public static readonly EXECUTING_AUTHORITIES = [BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI];
 
+    public static readonly ADDITIONAL_DESCRIPTION_EN = 'Instance Additional Description - en';
+    public static readonly ADDITIONAL_DESCRIPTION_NL_FORMAL = 'Instance Additional Description - nl-formal';
+    public static readonly ADDITIONAL_DESCRIPTION_NL_INFORMAL = 'Instance Additional Description - nl-informal';
 
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
+    private additionalDescription: LanguageString | undefined;
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -110,6 +119,11 @@ export class InstanceTestBuilder {
 
     public withDescription(description: LanguageString): InstanceTestBuilder {
         this.description = description;
+        return this;
+    }
+
+    public withAdditionalDescription(additionalDescription: LanguageString): InstanceTestBuilder {
+        this.additionalDescription = additionalDescription;
         return this;
     }
 
@@ -150,6 +164,7 @@ export class InstanceTestBuilder {
             this.createdBy,
             this.title,
             this.description,
+            this.additionalDescription,
             this.dateCreated,
             this.dateModified,
             this.status,

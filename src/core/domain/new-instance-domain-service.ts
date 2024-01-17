@@ -27,12 +27,13 @@ export class NewInstanceDomainService {
                 bestuurseenheid.id,
                 undefined,
                 undefined,
+                undefined,
                 now,
                 now,
                 InstanceStatusType.ONTWERP,
                 bestuurseenheid.spatials,
                 [bestuurseenheid.id],
-                [bestuurseenheid.id]
+                [bestuurseenheid.id],
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);
