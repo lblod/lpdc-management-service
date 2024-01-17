@@ -13,6 +13,7 @@ export class Instance {
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _additionalDescription: LanguageString;
+    private readonly _exception: LanguageString;
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -27,6 +28,7 @@ export class Instance {
                 title: LanguageString | undefined,
                 description: LanguageString | undefined,
                 additionalDescription: LanguageString | undefined,
+                exception: LanguageString | undefined,
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -41,6 +43,7 @@ export class Instance {
         this._title = title;
         this._description = description;
         this._additionalDescription = additionalDescription;
+        this._exception = exception;
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -71,6 +74,10 @@ export class Instance {
 
     get additionalDescription(): LanguageString | undefined {
         return this._additionalDescription;
+    }
+
+    get exception(): LanguageString | undefined {
+        return this._exception;
     }
 
     get dateCreated(): FormatPreservingDate {

@@ -45,6 +45,11 @@ export function aFullInstance(): InstanceTestBuilder {
                 InstanceTestBuilder.ADDITIONAL_DESCRIPTION_EN,
                 undefined,
                 InstanceTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL))
+        .withException(
+            LanguageString.of(
+                InstanceTestBuilder.EXCEPTION_EN,
+                undefined,
+                InstanceTestBuilder.EXCEPTION_NL_FORMAL))
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -84,12 +89,17 @@ export class InstanceTestBuilder {
     public static readonly ADDITIONAL_DESCRIPTION_NL_FORMAL = 'Instance Additional Description - nl-formal';
     public static readonly ADDITIONAL_DESCRIPTION_NL_INFORMAL = 'Instance Additional Description - nl-informal';
 
+    public static readonly EXCEPTION_EN = 'Instance Exception - en';
+    public static readonly EXCEPTION_NL_FORMAL = 'Instance Exception - nl-formal';
+    public static readonly EXCEPTION_NL_INFORMAL = 'Instance Exception - nl-informal';
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
     private additionalDescription: LanguageString | undefined;
+    private exception: LanguageString | undefined;
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -124,6 +134,11 @@ export class InstanceTestBuilder {
 
     public withAdditionalDescription(additionalDescription: LanguageString): InstanceTestBuilder {
         this.additionalDescription = additionalDescription;
+        return this;
+    }
+
+    public withException(exception: LanguageString): InstanceTestBuilder {
+        this.exception = exception;
         return this;
     }
 
@@ -165,6 +180,7 @@ export class InstanceTestBuilder {
             this.title,
             this.description,
             this.additionalDescription,
+            this.exception,
             this.dateCreated,
             this.dateModified,
             this.status,
