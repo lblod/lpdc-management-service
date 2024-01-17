@@ -1,10 +1,11 @@
-import {aSession, SessionTestBuilder} from "../../core/domain/session-test-builder";
+import {aSession} from "../../core/domain/session-test-builder";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {SessionSparqlTestRepository} from "./session-sparql-test-repository";
 import {uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
-import {SessionRole} from "../../../src/core/domain/session";
-import {Iri} from "../../../src/core/domain/shared/iri";
+import {SessionRoleType} from "../../../src/core/domain/session";
+import {USER_SESSIONS_GRAPH} from "../../../config";
+import {buildBestuurseenheidIri, buildSessionIri} from "../../core/domain/iri-test-builder";
 
 describe('SessionRepository', () => {
     const repository = new SessionSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -28,25 +29,28 @@ describe('SessionRepository', () => {
             const session = aSession().build();
             await repository.save(session);
 
-            const nonExistentSessionId = SessionTestBuilder.buildIri("thisiddoesnotexist");
+            const nonExistentSessionId = buildSessionIri("thisiddoesnotexist");
 
             await expect(repository.findById(nonExistentSessionId)).rejects.toThrow(new Error(`No session found for iri: ${nonExistentSessionId}`));
 
         });
 
         test('Verify ontology and mapping', async () => {
-            const sessionId = new Iri(`http://mu.semte.ch/sessions/${uuid()}`);
-            const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${uuid()}`);
+            const sessionId = buildSessionIri(uuid());
+            const bestuurseenheidId = buildBestuurseenheidIri(uuid());
 
             const session =
-                        aSession()
-                            .withId(sessionId)
-                            .withBestuurseenheidId(bestuurseenheidId)
-                            .withSessionRole(SessionRole.LOKETLB_LPDCGEBRUIKER)
-                            .build();
+                aSession()
+                    .withId(sessionId)
+                    .withBestuurseenheidId(bestuurseenheidId)
+                    .withSessionRoles([
+                        SessionRoleType.LOKETLB_LPDCGEBRUIKER,
+                        'LoketLB-bbcdrGebruiker',
+                        'LoketLB-berichtenGebruiker'])
+                    .build();
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/sessions",
+                USER_SESSIONS_GRAPH,
                 [`<${sessionId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
                     `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionGroup> <${bestuurseenheidId}>`,
                     `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionRole> """LoketLB-LPDCGebruiker"""`,
@@ -58,6 +62,75 @@ describe('SessionRepository', () => {
 
             expect(actualSession).toEqual(session);
         });
+
+        test('Can load a session without a session role', async () => {
+            const sessionId = buildSessionIri(uuid());
+            const bestuurseenheidId = buildBestuurseenheidIri(uuid());
+
+            const session =
+                aSession()
+                    .withId(sessionId)
+                    .withBestuurseenheidId(bestuurseenheidId)
+                    .withSessionRoles([])
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                USER_SESSIONS_GRAPH,
+                [`<${sessionId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+                    `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionGroup> <${bestuurseenheidId}>`,
+                ]);
+
+            const actualSession = await repository.findById(sessionId);
+
+            expect(actualSession).toEqual(session);
+            expect(actualSession.sessionRoles.length).toEqual(0);
+        });
+
+        test('Can load a session without a LoketLB-LPDCGebruiker session role', async () => {
+            const sessionId = buildSessionIri(uuid());
+            const bestuurseenheidId = buildBestuurseenheidIri(uuid());
+
+            const session =
+                aSession()
+                    .withId(sessionId)
+                    .withBestuurseenheidId(bestuurseenheidId)
+                    .withSessionRoles([
+                        'AnyOtherRole'
+                    ])
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                USER_SESSIONS_GRAPH,
+                [`<${sessionId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+                    `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionGroup> <${bestuurseenheidId}>`,
+                    `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionRole> """AnyOtherRole"""`,
+                ]);
+
+            const actualSession = await repository.findById(sessionId);
+
+            expect(actualSession).toEqual(session);
+        });
+    });
+
+    describe('exists', () => {
+
+        test('When session exists with id, then return true', async () => {
+            const session = aSession().build();
+            await repository.save(session);
+
+            expect(await repository.exists(session.id)).toBeTruthy();
+        });
+
+        test('When session not exists with id, then throw error', async () => {
+            const session = aSession().build();
+            await repository.save(session);
+
+            const nonExistentSessionId = buildSessionIri("thisiddoesnotexist");
+
+            expect(await repository.exists(nonExistentSessionId)).toBeFalsy();
+
+        });
+
     });
 
 });

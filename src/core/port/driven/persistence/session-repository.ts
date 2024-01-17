@@ -5,4 +5,6 @@ export interface SessionRepository {
 
     findById(id: Iri): Promise<Session>;
 
+    exists(id: Iri): Promise<boolean>;
+
 }

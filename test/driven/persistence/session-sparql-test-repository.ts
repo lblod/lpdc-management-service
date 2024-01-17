@@ -1,25 +1,28 @@
 import {SessionSparqlRepository} from "../../../src/driven/persistence/session-sparql-repository";
 import {Session} from "../../../src/core/domain/session";
-import {PREFIX} from "../../../config";
+import {PREFIX, USER_SESSIONS_GRAPH} from "../../../config";
 import {sparqlEscapeString, sparqlEscapeUri} from "../../../mu-helper";
+import {DirectDatabaseAccess} from "./direct-database-access";
 
 export class SessionSparqlTestRepository extends SessionSparqlRepository {
 
+    private readonly directDatabaseAccess: DirectDatabaseAccess;
+
     constructor(endpoint?: string) {
         super(endpoint);
+        this.directDatabaseAccess = new DirectDatabaseAccess(endpoint);
     }
 
     async save(session: Session): Promise<void> {
-        const query = `
-            ${PREFIX.ext}
-            INSERT DATA { 
-                GRAPH <http://mu.semte.ch/graphs/sessions> {
-                    ${sparqlEscapeUri(session.id)} ext:sessionGroup ${sparqlEscapeUri(session.bestuurseenheidId)}.
-                    ${sparqlEscapeUri(session.id)} ext:sessionRole ${sparqlEscapeString(session.sessionRol)}.
-                }
-            }
-        `;
-        await this.querying.update(query);
+        await this.directDatabaseAccess
+            .insertData(
+                USER_SESSIONS_GRAPH,
+                [
+                    `${sparqlEscapeUri(session.id)} ext:sessionGroup ${sparqlEscapeUri(session.bestuurseenheidId)}`,
+                    ...session.sessionRoles.map(sr => `${sparqlEscapeUri(session.id)} ext:sessionRole ${sparqlEscapeString(sr)}`),
+                ],
+                [PREFIX.ext]
+                );
     }
 
 }

@@ -1,5 +1,5 @@
 import {Iri} from "./shared/iri";
-import {SessionRole} from "./session";
+import {SessionRoleType} from "./session";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {asSortedArray} from "./shared/collections-helper";
 
@@ -47,7 +47,7 @@ export class Bestuurseenheid {
     }
 
     userGraph(): Iri {
-        return new Iri(`http://mu.semte.ch/graphs/organizations/${this.uuid}/${SessionRole.LOKETLB_LPDCGEBRUIKER}`);
+        return new Iri(`http://mu.semte.ch/graphs/organizations/${this.uuid}/${SessionRoleType.LOKETLB_LPDCGEBRUIKER}`);
     }
 }
 

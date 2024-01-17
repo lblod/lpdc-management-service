@@ -20,6 +20,10 @@ export function buildBestuurseenheidIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/bestuurseenheden/${uniqueId}`);
 }
 
+export function buildSessionIri(uniqueId: string): Iri {
+    return new Iri(`http://mu.semte.ch/sessions/${uniqueId}`);
+}
+
 export function buildSpatialRefNis2019Iri(aNumber: number): Iri {
     return new Iri(`http://vocab.belgif.be/auth/refnis2019/${aNumber}`);
 }

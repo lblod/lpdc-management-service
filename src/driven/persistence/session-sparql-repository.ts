@@ -1,9 +1,9 @@
 import {Iri} from "../../core/domain/shared/iri";
 import {SessionRepository} from "../../core/port/driven/persistence/session-repository";
-import {Session, SessionRole} from "../../core/domain/session";
+import {Session} from "../../core/domain/session";
 import {SparqlQuerying} from "./sparql-querying";
 import {sparqlEscapeUri} from "../../../mu-helper";
-import {PREFIX} from "../../../config";
+import {PREFIX, USER_SESSIONS_GRAPH} from "../../../config";
 
 export class SessionSparqlRepository implements SessionRepository {
 
@@ -15,26 +15,37 @@ export class SessionSparqlRepository implements SessionRepository {
     async findById(id: Iri): Promise<Session> {
         const query = `
             ${PREFIX.ext}
-            SELECT ?id ?bestuurseenheid ?sessionRole WHERE {
-                GRAPH <http://mu.semte.ch/graphs/sessions> {
-                    VALUES (?id ?sessionRole) {
-                        (${sparqlEscapeUri(id)} """${SessionRole.LOKETLB_LPDCGEBRUIKER}""")
+            SELECT ?bestuurseenheid ?sessionRole WHERE {
+                GRAPH ${sparqlEscapeUri(USER_SESSIONS_GRAPH)} {
+                    ${sparqlEscapeUri(id)} ext:sessionGroup ?bestuurseenheid .
+                    OPTIONAL {
+                        ${sparqlEscapeUri(id)} ext:sessionRole ?sessionRole .
                     }
-                    ?id ext:sessionGroup ?bestuurseenheid .
-                    ?id ext:sessionRole ?sessionRole .
                 }
             }
         `;
-        const result = await this.querying.singleRow(query);
+        const result = await this.querying.list(query);
 
-        if (!result) {
+        if (result.length === 0) {
             throw new Error(`No session found for iri: ${id}`);
         }
 
         return new Session(
-            new Iri(result['id'].value),
-            new Iri(result['bestuurseenheid'].value),
-            result['sessionRole'].value
+            id,
+            new Iri(result[0]['bestuurseenheid'].value),
+            result.map(r => r['sessionRole']?.value).filter(sr => sr !== undefined),
         );
+    }
+
+    async exists(id: Iri): Promise<boolean> {
+        const query = `
+            ${PREFIX.ext}
+            ASK WHERE {
+                GRAPH ${sparqlEscapeUri(USER_SESSIONS_GRAPH)} {
+                    ${sparqlEscapeUri(id)} ?p ?s.
+                }
+            }
+        `;
+        return this.querying.ask(query);
     }
 }

@@ -1,15 +1,16 @@
 import {Iri} from "./shared/iri";
-import {requiredValue} from "./shared/invariant";
+import {requiredValue, requireNoDuplicates} from "./shared/invariant";
+import {asSortedArray} from "./shared/collections-helper";
 
 export class Session {
     private readonly _id: Iri;
     private readonly _bestuurseenheidId: Iri;
-    private readonly _sessionRol: SessionRole;
+    private readonly _sessionRoles: SessionRoleTypeOrString[];
 
-    constructor(id: Iri, bestuurseenheidId: Iri, sessionRole: SessionRole) {
+    constructor(id: Iri, bestuurseenheidId: Iri, sessionRoles: SessionRoleTypeOrString[]) {
         this._id = requiredValue(id, 'id');
         this._bestuurseenheidId = requiredValue(bestuurseenheidId, 'bestuurseenheidId');
-        this._sessionRol = sessionRole;
+        this._sessionRoles = requireNoDuplicates(asSortedArray(sessionRoles), "sessionRoles");
     }
 
     get id(): Iri {
@@ -20,11 +21,17 @@ export class Session {
         return this._bestuurseenheidId;
     }
 
-    get sessionRol(): SessionRole {
-        return this._sessionRol;
+    get sessionRoles(): SessionRoleTypeOrString[] {
+        return [...this._sessionRoles];
+    }
+
+    hasRole(role: SessionRoleType): boolean {
+        return this._sessionRoles.includes(requiredValue(role, 'role'));
     }
 }
 
-export enum SessionRole {
+export enum SessionRoleType {
     LOKETLB_LPDCGEBRUIKER = 'LoketLB-LPDCGebruiker'
 }
+
+export type SessionRoleTypeOrString = SessionRoleType | string;

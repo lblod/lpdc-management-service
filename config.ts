@@ -2,8 +2,11 @@ const FORM_STATUS_ONTWERP = 'http://lblod.data.gift/concepts/instance-status/ont
 const APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH;
 
 const PUBLIC_GRAPH = 'http://mu.semte.ch/graphs/public';
-const CONCEPT_SNAPSHOT_LDES_GRAPH = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
+const CONCEPT_SNAPSHOT_LDES_GRAPH = 'http://mu.semte.ch/graphs/lpdc/ldes-data'; //TODO LPDC-917: use constant everywhere
 const CONCEPT_GRAPH = 'http://mu.semte.ch/graphs/public';
+
+const USER_SESSIONS_GRAPH = 'http://mu.semte.ch/graphs/sessions';
+
 const QUEUE_POLL_INTERVAL = Number(process.env.QUEUE_POLL_INTERVAL) || 60000; //1min
 const LOG_INCOMING_DELTA = process.env.LOG_INCOMING_DELTA == 'true' || false;
 const ADRESSEN_REGISTER_API_KEY = process.env.ADRESSEN_REGISTER_API_KEY;
@@ -105,6 +108,7 @@ export {
     CONCEPT_SNAPSHOT_LDES_GRAPH,
     FORM_STATUS_ONTWERP,
     APPLICATION_GRAPH,
+    USER_SESSIONS_GRAPH,
     FORM_MAPPING,
     FORM_MAPPING_TRANSLATIONS,
     PREFIXES,

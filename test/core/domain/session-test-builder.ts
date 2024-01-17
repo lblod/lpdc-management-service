@@ -1,22 +1,18 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {Session, SessionRole} from "../../../src/core/domain/session";
+import {Session, SessionRoleType, SessionRoleTypeOrString} from "../../../src/core/domain/session";
 import {uuid} from "../../../mu-helper";
-import {buildBestuurseenheidIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildSessionIri} from "./iri-test-builder";
 
 export function aSession(): SessionTestBuilder {
     return new SessionTestBuilder()
-        .withId(SessionTestBuilder.buildIri(uuid()))
+        .withId(buildSessionIri(uuid()))
         .withBestuurseenheidId(buildBestuurseenheidIri(uuid()))
-        .withSessionRole(SessionRole.LOKETLB_LPDCGEBRUIKER);
+        .withSessionRoles([SessionRoleType.LOKETLB_LPDCGEBRUIKER]);
 }
 export class SessionTestBuilder {
     private id: Iri;
     private bestuurseenheidId: Iri;
-    private sessionRole: SessionRole;
-
-    static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://mu.semte.ch/sessions/${uniqueId}`);
-    }
+    private sessionRoles: SessionRoleTypeOrString[] = [];
 
     public withId(id: Iri): SessionTestBuilder {
         this.id = id;
@@ -28,13 +24,13 @@ export class SessionTestBuilder {
         return this;
     }
 
-    public withSessionRole(sessionRole: SessionRole): SessionTestBuilder {
-        this.sessionRole = sessionRole;
+    public withSessionRoles(sessionRoles: SessionRoleTypeOrString[]): SessionTestBuilder {
+        this.sessionRoles = sessionRoles;
         return this;
     }
 
     public build(): Session {
-        return new Session(this.id, this.bestuurseenheidId, this.sessionRole);
+        return new Session(this.id, this.bestuurseenheidId, this.sessionRoles);
     }
 
 }
