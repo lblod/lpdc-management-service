@@ -5,7 +5,7 @@ import {buildBestuurseenheidIri, buildInstanceIri, buildSpatialRefNis2019Iri, ra
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
-    CompetentAuthorityLevelType,
+    CompetentAuthorityLevelType, ExecutingAuthorityLevelType,
     InstanceStatusType,
     ProductType,
     TargetAudienceType,
@@ -67,12 +67,13 @@ export function aFullInstance(): InstanceTestBuilder {
         .withTargetAudiences(InstanceTestBuilder.TARGET_AUDIENCES)
         .withThemes(InstanceTestBuilder.THEMES)
         .withCompetentAuthorityLevels(InstanceTestBuilder.COMPETENT_AUTHORITY_LEVELS)
+        .withCompetentAuthorities(InstanceTestBuilder.COMPETENT_AUTHORITIES)
+        .withExecutingAuthorityLevels(InstanceTestBuilder.EXECUTING_AUTHORITY_LEVELS)
+        .withExecutingAuthorities(InstanceTestBuilder.EXECUTING_AUTHORITIES)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
-        .withSpatials(InstanceTestBuilder.SPATIALS)
-        .withCompetentAuthorities(InstanceTestBuilder.COMPETENT_AUTHORITIES)
-        .withExecutingAuthorities(InstanceTestBuilder.EXECUTING_AUTHORITIES);
+        .withSpatials(InstanceTestBuilder.SPATIALS);
 }
 
 export class InstanceTestBuilder {
@@ -124,6 +125,7 @@ export class InstanceTestBuilder {
     public static readonly THEMES = [ThemeType.BOUWENWONEN, ThemeType.MILIEUENERGIE, ThemeType.WELZIJNGEZONDHEID];
 
     public static readonly COMPETENT_AUTHORITY_LEVELS = [CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.EUROPEES, CompetentAuthorityLevelType.FEDERAAL];
+    public static readonly EXECUTING_AUTHORITY_LEVELS = [ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.EUROPEES, ExecutingAuthorityLevelType.FEDERAAL];
 
     private id: Iri;
     private uuid: string;
@@ -139,12 +141,13 @@ export class InstanceTestBuilder {
     private targetAudiences: TargetAudienceType[] = [];
     private themes: ThemeType[] = [];
     private competentAuthorityLevels: CompetentAuthorityLevelType[] = [];
+    private competentAuthorities: Iri[] = [];
+    private executingAuthorityLevels: ExecutingAuthorityLevelType[] = [];
+    private executingAuthorities: Iri[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
     private spatials: Iri[] = [];
-    private competentAuthorities: Iri[] = [];
-    private executingAuthorities: Iri[] = [];
 
     public withId(id: Iri): InstanceTestBuilder {
         this.id = id;
@@ -216,6 +219,21 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withCompetentAuthorities(competentAuthorities: Iri[]): InstanceTestBuilder {
+        this.competentAuthorities = competentAuthorities;
+        return this;
+    }
+
+    public withExecutingAuthorityLevels(executingAuthorityLevels: ExecutingAuthorityLevelType[]): InstanceTestBuilder {
+        this.executingAuthorityLevels = executingAuthorityLevels;
+        return this;
+    }
+
+    public withExecutingAuthorities(executingAuthorities: Iri[]): InstanceTestBuilder {
+        this.executingAuthorities = executingAuthorities;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -236,16 +254,6 @@ export class InstanceTestBuilder {
         return this;
     }
 
-    public withCompetentAuthorities(competentAuthorities: Iri[]): InstanceTestBuilder {
-        this.competentAuthorities = competentAuthorities;
-        return this;
-    }
-
-    public withExecutingAuthorities(executingAuthorities: Iri[]): InstanceTestBuilder {
-        this.executingAuthorities = executingAuthorities;
-        return this;
-    }
-
     public build(): Instance {
         return new Instance(
             this.id,
@@ -262,12 +270,13 @@ export class InstanceTestBuilder {
             this.targetAudiences,
             this.themes,
             this.competentAuthorityLevels,
+            this.competentAuthorities,
+            this.executingAuthorityLevels,
+            this.executingAuthorities,
             this.dateCreated,
             this.dateModified,
             this.status,
             this.spatials,
-            this.competentAuthorities,
-            this.executingAuthorities,
         );
     }
 }

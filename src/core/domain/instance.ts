@@ -2,7 +2,14 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
-import {CompetentAuthorityLevelType, InstanceStatusType, ProductType, TargetAudienceType, ThemeType} from "./types";
+import {
+    CompetentAuthorityLevelType,
+    ExecutingAuthorityLevelType,
+    InstanceStatusType,
+    ProductType,
+    TargetAudienceType,
+    ThemeType
+} from "./types";
 import {asSortedArray} from "./shared/collections-helper";
 
 export class Instance {
@@ -21,12 +28,13 @@ export class Instance {
     private readonly _targetAudiences: TargetAudienceType[];
     private readonly _themes: ThemeType[];
     private readonly _competentAuthorityLevels: CompetentAuthorityLevelType[];
+    private readonly _competentAuthorities: Iri[];
+    private readonly _executingAuthorityLevels: ExecutingAuthorityLevelType[];
+    private readonly _executingAuthorities: Iri[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
     private readonly _spatials: Iri[];
-    private readonly _competentAuthorities: Iri[];
-    private readonly _executingAuthorities: Iri[];
 
     // TODO LPDC-917: title, description - languageStrings should contain only one language version and should be the same for all
     constructor(id: Iri,
@@ -43,12 +51,13 @@ export class Instance {
                 targetAudiences: TargetAudienceType[],
                 themes: ThemeType[],
                 competentAuthorityLevels: CompetentAuthorityLevelType[],
+                competentAuthorities: Iri[],
+                executingAuthorityLevels: ExecutingAuthorityLevelType[],
+                executingAuthorities: Iri[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
                 spatials: Iri[],
-                competentAuthorities: Iri[],
-                executingAuthorities: Iri[],
 
     ) {
         this._id = requiredValue(id, 'id');
@@ -65,12 +74,13 @@ export class Instance {
         this._targetAudiences = requireNoDuplicates(asSortedArray(targetAudiences), 'targetAudiences');
         this._themes = requireNoDuplicates(asSortedArray(themes), 'themes');
         this._competentAuthorityLevels = requireNoDuplicates(asSortedArray(competentAuthorityLevels),'competentAuthorityLevels');
+        this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities), 'competentAuthorities');
+        this._executingAuthorityLevels = requireNoDuplicates(asSortedArray(executingAuthorityLevels),'executingAuthorityLevels');
+        this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities), 'executingAuthorities');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
-        this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities), 'competentAuthorities');
-        this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities), 'executingAuthorities');
     }
 
     get id(): Iri {
@@ -129,6 +139,18 @@ export class Instance {
         return this._competentAuthorityLevels;
     }
 
+    get competentAuthorities(): Iri[] {
+        return [...this._competentAuthorities];
+    }
+
+    get executingAuthorityLevels(): ExecutingAuthorityLevelType[] {
+        return this._executingAuthorityLevels;
+    }
+
+    get executingAuthorities(): Iri[] {
+        return [...this._executingAuthorities];
+    }
+
     get dateCreated(): FormatPreservingDate {
         return this._dateCreated;
     }
@@ -143,14 +165,6 @@ export class Instance {
 
     get spatials(): Iri[] {
         return [...this._spatials];
-    }
-
-    get competentAuthorities(): Iri[] {
-        return [...this._competentAuthorities];
-    }
-
-    get executingAuthorities(): Iri[] {
-        return [...this._executingAuthorities];
     }
 
 }
