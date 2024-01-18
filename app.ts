@@ -99,36 +99,6 @@ app.post('/delta', async function (req, res): Promise<void> {
     }
 });
 
-//TODO LPDC-917: add end to end api test for the authentication / authorization
-//TODO LPDC-917: also use public-services url prefix
-app.post('/semantic-forms/:publicServiceId/submit', async function (req, res): Promise<any> {
-
-    const publicServiceId = req.params["publicServiceId"];
-
-    try {
-        const response = await validateService(publicServiceId);
-
-        if (response.errors.length) {
-            return res.status(400).json({
-                data: response,
-            });
-        } else {
-            return res.status(200).json({
-                data: response,
-            });
-        }
-
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Unexpected error during validation  of service "${publicServiceId}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-
-});
-
 app.use('/public-services/', authenticateAndAuthorizeRequest(sessionRepository));
 
 app.post('/public-services/', async function (req, res): Promise<any> {
@@ -172,9 +142,7 @@ app.post('/public-services/', async function (req, res): Promise<any> {
     }
 });
 
-//TODO LPDC-917: add end to end api test for the authentication / authorization
-//TODO LPDC-917: also use public-services url prefix
-app.get('/semantic-forms/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
+app.get('/public-services/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
     const publicServiceId = req.params["publicServiceId"];
     const formId = req.params["formId"];
 
@@ -195,9 +163,7 @@ app.get('/semantic-forms/:publicServiceId/form/:formId', async function (req, re
     }
 });
 
-//TODO LPDC-917: add end to end api test for the authentication / authorization
-//TODO LPDC-917: also use public-services url prefix
-app.put('/semantic-forms/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
+app.put('/public-services/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
     const delta = req.body;
     const header = req.headers['mu-session-id'] as string;
 
@@ -302,6 +268,34 @@ app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function 
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
+});
+
+app.post('/public-services/:publicServiceId/submit', async function (req, res): Promise<any> {
+
+    const publicServiceId = req.params["publicServiceId"];
+
+    try {
+        const response = await validateService(publicServiceId);
+
+        if (response.errors.length) {
+            return res.status(400).json({
+                data: response,
+            });
+        } else {
+            return res.status(200).json({
+                data: response,
+            });
+        }
+
+    } catch (e) {
+        console.error(e);
+        const response = {
+            status: 500,
+            message: `Unexpected error during validation  of service "${publicServiceId}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
+
 });
 
 app.use('/conceptual-public-services/', authenticateAndAuthorizeRequest(sessionRepository));
