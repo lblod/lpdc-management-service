@@ -39,6 +39,16 @@ export class Cost {
         );
     }
 
+    static forInstance(cost: Cost): Cost {
+        return new Cost(
+            cost.id,
+            requiredValue(cost.uuid, 'uuid'),
+            cost.title,
+            cost.description,
+        );
+    }
+
+
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,

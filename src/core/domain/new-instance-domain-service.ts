@@ -45,6 +45,7 @@ export class NewInstanceDomainService {
                 [],
                 [],
                 [],
+                [],
                 now,
                 now,
                 InstanceStatusType.ONTWERP,

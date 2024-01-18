@@ -14,6 +14,7 @@ import {asSortedArray} from "./shared/collections-helper";
 import {Requirement} from "./requirement";
 import {Procedure} from "./procedure";
 import {Website} from "./website";
+import {Cost} from "./cost";
 
 export class Instance {
 
@@ -40,6 +41,7 @@ export class Instance {
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
     private readonly _websites: Website[];
+    private readonly _costs: Cost[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -69,6 +71,7 @@ export class Instance {
                 requirements: Requirement[],
                 procedures: Procedure[],
                 websites: Website[],
+                costs: Cost[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -98,6 +101,7 @@ export class Instance {
         this._requirements = [...requirements].map(Requirement.forInstance);
         this._procedures = [...procedures].map(Procedure.forInstance);
         this._websites = [...websites].map(Website.forInstance);
+        this._costs = [...costs].map(Cost.forInstance);
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -194,6 +198,10 @@ export class Instance {
 
     get websites(): Website[] {
         return [...this._websites];
+    }
+
+    get costs(): Cost[] {
+        return [...this._costs];
     }
 
     get dateCreated(): FormatPreservingDate {

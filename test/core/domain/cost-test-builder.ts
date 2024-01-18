@@ -63,6 +63,34 @@ export function anotherFullCost(): CostTestBuilder {
                 CostTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
 }
 
+export function aFullCostForInstance(): CostTestBuilder {
+    return new CostTestBuilder()
+        .withId(CostTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
+        .withTitle(LanguageString.of(
+            CostTestBuilder.TITLE_EN,
+            undefined,
+            CostTestBuilder.TITLE_NL_FORMAL))
+        .withDescription(LanguageString.of(
+            CostTestBuilder.DESCRIPTION_EN,
+            undefined,
+            CostTestBuilder.DESCRIPTION_NL_FORMAL));
+}
+
+export function anotherFullCostForInstance(): CostTestBuilder {
+    return new CostTestBuilder()
+        .withId(CostTestBuilder.buildIri(uuid()))
+        .withUuid(uuid())
+        .withTitle(LanguageString.of(
+            CostTestBuilder.ANOTHER_TITLE_EN,
+            undefined,
+            CostTestBuilder.ANOTHER_TITLE_NL_FORMAL))
+        .withDescription(LanguageString.of(
+            CostTestBuilder.ANOTHER_DESCRIPTION_EN,
+            undefined,
+            CostTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL));
+}
+
 export class CostTestBuilder {
 
     public static readonly TITLE = 'Cost Title';

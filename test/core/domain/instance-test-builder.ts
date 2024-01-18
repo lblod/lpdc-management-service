@@ -22,6 +22,8 @@ import {Procedure} from "../../../src/core/domain/procedure";
 import {aFullProcedureForInstance, anotherFullProcedureForInstance} from "./procedure-test-builder";
 import {aFullWebsiteForInstance, anotherFullWebsiteForInstance} from "./website-test-builder";
 import {Website} from "../../../src/core/domain/website";
+import {Cost} from "../../../src/core/domain/cost";
+import {aFullCostForInstance, anotherFullCostForInstance} from "./cost-test-builder";
 
 export function aMinimalInstance(): InstanceTestBuilder {
     const uniqueId = uuid();
@@ -86,6 +88,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withRequirements(InstanceTestBuilder.REQUIREMENTS)
         .withProcedures(InstanceTestBuilder.PROCEDURES)
         .withWebsites(InstanceTestBuilder.WEBSITES)
+        .withCosts(InstanceTestBuilder.COSTS)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -159,9 +162,9 @@ export class InstanceTestBuilder {
         anotherFullProcedureForInstance().withUuid(uuid()).withWebsites([anotherFullWebsiteForInstance(uuid()).withUuid(uuid()).build(), anotherFullWebsiteForInstance(uuid()).withUuid(uuid()).build()]).build()
     ];
 
-    public static readonly WEBSITES = [
-        anotherFullWebsiteForInstance(uuid()).build(), anotherFullWebsiteForInstance(uuid()).build()
-    ];
+    public static readonly WEBSITES = [anotherFullWebsiteForInstance(uuid()).build(), anotherFullWebsiteForInstance(uuid()).build()];
+
+    public static readonly COSTS = [aFullCostForInstance().withUuid(uuid()).build(), anotherFullCostForInstance().withUuid(uuid()).build()];
 
     private id: Iri;
     private uuid: string;
@@ -186,6 +189,7 @@ export class InstanceTestBuilder {
     private requirements: Requirement[] = [];
     private procedures: Procedure[] = [];
     private websites: Website[] = [];
+    private costs: Cost[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -306,6 +310,10 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withCosts(costs: Cost[]): InstanceTestBuilder {
+        this.costs = costs;
+        return this;
+    }
 
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
@@ -352,6 +360,7 @@ export class InstanceTestBuilder {
             this.requirements,
             this.procedures,
             this.websites,
+            this.costs,
             this.dateCreated,
             this.dateModified,
             this.status,
