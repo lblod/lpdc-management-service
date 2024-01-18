@@ -9,8 +9,13 @@ import {InstanceSparqlTestRepository} from "../driven/persistence/instance-sparq
 import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
+import {
+    DatastoreToQuadsRecursiveSparqlFetcher
+} from "../../src/driven/persistence/datastore-to-quads-recursive-sparql-fetcher";
+import {asSortedArray} from "../../src/core/domain/shared/collections-helper";
+import fs from "fs";
 
-describe.skip('Instance Data Integrity Validation', () => {
+describe('Instance Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
 
@@ -31,6 +36,11 @@ describe.skip('Instance Data Integrity Validation', () => {
             }
         `;
         const bestuurseenheidIdsResult = await directDatabaseAccess.list(query);
+        let verfifiedBestuurseenheden = 0;
+        let verifiedInstances = 0;
+        const totalErrors = [];
+        const totalStartTime = new Date();
+
 
         console.log(`Verifying ${bestuurseenheidIdsResult.length} bestuurseenheden`);
         for (const bestuurseenheidId of bestuurseenheidIdsResult) {
@@ -48,6 +58,7 @@ describe.skip('Instance Data Integrity Validation', () => {
             `;
             const instanceIds = await directDatabaseAccess.list(instanceIdsQuery);
 
+            verifiedInstances += instanceIds.length;
             const allTriplesOfGraphQuery = `
              ${PREFIX.cpsv}
             SELECT ?s ?p ?o WHERE {
@@ -61,63 +72,46 @@ describe.skip('Instance Data Integrity Validation', () => {
             let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, bestuurseenheid.userGraph().value));
 
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://purl.org/dc/terms/created')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://purl.org/dc/terms/modified')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://www.w3.org/ns/activitystreams#deleted')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://www.w3.org/ns/dcat#keyword')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://data.europa.eu/m8g/hasCompetentAuthority')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://data.europa.eu/m8g/hasCost')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://vocab.belgif.be/ns/publicservice#hasRequirement')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/hasVersionedSource')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription')));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://data.europa.eu/m8g/hasLegalResource')));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://data.europa.eu/m8g/hasContactPoint')));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://data.europa.eu/m8g/hasCompetentAuthority')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://schema.org/productID')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://schema.org/publication')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#exception')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://www.w3.org/ns/shacl#order')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://www.w3.org/2000/01/rdf-schema#seeAlso')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://purl.org/dc/terms/source')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://www.w3.org/ns/adms#status')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://purl.org/dc/terms/type')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://data.europa.eu/m8g/hasLegalResource')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://purl.org/vocab/cpsv#produces')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://data.europa.eu/m8g/thematicArea')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://purl.org/vocab/cpsv#follows')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://purl.org/dc/terms/spatial')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://www.w3.org/ns/activitystreams#formerType')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/reviewStatus')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://data.europa.eu/m8g/hasContactPoint')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://publications.europa.eu/resource/authority/language')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://schema.org/startDate')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://schema.org/endDate')));
-
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.value.startsWith('http://data.lblod.info/id/website'));
 
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('http://schema.org/WebSite')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('http://data.europa.eu/m8g/Requirement')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('http://data.europa.eu/m8g/Cost')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('http://data.europa.eu/m8g/FinalncialAdvantage')));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('http://data.europa.eu/m8g/FinancialAdvantage')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('http://data.europa.eu/m8g/Procedure')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('http://purl.org/vocab/cpsv#Rule')));
-
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptDisplayConfiguration')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#FormalInformalChoice')));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('https://www.w3.org/ns/activitystreams#Tombstone')));
+            allQuadsOfGraph = allQuadsOfGraph.filter(
+                q => (!q.subject.value.startsWith('http://data.lblod.info/id/evidence/') && !q.predicate.equals(namedNode('http://www.w3.org/ns/shacl#order')))
+            );
+
+
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/conceptual-display-configuration/'));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/website/'));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/requirement/'));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/cost/'));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/form-data/'));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/formalInformalChoice/'));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/rule/'));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/evidence/'));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/financial-advantage/'));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/adressen/'));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/contact-punten/'));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/form-data/'));
 
 
             const delayTime = 0;
@@ -125,7 +119,6 @@ describe.skip('Instance Data Integrity Validation', () => {
             const averageTimes = [];
             const technicalErrors = [];
             const dataErrors = [];
-
             if (instanceIds.length > 0) {
 
 
@@ -133,8 +126,6 @@ describe.skip('Instance Data Integrity Validation', () => {
                     let quadsFromRequeriedInstances: Statement[] = [];
 
                     const before = new Date().valueOf();
-
-                    console.log(new Date().toISOString());
 
                     const randomizedInstanceIds = [...instanceIds];
                     shuffle(randomizedInstanceIds);
@@ -171,35 +162,82 @@ describe.skip('Instance Data Integrity Validation', () => {
 
                     //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
                     //fs.writeFileSync(`/tmp/remaining-quads-instance.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
-                    expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
+
+                    if (allRemainingQuadsOfGraphAsTurtle.length > 0) {
+                        totalErrors.push(...allRemainingQuadsOfGraphAsTurtle);
+                        console.log(`Remaining errors [${allRemainingQuadsOfGraphAsTurtle}]`);
+                        console.log(`total errors  ${totalErrors}`);
+
+                    }
+                    // expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
 
                     const averageTime = (new Date().valueOf() - before - delayTime * instanceIds.length) / instanceIds.length;
                     averageTimes.push(averageTime);
 
-                    console.log(`Verifying in total ${instanceIds.length} instance took on average ${averageTime} ms per instance for bestuurseenheid ${bestuurseenheid.prefLabel}`);
-                    // eslint-disable-next-line no-constant-condition
 
                 }
 
                 const totalAverageTime = averageTimes.reduce((accumulator, currentValue) => {
                     return accumulator + currentValue;
                 }, 0) / averageTimes.length;
-                console.log(`Total average time: ${totalAverageTime}`);
-                console.log(`Technical Errors [${technicalErrors}]`);
-                console.log(`Data Errors [${dataErrors}]`);
+                if (technicalErrors.length > 0) {
+                    console.log(`Technical Errors [${technicalErrors}]`);
+                    totalErrors.push(technicalErrors);
+                    console.log("totalErrors" + totalErrors);
+                }
+                if (dataErrors.length > 0) {
+                    console.log(`Data Errors [${dataErrors}]`);
+                    totalErrors.push(dataErrors);
+                    console.log("totalErrors" + totalErrors);
+                }
+                // console.log(`Total average time: ${totalAverageTime}`);
 
                 expect(totalAverageTime).toBeLessThan(250);
-                expect(technicalErrors).toEqual([]);
-
             }
 
+            verfifiedBestuurseenheden++;
+            // console.log(`Verifying in total ${instanceIds.length} instance took on average ${averageTime} ms per instance for bestuurseenheid ${bestuurseenheid.prefLabel}`);
+            const timeInMs = new Date().getTime() - totalStartTime.valueOf();
+            const timeInSeconds = timeInMs / 1000;
+            const timeInMinutes = Math.round(timeInSeconds / 60);
+            console.log(
+                '\n', `- Verified ${bestuurseenheid.userGraph()}`,
+                '\n', `- Verified ${verfifiedBestuurseenheden} of the ${bestuurseenheidIdsResult.length} bestuurseenheden`,
+                '\n', `- Verified ${verifiedInstances} instances`,
+                '\n', `- Total time:  ${timeInMs} ms or ${timeInSeconds} seconds or ${timeInMinutes} minutes `);
+
         }
+        expect(totalErrors).toEqual([]);
     }, 60000 * 15 * 100);
+
+    test.skip('Find all triples for instance', async () => {
+        const bestuurseenheidGraph = new Iri("http://mu.semte.ch/graphs/organizations/d9f7c0ab4920fdecf3f9a60b92e921b5ca07248fcb0eac2113eb97392ddd6c6c/LoketLB-LPDCGebruiker");
+        const instanceUUID = new Iri("http://data.lblod.info/id/public-service/144c7496-bb5e-47d2-8874-a2c9efc0ac0d");
+        const triples = await getInstanceTriples(endPoint, bestuurseenheidGraph, instanceUUID);
+        console.log(triples);
+        fs.writeFileSync(`/tmp/remaining-quads-instance.txt`, sortedUniq(triples).join('\n'));
+
+    });
 
     function wait(milliseconds: number) {
         return new Promise(resolve => {
             setTimeout(resolve, milliseconds);
         });
+    }
+
+    async function getInstanceTriples(endpoint: string, bestuurseenheidUserGraph: Iri, instanceUUID: Iri): Promise<string[]> {
+        const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endpoint);
+        const quads = await fetcher.fetch(
+            bestuurseenheidUserGraph,
+            instanceUUID,
+            ["https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration"],
+            [],
+            []);
+
+        const allQuadsAsStrings: string[] = asSortedArray(quads.map(q => q.toString()));
+
+        console.log(allQuadsAsStrings);
+        return allQuadsAsStrings;
     }
 
 });
