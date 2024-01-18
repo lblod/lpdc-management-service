@@ -1,6 +1,5 @@
 import {querySudo} from '@lblod/mu-auth-sudo';
 import fs from 'fs';
-import fse from 'fs-extra';
 import {sparqlEscapeUri} from '../mu-helper';
 import {FORM_MAPPING, PREFIX} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
@@ -34,8 +33,6 @@ export async function retrieveForm(publicServiceId: string, formId: string): Pro
     serviceUri: string
 }> {
     let form = fs.readFileSync(`./config/${FORM_MAPPING[formId]}/form.ttl`, 'utf8');
-    const metaFile = fse.readJsonSync(`./config/${FORM_MAPPING[formId]}/form.json`);
-    const schemes = metaFile.meta.schemes;
 
     let isConceptualPublicService = false;
     let serviceUri = await serviceUriForId(publicServiceId);
@@ -97,22 +94,8 @@ export async function retrieveForm(publicServiceId: string, formId: string): Pro
         form += englishRequirementFormSnippets;
     }
 
-    const schemesQuery = `
-    ${PREFIX.skos}
-
-    SELECT DISTINCT ?s ?p ?o WHERE {
-
-      VALUES ?scheme {
-        ${schemes.map(scheme => sparqlEscapeUri(scheme)).join('\n')}
-      }
-      ?s skos:inScheme ?scheme .
-      ?s ?p ?o .
-    }
-  `;
-
     const tailoredSchemes = await generateRuntimeConceptSchemes();
-    const storeSchemes = await querySudo(schemesQuery);
-    const meta = [...bindingsToNT(storeSchemes.results.bindings), ...tailoredSchemes].join("\r\n");
+    const meta = tailoredSchemes.join("\r\n");
     const source = bindingsToNT(sourceBindings).join("\r\n");
 
     return {form, meta, source, serviceUri};
