@@ -13,7 +13,8 @@ import {
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
-    ThemeType
+    ThemeType,
+    YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {NS} from "../../../src/driven/persistence/namespaces";
 
@@ -181,6 +182,9 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.EXECUTING_AUTHORITIES[1]}> a <http://data.europa.eu/m8g/PublicOrganisation>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(InstanceTestBuilder.PUBLICATION_MEDIA[0]).value}>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(InstanceTestBuilder.PUBLICATION_MEDIA[1]).value}>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES[0]).value}>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES[1]).value}>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES[2]).value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,
@@ -374,6 +378,31 @@ describe('InstanceRepository', () => {
                 ]);
 
             await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> for iri: <${instanceId}>`));
+        });
+
+        for (const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
+            test(`YourEuropeCategoryType ${yourEuropeCategory} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instance = aMinimalInstance().withYourEuropeCategories([yourEuropeCategory]).build();
+                await repository.save(bestuurseenheid, instance);
+
+                const actualInstance = await repository.findById(bestuurseenheid, instance.id);
+
+                expect(actualInstance).toEqual(instance);
+            });
+        }
+
+        test('Unknown YourEuropeCategoryType can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceId = buildInstanceIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [`<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> for iri: <${instanceId}>`));
         });
     });
 });

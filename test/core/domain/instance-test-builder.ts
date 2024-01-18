@@ -9,7 +9,7 @@ import {
     InstanceStatusType,
     ProductType, PublicationMediumType,
     TargetAudienceType,
-    ThemeType
+    ThemeType, YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 
@@ -71,6 +71,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withExecutingAuthorityLevels(InstanceTestBuilder.EXECUTING_AUTHORITY_LEVELS)
         .withExecutingAuthorities(InstanceTestBuilder.EXECUTING_AUTHORITIES)
         .withPublicationMedia(InstanceTestBuilder.PUBLICATION_MEDIA)
+        .withYourEuropeCategories(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -130,6 +131,8 @@ export class InstanceTestBuilder {
 
     public static readonly PUBLICATION_MEDIA = [PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER];
 
+    public static readonly YOUR_EUROPE_CATEGORIES = [YourEuropeCategoryType.WERKENPENSIONERING, YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFPENSIOENENVERZEKERINGSREGELINGENWERKGEVER, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -148,6 +151,7 @@ export class InstanceTestBuilder {
     private executingAuthorityLevels: ExecutingAuthorityLevelType[] = [];
     private executingAuthorities: Iri[] = [];
     private publicationMedia: PublicationMediumType[] = [];
+    private yourEuropeCategories: YourEuropeCategoryType[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -243,6 +247,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withYourEuropeCategories(yourEuropeCategories: YourEuropeCategoryType[]): InstanceTestBuilder {
+        this.yourEuropeCategories = yourEuropeCategories;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -283,6 +292,7 @@ export class InstanceTestBuilder {
             this.executingAuthorityLevels,
             this.executingAuthorities,
             this.publicationMedia,
+            this.yourEuropeCategories,
             this.dateCreated,
             this.dateModified,
             this.status,

@@ -8,9 +8,9 @@ import {
     ExecutingAuthorityLevelType,
     PublicationMediumType,
     TargetAudienceType,
-    ThemeType
+    ThemeType,
+    YourEuropeCategoryType
 } from "../../../src/core/domain/types";
-import {aFullConceptSnapshot} from "./concept-snapshot-test-builder";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -68,6 +68,11 @@ describe('constructing', () => {
     test('PublicationMedia with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withPublicationMedia([PublicationMediumType.YOUREUROPE, PublicationMediumType.YOUREUROPE]);
         expect(() => instanceTestBuilder.build()).toThrow(new Error('publicationMedia should not contain duplicates'));
+    });
+
+    test('YourEuropeCategories with duplicates throws error', () => {
+        const instanceTestBuilder = aFullInstance().withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF, YourEuropeCategoryType.BEDRIJF]);
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('yourEuropeCategories should not contain duplicates'));
     });
 
     describe('dateCreated', () => {

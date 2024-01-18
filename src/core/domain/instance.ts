@@ -8,7 +8,7 @@ import {
     InstanceStatusType,
     ProductType, PublicationMediumType,
     TargetAudienceType,
-    ThemeType
+    ThemeType, YourEuropeCategoryType
 } from "./types";
 import {asSortedArray} from "./shared/collections-helper";
 
@@ -32,6 +32,7 @@ export class Instance {
     private readonly _executingAuthorityLevels: ExecutingAuthorityLevelType[];
     private readonly _executingAuthorities: Iri[];
     private readonly _publicationMedia: PublicationMediumType[];
+    private readonly _yourEuropeCategories: YourEuropeCategoryType[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -56,6 +57,7 @@ export class Instance {
                 executingAuthorityLevels: ExecutingAuthorityLevelType[],
                 executingAuthorities: Iri[],
                 publicationMedia: PublicationMediumType[],
+                yourEuropeCategories: YourEuropeCategoryType[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -80,6 +82,7 @@ export class Instance {
         this._executingAuthorityLevels = requireNoDuplicates(asSortedArray(executingAuthorityLevels),'executingAuthorityLevels');
         this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities), 'executingAuthorities');
         this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
+        this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -156,6 +159,10 @@ export class Instance {
 
     get publicationMedia(): PublicationMediumType[] {
         return [...this._publicationMedia];
+    }
+
+    get yourEuropeCategories(): YourEuropeCategoryType[] {
+        return [...this._yourEuropeCategories];
     }
 
     get dateCreated(): FormatPreservingDate {
