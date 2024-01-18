@@ -76,12 +76,12 @@ export class Invariant<V> {
 
 }
 
-export const requiredValue = (value: any, name: string = 'object'): any => {
-    const invariant = Invariant.require(value, name);
+export const requiredValue = <T>(value: T, name: string = 'object'): T => {
+    const invariant: Invariant<T> = Invariant.require(value, name);
     return invariant.to(invariant.notBeUndefined(), invariant.notBeBlank());
 };
 
-export const requireNoDuplicates = (values: any[], name: string = 'list'): any => {
-    const invariant = Invariant.require(values, name);
+export const requireNoDuplicates = <T>(values: T[], name: string = 'list'): T[] => {
+    const invariant: Invariant<T[]> = Invariant.require(values, name);
     return invariant.to(invariant.noDuplicates());
 };
