@@ -13,6 +13,7 @@ import {
 import {asSortedArray} from "./shared/collections-helper";
 import {Requirement} from "./requirement";
 import {Procedure} from "./procedure";
+import {Website} from "./website";
 
 export class Instance {
 
@@ -38,6 +39,7 @@ export class Instance {
     private readonly _keywords: LanguageString[];
     private readonly _requirements: Requirement[];
     private readonly _procedures: Procedure[];
+    private readonly _websites: Website[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -66,6 +68,7 @@ export class Instance {
                 keywords: LanguageString[],
                 requirements: Requirement[],
                 procedures: Procedure[],
+                websites: Website[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -94,6 +97,7 @@ export class Instance {
         this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
         this._requirements = [...requirements].map(Requirement.forInstance);
         this._procedures = [...procedures].map(Procedure.forInstance);
+        this._websites = [...websites].map(Website.forInstance);
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -186,6 +190,10 @@ export class Instance {
 
     get procedures(): Procedure[] {
         return [...this._procedures];
+    }
+
+    get websites(): Website[] {
+        return [...this._websites];
     }
 
     get dateCreated(): FormatPreservingDate {

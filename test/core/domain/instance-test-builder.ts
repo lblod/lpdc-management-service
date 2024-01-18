@@ -21,6 +21,7 @@ import {aFullEvidenceForInstance, anotherFullEvidenceForInstance} from "./eviden
 import {Procedure} from "../../../src/core/domain/procedure";
 import {aFullProcedureForInstance, anotherFullProcedureForInstance} from "./procedure-test-builder";
 import {aFullWebsiteForInstance, anotherFullWebsiteForInstance} from "./website-test-builder";
+import {Website} from "../../../src/core/domain/website";
 
 export function aMinimalInstance(): InstanceTestBuilder {
     const uniqueId = uuid();
@@ -84,6 +85,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withKeywords(InstanceTestBuilder.KEYWORDS)
         .withRequirements(InstanceTestBuilder.REQUIREMENTS)
         .withProcedures(InstanceTestBuilder.PROCEDURES)
+        .withWebsites(InstanceTestBuilder.WEBSITES)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -157,6 +159,10 @@ export class InstanceTestBuilder {
         anotherFullProcedureForInstance().withUuid(uuid()).withWebsites([anotherFullWebsiteForInstance(uuid()).withUuid(uuid()).build(), anotherFullWebsiteForInstance(uuid()).withUuid(uuid()).build()]).build()
     ];
 
+    public static readonly WEBSITES = [
+        anotherFullWebsiteForInstance(uuid()).build(), anotherFullWebsiteForInstance(uuid()).build()
+    ];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -179,6 +185,7 @@ export class InstanceTestBuilder {
     private keywords: LanguageString[] = [];
     private requirements: Requirement[] = [];
     private procedures: Procedure[] = [];
+    private websites: Website[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -294,6 +301,12 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withWebsites(websites: Website[]): InstanceTestBuilder {
+        this.websites = websites;
+        return this;
+    }
+
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -338,6 +351,7 @@ export class InstanceTestBuilder {
             this.keywords,
             this.requirements,
             this.procedures,
+            this.websites,
             this.dateCreated,
             this.dateModified,
             this.status,

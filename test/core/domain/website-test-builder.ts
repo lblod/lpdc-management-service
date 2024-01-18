@@ -89,8 +89,10 @@ export function aFullWebsiteForInstance(): WebsiteTestBuilder {
 }
 
 export function anotherFullWebsiteForInstance(aUuid: string): WebsiteTestBuilder {
+    const uniqueId = uuid();
     return new WebsiteTestBuilder()
-        .withId(WebsiteTestBuilder.buildIri(aUuid))
+        .withId(WebsiteTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_EN(aUuid),
             undefined,

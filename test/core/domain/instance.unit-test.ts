@@ -20,6 +20,8 @@ import {EvidenceTestBuilder} from "./evidence-test-builder";
 import {Procedure} from "../../../src/core/domain/procedure";
 import {ProcedureTestBuilder} from "./procedure-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
+import {Website} from "../../../src/core/domain/website";
+import {WebsiteTestBuilder} from "./website-test-builder";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -160,6 +162,26 @@ describe('constructing', () => {
             const invalidProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuid()), undefined, undefined, undefined, []);
 
             expect(() => aFullInstance().withProcedures([invalidProcedure]).build()).toThrow();
+        });
+    });
+
+    describe('website ', () => {
+        test('valid website does not throw error', () => {
+            const uuidValue = uuid();
+            const validWebsite = Website.reconstitute(
+                WebsiteTestBuilder.buildIri(uuidValue),
+                uuidValue,
+                aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
+                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
+                WebsiteTestBuilder.URL);
+
+            expect(() => aFullInstance().withWebsites([validWebsite]).build()).not.toThrow();
+        });
+
+        test('invalid website does throw error', () => {
+            const invalidWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
+
+            expect(() => aFullInstance().withWebsites([invalidWebsite]).build()).toThrow();
         });
     });
 
