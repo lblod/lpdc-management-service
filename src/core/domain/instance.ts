@@ -11,6 +11,7 @@ import {
     ThemeType, YourEuropeCategoryType
 } from "./types";
 import {asSortedArray} from "./shared/collections-helper";
+import {Requirement} from "./requirement";
 
 export class Instance {
 
@@ -34,6 +35,7 @@ export class Instance {
     private readonly _publicationMedia: PublicationMediumType[];
     private readonly _yourEuropeCategories: YourEuropeCategoryType[];
     private readonly _keywords: LanguageString[];
+    private readonly _requirements: Requirement[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -60,6 +62,7 @@ export class Instance {
                 publicationMedia: PublicationMediumType[],
                 yourEuropeCategories: YourEuropeCategoryType[],
                 keywords: LanguageString[],
+                requirements: Requirement[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -86,6 +89,7 @@ export class Instance {
         this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
+        this._requirements = [...requirements].map(Requirement.forInstance);
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -170,6 +174,10 @@ export class Instance {
 
     get keywords(): LanguageString[] {
         return [...this._keywords];
+    }
+
+    get requirements(): Requirement[] {
+        return [...this._requirements];
     }
 
     get dateCreated(): FormatPreservingDate {

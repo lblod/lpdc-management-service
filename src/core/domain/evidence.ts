@@ -38,6 +38,15 @@ export class Evidence {
         );
     }
 
+    static forInstance(evidence: Evidence): Evidence {
+        return new Evidence(
+            evidence.id,
+            requiredValue(evidence.uuid, 'uuid'),
+            evidence.title,
+            evidence.description
+        );
+    }
+
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,

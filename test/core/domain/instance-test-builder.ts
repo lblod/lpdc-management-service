@@ -5,13 +5,19 @@ import {buildBestuurseenheidIri, buildInstanceIri, buildSpatialRefNis2019Iri, ra
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
-    CompetentAuthorityLevelType, ExecutingAuthorityLevelType,
+    CompetentAuthorityLevelType,
+    ExecutingAuthorityLevelType,
     InstanceStatusType,
-    ProductType, PublicationMediumType,
+    ProductType,
+    PublicationMediumType,
     TargetAudienceType,
-    ThemeType, YourEuropeCategoryType
+    ThemeType,
+    YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {Requirement} from "../../../src/core/domain/requirement";
+import {aFullRequirementForInstance, anotherFullRequirementForInstance} from "./requirement-test-builder";
+import {aFullEvidenceForInstance, anotherFullEvidenceForInstance} from "./evidence-test-builder";
 
 export function aMinimalInstance(): InstanceTestBuilder {
     const uniqueId = uuid();
@@ -73,6 +79,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withPublicationMedia(InstanceTestBuilder.PUBLICATION_MEDIA)
         .withYourEuropeCategories(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES)
         .withKeywords(InstanceTestBuilder.KEYWORDS)
+        .withRequirements(InstanceTestBuilder.REQUIREMENTS)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -136,6 +143,11 @@ export class InstanceTestBuilder {
 
     public static readonly KEYWORDS = [LanguageString.of('overlijden - en'), LanguageString.of(undefined, 'overlijden - nl'), LanguageString.of(undefined, 'goederen verhandelen'), LanguageString.of('sacrale activiteiten')];
 
+    public static readonly REQUIREMENTS = [
+        aFullRequirementForInstance().withUuid(uuid()).withEvidence(aFullEvidenceForInstance().withUuid(uuid()).build()).build(),
+        anotherFullRequirementForInstance().withUuid(uuid()).withEvidence(anotherFullEvidenceForInstance().withUuid(uuid()).build()).build()
+    ];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -156,6 +168,7 @@ export class InstanceTestBuilder {
     private publicationMedia: PublicationMediumType[] = [];
     private yourEuropeCategories: YourEuropeCategoryType[] = [];
     private keywords: LanguageString[] = [];
+    private requirements: Requirement[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -261,6 +274,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withRequirements(requirements: Requirement[]): InstanceTestBuilder {
+        this.requirements = requirements;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -303,6 +321,7 @@ export class InstanceTestBuilder {
             this.publicationMedia,
             this.yourEuropeCategories,
             this.keywords,
+            this.requirements,
             this.dateCreated,
             this.dateModified,
             this.status,

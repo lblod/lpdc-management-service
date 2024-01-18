@@ -21,6 +21,13 @@ export function aMinimalEvidenceForConcept(): EvidenceTestBuilder {
         .withDescription(aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
 }
 
+export function aMinimalEvidenceForInstance(): EvidenceTestBuilder {
+    const uniqueId = uuid();
+    return new EvidenceTestBuilder()
+        .withId(EvidenceTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId);
+}
+
 export function aFullEvidence(): EvidenceTestBuilder {
     const uniqueId = uuid();
     return new EvidenceTestBuilder()
@@ -62,6 +69,38 @@ export function anotherFullEvidence(): EvidenceTestBuilder {
                 EvidenceTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL,
                 EvidenceTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
 }
+
+export function aFullEvidenceForInstance(): EvidenceTestBuilder {
+    const uniqueId = uuid();
+    return new EvidenceTestBuilder()
+        .withId(EvidenceTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(LanguageString.of(
+            EvidenceTestBuilder.TITLE_EN,
+            undefined,
+            EvidenceTestBuilder.TITLE_NL_FORMAL))
+        .withDescription(LanguageString.of(
+            EvidenceTestBuilder.DESCRIPTION_EN,
+            undefined,
+            EvidenceTestBuilder.DESCRIPTION_NL_FORMAL));
+}
+
+export function anotherFullEvidenceForInstance(): EvidenceTestBuilder {
+    const uniqueId = uuid();
+    return new EvidenceTestBuilder()
+        .withId(EvidenceTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(LanguageString.of(
+            EvidenceTestBuilder.ANOTHER_TITLE_EN,
+            undefined,
+            EvidenceTestBuilder.ANOTHER_TITLE_NL_FORMAL))
+        .withDescription(LanguageString.of(
+            EvidenceTestBuilder.ANOTHER_DESCRIPTION_EN,
+            undefined,
+            EvidenceTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL));
+}
+
+
 
 export class EvidenceTestBuilder {
 

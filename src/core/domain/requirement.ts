@@ -46,6 +46,16 @@ export class Requirement {
         );
     }
 
+    static forInstance(requirement: Requirement): Requirement {
+        return new Requirement(
+            requirement.id,
+            requiredValue(requirement.uuid, 'uuid'),
+            requirement.title,
+            requirement.description,
+            requirement.evidence ? Evidence.forInstance(requirement.evidence) : undefined
+        );
+    }
+
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,

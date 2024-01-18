@@ -12,6 +12,11 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {uuid} from "../../../mu-helper";
+import {Requirement} from "../../../src/core/domain/requirement";
+import {aFullRequirement, RequirementTestBuilder} from "./requirement-test-builder";
+import {Evidence} from "../../../src/core/domain/evidence";
+import {EvidenceTestBuilder} from "./evidence-test-builder";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -79,6 +84,59 @@ describe('constructing', () => {
     test('keywords with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]);
         expect(() => instanceTestBuilder.build()).toThrow(new Error('keywords should not contain duplicates'));
+    });
+
+    describe('requirement ', () => {
+        test('valid requirement does not throw error', () => {
+            const uuidValue = uuid();
+            const validRequirement = Requirement.reconstitute(
+                RequirementTestBuilder.buildIri(uuidValue),
+                uuidValue,
+                undefined,
+                undefined,
+                undefined);
+
+            expect(() => aFullInstance().withRequirements([validRequirement]).build()).not.toThrow();
+        });
+
+        test('invalid financialAdvantage does throw error', () => {
+            const invalidRequirement = Requirement.reconstitute(
+                RequirementTestBuilder.buildIri(uuid()),
+                undefined,
+                undefined,
+                undefined,
+                undefined
+            );
+
+            expect(() => aFullInstance().withRequirements([invalidRequirement]).build()).toThrow();
+        });
+
+        describe('evidence ', () => {
+            test('valid evidence does not throw error', () => {
+                const uuidValue = uuid();
+                const validEvidence = Evidence.reconstitute(
+                    EvidenceTestBuilder.buildIri(uuidValue),
+                    uuidValue,
+                    undefined,
+                    undefined,
+                );
+                const validRequirement = aFullRequirement().withEvidence(validEvidence).build();
+
+                expect(() => aFullInstance().withRequirements([validRequirement]).build()).not.toThrow();
+            });
+
+            test('invalid evidence does throw error', () => {
+                const uuidValue = uuid();
+                const invalidEvidence = Evidence.reconstitute(
+                    EvidenceTestBuilder.buildIri(uuidValue),
+                    undefined,
+                    undefined,
+                    undefined);
+                const invalidRequirement = aFullRequirement().withEvidence(invalidEvidence).build();
+
+                expect(() => aFullInstance().withRequirements([invalidRequirement]).build()).toThrow();
+            });
+        });
     });
 
     describe('dateCreated', () => {

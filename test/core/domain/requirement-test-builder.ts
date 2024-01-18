@@ -2,7 +2,12 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Requirement} from "../../../src/core/domain/requirement";
-import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
+import {
+    aFullEvidence,
+    aFullEvidenceForInstance,
+    anotherFullEvidence,
+    anotherFullEvidenceForInstance
+} from "./evidence-test-builder";
 import {Evidence} from "../../../src/core/domain/evidence";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
@@ -22,6 +27,14 @@ export function aMinimalRequirementForConcept(): RequirementTestBuilder {
         .withTitle(aMinimalLanguageString(RequirementTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
 }
+
+export function aMinimalRequirementForInstance(): RequirementTestBuilder {
+    const uniqueId = uuid();
+    return new RequirementTestBuilder()
+        .withId(RequirementTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId);
+}
+
 
 export function aFullRequirement(): RequirementTestBuilder {
     const uniqueId = uuid();
@@ -67,6 +80,38 @@ export function anotherFullRequirement(): RequirementTestBuilder {
         .withEvidence(RequirementTestBuilder.ANOTHER_EVIDENCE);
 }
 
+export function aFullRequirementForInstance(): RequirementTestBuilder {
+    const uniqueId = uuid();
+    return new RequirementTestBuilder()
+        .withId(RequirementTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(LanguageString.of(
+            RequirementTestBuilder.TITLE_EN,
+            undefined,
+            RequirementTestBuilder.TITLE_NL_FORMAL))
+        .withDescription(LanguageString.of(
+            RequirementTestBuilder.DESCRIPTION_EN,
+            undefined,
+            RequirementTestBuilder.DESCRIPTION_NL_FORMAL))
+        .withEvidence(RequirementTestBuilder.EVIDENCE_FOR_INSTANCE);
+}
+
+export function anotherFullRequirementForInstance(): RequirementTestBuilder {
+    const uniqueId = uuid();
+    return new RequirementTestBuilder()
+        .withId(RequirementTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(LanguageString.of(
+            RequirementTestBuilder.ANOTHER_TITLE_EN,
+            undefined,
+            RequirementTestBuilder.ANOTHER_TITLE_NL_FORMAL))
+        .withDescription(LanguageString.of(
+            RequirementTestBuilder.ANOTHER_DESCRIPTION_EN,
+            undefined,
+            RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL))
+        .withEvidence(RequirementTestBuilder.ANOTHER_EVIDENCE_FOR_INSTANCE);
+}
+
 export class RequirementTestBuilder {
 
     public static readonly TITLE = 'Requirement Title';
@@ -100,7 +145,9 @@ export class RequirementTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Requirement Another Description - nl-generated-informal';
 
     public static readonly EVIDENCE = aFullEvidence().build();
+    public static readonly EVIDENCE_FOR_INSTANCE = aFullEvidenceForInstance().build();
     public static readonly ANOTHER_EVIDENCE = anotherFullEvidence().build();
+    public static readonly ANOTHER_EVIDENCE_FOR_INSTANCE = anotherFullEvidenceForInstance().build();
 
     private id: Iri;
     private uuid: string | undefined;

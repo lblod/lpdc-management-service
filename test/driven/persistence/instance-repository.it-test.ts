@@ -17,7 +17,8 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {NS} from "../../../src/driven/persistence/namespaces";
-import {ConceptSnapshotTestBuilder} from "../../core/domain/concept-snapshot-test-builder";
+import {aMinimalRequirementForInstance} from "../../core/domain/requirement-test-builder";
+import {aMinimalEvidenceForInstance} from "../../core/domain/evidence-test-builder";
 
 describe('InstanceRepository', () => {
 
@@ -190,6 +191,36 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[1].nl}"""@nl`,
                     `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[2].nl}"""@nl`,
                     `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[3].en}"""@en`,
+                    `<${instanceId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${InstanceTestBuilder.REQUIREMENTS[1].id}>`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].id}> a <http://data.europa.eu/m8g/Requirement>`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.REQUIREMENTS[1].uuid}"""`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[1].title.en}"""@EN`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[1].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[1].description.en}"""@EN`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[1].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}>`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> a <http://data.europa.eu/m8g/Evidence>`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.REQUIREMENTS[1].evidence.uuid}"""`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[1].evidence.title.en}"""@EN`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[1].evidence.title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[1].evidence.description.en}"""@EN`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[1].evidence.description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${instanceId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${InstanceTestBuilder.REQUIREMENTS[0].id}>`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].id}> a <http://data.europa.eu/m8g/Requirement>`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.REQUIREMENTS[0].uuid}"""`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[0].title.en}"""@EN`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[0].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].description.en}"""@EN`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}>`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> a <http://data.europa.eu/m8g/Evidence>`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.uuid}"""`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.title.en}"""@EN`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.description.en}"""@EN`,
+                    `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.description.nlFormal}"""@nl-BE-x-formal`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,
@@ -201,6 +232,70 @@ describe('InstanceRepository', () => {
             const actualInstance = await repository.findById(bestuurseenheid, instanceId);
 
             expect(actualInstance).toEqual(instance);
+        });
+
+        test('Verify minimal mappings - requirement without evidence', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const requirement = aMinimalRequirementForInstance().withEvidence(undefined).build();
+
+            const instance =
+                aMinimalInstance()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withRequirements([requirement])
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `<${instance.id}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instance.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${instance.uuid}"""`,
+                    `<${instance.id}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
+                    `<${instance.id}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instance.id}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instance.id}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
+                    `<${instance.id}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirement.id}>`,
+                    `<${requirement.id}> a <http://data.europa.eu/m8g/Requirement>`,
+                    `<${requirement.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${requirement.uuid}"""`,
+                    `<${requirement.id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                ]);
+
+            const actualConceptSnapshot = await repository.findById(bestuurseenheid, instance.id);
+
+            expect(actualConceptSnapshot).toEqual(instance);
+        });
+
+        test('Verify minimal mappings - requirement with minimal evidence', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const evidence = aMinimalEvidenceForInstance().build();
+            const requirement = aMinimalRequirementForInstance().withEvidence(evidence).build();
+
+            const instance =
+                aMinimalInstance()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withRequirements([requirement])
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `<${instance.id}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instance.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${instance.uuid}"""`,
+                    `<${instance.id}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
+                    `<${instance.id}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instance.id}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instance.id}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
+                    `<${instance.id}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirement.id}>`,
+                    `<${requirement.id}> a <http://data.europa.eu/m8g/Requirement>`,
+                    `<${requirement.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${requirement.uuid}"""`,
+                    `<${requirement.id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${requirement.id}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${evidence.id}>`,
+                    `<${evidence.id}> a <http://data.europa.eu/m8g/Evidence>`,
+                    `<${evidence.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${evidence.uuid}"""`,
+                ]);
+
+            const actualConceptSnapshot = await repository.findById(bestuurseenheid, instance.id);
+
+            expect(actualConceptSnapshot).toEqual(instance);
         });
 
         for (const type of Object.values(InstanceStatusType)) {
