@@ -36,6 +36,10 @@ export function buildInstanceIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/public-service/${uniqueId}`);
 }
 
+export function buildFormalInformalChoiceIri(uniqueId: string): Iri {
+    return new Iri(`http://data.lblod.info/id/formalInformalChoice/${uniqueId}`);
+}
+
 export function randomNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
