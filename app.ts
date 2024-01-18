@@ -323,6 +323,27 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version
     }
 });
 
+app.get('/conceptual-public-services/:conceptualPublicServiceId/form/:formId', async function (req, res): Promise<any> {
+    const conceptualPublicServiceId = req.params["conceptualPublicServiceId"];
+    const formId = req.params["formId"];
+
+    try {
+        const bundle = await retrieveForm(conceptualPublicServiceId, formId);
+
+        return res.status(200).json(bundle);
+    } catch (e) {
+        console.error(e);
+        if (e.status) {
+            return res.status(e.status).set('content-type', 'application/json').send(e);
+        }
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while submitting semantic-form for "${conceptualPublicServiceId}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
+});
+
 app.use('/contact-info-options/', authenticateAndAuthorizeRequest(sessionRepository));
 
 app.get('/contact-info-options/:fieldName', async (req, res): Promise<any> => {

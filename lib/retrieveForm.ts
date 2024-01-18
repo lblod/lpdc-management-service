@@ -21,10 +21,12 @@ import {
 } from './commonQueries';
 import {
     findDutchLanguageVersionsOfTriples,
-    getChosenForm, getLanguageVersionForInstance,
+    getChosenForm,
+    getLanguageVersionForInstance,
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
 
+//TODO LPDC-917: 'split up', is now being used from 2 already split up app.ts resource calls (one for concepts, one for instances)
 export async function retrieveForm(publicServiceId: string, formId: string): Promise<{
     form: string,
     meta: string,
