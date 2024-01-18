@@ -1,5 +1,4 @@
 import {Language} from "./language";
-import {Invariant} from "./shared/invariant";
 import {uniq} from "lodash";
 
 export class LanguageString {
@@ -20,8 +19,9 @@ export class LanguageString {
                         nlGeneratedFormal: string | undefined,
                         nlGeneratedInformal: string | undefined) {
 
-        const invariant = Invariant.require([en, nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal], 'language list');
-        invariant.to(invariant.haveAtLeastOneValuePresent());
+        //TODO LPDC-968: re-enable when empty triples are fixed in data
+        // const invariant = Invariant.require([en, nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal], 'language list');
+        // invariant.to(invariant.haveAtLeastOneValuePresent());
 
         this._en = en;
         this._nl = nl;
