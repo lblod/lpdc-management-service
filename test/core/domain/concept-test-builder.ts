@@ -148,8 +148,8 @@ export class ConceptTestBuilder {
     public static readonly REGULATION_NL_GENERATED_FORMAL = 'Concept Regulation - nl-generated-formal';
     public static readonly REGULATION_NL_GENERATED_INFORMAL = 'Concept Regulation - nl-generated-informal';
 
-    public static readonly START_DATE = FormatPreservingDate.of('2023-10-21 00:00:00Z');
-    public static readonly END_DATE = FormatPreservingDate.of('2027-09-17 00:00:00.000Z');
+    public static readonly START_DATE = FormatPreservingDate.of('2023-10-21T00:00:00.135Z');
+    public static readonly END_DATE = FormatPreservingDate.of('2027-09-17T00:00:00.613Z');
 
     public static readonly TYPE = ProductType.ADVIESBEGELEIDING;
 

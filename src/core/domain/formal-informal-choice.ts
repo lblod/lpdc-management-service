@@ -1,6 +1,7 @@
 import {Iri} from "./shared/iri";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {requiredValue} from "./shared/invariant";
+import {ChosenFormType} from "./types";
 
 export class FormalInformalChoice {
 
@@ -42,8 +43,5 @@ export class FormalInformalChoice {
         return this._bestuurseenheidId;
     }
 
-    //TODO LPDC-917: create repo and given a bestuurseenheid, return an Optional<result>
-
 }
 
-export type ChosenFormType = 'informal' | 'formal';

@@ -134,8 +134,8 @@ export class InstanceTestBuilder {
     public static readonly REGULATION_NL_FORMAL = 'Instance Regulation - nl-formal';
     public static readonly REGULATION_NL_INFORMAL = 'Instance Regulation - nl-informal';
 
-    public static readonly START_DATE = FormatPreservingDate.of('2023-10-21 00:00:00Z');
-    public static readonly END_DATE = FormatPreservingDate.of('2027-09-17 00:00:00.000Z');
+    public static readonly START_DATE = FormatPreservingDate.of('2023-10-21T00:00:00.456Z');
+    public static readonly END_DATE = FormatPreservingDate.of('2027-09-17T00:00:00.123Z');
 
     public static readonly TYPE = ProductType.BEWIJS;
 

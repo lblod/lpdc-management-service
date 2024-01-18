@@ -1,8 +1,9 @@
-import {ChosenFormType, FormalInformalChoice} from "../../../src/core/domain/formal-informal-choice";
+import {FormalInformalChoice} from "../../../src/core/domain/formal-informal-choice";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {uuid} from "../../../mu-helper";
 import {buildBestuurseenheidIri, buildFormalInformalChoiceIri} from "./iri-test-builder";
+import {ChosenFormType} from "../../../src/core/domain/types";
 
 export function aFormalInformalChoice(): FormalInformalChoiceTestBuilder {
     const id = uuid();
@@ -22,8 +23,8 @@ export class FormalInformalChoiceTestBuilder {
     private chosenForm: ChosenFormType;
     private bestuurseenheidId: Iri;
 
-    public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-23 12:05:46Z');
-    public static readonly CHOSEN_FORM: ChosenFormType = 'informal';
+    public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-23T12:05:46.654Z');
+    public static readonly CHOSEN_FORM = ChosenFormType.INFORMAL;
 
     public withId(id: Iri): FormalInformalChoiceTestBuilder {
         this.id = id;

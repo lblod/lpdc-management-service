@@ -153,8 +153,8 @@ export class ConceptSnapshotTestBuilder {
     public static readonly REGULATION_NL_GENERATED_FORMAL = 'Concept Snapshot Regulation - nl-generated-formal';
     public static readonly REGULATION_NL_GENERATED_INFORMAL = 'Concept Snapshot Regulation - nl-generated-informal';
 
-    public static readonly START_DATE = FormatPreservingDate.of('2023-10-28 00:00:00Z');
-    public static readonly END_DATE = FormatPreservingDate.of('2027-09-16 00:00:00.000Z');
+    public static readonly START_DATE = FormatPreservingDate.of('2023-10-28T00:00:00.657Z');
+    public static readonly END_DATE = FormatPreservingDate.of('2027-09-16T00:00:00.672Z');
 
     public static readonly TYPE = ProductType.FINANCIEELVOORDEEL;
 

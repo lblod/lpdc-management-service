@@ -201,3 +201,8 @@ export enum InstanceStatusType {
     ONTWERP = 'ontwerp',
     VERSTUURD = 'verstuurd',
 }
+
+export enum ChosenFormType {
+    INFORMAL = 'informal',
+    FORMAL = 'formal',
+}
