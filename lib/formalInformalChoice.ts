@@ -6,7 +6,7 @@ import _ from 'lodash';
  * @param formalInformalChoice triples
  * @returns {*} 'formal' or 'informal or undefined
  */
-export function getChosenForm(formalInformalChoice: any): string {
+export function getChosenForm(formalInformalChoice: any): string | undefined {
     return formalInformalChoice
         .find(triple => triple.p.value === 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#chosenForm')
         ?.o?.value;
@@ -46,7 +46,7 @@ export function getLanguageVersionForInstance(chosenForm: string): string {
  * @param chosenForm string informal or formal
  * @returns {string} language version of concept that corresponds to chosenForm
  */
-export function selectLanguageVersionForConcept(conceptLanguages: any[], chosenForm: string): string {
+export function selectLanguageVersionForConcept(conceptLanguages: any[], chosenForm: string | undefined): string {
     if (chosenForm === 'informal') {
         if (conceptLanguages.includes('nl-be-x-informal')) {
             return 'nl-be-x-informal';

@@ -51,7 +51,6 @@ export class Bestuurseenheid {
     }
 }
 
-
 export enum BestuurseenheidClassificatieCode {
     PROVINCIE = "Provincie",
     GEMEENTE = "Gemeente",

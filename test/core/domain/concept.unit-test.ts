@@ -45,7 +45,7 @@ describe('constructing', () => {
         ]);
     });
 
-    test('concept languages', () => {
+    test('concept dutch languages', () => {
         const aConcept =
             aFullConcept()
                 .withTitle(
@@ -58,8 +58,7 @@ describe('constructing', () => {
                         ConceptTestBuilder.TITLE_NL_GENERATED_INFORMAL))
                 .build();
 
-        expect(aConcept.conceptLanguages).toEqual([
-            Language.EN,
+        expect(aConcept.conceptDutchLanguages).toEqual([
             Language.NL,
             Language.FORMAL,
             Language.INFORMAL,

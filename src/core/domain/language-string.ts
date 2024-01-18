@@ -4,6 +4,8 @@ import {uniq} from "lodash";
 
 export class LanguageString {
 
+    //TODO LPDC-917: embed the language string invariants in the invariants ...
+
     private readonly _en: string | undefined;
     private readonly _nl: string | undefined;
     private readonly _nlFormal: string | undefined;

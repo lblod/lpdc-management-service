@@ -7,7 +7,6 @@ import {updateForm, updateFormAtomic} from './lib/updateForm';
 import {deleteForm} from './lib/deleteForm';
 import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
-import {getLanguageVersionOfConcept} from "./lib/getConceptLanguageVersion";
 import {getContactPointOptions} from "./lib/getContactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
 import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
@@ -36,6 +35,9 @@ import {NewInstanceDomainService} from "./src/core/domain/new-instance-domain-se
 import {Session} from "./src/core/domain/session";
 import {authenticateAndAuthorizeRequest} from "./utils/session-utils";
 import {FormDefinitionFileRepository} from "./src/driven/persistence/form-definition-file-repository";
+import {serviceUriForId} from "./lib/commonQueries";
+import {SelectFormLanguageDomainService} from "./src/core/domain/select-form-language-domain-service";
+import {FormalInformalChoiceSparqlRepository} from "./src/driven/persistence/formal-informal-choice-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -56,6 +58,7 @@ const bestuurseenheidRegistrationCodeFetcher = new BestuurseenheidRegistrationCo
 const codeRepository = new CodeSparqlRepository();
 const instanceRepository = new InstanceSparqlRepository();
 const formDefinitionRepository = new FormDefinitionFileRepository();
+const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository();
 
 const newConceptSnapshotToConceptMergerDomainService =
     new NewConceptSnapshotToConceptMergerDomainService(
@@ -71,7 +74,10 @@ const newInstanceDomainService =
         instanceRepository
     );
 
-app.get('/', function (req, res): void {
+const selectFormLanguageDomainService =
+    new SelectFormLanguageDomainService();
+
+app.get('/', function (_req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
     res.send(message);
 });
@@ -302,9 +308,18 @@ app.post('/public-services/:publicServiceId/submit', async function (req, res): 
 
 app.use('/conceptual-public-services/', authenticateAndAuthorizeRequest(sessionRepository));
 
-app.get('/conceptual-public-services/:conceptualPublicServiceId/language-version', async (req, res): Promise<any> => {
+//TODO LPDC-917: parameter conceptual public service uuid -> (escaped) iri
+app.get('/conceptual-public-services/:conceptualPublicServiceUuid/dutch-language-version', async (req, res): Promise<any> => {
     try {
-        const languageVersion = await getLanguageVersionOfConcept(req.params.conceptualPublicServiceId, conceptRepository);
+
+        const conceptId = new Iri(await serviceUriForId(req.params.conceptualPublicServiceUuid, 'lpdcExt:ConceptualPublicService'));
+
+        const session: Session = req['session'];
+        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+        const concept = await conceptRepository.findById(conceptId);
+        const formalInformalChoice = await formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
+
+        const languageVersion = selectFormLanguageDomainService.selectForConcept(concept, formalInformalChoice);
         return res.json({languageVersion: languageVersion});
     } catch (e) {
         console.error(e);

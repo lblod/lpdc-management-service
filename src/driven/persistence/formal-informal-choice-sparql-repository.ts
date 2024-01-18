@@ -16,7 +16,7 @@ export class FormalInformalChoiceSparqlRepository implements FormalInformalChoic
         this.querying = new SparqlQuerying(endpoint);
     }
 
-    async findByBestuurseenheid(bestuurseenheid: Bestuurseenheid): Promise<FormalInformalChoice> {
+    async findByBestuurseenheid(bestuurseenheid: Bestuurseenheid): Promise<FormalInformalChoice | undefined> {
         const query = `
             ${PREFIX.lpdcExt}
             ${PREFIX.mu}

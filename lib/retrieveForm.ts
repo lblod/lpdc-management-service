@@ -80,7 +80,7 @@ export async function retrieveForm(publicServiceId: string, formId: string, code
     const isYourEurope = (await querySudo(publicationChannelQuery)).boolean;
 
     //TODO LPDC-917: find chosen language
-    const chosenForm = getChosenForm(await loadFormalInformalChoice());
+    const chosenForm: string | undefined = getChosenForm(await loadFormalInformalChoice());
     let languageForChosenForm: string;
     if (isConceptualPublicService) {
         const conceptLanguages = findDutchLanguageVersionsOfTriples(sourceBindings);

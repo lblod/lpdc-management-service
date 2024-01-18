@@ -125,8 +125,9 @@ export class Concept {
         this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
     }
 
-    get conceptLanguages(): Language[] {
-        return [...this._title.definedLanguages];
+    //TODO LPDC-917: what is the correct business term for this method?
+    get conceptDutchLanguages(): Language[] {
+        return [...this._title.definedLanguages.filter(l => l !== Language.EN)];
     }
 
     get appliedConceptSnapshots(): Iri[] {
