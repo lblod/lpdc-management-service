@@ -94,7 +94,7 @@ export async function retrieveForm(publicServiceId: string, formId: string): Pro
         form += englishRequirementFormSnippets;
     }
 
-    const tailoredSchemes = await generateRuntimeConceptSchemes();
+    const tailoredSchemes = FORM_MAPPING[formId] === "characteristics" ? await generateRuntimeConceptSchemes() : [];
     const meta = tailoredSchemes.join("\r\n");
     const source = bindingsToNT(sourceBindings).join("\r\n");
 
