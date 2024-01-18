@@ -29,10 +29,9 @@ export class FormalInformalChoiceSparqlRepository implements FormalInformalChoic
                         mu:uuid ?uuid ;
                         schema:dateCreated ?dateCreated ;
                         lpdcExt:chosenForm ?chosenForm ;
-                        dct:relation ?bestuurseenheidId .
-                    
+                        dct:relation ?bestuurseenheidId .                    
                 }
-            }
+            } ORDER BY ASC(?dateCreated) LIMIT 1
         `;
         const result = await this.querying.singleRow(query);
 
@@ -62,9 +61,7 @@ export class FormalInformalChoiceSparqlRepository implements FormalInformalChoic
             throw Error(`formal informal choice found <${formalInformalChoice.id}> in incorrect user graph`);
         }
 
-
         return formalInformalChoice;
-
     }
 
 }

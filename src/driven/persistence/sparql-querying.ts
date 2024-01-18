@@ -14,6 +14,7 @@ export class SparqlQuerying {
         await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
     }
 
+    //TODO LPDC-917: test the retrying extensively. e.g. if the single row returns multiple results -> it retries ...
     public async singleRow(query: string): Promise<unknown | undefined> {
         return retry(async () => {
             const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});

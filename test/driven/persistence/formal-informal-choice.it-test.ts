@@ -16,9 +16,9 @@ describe('FormalInformalChoiceRepository', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
-    describe('findById', () => {
+    describe('findByBestuurseenheid', () => {
 
-        test('When formal informal choice exists with id, then return formal informal choice', async () => {
+        test('When formal informal choice exists for a bestuurseenheid, then return formal informal choice', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
 
             const formalInformalChoice = aFormalInformalChoice().withBestuurseenheidId(bestuurseenheid.id).build();
@@ -39,6 +39,30 @@ describe('FormalInformalChoiceRepository', () => {
             const actualFormalInformalChoice = await repository.findByBestuurseenheid(bestuurseenheid);
 
             expect(actualFormalInformalChoice).toBeUndefined();
+        });
+
+        test('When multiple formal informal choices for a bestuurseenheid, then return oldest formal informal choice', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+
+            const formalInformalChoiceSavedFirst =
+                aFormalInformalChoice()
+                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withChosenForm(ChosenFormType.FORMAL)
+                    .withDateCreated(FormatPreservingDate.of('2024-01-23T12:05:46.654Z'))
+                    .build();
+            await repository.save(bestuurseenheid, formalInformalChoiceSavedFirst);
+
+            const formalInformalChoiceSavedAfter =
+                aFormalInformalChoice()
+                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withChosenForm(ChosenFormType.INFORMAL)
+                    .withDateCreated(FormatPreservingDate.of('2024-01-23T12:05:47.654Z'))
+                    .build();
+            await repository.save(bestuurseenheid, formalInformalChoiceSavedAfter);
+
+            const actualFormalInformalChoice = await repository.findByBestuurseenheid(bestuurseenheid);
+
+            expect(actualFormalInformalChoice).toEqual(formalInformalChoiceSavedFirst);
         });
 
     });
