@@ -1,5 +1,4 @@
 import {querySudo} from '@lblod/mu-auth-sudo';
-import fs from 'fs';
 import {sparqlEscapeUri} from '../mu-helper';
 import {FORM_MAPPING, PREFIX} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
@@ -25,15 +24,17 @@ import {
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
 import {CodeRepository} from "../src/core/port/driven/persistence/code-repository";
+import {FormDefinitionRepository} from "../src/core/port/driven/persistence/form-definition-repository";
 
 //TODO LPDC-917: 'split up', is now being used from 2 already split up app.ts resource calls (one for concepts, one for instances)
-export async function retrieveForm(publicServiceId: string, formId: string, codeRepository: CodeRepository): Promise<{
+export async function retrieveForm(publicServiceId: string, formId: string, codeRepository: CodeRepository, formDefinitionRepository: FormDefinitionRepository): Promise<{
     form: string,
     meta: string,
     source: string,
     serviceUri: string
 }> {
-    let form = fs.readFileSync(`./config/${FORM_MAPPING[formId]}/form.ttl`, 'utf8');
+
+    //TODO LPDC-917: load concept / instance
 
     let isConceptualPublicService = false;
     let serviceUri = await serviceUriForId(publicServiceId);
@@ -66,16 +67,6 @@ export async function retrieveForm(publicServiceId: string, formId: string, code
     const sourceBindings = results
         .reduce((acc, b) => [...acc, ...b]);
 
-    const chosenForm = getChosenForm(await loadFormalInformalChoice());
-    if (isConceptualPublicService) {
-        const conceptLanguages = findDutchLanguageVersionsOfTriples(sourceBindings);
-        const languageForChosenForm = selectLanguageVersionForConcept(conceptLanguages, chosenForm);
-        form = adjustLanguageOfForm(form, languageForChosenForm);
-    } else {
-        const existingLanguage = findDutchLanguageVersionsOfTriples(sourceBindings)[0];
-        form = adjustLanguageOfForm(form, existingLanguage ?? getLanguageVersionForInstance(chosenForm));
-    }
-
     // Check whether a user chose "YourEurope" as their publication channel
     const publicationChannelQuery = `
     ${PREFIX.lpdcExt}
@@ -88,12 +79,18 @@ export async function retrieveForm(publicServiceId: string, formId: string, code
   `;
     const isYourEurope = (await querySudo(publicationChannelQuery)).boolean;
 
-    // If a user chooses "YourEurope" as their publication channel, load
-    // the relevants snippets into the content form that render the English fields obligatory.
-    if (FORM_MAPPING[formId] === "content" && isYourEurope) {
-        const englishRequirementFormSnippets = fs.readFileSync(`./config/${FORM_MAPPING[formId]}/add-english-requirement.ttl`, 'utf8');
-        form += englishRequirementFormSnippets;
+    //TODO LPDC-917: find chosen language
+    const chosenForm = getChosenForm(await loadFormalInformalChoice());
+    let languageForChosenForm: string;
+    if (isConceptualPublicService) {
+        const conceptLanguages = findDutchLanguageVersionsOfTriples(sourceBindings);
+        languageForChosenForm = selectLanguageVersionForConcept(conceptLanguages, chosenForm);
+    } else {
+        const existingLanguage = findDutchLanguageVersionsOfTriples(sourceBindings)[0];
+        languageForChosenForm = existingLanguage ?? getLanguageVersionForInstance(chosenForm);
     }
+
+    const form = formDefinitionRepository.loadFormDefinition(formId, languageForChosenForm, isYourEurope);
 
     const tailoredSchemes = FORM_MAPPING[formId] === "characteristics" ? await codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
     const meta = tailoredSchemes.join("\r\n");
@@ -102,6 +99,3 @@ export async function retrieveForm(publicServiceId: string, formId: string, code
     return {form, meta, source, serviceUri};
 }
 
-function adjustLanguageOfForm(form: string, newLanguage: string): string {
-    return form.replaceAll(`form:language "<FORMAL_INFORMAL_LANGUAGE>"`, `form:language "${newLanguage}"`);
-}

@@ -35,6 +35,7 @@ import {InstanceSparqlRepository} from "./src/driven/persistence/instance-sparql
 import {NewInstanceDomainService} from "./src/core/domain/new-instance-domain-service";
 import {Session} from "./src/core/domain/session";
 import {authenticateAndAuthorizeRequest} from "./utils/session-utils";
+import {FormDefinitionFileRepository} from "./src/driven/persistence/form-definition-file-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -54,6 +55,7 @@ const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSpa
 const bestuurseenheidRegistrationCodeFetcher = new BestuurseenheidRegistrationCodeThroughSubjectPageOrApiFetcher();
 const codeRepository = new CodeSparqlRepository();
 const instanceRepository = new InstanceSparqlRepository();
+const formDefinitionRepository = new FormDefinitionFileRepository();
 
 const newConceptSnapshotToConceptMergerDomainService =
     new NewConceptSnapshotToConceptMergerDomainService(
@@ -109,7 +111,7 @@ app.post('/public-services/', async function (req, res): Promise<any> {
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
     try {
-        if(conceptId) {
+        if (conceptId) {
             const {uuid, uri} = await createForm(conceptId, session.id, sessionRepository, bestuurseenheidRepository);
             return res.status(201).json({
                 data: {
@@ -147,7 +149,7 @@ app.get('/public-services/:publicServiceId/form/:formId', async function (req, r
     const formId = req.params["formId"];
 
     try {
-        const bundle = await retrieveForm(publicServiceId, formId, codeRepository);
+        const bundle = await retrieveForm(publicServiceId, formId, codeRepository, formDefinitionRepository);
 
         return res.status(200).json(bundle);
     } catch (e) {
@@ -275,7 +277,7 @@ app.post('/public-services/:publicServiceId/submit', async function (req, res): 
     const publicServiceId = req.params["publicServiceId"];
 
     try {
-        const response = await validateService(publicServiceId, codeRepository);
+        const response = await validateService(publicServiceId, codeRepository, formDefinitionRepository);
 
         if (response.errors.length) {
             return res.status(400).json({
@@ -322,7 +324,7 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/form/:formId', a
     const formId = req.params["formId"];
 
     try {
-        const bundle = await retrieveForm(conceptualPublicServiceId, formId, codeRepository);
+        const bundle = await retrieveForm(conceptualPublicServiceId, formId, codeRepository, formDefinitionRepository);
 
         return res.status(200).json(bundle);
     } catch (e) {

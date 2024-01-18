@@ -6,17 +6,18 @@ import {validateForm} from '@lblod/submission-form-helpers';
 import {loadContactPointsAddresses} from "./commonQueries";
 import {uniq} from "lodash";
 import {CodeRepository} from "../src/core/port/driven/persistence/code-repository";
+import {FormDefinitionRepository} from "../src/core/port/driven/persistence/form-definition-repository";
 
 const FORM = rdflib.Namespace('http://lblod.data.gift/vocabularies/forms/');
 const RDF = rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 
 
-export async function validateService(publicServiceId: string, codeRepository: CodeRepository): Promise<{ errors: any[] }> {
+export async function validateService(publicServiceId: string, codeRepository: CodeRepository, formDefinitionRepository: FormDefinitionRepository): Promise<{ errors: any[] }> {
     const formIds = Object.keys(FORM_MAPPING);
     const forms = [];
 
     for (const id of formIds) {
-        const form = await retrieveForm(publicServiceId, id, codeRepository);
+        const form = await retrieveForm(publicServiceId, id, codeRepository, formDefinitionRepository);
         forms.push({
             type: FORM_MAPPING[id],
             form: form,
