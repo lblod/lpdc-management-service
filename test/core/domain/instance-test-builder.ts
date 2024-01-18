@@ -72,6 +72,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withExecutingAuthorities(InstanceTestBuilder.EXECUTING_AUTHORITIES)
         .withPublicationMedia(InstanceTestBuilder.PUBLICATION_MEDIA)
         .withYourEuropeCategories(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES)
+        .withKeywords(InstanceTestBuilder.KEYWORDS)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -133,6 +134,8 @@ export class InstanceTestBuilder {
 
     public static readonly YOUR_EUROPE_CATEGORIES = [YourEuropeCategoryType.WERKENPENSIONERING, YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFPENSIOENENVERZEKERINGSREGELINGENWERKGEVER, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE];
 
+    public static readonly KEYWORDS = [LanguageString.of('overlijden - en'), LanguageString.of(undefined, 'overlijden - nl'), LanguageString.of(undefined, 'goederen verhandelen'), LanguageString.of('sacrale activiteiten')];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -152,6 +155,7 @@ export class InstanceTestBuilder {
     private executingAuthorities: Iri[] = [];
     private publicationMedia: PublicationMediumType[] = [];
     private yourEuropeCategories: YourEuropeCategoryType[] = [];
+    private keywords: LanguageString[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -252,6 +256,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withKeywords(keywords: LanguageString[]): InstanceTestBuilder {
+        this.keywords = keywords;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -293,6 +302,7 @@ export class InstanceTestBuilder {
             this.executingAuthorities,
             this.publicationMedia,
             this.yourEuropeCategories,
+            this.keywords,
             this.dateCreated,
             this.dateModified,
             this.status,

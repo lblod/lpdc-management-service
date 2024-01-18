@@ -11,6 +11,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
+import {LanguageString} from "../../../src/core/domain/language-string";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -73,6 +74,11 @@ describe('constructing', () => {
     test('YourEuropeCategories with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF, YourEuropeCategoryType.BEDRIJF]);
         expect(() => instanceTestBuilder.build()).toThrow(new Error('yourEuropeCategories should not contain duplicates'));
+    });
+
+    test('keywords with duplicates throws error', () => {
+        const instanceTestBuilder = aFullInstance().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]);
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('keywords should not contain duplicates'));
     });
 
     describe('dateCreated', () => {

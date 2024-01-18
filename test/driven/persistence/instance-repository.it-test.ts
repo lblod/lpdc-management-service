@@ -17,6 +17,7 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {NS} from "../../../src/driven/persistence/namespaces";
+import {ConceptSnapshotTestBuilder} from "../../core/domain/concept-snapshot-test-builder";
 
 describe('InstanceRepository', () => {
 
@@ -185,6 +186,10 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES[0]).value}>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES[1]).value}>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES[2]).value}>`,
+                    `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[0].en}"""@en`,
+                    `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[1].nl}"""@nl`,
+                    `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[2].nl}"""@nl`,
+                    `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[3].en}"""@en`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,

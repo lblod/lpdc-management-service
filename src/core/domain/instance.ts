@@ -33,6 +33,7 @@ export class Instance {
     private readonly _executingAuthorities: Iri[];
     private readonly _publicationMedia: PublicationMediumType[];
     private readonly _yourEuropeCategories: YourEuropeCategoryType[];
+    private readonly _keywords: LanguageString[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -58,6 +59,7 @@ export class Instance {
                 executingAuthorities: Iri[],
                 publicationMedia: PublicationMediumType[],
                 yourEuropeCategories: YourEuropeCategoryType[],
+                keywords: LanguageString[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -83,6 +85,7 @@ export class Instance {
         this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities), 'executingAuthorities');
         this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
+        this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -163,6 +166,10 @@ export class Instance {
 
     get yourEuropeCategories(): YourEuropeCategoryType[] {
         return [...this._yourEuropeCategories];
+    }
+
+    get keywords(): LanguageString[] {
+        return [...this._keywords];
     }
 
     get dateCreated(): FormatPreservingDate {
