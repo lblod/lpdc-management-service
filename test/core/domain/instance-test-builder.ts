@@ -7,7 +7,7 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import {
     CompetentAuthorityLevelType, ExecutingAuthorityLevelType,
     InstanceStatusType,
-    ProductType,
+    ProductType, PublicationMediumType,
     TargetAudienceType,
     ThemeType
 } from "../../../src/core/domain/types";
@@ -70,6 +70,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withCompetentAuthorities(InstanceTestBuilder.COMPETENT_AUTHORITIES)
         .withExecutingAuthorityLevels(InstanceTestBuilder.EXECUTING_AUTHORITY_LEVELS)
         .withExecutingAuthorities(InstanceTestBuilder.EXECUTING_AUTHORITIES)
+        .withPublicationMedia(InstanceTestBuilder.PUBLICATION_MEDIA)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -127,6 +128,8 @@ export class InstanceTestBuilder {
     public static readonly COMPETENT_AUTHORITY_LEVELS = [CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.EUROPEES, CompetentAuthorityLevelType.FEDERAAL];
     public static readonly EXECUTING_AUTHORITY_LEVELS = [ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.EUROPEES, ExecutingAuthorityLevelType.FEDERAAL];
 
+    public static readonly PUBLICATION_MEDIA = [PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -144,6 +147,7 @@ export class InstanceTestBuilder {
     private competentAuthorities: Iri[] = [];
     private executingAuthorityLevels: ExecutingAuthorityLevelType[] = [];
     private executingAuthorities: Iri[] = [];
+    private publicationMedia: PublicationMediumType[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -234,6 +238,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withPublicationMedia(publicationMedia: PublicationMediumType[]): InstanceTestBuilder {
+        this.publicationMedia = publicationMedia;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -273,6 +282,7 @@ export class InstanceTestBuilder {
             this.competentAuthorities,
             this.executingAuthorityLevels,
             this.executingAuthorities,
+            this.publicationMedia,
             this.dateCreated,
             this.dateModified,
             this.status,

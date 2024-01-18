@@ -6,6 +6,7 @@ import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
+    PublicationMediumType,
     TargetAudienceType,
     ThemeType
 } from "../../../src/core/domain/types";
@@ -56,12 +57,17 @@ describe('constructing', () => {
     });
 
     test('ExecutingAuthorityLevels with duplicates throws error', () => {
-        const conceptTestBuilder = aFullConceptSnapshot().withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.LOKAAL]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('executingAuthorityLevels should not contain duplicates'));
+        const instanceTestBuilder = aFullInstance().withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.LOKAAL]);
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('executingAuthorityLevels should not contain duplicates'));
     });
 
     test('ExecutingAuthorities with duplicates throws error', () => {
         expect(() => aFullInstance().withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]).build()).toThrow(new Error('executingAuthorities should not contain duplicates'));
+    });
+
+    test('PublicationMedia with duplicates throws error', () => {
+        const instanceTestBuilder = aFullInstance().withPublicationMedia([PublicationMediumType.YOUREUROPE, PublicationMediumType.YOUREUROPE]);
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('publicationMedia should not contain duplicates'));
     });
 
     describe('dateCreated', () => {

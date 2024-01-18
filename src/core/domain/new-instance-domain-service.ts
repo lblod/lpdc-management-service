@@ -39,6 +39,7 @@ export class NewInstanceDomainService {
                 [bestuurseenheid.id],
                 [],
                 [bestuurseenheid.id],
+                [],
                 now,
                 now,
                 InstanceStatusType.ONTWERP,

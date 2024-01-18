@@ -6,7 +6,7 @@ import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
     InstanceStatusType,
-    ProductType,
+    ProductType, PublicationMediumType,
     TargetAudienceType,
     ThemeType
 } from "./types";
@@ -31,6 +31,7 @@ export class Instance {
     private readonly _competentAuthorities: Iri[];
     private readonly _executingAuthorityLevels: ExecutingAuthorityLevelType[];
     private readonly _executingAuthorities: Iri[];
+    private readonly _publicationMedia: PublicationMediumType[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -54,6 +55,7 @@ export class Instance {
                 competentAuthorities: Iri[],
                 executingAuthorityLevels: ExecutingAuthorityLevelType[],
                 executingAuthorities: Iri[],
+                publicationMedia: PublicationMediumType[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -77,6 +79,7 @@ export class Instance {
         this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities), 'competentAuthorities');
         this._executingAuthorityLevels = requireNoDuplicates(asSortedArray(executingAuthorityLevels),'executingAuthorityLevels');
         this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities), 'executingAuthorities');
+        this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -128,15 +131,15 @@ export class Instance {
     }
 
     get targetAudiences(): TargetAudienceType[] {
-        return this._targetAudiences;
+        return [...this._targetAudiences];
     }
 
     get themes(): ThemeType[] {
-        return this._themes;
+        return [...this._themes];
     }
 
     get competentAuthorityLevels(): CompetentAuthorityLevelType[] {
-        return this._competentAuthorityLevels;
+        return [...this._competentAuthorityLevels];
     }
 
     get competentAuthorities(): Iri[] {
@@ -144,11 +147,15 @@ export class Instance {
     }
 
     get executingAuthorityLevels(): ExecutingAuthorityLevelType[] {
-        return this._executingAuthorityLevels;
+        return [...this._executingAuthorityLevels];
     }
 
     get executingAuthorities(): Iri[] {
         return [...this._executingAuthorities];
+    }
+
+    get publicationMedia(): PublicationMediumType[] {
+        return [...this._publicationMedia];
     }
 
     get dateCreated(): FormatPreservingDate {

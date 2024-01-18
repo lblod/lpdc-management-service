@@ -143,6 +143,7 @@ export class QuadsToDomainMapper {
             this.competentAuthorities(id),
             this.executingAuthorityLevels(id),
             this.executingAuthorities(id),
+            this.publicationMedia(id),
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
             this.instanceStatusType(id),
