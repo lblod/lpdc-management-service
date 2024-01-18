@@ -19,6 +19,8 @@ import {
 import {NS} from "../../../src/driven/persistence/namespaces";
 import {aMinimalRequirementForInstance} from "../../core/domain/requirement-test-builder";
 import {aMinimalEvidenceForInstance} from "../../core/domain/evidence-test-builder";
+import {aMinimalProcedureForInstance} from "../../core/domain/procedure-test-builder";
+import {aMinimalWebsiteForInstance} from "../../core/domain/website-test-builder";
 
 describe('InstanceRepository', () => {
 
@@ -221,6 +223,58 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.title.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.description.en}"""@EN`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${instanceId}> <http://purl.org/vocab/cpsv#follows> <${InstanceTestBuilder.PROCEDURES[1].id}>`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].id}> a <http://purl.org/vocab/cpsv#Rule>`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[1].uuid}"""`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].title.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].description.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${InstanceTestBuilder.PROCEDURES[1].websites[1].id}>`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> a <http://schema.org/WebSite>`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[1].websites[1].uuid}"""`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].websites[1].title.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].websites[1].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].websites[1].description.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].websites[1].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://schema.org/url> """${InstanceTestBuilder.PROCEDURES[1].websites[1].url}"""`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${InstanceTestBuilder.PROCEDURES[1].websites[0].id}>`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> a <http://schema.org/WebSite>`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[1].websites[0].uuid}"""`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].websites[0].title.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].websites[0].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].websites[0].description.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].websites[0].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://schema.org/url> """${InstanceTestBuilder.PROCEDURES[1].websites[0].url}"""`,
+                    `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${instanceId}> <http://purl.org/vocab/cpsv#follows> <${InstanceTestBuilder.PROCEDURES[0].id}>`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].id}> a <http://purl.org/vocab/cpsv#Rule>`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[0].uuid}"""`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].title.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].description.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${InstanceTestBuilder.PROCEDURES[0].websites[1].id}>`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> a <http://schema.org/WebSite>`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[0].websites[1].uuid}"""`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].websites[1].title.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].websites[1].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].websites[1].description.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].websites[1].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://schema.org/url> """${InstanceTestBuilder.PROCEDURES[0].websites[1].url}"""`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${InstanceTestBuilder.PROCEDURES[0].websites[0].id}>`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> a <http://schema.org/WebSite>`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[0].websites[0].uuid}"""`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].websites[0].title.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].websites[0].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].websites[0].description.en}"""@EN`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].websites[0].description.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://schema.org/url> """${InstanceTestBuilder.PROCEDURES[0].websites[0].url}"""`,
+                    `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,
@@ -296,6 +350,69 @@ describe('InstanceRepository', () => {
             const actualConceptSnapshot = await repository.findById(bestuurseenheid, instance.id);
 
             expect(actualConceptSnapshot).toEqual(instance);
+        });
+
+        test('Verify minimal mappings - procedure without websites', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const procedure = aMinimalProcedureForInstance().build();
+
+            const instance = aMinimalInstance()
+                .withCreatedBy(bestuurseenheid.id)
+                .withProcedures([procedure])
+                .build();
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `<${instance.id}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instance.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${instance.uuid}"""`,
+                    `<${instance.id}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
+                    `<${instance.id}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instance.id}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instance.id}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
+                    `<${instance.id}> <http://purl.org/vocab/cpsv#follows> <${procedure.id}>`,
+                    `<${procedure.id}> a <http://purl.org/vocab/cpsv#Rule>`,
+                    `<${procedure.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${procedure.uuid}"""`,
+                    `<${procedure.id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                ]);
+
+            const actualInstance = await repository.findById(bestuurseenheid, instance.id);
+
+            expect(actualInstance).toEqual(instance);
+        });
+
+        test('Verify minimal mappings - procedure with minimal website', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const website = aMinimalWebsiteForInstance().build();
+            const procedure = aMinimalProcedureForInstance().withWebsites([website]).build();
+
+            const instance = aMinimalInstance()
+                .withCreatedBy(bestuurseenheid.id)
+                .withProcedures([procedure])
+                .build();
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `<${instance.id}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instance.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${instance.uuid}"""`,
+                    `<${instance.id}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
+                    `<${instance.id}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instance.id}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instance.id}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
+                    `<${instance.id}> <http://purl.org/vocab/cpsv#follows> <${procedure.id}>`,
+                    `<${procedure.id}> a <http://purl.org/vocab/cpsv#Rule>`,
+                    `<${procedure.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${procedure.uuid}"""`,
+                    `<${procedure.id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${procedure.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${procedure.websites[0].id}>`,
+                    `<${procedure.websites[0].id}> a <http://schema.org/WebSite>`,
+                    `<${procedure.websites[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${procedure.websites[0].uuid}"""`,
+                    `<${procedure.websites[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                ]);
+
+            const actualInstance = await repository.findById(bestuurseenheid, instance.id);
+
+            expect(actualInstance).toEqual(instance);
         });
 
         for (const type of Object.values(InstanceStatusType)) {

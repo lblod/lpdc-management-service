@@ -20,6 +20,13 @@ export function aMinimalWebsiteForConcept(): WebsiteTestBuilder {
         .withUrl(WebsiteTestBuilder.URL);
 }
 
+export function aMinimalWebsiteForInstance(): WebsiteTestBuilder {
+    const uniqueId = uuid();
+    return new WebsiteTestBuilder()
+        .withId(WebsiteTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId);
+}
+
 export function aFullWebsite(): WebsiteTestBuilder {
     const uniqueId = uuid();
     return new WebsiteTestBuilder()
@@ -61,6 +68,37 @@ export function anotherFullWebsite(aUuid: string): WebsiteTestBuilder {
                 WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_INFORMAL(aUuid),
                 WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_GENERATED_FORMAL(aUuid),
                 WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_GENERATED_INFORMAL(aUuid)))
+        .withUrl(WebsiteTestBuilder.ANOTHER_URL_TEMPLATE(aUuid));
+}
+
+export function aFullWebsiteForInstance(): WebsiteTestBuilder {
+    const uniqueId = uuid();
+    return new WebsiteTestBuilder()
+        .withId(WebsiteTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(LanguageString.of(
+            WebsiteTestBuilder.TITLE_EN,
+            undefined,
+            WebsiteTestBuilder.TITLE_NL_FORMAL))
+        .withDescription(
+            LanguageString.of(
+                WebsiteTestBuilder.DESCRIPTION_EN,
+                undefined,
+                WebsiteTestBuilder.DESCRIPTION_NL_FORMAL))
+        .withUrl(WebsiteTestBuilder.URL);
+}
+
+export function anotherFullWebsiteForInstance(aUuid: string): WebsiteTestBuilder {
+    return new WebsiteTestBuilder()
+        .withId(WebsiteTestBuilder.buildIri(aUuid))
+        .withTitle(LanguageString.of(
+            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_EN(aUuid),
+            undefined,
+            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_FORMAL(aUuid)))
+        .withDescription(LanguageString.of(
+            WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_EN(aUuid),
+            undefined,
+            WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_FORMAL(aUuid)))
         .withUrl(WebsiteTestBuilder.ANOTHER_URL_TEMPLATE(aUuid));
 }
 

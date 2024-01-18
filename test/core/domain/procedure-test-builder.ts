@@ -2,7 +2,12 @@ import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Procedure} from "../../../src/core/domain/procedure";
-import {aFullWebsite, anotherFullWebsite} from "./website-test-builder";
+import {
+    aFullWebsite,
+    aFullWebsiteForInstance,
+    anotherFullWebsite,
+    anotherFullWebsiteForInstance
+} from "./website-test-builder";
 import {Website} from "../../../src/core/domain/website";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
@@ -20,6 +25,13 @@ export function aMinimalProcedureForConcept(): ProcedureTestBuilder {
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(ProcedureTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build());
+}
+
+export function aMinimalProcedureForInstance(): ProcedureTestBuilder {
+    const uniqueId = uuid();
+    return new ProcedureTestBuilder()
+        .withId(ProcedureTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId);
 }
 
 export function aFullProcedure(): ProcedureTestBuilder {
@@ -66,6 +78,41 @@ export function anotherFullProcedure(): ProcedureTestBuilder {
         .withWebsites(ProcedureTestBuilder.ANOTHER_WEBSITES);
 }
 
+export function aFullProcedureForInstance(): ProcedureTestBuilder {
+    const uniqueId = uuid();
+    return new ProcedureTestBuilder()
+        .withId(ProcedureTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(LanguageString.of(
+            ProcedureTestBuilder.TITLE_EN,
+            undefined,
+            ProcedureTestBuilder.TITLE_NL_FORMAL
+        ))
+        .withDescription(
+            LanguageString.of(
+                ProcedureTestBuilder.DESCRIPTION_EN,
+                undefined,
+                ProcedureTestBuilder.DESCRIPTION_NL_FORMAL
+            ))
+        .withWebsites(ProcedureTestBuilder.WEBSITES_FOR_INSTANCE);
+}
+
+export function anotherFullProcedureForInstance() {
+    return new ProcedureTestBuilder()
+        .withId(ProcedureTestBuilder.buildIri(uuid()))
+        .withTitle(LanguageString.of(
+            ProcedureTestBuilder.ANOTHER_TITLE_EN,
+            undefined,
+            ProcedureTestBuilder.ANOTHER_TITLE_NL_FORMAL
+        ))
+        .withDescription(LanguageString.of(
+            ProcedureTestBuilder.ANOTHER_DESCRIPTION_EN,
+            undefined,
+            ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL
+        ))
+        .withWebsites(ProcedureTestBuilder.ANOTHER_WEBSITES_FOR_INSTANCE);
+}
+
 export class ProcedureTestBuilder {
 
     public static readonly TITLE = 'Procedure Title';
@@ -100,6 +147,8 @@ export class ProcedureTestBuilder {
 
     public static readonly WEBSITES = [aFullWebsite().build(), anotherFullWebsite(uuid()).build()];
     public static readonly ANOTHER_WEBSITES = [anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()];
+    public static readonly WEBSITES_FOR_INSTANCE = [aFullWebsiteForInstance().build(), anotherFullWebsiteForInstance(uuid()).build()];
+    public static readonly ANOTHER_WEBSITES_FOR_INSTANCE = [anotherFullWebsiteForInstance(uuid()).build(), anotherFullWebsiteForInstance(uuid()).build()];
 
     private id: Iri;
     private uuid: string | undefined;

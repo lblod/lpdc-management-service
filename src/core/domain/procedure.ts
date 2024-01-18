@@ -46,6 +46,16 @@ export class Procedure {
         );
     }
 
+    static forInstance(procedure: Procedure): Procedure {
+        return new Procedure(
+            procedure.id,
+            requiredValue(procedure.uuid, 'uuid'),
+            procedure.title,
+            procedure.description,
+            procedure.websites.map(Website.forInstance)
+        );
+    }
+
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,

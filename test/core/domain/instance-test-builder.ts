@@ -18,6 +18,9 @@ import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullRequirementForInstance, anotherFullRequirementForInstance} from "./requirement-test-builder";
 import {aFullEvidenceForInstance, anotherFullEvidenceForInstance} from "./evidence-test-builder";
+import {Procedure} from "../../../src/core/domain/procedure";
+import {aFullProcedureForInstance, anotherFullProcedureForInstance} from "./procedure-test-builder";
+import {aFullWebsiteForInstance, anotherFullWebsiteForInstance} from "./website-test-builder";
 
 export function aMinimalInstance(): InstanceTestBuilder {
     const uniqueId = uuid();
@@ -80,6 +83,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withYourEuropeCategories(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES)
         .withKeywords(InstanceTestBuilder.KEYWORDS)
         .withRequirements(InstanceTestBuilder.REQUIREMENTS)
+        .withProcedures(InstanceTestBuilder.PROCEDURES)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -148,6 +152,11 @@ export class InstanceTestBuilder {
         anotherFullRequirementForInstance().withUuid(uuid()).withEvidence(anotherFullEvidenceForInstance().withUuid(uuid()).build()).build()
     ];
 
+    public static readonly PROCEDURES = [
+        aFullProcedureForInstance().withUuid(uuid()).withWebsites([aFullWebsiteForInstance().withUuid(uuid()).build(), anotherFullWebsiteForInstance(uuid()).withUuid(uuid()).build()]).build(),
+        anotherFullProcedureForInstance().withUuid(uuid()).withWebsites([anotherFullWebsiteForInstance(uuid()).withUuid(uuid()).build(), anotherFullWebsiteForInstance(uuid()).withUuid(uuid()).build()]).build()
+    ];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -169,6 +178,7 @@ export class InstanceTestBuilder {
     private yourEuropeCategories: YourEuropeCategoryType[] = [];
     private keywords: LanguageString[] = [];
     private requirements: Requirement[] = [];
+    private procedures: Procedure[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -279,6 +289,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withProcedures(procedures: Procedure[]): InstanceTestBuilder {
+        this.procedures = procedures;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -322,6 +337,7 @@ export class InstanceTestBuilder {
             this.yourEuropeCategories,
             this.keywords,
             this.requirements,
+            this.procedures,
             this.dateCreated,
             this.dateModified,
             this.status,

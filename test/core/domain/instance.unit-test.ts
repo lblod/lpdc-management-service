@@ -17,6 +17,9 @@ import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullRequirement, RequirementTestBuilder} from "./requirement-test-builder";
 import {Evidence} from "../../../src/core/domain/evidence";
 import {EvidenceTestBuilder} from "./evidence-test-builder";
+import {Procedure} from "../../../src/core/domain/procedure";
+import {ProcedureTestBuilder} from "./procedure-test-builder";
+import {aMinimalLanguageString} from "./language-string-test-builder";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -136,6 +139,27 @@ describe('constructing', () => {
 
                 expect(() => aFullInstance().withRequirements([invalidRequirement]).build()).toThrow();
             });
+        });
+    });
+
+    describe('procedure ', () => {
+        test('valid procedure does not throw error', () => {
+            const uuidValue = uuid();
+            const validProcedure = Procedure.reconstitute(
+                ProcedureTestBuilder.buildIri(uuidValue),
+                uuidValue,
+                aMinimalLanguageString(ProcedureTestBuilder.TITLE).build(),
+                aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(),
+                []
+            );
+
+            expect(() => aFullInstance().withProcedures([validProcedure]).build()).not.toThrow();
+        });
+
+        test('invalid procedure does throw error', () => {
+            const invalidProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuid()), undefined, undefined, undefined, []);
+
+            expect(() => aFullInstance().withProcedures([invalidProcedure]).build()).toThrow();
         });
     });
 

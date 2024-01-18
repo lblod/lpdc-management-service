@@ -21,7 +21,7 @@ export class Website {
         this._uuid = uuid;
         this._title = title;
         this._description = description;
-        this._url = requiredValue(url, 'url');
+        this._url = url;
     }
 
     static forConcept(website: Website): Website {
@@ -30,7 +30,7 @@ export class Website {
             requiredValue(website.uuid, 'uuid'),
             requiredValue(website.title, 'title'),
             website.description,
-            website.url
+            requiredValue(website.url, 'url')
         );
     }
 
@@ -39,6 +39,16 @@ export class Website {
             website.id,
             undefined,
             requiredValue(website.title, 'title'),
+            website.description,
+            requiredValue(website.url, 'url')
+        );
+    }
+
+    static forInstance(website: Website): Website {
+        return new Website(
+            website.id,
+            requiredValue(website.uuid, 'uuid'),
+            website.title,
             website.description,
             website.url
         );
