@@ -147,7 +147,7 @@ app.get('/public-services/:publicServiceId/form/:formId', async function (req, r
     const formId = req.params["formId"];
 
     try {
-        const bundle = await retrieveForm(publicServiceId, formId);
+        const bundle = await retrieveForm(publicServiceId, formId, codeRepository);
 
         return res.status(200).json(bundle);
     } catch (e) {
@@ -275,7 +275,7 @@ app.post('/public-services/:publicServiceId/submit', async function (req, res): 
     const publicServiceId = req.params["publicServiceId"];
 
     try {
-        const response = await validateService(publicServiceId);
+        const response = await validateService(publicServiceId, codeRepository);
 
         if (response.errors.length) {
             return res.status(400).json({
@@ -322,7 +322,7 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/form/:formId', a
     const formId = req.params["formId"];
 
     try {
-        const bundle = await retrieveForm(conceptualPublicServiceId, formId);
+        const bundle = await retrieveForm(conceptualPublicServiceId, formId, codeRepository);
 
         return res.status(200).json(bundle);
     } catch (e) {

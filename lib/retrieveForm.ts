@@ -24,9 +24,10 @@ import {
     getLanguageVersionForInstance,
     selectLanguageVersionForConcept
 } from "./formalInformalChoice";
+import {CodeRepository} from "../src/core/port/driven/persistence/code-repository";
 
 //TODO LPDC-917: 'split up', is now being used from 2 already split up app.ts resource calls (one for concepts, one for instances)
-export async function retrieveForm(publicServiceId: string, formId: string): Promise<{
+export async function retrieveForm(publicServiceId: string, formId: string, codeRepository: CodeRepository): Promise<{
     form: string,
     meta: string,
     source: string,
@@ -94,66 +95,11 @@ export async function retrieveForm(publicServiceId: string, formId: string): Pro
         form += englishRequirementFormSnippets;
     }
 
-    const tailoredSchemes = FORM_MAPPING[formId] === "characteristics" ? await generateRuntimeConceptSchemes() : [];
+    const tailoredSchemes = FORM_MAPPING[formId] === "characteristics" ? await codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
     const meta = tailoredSchemes.join("\r\n");
     const source = bindingsToNT(sourceBindings).join("\r\n");
 
     return {form, meta, source, serviceUri};
-}
-
-/*
- * Generate codelists for all bestuurseenheden at runtime for the
- * "Uitvoerende Overheid" and "Bevoegde Overheid" fields in the
- * "Eigenschappen" tab of an LPDC public service form.
- * For example, if "Gemeente Aalter" is the current user,
- * they will be able to add the various"Gemeenten", "OCMW" and
- * other organizations within app-digitaal-loket.
- */
-async function generateRuntimeConceptSchemes(): Promise<any[]> {
-    //spliting in two because faster
-    const tailoredConceptQ = `
-    ${PREFIX.skos}
-    ${PREFIX.besluit}
-    CONSTRUCT {
-      ?bestuurseenheid a skos:Concept ;
-        skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored> ;
-        skos:prefLabel ?newLabel .
-    }
-    WHERE {
-      ?bestuurseenheid a besluit:Bestuurseenheid ;
-        skos:prefLabel ?bestuurseenheidLabel .
-
-      ?bestuurseenheid besluit:classificatie ?bestuurseenheidClassificatie .
-      ?bestuurseenheidClassificatie skos:prefLabel ?bestuurseenheidClassificatieLabel .
-
-      BIND(CONCAT(?bestuurseenheidLabel, " (", ?bestuurseenheidClassificatieLabel, ")") as ?newLabel)
-    }
-  `;
-
-    let tailoredConcept = await querySudo(tailoredConceptQ);
-    tailoredConcept = bindingsToNT(tailoredConcept.results.bindings);
-
-    const baseSchemeQ = `
-    ${PREFIX.skos}
-    ${PREFIX.dvcs}
-    ${PREFIX.rdfs}
-
-    CONSTRUCT {
-      ?s ?p ?o ;
-        skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored> .
-    }
-    WHERE {
-      ?s a skos:Concept ;
-        skos:inScheme dvcs:IPDCOrganisaties ;
-        rdfs:seeAlso <https://wegwijs.vlaanderen.be> ;
-        ?p ?o .
-    }
-  `;
-
-    let baseScheme = await querySudo(baseSchemeQ);
-    baseScheme = bindingsToNT(baseScheme.results.bindings);
-
-    return [...baseScheme, ...tailoredConcept];
 }
 
 function adjustLanguageOfForm(form: string, newLanguage: string): string {

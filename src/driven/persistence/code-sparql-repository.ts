@@ -46,5 +46,60 @@ export class CodeSparqlRepository implements CodeRepository {
         await this.querying.update(query);
     }
 
+    async loadIPDCOrganisatiesTailoredInTurtleFormat(): Promise<string[]> {
+        const bestuurseenheidTailoredAsIpdcOrganisatieConceptQuery = `
+            ${PREFIX.skos}
+            ${PREFIX.besluit}
+            CONSTRUCT {
+              ?bestuurseenheid a skos:Concept ;
+                skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored> ;
+                skos:prefLabel ?newLabel .
+            }
+            WHERE {
+                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
+                  ?bestuurseenheid a besluit:Bestuurseenheid ;
+                    skos:prefLabel ?bestuurseenheidLabel .
+            
+                  ?bestuurseenheid besluit:classificatie ?bestuurseenheidClassificatie .
+                  ?bestuurseenheidClassificatie skos:prefLabel ?bestuurseenheidClassificatieLabel .
+            
+                  BIND(CONCAT(?bestuurseenheidLabel, " (", ?bestuurseenheidClassificatieLabel, ")") as ?newLabel)
+               }
+            }
+          `;
+
+        const bestuurseenheidTailoredAsIpdcOrganisatieConceptResult = await this.querying.list(bestuurseenheidTailoredAsIpdcOrganisatieConceptQuery);
+        const bestuurseenheidTailoredAsIpdcOrganisatieTailoredConceptQuads
+            = this.querying.asQuads(bestuurseenheidTailoredAsIpdcOrganisatieConceptResult, PUBLIC_GRAPH);
+
+        const ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptQuery = `
+            ${PREFIX.skos}
+            ${PREFIX.dvcs}
+            ${PREFIX.rdfs}
+        
+            CONSTRUCT {
+              ?s ?p ?o ;
+                skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored> .
+            }
+            WHERE {
+                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {            
+                  ?s a skos:Concept ;
+                    skos:inScheme dvcs:IPDCOrganisaties ;
+                    rdfs:seeAlso <https://wegwijs.vlaanderen.be> ;
+                    ?p ?o .
+                }
+            }
+          `;
+
+        const ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptResult = await this.querying.list(ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptQuery);
+        const ipdcOrganisatiesConceptSchemesAsIpdcOrganisatieTailoredConceptQuads
+            = this.querying.asQuads(ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptResult, PUBLIC_GRAPH);
+
+        return [
+            ...bestuurseenheidTailoredAsIpdcOrganisatieTailoredConceptQuads.map(q => q.toNT()),
+            ...ipdcOrganisatiesConceptSchemesAsIpdcOrganisatieTailoredConceptQuads.map(q => q.toNT())];
+    }
+
+
 
 }

@@ -6,8 +6,10 @@ export interface CodeRepository {
 
     save(schema: CodeSchema, id: Iri, prefLabel: string, seeAlso: Iri): Promise<void>;
 
+    loadIPDCOrganisatiesTailoredInTurtleFormat(): Promise<string[]>;
+
 }
 
 export enum CodeSchema {
-    IPDCOrganisaties = 'IPDCOrganisaties',
+    IPDCOrganisaties = 'IPDCOrganisaties'
 }
