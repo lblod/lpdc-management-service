@@ -4,7 +4,13 @@ import {Instance} from "../../../src/core/domain/instance";
 import {buildBestuurseenheidIri, buildInstanceIri, buildSpatialRefNis2019Iri, randomNumber} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {InstanceStatusType, ProductType, TargetAudienceType, ThemeType} from "../../../src/core/domain/types";
+import {
+    CompetentAuthorityLevelType,
+    InstanceStatusType,
+    ProductType,
+    TargetAudienceType,
+    ThemeType
+} from "../../../src/core/domain/types";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
 
 export function aMinimalInstance(): InstanceTestBuilder {
@@ -60,6 +66,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withType(InstanceTestBuilder.TYPE)
         .withTargetAudiences(InstanceTestBuilder.TARGET_AUDIENCES)
         .withThemes(InstanceTestBuilder.THEMES)
+        .withCompetentAuthorityLevels(InstanceTestBuilder.COMPETENT_AUTHORITY_LEVELS)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -116,6 +123,8 @@ export class InstanceTestBuilder {
 
     public static readonly THEMES = [ThemeType.BOUWENWONEN, ThemeType.MILIEUENERGIE, ThemeType.WELZIJNGEZONDHEID];
 
+    public static readonly COMPETENT_AUTHORITY_LEVELS = [CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.EUROPEES, CompetentAuthorityLevelType.FEDERAAL];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -129,6 +138,7 @@ export class InstanceTestBuilder {
     private type: ProductType | undefined;
     private targetAudiences: TargetAudienceType[] = [];
     private themes: ThemeType[] = [];
+    private competentAuthorityLevels: CompetentAuthorityLevelType[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -201,6 +211,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withCompetentAuthorityLevels(competentAuthorityLevels: CompetentAuthorityLevelType[]): InstanceTestBuilder {
+        this.competentAuthorityLevels = competentAuthorityLevels;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -246,6 +261,7 @@ export class InstanceTestBuilder {
             this.type,
             this.targetAudiences,
             this.themes,
+            this.competentAuthorityLevels,
             this.dateCreated,
             this.dateModified,
             this.status,

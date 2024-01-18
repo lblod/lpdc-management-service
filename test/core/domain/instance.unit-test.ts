@@ -3,7 +3,7 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {buildSpatialRefNis2019Iri} from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
-import {TargetAudienceType, ThemeType} from "../../../src/core/domain/types";
+import {CompetentAuthorityLevelType, TargetAudienceType, ThemeType} from "../../../src/core/domain/types";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -38,6 +38,11 @@ describe('constructing', () => {
     test('Themes with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withThemes([ThemeType.WELZIJNGEZONDHEID, ThemeType.WELZIJNGEZONDHEID]);
         expect(() => instanceTestBuilder.build()).toThrow(new Error('themes should not contain duplicates'));
+    });
+
+    test('CompetentAuthorityLevels with duplicates throws error', () => {
+        const instanceTestBuilder = aFullInstance().withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.LOKAAL]);
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('competentAuthorityLevels should not contain duplicates'));
     });
 
     describe('dateCreated', () => {

@@ -139,6 +139,7 @@ export class QuadsToDomainMapper {
             this.productType(id),
             this.targetAudiences(id),
             this.themes(id),
+            this.competentAuthorityLevels(id),
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
             this.instanceStatusType(id),

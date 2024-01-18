@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
-import {InstanceStatusType, ProductType, TargetAudienceType, ThemeType} from "./types";
+import {CompetentAuthorityLevelType, InstanceStatusType, ProductType, TargetAudienceType, ThemeType} from "./types";
 import {asSortedArray} from "./shared/collections-helper";
 
 export class Instance {
@@ -20,6 +20,7 @@ export class Instance {
     private readonly _type: ProductType | undefined;
     private readonly _targetAudiences: TargetAudienceType[];
     private readonly _themes: ThemeType[];
+    private readonly _competentAuthorityLevels: CompetentAuthorityLevelType[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -41,6 +42,7 @@ export class Instance {
                 type: ProductType | undefined,
                 targetAudiences: TargetAudienceType[],
                 themes: ThemeType[],
+                competentAuthorityLevels: CompetentAuthorityLevelType[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -62,6 +64,7 @@ export class Instance {
         this._type = type;
         this._targetAudiences = requireNoDuplicates(asSortedArray(targetAudiences), 'targetAudiences');
         this._themes = requireNoDuplicates(asSortedArray(themes), 'themes');
+        this._competentAuthorityLevels = requireNoDuplicates(asSortedArray(competentAuthorityLevels),'competentAuthorityLevels');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -120,6 +123,10 @@ export class Instance {
 
     get themes(): ThemeType[] {
         return this._themes;
+    }
+
+    get competentAuthorityLevels(): CompetentAuthorityLevelType[] {
+        return this._competentAuthorityLevels;
     }
 
     get dateCreated(): FormatPreservingDate {
