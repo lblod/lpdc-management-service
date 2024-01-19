@@ -105,7 +105,6 @@ describe('BestuurseenheidRepository', () => {
                     `<${spatial3Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties>`,
                     `<${spatial4Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties>`,
                 ]);
-            //TODO LPDC-917: what happens if there are no spatials attached ? is that a valiation error? or just a remark in the data integrityt est ?
 
             const actualBestuurseenheid = await repository.findById(bestuurseenheidId);
 

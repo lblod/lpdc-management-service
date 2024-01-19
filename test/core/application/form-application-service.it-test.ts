@@ -23,8 +23,8 @@ describe('Form application service tests', () => {
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = mock<FormDefinitionRepository>();
         const codeRepository = mock<CodeRepository>();
-        const selectFormLanguageDomainService = new SelectFormLanguageDomainService();
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+        const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
         const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
 
         const formApplicationService = new FormApplicationService(conceptRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, formalInformalChoiceRepository);

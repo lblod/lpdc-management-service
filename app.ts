@@ -82,7 +82,9 @@ const newInstanceDomainService =
     );
 
 const selectFormLanguageDomainService =
-    new SelectFormLanguageDomainService();
+    new SelectFormLanguageDomainService(
+        formalInformalChoiceRepository,
+    );
 
 const formApplicationService =
     new FormApplicationService(
@@ -333,9 +335,8 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/dutch-language-v
         const session: Session = req['session'];
         const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
         const concept = await conceptRepository.findById(conceptId);
-        const formalInformalChoice = await formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
 
-        const languageVersion = selectFormLanguageDomainService.selectForConcept(concept, formalInformalChoice);
+        const languageVersion = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
         return res.json({languageVersion: languageVersion});
     } catch (e) {
         console.error(e);

@@ -1,12 +1,23 @@
 import {Concept} from "./concept";
-import {FormalInformalChoice} from "./formal-informal-choice";
 import {Language} from "./language";
 import {ChosenFormType} from "./types";
+import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
+import {Bestuurseenheid} from "./bestuurseenheid";
+import {FormalInformalChoice} from "./formal-informal-choice";
 
 export class SelectFormLanguageDomainService {
 
-    //TODO LPDC-917: we can move the loading for the formal informal choice in this service, and provide a bestuurseenheid instaed ... its better encapsulated then.
-    public selectForConcept(concept: Concept, formalInformalChoice: FormalInformalChoice | undefined): Language {
+    private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
+
+    constructor(
+        formalInformalChoiceRepository: FormalInformalChoiceRepository,
+    ) {
+        this._formalInformalChoiceRepository = formalInformalChoiceRepository;
+    }
+
+    public async selectForConcept(concept: Concept, bestuurseenheid: Bestuurseenheid): Promise<Language> {
+        const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
+
         const conceptLanguages = concept.conceptDutchLanguages;
         if (formalInformalChoice?.chosenForm === ChosenFormType.INFORMAL) {
             if (conceptLanguages.includes(Language.INFORMAL)) {

@@ -99,7 +99,7 @@ describe('authenticateAndAuthorizeRequest', () => {
         expect(req['session']).toBeUndefined();
         expect(res['status']).toHaveBeenCalledWith(500);
         expect(res['set']).toHaveBeenCalledWith('content-type', 'application/json');
-        expect(res['send']).toHaveBeenCalledWith('Could not validate session');
+        expect(res['send']).toHaveBeenCalledWith('Could not execute request');
         expect(next).not.toHaveBeenCalled();
     });
 
