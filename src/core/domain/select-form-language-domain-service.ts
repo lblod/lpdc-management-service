@@ -5,6 +5,7 @@ import {ChosenFormType} from "./types";
 
 export class SelectFormLanguageDomainService {
 
+    //TODO LPDC-917: we can move the loading for the formal informal choice in this service, and provide a bestuurseenheid instaed ... its better encapsulated then.
     public selectForConcept(concept: Concept, formalInformalChoice: FormalInformalChoice | undefined): Language {
         const conceptLanguages = concept.conceptDutchLanguages;
         if (formalInformalChoice?.chosenForm === ChosenFormType.INFORMAL) {

@@ -93,4 +93,8 @@ export class ConceptSparqlRepository implements ConceptRepository {
 
         await this.querying.update(query);
     }
+
+    asTurtleFormat(concept: Concept): string[] {
+        return new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(concept).map(s => s.toNT());
+    }
 }

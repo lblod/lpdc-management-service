@@ -11,4 +11,6 @@ export interface ConceptRepository {
 
     update(concept: Concept, old: Concept): Promise<void>;
 
+    asTurtleFormat(concept: Concept): string[];
+
 }

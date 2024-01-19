@@ -1,0 +1,148 @@
+import {FormApplicationService} from "../../../src/core/application/form-application-service";
+import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
+import {TEST_SPARQL_ENDPOINT} from "../../test.config";
+import {aFullConcept} from "../domain/concept-test-builder";
+import {mock} from 'jest-mock-extended';
+import {CodeRepository} from "../../../src/core/port/driven/persistence/code-repository";
+import {FormDefinitionRepository} from "../../../src/core/port/driven/persistence/form-definition-repository";
+import {SelectFormLanguageDomainService} from "../../../src/core/domain/select-form-language-domain-service";
+import {
+    FormalInformalChoiceSparqlTestRepository
+} from "../../driven/persistence/formal-informal-choice-sparql-test-repository";
+import {aFormalInformalChoice} from "../domain/formal-informal-choice-test-builder";
+import {ChosenFormType, PublicationMediumType} from "../../../src/core/domain/types";
+import {aBestuurseenheid} from "../domain/bestuureenheid-test-builder";
+import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
+import {Language} from "../../../src/core/domain/language";
+import {LanguageString} from "../../../src/core/domain/language-string";
+
+describe('Form application service tests', () => {
+
+    describe('loadConceptForm', () => {
+
+        const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+        const formDefinitionRepository = mock<FormDefinitionRepository>();
+        const codeRepository = mock<CodeRepository>();
+        const selectFormLanguageDomainService = new SelectFormLanguageDomainService();
+        const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+        const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+
+        const formApplicationService = new FormApplicationService(conceptRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, formalInformalChoiceRepository);
+
+        test('can load a inhoud form for a concept in correct language', async () => {
+            const concept =
+                aFullConcept()
+                    .withTitle(
+                        LanguageString.of(undefined, 'nl', undefined, 'title informal', 'title generated formal', undefined)
+                    )
+                    .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
+                    .build();
+            await conceptRepository.save(concept);
+
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .build();
+            bestuurseenheidRepository.save(bestuurseenheid);
+
+            const formalInformalChoice =
+                aFormalInformalChoice()
+                    .withChosenForm(ChosenFormType.INFORMAL)
+                    .build();
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            formDefinitionRepository.loadFormDefinition.calledWith('cd0b5eba-33c1-45d9-aed9-75194c3728d3', Language.INFORMAL, false).mockReturnValue('formdefinition');
+
+            const {
+                form,
+                meta,
+                source,
+                serviceUri
+            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, 'cd0b5eba-33c1-45d9-aed9-75194c3728d3');
+
+            expect(form).toEqual('formdefinition');
+            expect(meta).toEqual('');
+            expect(source).toEqual(conceptRepository.asTurtleFormat(concept).join("\r\n"));
+            expect(source).toContain(`<${concept.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> .`);
+            expect(serviceUri).toEqual(concept.id.value);
+        });
+
+        test('can load a inhoud form for a concept in correct language and add english requirements if publication medium is your europe', async () => {
+            const concept =
+                aFullConcept()
+                    .withTitle(
+                        LanguageString.of(undefined, 'nl', undefined, 'title informal', 'title generated formal', undefined)
+                    )
+                    .withPublicationMedia([PublicationMediumType.YOUREUROPE])
+                    .build();
+            await conceptRepository.save(concept);
+
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .build();
+            bestuurseenheidRepository.save(bestuurseenheid);
+
+            const formalInformalChoice =
+                aFormalInformalChoice()
+                    .withChosenForm(ChosenFormType.INFORMAL)
+                    .build();
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            formDefinitionRepository.loadFormDefinition.calledWith('cd0b5eba-33c1-45d9-aed9-75194c3728d3', Language.INFORMAL, true).mockReturnValue('formdefinition with english requirements');
+
+            const {
+                form,
+                meta,
+                source,
+                serviceUri
+            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, 'cd0b5eba-33c1-45d9-aed9-75194c3728d3');
+
+            expect(form).toEqual('formdefinition with english requirements');
+            expect(meta).toEqual('');
+            expect(source).toEqual(conceptRepository.asTurtleFormat(concept).join("\r\n"));
+            expect(source).toContain(`<${concept.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> .`);
+            expect(serviceUri).toEqual(concept.id.value);
+
+        });
+
+        test('can load a characteristics form for a concept in correct language', async () => {
+            const concept =
+                aFullConcept()
+                    .withTitle(
+                        LanguageString.of(undefined, 'nl', undefined, 'title informal', 'title generated formal', undefined)
+                    )
+                    .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
+                    .build();
+            await conceptRepository.save(concept);
+
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .build();
+            bestuurseenheidRepository.save(bestuurseenheid);
+
+            const formalInformalChoice =
+                aFormalInformalChoice()
+                    .withChosenForm(ChosenFormType.INFORMAL)
+                    .build();
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            formDefinitionRepository.loadFormDefinition.calledWith('149a7247-0294-44a5-a281-0a4d3782b4fd', Language.INFORMAL, false).mockReturnValue('formdefinition');
+            codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
+
+            const {
+                form,
+                meta,
+                source,
+                serviceUri
+            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, '149a7247-0294-44a5-a281-0a4d3782b4fd');
+
+            expect(form).toEqual('formdefinition');
+            expect(meta).toEqual('org1 a concept.\r\norg2 a concept.');
+            expect(source).toEqual(conceptRepository.asTurtleFormat(concept).join("\r\n"));
+            expect(source).toContain(`<${concept.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> .`);
+            expect(serviceUri).toEqual(concept.id.value);
+
+        });
+
+    });
+
+});
