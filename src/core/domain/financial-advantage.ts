@@ -39,6 +39,15 @@ export class FinancialAdvantage {
         );
     }
 
+    static forInstance(financialAdvantage: FinancialAdvantage): FinancialAdvantage {
+        return new FinancialAdvantage(
+            financialAdvantage.id,
+            requiredValue(financialAdvantage.uuid, 'uuid'),
+            financialAdvantage.title,
+            financialAdvantage.description
+        );
+    }
+
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,

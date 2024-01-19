@@ -62,6 +62,36 @@ export function anotherFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
                 FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
 }
 
+export function aFullFinancialAdvantageForInstance(): FinancialAdvantageTestBuilder {
+    const uniqueId = uuid();
+    return new FinancialAdvantageTestBuilder()
+        .withId(FinancialAdvantageTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(LanguageString.of(
+            FinancialAdvantageTestBuilder.TITLE_EN,
+            undefined,
+            FinancialAdvantageTestBuilder.TITLE_NL_FORMAL))
+        .withDescription(LanguageString.of(
+            FinancialAdvantageTestBuilder.DESCRIPTION_EN,
+            undefined,
+            FinancialAdvantageTestBuilder.DESCRIPTION_NL_FORMAL));
+}
+
+export function anotherFullFinancialAdvantageForInstance(): FinancialAdvantageTestBuilder {
+    const uniqueId = uuid();
+    return new FinancialAdvantageTestBuilder()
+        .withId(FinancialAdvantageTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withTitle(LanguageString.of(
+            FinancialAdvantageTestBuilder.ANOTHER_TITLE_EN,
+            undefined,
+            FinancialAdvantageTestBuilder.ANOTHER_TITLE_NL_FORMAL))
+        .withDescription(LanguageString.of(
+            FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_EN,
+            undefined,
+            FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL));
+}
+
 export class FinancialAdvantageTestBuilder {
 
     public static readonly TITLE = 'Financial Advantage Title';

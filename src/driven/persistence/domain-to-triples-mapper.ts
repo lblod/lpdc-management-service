@@ -131,6 +131,7 @@ export class DomainToTriplesMapper {
             ...this.procedures(instance.id, instance.procedures),
             ...this.websites(instance.id, NS.rdfs('seeAlso'), instance.websites),
             ...this.costs(instance.id, instance.costs),
+            ...this.financialAdvantages(instance.id, instance.financialAdvantages),
             instance.dateCreated ? this.buildQuad(namedNode(instance.id.value), NS.dct('created'), literal(instance.dateCreated.value, NS.xsd('dateTime'))) : undefined,
             instance.dateModified ? this.buildQuad(namedNode(instance.id.value), NS.dct('modified'), literal(instance.dateModified.value, NS.xsd('dateTime'))) : undefined,
             this.buildQuad(namedNode(instance.id.value), NS.adms('status'), namedNode(this.enumToIri(instance.status, NS.concepts.instanceStatus).value)),

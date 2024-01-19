@@ -150,6 +150,7 @@ export class QuadsToDomainMapper {
             this.procedures(id),
             this.websites(id),
             this.costs(id),
+            this.financialAdvantages(id),
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
             this.instanceStatusType(id),

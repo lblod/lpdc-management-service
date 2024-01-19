@@ -22,6 +22,10 @@ import {ProcedureTestBuilder} from "./procedure-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {Website} from "../../../src/core/domain/website";
 import {WebsiteTestBuilder} from "./website-test-builder";
+import {Cost} from "../../../src/core/domain/cost";
+import {CostTestBuilder} from "./cost-test-builder";
+import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
+import {FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -182,6 +186,42 @@ describe('constructing', () => {
             const invalidWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
 
             expect(() => aFullInstance().withWebsites([invalidWebsite]).build()).toThrow();
+        });
+    });
+
+    describe('cost ', () => {
+        test('valid cost for concept does not throw error', () => {
+            const uuidValue = uuid();
+            const validCost = Cost.reconstitute(
+                CostTestBuilder.buildIri(uuidValue),
+                uuidValue,
+                aMinimalLanguageString(CostTestBuilder.TITLE).build(),
+                aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build()
+            );
+
+            expect(() => aFullInstance().withCosts([validCost]).build()).not.toThrow();
+        });
+
+        test('invalid cost for concept does throw error', () => {
+            const invalidCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
+
+            expect(() => aFullInstance().withCosts([invalidCost]).build()).toThrow();
+        });
+    });
+
+    describe('financialAdvantage ', () => {
+        test('valid financialAdvantage for concept does not throw error', () => {
+            const uuidValue = uuid();
+            const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
+                aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
+
+            expect(() => aFullInstance().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
+        });
+
+        test('invalid financialAdvantage for concept does throw error', () => {
+            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
+
+            expect(() => aFullInstance().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
         });
     });
 

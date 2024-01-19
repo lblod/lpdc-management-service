@@ -24,6 +24,11 @@ import {aFullWebsiteForInstance, anotherFullWebsiteForInstance} from "./website-
 import {Website} from "../../../src/core/domain/website";
 import {Cost} from "../../../src/core/domain/cost";
 import {aFullCostForInstance, anotherFullCostForInstance} from "./cost-test-builder";
+import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
+import {
+    aFullFinancialAdvantageForInstance,
+    anotherFullFinancialAdvantageForInstance
+} from "./financial-advantage-test-builder";
 
 export function aMinimalInstance(): InstanceTestBuilder {
     const uniqueId = uuid();
@@ -89,6 +94,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withProcedures(InstanceTestBuilder.PROCEDURES)
         .withWebsites(InstanceTestBuilder.WEBSITES)
         .withCosts(InstanceTestBuilder.COSTS)
+        .withFinancialAdvantages(InstanceTestBuilder.FINANCIAL_ADVANTAGES)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -166,6 +172,8 @@ export class InstanceTestBuilder {
 
     public static readonly COSTS = [aFullCostForInstance().withUuid(uuid()).build(), anotherFullCostForInstance().withUuid(uuid()).build()];
 
+    public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantageForInstance().build(), anotherFullFinancialAdvantageForInstance().build()];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -190,6 +198,7 @@ export class InstanceTestBuilder {
     private procedures: Procedure[] = [];
     private websites: Website[] = [];
     private costs: Cost[] = [];
+    private financialAdvantages: FinancialAdvantage[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -315,6 +324,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withFinancialAdvantages(financialAdvantages: FinancialAdvantage[]): InstanceTestBuilder {
+        this.financialAdvantages = financialAdvantages;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -361,6 +375,7 @@ export class InstanceTestBuilder {
             this.procedures,
             this.websites,
             this.costs,
+            this.financialAdvantages,
             this.dateCreated,
             this.dateModified,
             this.status,

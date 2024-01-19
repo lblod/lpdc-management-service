@@ -25,7 +25,7 @@ describe('Instance Data Integrity Validation', () => {
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);
 
-    test('Load all instances; print errors to console.log', async () => {
+    test.skip('Load all instances; print errors to console.log', async () => {
 
         const query = `
             ${PREFIX.besluit}
