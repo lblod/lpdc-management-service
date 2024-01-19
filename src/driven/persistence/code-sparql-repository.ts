@@ -4,6 +4,7 @@ import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {sparqlEscapeString, sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {Iri} from "../../core/domain/shared/iri";
 import {NS} from "./namespaces";
+import {extractResultsFromAllSettled} from "../../../platform/promises";
 
 export class CodeSparqlRepository implements CodeRepository {
 
@@ -106,12 +107,3 @@ export class CodeSparqlRepository implements CodeRepository {
     }
 
 }
-
-//TODO LPDC-917: move method into shared / infra?
-export const extractResultsFromAllSettled = async <T>(promises: Promise<T>[]): Promise<T[]> => {
-    const results = await Promise.allSettled(promises);
-    if (results.some(result => result.status === 'rejected')) {
-        throw new Error('Some promises were rejected');
-    }
-    return results.map(result => (result as PromiseFulfilledResult<T>).value);
-};

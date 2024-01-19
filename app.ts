@@ -17,7 +17,7 @@ import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address
 import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
 import {getLanguageVersionOfInstance} from "./lib/getInstanceLanguageVersion";
 import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
-import LPDCError from "./utils/lpdc-error";
+import LPDCError from "./platform/lpdc-error";
 import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "./src/driven/persistence/concept-snapshot-sparql-repository";
@@ -38,7 +38,7 @@ import {CodeSparqlRepository} from "./src/driven/persistence/code-sparql-reposit
 import {InstanceSparqlRepository} from "./src/driven/persistence/instance-sparql-repository";
 import {NewInstanceDomainService} from "./src/core/domain/new-instance-domain-service";
 import {Session} from "./src/core/domain/session";
-import {authenticateAndAuthorizeRequest} from "./utils/session-utils";
+import {authenticateAndAuthorizeRequest} from "./src/driving/sessions";
 import {FormDefinitionFileRepository} from "./src/driven/persistence/form-definition-file-repository";
 import {serviceUriForId} from "./lib/commonQueries";
 import {SelectFormLanguageDomainService} from "./src/core/domain/select-form-language-domain-service";

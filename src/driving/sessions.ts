@@ -1,8 +1,8 @@
 import {querySudo} from '@lblod/mu-auth-sudo';
-import {sparqlEscapeUri} from '../mu-helper';
-import {Iri} from "../src/core/domain/shared/iri";
-import {SessionRoleType} from "../src/core/domain/session";
-import {SessionRepository} from "../src/core/port/driven/persistence/session-repository";
+import {sparqlEscapeUri} from '../../mu-helper';
+import {Iri} from "../core/domain/shared/iri";
+import {SessionRoleType} from "../core/domain/session";
+import {SessionRepository} from "../core/port/driven/persistence/session-repository";
 
 //TODO LPDC-917: remove ...
 export async function isAllowedForLPDC(sessionUri: string): Promise<boolean> {
@@ -14,7 +14,6 @@ export async function isAllowedForLPDC(sessionUri: string): Promise<boolean> {
     return (await querySudo(queryStr)).boolean;
 }
 
-//TODO LPDC-917: find a better place for these type of functions ...
 export const authenticateAndAuthorizeRequest = (sessionRepository: SessionRepository) => async (req, res, next) => {
     try {
         const sessionIri: string | undefined = req.headers['mu-session-id'] as string;

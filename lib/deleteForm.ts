@@ -15,7 +15,7 @@ import {
     loadWebsites,
     serviceUriForId
 } from './commonQueries';
-import {isAllowedForLPDC} from '../utils/session-utils';
+import {isAllowedForLPDC} from '../src/driving/sessions';
 import {getScopedGraphsForStatement} from '../utils/common';
 import {updateSudo} from '@lblod/mu-auth-sudo';
 import {SessionSparqlRepository} from "../src/driven/persistence/session-sparql-repository";

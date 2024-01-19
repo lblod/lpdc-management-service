@@ -1,4 +1,4 @@
-import {authenticateAndAuthorizeRequest} from "../../utils/session-utils";
+import {authenticateAndAuthorizeRequest} from "../../src/driving/sessions";
 import {SessionSparqlTestRepository} from "../driven/persistence/session-sparql-test-repository";
 import {TEST_SPARQL_ENDPOINT} from "../test.config";
 import {buildSessionIri} from "../core/domain/iri-test-builder";

@@ -21,33 +21,25 @@ import {
     findDutchLanguageVersionsOfTriples,
     getChosenForm,
     getLanguageVersionForInstance,
-    selectLanguageVersionForConcept
 } from "./formalInformalChoice";
 import {CodeRepository} from "../src/core/port/driven/persistence/code-repository";
 import {FormDefinitionRepository} from "../src/core/port/driven/persistence/form-definition-repository";
 import {FormType} from "../src/core/domain/types";
 
-export async function retrieveForm(publicServiceId: string, formType: FormType, codeRepository: CodeRepository, formDefinitionRepository: FormDefinitionRepository): Promise<{
+export async function retrieveForm(publicServiceUuid: string, formType: FormType, codeRepository: CodeRepository, formDefinitionRepository: FormDefinitionRepository): Promise<{
     form: string,
     meta: string,
     source: string,
     serviceUri: string
 }> {
 
-    let isConceptualPublicService = false;
-    let serviceUri = await serviceUriForId(publicServiceId);
+    const serviceUri = await serviceUriForId(publicServiceUuid);
 
     if (!serviceUri) {
-        serviceUri = await serviceUriForId(publicServiceId, 'lpdcExt:ConceptualPublicService');
-
-        if (serviceUri) {
-            isConceptualPublicService = true;
-        } else {
-            throw `Service URI not found for id ${publicServiceId}`;
-        }
+        throw `Service URI not found for id ${publicServiceUuid}`;
     }
 
-    const type = isConceptualPublicService ? 'lpdcExt:ConceptualPublicService' : 'cpsv:PublicService';
+    const type = 'cpsv:PublicService';
 
     const results = [];
     results.push(await loadEvidences(serviceUri, {type}));
@@ -78,14 +70,8 @@ export async function retrieveForm(publicServiceId: string, formType: FormType, 
     const isYourEurope = (await querySudo(publicationChannelQuery)).boolean;
 
     const chosenForm: string | undefined = getChosenForm(await loadFormalInformalChoice());
-    let languageForChosenForm: string;
-    if (isConceptualPublicService) {
-        const conceptLanguages = findDutchLanguageVersionsOfTriples(sourceBindings);
-        languageForChosenForm = selectLanguageVersionForConcept(conceptLanguages, chosenForm);
-    } else {
-        const existingLanguage = findDutchLanguageVersionsOfTriples(sourceBindings)[0];
-        languageForChosenForm = existingLanguage ?? getLanguageVersionForInstance(chosenForm);
-    }
+    const existingLanguage = findDutchLanguageVersionsOfTriples(sourceBindings)[0];
+    const languageForChosenForm = existingLanguage ?? getLanguageVersionForInstance(chosenForm);
 
     const form = formDefinitionRepository.loadFormDefinition(formType, languageForChosenForm, isYourEurope);
 
