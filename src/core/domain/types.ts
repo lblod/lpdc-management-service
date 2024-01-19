@@ -206,3 +206,8 @@ export enum ChosenFormType {
     INFORMAL = 'informal',
     FORMAL = 'formal',
 }
+
+export enum FormType {
+    CONTENT = 'content',
+    CHARACTERISTICS = 'characteristics',
+}

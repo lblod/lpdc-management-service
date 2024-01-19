@@ -5,8 +5,7 @@ import {CodeRepository} from "../port/driven/persistence/code-repository";
 import {SelectFormLanguageDomainService} from "../domain/select-form-language-domain-service";
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
 import {Bestuurseenheid} from "../domain/bestuurseenheid";
-import {PublicationMediumType} from "../domain/types";
-import {FORM_MAPPING} from "../../../config";
+import {FormType, PublicationMediumType} from "../domain/types";
 
 export class FormApplicationService {
 
@@ -29,7 +28,7 @@ export class FormApplicationService {
         this._formalInformalChoiceRepository = formalInformalChoiceRepository;
     }
 
-    async loadConceptForm(bestuurseenheid: Bestuurseenheid, conceptId: Iri, formId: string): Promise<{
+    async loadConceptForm(bestuurseenheid: Bestuurseenheid, conceptId: Iri, formType: FormType): Promise<{
         form: string,
         meta: string,
         source: string,
@@ -41,9 +40,9 @@ export class FormApplicationService {
         const languageForForm = this._selectFormLanguageDomainService.selectForConcept(concept, formalInformalChoice);
 
         const isEnglishRequired = concept.publicationMedia.includes(PublicationMediumType.YOUREUROPE);
-        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formId, languageForForm, isEnglishRequired);
+        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm, isEnglishRequired);
 
-        const tailoredSchemes =  FORM_MAPPING[formId] === 'characteristics' ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
+        const tailoredSchemes =  formType === FormType.CHARACTERISTICS ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
 
         return {
             form: formDefinition,

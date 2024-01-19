@@ -1,4 +1,4 @@
-import {FORM_MAPPING, FORM_MAPPING_TRANSLATIONS} from '../config';
+import {FORM_ID_TO_TYPE_MAPPING, FORM_MAPPING_TRANSLATIONS} from '../config';
 import ForkingStore from "forking-store";
 import * as rdflib from 'rdflib';
 import {retrieveForm} from './retrieveForm';
@@ -7,21 +7,23 @@ import {loadContactPointsAddresses} from "./commonQueries";
 import {uniq} from "lodash";
 import {CodeRepository} from "../src/core/port/driven/persistence/code-repository";
 import {FormDefinitionRepository} from "../src/core/port/driven/persistence/form-definition-repository";
+import {FormType} from "../src/core/domain/types";
 
 const FORM = rdflib.Namespace('http://lblod.data.gift/vocabularies/forms/');
 const RDF = rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 
 
 export async function validateService(publicServiceId: string, codeRepository: CodeRepository, formDefinitionRepository: FormDefinitionRepository): Promise<{ errors: any[] }> {
-    const formIds = Object.keys(FORM_MAPPING);
+    const formIds = Object.keys(FORM_ID_TO_TYPE_MAPPING);
     const forms = [];
 
-    for (const id of formIds) {
-        const form = await retrieveForm(publicServiceId, id, codeRepository, formDefinitionRepository);
+    for (const formId of formIds) {
+        const formType = FORM_ID_TO_TYPE_MAPPING[formId];
+        const form = await retrieveForm(publicServiceId, formType, codeRepository, formDefinitionRepository);
         forms.push({
-            type: FORM_MAPPING[id],
+            type: formType,
             form: form,
-            id: id,
+            id: formId,
             serviceUri: form.serviceUri
         });
     }
@@ -56,7 +58,7 @@ export async function validateService(publicServiceId: string, codeRepository: C
             FORM_GRAPHS.formGraph
         );
 
-        if (FORM_MAPPING[form.id] === 'content') {
+        if (form.type === FormType.CONTENT) {
             const addressesAreValid = await validateAddresses(form.serviceUri);
             if (!addressesAreValid) {
                 response.errors.push({

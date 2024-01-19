@@ -1,3 +1,5 @@
+import {FormType} from "./src/core/domain/types";
+
 const FORM_STATUS_ONTWERP = 'http://lblod.data.gift/concepts/instance-status/ontwerp';
 const APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH;
 
@@ -13,10 +15,9 @@ const ADRESSEN_REGISTER_API_KEY = process.env.ADRESSEN_REGISTER_API_KEY;
 
 const FEATURE_FLAG_ATOMIC_UPDATE = process.env.FEATURE_FLAG_ATOMIC_UPDATE == 'true' || false;
 
-//TODO LPDC-917: move to domain ...
-const FORM_MAPPING = {
-    "cd0b5eba-33c1-45d9-aed9-75194c3728d3": "content",
-    "149a7247-0294-44a5-a281-0a4d3782b4fd": "characteristics",
+const FORM_ID_TO_TYPE_MAPPING = {
+    "cd0b5eba-33c1-45d9-aed9-75194c3728d3": FormType.CONTENT,
+    "149a7247-0294-44a5-a281-0a4d3782b4fd": FormType.CHARACTERISTICS,
 };
 
 const FORM_MAPPING_TRANSLATIONS = {
@@ -106,7 +107,7 @@ export {
     FORM_STATUS_ONTWERP,
     APPLICATION_GRAPH,
     USER_SESSIONS_GRAPH,
-    FORM_MAPPING,
+    FORM_ID_TO_TYPE_MAPPING,
     FORM_MAPPING_TRANSLATIONS,
     PREFIXES,
     PREFIX,

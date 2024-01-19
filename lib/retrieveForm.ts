@@ -1,6 +1,6 @@
 import {querySudo} from '@lblod/mu-auth-sudo';
 import {sparqlEscapeUri} from '../mu-helper';
-import {FORM_MAPPING, PREFIX} from '../config';
+import {PREFIX} from '../config';
 import {bindingsToNT} from '../utils/bindingsToNT';
 import {
     loadAttachments,
@@ -25,9 +25,9 @@ import {
 } from "./formalInformalChoice";
 import {CodeRepository} from "../src/core/port/driven/persistence/code-repository";
 import {FormDefinitionRepository} from "../src/core/port/driven/persistence/form-definition-repository";
+import {FormType} from "../src/core/domain/types";
 
-//TODO LPDC-917: 'split up', is now being used from 2 already split up app.ts resource calls (one for concepts, one for instances)
-export async function retrieveForm(publicServiceId: string, formId: string, codeRepository: CodeRepository, formDefinitionRepository: FormDefinitionRepository): Promise<{
+export async function retrieveForm(publicServiceId: string, formType: FormType, codeRepository: CodeRepository, formDefinitionRepository: FormDefinitionRepository): Promise<{
     form: string,
     meta: string,
     source: string,
@@ -87,9 +87,9 @@ export async function retrieveForm(publicServiceId: string, formId: string, code
         languageForChosenForm = existingLanguage ?? getLanguageVersionForInstance(chosenForm);
     }
 
-    const form = formDefinitionRepository.loadFormDefinition(formId, languageForChosenForm, isYourEurope);
+    const form = formDefinitionRepository.loadFormDefinition(formType, languageForChosenForm, isYourEurope);
 
-    const tailoredSchemes = FORM_MAPPING[formId] === "characteristics" ? await codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
+    const tailoredSchemes = formType === FormType.CHARACTERISTICS ? await codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
     const meta = tailoredSchemes.join("\r\n");
     const source = bindingsToNT(sourceBindings).join("\r\n");
 

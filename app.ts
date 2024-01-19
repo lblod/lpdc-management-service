@@ -1,6 +1,11 @@
 import {createApp, errorHandler, uuid} from './mu-helper';
 import bodyparser from 'body-parser';
-import {CONCEPT_SNAPSHOT_LDES_GRAPH, FEATURE_FLAG_ATOMIC_UPDATE, LOG_INCOMING_DELTA} from './config';
+import {
+    CONCEPT_SNAPSHOT_LDES_GRAPH,
+    FEATURE_FLAG_ATOMIC_UPDATE,
+    FORM_ID_TO_TYPE_MAPPING,
+    LOG_INCOMING_DELTA
+} from './config';
 import {createForm} from './lib/createForm';
 import {retrieveForm} from './lib/retrieveForm';
 import {updateForm, updateFormAtomic} from './lib/updateForm';
@@ -164,9 +169,10 @@ app.post('/public-services/', async function (req, res): Promise<any> {
 app.get('/public-services/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
     const publicServiceId = req.params["publicServiceId"];
     const formId = req.params["formId"];
+    const formType = FORM_ID_TO_TYPE_MAPPING[formId];
 
     try {
-        const bundle = await retrieveForm(publicServiceId, formId, codeRepository, formDefinitionRepository);
+        const bundle = await retrieveForm(publicServiceId, formType, codeRepository, formDefinitionRepository);
 
         return res.status(200).json(bundle);
     } catch (e) {
@@ -348,13 +354,14 @@ app.get('/conceptual-public-services/:conceptualPublicServiceUuid/dutch-language
 app.get('/conceptual-public-services/:conceptualPublicServiceId/form/:formId', async function (req, res): Promise<any> {
     const conceptualPublicServiceId = req.params["conceptualPublicServiceId"];
     const formId = req.params["formId"];
+    const formType = FORM_ID_TO_TYPE_MAPPING[formId];
 
     try {
 
         const session: Session = req['session'];
         const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
         const conceptId = new Iri(await serviceUriForId(conceptualPublicServiceId, 'lpdcExt:ConceptualPublicService'));
-        const bundle = await formApplicationService.loadConceptForm(bestuurseenheid, conceptId, formId);
+        const bundle = await formApplicationService.loadConceptForm(bestuurseenheid, conceptId, formType);
 
         return res.status(200).json(bundle);
     } catch (e) {

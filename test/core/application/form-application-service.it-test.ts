@@ -10,7 +10,7 @@ import {
     FormalInformalChoiceSparqlTestRepository
 } from "../../driven/persistence/formal-informal-choice-sparql-test-repository";
 import {aFormalInformalChoice} from "../domain/formal-informal-choice-test-builder";
-import {ChosenFormType, PublicationMediumType} from "../../../src/core/domain/types";
+import {ChosenFormType, FormType, PublicationMediumType} from "../../../src/core/domain/types";
 import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {Language} from "../../../src/core/domain/language";
@@ -29,7 +29,7 @@ describe('Form application service tests', () => {
 
         const formApplicationService = new FormApplicationService(conceptRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, formalInformalChoiceRepository);
 
-        test('can load a inhoud form for a concept in correct language', async () => {
+        test('can load a content form for a concept in correct language', async () => {
             const concept =
                 aFullConcept()
                     .withTitle(
@@ -50,14 +50,14 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith('cd0b5eba-33c1-45d9-aed9-75194c3728d3', Language.INFORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CONTENT, Language.INFORMAL, false).mockReturnValue('formdefinition');
 
             const {
                 form,
                 meta,
                 source,
                 serviceUri
-            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, 'cd0b5eba-33c1-45d9-aed9-75194c3728d3');
+            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, FormType.CONTENT);
 
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('');
@@ -66,7 +66,7 @@ describe('Form application service tests', () => {
             expect(serviceUri).toEqual(concept.id.value);
         });
 
-        test('can load a inhoud form for a concept in correct language and add english requirements if publication medium is your europe', async () => {
+        test('can load a content form for a concept in correct language and add english requirements if publication medium is your europe', async () => {
             const concept =
                 aFullConcept()
                     .withTitle(
@@ -87,14 +87,14 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith('cd0b5eba-33c1-45d9-aed9-75194c3728d3', Language.INFORMAL, true).mockReturnValue('formdefinition with english requirements');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CONTENT, Language.INFORMAL, true).mockReturnValue('formdefinition with english requirements');
 
             const {
                 form,
                 meta,
                 source,
                 serviceUri
-            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, 'cd0b5eba-33c1-45d9-aed9-75194c3728d3');
+            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, FormType.CONTENT);
 
             expect(form).toEqual('formdefinition with english requirements');
             expect(meta).toEqual('');
@@ -125,7 +125,7 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith('149a7247-0294-44a5-a281-0a4d3782b4fd', Language.INFORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CHARACTERISTICS, Language.INFORMAL, false).mockReturnValue('formdefinition');
             codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
 
             const {
@@ -133,7 +133,7 @@ describe('Form application service tests', () => {
                 meta,
                 source,
                 serviceUri
-            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, '149a7247-0294-44a5-a281-0a4d3782b4fd');
+            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, FormType.CHARACTERISTICS);
 
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('org1 a concept.\r\norg2 a concept.');
