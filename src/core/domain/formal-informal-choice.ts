@@ -3,7 +3,6 @@ import {FormatPreservingDate} from "./format-preserving-date";
 import {requiredValue} from "./shared/invariant";
 import {ChosenFormType} from "./types";
 
-//TODO LPDC-917: add data integrity test
 export class FormalInformalChoice {
 
     private readonly _id: Iri;
