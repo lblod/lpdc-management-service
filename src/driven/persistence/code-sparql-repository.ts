@@ -68,10 +68,6 @@ export class CodeSparqlRepository implements CodeRepository {
             }
           `;
 
-        const bestuurseenheidTailoredAsIpdcOrganisatieConceptResult = await this.querying.list(bestuurseenheidTailoredAsIpdcOrganisatieConceptQuery);
-        const bestuurseenheidTailoredAsIpdcOrganisatieTailoredConceptQuads
-            = this.querying.asQuads(bestuurseenheidTailoredAsIpdcOrganisatieConceptResult, PUBLIC_GRAPH);
-
         const ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptQuery = `
             ${PREFIX.skos}
             ${PREFIX.dvcs}
@@ -91,7 +87,16 @@ export class CodeSparqlRepository implements CodeRepository {
             }
           `;
 
-        const ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptResult = await this.querying.list(ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptQuery);
+        const [
+            bestuurseenheidTailoredAsIpdcOrganisatieConceptResult,
+            ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptResult] =
+            await extractResultsFromAllSettled(
+                [
+                    this.querying.list(bestuurseenheidTailoredAsIpdcOrganisatieConceptQuery),
+                    this.querying.list(ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptQuery)]);
+
+        const bestuurseenheidTailoredAsIpdcOrganisatieTailoredConceptQuads
+            = this.querying.asQuads(bestuurseenheidTailoredAsIpdcOrganisatieConceptResult, PUBLIC_GRAPH);
         const ipdcOrganisatiesConceptSchemesAsIpdcOrganisatieTailoredConceptQuads
             = this.querying.asQuads(ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptResult, PUBLIC_GRAPH);
 
@@ -100,6 +105,13 @@ export class CodeSparqlRepository implements CodeRepository {
             ...ipdcOrganisatiesConceptSchemesAsIpdcOrganisatieTailoredConceptQuads.map(q => q.toNT())];
     }
 
-
-
 }
+
+//TODO LPDC-917: move method into shared / infra?
+export const extractResultsFromAllSettled = async <T>(promises: Promise<T>[]): Promise<T[]> => {
+    const results = await Promise.allSettled(promises);
+    if (results.some(result => result.status === 'rejected')) {
+        throw new Error('Some promises were rejected');
+    }
+    return results.map(result => (result as PromiseFulfilledResult<T>).value);
+};
