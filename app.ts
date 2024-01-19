@@ -325,11 +325,10 @@ app.post('/public-services/:publicServiceId/submit', async function (req, res): 
 
 app.use('/conceptual-public-services/', authenticateAndAuthorizeRequest(sessionRepository));
 
-//TODO LPDC-917: parameter conceptual public service uuid -> (escaped) iri
-app.get('/conceptual-public-services/:conceptualPublicServiceUuid/dutch-language-version', async (req, res): Promise<any> => {
+app.get('/conceptual-public-services/:conceptualPublicServiceId/dutch-language-version', async (req, res): Promise<any> => {
     try {
 
-        const conceptId = new Iri(await serviceUriForId(req.params.conceptualPublicServiceUuid, 'lpdcExt:ConceptualPublicService'));
+        const conceptId = new Iri(req.params.conceptualPublicServiceId);
 
         const session: Session = req['session'];
         const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);

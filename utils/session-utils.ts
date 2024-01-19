@@ -50,7 +50,7 @@ export const authenticateAndAuthorizeRequest = (sessionRepository: SessionReposi
         console.error(e);
         const response = {
             status: 500,
-            message: `Could not validate session`
+            message: `Could not execute request`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }

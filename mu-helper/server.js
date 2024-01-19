@@ -41,7 +41,8 @@ function createApp() {
     return app;
 }
 
-const errorHandler = function (err, req, res) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const errorHandler = function (err, req, res, _next) {
     res.status(err.status || 400);
     res.json({
         errors: [{title: err.message}]
