@@ -5,7 +5,6 @@ import {FORM_MAPPING} from "../../../config";
 //TODO LPDC-917: write it tests (instead of only current end to end tests)
 export class FormDefinitionFileRepository implements FormDefinitionRepository {
 
-    //TODO LPDC-917: cache static content (maybe even the language replacement result?)
     //TODO LPDC-917: switch language type to Language
     loadFormDefinition(formId: string, language: string, isEnglishRequired: boolean): string {
 

@@ -34,8 +34,6 @@ export async function retrieveForm(publicServiceId: string, formId: string, code
     serviceUri: string
 }> {
 
-    //TODO LPDC-917: load concept / instance
-
     let isConceptualPublicService = false;
     let serviceUri = await serviceUriForId(publicServiceId);
 
@@ -79,7 +77,6 @@ export async function retrieveForm(publicServiceId: string, formId: string, code
   `;
     const isYourEurope = (await querySudo(publicationChannelQuery)).boolean;
 
-    //TODO LPDC-917: find chosen language
     const chosenForm: string | undefined = getChosenForm(await loadFormalInformalChoice());
     let languageForChosenForm: string;
     if (isConceptualPublicService) {

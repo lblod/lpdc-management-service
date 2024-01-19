@@ -38,6 +38,7 @@ import {FormDefinitionFileRepository} from "./src/driven/persistence/form-defini
 import {serviceUriForId} from "./lib/commonQueries";
 import {SelectFormLanguageDomainService} from "./src/core/domain/select-form-language-domain-service";
 import {FormalInformalChoiceSparqlRepository} from "./src/driven/persistence/formal-informal-choice-sparql-repository";
+import {FormApplicationService} from "./src/core/application/form-application-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -67,15 +68,25 @@ const newConceptSnapshotToConceptMergerDomainService =
         conceptDisplayConfigurationRepository,
         bestuurseenheidRegistrationCodeFetcher,
         codeRepository,
-        instanceRepository);
+        instanceRepository,
+    );
 
 const newInstanceDomainService =
     new NewInstanceDomainService(
-        instanceRepository
+        instanceRepository,
     );
 
 const selectFormLanguageDomainService =
     new SelectFormLanguageDomainService();
+
+const formApplicationService =
+    new FormApplicationService(
+        conceptRepository,
+        formDefinitionRepository,
+        codeRepository,
+        selectFormLanguageDomainService,
+        formalInformalChoiceRepository,
+    );
 
 app.get('/', function (_req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -339,8 +350,11 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/form/:formId', a
     const formId = req.params["formId"];
 
     try {
-        //TODO LPDC-917: replace by call to form-application-service>loadConceptForm (but first implement)
-        const bundle = await retrieveForm(conceptualPublicServiceId, formId, codeRepository, formDefinitionRepository);
+
+        const session: Session = req['session'];
+        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+        const conceptId = new Iri(await serviceUriForId(conceptualPublicServiceId, 'lpdcExt:ConceptualPublicService'));
+        const bundle = await formApplicationService.loadConceptForm(bestuurseenheid, conceptId, formId);
 
         return res.status(200).json(bundle);
     } catch (e) {
