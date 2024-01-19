@@ -3,7 +3,6 @@ import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/co
 import {uuid} from "../../../mu-helper";
 import {buildBestuurseenheidIri, buildSpatialRefNis2019Iri, randomNumber} from "./iri-test-builder";
 
-//TODO LPDC-917: rename file to bestuurseenheid
 export function aBestuurseenheid(): BestuurseenheidTestBuilder {
     const bestuurseenheidUuid = uuid();
     return new BestuurseenheidTestBuilder()
