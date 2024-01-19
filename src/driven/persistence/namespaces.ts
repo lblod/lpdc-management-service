@@ -25,6 +25,10 @@ export const NS = {
     ext: Namespace('http://mu.semte.ch/vocabularies/ext/'),
     eli: Namespace('http://data.europa.eu/eli/ontology#'),
     eliIncorrectlyInDatabase: Namespace('http://data.europa.eu/eli/ontology/#'), //we need a clean up in ipdc and in our database to be able remove this hack ...
+    pera: {
+        language: Namespace('http://publications.europa.eu/resource/authority/language'),
+        languageType: Namespace('http://publications.europa.eu/resource/authority/language/')
+    },
     dvc: {
         type: Namespace(dataVlaanderenConceptNS('Type/').value),
         doelgroep: Namespace(dataVlaanderenConceptNS('Doelgroep/').value),

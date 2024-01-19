@@ -6,6 +6,7 @@ import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
+    LanguageType,
     PublicationMediumType,
     TargetAudienceType,
     ThemeType,
@@ -93,6 +94,11 @@ describe('constructing', () => {
     test('keywords with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]);
         expect(() => instanceTestBuilder.build()).toThrow(new Error('keywords should not contain duplicates'));
+    });
+
+    test('languages with duplicates throws error', () => {
+        const instanceTestBuilder = aFullInstance().withLanguages([LanguageType.ENG, LanguageType.ENG]);
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('languages should not contain duplicates'));
     });
 
     describe('requirement ', () => {

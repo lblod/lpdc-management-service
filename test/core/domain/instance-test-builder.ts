@@ -13,7 +13,7 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
-    InstanceStatusType,
+    InstanceStatusType, LanguageType,
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
@@ -103,6 +103,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withFinancialAdvantages(InstanceTestBuilder.FINANCIAL_ADVANTAGES)
         .withSource(buildConceptIri(uuid()))
         .withVersionedSource(buildConceptSnapshotIri(uuid()))
+        .withLanguages(InstanceTestBuilder.LANGUAGES)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -182,6 +183,8 @@ export class InstanceTestBuilder {
 
     public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantageForInstance().build(), anotherFullFinancialAdvantageForInstance().build()];
 
+    public static readonly LANGUAGES = [LanguageType.NLD, LanguageType.ENG];
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -209,6 +212,7 @@ export class InstanceTestBuilder {
     private financialAdvantages: FinancialAdvantage[] = [];
     private source: Iri | undefined;
     private versionedSource: Iri | undefined;
+    private languages: LanguageType[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -349,6 +353,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withLanguages(languages: LanguageType[]): InstanceTestBuilder {
+        this.languages = languages;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -398,6 +407,7 @@ export class InstanceTestBuilder {
             this.financialAdvantages,
             this.source,
             this.versionedSource,
+            this.languages,
             this.dateCreated,
             this.dateModified,
             this.status,

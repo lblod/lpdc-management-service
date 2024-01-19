@@ -211,3 +211,10 @@ export enum FormType {
     CONTENT = 'content',
     CHARACTERISTICS = 'characteristics',
 }
+
+export enum LanguageType {
+    NLD = 'NLD',
+    FRA = 'FRA',
+    DEU = 'DEU',
+    ENG = 'ENG'
+}

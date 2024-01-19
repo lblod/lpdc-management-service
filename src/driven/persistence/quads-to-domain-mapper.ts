@@ -16,7 +16,7 @@ import {
     CompetentAuthorityLevelType,
     ConceptTagType,
     ExecutingAuthorityLevelType,
-    InstanceStatusType,
+    InstanceStatusType, LanguageType,
     ProductType,
     PublicationMediumType,
     SnapshotType,
@@ -153,6 +153,7 @@ export class QuadsToDomainMapper {
             this.financialAdvantages(id),
             this.source(id),
             this.versionedSource(id),
+            this.languages(id),
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
             this.instanceStatusType(id),
@@ -403,6 +404,10 @@ export class QuadsToDomainMapper {
 
     private versionedSource(id: Iri): Iri | undefined {
         return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.ext('hasVersionedSource'), null, this.graphId));
+    }
+
+    private languages(id: Iri): LanguageType[] {
+        return this.asEnums(LanguageType, NS.pera.languageType, this.store.statementsMatching(namedNode(id.value), NS.pera.language(''), null, this.graphId), id.value);
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {

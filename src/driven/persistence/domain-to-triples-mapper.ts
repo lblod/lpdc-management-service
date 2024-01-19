@@ -11,7 +11,7 @@ import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,
     ConceptTagType,
-    ExecutingAuthorityLevelType,
+    ExecutingAuthorityLevelType, LanguageType,
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
@@ -134,6 +134,7 @@ export class DomainToTriplesMapper {
             ...this.financialAdvantages(instance.id, instance.financialAdvantages),
             this.source(instance.id, instance.source),
             this.versionedSource(instance.id, instance.versionedSource),
+            ...this.languages(instance.id, instance.languages),
             instance.dateCreated ? this.buildQuad(namedNode(instance.id.value), NS.dct('created'), literal(instance.dateCreated.value, NS.xsd('dateTime'))) : undefined,
             instance.dateModified ? this.buildQuad(namedNode(instance.id.value), NS.dct('modified'), literal(instance.dateModified.value, NS.xsd('dateTime'))) : undefined,
             this.buildQuad(namedNode(instance.id.value), NS.adms('status'), namedNode(this.enumToIri(instance.status, NS.concepts.instanceStatus).value)),
@@ -291,7 +292,7 @@ export class DomainToTriplesMapper {
         );
     }
 
-    private websites(id: Iri, predicate: NamedNode, websites: Website[]): Statement [] {
+    private websites(id: Iri, predicate: NamedNode, websites: Website[]): Statement[] {
         return websites.flatMap((website, index) => {
                 return [
                     this.buildQuad(namedNode(id.value), predicate, namedNode(website.id.value)),
@@ -343,6 +344,10 @@ export class DomainToTriplesMapper {
 
     private versionedSource(id: Iri, versionedSource: Iri | undefined) : Statement | undefined {
         return versionedSource ? this.buildQuad(namedNode(id.value), NS.ext('hasVersionedSource'), namedNode(versionedSource.value)) : undefined;
+    }
+
+    private languages(id: Iri, values: LanguageType[]): Statement[] {
+        return this.irisToTriples(namedNode(id.value), NS.pera.language(''), this.enumsToIris(values, NS.pera.languageType));
     }
 
     private languageStringToTriples(subject: NamedNode, predicate: NamedNode, object: LanguageString | undefined): Statement[] {

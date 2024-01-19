@@ -5,7 +5,7 @@ import {FormatPreservingDate} from "./format-preserving-date";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
-    InstanceStatusType,
+    InstanceStatusType, LanguageType,
     ProductType, PublicationMediumType,
     TargetAudienceType,
     ThemeType, YourEuropeCategoryType
@@ -46,6 +46,7 @@ export class Instance {
     private readonly _financialAdvantages: FinancialAdvantage[];
     private readonly _source: Iri;
     private readonly _versionedSource: Iri;
+    private readonly _languages: LanguageType[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -79,6 +80,7 @@ export class Instance {
                 financialAdvantages: FinancialAdvantage[],
                 source: Iri,
                 versionedSource: Iri,
+                languages: LanguageType[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -112,6 +114,7 @@ export class Instance {
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forInstance);
         this._source = source;
         this._versionedSource = versionedSource; //TODO LPDC-917: should be required when source is defined
+        this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -224,6 +227,10 @@ export class Instance {
 
     get versionedSource(): Iri {
         return this._versionedSource;
+    }
+
+    get languages(): LanguageType[] {
+        return this._languages;
     }
 
     get dateCreated(): FormatPreservingDate {
