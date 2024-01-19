@@ -1,6 +1,6 @@
 import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
-import {PREFIX} from "../../config";
+import {CONCEPT_SNAPSHOT_LDES_GRAPH, PREFIX} from "../../config";
 import {ConceptSnapshotSparqlTestRepository} from "../driven/persistence/concept-snapshot-sparql-test-repository";
 import {shuffle, sortedUniq, uniq} from "lodash";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
@@ -22,7 +22,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);
     const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endPoint);
-    const graph = new Iri('http://mu.semte.ch/graphs/lpdc/ldes-data');
+    const graph = new Iri(CONCEPT_SNAPSHOT_LDES_GRAPH);
     const domainToTriplesMapper = new DomainToTriplesMapper(graph);
 
     test.skip('Load all concept snapshots; print errors to console.log', async () => {

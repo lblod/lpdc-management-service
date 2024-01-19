@@ -30,6 +30,7 @@ import {NS} from "../../../src/driven/persistence/namespaces";
 import {aMinimalLanguageString} from "../../core/domain/language-string-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {CONCEPT_SNAPSHOT_LDES_GRAPH} from "../../../config";
 
 describe('ConceptSnapshotRepository', () => {
     const repository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -89,7 +90,7 @@ describe('ConceptSnapshotRepository', () => {
             const idForIncorrectType = new Iri(`https://ipdc.tni-vlaanderen.be/id/rule/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${idForIncorrectType}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType>`]);
 
             await expect(repository.findById(idForIncorrectType)).rejects.toThrow(new Error(`Could not find <${idForIncorrectType}> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>, but found with type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType> in graph <http://mu.semte.ch/graphs/lpdc/ldes-data>`));
@@ -119,7 +120,7 @@ describe('ConceptSnapshotRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [
                     `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
@@ -162,7 +163,7 @@ describe('ConceptSnapshotRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
@@ -189,7 +190,7 @@ describe('ConceptSnapshotRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_EN}"""@EN`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_NL}"""@NL`,
@@ -567,7 +568,7 @@ describe('ConceptSnapshotRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
@@ -630,7 +631,7 @@ describe('ConceptSnapshotRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
@@ -690,7 +691,7 @@ describe('ConceptSnapshotRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
@@ -752,7 +753,7 @@ describe('ConceptSnapshotRepository', () => {
                                     .withUrl(websiteUrl).build()]).build()])
                     .build();
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
@@ -793,7 +794,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType>`,
                 ]);
@@ -816,7 +817,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
                 ]);
@@ -839,7 +840,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme>`,
                 ]);
@@ -862,7 +863,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel>`,
                 ]);
@@ -885,7 +886,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel>`,
                 ]);
@@ -908,7 +909,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium>`,
                 ]);
@@ -931,7 +932,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory>`,
                 ]);
@@ -954,7 +955,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/NonExistingSnapshotType>`,
                 ]);
@@ -977,7 +978,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
 
             await directDatabaseAccess.insertData(
-                "http://mu.semte.ch/graphs/lpdc/ldes-data",
+                CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <https://productencatalogus.data.vlaanderen.be/id/concept/ConceptTag/NonExistingConceptTag>`,
                 ]);
