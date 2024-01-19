@@ -14,7 +14,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
-import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullRequirementForInstance, anotherFullRequirementForInstance} from "./requirement-test-builder";
 import {aFullEvidenceForInstance, anotherFullEvidenceForInstance} from "./evidence-test-builder";

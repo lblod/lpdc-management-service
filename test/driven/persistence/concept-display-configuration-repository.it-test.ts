@@ -1,7 +1,7 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {aFullConceptDisplayConfiguration} from "../../core/domain/concept-display-configuration-test-builder";
 import {ConceptDisplayConfigurationSparqlTestRepository} from "./concept-display-configuration-sparql-test-repository";
-import {aBestuurseenheid} from "../../core/domain/bestuureenheid-test-builder";
+import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {
     buildBestuurseenheidIri,

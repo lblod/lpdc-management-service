@@ -1,6 +1,6 @@
 import {NewInstanceDomainService} from "../../../src/core/domain/new-instance-domain-service";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {aBestuurseenheid} from "./bestuureenheid-test-builder";
+import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
 import {buildBestuurseenheidIri, buildSpatialRefNis2019Iri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {InstanceStatusType} from "../../../src/core/domain/types";

@@ -2,7 +2,7 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
 import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullRequirement, anotherFullRequirement} from "./requirement-test-builder";
 import {Procedure} from "../../../src/core/domain/procedure";

@@ -1,7 +1,7 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {FormalInformalChoiceSparqlTestRepository} from "./formal-informal-choice-sparql-test-repository";
-import {aBestuurseenheid} from "../../core/domain/bestuureenheid-test-builder";
+import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {aFormalInformalChoice} from "../../core/domain/formal-informal-choice-test-builder";
 import {buildBestuurseenheidIri, buildFormalInformalChoiceIri} from "../../core/domain/iri-test-builder";
 import {uuid} from "../../../mu-helper";

@@ -27,7 +27,7 @@ import {
 } from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {aFullRequirement, anotherFullRequirement} from "./requirement-test-builder";
 import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
 import {aFullProcedure, anotherFullProcedure} from "./procedure-test-builder";

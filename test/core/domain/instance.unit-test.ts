@@ -2,7 +2,7 @@ import {aFullInstance} from "./instance-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {buildSpatialRefNis2019Iri} from "./iri-test-builder";
-import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,

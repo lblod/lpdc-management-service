@@ -2,7 +2,7 @@ import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
 import {uuid} from "../../../mu-helper";
 import {aFullConceptSnapshot} from "./concept-snapshot-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {BestuurseenheidTestBuilder} from "./bestuureenheid-test-builder";
+import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     aFullRequirement,
     aMinimalRequirementForConceptSnapshot,
@@ -15,7 +15,8 @@ import {aFullCost, CostTestBuilder} from "./cost-test-builder";
 import {aFullFinancialAdvantage, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
-    CompetentAuthorityLevelType, ConceptTagType,
+    CompetentAuthorityLevelType,
+    ConceptTagType,
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,

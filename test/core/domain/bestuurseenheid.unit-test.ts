@@ -1,4 +1,4 @@
-import {aBestuurseenheid} from "./bestuureenheid-test-builder";
+import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
 import {uuid} from "../../../mu-helper";
 import {Iri} from "../../../src/core/domain/shared/iri";

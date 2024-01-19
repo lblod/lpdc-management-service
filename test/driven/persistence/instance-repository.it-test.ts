@@ -2,7 +2,7 @@ import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "../../core/domain/instance-test-builder";
 import {InstanceSparqlTestRepository} from "./instance-sparql-test-repository";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
-import {aBestuurseenheid} from "../../core/domain/bestuureenheid-test-builder";
+import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {buildInstanceIri, buildSpatialRefNis2019Iri} from "../../core/domain/iri-test-builder";

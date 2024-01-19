@@ -11,7 +11,7 @@ import {
 } from "../../driven/persistence/formal-informal-choice-sparql-test-repository";
 import {aFormalInformalChoice} from "../domain/formal-informal-choice-test-builder";
 import {ChosenFormType, PublicationMediumType} from "../../../src/core/domain/types";
-import {aBestuurseenheid} from "../domain/bestuureenheid-test-builder";
+import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
