@@ -44,6 +44,8 @@ export class Instance {
     private readonly _websites: Website[];
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
+    private readonly _source: Iri;
+    private readonly _versionedSource: Iri;
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
@@ -75,6 +77,8 @@ export class Instance {
                 websites: Website[],
                 costs: Cost[],
                 financialAdvantages: FinancialAdvantage[],
+                source: Iri,
+                versionedSource: Iri,
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
@@ -106,6 +110,8 @@ export class Instance {
         this._websites = [...websites].map(Website.forInstance);
         this._costs = [...costs].map(Cost.forInstance);
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forInstance);
+        this._source = source;
+        this._versionedSource = versionedSource; //TODO LPDC-917: should be required when source is defined
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
@@ -210,6 +216,14 @@ export class Instance {
 
     get financialAdvantages(): FinancialAdvantage[] {
         return [...this._financialAdvantages];
+    }
+
+    get source(): Iri {
+        return this._source;
+    }
+
+    get versionedSource(): Iri {
+        return this._versionedSource;
     }
 
     get dateCreated(): FormatPreservingDate {

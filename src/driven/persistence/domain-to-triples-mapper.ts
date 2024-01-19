@@ -132,6 +132,8 @@ export class DomainToTriplesMapper {
             ...this.websites(instance.id, NS.rdfs('seeAlso'), instance.websites),
             ...this.costs(instance.id, instance.costs),
             ...this.financialAdvantages(instance.id, instance.financialAdvantages),
+            this.source(instance.id, instance.source),
+            this.versionedSource(instance.id, instance.versionedSource),
             instance.dateCreated ? this.buildQuad(namedNode(instance.id.value), NS.dct('created'), literal(instance.dateCreated.value, NS.xsd('dateTime'))) : undefined,
             instance.dateModified ? this.buildQuad(namedNode(instance.id.value), NS.dct('modified'), literal(instance.dateModified.value, NS.xsd('dateTime'))) : undefined,
             this.buildQuad(namedNode(instance.id.value), NS.adms('status'), namedNode(this.enumToIri(instance.status, NS.concepts.instanceStatus).value)),
@@ -333,6 +335,14 @@ export class DomainToTriplesMapper {
 
     private productId(id: Iri, productId: string | undefined): Statement | undefined {
         return productId ? this.buildQuad(namedNode(id.value), NS.schema('productID'), literal(productId)) : undefined;
+    }
+
+    private source(id: Iri, source: Iri | undefined): Statement | undefined {
+        return source ? this.buildQuad(namedNode(id.value), NS.dct('source'), namedNode(source.value)) : undefined;
+    }
+
+    private versionedSource(id: Iri, versionedSource: Iri | undefined) : Statement | undefined {
+        return versionedSource ? this.buildQuad(namedNode(id.value), NS.ext('hasVersionedSource'), namedNode(versionedSource.value)) : undefined;
     }
 
     private languageStringToTriples(subject: NamedNode, predicate: NamedNode, object: LanguageString | undefined): Statement[] {

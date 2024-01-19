@@ -1,7 +1,13 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Instance} from "../../../src/core/domain/instance";
-import {buildBestuurseenheidIri, buildInstanceIri, buildSpatialRefNis2019Iri, randomNumber} from "./iri-test-builder";
+import {
+    buildBestuurseenheidIri,
+    buildConceptIri, buildConceptSnapshotIri,
+    buildInstanceIri,
+    buildSpatialRefNis2019Iri,
+    randomNumber
+} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
@@ -95,6 +101,8 @@ export function aFullInstance(): InstanceTestBuilder {
         .withWebsites(InstanceTestBuilder.WEBSITES)
         .withCosts(InstanceTestBuilder.COSTS)
         .withFinancialAdvantages(InstanceTestBuilder.FINANCIAL_ADVANTAGES)
+        .withSource(buildConceptIri(uuid()))
+        .withVersionedSource(buildConceptSnapshotIri(uuid()))
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
@@ -199,6 +207,8 @@ export class InstanceTestBuilder {
     private websites: Website[] = [];
     private costs: Cost[] = [];
     private financialAdvantages: FinancialAdvantage[] = [];
+    private source: Iri | undefined;
+    private versionedSource: Iri | undefined;
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
@@ -329,6 +339,16 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withSource(conceptId: Iri): InstanceTestBuilder {
+        this.source = conceptId;
+        return this;
+    }
+
+    public withVersionedSource(conceptSnapshotId: Iri): InstanceTestBuilder {
+        this.versionedSource = conceptSnapshotId;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -376,6 +396,8 @@ export class InstanceTestBuilder {
             this.websites,
             this.costs,
             this.financialAdvantages,
+            this.source,
+            this.versionedSource,
             this.dateCreated,
             this.dateModified,
             this.status,

@@ -151,6 +151,8 @@ export class QuadsToDomainMapper {
             this.websites(id),
             this.costs(id),
             this.financialAdvantages(id),
+            this.source(id),
+            this.versionedSource(id),
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
             this.instanceStatusType(id),
@@ -393,6 +395,14 @@ export class QuadsToDomainMapper {
             return undefined;
         }
         return Evidence.reconstitute(evidenceIds[0], this.uuid(evidenceIds[0]), this.title(evidenceIds[0]), this.description(evidenceIds[0]));
+    }
+
+    private source(id: Iri): Iri | undefined {
+        return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.dct('source'), null, this.graphId));
+    }
+
+    private versionedSource(id: Iri): Iri | undefined {
+        return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.ext('hasVersionedSource'), null, this.graphId));
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {
