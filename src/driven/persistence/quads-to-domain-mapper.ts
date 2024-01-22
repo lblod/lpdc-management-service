@@ -28,6 +28,8 @@ import {Concept} from '../../core/domain/concept';
 import {Namespace} from "rdflib/lib/factories/factory-types";
 import {STATUS} from "./status";
 import {Instance} from "../../core/domain/instance";
+import {ContactPoint} from "../../core/domain/contactPoint";
+import {Address} from "../../core/domain/address";
 
 export class QuadsToDomainMapper {
 
@@ -151,6 +153,7 @@ export class QuadsToDomainMapper {
             this.websites(id),
             this.costs(id),
             this.financialAdvantages(id),
+            this.contactPoints(id),
             this.source(id),
             this.versionedSource(id),
             this.languages(id),
@@ -241,6 +244,46 @@ export class QuadsToDomainMapper {
 
     private yourEuropeCategories(id: Iri): YourEuropeCategoryType[] {
         return this.asEnums(YourEuropeCategoryType, NS.dvc.yourEuropeCategorie, this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), null, this.graphId), id.value);
+    }
+
+    private email(id: Iri): string | undefined {
+        return this.store.anyValue(namedNode(id.value), NS.schema('email'), null, this.graphId);
+    }
+
+    private telephone(id: Iri): string | undefined {
+        return this.store.anyValue(namedNode(id.value), NS.schema('telephone'), null, this.graphId);
+    }
+
+    private openingHours(id: Iri): string | undefined {
+        return this.store.anyValue(namedNode(id.value), NS.schema('openingHours'), null, this.graphId);
+    }
+
+    private gemeentenaam(id: Iri): LanguageString | undefined {
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id.value), NS.adres('gemeentenaam'), null, this.graphId));
+    }
+
+    private land(id: Iri): LanguageString | undefined {
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id.value), NS.adres('land'), null, this.graphId));
+    }
+
+    private huisnummer(id: Iri): string | undefined {
+        return this.store.anyValue(namedNode(id.value), NS.adresvoorstelling('huisnummer'), null, this.graphId);
+    }
+
+    private busnummer(id: Iri): string | undefined {
+        return this.store.anyValue(namedNode(id.value), NS.adresvoorstelling('busnummer'), null, this.graphId);
+    }
+
+    private postcode(id: Iri): string | undefined {
+        return this.store.anyValue(namedNode(id.value), NS.adres('postcode'), null, this.graphId);
+    }
+
+    private straatnaam(id: Iri): LanguageString | undefined {
+        return this.asLanguageString(this.store.statementsMatching(namedNode(id.value), NS.adres('Straatnaam'), null, this.graphId));
+    }
+
+    private verwijstNaar(id: Iri): Iri | undefined {
+        return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.adres('verwijstNaar'), null, this.graphId));
     }
 
     private keywords(id: Iri): LanguageString[] {
@@ -338,6 +381,47 @@ export class QuadsToDomainMapper {
                 FinancialAdvantage.reconstitute(financialAdvantageId, this.uuid(financialAdvantageId), this.title(financialAdvantageId), this.description(financialAdvantageId)));
 
         return this.sort(financialAdvantages);
+    }
+
+    private contactPoints(id: Iri): ContactPoint[] {
+        const contactPointIds =
+            this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasContactPoint'), null, this.graphId));
+
+        contactPointIds.forEach(contactPointId =>
+            this.errorIfMissingOrIncorrectType(contactPointId, NS.schema('ContactPoint')));
+
+        const contactPoints: ContactPoint[] =
+            contactPointIds.map(contactPointId => {
+                return new ContactPoint(contactPointId, this.uuid(contactPointId), this.url(contactPointId), this.email(contactPointId), this.telephone(contactPointId), this.openingHours(contactPointId), this.address(contactPointId));
+            });
+        return this.sort(contactPoints);
+    }
+
+    private address(id: Iri): Address | undefined {
+        const addressIds =
+            this.asIris(this.store.statementsMatching(namedNode(id.value), NS.lpdcExt('address'), null, this.graphId));
+
+        addressIds.forEach(evidenceId =>
+            this.errorIfMissingOrIncorrectType(evidenceId, NS.locn('Address')));
+
+        if (addressIds.length > 1) {
+            throw new Error(`Did not expect more than one evidence for ${id}`);
+        }
+        if (addressIds.length === 0) {
+            return undefined;
+        }
+        const addressId = addressIds[0];
+        return new Address(
+            addressId,
+            this.uuid(addressId),
+            this.gemeentenaam(addressId),
+            this.land(addressId),
+            this.huisnummer(addressId),
+            this.busnummer(addressId),
+            this.postcode(addressId),
+            this.straatnaam(addressId),
+            this.verwijstNaar(addressId)
+        );
     }
 
     private websites(id: Iri, predicate: NamedNode = NS.rdfs('seeAlso')): Website[] {

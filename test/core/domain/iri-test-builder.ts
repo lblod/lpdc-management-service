@@ -20,6 +20,10 @@ export function buildBestuurseenheidIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/bestuurseenheden/${uniqueId}`);
 }
 
+export function buildVerwijstNaarIri(uniqueId: string): Iri {
+    return new Iri(`https://data.vlaanderen.be/id/adres/${uniqueId}`);
+}
+
 export function buildSessionIri(uniqueId: string): Iri {
     return new Iri(`http://mu.semte.ch/sessions/${uniqueId}`);
 }

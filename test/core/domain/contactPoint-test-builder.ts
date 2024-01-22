@@ -2,7 +2,7 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
 import {ContactPoint} from "../../../src/core/domain/contactPoint";
 import {Address} from "../../../src/core/domain/address";
-import {aFullAddress} from "./address-test-builder";
+import {aFullAddress, anotherAddress} from "./address-test-builder";
 
 
 export function aMinimalContactPoint(): ContactPointTestBuilder {
@@ -26,14 +26,30 @@ export function aFullContactPoint(): ContactPointTestBuilder {
         .withAddress(ContactPointTestBuilder.ADDRESS);
 }
 
+export function anotherFullContactPoint(): ContactPointTestBuilder {
+    const uniqueId = uuid();
+    return new ContactPointTestBuilder()
+        .withId(ContactPointTestBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
+        .withUrl(ContactPointTestBuilder.ANOTHER_URL)
+        .withEmail(ContactPointTestBuilder.ANOTHER_EMAIL)
+        .withTelephone(ContactPointTestBuilder.ANOTHER_TELEPHONE)
+        .withOpeningHours(ContactPointTestBuilder.OPENING_HOURS)
+        .withAddress(ContactPointTestBuilder.ANOTHER_ADDRESS);
+}
+
 
 export class ContactPointTestBuilder {
 
-    public static readonly EMAIL = 'test@example.com';
+    public static readonly EMAIL = 'test@leuven.com';
+    public static readonly ANOTHER_EMAIL = 'test@gent.com';
     public static readonly TELEPHONE = '016123123';
+    public static readonly ANOTHER_TELEPHONE = '016456456';
     public static readonly OPENING_HOURS = 'Everyday from 09:00 - 17:00';
     public static readonly ADDRESS = aFullAddress().build();
+    public static readonly ANOTHER_ADDRESS = anotherAddress().build();
     public static readonly URL = 'https://leuven.be';
+    public static readonly ANOTHER_URL = 'https://gent.be';
 
 
     private id: Iri;
@@ -46,7 +62,7 @@ export class ContactPointTestBuilder {
 
 
     static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://data.lblod.info/form-data/nodes/${uniqueId}`);
+        return new Iri(`http://data.lblod.info/id/contact-punten/${uniqueId}`);
     }
 
     public withId(id: Iri): ContactPointTestBuilder {

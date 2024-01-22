@@ -19,6 +19,7 @@ import {Procedure} from "./procedure";
 import {Website} from "./website";
 import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
+import {ContactPoint} from "./contactPoint";
 import {Language} from "./language";
 
 export class Instance {
@@ -48,6 +49,7 @@ export class Instance {
     private readonly _websites: Website[];
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
+    private readonly _contactPoints: ContactPoint[];
     private readonly _source: Iri;
     private readonly _versionedSource: Iri;
     private readonly _languages: LanguageType[];
@@ -82,6 +84,7 @@ export class Instance {
                 websites: Website[],
                 costs: Cost[],
                 financialAdvantages: FinancialAdvantage[],
+                contactPoints: ContactPoint[],
                 source: Iri,
                 versionedSource: Iri,
                 languages: LanguageType[],
@@ -115,6 +118,7 @@ export class Instance {
         this._websites = [...websites].map(Website.forInstance);
         this._costs = [...costs].map(Cost.forInstance);
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forInstance);
+        this._contactPoints = [...contactPoints];
         this._source = source;
         this._versionedSource = versionedSource; //TODO LPDC-917: should be required when source is defined
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
@@ -237,6 +241,10 @@ export class Instance {
 
     get financialAdvantages(): FinancialAdvantage[] {
         return [...this._financialAdvantages];
+    }
+
+    get contactPoints(): ContactPoint[] {
+        return [...this._contactPoints];
     }
 
     get source(): Iri {

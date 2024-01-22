@@ -18,7 +18,7 @@ export class ContactPoint {
                 email: string | undefined,
                 telephone: string | undefined,
                 openingHours: string | undefined,
-                address: Address) {
+                address: Address | undefined) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         this._url = url;

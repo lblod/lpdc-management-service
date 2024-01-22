@@ -3,7 +3,8 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {Instance} from "../../../src/core/domain/instance";
 import {
     buildBestuurseenheidIri,
-    buildConceptIri, buildConceptSnapshotIri,
+    buildConceptIri,
+    buildConceptSnapshotIri,
     buildInstanceIri,
     buildSpatialRefNis2019Iri,
     randomNumber
@@ -35,6 +36,8 @@ import {
     aFullFinancialAdvantageForInstance,
     anotherFullFinancialAdvantageForInstance
 } from "./financial-advantage-test-builder";
+import {ContactPoint} from "../../../src/core/domain/contactPoint";
+import {aFullContactPoint, anotherFullContactPoint} from "./contactPoint-test-builder";
 
 export function aMinimalInstance(): InstanceTestBuilder {
     const uniqueId = uuid();
@@ -101,6 +104,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withWebsites(InstanceTestBuilder.WEBSITES)
         .withCosts(InstanceTestBuilder.COSTS)
         .withFinancialAdvantages(InstanceTestBuilder.FINANCIAL_ADVANTAGES)
+        .withContactPoints(InstanceTestBuilder.CONTACT_POINTS)
         .withSource(buildConceptIri(uuid()))
         .withVersionedSource(buildConceptSnapshotIri(uuid()))
         .withLanguages(InstanceTestBuilder.LANGUAGES)
@@ -185,6 +189,9 @@ export class InstanceTestBuilder {
 
     public static readonly LANGUAGES = [LanguageType.NLD, LanguageType.ENG];
 
+    public static readonly CONTACT_POINTS = [aFullContactPoint().build(), anotherFullContactPoint().build()];
+
+
     private id: Iri;
     private uuid: string;
     private createdBy: Iri;
@@ -210,6 +217,7 @@ export class InstanceTestBuilder {
     private websites: Website[] = [];
     private costs: Cost[] = [];
     private financialAdvantages: FinancialAdvantage[] = [];
+    private contactPoints: ContactPoint[] = [];
     private source: Iri | undefined;
     private versionedSource: Iri | undefined;
     private languages: LanguageType[] = [];
@@ -343,6 +351,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withContactPoints(contactPoinst: ContactPoint[]): InstanceTestBuilder {
+        this.contactPoints = contactPoinst;
+        return this;
+    }
+
     public withSource(conceptId: Iri): InstanceTestBuilder {
         this.source = conceptId;
         return this;
@@ -405,6 +418,7 @@ export class InstanceTestBuilder {
             this.websites,
             this.costs,
             this.financialAdvantages,
+            this.contactPoints,
             this.source,
             this.versionedSource,
             this.languages,

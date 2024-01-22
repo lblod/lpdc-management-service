@@ -11,7 +11,8 @@ import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,
     ConceptTagType,
-    ExecutingAuthorityLevelType, LanguageType,
+    ExecutingAuthorityLevelType,
+    LanguageType,
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
@@ -24,6 +25,8 @@ import {Cost} from "../../core/domain/cost";
 import {FinancialAdvantage} from "../../core/domain/financial-advantage";
 import {STATUS} from "./status";
 import {Instance} from "../../core/domain/instance";
+import {ContactPoint} from "../../core/domain/contactPoint";
+import {Address} from "../../core/domain/address";
 
 export class DomainToTriplesMapper {
     private readonly graphId;
@@ -132,6 +135,7 @@ export class DomainToTriplesMapper {
             ...this.websites(instance.id, NS.rdfs('seeAlso'), instance.websites),
             ...this.costs(instance.id, instance.costs),
             ...this.financialAdvantages(instance.id, instance.financialAdvantages),
+            ...this.contactPoints(instance.id, instance.contactPoints),
             this.source(instance.id, instance.source),
             this.versionedSource(instance.id, instance.versionedSource),
             ...this.languages(instance.id, instance.languages),
@@ -334,6 +338,39 @@ export class DomainToTriplesMapper {
             });
     }
 
+    private contactPoints(id: Iri, values: ContactPoint[]): Statement[] {
+        return values
+            .flatMap((contactPoint, index) => {
+                return [
+                    this.buildQuad(namedNode(id.value), NS.m8g('hasContactPoint'), namedNode(contactPoint.id.value)),
+                    contactPoint.uuid ? this.buildQuad(namedNode(contactPoint.id.value), NS.mu('uuid'), literal(contactPoint.uuid)) : undefined,
+                    this.buildQuad(namedNode(contactPoint.id.value), NS.rdf('type'), NS.schema('ContactPoint')),
+                    contactPoint.url ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('url'), contactPoint.url) : undefined,
+                    contactPoint.email ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('email'), contactPoint.email) : undefined,
+                    contactPoint.telephone ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('telephone'), contactPoint.telephone) : undefined,
+                    contactPoint.openingHours ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('openingHours'), contactPoint.openingHours) : undefined,
+                    this.buildQuad(namedNode(contactPoint.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                    ...this.addressToTriples(contactPoint.id, contactPoint.address),
+
+                ];
+            });
+    }
+
+    private addressToTriples(contactPointId: Iri, address: Address | undefined): Statement[] {
+        return address ? [
+            this.buildQuad(namedNode(contactPointId.value), NS.lpdcExt('address'), namedNode(address.id.value)),
+            address.uuid ? this.buildQuad(namedNode(address.id.value), NS.mu('uuid'), literal(address.uuid)) : undefined,
+            this.buildQuad(namedNode(address.id.value), NS.rdf('type'), NS.locn('Address')),
+            ...this.languageStringToTriples(namedNode(address.id.value), NS.adres(`gemeentenaam`), address.gemeentenaam),
+            ...this.languageStringToTriples(namedNode(address.id.value), NS.adres(`land`), address.land),
+            address.huisnummer ? this.buildQuad(namedNode(address.id.value), NS.adresvoorstelling('huisnummer'), address.huisnummer) : undefined,
+            address.busnummer ? this.buildQuad(namedNode(address.id.value), NS.adresvoorstelling('busnummer'), address.busnummer) : undefined,
+            address.postcode ? this.buildQuad(namedNode(address.id.value), NS.adres('postcode'), address.postcode) : undefined,
+            ...this.languageStringToTriples(namedNode(address.id.value), NS.adres(`Straatnaam`), address.straatnaam),
+            this.verwijstNaar(address.id, address.verwijstNaar)
+        ] : [];
+    }
+
     private productId(id: Iri, productId: string | undefined): Statement | undefined {
         return productId ? this.buildQuad(namedNode(id.value), NS.schema('productID'), literal(productId)) : undefined;
     }
@@ -342,12 +379,16 @@ export class DomainToTriplesMapper {
         return source ? this.buildQuad(namedNode(id.value), NS.dct('source'), namedNode(source.value)) : undefined;
     }
 
-    private versionedSource(id: Iri, versionedSource: Iri | undefined) : Statement | undefined {
+    private versionedSource(id: Iri, versionedSource: Iri | undefined): Statement | undefined {
         return versionedSource ? this.buildQuad(namedNode(id.value), NS.ext('hasVersionedSource'), namedNode(versionedSource.value)) : undefined;
     }
 
     private languages(id: Iri, values: LanguageType[]): Statement[] {
         return this.irisToTriples(namedNode(id.value), NS.pera.language(''), this.enumsToIris(values, NS.pera.languageType));
+    }
+
+    private verwijstNaar(id: Iri, verwijstNaar: Iri | undefined): Statement | undefined {
+        return verwijstNaar ? this.buildQuad(namedNode(id.value), NS.adres('verwijstNaar'), namedNode(verwijstNaar.value)) : undefined;
     }
 
     private languageStringToTriples(subject: NamedNode, predicate: NamedNode, object: LanguageString | undefined): Statement[] {

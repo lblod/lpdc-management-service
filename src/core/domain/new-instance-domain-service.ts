@@ -47,6 +47,7 @@ export class NewInstanceDomainService {
                 [],
                 [],
                 [],
+                [],
                 undefined,
                 undefined,
                 [],

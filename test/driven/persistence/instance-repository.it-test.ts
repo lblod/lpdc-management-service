@@ -21,6 +21,8 @@ import {aMinimalRequirementForInstance} from "../../core/domain/requirement-test
 import {aMinimalEvidenceForInstance} from "../../core/domain/evidence-test-builder";
 import {aMinimalProcedureForInstance} from "../../core/domain/procedure-test-builder";
 import {aMinimalWebsiteForInstance} from "../../core/domain/website-test-builder";
+import {aFullContactPoint} from "../../core/domain/contactPoint-test-builder";
+import {AddressTestBuilder, aFullAddress} from "../../core/domain/address-test-builder";
 
 describe('InstanceRepository', () => {
 
@@ -32,15 +34,18 @@ describe('InstanceRepository', () => {
 
         test('When full instance exists with id, then return instance', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
+            const contactPoint = aFullContactPoint().withAddress(aFullAddress().build()).build();
+
             const anotherBestuurseenheid = aBestuurseenheid().build();
+            const anotherContactPoint = aFullContactPoint().withAddress(aFullAddress().build()).build();
             await bestuurseenheidRepository.save(bestuurseenheid);
             await bestuurseenheidRepository.save(anotherBestuurseenheid);
 
-            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).withContactPoints([contactPoint]).build();
 
             await repository.save(bestuurseenheid, instance);
 
-            const anotherInstance = aFullInstance().withCreatedBy(anotherBestuurseenheid.id).build();
+            const anotherInstance = aFullInstance().withCreatedBy(anotherBestuurseenheid.id).withContactPoints([anotherContactPoint]).build();
             await repository.save(bestuurseenheid, anotherInstance);
 
             const actualInstance = await repository.findById(bestuurseenheid, instance.id);
@@ -325,6 +330,54 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${instanceId}> <http://data.europa.eu/m8g/hasContactPoint> <${InstanceTestBuilder.CONTACT_POINTS[1].id}>`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].id}> a <http://schema.org/ContactPoint>`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.CONTACT_POINTS[1].uuid}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].id}> <http://schema.org/url> """${InstanceTestBuilder.CONTACT_POINTS[1].url}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].id}> <http://schema.org/email> """${InstanceTestBuilder.CONTACT_POINTS[1].email}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].id}> <http://schema.org/telephone> """${InstanceTestBuilder.CONTACT_POINTS[1].telephone}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].id}> <http://schema.org/openingHours> """${InstanceTestBuilder.CONTACT_POINTS[1].openingHours}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#address> <${InstanceTestBuilder.CONTACT_POINTS[1].address.id}>`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> a <http://www.w3.org/ns/locn#Address>`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.CONTACT_POINTS[1].address.uuid}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <http://www.w3.org/ns/adres#gemeentenaam> """${AddressTestBuilder.ANOTHER_GEMEENTENAAM}"""@NL`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <http://www.w3.org/ns/adres#land> """${AddressTestBuilder.LAND_NL}"""@NL`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <http://www.w3.org/ns/adres#Adresvoorstelling.huisnummer> """${AddressTestBuilder.ANTOHER_HUISNUMMER}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <http://www.w3.org/ns/adres#postcode> """${AddressTestBuilder.ANOTHER_POSTCODE}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <http://www.w3.org/ns/adres#Straatnaam> """${AddressTestBuilder.ANTOHER_STRAATNAAM}"""@NL`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <http://www.w3.org/ns/adres#verwijstNaar> <${AddressTestBuilder.ANOTHER_VERWIJST_NAAR}>`,
+                    `<${instanceId}> <http://data.europa.eu/m8g/hasContactPoint> <${InstanceTestBuilder.CONTACT_POINTS[0].id}>`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].id}> a <http://schema.org/ContactPoint>`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.CONTACT_POINTS[0].uuid}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].id}> <http://schema.org/url> """${InstanceTestBuilder.CONTACT_POINTS[0].url}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].id}> <http://schema.org/email> """${InstanceTestBuilder.CONTACT_POINTS[0].email}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].id}> <http://schema.org/telephone> """${InstanceTestBuilder.CONTACT_POINTS[0].telephone}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].id}> <http://schema.org/openingHours> """${InstanceTestBuilder.CONTACT_POINTS[0].openingHours}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#address> <${InstanceTestBuilder.CONTACT_POINTS[0].address.id}>`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> a <http://www.w3.org/ns/locn#Address>`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.CONTACT_POINTS[0].address.uuid}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#gemeentenaam> """${AddressTestBuilder.GEMEENTENAAM_EN}"""@EN`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#gemeentenaam> """${AddressTestBuilder.GEMEENTENAAM_NL}"""@NL`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#gemeentenaam> """${AddressTestBuilder.GEMEENTENAAM_NL_FORMAL}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#gemeentenaam> """${AddressTestBuilder.GEMEENTENAAM_NL_INFORMAL}"""@nl-BE-x-informal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#gemeentenaam> """${AddressTestBuilder.GEMEENTENAAM_NL_GENERATED_FORMAL}"""@nl-BE-x-generated-formal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#gemeentenaam> """${AddressTestBuilder.GEMEENTENAAM_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#land> """${AddressTestBuilder.LAND_EN}"""@EN`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#land> """${AddressTestBuilder.LAND_NL}"""@NL`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#land> """${AddressTestBuilder.LAND_NL_FORMAL}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#land> """${AddressTestBuilder.LAND_NL_INFORMAL}"""@nl-BE-x-informal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#land> """${AddressTestBuilder.LAND_NL_GENERATED_FORMAL}"""@nl-BE-x-generated-formal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#land> """${AddressTestBuilder.LAND_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#Adresvoorstelling.huisnummer> """${AddressTestBuilder.HUISNUMMER}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#Adresvoorstelling.busnummer> """${AddressTestBuilder.BUSNUMMER}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#postcode> """${AddressTestBuilder.POSTCODE}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#Straatnaam> """${AddressTestBuilder.STRAATNAAM_EN}"""@EN`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#Straatnaam> """${AddressTestBuilder.STRAATNAAM_NL}"""@NL`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#Straatnaam> """${AddressTestBuilder.STRAATNAAM_NL_FORMAL}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#Straatnaam> """${AddressTestBuilder.STRAATNAAM_NL_INFORMAL}"""@nl-BE-x-informal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#Straatnaam> """${AddressTestBuilder.STRAATNAAM_NL_GENERATED_FORMAL}"""@nl-BE-x-generated-formal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#Straatnaam> """${AddressTestBuilder.STRAATNAAM_NL_GENERATED_INFORMAL}"""@nl-BE-x-generated-informal`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <http://www.w3.org/ns/adres#verwijstNaar> <${AddressTestBuilder.VERWIJST_NAAR}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/source> <${instance.source.value}>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${instance.versionedSource.value}>`,
                     `<${instanceId}> <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/NLD>`,
