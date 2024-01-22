@@ -7,7 +7,6 @@ import {
     LOG_INCOMING_DELTA
 } from './config';
 import {createForm} from './lib/createForm';
-import {retrieveForm} from './lib/retrieveForm';
 import {updateForm, updateFormAtomic} from './lib/updateForm';
 import {deleteForm} from './lib/deleteForm';
 import {validateService} from './lib/validateService';
@@ -167,14 +166,17 @@ app.post('/public-services/', async function (req, res): Promise<any> {
     }
 });
 
-app.get('/public-services/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
-    const publicServiceId = req.params["publicServiceId"];
-    const formId = req.params["formId"];
+app.get('/public-services/:instanceId/form/:formId', async function (req, res): Promise<any> {
+    const instanceIdRequestParam = req.params.instanceId;
+    const formId = req.params.formId;
     const formType = FORM_ID_TO_TYPE_MAPPING[formId];
 
     try {
-        const bundle = await retrieveForm(publicServiceId, formType, codeRepository, formDefinitionRepository);
+        const instanceId = new Iri(instanceIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
+        const bundle = await formApplicationService.loadInstanceForm(bestuurseenheid, instanceId, formType);
         return res.status(200).json(bundle);
     } catch (e) {
         console.error(e);
@@ -183,13 +185,13 @@ app.get('/public-services/:publicServiceId/form/:formId', async function (req, r
         }
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while submitting semantic-form for "${publicServiceId}".`
+            message: `Something unexpected went wrong while submitting semantic-form for "${instanceIdRequestParam}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
 });
 
-app.put('/public-services/:publicServiceId/form/:formId', async function (req, res): Promise<any> {
+app.put('/public-services/:instanceId/form/:formId', async function (req, res): Promise<any> {
     const delta = req.body;
     const header = req.headers['mu-session-id'] as string;
 
@@ -212,8 +214,8 @@ app.put('/public-services/:publicServiceId/form/:formId', async function (req, r
     }
 });
 
-app.delete('/public-services/:publicServiceId', async function (req, res): Promise<any> {
-    const publicServiceId = req.params.publicServiceId;
+app.delete('/public-services/:instanceId', async function (req, res): Promise<any> {
+    const publicServiceId = req.params.instanceId;
     const header = req.headers['mu-session-id'] as string;
     try {
         await deleteForm(publicServiceId, header, sessionRepository, bestuurseenheidRepository);
@@ -232,8 +234,8 @@ app.delete('/public-services/:publicServiceId', async function (req, res): Promi
 
 });
 
-app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, res): Promise<any> {
-    const instanceUUID = req.params.publicServiceId;
+app.put('/public-services/:instanceId/ontkoppelen', async function (req, res): Promise<any> {
+    const instanceUUID = req.params.instanceId;
     try {
         await unlinkConcept(instanceUUID);
         return res.sendStatus(200);
@@ -250,8 +252,8 @@ app.put('/public-services/:publicServiceId/ontkoppelen', async function (req, re
     }
 });
 
-app.get('/public-services/:publicServiceId/language-version', async function (req, res): Promise<any> {
-    const instanceUUID = req.params.publicServiceId;
+app.get('/public-services/:instanceId/language-version', async function (req, res): Promise<any> {
+    const instanceUUID = req.params.instanceId;
     try {
         const languageVersion = await getLanguageVersionOfInstance(instanceUUID);
         return res.json({languageVersion: languageVersion});
@@ -265,8 +267,8 @@ app.get('/public-services/:publicServiceId/language-version', async function (re
     }
 });
 
-app.post('/public-services/:publicServiceId/confirm-bijgewerkt-tot', async function (req, res): Promise<any> {
-    const instanceUUID = req.params.publicServiceId;
+app.post('/public-services/:instanceId/confirm-bijgewerkt-tot', async function (req, res): Promise<any> {
+    const instanceUUID = req.params.instanceId;
     try {
         await confirmBijgewerktTot(instanceUUID, req.body.bijgewerktTot);
         return res.sendStatus(200);
@@ -280,8 +282,8 @@ app.post('/public-services/:publicServiceId/confirm-bijgewerkt-tot', async funct
     }
 });
 
-app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function (req, res): Promise<any> {
-    const instanceUUID = req.params.publicServiceId;
+app.put('/public-services/:instanceId/koppelen/:conceptId', async function (req, res): Promise<any> {
+    const instanceUUID = req.params.instanceId;
     try {
         const conceptId = req.params.conceptId;
         await linkConcept(instanceUUID, conceptId);
@@ -296,9 +298,9 @@ app.put('/public-services/:publicServiceId/koppelen/:conceptId', async function 
     }
 });
 
-app.post('/public-services/:publicServiceId/submit', async function (req, res): Promise<any> {
+app.post('/public-services/:instanceId/submit', async function (req, res): Promise<any> {
 
-    const publicServiceId = req.params["publicServiceId"];
+    const publicServiceId = req.params.instanceId;
 
     try {
         const response = await validateService(publicServiceId, codeRepository, formDefinitionRepository);

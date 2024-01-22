@@ -19,6 +19,7 @@ export async function validateService(publicServiceId: string, codeRepository: C
 
     for (const formId of formIds) {
         const formType = FORM_ID_TO_TYPE_MAPPING[formId];
+        //TODO LPDC-917: use form application service instead
         const form = await retrieveForm(publicServiceId, formType, codeRepository, formDefinitionRepository);
         forms.push({
             type: formType,
