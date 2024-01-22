@@ -202,6 +202,16 @@ export enum InstanceStatusType {
     VERSTUURD = 'verstuurd',
 }
 
+export enum InstanceReviewStatusType {
+    CONCEPT_GEWIJZIGD = 'concept-gewijzigd',
+    CONCEPT_GEARCHIVEERD = 'concept-gearchiveerd'
+}
+
+export enum InstancePublicationStatusType {
+    GEPUBLICEERD = 'gepubliceerd',
+    TE_HERPUBLICEREN = 'te-herpubliceren'
+}
+
 export enum ChosenFormType {
     INFORMAL = 'informal',
     FORMAL = 'formal',

@@ -4,7 +4,7 @@ import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {
     CompetentAuthorityLevelType,
-    ExecutingAuthorityLevelType,
+    ExecutingAuthorityLevelType, InstancePublicationStatusType, InstanceReviewStatusType,
     InstanceStatusType,
     LanguageType,
     ProductType,
@@ -56,7 +56,10 @@ export class Instance {
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _status: InstanceStatusType;
+    private readonly _reviewStatus: InstanceReviewStatusType | undefined;
+    private readonly _publicationStatus: InstancePublicationStatusType | undefined;
     private readonly _spatials: Iri[];
+    private readonly _legalResources: Iri[];
 
     // TODO LPDC-917: title, description - languageStrings should contain only one language version and should be the same for all (en, nl, nlFormal, nlInformal are allowed ...)
     constructor(id: Iri,
@@ -91,7 +94,10 @@ export class Instance {
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
+                reviewStatus: InstanceReviewStatusType,
+                publicationStatus: InstancePublicationStatusType,
                 spatials: Iri[],
+                legalResources: Iri[]
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -125,7 +131,10 @@ export class Instance {
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
+        this._reviewStatus = reviewStatus;
+        this._publicationStatus = publicationStatus;
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
+        this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
     }
 
     get instanceDutchLanguage(): Language | undefined {
@@ -271,8 +280,19 @@ export class Instance {
         return this._status;
     }
 
+    get reviewStatus(): InstanceReviewStatusType {
+        return this._reviewStatus;
+    }
+
+    get publicationStatus(): InstancePublicationStatusType {
+        return this._publicationStatus;
+    }
+
     get spatials(): Iri[] {
         return [...this._spatials];
     }
 
+    get legalResources(): Iri[] {
+        return [...this._legalResources];
+    }
 }

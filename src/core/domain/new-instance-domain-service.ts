@@ -54,7 +54,10 @@ export class NewInstanceDomainService {
                 now,
                 now,
                 InstanceStatusType.ONTWERP,
+                undefined,
+                undefined,
                 bestuurseenheid.spatials,
+                [],
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);

@@ -15,7 +15,7 @@ import {FormatPreservingDate} from '../../core/domain/format-preserving-date';
 import {
     CompetentAuthorityLevelType,
     ConceptTagType,
-    ExecutingAuthorityLevelType,
+    ExecutingAuthorityLevelType, InstancePublicationStatusType, InstanceReviewStatusType,
     InstanceStatusType,
     LanguageType,
     ProductType,
@@ -161,7 +161,10 @@ export class QuadsToDomainMapper {
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
             this.instanceStatusType(id),
+            this.instanceReviewStatusType(id),
+            this.instancePublicationStatusType(id),
             this.spatials(id),
+            this.legalResources(id)
         );
     }
 
@@ -355,6 +358,14 @@ export class QuadsToDomainMapper {
 
     private instanceStatusType(id: Iri): InstanceStatusType | undefined {
         return this.asEnum(InstanceStatusType, NS.concepts.instanceStatus, this.store.anyValue(namedNode(id.value), NS.adms('status'), null, this.graphId), id.value);
+    }
+
+    private instanceReviewStatusType(id: Iri): InstanceReviewStatusType | undefined {
+        return this.asEnum(InstanceReviewStatusType, NS.concepts.reviewStatus, this.store.anyValue(namedNode(id.value), NS.ext('reviewStatus'), null, this.graphId), id.value);
+    }
+
+    private instancePublicationStatusType(id: Iri): InstancePublicationStatusType | undefined {
+        return this.asEnum(InstancePublicationStatusType, NS.concepts.publicationStatus, this.store.anyValue(namedNode(id.value), NS.schema('publication'), null, this.graphId), id.value);
     }
 
     private spatials(id: Iri): Iri[] {

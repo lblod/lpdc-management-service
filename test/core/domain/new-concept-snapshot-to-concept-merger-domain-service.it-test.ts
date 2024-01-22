@@ -17,7 +17,7 @@ import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
 import {
     CompetentAuthorityLevelType,
     ConceptTagType,
-    ExecutingAuthorityLevelType,
+    ExecutingAuthorityLevelType, InstanceReviewStatusType,
     ProductType,
     PublicationMediumType,
     SnapshotType,
@@ -1075,13 +1075,13 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(reviewStatusResultForInstanceOfBestuurseenheid.length).toEqual(1);
 
             const reviewStatusForInstanceOfBestuurseenheid = reviewStatusResultForInstanceOfBestuurseenheid[0]['reviewStatus'].value;
-            expect(reviewStatusForInstanceOfBestuurseenheid).toEqual('http://lblod.data.gift/concepts/5a3168e2-f39b-4b5d-8638-29f935023c83');
+            expect(reviewStatusForInstanceOfBestuurseenheid).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD).value);
 
             const reviewStatusResultForInstanceOfAnotherBestuurseenheid = await directDatabaseAccess.list(reviewStatusForConceptInGraph(anotherBestuurseenheid));
             expect(reviewStatusResultForInstanceOfAnotherBestuurseenheid.length).toEqual(1);
 
             const reviewStatusForInstanceOfAnotherBestuurseenheid = reviewStatusResultForInstanceOfAnotherBestuurseenheid[0]['reviewStatus'].value;
-            expect(reviewStatusForInstanceOfAnotherBestuurseenheid).toEqual('http://lblod.data.gift/concepts/5a3168e2-f39b-4b5d-8638-29f935023c83');
+            expect(reviewStatusForInstanceOfAnotherBestuurseenheid).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD).value);
         }, 20000);
 
         test('Does not updates instance review status to updated for each linked instance if concept is not FunctionallyModified', async () => {
@@ -1213,7 +1213,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(reviewStatusResultForInstance.length).toEqual(1);
 
             const reviewStatusForInstance = reviewStatusResultForInstance[0]['reviewStatus'].value;
-            expect(reviewStatusForInstance).toEqual('http://lblod.data.gift/concepts/cf22e8d1-23c3-45da-89bc-00826eaf23c3');
+            expect(reviewStatusForInstance).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEARCHIVEERD).value);
 
         }, 20000);
 

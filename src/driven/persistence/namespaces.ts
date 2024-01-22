@@ -46,5 +46,7 @@ export const NS = {
     concepts: {
         identity: lblodConceptsNS,
         instanceStatus: Namespace(lblodConceptsNS('instance-status/').value),
+        reviewStatus: Namespace(lblodConceptsNS('review-status/').value),
+        publicationStatus: Namespace(lblodConceptsNS('publication-status/').value)
     },
 };

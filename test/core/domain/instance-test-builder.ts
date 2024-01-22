@@ -2,7 +2,7 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Instance} from "../../../src/core/domain/instance";
 import {
-    buildBestuurseenheidIri,
+    buildBestuurseenheidIri, buildCodexVlaanderenIri,
     buildConceptIri,
     buildConceptSnapshotIri,
     buildInstanceIri,
@@ -13,8 +13,10 @@ import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,
-    ExecutingAuthorityLevelType,
-    InstanceStatusType, LanguageType,
+    ExecutingAuthorityLevelType, InstancePublicationStatusType,
+    InstanceReviewStatusType,
+    InstanceStatusType,
+    LanguageType,
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
@@ -111,7 +113,10 @@ export function aFullInstance(): InstanceTestBuilder {
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withStatus(InstanceTestBuilder.STATUS)
-        .withSpatials(InstanceTestBuilder.SPATIALS);
+        .withReviewStatus(InstanceTestBuilder.REVIEW_STATUS)
+        .withPublicationStatus(InstanceTestBuilder.PUBLICATION_STATUS)
+        .withSpatials(InstanceTestBuilder.SPATIALS)
+        .withLegalResources(InstanceTestBuilder.LEGAL_RESOURCES);
 }
 
 export class InstanceTestBuilder {
@@ -191,6 +196,10 @@ export class InstanceTestBuilder {
 
     public static readonly CONTACT_POINTS = [aFullContactPoint().build(), anotherFullContactPoint().build()];
 
+    public static readonly REVIEW_STATUS = InstanceReviewStatusType.CONCEPT_GEWIJZIGD;
+    public static readonly PUBLICATION_STATUS = InstancePublicationStatusType.GEPUBLICEERD;
+
+    public static readonly LEGAL_RESOURCES = [buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())];
 
     private id: Iri;
     private uuid: string;
@@ -224,7 +233,10 @@ export class InstanceTestBuilder {
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private status: InstanceStatusType;
+    private reviewStatus: InstanceReviewStatusType;
+    private publicationStatus: InstancePublicationStatusType;
     private spatials: Iri[] = [];
+    private legalResources: Iri[] = [];
 
     public withId(id: Iri): InstanceTestBuilder {
         this.id = id;
@@ -386,8 +398,23 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withReviewStatus(reviewStatus: InstanceReviewStatusType): InstanceTestBuilder {
+        this.reviewStatus = reviewStatus;
+        return this;
+    }
+
+    public withPublicationStatus(publicationStatus: InstancePublicationStatusType) {
+        this.publicationStatus = publicationStatus;
+        return this;
+    }
+
     public withSpatials(spatials: Iri[]): InstanceTestBuilder {
         this.spatials = spatials;
+        return this;
+    }
+
+    public withLegalResources(legalResources: Iri[]): InstanceTestBuilder {
+        this.legalResources = legalResources;
         return this;
     }
 
@@ -425,7 +452,10 @@ export class InstanceTestBuilder {
             this.dateCreated,
             this.dateModified,
             this.status,
+            this.reviewStatus,
+            this.publicationStatus,
             this.spatials,
+            this.legalResources
         );
     }
 }

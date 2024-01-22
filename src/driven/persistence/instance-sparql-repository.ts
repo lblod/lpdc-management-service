@@ -8,6 +8,8 @@ import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recur
 import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {NS} from "./namespaces";
+import {InstanceReviewStatusType} from "../../core/domain/types";
 
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
@@ -53,9 +55,9 @@ export class InstanceSparqlRepository implements InstanceRepository {
     async updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void> {
         let reviewStatus = undefined;
         if (isConceptArchived) {
-            reviewStatus = 'http://lblod.data.gift/concepts/cf22e8d1-23c3-45da-89bc-00826eaf23c3';
+            reviewStatus = InstanceReviewStatusType.CONCEPT_GEARCHIVEERD;
         } else if (isConceptFunctionallyChanged) {
-            reviewStatus = 'http://lblod.data.gift/concepts/5a3168e2-f39b-4b5d-8638-29f935023c83';
+            reviewStatus = InstanceReviewStatusType.CONCEPT_GEWIJZIGD;
         }
 
         if (reviewStatus) {
@@ -69,7 +71,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
             }
             INSERT {
                 GRAPH ?g {
-                    ?service ext:reviewStatus ${sparqlEscapeUri(reviewStatus)}.
+                    ?service ext:reviewStatus ${NS.concepts.reviewStatus(reviewStatus)}.
                 }
             }
             WHERE {

@@ -1,7 +1,7 @@
 import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {buildSpatialRefNis2019Iri} from "./iri-test-builder";
+import {buildCodexVlaanderenIri, buildSpatialRefNis2019Iri} from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
@@ -197,7 +197,7 @@ describe('constructing', () => {
     });
 
     describe('cost ', () => {
-        test('valid cost for concept does not throw error', () => {
+        test('valid cost for instance does not throw error', () => {
             const uuidValue = uuid();
             const validCost = Cost.reconstitute(
                 CostTestBuilder.buildIri(uuidValue),
@@ -209,7 +209,7 @@ describe('constructing', () => {
             expect(() => aFullInstance().withCosts([validCost]).build()).not.toThrow();
         });
 
-        test('invalid cost for concept does throw error', () => {
+        test('invalid cost for instance does throw error', () => {
             const invalidCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
 
             expect(() => aFullInstance().withCosts([invalidCost]).build()).toThrow();
@@ -217,7 +217,7 @@ describe('constructing', () => {
     });
 
     describe('financialAdvantage ', () => {
-        test('valid financialAdvantage for concept does not throw error', () => {
+        test('valid financialAdvantage for instance does not throw error', () => {
             const uuidValue = uuid();
             const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
                 aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
@@ -225,7 +225,7 @@ describe('constructing', () => {
             expect(() => aFullInstance().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
         });
 
-        test('invalid financialAdvantage for concept does throw error', () => {
+        test('invalid financialAdvantage for instance does throw error', () => {
             const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
 
             expect(() => aFullInstance().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
@@ -267,6 +267,13 @@ describe('constructing', () => {
     test('Spatials with duplicates throws error', () => {
         expect(() => aFullInstance().withSpatials([buildSpatialRefNis2019Iri(1), buildSpatialRefNis2019Iri(1)]).build()).toThrow(new Error('spatials should not contain duplicates'));
     });
+
+    test('legalResources with duplicates throws error', () => {
+        const iri = uuid();
+        const instanceTestBuilder = aFullInstance().withLegalResources([buildCodexVlaanderenIri(iri), buildCodexVlaanderenIri(iri)]);
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('legalResources should not contain duplicates'));
+    });
+
 
 });
 
