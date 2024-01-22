@@ -1,8 +1,8 @@
 import {FormType} from "../../../domain/types";
+import {Language} from "../../../domain/language";
 
 export interface FormDefinitionRepository {
 
-    //TODO LPDC-917: switch language type to Language
-    loadFormDefinition(formType: FormType, language: string, isEnglishRequired: boolean): string;
+    loadFormDefinition(formType: FormType, language: Language, isEnglishRequired: boolean): string;
 
 }
