@@ -89,10 +89,10 @@ const selectFormLanguageDomainService =
 const formApplicationService =
     new FormApplicationService(
         conceptRepository,
+        instanceRepository,
         formDefinitionRepository,
         codeRepository,
         selectFormLanguageDomainService,
-        formalInformalChoiceRepository,
     );
 
 app.get('/', function (_req, res): void {
