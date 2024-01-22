@@ -4,6 +4,7 @@ import {ChosenFormType} from "./types";
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {FormalInformalChoice} from "./formal-informal-choice";
+import {Instance} from "./instance";
 
 export class SelectFormLanguageDomainService {
 
@@ -35,5 +36,14 @@ export class SelectFormLanguageDomainService {
             }
             return Language.NL;
         }
+    }
+
+    public async selectForInstance(instance: Instance, bestuurseenheid: Bestuurseenheid): Promise<Language> {
+        if (instance.instanceDutchLanguage) {
+            return instance.instanceDutchLanguage;
+        }
+
+        const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
+        return formalInformalChoice?.chosenForm === ChosenFormType.INFORMAL ? Language.INFORMAL : Language.FORMAL;
     }
 }

@@ -1,4 +1,4 @@
-import {aFullInstance} from "./instance-test-builder";
+import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {buildSpatialRefNis2019Iri} from "./iri-test-builder";
@@ -27,6 +27,7 @@ import {Cost} from "../../../src/core/domain/cost";
 import {CostTestBuilder} from "./cost-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
+import {Language} from "../../../src/core/domain/language";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -266,5 +267,110 @@ describe('constructing', () => {
     test('Spatials with duplicates throws error', () => {
         expect(() => aFullInstance().withSpatials([buildSpatialRefNis2019Iri(1), buildSpatialRefNis2019Iri(1)]).build()).toThrow(new Error('spatials should not contain duplicates'));
     });
+
+});
+
+describe('dutch language version', () => {
+
+    test('title, description, additional description, exception, regulation missing, returns undefined', () => {
+        const instance =
+            aMinimalInstance()
+                .withTitle(undefined)
+                .withDescription(undefined)
+                .withAdditionalDescription(undefined)
+                .withException(undefined)
+                .withRegulation(undefined)
+                .build();
+        expect(instance.instanceDutchLanguage).toBeUndefined();
+    });
+
+
+    for (const dutchLanguage of [Language.NL, Language.FORMAL, Language.INFORMAL]) {
+
+        let valueInDutchLanguage: LanguageString;
+        if(dutchLanguage === Language.NL) {
+            valueInDutchLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
+        } else if(dutchLanguage == Language.FORMAL) {
+            valueInDutchLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
+        } else if(dutchLanguage == Language.INFORMAL) {
+            valueInDutchLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
+        }
+
+
+        test(`title has dutch language ${dutchLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(valueInDutchLanguage)
+                    .withDescription(undefined)
+                    .withAdditionalDescription(undefined)
+                    .withException(undefined)
+                    .withRegulation(undefined)
+                    .build();
+            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+        });
+
+        test(`description has dutch language ${dutchLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(undefined)
+                    .withDescription(valueInDutchLanguage)
+                    .withAdditionalDescription(undefined)
+                    .withException(undefined)
+                    .withRegulation(undefined)
+                    .build();
+            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+        });
+
+        test(`additional Description has dutch language ${dutchLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(undefined)
+                    .withDescription(undefined)
+                    .withAdditionalDescription(valueInDutchLanguage)
+                    .withException(undefined)
+                    .withRegulation(undefined)
+                    .build();
+            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+        });
+
+
+        test(`exception has dutch language ${dutchLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(undefined)
+                    .withDescription(undefined)
+                    .withAdditionalDescription(undefined)
+                    .withException(valueInDutchLanguage)
+                    .withRegulation(undefined)
+                    .build();
+            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+        });
+
+        test(`regulation has dutch language ${dutchLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(undefined)
+                    .withDescription(undefined)
+                    .withAdditionalDescription(undefined)
+                    .withException(undefined)
+                    .withRegulation(valueInDutchLanguage)
+                    .build();
+            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+        });
+
+
+        test(`title, description, additional description, exception, regulation all have dutchLanguage ${dutchLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(valueInDutchLanguage)
+                    .withDescription(valueInDutchLanguage)
+                    .withAdditionalDescription(valueInDutchLanguage)
+                    .withException(valueInDutchLanguage)
+                    .withRegulation(valueInDutchLanguage)
+                    .build();
+            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+        });
+
+    }
 
 });

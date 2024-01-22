@@ -80,7 +80,10 @@ export class InstanceSparqlRepository implements InstanceRepository {
             }`;
             await this.querying.update(updateReviewStatusesQuery);
         }
+    }
 
+    asTurtleFormat(bestuurseenheid: Bestuurseenheid, instance: Instance): string[] {
+        return new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
     }
 
 

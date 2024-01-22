@@ -5,10 +5,13 @@ import {FormatPreservingDate} from "./format-preserving-date";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
-    InstanceStatusType, LanguageType,
-    ProductType, PublicationMediumType,
+    InstanceStatusType,
+    LanguageType,
+    ProductType,
+    PublicationMediumType,
     TargetAudienceType,
-    ThemeType, YourEuropeCategoryType
+    ThemeType,
+    YourEuropeCategoryType
 } from "./types";
 import {asSortedArray} from "./shared/collections-helper";
 import {Requirement} from "./requirement";
@@ -16,6 +19,7 @@ import {Procedure} from "./procedure";
 import {Website} from "./website";
 import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
+import {Language} from "./language";
 
 export class Instance {
 
@@ -52,7 +56,7 @@ export class Instance {
     private readonly _status: InstanceStatusType;
     private readonly _spatials: Iri[];
 
-    // TODO LPDC-917: title, description - languageStrings should contain only one language version and should be the same for all
+    // TODO LPDC-917: title, description - languageStrings should contain only one language version and should be the same for all (en, nl, nlFormal, nlInformal are allowed ...)
     constructor(id: Iri,
                 uuid: string,
                 createdBy: Iri,
@@ -85,7 +89,6 @@ export class Instance {
                 dateModified: FormatPreservingDate,
                 status: InstanceStatusType,
                 spatials: Iri[],
-
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -100,9 +103,9 @@ export class Instance {
         this._type = type;
         this._targetAudiences = requireNoDuplicates(asSortedArray(targetAudiences), 'targetAudiences');
         this._themes = requireNoDuplicates(asSortedArray(themes), 'themes');
-        this._competentAuthorityLevels = requireNoDuplicates(asSortedArray(competentAuthorityLevels),'competentAuthorityLevels');
+        this._competentAuthorityLevels = requireNoDuplicates(asSortedArray(competentAuthorityLevels), 'competentAuthorityLevels');
         this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities), 'competentAuthorities');
-        this._executingAuthorityLevels = requireNoDuplicates(asSortedArray(executingAuthorityLevels),'executingAuthorityLevels');
+        this._executingAuthorityLevels = requireNoDuplicates(asSortedArray(executingAuthorityLevels), 'executingAuthorityLevels');
         this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities), 'executingAuthorities');
         this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
@@ -119,6 +122,21 @@ export class Instance {
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
+    }
+
+    get instanceDutchLanguage(): Language | undefined {
+        const dutchLanguages =
+            [
+                this._title,
+                this._description,
+                this._additionalDescription,
+                this._exception,
+                this._regulation,
+            ]
+                .filter(ls => ls !== undefined)
+                .flatMap(ls => ls.definedLanguages)
+                .filter(l => l !== Language.EN);
+        return dutchLanguages[0];
     }
 
     get id(): Iri {

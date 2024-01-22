@@ -10,4 +10,6 @@ export interface InstanceRepository {
 
     updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void>;
 
+    asTurtleFormat(bestuurseenheid: Bestuurseenheid, instance: Instance): string[];
+
 }

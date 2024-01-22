@@ -10,13 +10,13 @@ import {
     FormalInformalChoiceSparqlTestRepository
 } from "../../driven/persistence/formal-informal-choice-sparql-test-repository";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
+import {aMinimalInstance} from "./instance-test-builder";
 
 describe('select form language for concept', () => {
 
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
-
 
     test('When chosenForm informal and concept in informal version then formLanguage should be @nl-be-x-informal', async () => {
         const bestuurseenheid =
@@ -342,6 +342,151 @@ describe('select form language for concept', () => {
 
         const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
         expect(selectedLanguage).toEqual(Language.NL);
+    });
+
+});
+
+describe('select form language for instance', () => {
+
+    const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
+
+    test('Existing dutch nl language on instance overrides formal informal choice', async () => {
+        const bestuurseenheid =
+            aBestuurseenheid()
+                .build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const formalInformalChoice =
+            aFormalInformalChoice()
+                .withChosenForm(ChosenFormType.INFORMAL)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .build();
+        await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+        const instance =
+            aMinimalInstance()
+                .withTitle(LanguageString.of('en', 'nl'))
+                .build();
+
+        const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
+        expect(selectedLanguage).toEqual(Language.NL);
+    });
+
+    test('Existing dutch nl formal language on instance overrides formal informal choice', async () => {
+        const bestuurseenheid =
+            aBestuurseenheid()
+                .build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const formalInformalChoice =
+            aFormalInformalChoice()
+                .withChosenForm(ChosenFormType.INFORMAL)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .build();
+        await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+        const instance =
+            aMinimalInstance()
+                .withTitle(LanguageString.of('en', undefined, 'nl formal'))
+                .build();
+
+        const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
+        expect(selectedLanguage).toEqual(Language.FORMAL);
+    });
+
+    test('Existing dutch nl informal language on instance overrides formal informal choice', async () => {
+        const bestuurseenheid =
+            aBestuurseenheid()
+                .build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const formalInformalChoice =
+            aFormalInformalChoice()
+                .withChosenForm(ChosenFormType.FORMAL)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .build();
+        await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+        const instance =
+            aMinimalInstance()
+                .withTitle(LanguageString.of('en', undefined, undefined, 'nl informal'))
+                .build();
+
+        const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
+        expect(selectedLanguage).toEqual(Language.INFORMAL);
+    });
+
+    test('Instance without dutch language uses formal informal choice formal', async () => {
+        const bestuurseenheid =
+            aBestuurseenheid()
+                .build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const formalInformalChoice =
+            aFormalInformalChoice()
+                .withChosenForm(ChosenFormType.FORMAL)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .build();
+        await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+        const instance =
+            aMinimalInstance()
+                .withTitle(undefined)
+                .withDescription(undefined)
+                .withAdditionalDescription(undefined)
+                .withException(undefined)
+                .withRegulation(undefined)
+                .build();
+
+        const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
+        expect(selectedLanguage).toEqual(Language.FORMAL);
+    });
+
+    test('Instance without dutch language uses formal informal choice informal', async () => {
+        const bestuurseenheid =
+            aBestuurseenheid()
+                .build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const formalInformalChoice =
+            aFormalInformalChoice()
+                .withChosenForm(ChosenFormType.INFORMAL)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .build();
+        await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+        const instance =
+            aMinimalInstance()
+                .withTitle(undefined)
+                .withDescription(undefined)
+                .withAdditionalDescription(undefined)
+                .withException(undefined)
+                .withRegulation(undefined)
+                .build();
+
+        const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
+        expect(selectedLanguage).toEqual(Language.INFORMAL);
+    });
+
+    test('Instance without dutch language and no formal informal choice made yet returns formal', async () => {
+        const bestuurseenheid =
+            aBestuurseenheid()
+                .build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const instance =
+            aMinimalInstance()
+                .withTitle(undefined)
+                .withDescription(undefined)
+                .withAdditionalDescription(undefined)
+                .withException(undefined)
+                .withRegulation(undefined)
+                .build();
+
+        const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
+        expect(selectedLanguage).toEqual(Language.FORMAL);
     });
 
 });
