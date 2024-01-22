@@ -40,7 +40,6 @@ import {NewInstanceDomainService} from "./src/core/domain/new-instance-domain-se
 import {Session} from "./src/core/domain/session";
 import {authenticateAndAuthorizeRequest} from "./src/driving/sessions";
 import {FormDefinitionFileRepository} from "./src/driven/persistence/form-definition-file-repository";
-import {serviceUriForId} from "./lib/commonQueries";
 import {SelectFormLanguageDomainService} from "./src/core/domain/select-form-language-domain-service";
 import {FormalInformalChoiceSparqlRepository} from "./src/driven/persistence/formal-informal-choice-sparql-repository";
 import {FormApplicationService} from "./src/core/application/form-application-service";
@@ -132,9 +131,9 @@ app.post('/public-services/', async function (req, res): Promise<any> {
     const conceptId = body?.data?.relationships?.["concept"]?.data?.id;
 
     const session: Session = req['session'];
-    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
     try {
+        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
         if (conceptId) {
             const {uuid, uri} = await createForm(conceptId, session.id, sessionRepository, bestuurseenheidRepository);
             return res.status(201).json({
@@ -327,11 +326,11 @@ app.post('/public-services/:publicServiceId/submit', async function (req, res): 
 
 app.use('/conceptual-public-services/', authenticateAndAuthorizeRequest(sessionRepository));
 
-app.get('/conceptual-public-services/:conceptualPublicServiceId/dutch-language-version', async (req, res): Promise<any> => {
+app.get('/conceptual-public-services/:conceptId/dutch-language-version', async (req, res): Promise<any> => {
+    const conceptIdRequestParam = req.params.conceptId;
+
     try {
-
-        const conceptId = new Iri(req.params.conceptualPublicServiceId);
-
+        const conceptId = new Iri(conceptIdRequestParam);
         const session: Session = req['session'];
         const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
         const concept = await conceptRepository.findById(conceptId);
@@ -345,22 +344,21 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/dutch-language-v
         }
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while getting language version for concept with uuid "${uuid}".`
+            message: `Something unexpected went wrong while getting dutch language version for concept with id "${conceptIdRequestParam}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
 });
 
-app.get('/conceptual-public-services/:conceptualPublicServiceId/form/:formId', async function (req, res): Promise<any> {
-    const conceptualPublicServiceId = req.params["conceptualPublicServiceId"];
+app.get('/conceptual-public-services/:conceptId/form/:formId', async function (req, res): Promise<any> {
+    const conceptIdRequestParam = req.params.conceptId;
     const formId = req.params["formId"];
     const formType = FORM_ID_TO_TYPE_MAPPING[formId];
 
     try {
-
+        const conceptId = new Iri(conceptIdRequestParam);
         const session: Session = req['session'];
         const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        const conceptId = new Iri(await serviceUriForId(conceptualPublicServiceId, 'lpdcExt:ConceptualPublicService'));
         const bundle = await formApplicationService.loadConceptForm(bestuurseenheid, conceptId, formType);
 
         return res.status(200).json(bundle);
@@ -371,7 +369,7 @@ app.get('/conceptual-public-services/:conceptualPublicServiceId/form/:formId', a
         }
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while submitting semantic-form for "${conceptualPublicServiceId}".`
+            message: `Something unexpected went wrong while submitting semantic-form for "${conceptIdRequestParam}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
