@@ -363,11 +363,12 @@ export class DomainToTriplesMapper {
             this.buildQuad(namedNode(address.id.value), NS.rdf('type'), NS.locn('Address')),
             ...this.languageStringToTriples(namedNode(address.id.value), NS.adres(`gemeentenaam`), address.gemeentenaam),
             ...this.languageStringToTriples(namedNode(address.id.value), NS.adres(`land`), address.land),
-            address.huisnummer ? this.buildQuad(namedNode(address.id.value), NS.adresvoorstelling('huisnummer'), address.huisnummer) : undefined,
-            address.busnummer ? this.buildQuad(namedNode(address.id.value), NS.adresvoorstelling('busnummer'), address.busnummer) : undefined,
+            address.huisnummer ? this.buildQuad(namedNode(address.id.value), NS.adres('Adresvoorstelling.huisnummer'), address.huisnummer) : undefined,
+            address.busnummer ? this.buildQuad(namedNode(address.id.value), NS.adres('Adresvoorstelling.busnummer'), address.busnummer) : undefined,
             address.postcode ? this.buildQuad(namedNode(address.id.value), NS.adres('postcode'), address.postcode) : undefined,
             ...this.languageStringToTriples(namedNode(address.id.value), NS.adres(`Straatnaam`), address.straatnaam),
-            this.verwijstNaar(address.id, address.verwijstNaar)
+            this.verwijstNaar(address.id, address.verwijstNaar),
+            this.buildQuad(namedNode(address.id.value), NS.sh('order'), literal(`1`, NS.xsd('integer'))),
         ] : [];
     }
 

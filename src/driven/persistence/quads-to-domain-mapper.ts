@@ -16,7 +16,8 @@ import {
     CompetentAuthorityLevelType,
     ConceptTagType,
     ExecutingAuthorityLevelType,
-    InstanceStatusType, LanguageType,
+    InstanceStatusType,
+    LanguageType,
     ProductType,
     PublicationMediumType,
     SnapshotType,
@@ -267,11 +268,11 @@ export class QuadsToDomainMapper {
     }
 
     private huisnummer(id: Iri): string | undefined {
-        return this.store.anyValue(namedNode(id.value), NS.adresvoorstelling('huisnummer'), null, this.graphId);
+        return this.store.anyValue(namedNode(id.value), NS.adres('Adresvoorstelling.huisnummer'), null, this.graphId);
     }
 
     private busnummer(id: Iri): string | undefined {
-        return this.store.anyValue(namedNode(id.value), NS.adresvoorstelling('busnummer'), null, this.graphId);
+        return this.store.anyValue(namedNode(id.value), NS.adres('Adresvoorstelling.busnummer'), null, this.graphId);
     }
 
     private postcode(id: Iri): string | undefined {
@@ -405,7 +406,7 @@ export class QuadsToDomainMapper {
             this.errorIfMissingOrIncorrectType(evidenceId, NS.locn('Address')));
 
         if (addressIds.length > 1) {
-            throw new Error(`Did not expect more than one evidence for ${id}`);
+            throw new Error(`Did not expect more than one address for ${id}`);
         }
         if (addressIds.length === 0) {
             return undefined;
