@@ -1,31 +1,32 @@
 import {FORM_ID_TO_TYPE_MAPPING, FORM_MAPPING_TRANSLATIONS} from '../config';
 import ForkingStore from "forking-store";
 import * as rdflib from 'rdflib';
-import {retrieveForm} from './retrieveForm';
 import {validateForm} from '@lblod/submission-form-helpers';
 import {loadContactPointsAddresses} from "./commonQueries";
 import {uniq} from "lodash";
-import {CodeRepository} from "../src/core/port/driven/persistence/code-repository";
-import {FormDefinitionRepository} from "../src/core/port/driven/persistence/form-definition-repository";
 import {FormType} from "../src/core/domain/types";
+import {Iri} from "../src/core/domain/shared/iri";
+import {Bestuurseenheid} from "../src/core/domain/bestuurseenheid";
+import {FormApplicationService} from "../src/core/application/form-application-service";
 
 const FORM = rdflib.Namespace('http://lblod.data.gift/vocabularies/forms/');
 const RDF = rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 
 
-export async function validateService(publicServiceId: string, codeRepository: CodeRepository, formDefinitionRepository: FormDefinitionRepository): Promise<{ errors: any[] }> {
+export async function validateService(instanceId: Iri, bestuurseenheid: Bestuurseenheid, formApplicationService: FormApplicationService): Promise<{ errors: any[] }> {
     const formIds = Object.keys(FORM_ID_TO_TYPE_MAPPING);
     const forms = [];
 
     for (const formId of formIds) {
         const formType = FORM_ID_TO_TYPE_MAPPING[formId];
-        //TODO LPDC-917: use form application service instead
-        const form = await retrieveForm(publicServiceId, formType, codeRepository, formDefinitionRepository);
+
+        const bundle = await formApplicationService.loadInstanceForm(bestuurseenheid, instanceId, formType);
+
         forms.push({
             type: formType,
-            form: form,
+            form: bundle,
             id: formId,
-            serviceUri: form.serviceUri
+            serviceUri: bundle.serviceUri
         });
     }
 

@@ -300,10 +300,14 @@ app.put('/public-services/:instanceId/koppelen/:conceptId', async function (req,
 
 app.post('/public-services/:instanceId/submit', async function (req, res): Promise<any> {
 
-    const publicServiceId = req.params.instanceId;
+    const instanceIdRequestParam = req.params.instanceId;
 
     try {
-        const response = await validateService(publicServiceId, codeRepository, formDefinitionRepository);
+        const instanceId = new Iri(instanceIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+        const response = await validateService(instanceId, bestuurseenheid, formApplicationService);
 
         if (response.errors.length) {
             return res.status(400).json({
@@ -319,7 +323,7 @@ app.post('/public-services/:instanceId/submit', async function (req, res): Promi
         console.error(e);
         const response = {
             status: 500,
-            message: `Unexpected error during validation  of service "${publicServiceId}".`
+            message: `Unexpected error during validation of service "${instanceIdRequestParam}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
