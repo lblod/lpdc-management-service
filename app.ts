@@ -14,7 +14,6 @@ import {ProcessingQueue} from './lib/processing-queue';
 import {getContactPointOptions} from "./lib/getContactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
 import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
-import {getLanguageVersionOfInstance} from "./lib/getInstanceLanguageVersion";
 import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
 import LPDCError from "./platform/lpdc-error";
 import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-repository";
@@ -252,16 +251,22 @@ app.put('/public-services/:instanceId/ontkoppelen', async function (req, res): P
     }
 });
 
-app.get('/public-services/:instanceId/language-version', async function (req, res): Promise<any> {
-    const instanceUUID = req.params.instanceId;
+app.get('/public-services/:instanceId/dutch-language-version', async function (req, res): Promise<any> {
+    const instanceIdRequestParam = req.params.instanceId;
+
     try {
-        const languageVersion = await getLanguageVersionOfInstance(instanceUUID);
+        const instanceId = new Iri(instanceIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+
+        const languageVersion = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
         return res.json({languageVersion: languageVersion});
     } catch (e) {
         console.error(e);
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while getting language version for concept with uuid "${instanceUUID}".`
+            message: `Something unexpected went wrong while getting dutch language version for concept with id "${instanceIdRequestParam}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }

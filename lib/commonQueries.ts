@@ -602,7 +602,6 @@ export async function loadContactPointOption(option: string): Promise<any> {
     return sortBy(unsortedContactPointOptions, (option) => option.toUpperCase());
 }
 
-
 export async function removeReviewStatus(instanceUri: string): Promise<void> {
     const queryString = `
         ${PREFIXES}
