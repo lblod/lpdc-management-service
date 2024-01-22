@@ -2,7 +2,6 @@ import {sparqlEscapeUri, update, uuid} from '../mu-helper';
 import {updateSudo} from '@lblod/mu-auth-sudo';
 import {APPLICATION_GRAPH} from '../config';
 import {Graph, parse, RDFNode} from '../utils/rdflib';
-import {isAllowedForLPDC} from '../src/driving/sessions';
 import {getScopedGraphsForStatement} from '../utils/common';
 import {Literal, Statement} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";
@@ -16,10 +15,6 @@ export async function updateFormAtomic(data: any, sessionUri: string, sessionRep
 
     const session = await sessionRepository.findById(new Iri(sessionUri));
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-
-    if (!(await isAllowedForLPDC(session.id.value))) {
-        throw `Session ${session.id} is not an LPDC User`;
-    }
 
     const targetGraph = `http://mu.semte.ch/graphs/organizations/${bestuurseenheid.uuid}/LoketLB-LPDCGebruiker`;
 
@@ -66,11 +61,6 @@ function parseStatements(statements: Statement[]): Array<Quad> {
 export async function updateForm(data: any, sessionUri: string, sessionRepository: SessionSparqlRepository, bestuurseenheidRepository: BestuurseenheidSparqlRepository) {
     const session = await sessionRepository.findById(new Iri(sessionUri));
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-
-    if (!(await isAllowedForLPDC(session.id.value))) {
-        throw `Session ${session.id} is not an LPDC User`;
-    }
-
 
     if (data.removals) await mutate('DELETE', data.removals, bestuurseenheid.uuid);
     if (data.additions) await mutate('INSERT', data.additions);

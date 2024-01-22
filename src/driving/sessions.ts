@@ -1,18 +1,6 @@
-import {querySudo} from '@lblod/mu-auth-sudo';
-import {sparqlEscapeUri} from '../../mu-helper';
 import {Iri} from "../core/domain/shared/iri";
 import {SessionRoleType} from "../core/domain/session";
 import {SessionRepository} from "../core/port/driven/persistence/session-repository";
-
-//TODO LPDC-917: remove ...
-export async function isAllowedForLPDC(sessionUri: string): Promise<boolean> {
-    const queryStr = `
-    ASK {
-      ${sparqlEscapeUri(sessionUri)} <http://mu.semte.ch/vocabularies/ext/sessionRole> "LoketLB-LPDCGebruiker".
-    }
-  `;
-    return (await querySudo(queryStr)).boolean;
-}
 
 export const authenticateAndAuthorizeRequest = (sessionRepository: SessionRepository) => async (req, res, next) => {
     try {

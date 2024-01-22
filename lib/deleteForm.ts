@@ -15,7 +15,6 @@ import {
     loadWebsites,
     serviceUriForId
 } from './commonQueries';
-import {isAllowedForLPDC} from '../src/driving/sessions';
 import {getScopedGraphsForStatement} from '../utils/common';
 import {updateSudo} from '@lblod/mu-auth-sudo';
 import {SessionSparqlRepository} from "../src/driven/persistence/session-sparql-repository";
@@ -56,10 +55,6 @@ export async function deleteForm(serviceId: string, sessionUri: string, sessionR
     const source = bindingsToNT(sourceBindings);
     const session = await sessionRepository.findById(new Iri(sessionUri));
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-
-    if (!(await isAllowedForLPDC(session.id.value))) {
-        throw `Session ${session.id} is not an LPDC User`;
-    }
 
     for (const statement of source) {
         // The workaround: ensure mu-auth deletes one triple in one graph at a time. We know that works.
