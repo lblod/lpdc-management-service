@@ -24,6 +24,7 @@ export class Address {
                 straatnaam: LanguageString | undefined,
                 verwijstNaar: Iri) {
 
+        // TODO LPDC-917: validate gemeentenaam, land en straatnaam should be only nl
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         this._gemeentenaam = gemeentenaam;

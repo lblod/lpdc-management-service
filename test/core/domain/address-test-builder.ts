@@ -19,33 +19,21 @@ export function aFullAddress(): AddressTestBuilder {
         .withUuid(uniqueId)
         .withGemeentenaam(
             LanguageString.of(
-                AddressTestBuilder.GEMEENTENAAM_EN,
+                undefined,
                 AddressTestBuilder.GEMEENTENAAM_NL,
-                AddressTestBuilder.GEMEENTENAAM_NL_FORMAL,
-                AddressTestBuilder.GEMEENTENAAM_NL_INFORMAL,
-                AddressTestBuilder.GEMEENTENAAM_NL_GENERATED_FORMAL,
-                AddressTestBuilder.GEMEENTENAAM_NL_GENERATED_INFORMAL,
             )
         ).withLand(
             LanguageString.of(
-                AddressTestBuilder.LAND_EN,
+                undefined,
                 AddressTestBuilder.LAND_NL,
-                AddressTestBuilder.LAND_NL_FORMAL,
-                AddressTestBuilder.LAND_NL_INFORMAL,
-                AddressTestBuilder.LAND_NL_GENERATED_FORMAL,
-                AddressTestBuilder.LAND_NL_GENERATED_INFORMAL,
             )
         )
         .withHuisnummer(AddressTestBuilder.HUISNUMMER)
         .withBusnummer(AddressTestBuilder.BUSNUMMER)
         .withPostcode(AddressTestBuilder.POSTCODE)
         .withStraatnaam(LanguageString.of(
-                AddressTestBuilder.STRAATNAAM_EN,
-                AddressTestBuilder.STRAATNAAM_NL,
-                AddressTestBuilder.STRAATNAAM_NL_FORMAL,
-                AddressTestBuilder.STRAATNAAM_NL_INFORMAL,
-                AddressTestBuilder.STRAATNAAM_NL_GENERATED_FORMAL,
-                AddressTestBuilder.STRAATNAAM_NL_GENERATED_INFORMAL,
+                undefined,
+                AddressTestBuilder.STRAATNAAM_NL
             )
         )
         .withVerwijstNaar(AddressTestBuilder.VERWIJST_NAAR);
