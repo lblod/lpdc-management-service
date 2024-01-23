@@ -4,7 +4,9 @@ import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {
     CompetentAuthorityLevelType,
-    ExecutingAuthorityLevelType, InstancePublicationStatusType, InstanceReviewStatusType,
+    ExecutingAuthorityLevelType,
+    InstancePublicationStatusType,
+    InstanceReviewStatusType,
     InstanceStatusType,
     LanguageType,
     ProductType,
@@ -50,8 +52,8 @@ export class Instance {
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
     private readonly _contactPoints: ContactPoint[];
-    private readonly _source: Iri;
-    private readonly _versionedSource: Iri;
+    private readonly _source: Iri | undefined;
+    private readonly _versionedSource: Iri | undefined;
     private readonly _languages: LanguageType[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
@@ -88,8 +90,8 @@ export class Instance {
                 costs: Cost[],
                 financialAdvantages: FinancialAdvantage[],
                 contactPoints: ContactPoint[],
-                source: Iri,
-                versionedSource: Iri,
+                source: Iri | undefined,
+                versionedSource: Iri | undefined,
                 languages: LanguageType[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
@@ -256,11 +258,11 @@ export class Instance {
         return [...this._contactPoints];
     }
 
-    get source(): Iri {
+    get source(): Iri | undefined {
         return this._source;
     }
 
-    get versionedSource(): Iri {
+    get versionedSource(): Iri |undefined{
         return this._versionedSource;
     }
 
