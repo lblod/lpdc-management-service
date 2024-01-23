@@ -140,6 +140,7 @@ export class Instance {
     }
 
     get instanceDutchLanguage(): Language | undefined {
+        // TODO 917: Language can also be included in requirements, procedures, websites, costs, ...
         const dutchLanguages =
             [
                 this._title,

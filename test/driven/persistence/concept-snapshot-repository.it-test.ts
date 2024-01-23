@@ -31,6 +31,10 @@ import {aMinimalLanguageString} from "../../core/domain/language-string-test-bui
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {CONCEPT_SNAPSHOT_LDES_GRAPH} from "../../../config";
+import {EvidenceBuilder} from "../../../src/core/domain/evidence";
+import {RequirementBuilder} from "../../../src/core/domain/requirement";
+import {ProcedureBuilder} from "../../../src/core/domain/procedure";
+import {WebsiteBuilder} from "../../../src/core/domain/website";
 
 describe('ConceptSnapshotRepository', () => {
     const repository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -545,7 +549,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
 
 
-            const requirementId = RequirementTestBuilder.buildIri(uuid());
+            const requirementId = RequirementBuilder.buildIri(uuid());
             const requirementTitle = aMinimalLanguageString(RequirementTestBuilder.TITLE).build();
             const requirementDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
 
@@ -600,10 +604,10 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
 
 
-            const requirementId = RequirementTestBuilder.buildIri(uuid());
+            const requirementId = RequirementBuilder.buildIri(uuid());
             const requirementTitle = aMinimalLanguageString(RequirementTestBuilder.TITLE).build();
             const requirementDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
-            const evidenceId = EvidenceTestBuilder.buildIri(uuid());
+            const evidenceId = EvidenceBuilder.buildIri(uuid());
             const evidenceTitle = aMinimalLanguageString(EvidenceTestBuilder.TITLE).build();
             const evidenceDescription = aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build();
 
@@ -667,7 +671,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
 
 
-            const procedureId = ProcedureTestBuilder.buildIri(uuid());
+            const procedureId = ProcedureBuilder.buildIri(uuid());
             const procedureTitle = aMinimalLanguageString(ProcedureTestBuilder.TITLE).build();
             const procedureDescription = aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build();
 
@@ -724,10 +728,10 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
 
 
-            const procedureId = ProcedureTestBuilder.buildIri(uuid());
+            const procedureId = ProcedureBuilder.buildIri(uuid());
             const procedureTitle = aMinimalLanguageString(ProcedureTestBuilder.TITLE).build();
             const procedureDescription = aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build();
-            const websiteId = WebsiteTestBuilder.buildIri(uuid());
+            const websiteId = WebsiteBuilder.buildIri(uuid());
             const websiteTitle = aMinimalLanguageString(WebsiteTestBuilder.TITLE).build();
             const websiteUrl = WebsiteTestBuilder.URL;
 

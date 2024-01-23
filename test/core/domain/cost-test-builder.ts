@@ -1,29 +1,28 @@
-import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {Cost} from "../../../src/core/domain/cost";
+import {CostBuilder} from "../../../src/core/domain/cost";
 import {uuid} from "../../../mu-helper";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
 
-export function aMinimalCostForConceptSnapshot(): CostTestBuilder {
-    return new CostTestBuilder()
-        .withId(CostTestBuilder.buildIri(uuid()))
+export function aMinimalCostForConceptSnapshot(): CostBuilder {
+    return new CostBuilder()
+        .withId(CostBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(CostTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
 }
 
-export function aMinimalCostForConcept(): CostTestBuilder {
+export function aMinimalCostForConcept(): CostBuilder {
     const uniqueId = uuid();
-    return new CostTestBuilder()
-        .withId(CostTestBuilder.buildIri(uniqueId))
+    return new CostBuilder()
+        .withId(CostBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(CostTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
 }
 
-export function aFullCost(): CostTestBuilder {
-    return new CostTestBuilder()
-        .withId(CostTestBuilder.buildIri(uuid()))
+export function aFullCost(): CostBuilder {
+    return new CostBuilder()
+        .withId(CostBuilder.buildIri(uuid()))
         .withUuid(uuid())
         .withTitle(LanguageString.of(
             CostTestBuilder.TITLE_EN,
@@ -42,9 +41,9 @@ export function aFullCost(): CostTestBuilder {
                 CostTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL));
 }
 
-export function anotherFullCost(): CostTestBuilder {
-    return new CostTestBuilder()
-        .withId(CostTestBuilder.buildIri(uuid()))
+export function anotherFullCost(): CostBuilder {
+    return new CostBuilder()
+        .withId(CostBuilder.buildIri(uuid()))
         .withUuid(uuid())
         .withTitle(LanguageString.of(
             CostTestBuilder.ANOTHER_TITLE_EN,
@@ -63,9 +62,9 @@ export function anotherFullCost(): CostTestBuilder {
                 CostTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
 }
 
-export function aFullCostForInstance(): CostTestBuilder {
-    return new CostTestBuilder()
-        .withId(CostTestBuilder.buildIri(uuid()))
+export function aFullCostForInstance(): CostBuilder {
+    return new CostBuilder()
+        .withId(CostBuilder.buildIri(uuid()))
         .withUuid(uuid())
         .withTitle(LanguageString.of(
             CostTestBuilder.TITLE_EN,
@@ -77,9 +76,9 @@ export function aFullCostForInstance(): CostTestBuilder {
             CostTestBuilder.DESCRIPTION_NL_FORMAL));
 }
 
-export function anotherFullCostForInstance(): CostTestBuilder {
-    return new CostTestBuilder()
-        .withId(CostTestBuilder.buildIri(uuid()))
+export function anotherFullCostForInstance(): CostBuilder {
+    return new CostBuilder()
+        .withId(CostBuilder.buildIri(uuid()))
         .withUuid(uuid())
         .withTitle(LanguageString.of(
             CostTestBuilder.ANOTHER_TITLE_EN,
@@ -123,41 +122,4 @@ export class CostTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL = 'Cost Another Description - nl-generated-formal';
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Cost Another Description - nl-generated-informal';
 
-    private id: Iri;
-    private uuid: string | undefined;
-    private title: LanguageString | undefined;
-    private description: LanguageString | undefined;
-
-    static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://data.lblod.info/id/cost/${uniqueId}`);
-    }
-
-    public withId(id: Iri): CostTestBuilder {
-        this.id = id;
-        return this;
-    }
-
-    public withUuid(uuid: string): CostTestBuilder {
-        this.uuid = uuid;
-        return this;
-    }
-
-    public withTitle(title: LanguageString): CostTestBuilder {
-        this.title = title;
-        return this;
-    }
-
-    public withDescription(description: LanguageString): CostTestBuilder {
-        this.description = description;
-        return this;
-    }
-
-    public build(): Cost {
-        return Cost.reconstitute(
-            this.id,
-            this.uuid,
-            this.title,
-            this.description,
-        );
-    }
 }

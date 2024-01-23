@@ -14,18 +14,18 @@ import {
 } from "../../../src/core/domain/types";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {uuid} from "../../../mu-helper";
-import {Requirement} from "../../../src/core/domain/requirement";
+import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
 import {aFullRequirement, RequirementTestBuilder} from "./requirement-test-builder";
-import {Evidence} from "../../../src/core/domain/evidence";
+import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {EvidenceTestBuilder} from "./evidence-test-builder";
-import {Procedure} from "../../../src/core/domain/procedure";
+import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {ProcedureTestBuilder} from "./procedure-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
-import {Website} from "../../../src/core/domain/website";
+import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
 import {WebsiteTestBuilder} from "./website-test-builder";
-import {Cost} from "../../../src/core/domain/cost";
+import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {CostTestBuilder} from "./cost-test-builder";
-import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
+import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {Language} from "../../../src/core/domain/language";
 
@@ -106,18 +106,21 @@ describe('constructing', () => {
         test('valid requirement does not throw error', () => {
             const uuidValue = uuid();
             const validRequirement = Requirement.reconstitute(
-                RequirementTestBuilder.buildIri(uuidValue),
+                RequirementBuilder.buildIri(uuidValue),
                 uuidValue,
                 undefined,
                 undefined,
-                undefined);
+                undefined,
+                undefined
+            );
 
             expect(() => aFullInstance().withRequirements([validRequirement]).build()).not.toThrow();
         });
 
         test('invalid financialAdvantage does throw error', () => {
             const invalidRequirement = Requirement.reconstitute(
-                RequirementTestBuilder.buildIri(uuid()),
+                RequirementBuilder.buildIri(uuid()),
+                undefined,
                 undefined,
                 undefined,
                 undefined,
@@ -131,10 +134,11 @@ describe('constructing', () => {
             test('valid evidence does not throw error', () => {
                 const uuidValue = uuid();
                 const validEvidence = Evidence.reconstitute(
-                    EvidenceTestBuilder.buildIri(uuidValue),
+                    EvidenceBuilder.buildIri(uuidValue),
                     uuidValue,
                     undefined,
                     undefined,
+                    undefined
                 );
                 const validRequirement = aFullRequirement().withEvidence(validEvidence).build();
 
@@ -144,7 +148,8 @@ describe('constructing', () => {
             test('invalid evidence does throw error', () => {
                 const uuidValue = uuid();
                 const invalidEvidence = Evidence.reconstitute(
-                    EvidenceTestBuilder.buildIri(uuidValue),
+                    EvidenceBuilder.buildIri(uuidValue),
+                    undefined,
                     undefined,
                     undefined,
                     undefined);
@@ -159,18 +164,19 @@ describe('constructing', () => {
         test('valid procedure does not throw error', () => {
             const uuidValue = uuid();
             const validProcedure = Procedure.reconstitute(
-                ProcedureTestBuilder.buildIri(uuidValue),
+                ProcedureBuilder.buildIri(uuidValue),
                 uuidValue,
                 aMinimalLanguageString(ProcedureTestBuilder.TITLE).build(),
                 aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(),
-                []
+                [],
+                undefined
             );
 
             expect(() => aFullInstance().withProcedures([validProcedure]).build()).not.toThrow();
         });
 
         test('invalid procedure does throw error', () => {
-            const invalidProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuid()), undefined, undefined, undefined, []);
+            const invalidProcedure = Procedure.reconstitute(ProcedureBuilder.buildIri(uuid()), undefined, undefined, undefined, [], undefined);
 
             expect(() => aFullInstance().withProcedures([invalidProcedure]).build()).toThrow();
         });
@@ -180,17 +186,19 @@ describe('constructing', () => {
         test('valid website does not throw error', () => {
             const uuidValue = uuid();
             const validWebsite = Website.reconstitute(
-                WebsiteTestBuilder.buildIri(uuidValue),
+                WebsiteBuilder.buildIri(uuidValue),
                 uuidValue,
                 aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
                 aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
-                WebsiteTestBuilder.URL);
+                WebsiteTestBuilder.URL,
+                undefined
+            );
 
             expect(() => aFullInstance().withWebsites([validWebsite]).build()).not.toThrow();
         });
 
         test('invalid website does throw error', () => {
-            const invalidWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
+            const invalidWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined, undefined);
 
             expect(() => aFullInstance().withWebsites([invalidWebsite]).build()).toThrow();
         });
@@ -200,17 +208,18 @@ describe('constructing', () => {
         test('valid cost for instance does not throw error', () => {
             const uuidValue = uuid();
             const validCost = Cost.reconstitute(
-                CostTestBuilder.buildIri(uuidValue),
+                CostBuilder.buildIri(uuidValue),
                 uuidValue,
                 aMinimalLanguageString(CostTestBuilder.TITLE).build(),
-                aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build()
+                aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build(),
+                undefined
             );
 
             expect(() => aFullInstance().withCosts([validCost]).build()).not.toThrow();
         });
 
         test('invalid cost for instance does throw error', () => {
-            const invalidCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
+            const invalidCost = Cost.reconstitute(CostBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
 
             expect(() => aFullInstance().withCosts([invalidCost]).build()).toThrow();
         });
@@ -219,14 +228,14 @@ describe('constructing', () => {
     describe('financialAdvantage ', () => {
         test('valid financialAdvantage for instance does not throw error', () => {
             const uuidValue = uuid();
-            const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
-                aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
+            const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
+                aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build(), undefined);
 
             expect(() => aFullInstance().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
         });
 
         test('invalid financialAdvantage for instance does throw error', () => {
-            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
+            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
 
             expect(() => aFullInstance().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
         });

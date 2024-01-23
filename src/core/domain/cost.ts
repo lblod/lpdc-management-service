@@ -9,16 +9,19 @@ export class Cost {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
+    private readonly _source: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
+                        source: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
+        this._source = source;
     }
 
     static forConcept(cost: Cost): Cost {
@@ -26,7 +29,8 @@ export class Cost {
             cost.id,
             requiredValue(cost.uuid, 'uuid'),
             requiredValue(cost.title, 'title'),
-            requiredValue(cost.description, 'description')
+            requiredValue(cost.description, 'description'),
+            undefined
         );
     }
 
@@ -35,7 +39,8 @@ export class Cost {
             cost.id,
             undefined,
             requiredValue(cost.title, 'title'),
-            requiredValue(cost.description, 'description')
+            requiredValue(cost.description, 'description'),
+            undefined
         );
     }
 
@@ -45,6 +50,7 @@ export class Cost {
             requiredValue(cost.uuid, 'uuid'),
             cost.title,
             cost.description,
+            cost.source
         );
     }
 
@@ -52,9 +58,10 @@ export class Cost {
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
-                        description: LanguageString | undefined): Cost {
+                        description: LanguageString | undefined,
+                        source: Iri | undefined): Cost {
 
-        return new Cost(id, uuid, title, description);
+        return new Cost(id, uuid, title, description, source);
     }
 
     get id(): Iri {
@@ -73,6 +80,10 @@ export class Cost {
         return this._description;
     }
 
+    get source(): Iri | undefined {
+        return this._source;
+    }
+
     static isFunctionallyChanged(value: Cost[], other: Cost[]): boolean {
         return value.length !== other.length
             || _.zip(value, other).some((costs: [Cost, Cost]) => {
@@ -81,4 +92,64 @@ export class Cost {
             });
     }
 
+}
+
+export class CostBuilder {
+
+    private id: Iri;
+    private uuid: string | undefined;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
+    private source: Iri | undefined;
+
+    static buildIri(uniqueId: string): Iri {
+        return new Iri(`http://data.lblod.info/id/cost/${uniqueId}`);
+    }
+
+    public withId(id: Iri): CostBuilder {
+        this.id = id;
+        return this;
+    }
+
+    public withUuid(uuid: string): CostBuilder {
+        this.uuid = uuid;
+        return this;
+    }
+
+    public withTitle(title: LanguageString): CostBuilder {
+        this.title = title;
+        return this;
+    }
+
+    public withDescription(description: LanguageString): CostBuilder {
+        this.description = description;
+        return this;
+    }
+
+    public withSource(source: Iri): CostBuilder {
+        this.source = source;
+        return this;
+    }
+
+    public buildForInstance(): Cost {
+        return Cost.forInstance(this.build());
+    }
+
+    public buildForConcept(): Cost {
+        return Cost.forConcept(this.build());
+    }
+
+    public buildForConceptSnapshot(): Cost {
+        return Cost.forConceptSnapshot(this.build());
+    }
+
+    public build(): Cost {
+        return Cost.reconstitute(
+            this.id,
+            this.uuid,
+            this.title,
+            this.description,
+            this.source
+        );
+    }
 }

@@ -76,6 +76,7 @@ const newConceptSnapshotToConceptMergerDomainService =
 const newInstanceDomainService =
     new NewInstanceDomainService(
         instanceRepository,
+        formalInformalChoiceRepository
     );
 
 const selectFormLanguageDomainService =
@@ -126,19 +127,21 @@ app.use('/public-services/', authenticateAndAuthorizeRequest(sessionRepository))
 
 app.post('/public-services/', async function (req, res): Promise<any> {
     const body = req.body;
-    const conceptId = body?.data?.relationships?.["concept"]?.data?.id;
+    const conceptIdRequestParam = body.conceptId;
 
     const session: Session = req['session'];
 
     try {
         const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        if (conceptId) {
-            const {uuid, uri} = await createForm(conceptId, session.id, sessionRepository, bestuurseenheidRepository);
+        if (conceptIdRequestParam) {
+            const conceptId = new Iri(conceptIdRequestParam);
+            const concept = await conceptRepository.findById(conceptId);
+            const newInstance = await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept,);
             return res.status(201).json({
                 data: {
                     "type": "public-service",
-                    "id": uuid,
-                    "uri": uri
+                    "id": newInstance.uuid,
+                    "uri": newInstance.id.value
                 }
             });
         } else {

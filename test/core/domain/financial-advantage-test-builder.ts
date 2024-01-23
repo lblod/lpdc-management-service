@@ -1,29 +1,28 @@
-import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
+import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {uuid} from "../../../mu-helper";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
-export function aMinimalFinancialAdvantageForConceptSnapshot(): FinancialAdvantageTestBuilder {
-    return new FinancialAdvantageTestBuilder()
-        .withId(FinancialAdvantageTestBuilder.buildIri(uuid()))
+export function aMinimalFinancialAdvantageForConceptSnapshot(): FinancialAdvantageBuilder {
+    return new FinancialAdvantageBuilder()
+        .withId(FinancialAdvantageBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
 }
 
-export function aMinimalFinancialAdvantageForConcept(): FinancialAdvantageTestBuilder {
+export function aMinimalFinancialAdvantageForConcept(): FinancialAdvantageBuilder {
     const uniqueId = uuid();
-    return new FinancialAdvantageTestBuilder()
-        .withId(FinancialAdvantageTestBuilder.buildIri(uniqueId))
+    return new FinancialAdvantageBuilder()
+        .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
 }
 
-export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
+export function aFullFinancialAdvantage(): FinancialAdvantageBuilder {
     const uniqueId = uuid();
-    return new FinancialAdvantageTestBuilder()
-        .withId(FinancialAdvantageTestBuilder.buildIri(uniqueId))
+    return new FinancialAdvantageBuilder()
+        .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.TITLE_EN,
@@ -42,9 +41,9 @@ export function aFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
                 FinancialAdvantageTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL));
 }
 
-export function anotherFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
-    return new FinancialAdvantageTestBuilder()
-        .withId(FinancialAdvantageTestBuilder.buildIri(uuid()))
+export function anotherFullFinancialAdvantage(): FinancialAdvantageBuilder {
+    return new FinancialAdvantageBuilder()
+        .withId(FinancialAdvantageBuilder.buildIri(uuid()))
         .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_EN,
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_NL,
@@ -62,10 +61,10 @@ export function anotherFullFinancialAdvantage(): FinancialAdvantageTestBuilder {
                 FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
 }
 
-export function aFullFinancialAdvantageForInstance(): FinancialAdvantageTestBuilder {
+export function aFullFinancialAdvantageForInstance(): FinancialAdvantageBuilder {
     const uniqueId = uuid();
-    return new FinancialAdvantageTestBuilder()
-        .withId(FinancialAdvantageTestBuilder.buildIri(uniqueId))
+    return new FinancialAdvantageBuilder()
+        .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.TITLE_EN,
@@ -77,10 +76,10 @@ export function aFullFinancialAdvantageForInstance(): FinancialAdvantageTestBuil
             FinancialAdvantageTestBuilder.DESCRIPTION_NL_FORMAL));
 }
 
-export function anotherFullFinancialAdvantageForInstance(): FinancialAdvantageTestBuilder {
+export function anotherFullFinancialAdvantageForInstance(): FinancialAdvantageBuilder {
     const uniqueId = uuid();
-    return new FinancialAdvantageTestBuilder()
-        .withId(FinancialAdvantageTestBuilder.buildIri(uniqueId))
+    return new FinancialAdvantageBuilder()
+        .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             FinancialAdvantageTestBuilder.ANOTHER_TITLE_EN,
@@ -123,42 +122,4 @@ export class FinancialAdvantageTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_INFORMAL = 'Financial Advantage Another Description - nl-informal';
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL = 'Financial Advantage Another Description - nl-generated-formal';
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Financial Advantage Another Description - nl-generated-informal';
-
-    private id: Iri;
-    private uuid: string | undefined;
-    private title: LanguageString | undefined;
-    private description: LanguageString | undefined;
-
-    static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://data.lblod.info/id/financial-advantage/${uniqueId}`);
-    }
-
-    public withId(id: Iri): FinancialAdvantageTestBuilder {
-        this.id = id;
-        return this;
-    }
-
-    public withUuid(uuid: string): FinancialAdvantageTestBuilder {
-        this.uuid = uuid;
-        return this;
-    }
-
-    public withTitle(title: LanguageString): FinancialAdvantageTestBuilder {
-        this.title = title;
-        return this;
-    }
-
-    public withDescription(description: LanguageString): FinancialAdvantageTestBuilder {
-        this.description = description;
-        return this;
-    }
-
-    public build(): FinancialAdvantage {
-        return FinancialAdvantage.reconstitute(
-            this.id,
-            this.uuid,
-            this.title,
-            this.description,
-        );
-    }
 }

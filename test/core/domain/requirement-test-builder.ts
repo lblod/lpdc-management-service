@@ -1,45 +1,43 @@
-import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {Requirement} from "../../../src/core/domain/requirement";
+import {RequirementBuilder} from "../../../src/core/domain/requirement";
 import {
     aFullEvidence,
     aFullEvidenceForInstance,
     anotherFullEvidence,
     anotherFullEvidenceForInstance
 } from "./evidence-test-builder";
-import {Evidence} from "../../../src/core/domain/evidence";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
 
-export function aMinimalRequirementForConceptSnapshot(): RequirementTestBuilder {
-    return new RequirementTestBuilder()
-        .withId(RequirementTestBuilder.buildIri(uuid()))
+export function aMinimalRequirementForConceptSnapshot(): RequirementBuilder {
+    return new RequirementBuilder()
+        .withId(RequirementBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(RequirementTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
 }
 
-export function aMinimalRequirementForConcept(): RequirementTestBuilder {
+export function aMinimalRequirementForConcept(): RequirementBuilder {
     const uniqueId = uuid();
-    return new RequirementTestBuilder()
-        .withId(RequirementTestBuilder.buildIri(uniqueId))
+    return new RequirementBuilder()
+        .withId(RequirementBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(RequirementTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
 }
 
-export function aMinimalRequirementForInstance(): RequirementTestBuilder {
+export function aMinimalRequirementForInstance(): RequirementBuilder {
     const uniqueId = uuid();
-    return new RequirementTestBuilder()
-        .withId(RequirementTestBuilder.buildIri(uniqueId))
+    return new RequirementBuilder()
+        .withId(RequirementBuilder.buildIri(uniqueId))
         .withUuid(uniqueId);
 }
 
 
-export function aFullRequirement(): RequirementTestBuilder {
+export function aFullRequirement(): RequirementBuilder {
     const uniqueId = uuid();
-    return new RequirementTestBuilder()
-        .withId(RequirementTestBuilder.buildIri(uniqueId))
+    return new RequirementBuilder()
+        .withId(RequirementBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             RequirementTestBuilder.TITLE_EN,
@@ -59,9 +57,9 @@ export function aFullRequirement(): RequirementTestBuilder {
         .withEvidence(RequirementTestBuilder.EVIDENCE);
 }
 
-export function anotherFullRequirement(): RequirementTestBuilder {
-    return new RequirementTestBuilder()
-        .withId(RequirementTestBuilder.buildIri(uuid()))
+export function anotherFullRequirement(): RequirementBuilder {
+    return new RequirementBuilder()
+        .withId(RequirementBuilder.buildIri(uuid()))
         .withTitle(LanguageString.of(
             RequirementTestBuilder.ANOTHER_TITLE_EN,
             RequirementTestBuilder.ANOTHER_TITLE_NL,
@@ -80,10 +78,10 @@ export function anotherFullRequirement(): RequirementTestBuilder {
         .withEvidence(RequirementTestBuilder.ANOTHER_EVIDENCE);
 }
 
-export function aFullRequirementForInstance(): RequirementTestBuilder {
+export function aFullRequirementForInstance(): RequirementBuilder {
     const uniqueId = uuid();
-    return new RequirementTestBuilder()
-        .withId(RequirementTestBuilder.buildIri(uniqueId))
+    return new RequirementBuilder()
+        .withId(RequirementBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             RequirementTestBuilder.TITLE_EN,
@@ -96,10 +94,10 @@ export function aFullRequirementForInstance(): RequirementTestBuilder {
         .withEvidence(RequirementTestBuilder.EVIDENCE_FOR_INSTANCE);
 }
 
-export function anotherFullRequirementForInstance(): RequirementTestBuilder {
+export function anotherFullRequirementForInstance(): RequirementBuilder {
     const uniqueId = uuid();
-    return new RequirementTestBuilder()
-        .withId(RequirementTestBuilder.buildIri(uniqueId))
+    return new RequirementBuilder()
+        .withId(RequirementBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             RequirementTestBuilder.ANOTHER_TITLE_EN,
@@ -148,50 +146,5 @@ export class RequirementTestBuilder {
     public static readonly EVIDENCE_FOR_INSTANCE = aFullEvidenceForInstance().build();
     public static readonly ANOTHER_EVIDENCE = anotherFullEvidence().build();
     public static readonly ANOTHER_EVIDENCE_FOR_INSTANCE = anotherFullEvidenceForInstance().build();
-
-    private id: Iri;
-    private uuid: string | undefined;
-    private title: LanguageString | undefined;
-    private description: LanguageString | undefined;
-    private evidence: Evidence | undefined;
-
-    static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://data.lblod.info/id/requirement/${uniqueId}`);
-    }
-
-    public withId(id: Iri): RequirementTestBuilder {
-        this.id = id;
-        return this;
-    }
-
-    public withUuid(uuid: string): RequirementTestBuilder {
-        this.uuid = uuid;
-        return this;
-    }
-
-    public withTitle(title: LanguageString): RequirementTestBuilder {
-        this.title = title;
-        return this;
-    }
-
-    public withDescription(description: LanguageString): RequirementTestBuilder {
-        this.description = description;
-        return this;
-    }
-
-    public withEvidence(evidence: Evidence): RequirementTestBuilder {
-        this.evidence = evidence;
-        return this;
-    }
-
-    public build(): Requirement {
-        return Requirement.reconstitute(
-            this.id,
-            this.uuid,
-            this.title,
-            this.description,
-            this.evidence
-        );
-    }
 
 }

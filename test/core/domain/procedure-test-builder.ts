@@ -1,43 +1,41 @@
 import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {Iri} from "../../../src/core/domain/shared/iri";
-import {Procedure} from "../../../src/core/domain/procedure";
+import {ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {
     aFullWebsite,
     aFullWebsiteForInstance,
     anotherFullWebsite,
     anotherFullWebsiteForInstance
 } from "./website-test-builder";
-import {Website} from "../../../src/core/domain/website";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
-export function aMinimalProcedureForConceptSnapshot(): ProcedureTestBuilder {
-    return new ProcedureTestBuilder()
-        .withId(ProcedureTestBuilder.buildIri(uuid()))
+export function aMinimalProcedureForConceptSnapshot(): ProcedureBuilder {
+    return new ProcedureBuilder()
+        .withId(ProcedureBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(ProcedureTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build());
 }
 
-export function aMinimalProcedureForConcept(): ProcedureTestBuilder {
+export function aMinimalProcedureForConcept(): ProcedureBuilder {
     const uniqueId = uuid();
-    return new ProcedureTestBuilder()
-        .withId(ProcedureTestBuilder.buildIri(uniqueId))
+    return new ProcedureBuilder()
+        .withId(ProcedureBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(ProcedureTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build());
 }
 
-export function aMinimalProcedureForInstance(): ProcedureTestBuilder {
+export function aMinimalProcedureForInstance(): ProcedureBuilder {
     const uniqueId = uuid();
-    return new ProcedureTestBuilder()
-        .withId(ProcedureTestBuilder.buildIri(uniqueId))
+    return new ProcedureBuilder()
+        .withId(ProcedureBuilder.buildIri(uniqueId))
         .withUuid(uniqueId);
 }
 
-export function aFullProcedure(): ProcedureTestBuilder {
+export function aFullProcedure(): ProcedureBuilder {
     const uniqueId = uuid();
-    return new ProcedureTestBuilder()
-        .withId(ProcedureTestBuilder.buildIri(uniqueId))
+    return new ProcedureBuilder()
+        .withId(ProcedureBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             ProcedureTestBuilder.TITLE_EN,
@@ -57,9 +55,9 @@ export function aFullProcedure(): ProcedureTestBuilder {
         .withWebsites(ProcedureTestBuilder.WEBSITES);
 }
 
-export function anotherFullProcedure(): ProcedureTestBuilder {
-    return new ProcedureTestBuilder()
-        .withId(ProcedureTestBuilder.buildIri(uuid()))
+export function anotherFullProcedure(): ProcedureBuilder {
+    return new ProcedureBuilder()
+        .withId(ProcedureBuilder.buildIri(uuid()))
         .withTitle(LanguageString.of(
             ProcedureTestBuilder.ANOTHER_TITLE_EN,
             ProcedureTestBuilder.ANOTHER_TITLE_NL,
@@ -78,10 +76,10 @@ export function anotherFullProcedure(): ProcedureTestBuilder {
         .withWebsites(ProcedureTestBuilder.ANOTHER_WEBSITES);
 }
 
-export function aFullProcedureForInstance(): ProcedureTestBuilder {
+export function aFullProcedureForInstance(): ProcedureBuilder {
     const uniqueId = uuid();
-    return new ProcedureTestBuilder()
-        .withId(ProcedureTestBuilder.buildIri(uniqueId))
+    return new ProcedureBuilder()
+        .withId(ProcedureBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             ProcedureTestBuilder.TITLE_EN,
@@ -98,8 +96,8 @@ export function aFullProcedureForInstance(): ProcedureTestBuilder {
 }
 
 export function anotherFullProcedureForInstance() {
-    return new ProcedureTestBuilder()
-        .withId(ProcedureTestBuilder.buildIri(uuid()))
+    return new ProcedureBuilder()
+        .withId(ProcedureBuilder.buildIri(uuid()))
         .withTitle(LanguageString.of(
             ProcedureTestBuilder.ANOTHER_TITLE_EN,
             undefined,
@@ -149,50 +147,5 @@ export class ProcedureTestBuilder {
     public static readonly ANOTHER_WEBSITES = [anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()];
     public static readonly WEBSITES_FOR_INSTANCE = [aFullWebsiteForInstance().build(), anotherFullWebsiteForInstance(uuid()).build()];
     public static readonly ANOTHER_WEBSITES_FOR_INSTANCE = [anotherFullWebsiteForInstance(uuid()).build(), anotherFullWebsiteForInstance(uuid()).build()];
-
-    private id: Iri;
-    private uuid: string | undefined;
-    private title: LanguageString | undefined;
-    private description: LanguageString | undefined;
-    private websites: Website[] = [];
-
-    static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://data.lblod.info/id/rule/${uniqueId}`);
-    }
-
-    public withId(id: Iri): ProcedureTestBuilder {
-        this.id = id;
-        return this;
-    }
-
-    public withUuid(uuid: string): ProcedureTestBuilder {
-        this.uuid = uuid;
-        return this;
-    }
-
-    public withTitle(title: LanguageString): ProcedureTestBuilder {
-        this.title = title;
-        return this;
-    }
-
-    public withDescription(description: LanguageString): ProcedureTestBuilder {
-        this.description = description;
-        return this;
-    }
-
-    public withWebsites(websites: Website[]): ProcedureTestBuilder {
-        this.websites = websites;
-        return this;
-    }
-
-    public build(): Procedure {
-        return Procedure.reconstitute(
-            this.id,
-            this.uuid,
-            this.title,
-            this.description,
-            this.websites,
-        );
-    }
 
 }

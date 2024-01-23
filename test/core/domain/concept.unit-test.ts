@@ -4,17 +4,17 @@ import {Language} from "../../../src/core/domain/language";
 import {buildCodexVlaanderenIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {CostTestBuilder} from "./cost-test-builder";
-import {Cost} from "../../../src/core/domain/cost";
+import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {aMinimalLanguageString} from "./language-string-test-builder";
-import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
+import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
-import {Requirement} from "../../../src/core/domain/requirement";
+import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
 import {aFullRequirement, RequirementTestBuilder} from "./requirement-test-builder";
-import {Evidence} from "../../../src/core/domain/evidence";
+import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {EvidenceTestBuilder} from "./evidence-test-builder";
-import {Procedure} from "../../../src/core/domain/procedure";
+import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {ProcedureTestBuilder} from "./procedure-test-builder";
-import {Website} from "../../../src/core/domain/website";
+import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
 import {WebsiteTestBuilder} from "./website-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {
@@ -205,14 +205,14 @@ describe('constructing', () => {
     describe('cost ', () => {
         test('valid cost for concept does not throw error', () => {
             const uuidValue = uuid();
-            const validCost = Cost.reconstitute(CostTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(CostTestBuilder.TITLE).build(),
-                aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
+            const validCost = Cost.reconstitute(CostBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(CostTestBuilder.TITLE).build(),
+                aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build(), undefined);
 
             expect(() => aFullConcept().withCosts([validCost]).build()).not.toThrow();
         });
 
         test('invalid cost for concept does throw error', () => {
-            const invalidCost = Cost.reconstitute(CostTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
+            const invalidCost = Cost.reconstitute(CostBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
 
             expect(() => aFullConcept().withCosts([invalidCost]).build()).toThrow();
         });
@@ -221,14 +221,14 @@ describe('constructing', () => {
     describe('financialAdvantage ', () => {
         test('valid financialAdvantage for concept does not throw error', () => {
             const uuidValue = uuid();
-            const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
-                aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
+            const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
+                aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build(), undefined);
 
             expect(() => aFullConcept().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
         });
 
         test('invalid financialAdvantage for concept does throw error', () => {
-            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageTestBuilder.buildIri(uuid()), undefined, undefined, undefined);
+            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
 
             expect(() => aFullConcept().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
         });
@@ -237,14 +237,14 @@ describe('constructing', () => {
     describe('procedure ', () => {
         test('valid procedure for concept does not throw error', () => {
             const uuidValue = uuid();
-            const validProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(ProcedureTestBuilder.TITLE).build(),
-                aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(), []);
+            const validProcedure = Procedure.reconstitute(ProcedureBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(ProcedureTestBuilder.TITLE).build(),
+                aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(), [], undefined);
 
             expect(() => aFullConcept().withProcedures([validProcedure]).build()).not.toThrow();
         });
 
         test('invalid procedure for concept does throw error', () => {
-            const invalidProcedure = Procedure.reconstitute(ProcedureTestBuilder.buildIri(uuid()), undefined, undefined, undefined, []);
+            const invalidProcedure = Procedure.reconstitute(ProcedureBuilder.buildIri(uuid()), undefined, undefined, undefined, [], undefined);
 
             expect(() => aFullConcept().withProcedures([invalidProcedure]).build()).toThrow();
         });
@@ -253,14 +253,14 @@ describe('constructing', () => {
     describe('website ', () => {
         test('valid website does not throw error', () => {
             const uuidValue = uuid();
-            const validWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
-                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), WebsiteTestBuilder.URL);
+            const validWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
+                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), WebsiteTestBuilder.URL, undefined);
 
             expect(() => aFullConcept().withWebsites([validWebsite]).build()).not.toThrow();
         });
 
         test('invalid website does throw error', () => {
-            const invalidWebsite = Website.reconstitute(WebsiteTestBuilder.buildIri(uuid()), undefined, undefined, undefined, WebsiteTestBuilder.URL);
+            const invalidWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuid()), undefined, undefined, undefined, WebsiteTestBuilder.URL, undefined);
 
             expect(() => aFullConcept().withWebsites([invalidWebsite]).build()).toThrow();
         });
@@ -269,22 +269,22 @@ describe('constructing', () => {
     describe('requirement ', () => {
         test('valid requirement does not throw error', () => {
             const uuidValue = uuid();
-            const validRequirement = Requirement.reconstitute(RequirementTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(RequirementTestBuilder.TITLE).build(),
-                aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build(), undefined);
+            const validRequirement = Requirement.reconstitute(RequirementBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(RequirementTestBuilder.TITLE).build(),
+                aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build(), undefined, undefined);
 
             expect(() => aFullConcept().withRequirements([validRequirement]).build()).not.toThrow();
         });
 
         test('invalid requirement does throw error', () => {
-            const invalidRequirement = Requirement.reconstitute(RequirementTestBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined);
+            const invalidRequirement = Requirement.reconstitute(RequirementBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined, undefined);
 
             expect(() => aFullConcept().withRequirements([invalidRequirement]).build()).toThrow();
         });
         describe('evidence ', () => {
             test('valid evidence does not throw error', () => {
                 const uuidValue = uuid();
-                const validEvidence = Evidence.reconstitute(EvidenceTestBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
-                    aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
+                const validEvidence = Evidence.reconstitute(EvidenceBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
+                    aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build(), undefined);
                 const validRequirement = aFullRequirement().withEvidence(validEvidence);
 
                 expect(() => aFullConcept().withRequirements([validRequirement.build()])).not.toThrow();
@@ -292,7 +292,7 @@ describe('constructing', () => {
 
             test('invalid evidence does throw error', () => {
                 const uuidValue = uuid();
-                const invalidEvidence = Evidence.reconstitute(EvidenceTestBuilder.buildIri(uuidValue), uuidValue, undefined, undefined);
+                const invalidEvidence = Evidence.reconstitute(EvidenceBuilder.buildIri(uuidValue), uuidValue, undefined, undefined, undefined);
                 const invalidRequirement = aFullRequirement().withEvidence(invalidEvidence).build();
 
                 expect(() => aFullConcept().withRequirements([invalidRequirement]).build()).toThrow();

@@ -1,36 +1,35 @@
 import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {Iri} from "../../../src/core/domain/shared/iri";
-import {Website} from "../../../src/core/domain/website";
 import {aMinimalLanguageString} from "./language-string-test-builder";
+import {WebsiteBuilder} from "../../../src/core/domain/website";
 
-export function aMinimalWebsiteForConceptSnapshot(): WebsiteTestBuilder {
-    return new WebsiteTestBuilder()
-        .withId(WebsiteTestBuilder.buildIri(uuid()))
+export function aMinimalWebsiteForConceptSnapshot(): WebsiteBuilder {
+    return new WebsiteBuilder()
+        .withId(WebsiteBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(WebsiteTestBuilder.TITLE).build())
         .withUrl(WebsiteTestBuilder.URL);
 }
 
-export function aMinimalWebsiteForConcept(): WebsiteTestBuilder {
+export function aMinimalWebsiteForConcept(): WebsiteBuilder {
     const uniqueId = uuid();
-    return new WebsiteTestBuilder()
-        .withId(WebsiteTestBuilder.buildIri(uniqueId))
+    return new WebsiteBuilder()
+        .withId(WebsiteBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(WebsiteTestBuilder.TITLE).build())
         .withUrl(WebsiteTestBuilder.URL);
 }
 
-export function aMinimalWebsiteForInstance(): WebsiteTestBuilder {
+export function aMinimalWebsiteForInstance(): WebsiteBuilder {
     const uniqueId = uuid();
-    return new WebsiteTestBuilder()
-        .withId(WebsiteTestBuilder.buildIri(uniqueId))
+    return new WebsiteBuilder()
+        .withId(WebsiteBuilder.buildIri(uniqueId))
         .withUuid(uniqueId);
 }
 
-export function aFullWebsite(): WebsiteTestBuilder {
+export function aFullWebsite(): WebsiteBuilder {
     const uniqueId = uuid();
-    return new WebsiteTestBuilder()
-        .withId(WebsiteTestBuilder.buildIri(uniqueId))
+    return new WebsiteBuilder()
+        .withId(WebsiteBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             WebsiteTestBuilder.TITLE_EN,
@@ -50,9 +49,9 @@ export function aFullWebsite(): WebsiteTestBuilder {
         .withUrl(WebsiteTestBuilder.URL);
 }
 
-export function anotherFullWebsite(aUuid: string): WebsiteTestBuilder {
-    return new WebsiteTestBuilder()
-        .withId(WebsiteTestBuilder.buildIri(aUuid))
+export function anotherFullWebsite(aUuid: string): WebsiteBuilder {
+    return new WebsiteBuilder()
+        .withId(WebsiteBuilder.buildIri(aUuid))
         .withTitle(LanguageString.of(
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_EN(aUuid),
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL(aUuid),
@@ -71,10 +70,10 @@ export function anotherFullWebsite(aUuid: string): WebsiteTestBuilder {
         .withUrl(WebsiteTestBuilder.ANOTHER_URL_TEMPLATE(aUuid));
 }
 
-export function aFullWebsiteForInstance(): WebsiteTestBuilder {
+export function aFullWebsiteForInstance(): WebsiteBuilder {
     const uniqueId = uuid();
-    return new WebsiteTestBuilder()
-        .withId(WebsiteTestBuilder.buildIri(uniqueId))
+    return new WebsiteBuilder()
+        .withId(WebsiteBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             WebsiteTestBuilder.TITLE_EN,
@@ -88,10 +87,10 @@ export function aFullWebsiteForInstance(): WebsiteTestBuilder {
         .withUrl(WebsiteTestBuilder.URL);
 }
 
-export function anotherFullWebsiteForInstance(aUuid: string): WebsiteTestBuilder {
+export function anotherFullWebsiteForInstance(aUuid: string): WebsiteBuilder {
     const uniqueId = uuid();
-    return new WebsiteTestBuilder()
-        .withId(WebsiteTestBuilder.buildIri(uniqueId))
+    return new WebsiteBuilder()
+        .withId(WebsiteBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_EN(aUuid),
@@ -138,50 +137,5 @@ export class WebsiteTestBuilder {
 
     public static readonly URL = 'https://some-url.test';
     public static readonly ANOTHER_URL_TEMPLATE = (param: string) => `https://some-other-url-${param}.test`;
-
-    private id: Iri;
-    private uuid: string | undefined;
-    private title: LanguageString | undefined;
-    private description: LanguageString | undefined;
-    private url: string | undefined;
-
-    static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://data.lblod.info/id/website/${uniqueId}`);
-    }
-
-    public withId(id: Iri): WebsiteTestBuilder {
-        this.id = id;
-        return this;
-    }
-
-    public withUuid(uuid: string): WebsiteTestBuilder {
-        this.uuid = uuid;
-        return this;
-    }
-
-    public withTitle(title: LanguageString): WebsiteTestBuilder {
-        this.title = title;
-        return this;
-    }
-
-    public withDescription(description: LanguageString): WebsiteTestBuilder {
-        this.description = description;
-        return this;
-    }
-
-    public withUrl(url: string): WebsiteTestBuilder {
-        this.url = url;
-        return this;
-    }
-
-    public build(): Website {
-        return Website.reconstitute(
-            this.id,
-            this.uuid,
-            this.title,
-            this.description,
-            this.url);
-    }
-
 
 }

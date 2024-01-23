@@ -271,6 +271,7 @@ export class DomainToTriplesMapper {
                 ...this.languageStringToTriples(namedNode(requirement.id.value), NS.dct(`description`), requirement.description),
                 this.buildQuad(namedNode(requirement.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
                 ...this.evidenceToTriples(requirement.id, requirement.evidence),
+                requirement.source ? this.source(requirement.id, requirement.source) : undefined,
             ]
         );
     }
@@ -282,6 +283,7 @@ export class DomainToTriplesMapper {
             this.buildQuad(namedNode(evidence.id.value), NS.rdf('type'), NS.m8g('Evidence')),
             ...this.languageStringToTriples(namedNode(evidence.id.value), NS.dct(`title`), evidence.title),
             ...this.languageStringToTriples(namedNode(evidence.id.value), NS.dct(`description`), evidence.description),
+            evidence.source ? this.source(evidence.id, evidence.source) : undefined,
         ] : [];
     }
 
@@ -294,7 +296,8 @@ export class DomainToTriplesMapper {
                 ...this.languageStringToTriples(namedNode(procedure.id.value), NS.dct(`title`), procedure.title),
                 ...this.languageStringToTriples(namedNode(procedure.id.value), NS.dct(`description`), procedure.description),
                 this.buildQuad(namedNode(procedure.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
-                ...this.websites(procedure.id, NS.lpdcExt('hasWebsite'), procedure.websites)
+                ...this.websites(procedure.id, NS.lpdcExt('hasWebsite'), procedure.websites),
+                procedure.source ? this.source(procedure.id, procedure.source) : undefined,
             ]
         );
     }
@@ -309,6 +312,7 @@ export class DomainToTriplesMapper {
                     ...this.languageStringToTriples(namedNode(website.id.value), NS.dct(`description`), website.description),
                     website.url ? this.buildQuad(namedNode(website.id.value), NS.schema('url'), literal(website.url)) : undefined,
                     this.buildQuad(namedNode(website.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                    website.source ? this.source(website.id, website.source) : undefined,
                 ];
             }
         ).filter(t => t != undefined);
@@ -323,40 +327,39 @@ export class DomainToTriplesMapper {
                 ...this.languageStringToTriples(namedNode(cost.id.value), NS.dct(`title`), cost.title),
                 ...this.languageStringToTriples(namedNode(cost.id.value), NS.dct(`description`), cost.description),
                 this.buildQuad(namedNode(cost.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                cost.source ? this.source(cost.id, cost.source) : undefined,
             ];
         });
     }
 
     private financialAdvantages(id: Iri, values: FinancialAdvantage[]): Statement[] {
-        return values
-            .flatMap((financialAdvantage, index) => {
-                return [
-                    this.buildQuad(namedNode(id.value), NS.cpsv('produces'), namedNode(financialAdvantage.id.value)),
-                    financialAdvantage.uuid ? this.buildQuad(namedNode(financialAdvantage.id.value), NS.mu('uuid'), literal(financialAdvantage.uuid)) : undefined,
-                    this.buildQuad(namedNode(financialAdvantage.id.value), NS.rdf('type'), NS.lpdcExt('FinancialAdvantage')),
-                    ...this.languageStringToTriples(namedNode(financialAdvantage.id.value), NS.dct(`title`), financialAdvantage.title),
-                    ...this.languageStringToTriples(namedNode(financialAdvantage.id.value), NS.dct(`description`), financialAdvantage.description),
-                    this.buildQuad(namedNode(financialAdvantage.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
-                ];
-            });
+        return values.flatMap((financialAdvantage, index) => {
+            return [
+                this.buildQuad(namedNode(id.value), NS.cpsv('produces'), namedNode(financialAdvantage.id.value)),
+                financialAdvantage.uuid ? this.buildQuad(namedNode(financialAdvantage.id.value), NS.mu('uuid'), literal(financialAdvantage.uuid)) : undefined,
+                this.buildQuad(namedNode(financialAdvantage.id.value), NS.rdf('type'), NS.lpdcExt('FinancialAdvantage')),
+                ...this.languageStringToTriples(namedNode(financialAdvantage.id.value), NS.dct(`title`), financialAdvantage.title),
+                ...this.languageStringToTriples(namedNode(financialAdvantage.id.value), NS.dct(`description`), financialAdvantage.description),
+                this.buildQuad(namedNode(financialAdvantage.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                financialAdvantage.source ? this.source(financialAdvantage.id, financialAdvantage.source) : undefined,
+            ];
+        });
     }
 
     private contactPoints(id: Iri, values: ContactPoint[]): Statement[] {
-        return values
-            .flatMap((contactPoint, index) => {
-                return [
-                    this.buildQuad(namedNode(id.value), NS.m8g('hasContactPoint'), namedNode(contactPoint.id.value)),
-                    contactPoint.uuid ? this.buildQuad(namedNode(contactPoint.id.value), NS.mu('uuid'), literal(contactPoint.uuid)) : undefined,
-                    this.buildQuad(namedNode(contactPoint.id.value), NS.rdf('type'), NS.schema('ContactPoint')),
-                    contactPoint.url ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('url'), contactPoint.url) : undefined,
-                    contactPoint.email ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('email'), contactPoint.email) : undefined,
-                    contactPoint.telephone ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('telephone'), contactPoint.telephone) : undefined,
-                    contactPoint.openingHours ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('openingHours'), contactPoint.openingHours) : undefined,
-                    this.buildQuad(namedNode(contactPoint.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
-                    ...this.addressToTriples(contactPoint.id, contactPoint.address),
-
-                ];
-            });
+        return values.flatMap((contactPoint, index) => {
+            return [
+                this.buildQuad(namedNode(id.value), NS.m8g('hasContactPoint'), namedNode(contactPoint.id.value)),
+                contactPoint.uuid ? this.buildQuad(namedNode(contactPoint.id.value), NS.mu('uuid'), literal(contactPoint.uuid)) : undefined,
+                this.buildQuad(namedNode(contactPoint.id.value), NS.rdf('type'), NS.schema('ContactPoint')),
+                contactPoint.url ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('url'), contactPoint.url) : undefined,
+                contactPoint.email ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('email'), contactPoint.email) : undefined,
+                contactPoint.telephone ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('telephone'), contactPoint.telephone) : undefined,
+                contactPoint.openingHours ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('openingHours'), contactPoint.openingHours) : undefined,
+                this.buildQuad(namedNode(contactPoint.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                ...this.addressToTriples(contactPoint.id, contactPoint.address),
+            ];
+        });
     }
 
     private addressToTriples(contactPointId: Iri, address: Address | undefined): Statement[] {

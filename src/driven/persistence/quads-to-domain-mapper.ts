@@ -377,7 +377,7 @@ export class QuadsToDomainMapper {
             this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasCost'), null, this.graphId));
         costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, NS.m8g('Cost')));
 
-        const costs = costIds.map(costId => Cost.reconstitute(costId, this.uuid(costId), this.title(costId), this.description(costId)));
+        const costs = costIds.map(costId => Cost.reconstitute(costId, this.uuid(costId), this.title(costId), this.description(costId), this.source(costId)));
 
         return this.sort(costs);
     }
@@ -390,7 +390,7 @@ export class QuadsToDomainMapper {
 
         const financialAdvantages =
             financialAdvantageIds.map(financialAdvantageId =>
-                FinancialAdvantage.reconstitute(financialAdvantageId, this.uuid(financialAdvantageId), this.title(financialAdvantageId), this.description(financialAdvantageId)));
+                FinancialAdvantage.reconstitute(financialAdvantageId, this.uuid(financialAdvantageId), this.title(financialAdvantageId), this.description(financialAdvantageId), this.source(financialAdvantageId)));
 
         return this.sort(financialAdvantages);
     }
@@ -445,7 +445,7 @@ export class QuadsToDomainMapper {
 
         const websites =
             websiteIds.map(websiteId =>
-                Website.reconstitute(websiteId, this.uuid(websiteId), this.title(websiteId), this.description(websiteId), this.url(websiteId)));
+                Website.reconstitute(websiteId, this.uuid(websiteId), this.title(websiteId), this.description(websiteId), this.url(websiteId), this.source(websiteId)));
 
         return this.sort(websites);
     }
@@ -459,7 +459,7 @@ export class QuadsToDomainMapper {
 
         const procedures =
             procedureIds.map(procedureId =>
-                Procedure.reconstitute(procedureId, this.uuid(procedureId), this.title(procedureId), this.description(procedureId), this.websites(procedureId, NS.lpdcExt('hasWebsite'))));
+                Procedure.reconstitute(procedureId, this.uuid(procedureId), this.title(procedureId), this.description(procedureId), this.websites(procedureId, NS.lpdcExt('hasWebsite')), this.source(procedureId)));
 
         return this.sort(procedures);
     }
@@ -473,7 +473,14 @@ export class QuadsToDomainMapper {
 
         const requirements =
             requirementIds.map(requirementId =>
-                Requirement.reconstitute(requirementId, this.uuid(requirementId), this.title(requirementId), this.description(requirementId), this.evidence(requirementId)));
+                Requirement.reconstitute(
+                    requirementId,
+                    this.uuid(requirementId),
+                    this.title(requirementId),
+                    this.description(requirementId),
+                    this.evidence(requirementId),
+                    this.source(requirementId)
+                ));
 
         return this.sort(requirements);
     }
@@ -491,7 +498,7 @@ export class QuadsToDomainMapper {
         if (evidenceIds.length === 0) {
             return undefined;
         }
-        return Evidence.reconstitute(evidenceIds[0], this.uuid(evidenceIds[0]), this.title(evidenceIds[0]), this.description(evidenceIds[0]));
+        return Evidence.reconstitute(evidenceIds[0], this.uuid(evidenceIds[0]), this.title(evidenceIds[0]), this.description(evidenceIds[0]), this.source(evidenceIds[0]));
     }
 
     private source(id: Iri): Iri | undefined {

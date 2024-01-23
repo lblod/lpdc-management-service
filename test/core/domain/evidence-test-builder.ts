@@ -1,37 +1,35 @@
 import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {Iri} from "../../../src/core/domain/shared/iri";
-import {Evidence} from "../../../src/core/domain/evidence";
+import {EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
-
-export function aMinimalEvidenceForConceptSnapshot(): EvidenceTestBuilder {
-    return new EvidenceTestBuilder()
-        .withId(EvidenceTestBuilder.buildIri(uuid()))
+export function aMinimalEvidenceForConceptSnapshot(): EvidenceBuilder {
+    return new EvidenceBuilder()
+        .withId(EvidenceBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(EvidenceTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
 }
 
-export function aMinimalEvidenceForConcept(): EvidenceTestBuilder {
+export function aMinimalEvidenceForConcept(): EvidenceBuilder {
     const uniqueId = uuid();
-    return new EvidenceTestBuilder()
-        .withId(EvidenceTestBuilder.buildIri(uniqueId))
+    return new EvidenceBuilder()
+        .withId(EvidenceBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(EvidenceTestBuilder.TITLE).build())
         .withDescription(aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
 }
 
-export function aMinimalEvidenceForInstance(): EvidenceTestBuilder {
+export function aMinimalEvidenceForInstance(): EvidenceBuilder {
     const uniqueId = uuid();
-    return new EvidenceTestBuilder()
-        .withId(EvidenceTestBuilder.buildIri(uniqueId))
+    return new EvidenceBuilder()
+        .withId(EvidenceBuilder.buildIri(uniqueId))
         .withUuid(uniqueId);
 }
 
-export function aFullEvidence(): EvidenceTestBuilder {
+export function aFullEvidence(): EvidenceBuilder {
     const uniqueId = uuid();
-    return new EvidenceTestBuilder()
-        .withId(EvidenceTestBuilder.buildIri(uniqueId))
+    return new EvidenceBuilder()
+        .withId(EvidenceBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             EvidenceTestBuilder.TITLE_EN,
@@ -50,9 +48,9 @@ export function aFullEvidence(): EvidenceTestBuilder {
                 EvidenceTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL));
 }
 
-export function anotherFullEvidence(): EvidenceTestBuilder {
-    return new EvidenceTestBuilder()
-        .withId(EvidenceTestBuilder.buildIri(uuid()))
+export function anotherFullEvidence(): EvidenceBuilder {
+    return new EvidenceBuilder()
+        .withId(EvidenceBuilder.buildIri(uuid()))
         .withTitle(LanguageString.of(
             EvidenceTestBuilder.ANOTHER_TITLE_EN,
             EvidenceTestBuilder.ANOTHER_TITLE_NL,
@@ -70,10 +68,10 @@ export function anotherFullEvidence(): EvidenceTestBuilder {
                 EvidenceTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
 }
 
-export function aFullEvidenceForInstance(): EvidenceTestBuilder {
+export function aFullEvidenceForInstance(): EvidenceBuilder {
     const uniqueId = uuid();
-    return new EvidenceTestBuilder()
-        .withId(EvidenceTestBuilder.buildIri(uniqueId))
+    return new EvidenceBuilder()
+        .withId(EvidenceBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             EvidenceTestBuilder.TITLE_EN,
@@ -85,10 +83,10 @@ export function aFullEvidenceForInstance(): EvidenceTestBuilder {
             EvidenceTestBuilder.DESCRIPTION_NL_FORMAL));
 }
 
-export function anotherFullEvidenceForInstance(): EvidenceTestBuilder {
+export function anotherFullEvidenceForInstance(): EvidenceBuilder {
     const uniqueId = uuid();
-    return new EvidenceTestBuilder()
-        .withId(EvidenceTestBuilder.buildIri(uniqueId))
+    return new EvidenceBuilder()
+        .withId(EvidenceBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             EvidenceTestBuilder.ANOTHER_TITLE_EN,
@@ -99,8 +97,6 @@ export function anotherFullEvidenceForInstance(): EvidenceTestBuilder {
             undefined,
             EvidenceTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL));
 }
-
-
 
 export class EvidenceTestBuilder {
 
@@ -133,42 +129,5 @@ export class EvidenceTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_INFORMAL = 'Evidence Another Description - nl-informal';
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL = 'Evidence Another Description - nl-generated-formal';
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Evidence Another Description - nl-generated-informal';
-
-    private id: Iri;
-    private uuid: string | undefined;
-    private title: LanguageString | undefined;
-    private description: LanguageString | undefined;
-
-    static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://data.lblod.info/id/evidence/${uniqueId}`);
-    }
-
-    public withId(id: Iri): EvidenceTestBuilder {
-        this.id = id;
-        return this;
-    }
-
-    public withUuid(uuid: string): EvidenceTestBuilder {
-        this.uuid = uuid;
-        return this;
-    }
-
-    public withTitle(title: LanguageString): EvidenceTestBuilder {
-        this.title = title;
-        return this;
-    }
-
-    public withDescription(description: LanguageString): EvidenceTestBuilder {
-        this.description = description;
-        return this;
-    }
-
-    public build(): Evidence {
-        return Evidence.reconstitute(
-            this.id,
-            this.uuid,
-            this.title,
-            this.description);
-    }
 
 }

@@ -76,6 +76,15 @@ export class LanguageString {
         return uniq(definedLanguages);
     }
 
+    getLanguageValue(language: Language): string | undefined {
+        if (language === Language.EN) return this._en;
+        if (language === Language.NL) return this._nl;
+        if (language === Language.FORMAL) return this._nlFormal;
+        if (language === Language.INFORMAL) return this._nlInformal;
+        if (language === Language.GENERATED_FORMAL) return this._nlGeneratedFormal;
+        if (language === Language.GENERATED_INFORMAL) return this._nlGeneratedInformal;
+    }
+
     static isFunctionallyChanged(value: LanguageString | undefined, other: LanguageString | undefined): boolean {
         return value?.en !== other?.en
             || value?.nl !== other?.nl;
