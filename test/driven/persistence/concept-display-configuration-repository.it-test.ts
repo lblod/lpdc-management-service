@@ -153,6 +153,49 @@ describe('ConceptDisplayConfigurationRepository', () => {
 
     });
 
+    describe('removeInstantiatedFlag',()=>{
+
+        test('if exists, conceptIsInstantiated is false ', async () => {
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .withId(buildBestuurseenheidIri(uuid()))
+                    .build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const conceptDisplayConfiguration =
+                aFullConceptDisplayConfiguration()
+                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withConceptIsInstantiated(true)
+                    .build();
+
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
+            await repository.removeInstantiatedFlag(bestuurseenheid,conceptDisplayConfiguration.conceptId);
+            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+
+            expect(actualConceptDisplayConfiguration.conceptIsInstantiated).toBeFalsy();
+        });
+
+        test('if not-exists, throws error', async () => {
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .withId(buildBestuurseenheidIri(uuid()))
+                    .build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const conceptDisplayConfiguration =
+                aFullConceptDisplayConfiguration()
+                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withConceptIsInstantiated(true)
+                    .build();
+
+            const anotherConceptDisplayConfiguration = buildConceptDisplayConfigurationIri(uuid());
+
+
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
+            await expect(repository.removeInstantiatedFlag(bestuurseenheid,anotherConceptDisplayConfiguration)).rejects.toThrow();
+        });
+    });
+
     describe('Verify ontology and mapping', () => {
 
         test('Verify correct type', async () => {

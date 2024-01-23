@@ -8,6 +8,8 @@ export interface InstanceRepository {
 
     save(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void>
 
+    delete(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<void>;
+
     updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void>;
 
     asTurtleFormat(bestuurseenheid: Bestuurseenheid, instance: Instance): string[];

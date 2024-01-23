@@ -2,7 +2,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {InstanceRepository} from "../../core/port/driven/persistence/instance-repository";
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX} from "../../../config";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeDateTime, sparqlEscapeUri} from "../../../mu-helper";
 import {Instance} from "../../core/domain/instance";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
@@ -51,6 +51,33 @@ export class InstanceSparqlRepository implements InstanceRepository {
         `;
         await this.querying.update(query);
     }
+
+    async delete(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<void> {
+        const instance = await this.findById(bestuurseenheid, id);
+        if (instance != undefined) {
+            const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
+
+            const now = new Date();
+            const query = `
+                ${PREFIX.as}
+                ${PREFIX.cpsv}
+                
+                DELETE DATA FROM ${sparqlEscapeUri(bestuurseenheid.userGraph())}{
+                    ${triples.join("\n")}
+                };
+
+                INSERT DATA {
+                    GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())}{
+                        ${sparqlEscapeUri(instance.id)} a  as:Tombstone;
+                        as:formerType cpsv:PublicService;
+                        as:deleted ${sparqlEscapeDateTime(now)}. 
+                   }   
+                }
+            `;
+            await this.querying.update(query);
+        }
+    }
+
 
     async updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void> {
         let reviewStatus = undefined;

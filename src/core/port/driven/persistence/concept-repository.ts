@@ -13,4 +13,5 @@ export interface ConceptRepository {
 
     asTurtleFormat(concept: Concept): string[];
 
+    conceptHasInstancesInBestuurseenheid(concept: Iri, bestuurseenheidGraph:Iri): Promise<boolean>;
 }

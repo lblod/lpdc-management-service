@@ -3,7 +3,7 @@ import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "../../core/d
 import {InstanceSparqlTestRepository} from "./instance-sparql-test-repository";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
-import {uuid} from "../../../mu-helper";
+import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {buildInstanceIri, buildSpatialRefNis2019Iri} from "../../core/domain/iri-test-builder";
 import {
@@ -84,6 +84,114 @@ describe('InstanceRepository', () => {
         });
     });
 
+    describe('delete', () => {
+
+        test('if exists, Removes all triples related to the instance and create tombstone triples ', async () => {
+
+            const fixedToday = '2023-12-13T14:23:54.768Z';
+            jest.useFakeTimers();
+            const fixedTodayAsDate = new Date(fixedToday);
+            jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
+
+
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceId = buildInstanceIri(uuid());
+            const instance = aFullInstance().withId(instanceId).build();
+            const anotherInstanceUUID = uuid();
+            const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
+            const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
+            const anotherInstance =
+                aMinimalInstance()
+                    .withId(buildInstanceIri(anotherInstanceUUID))
+                    .withUuid(anotherInstanceUUID)
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withDateCreated(instanceDateCreated)
+                    .withDateModified(instanceDateModified)
+                    .withStatus(InstanceStatusType.ONTWERP)
+                    .build();
+
+            await repository.save(bestuurseenheid, instance);
+            await repository.save(bestuurseenheid, anotherInstance);
+
+            const query = `
+            SELECT ?s ?p ?o WHERE {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    ?s ?p ?o
+                }
+            }
+        `;
+            const queryResultBeforeDelete = await directDatabaseAccess.list(query);
+
+            expect(queryResultBeforeDelete.length).toBeGreaterThan(9);
+
+            await repository.delete(bestuurseenheid, instanceId);
+
+            const queryResult = await directDatabaseAccess.list(query);
+            expect(queryResult.length).toBe(9);
+
+            expect(queryResult[0]['s'].value).toStrictEqual(instance.id.value);
+            expect(queryResult[0]['p'].value).toStrictEqual('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+            expect(queryResult[0]['o'].value).toStrictEqual('https://www.w3.org/ns/activitystreams#Tombstone');
+            expect(queryResult[6]['s'].value).toStrictEqual(instance.id.value);
+            expect(queryResult[6]['p'].value).toStrictEqual('https://www.w3.org/ns/activitystreams#deleted');
+            expect(queryResult[6]['o'].value).toStrictEqual(fixedToday);
+            expect(queryResult[7]['s'].value).toStrictEqual(instance.id.value);
+            expect(queryResult[7]['p'].value).toStrictEqual('https://www.w3.org/ns/activitystreams#formerType');
+            expect(queryResult[7]['o'].value).toStrictEqual('http://purl.org/vocab/cpsv#PublicService');
+
+            expect(queryResult[1]['s'].value).toStrictEqual(anotherInstance.id.value);
+            expect(queryResult[1]['p'].value).toStrictEqual('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+            expect(queryResult[1]['o'].value).toStrictEqual('http://purl.org/vocab/cpsv#PublicService');
+            expect(queryResult[2]['s'].value).toStrictEqual(anotherInstance.id.value);
+            expect(queryResult[2]['p'].value).toStrictEqual('http://purl.org/dc/terms/created');
+            expect(queryResult[2]['o'].value).toStrictEqual(anotherInstance.dateCreated.value);
+            expect(queryResult[2]['s'].value).toStrictEqual(anotherInstance.id.value);
+            expect(queryResult[3]['p'].value).toStrictEqual('http://purl.org/dc/terms/modified');
+            expect(queryResult[3]['o'].value).toStrictEqual(anotherInstance.dateModified.value);
+            expect(queryResult[3]['s'].value).toStrictEqual(anotherInstance.id.value);
+            expect(queryResult[4]['p'].value).toStrictEqual('http://www.w3.org/ns/adms#status');
+            expect(queryResult[4]['o'].value).toStrictEqual(`http://lblod.data.gift/concepts/instance-status/${anotherInstance.status}`);
+            expect(queryResult[4]['s'].value).toStrictEqual(anotherInstance.id.value);
+            expect(queryResult[5]['p'].value).toStrictEqual('http://mu.semte.ch/vocabularies/core/uuid');
+            expect(queryResult[5]['o'].value).toStrictEqual(anotherInstance.uuid);
+            expect(queryResult[8]['s'].value).toStrictEqual(anotherInstance.id.value);
+            expect(queryResult[8]['p'].value).toStrictEqual('http://purl.org/pav/createdBy');
+            expect(queryResult[8]['o'].value).toStrictEqual(bestuurseenheid.id.value);
+
+            jest.clearAllTimers();
+            jest.useRealTimers();
+            jest.restoreAllMocks();
+        });
+
+        test('When instance does not exist with id, then throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aMinimalInstance().withCreatedBy(bestuurseenheid.id).build();
+            await repository.save(bestuurseenheid, instance);
+
+            const nonExistentInstanceId = buildInstanceIri('thisiddoesnotexist');
+
+            await expect(repository.delete(bestuurseenheid, nonExistentInstanceId)).rejects.toThrow(new Error(`Could not find <http://data.lblod.info/id/public-service/thisiddoesnotexist> for type <http://purl.org/vocab/cpsv#PublicService> in graph <http://mu.semte.ch/graphs/organizations/${bestuurseenheid.uuid}/LoketLB-LPDCGebruiker>`));
+        });
+
+        test('if instance exists, but for other bestuurseenheid, then does not remove and throws error',async()=>{
+            const bestuurseenheid = aBestuurseenheid().build();
+            const anotherBestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+            const anotherInstance = aFullInstance().withCreatedBy(anotherBestuurseenheid.id).build();
+
+            await repository.save(bestuurseenheid,instance);
+            await repository.save(anotherBestuurseenheid,anotherInstance);
+
+            await expect(repository.delete(bestuurseenheid,anotherInstance.id)).rejects.toThrow();
+
+            expect(await repository.findById(anotherBestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
+
+
+        });
+    });
+
     describe('Verify ontology and mapping', () => {
 
         test('Verify minimal mapping', async () => {
@@ -119,6 +227,7 @@ describe('InstanceRepository', () => {
 
             expect(actualInstance).toEqual(instance);
         });
+
 
         test('Verify full mapping', async () => {
             const instanceUUID = uuid();
@@ -330,6 +439,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://www.w3.org/ns/shacl#order> """0"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+
                     `<${instanceId}> <http://data.europa.eu/m8g/hasContactPoint> <${InstanceTestBuilder.CONTACT_POINTS[1].id}>`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].id}> a <http://schema.org/ContactPoint>`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.CONTACT_POINTS[1].uuid}"""`,
@@ -346,6 +456,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#postcode> """${AddressTestBuilder.ANOTHER_POSTCODE}"""`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#Straatnaam> """${AddressTestBuilder.ANTOHER_STRAATNAAM}"""@NL`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#verwijstNaar> <${AddressTestBuilder.ANOTHER_VERWIJST_NAAR}>`,
+
                     `<${instanceId}> <http://data.europa.eu/m8g/hasContactPoint> <${InstanceTestBuilder.CONTACT_POINTS[0].id}>`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[0].id}> a <http://schema.org/ContactPoint>`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.CONTACT_POINTS[0].uuid}"""`,

@@ -97,4 +97,19 @@ export class ConceptSparqlRepository implements ConceptRepository {
     asTurtleFormat(concept: Concept): string[] {
         return new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(concept).map(s => s.toNT());
     }
+
+    async conceptHasInstancesInBestuurseenheid(conceptId: Iri, bestuurseenheidsGraph:Iri): Promise<boolean> {
+        const query = `
+    ${PREFIX.cpsv}
+    ${PREFIX.dct}
+    ASK WHERE {
+      GRAPH ${sparqlEscapeUri(bestuurseenheidsGraph)} {
+        ?instance a cpsv:PublicService ;
+          dct:source ${sparqlEscapeUri(conceptId)} .
+      }
+    }
+  `;
+
+        return this.querying.ask(query);
+    }
 }

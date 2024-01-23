@@ -59,6 +59,32 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         return conceptDisplayConfiguration;
     }
 
+    async removeInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId:Iri): Promise<void>{
+      const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid,conceptId);
+
+        const query = `
+    ${PREFIX.lpdcExt}
+
+    DELETE {
+      GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+        ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
+      }
+    }
+    INSERT {
+      GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+       ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
+      }
+    }
+    WHERE {
+      GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+        ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
+      }
+    }
+  `;
+
+        await this.querying.update(query);
+
+    }
     async ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void> {
         const insertQuery = `
         ${PREFIX.lpdcExt}
