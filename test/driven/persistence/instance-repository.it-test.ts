@@ -23,6 +23,8 @@ import {aMinimalProcedureForInstance} from "../../core/domain/procedure-test-bui
 import {aMinimalWebsiteForInstance} from "../../core/domain/website-test-builder";
 import {aFullContactPoint} from "../../core/domain/contactPoint-test-builder";
 import {AddressTestBuilder, aFullAddress} from "../../core/domain/address-test-builder";
+import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
+import {literal, namedNode, quad} from "rdflib";
 
 describe('InstanceRepository', () => {
 
@@ -93,74 +95,49 @@ describe('InstanceRepository', () => {
             const fixedTodayAsDate = new Date(fixedToday);
             jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
 
-
             const bestuurseenheid = aBestuurseenheid().build();
-            const instanceId = buildInstanceIri(uuid());
-            const instance = aFullInstance().withId(instanceId).build();
-            const anotherInstanceUUID = uuid();
-            const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
-            const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
-            const anotherInstance =
-                aMinimalInstance()
-                    .withId(buildInstanceIri(anotherInstanceUUID))
-                    .withUuid(anotherInstanceUUID)
-                    .withCreatedBy(bestuurseenheid.id)
-                    .withDateCreated(instanceDateCreated)
-                    .withDateModified(instanceDateModified)
-                    .withStatus(InstanceStatusType.ONTWERP)
-                    .build();
+            const instance = aFullInstance().build();
 
             await repository.save(bestuurseenheid, instance);
-            await repository.save(bestuurseenheid, anotherInstance);
+            await repository.delete(bestuurseenheid, instance.id);
 
             const query = `
             SELECT ?s ?p ?o WHERE {
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    VALUES ?s {
+                        <${instance.id.value}>
+                    }
                     ?s ?p ?o
                 }
             }
         `;
-            const queryResultBeforeDelete = await directDatabaseAccess.list(query);
-
-            expect(queryResultBeforeDelete.length).toBeGreaterThan(9);
-
-            await repository.delete(bestuurseenheid, instanceId);
-
             const queryResult = await directDatabaseAccess.list(query);
-            expect(queryResult.length).toBe(9);
+            const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
 
-            expect(queryResult[0]['s'].value).toStrictEqual(instance.id.value);
-            expect(queryResult[0]['p'].value).toStrictEqual('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
-            expect(queryResult[0]['o'].value).toStrictEqual('https://www.w3.org/ns/activitystreams#Tombstone');
-            expect(queryResult[6]['s'].value).toStrictEqual(instance.id.value);
-            expect(queryResult[6]['p'].value).toStrictEqual('https://www.w3.org/ns/activitystreams#deleted');
-            expect(queryResult[6]['o'].value).toStrictEqual(fixedToday);
-            expect(queryResult[7]['s'].value).toStrictEqual(instance.id.value);
-            expect(queryResult[7]['p'].value).toStrictEqual('https://www.w3.org/ns/activitystreams#formerType');
-            expect(queryResult[7]['o'].value).toStrictEqual('http://purl.org/vocab/cpsv#PublicService');
-
-            expect(queryResult[1]['s'].value).toStrictEqual(anotherInstance.id.value);
-            expect(queryResult[1]['p'].value).toStrictEqual('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
-            expect(queryResult[1]['o'].value).toStrictEqual('http://purl.org/vocab/cpsv#PublicService');
-            expect(queryResult[2]['s'].value).toStrictEqual(anotherInstance.id.value);
-            expect(queryResult[2]['p'].value).toStrictEqual('http://purl.org/dc/terms/created');
-            expect(queryResult[2]['o'].value).toStrictEqual(anotherInstance.dateCreated.value);
-            expect(queryResult[2]['s'].value).toStrictEqual(anotherInstance.id.value);
-            expect(queryResult[3]['p'].value).toStrictEqual('http://purl.org/dc/terms/modified');
-            expect(queryResult[3]['o'].value).toStrictEqual(anotherInstance.dateModified.value);
-            expect(queryResult[3]['s'].value).toStrictEqual(anotherInstance.id.value);
-            expect(queryResult[4]['p'].value).toStrictEqual('http://www.w3.org/ns/adms#status');
-            expect(queryResult[4]['o'].value).toStrictEqual(`http://lblod.data.gift/concepts/instance-status/${anotherInstance.status}`);
-            expect(queryResult[4]['s'].value).toStrictEqual(anotherInstance.id.value);
-            expect(queryResult[5]['p'].value).toStrictEqual('http://mu.semte.ch/vocabularies/core/uuid');
-            expect(queryResult[5]['o'].value).toStrictEqual(anotherInstance.uuid);
-            expect(queryResult[8]['s'].value).toStrictEqual(anotherInstance.id.value);
-            expect(queryResult[8]['p'].value).toStrictEqual('http://purl.org/pav/createdBy');
-            expect(queryResult[8]['o'].value).toStrictEqual(bestuurseenheid.id.value);
+            expect(quads).toHaveLength(3);
+            expect(quads).toEqual(expect.arrayContaining([
+                quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(fixedToday, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
+            ]));
 
             jest.clearAllTimers();
             jest.useRealTimers();
             jest.restoreAllMocks();
+        });
+
+        test('Only the requested instance is deleted', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance().build();
+            const anotherInstance = aMinimalInstance().build();
+
+            await repository.save(bestuurseenheid, instance);
+            await repository.save(bestuurseenheid, anotherInstance);
+
+            await repository.delete(bestuurseenheid, instance.id);
+
+            await expect(repository.findById(bestuurseenheid, instance.id)).rejects.toThrow();
+            expect(await repository.findById(bestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
         });
 
         test('When instance does not exist with id, then throw error', async () => {
@@ -175,16 +152,16 @@ describe('InstanceRepository', () => {
             await expect(repository.delete(bestuurseenheid, nonExistentInstanceId)).rejects.toThrow(new Error(`Could not find <http://data.lblod.info/id/public-service/thisiddoesnotexist> for type <http://purl.org/vocab/cpsv#PublicService> in graph <http://mu.semte.ch/graphs/organizations/${bestuurseenheid.uuid}/LoketLB-LPDCGebruiker>`));
         });
 
-        test('if instance exists, but for other bestuurseenheid, then does not remove and throws error',async()=>{
+        test('if instance exists, but for other bestuurseenheid, then does not remove and throws error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const anotherBestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
             const anotherInstance = aFullInstance().withCreatedBy(anotherBestuurseenheid.id).build();
 
-            await repository.save(bestuurseenheid,instance);
-            await repository.save(anotherBestuurseenheid,anotherInstance);
+            await repository.save(bestuurseenheid, instance);
+            await repository.save(anotherBestuurseenheid, anotherInstance);
 
-            await expect(repository.delete(bestuurseenheid,anotherInstance.id)).rejects.toThrow();
+            await expect(repository.delete(bestuurseenheid, anotherInstance.id)).rejects.toThrow();
 
             expect(await repository.findById(anotherBestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
 
