@@ -6,7 +6,6 @@ import {
     FORM_ID_TO_TYPE_MAPPING,
     LOG_INCOMING_DELTA
 } from './config';
-import {createForm} from './lib/createForm';
 import {updateForm, updateFormAtomic} from './lib/updateForm';
 import {deleteForm} from './lib/deleteForm';
 import {validateService} from './lib/validateService';
