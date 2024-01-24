@@ -144,8 +144,7 @@ export class Instance {
     private validateLanguages(...values : LanguageString[]): void {
         const languages = new Set();
 
-        values.filter(ls => ls !== undefined);
-        values.forEach(val => languages.add(val.getDefinedNlLanguages()));
+        values.filter(ls => ls !== undefined).forEach(val => val.getDefinedNlLanguages().forEach(language => languages.add(language)));
 
         if(languages.size>1){
             throw new Error('More then 1 nl-language is present');

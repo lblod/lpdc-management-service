@@ -2,7 +2,8 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Instance} from "../../../src/core/domain/instance";
 import {
-    buildBestuurseenheidIri, buildCodexVlaanderenIri,
+    buildBestuurseenheidIri,
+    buildCodexVlaanderenIri,
     buildConceptIri,
     buildConceptSnapshotIri,
     buildInstanceIri,
@@ -13,7 +14,8 @@ import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,
-    ExecutingAuthorityLevelType, InstancePublicationStatusType,
+    ExecutingAuthorityLevelType,
+    InstancePublicationStatusType,
     InstanceReviewStatusType,
     InstanceStatusType,
     LanguageType,
@@ -61,19 +63,13 @@ export function aFullInstance(): InstanceTestBuilder {
         .withTitle(
             LanguageString.of(
                 InstanceTestBuilder.TITLE_EN,
-                InstanceTestBuilder.TITLE_NL,
-                InstanceTestBuilder.TITLE_NL_FORMAL,
-                InstanceTestBuilder.TITLE_NL_INFORMAL,
-                InstanceTestBuilder.TITLE_NL_GENERATED_FORMAL,
-                InstanceTestBuilder.TITLE_NL_GENERATED_INFORMAL))
+                undefined,
+                InstanceTestBuilder.TITLE_NL_FORMAL))
         .withDescription(
             LanguageString.of(
                 InstanceTestBuilder.DESCRIPTION_EN,
-                InstanceTestBuilder.DESCRIPTION_NL,
-                InstanceTestBuilder.DESCRIPTION_NL_FORMAL,
-                InstanceTestBuilder.DESCRIPTION_NL_INFORMAL,
-                InstanceTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
-                InstanceTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
+                undefined,
+                InstanceTestBuilder.DESCRIPTION_NL_FORMAL))
         .withAdditionalDescription(
             LanguageString.of(
                 InstanceTestBuilder.ADDITIONAL_DESCRIPTION_EN,
