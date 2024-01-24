@@ -101,6 +101,8 @@ export class Instance {
                 spatials: Iri[],
                 legalResources: Iri[]
     ) {
+        this.validateLanguages(title,description);
+
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         this._createdBy = requiredValue(createdBy, 'createdBy');
@@ -137,6 +139,17 @@ export class Instance {
         this._publicationStatus = publicationStatus;
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
         this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
+    }
+
+    private validateLanguages(...values : LanguageString[]): void {
+        const languages = new Set();
+
+        values.filter(ls => ls !== undefined);
+        values.forEach(val => languages.add(val.getDefinedNlLanguages()));
+
+        if(languages.size>1){
+            throw new Error('More then 1 nl-language is present');
+        }
     }
 
     get instanceDutchLanguage(): Language | undefined {

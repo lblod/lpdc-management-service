@@ -286,6 +286,51 @@ describe('constructing', () => {
 
 });
 
+describe('validateLanguages',()=>{
+    test('if values have different nl language strings, then throws error',()=>{
+        const title = LanguageString.of(undefined,'nl',undefined);
+        const description = LanguageString.of(undefined, undefined,'nl-formal');
+
+        const instance = aFullInstance().withTitle(title).withDescription(description);
+
+        expect(()=>instance.build()).toThrow(new Error('More then 1 nl-language is present'));
+    });
+    test('if 1 value has different nl language strings, then throws error',()=>{
+        const title = LanguageString.of(undefined,'nl','nl-formal');
+        const description = LanguageString.of(undefined, undefined,undefined);
+
+        const instance = aFullInstance().withTitle(title).withDescription(description);
+
+        expect(()=>instance.build()).toThrow(new Error('More then 1 nl-language is present'));
+    });
+
+    test('if values have no nl language strings, then no error is thrown',()=>{
+        const title = LanguageString.of(undefined,undefined,undefined);
+        const description = LanguageString.of(undefined, undefined,undefined);
+
+        const instance = aFullInstance().withTitle(title).withDescription(description);
+
+        expect(()=>instance.build()).not.toThrow(new Error());
+    });
+
+    test('if values have 1 nl language string but non-consistent en language strings, then no error is thrown',()=>{
+        const title = LanguageString.of(undefined,undefined,undefined);
+        const description = LanguageString.of('en', undefined,undefined);
+
+        const instance = aFullInstance().withTitle(title).withDescription(description);
+
+        expect(()=>instance.build()).not.toThrow(new Error());
+    });
+
+    test('if only 1 value has 1 nl language string, then no error is thrown',()=>{
+        const title = LanguageString.of(undefined,undefined,undefined);
+        const description = LanguageString.of('en', 'nl',undefined);
+
+        const instance = aFullInstance().withTitle(title).withDescription(description);
+
+        expect(()=>instance.build()).not.toThrow(new Error());
+    });
+});
 describe('dutch language version', () => {
 
     test('title, description, additional description, exception, regulation missing, returns undefined', () => {

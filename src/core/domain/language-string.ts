@@ -75,6 +75,15 @@ export class LanguageString {
         if (this._nlGeneratedInformal !== undefined) definedLanguages.push(Language.GENERATED_INFORMAL);
         return uniq(definedLanguages);
     }
+    getDefinedNlLanguages():Language[]{
+        const definedLanguages = [];
+        if (this._nl !== undefined) definedLanguages.push(Language.NL);
+        if (this._nlFormal !== undefined) definedLanguages.push(Language.FORMAL);
+        if (this._nlInformal !== undefined) definedLanguages.push(Language.INFORMAL);
+        if (this._nlGeneratedFormal !== undefined) definedLanguages.push(Language.GENERATED_FORMAL);
+        if (this._nlGeneratedInformal !== undefined) definedLanguages.push(Language.GENERATED_INFORMAL);
+        return uniq(definedLanguages);
+    }
 
     getLanguageValue(language: Language): string | undefined {
         if (language === Language.EN) return this._en;
