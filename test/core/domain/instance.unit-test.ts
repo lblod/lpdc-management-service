@@ -330,6 +330,7 @@ describe('validateLanguages',()=>{
         expect(()=>instance.build()).not.toThrow(new Error());
     });
 });
+
 describe('nl language version', () => {
 
     test('title, description, additional description, exception, regulation, requirements, procedures, websites missing, returns undefined', () => {

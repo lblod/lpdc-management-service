@@ -76,7 +76,8 @@ const newConceptSnapshotToConceptMergerDomainService =
 const newInstanceDomainService =
     new NewInstanceDomainService(
         instanceRepository,
-        formalInformalChoiceRepository
+        formalInformalChoiceRepository,
+        conceptDisplayConfigurationRepository
     );
 
 const selectFormLanguageDomainService =

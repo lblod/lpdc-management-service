@@ -19,7 +19,7 @@ import {
 } from "./types";
 import {Language} from "./language";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
-import {uniqBy} from "lodash";
+import {isEqual, uniqWith} from "lodash";
 
 export class Concept {
 
@@ -131,7 +131,7 @@ export class Concept {
     }
 
     get appliedConceptSnapshots(): Iri[] {
-        return [...uniqBy([this._latestConceptSnapshot, ...this._previousConceptSnapshots], (iri) => iri.value)];
+        return [...uniqWith([this._latestConceptSnapshot, ...this._previousConceptSnapshots], isEqual)];
     }
 
     get id(): Iri {

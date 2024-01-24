@@ -16,15 +16,23 @@ import {Procedure, ProcedureBuilder} from "./procedure";
 import {Website, WebsiteBuilder} from "./website";
 import {Cost, CostBuilder} from "./cost";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "./financial-advantage";
+import {isEqual, uniqWith} from "lodash";
+import {
+    ConceptDisplayConfigurationRepository
+} from "../port/driven/persistence/concept-display-configuration-repository";
 
 export class NewInstanceDomainService {
 
     private readonly _instanceRepository: InstanceRepository;
     private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
+    private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
 
-    constructor(instanceRepository: InstanceRepository, formalInformalChoiceRepository: FormalInformalChoiceRepository) {
+    constructor(instanceRepository: InstanceRepository,
+                formalInformalChoiceRepository: FormalInformalChoiceRepository,
+                conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository) {
         this._instanceRepository = instanceRepository;
         this._formalInformalChoiceRepository = formalInformalChoiceRepository;
+        this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
     }
 
     public async createNewEmpty(bestuurseenheid: Bestuurseenheid): Promise<Instance> {
@@ -103,9 +111,9 @@ export class NewInstanceDomainService {
                 [...concept.targetAudiences],
                 [...concept.themes],
                 concept.competentAuthorityLevels,
-                [bestuurseenheid.id],
+                concept.competentAuthorities,
                 concept.executingAuthorityLevels,
-                [bestuurseenheid.id],
+                uniqWith([...concept.executingAuthorities, bestuurseenheid.id], isEqual),
                 concept.publicationMedia,
                 concept.yourEuropeCategories,
                 concept.keywords,
@@ -128,6 +136,7 @@ export class NewInstanceDomainService {
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);
+        await this._conceptDisplayConfigurationRepository.removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid, concept.id);
 
         return newInstance;
     }

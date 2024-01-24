@@ -62,29 +62,64 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
     async removeInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId:Iri): Promise<void>{
       const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid,conceptId);
 
-        const query = `
-    ${PREFIX.lpdcExt}
+        if (!conceptDisplayConfiguration) {
+            throw new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`);
+        }
 
-    DELETE {
-      GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-        ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
-      }
-    }
-    INSERT {
-      GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-       ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
-      }
-    }
-    WHERE {
-      GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-        ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
-      }
-    }
-  `;
+        const query = `
+        ${PREFIX.lpdcExt}
+    
+        DELETE {
+          GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+            ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
+          }
+        }
+        INSERT {
+          GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+           ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
+          }
+        }
+        WHERE {
+          GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+            ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
+          }
+        }
+      `;
 
         await this.querying.update(query);
-
     }
+
+    async removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void> {
+        const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid, conceptId);
+
+        if (!conceptDisplayConfiguration) {
+            throw new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`);
+        }
+
+        const updateQuery = `
+        ${PREFIX.lpdcExt}
+        DELETE {
+            GRAPH ?bestuurseenheidGraph {
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew ?oldIsNew .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
+            }
+        }
+        INSERT {
+            GRAPH ?bestuurseenheidGraph {
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated "true"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
+            }
+        } 
+        WHERE {
+            GRAPH ?bestuurseenheidGraph {
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew ?oldIsNew .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
+            }
+        }`;
+
+        await this.querying.update(updateQuery);
+    }
+
     async ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void> {
         const insertQuery = `
         ${PREFIX.lpdcExt}

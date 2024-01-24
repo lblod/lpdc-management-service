@@ -1,6 +1,6 @@
 import {NewInstanceDomainService} from "../../../src/core/domain/new-instance-domain-service";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
+import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {buildBestuurseenheidIri, buildSpatialRefNis2019Iri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {ChosenFormType, InstanceStatusType} from "../../../src/core/domain/types";
@@ -22,13 +22,22 @@ import {
     FormalInformalChoiceSparqlTestRepository
 } from "../../driven/persistence/formal-informal-choice-sparql-test-repository";
 import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
+import {aFullConceptDisplayConfiguration} from "./concept-display-configuration-test-builder";
+import {
+    ConceptDisplayConfigurationSparqlRepository
+} from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
+import {
+    ConceptDisplayConfigurationSparqlTestRepository
+} from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
 
 describe('Creating a new Instance domain service', () => {
 
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceTestRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository);
+    const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const conceptDisplayConfigurationTestRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, conceptDisplayConfigurationRepository);
     const fixedToday = '2023-12-13T14:23:54.768Z';
 
     beforeAll(() => {
@@ -46,8 +55,7 @@ describe('Creating a new Instance domain service', () => {
     test('Create new empty', async () => {
         const spatial1 = buildSpatialRefNis2019Iri(12345);
         const spatial2 = buildSpatialRefNis2019Iri(67890);
-        const bestuurseenheid =
-            aBestuurseenheid()
+        const bestuurseenheid = aBestuurseenheid()
                 .withId(buildBestuurseenheidIri(uuid()))
                 .withSpatials([spatial1, spatial2])
                 .build();
@@ -84,6 +92,14 @@ describe('Creating a new Instance domain service', () => {
             .withSpatials([spatial1, spatial2])
             .build();
 
+        const displayConfiguration = aFullConceptDisplayConfiguration()
+            .withBestuurseenheidId(bestuurseenheid.id)
+            .withConceptId(concept.id)
+            .withConceptIsNew(true)
+            .withConceptIsInstantiated(false)
+            .build();
+        await conceptDisplayConfigurationTestRepository.save(bestuurseenheid, displayConfiguration);
+
         const createdInstance = await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept);
 
         const reloadedInstance = await instanceRepository.findById(bestuurseenheid, createdInstance.id);
@@ -101,8 +117,6 @@ describe('Creating a new Instance domain service', () => {
                 .withDateModified(FormatPreservingDate.of(fixedToday))
                 .withStatus(InstanceStatusType.ONTWERP)
                 .withSpatials([spatial1, spatial2])
-                .withCompetentAuthorities([bestuurseenheid.id])
-                .withExecutingAuthorities([bestuurseenheid.id])
                 .withTitle(LanguageString.of(concept.title.en, undefined, concept.title.nlFormal))
                 .withDescription(LanguageString.of(concept.description.en, undefined, concept.description.nlFormal))
                 .withAdditionalDescription(LanguageString.of(concept.additionalDescription.en, undefined, concept.additionalDescription.nlFormal))
@@ -114,7 +128,9 @@ describe('Creating a new Instance domain service', () => {
                 .withTargetAudiences(concept.targetAudiences)
                 .withThemes(concept.themes)
                 .withCompetentAuthorityLevels(concept.competentAuthorityLevels)
+                .withCompetentAuthorities(concept.competentAuthorities)
                 .withExecutingAuthorityLevels(concept.executingAuthorityLevels)
+                .withExecutingAuthorities([...concept.executingAuthorities, bestuurseenheid.id])
                 .withPublicationMedia(concept.publicationMedia)
                 .withYourEuropeCategories(concept.yourEuropeCategories)
                 .withKeywords(concept.keywords)
@@ -313,6 +329,14 @@ describe('Creating a new Instance domain service', () => {
 
         await formalInformalChoiceTestRepository.save(bestuurseenheid, formalInformalChoice);
 
+        const displayConfiguration = aFullConceptDisplayConfiguration()
+            .withBestuurseenheidId(bestuurseenheid.id)
+            .withConceptId(concept.id)
+            .withConceptIsNew(true)
+            .withConceptIsInstantiated(false)
+            .build();
+        await conceptDisplayConfigurationTestRepository.save(bestuurseenheid, displayConfiguration);
+
         const createdInstance = await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept);
 
         const reloadedInstance = await instanceRepository.findById(bestuurseenheid, createdInstance.id);
@@ -330,8 +354,6 @@ describe('Creating a new Instance domain service', () => {
                 .withDateModified(FormatPreservingDate.of(fixedToday))
                 .withStatus(InstanceStatusType.ONTWERP)
                 .withSpatials([spatial1, spatial2])
-                .withCompetentAuthorities([bestuurseenheid.id])
-                .withExecutingAuthorities([bestuurseenheid.id])
                 .withTitle(LanguageString.of(concept.title.en, undefined, concept.title.nlFormal))
                 .withDescription(LanguageString.of(concept.description.en, undefined, concept.description.nlFormal))
                 .withAdditionalDescription(LanguageString.of(concept.additionalDescription.en, undefined, concept.additionalDescription.nlFormal))
@@ -343,7 +365,9 @@ describe('Creating a new Instance domain service', () => {
                 .withTargetAudiences(concept.targetAudiences)
                 .withThemes(concept.themes)
                 .withCompetentAuthorityLevels(concept.competentAuthorityLevels)
+                .withCompetentAuthorities(concept.competentAuthorities)
                 .withExecutingAuthorityLevels(concept.executingAuthorityLevels)
+                .withExecutingAuthorities([...concept.executingAuthorities, bestuurseenheid.id])
                 .withPublicationMedia(concept.publicationMedia)
                 .withYourEuropeCategories(concept.yourEuropeCategories)
                 .withKeywords(concept.keywords)
@@ -509,6 +533,15 @@ describe('Creating a new Instance domain service', () => {
             .build();
 
         await formalInformalChoiceTestRepository.save(bestuurseenheid, formalInformalChoice);
+
+        const displayConfiguration = aFullConceptDisplayConfiguration()
+            .withBestuurseenheidId(bestuurseenheid.id)
+            .withConceptId(concept.id)
+            .withConceptIsNew(true)
+            .withConceptIsInstantiated(false)
+            .build();
+        await conceptDisplayConfigurationTestRepository.save(bestuurseenheid, displayConfiguration);
+
         const createdInstance = await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept);
 
         const reloadedInstance = await instanceRepository.findById(bestuurseenheid, createdInstance.id);
@@ -526,8 +559,6 @@ describe('Creating a new Instance domain service', () => {
                 .withDateModified(FormatPreservingDate.of(fixedToday))
                 .withStatus(InstanceStatusType.ONTWERP)
                 .withSpatials([spatial1, spatial2])
-                .withCompetentAuthorities([bestuurseenheid.id])
-                .withExecutingAuthorities([bestuurseenheid.id])
                 .withTitle(LanguageString.of(concept.title.en, undefined, undefined, concept.title.nlInformal))
                 .withDescription(LanguageString.of(concept.description.en, undefined, undefined, concept.description.nlInformal))
                 .withAdditionalDescription(LanguageString.of(concept.additionalDescription.en, undefined, undefined, concept.additionalDescription.nlInformal))
@@ -539,7 +570,9 @@ describe('Creating a new Instance domain service', () => {
                 .withTargetAudiences(concept.targetAudiences)
                 .withThemes(concept.themes)
                 .withCompetentAuthorityLevels(concept.competentAuthorityLevels)
+                .withCompetentAuthorities(concept.competentAuthorities)
                 .withExecutingAuthorityLevels(concept.executingAuthorityLevels)
+                .withExecutingAuthorities([bestuurseenheid.id, ...concept.executingAuthorities])
                 .withPublicationMedia(concept.publicationMedia)
                 .withYourEuropeCategories(concept.yourEuropeCategories)
                 .withKeywords(concept.keywords)
@@ -699,12 +732,14 @@ describe('Creating a new Instance domain service', () => {
             .withSpatials([spatial1, spatial2])
             .build();
 
-        const formalInformalChoice = aFormalInformalChoice()
-            .withChosenForm(ChosenFormType.INFORMAL)
+        const displayConfiguration = aFullConceptDisplayConfiguration()
             .withBestuurseenheidId(bestuurseenheid.id)
+            .withConceptId(concept.id)
+            .withConceptIsNew(true)
+            .withConceptIsInstantiated(false)
             .build();
+        await conceptDisplayConfigurationTestRepository.save(bestuurseenheid, displayConfiguration);
 
-        await formalInformalChoiceTestRepository.save(bestuurseenheid, formalInformalChoice);
         const createdInstance = await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept);
 
         const reloadedInstance = await instanceRepository.findById(bestuurseenheid, createdInstance.id);
@@ -712,6 +747,62 @@ describe('Creating a new Instance domain service', () => {
         expect(createdInstance).toEqual(reloadedInstance);
         expect(createdInstance.id).not.toBeUndefined();
         expect(createdInstance.uuid).not.toBeUndefined();
+    });
+
+    test('Create new from concept where concept already includes competent authority of bestuurseenheid', async () => {
+        const spatial1 = buildSpatialRefNis2019Iri(12345);
+        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const bestuurseenheid = aBestuurseenheid()
+            .withId(BestuurseenheidTestBuilder.BORGLOON_IRI)
+            .withSpatials([spatial1, spatial2])
+            .build();
+
+        const concept = aMinimalConcept()
+            .withCompetentAuthorities([bestuurseenheid.id, BestuurseenheidTestBuilder.PEPINGEN_IRI])
+            .withExecutingAuthorities([bestuurseenheid.id, BestuurseenheidTestBuilder.ASSENEDE_IRI])
+            .build();
+
+        const displayConfiguration = aFullConceptDisplayConfiguration()
+            .withBestuurseenheidId(bestuurseenheid.id)
+            .withConceptId(concept.id)
+            .withConceptIsNew(true)
+            .withConceptIsInstantiated(false)
+            .build();
+        await conceptDisplayConfigurationTestRepository.save(bestuurseenheid, displayConfiguration);
+
+        const createdInstance = await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept);
+
+        expect(createdInstance.competentAuthorities).toEqual([bestuurseenheid.id, BestuurseenheidTestBuilder.PEPINGEN_IRI]);
+        expect(createdInstance.executingAuthorities).toEqual([bestuurseenheid.id, BestuurseenheidTestBuilder.ASSENEDE_IRI]);
+    });
+
+    test('Create new from concept should update displayConfiguration', async () => {
+        const spatial1 = buildSpatialRefNis2019Iri(12345);
+        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const bestuurseenheid = aBestuurseenheid()
+            .withSpatials([spatial1, spatial2])
+            .build();
+
+        const concept = aMinimalConcept()
+            .withCompetentAuthorities([bestuurseenheid.id, BestuurseenheidTestBuilder.PEPINGEN_IRI])
+            .withExecutingAuthorities([bestuurseenheid.id, BestuurseenheidTestBuilder.ASSENEDE_IRI])
+            .build();
+
+        const displayConfiguration = aFullConceptDisplayConfiguration()
+            .withBestuurseenheidId(bestuurseenheid.id)
+            .withConceptId(concept.id)
+            .withConceptIsNew(true)
+            .withConceptIsInstantiated(false)
+            .build();
+
+        await conceptDisplayConfigurationTestRepository.save(bestuurseenheid, displayConfiguration);
+
+        await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept);
+
+        const updatedConceptDisplayConfiguration = await conceptDisplayConfigurationTestRepository.findByConceptId(bestuurseenheid, concept.id);
+
+        expect(updatedConceptDisplayConfiguration.conceptIsNew).toEqual(false);
+        expect(updatedConceptDisplayConfiguration.conceptIsInstantiated).toEqual(true);
     });
 
 });
