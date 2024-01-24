@@ -20,6 +20,12 @@ export function aMinimalCostForConcept(): CostBuilder {
         .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
 }
 
+export function aMinimalCostForInstance(): CostBuilder {
+    return new CostBuilder()
+        .withId(CostBuilder.buildIri(uuid()))
+        .withUuid(uuid());
+}
+
 export function aFullCost(): CostBuilder {
     return new CostBuilder()
         .withId(CostBuilder.buildIri(uuid()))

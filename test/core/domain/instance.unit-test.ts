@@ -15,18 +15,17 @@ import {
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {uuid} from "../../../mu-helper";
 import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
-import {aFullRequirement, RequirementTestBuilder} from "./requirement-test-builder";
+import {aFullRequirement, aMinimalRequirementForInstance} from "./requirement-test-builder";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
-import {EvidenceTestBuilder} from "./evidence-test-builder";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
-import {ProcedureTestBuilder} from "./procedure-test-builder";
+import {aMinimalProcedureForInstance, ProcedureTestBuilder} from "./procedure-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
-import {WebsiteTestBuilder} from "./website-test-builder";
+import {aMinimalWebsiteForInstance, WebsiteTestBuilder} from "./website-test-builder";
 import {Cost, CostBuilder} from "../../../src/core/domain/cost";
-import {CostTestBuilder} from "./cost-test-builder";
+import {aMinimalCostForInstance, CostTestBuilder} from "./cost-test-builder";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
-import {FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
+import {aMinimalFinancialAdvantageForInstance, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {Language} from "../../../src/core/domain/language";
 
 describe('constructing', () => {
@@ -331,9 +330,9 @@ describe('validateLanguages',()=>{
         expect(()=>instance.build()).not.toThrow(new Error());
     });
 });
-describe('dutch language version', () => {
+describe('nl language version', () => {
 
-    test('title, description, additional description, exception, regulation missing, returns undefined', () => {
+    test('title, description, additional description, exception, regulation, requirements, procedures, websites missing, returns undefined', () => {
         const instance =
             aMinimalInstance()
                 .withTitle(undefined)
@@ -341,95 +340,217 @@ describe('dutch language version', () => {
                 .withAdditionalDescription(undefined)
                 .withException(undefined)
                 .withRegulation(undefined)
+                .withRequirements([])
+                .withProcedures([])
+                .withWebsites([])
+                .withCosts([])
+                .withFinancialAdvantages([])
                 .build();
-        expect(instance.instanceDutchLanguage).toBeUndefined();
+        expect(instance.instanceNlLanguage).toBeUndefined();
     });
 
 
-    for (const dutchLanguage of [Language.NL, Language.FORMAL, Language.INFORMAL]) {
+    for (const nlLanguage of [Language.NL, Language.FORMAL, Language.INFORMAL]) {
 
-        let valueInDutchLanguage: LanguageString;
-        if(dutchLanguage === Language.NL) {
-            valueInDutchLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
-        } else if(dutchLanguage == Language.FORMAL) {
-            valueInDutchLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
-        } else if(dutchLanguage == Language.INFORMAL) {
-            valueInDutchLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
+        let valueInNlLanguage: LanguageString;
+        if (nlLanguage === Language.NL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
+        } else if (nlLanguage == Language.FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
+        } else if (nlLanguage == Language.INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
         }
 
 
-        test(`title has dutch language ${dutchLanguage}`, () => {
+        test(`title has nl language ${nlLanguage}`, () => {
             const instance =
                 aMinimalInstance()
-                    .withTitle(valueInDutchLanguage)
+                    .withTitle(valueInNlLanguage)
                     .withDescription(undefined)
                     .withAdditionalDescription(undefined)
                     .withException(undefined)
                     .withRegulation(undefined)
                     .build();
-            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
         });
 
-        test(`description has dutch language ${dutchLanguage}`, () => {
+        test(`description has nl language ${nlLanguage}`, () => {
             const instance =
                 aMinimalInstance()
                     .withTitle(undefined)
-                    .withDescription(valueInDutchLanguage)
+                    .withDescription(valueInNlLanguage)
                     .withAdditionalDescription(undefined)
                     .withException(undefined)
                     .withRegulation(undefined)
                     .build();
-            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
         });
 
-        test(`additional Description has dutch language ${dutchLanguage}`, () => {
+        test(`additional Description has nl language ${nlLanguage}`, () => {
             const instance =
                 aMinimalInstance()
                     .withTitle(undefined)
                     .withDescription(undefined)
-                    .withAdditionalDescription(valueInDutchLanguage)
+                    .withAdditionalDescription(valueInNlLanguage)
                     .withException(undefined)
                     .withRegulation(undefined)
                     .build();
-            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
         });
 
 
-        test(`exception has dutch language ${dutchLanguage}`, () => {
-            const instance =
-                aMinimalInstance()
-                    .withTitle(undefined)
-                    .withDescription(undefined)
-                    .withAdditionalDescription(undefined)
-                    .withException(valueInDutchLanguage)
-                    .withRegulation(undefined)
-                    .build();
-            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
-        });
-
-        test(`regulation has dutch language ${dutchLanguage}`, () => {
+        test(`exception has nl language ${nlLanguage}`, () => {
             const instance =
                 aMinimalInstance()
                     .withTitle(undefined)
                     .withDescription(undefined)
                     .withAdditionalDescription(undefined)
-                    .withException(undefined)
-                    .withRegulation(valueInDutchLanguage)
+                    .withException(valueInNlLanguage)
+                    .withRegulation(undefined)
                     .build();
-            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
+        });
+
+        test(`regulation has nl language ${nlLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(undefined)
+                    .withDescription(undefined)
+                    .withAdditionalDescription(undefined)
+                    .withException(undefined)
+                    .withRegulation(valueInNlLanguage)
+                    .build();
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
+        });
+
+        test(`requirement has nl language ${nlLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(undefined)
+                    .withDescription(undefined)
+                    .withAdditionalDescription(undefined)
+                    .withException(undefined)
+                    .withRegulation(undefined)
+                    .withRequirements(
+                        [
+                            aMinimalRequirementForInstance()
+                                .withTitle(valueInNlLanguage)
+                                .build()])
+                    .build();
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
+        });
+
+        test(`procedure has nl language ${nlLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(undefined)
+                    .withDescription(undefined)
+                    .withAdditionalDescription(undefined)
+                    .withException(undefined)
+                    .withRegulation(undefined)
+                    .withProcedures(
+                        [
+                            aMinimalProcedureForInstance()
+                                .withTitle(valueInNlLanguage)
+                                .build()])
+                    .build();
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
+        });
+
+        test(`website has nl language ${nlLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(undefined)
+                    .withDescription(undefined)
+                    .withAdditionalDescription(undefined)
+                    .withException(undefined)
+                    .withRegulation(undefined)
+                    .withWebsites(
+                        [
+                            aMinimalWebsiteForInstance()
+                                .withTitle(valueInNlLanguage)
+                                .build()])
+                    .build();
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
         });
 
 
-        test(`title, description, additional description, exception, regulation all have dutchLanguage ${dutchLanguage}`, () => {
+        test(`cost has nl language ${nlLanguage}`, () => {
             const instance =
                 aMinimalInstance()
-                    .withTitle(valueInDutchLanguage)
-                    .withDescription(valueInDutchLanguage)
-                    .withAdditionalDescription(valueInDutchLanguage)
-                    .withException(valueInDutchLanguage)
-                    .withRegulation(valueInDutchLanguage)
+                    .withTitle(undefined)
+                    .withDescription(undefined)
+                    .withAdditionalDescription(undefined)
+                    .withException(undefined)
+                    .withRegulation(undefined)
+                    .withCosts(
+                        [
+                            aMinimalCostForInstance()
+                                .withTitle(valueInNlLanguage)
+                                .build()
+                        ]
+                    )
                     .build();
-            expect(instance.instanceDutchLanguage).toEqual(dutchLanguage);
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
+        });
+
+        test(`financial advantage has nl language ${nlLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(undefined)
+                    .withDescription(undefined)
+                    .withAdditionalDescription(undefined)
+                    .withException(undefined)
+                    .withRegulation(undefined)
+                    .withFinancialAdvantages(
+                        [
+                            aMinimalFinancialAdvantageForInstance()
+                                .withTitle(valueInNlLanguage)
+                                .build()
+                        ]
+                    )
+                    .build();
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
+        });
+
+
+        test(`title, description, additional description, exception, regulation, requirement, procedure, website, cost, financial advantage all have nl Language ${nlLanguage}`, () => {
+            const instance =
+                aMinimalInstance()
+                    .withTitle(valueInNlLanguage)
+                    .withDescription(valueInNlLanguage)
+                    .withAdditionalDescription(valueInNlLanguage)
+                    .withException(valueInNlLanguage)
+                    .withRegulation(valueInNlLanguage)
+                    .withRequirements(
+                        [
+                            aMinimalRequirementForInstance()
+                                .withTitle(valueInNlLanguage)
+                                .build()])
+                    .withProcedures(
+                        [
+                            aMinimalProcedureForInstance()
+                                .withTitle(valueInNlLanguage)
+                                .build()])
+                    .withWebsites(
+                        [
+                            aMinimalWebsiteForInstance()
+                                .withTitle(valueInNlLanguage)
+                                .build()])
+                    .withCosts(
+                        [
+                            aMinimalCostForInstance()
+                                .withTitle(valueInNlLanguage)
+                                .build()
+                        ])
+                    .withFinancialAdvantages(
+                        [
+                            aMinimalFinancialAdvantageForInstance()
+                                .withTitle(valueInNlLanguage)
+                                .build()
+                        ])
+                    .build();
+            expect(instance.instanceNlLanguage).toEqual(nlLanguage);
         });
 
     }

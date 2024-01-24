@@ -126,8 +126,8 @@ export class Concept {
     }
 
     //TODO LPDC-917: what is the correct business term for this method?
-    get conceptDutchLanguages(): Language[] {
-        return [...this._title.definedLanguages.filter(l => l !== Language.EN)];
+    get conceptNlLanguages(): Language[] {
+        return [...this._title.definedNlLanguages];
     }
 
     get appliedConceptSnapshots(): Iri[] {

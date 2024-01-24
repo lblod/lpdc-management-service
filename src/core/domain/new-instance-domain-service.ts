@@ -229,17 +229,17 @@ export class NewInstanceDomainService {
 
     private selectLanguageVersionForConcept(concept: Concept, chosenForm: ChosenFormType | undefined): Language {
         if (chosenForm === ChosenFormType.INFORMAL) {
-            if (concept.conceptDutchLanguages.includes(Language.INFORMAL)) {
+            if (concept.conceptNlLanguages.includes(Language.INFORMAL)) {
                 return Language.INFORMAL;
-            } else if (concept.conceptDutchLanguages.includes(Language.GENERATED_INFORMAL)) {
+            } else if (concept.conceptNlLanguages.includes(Language.GENERATED_INFORMAL)) {
                 return Language.GENERATED_INFORMAL;
             } else {
                 return Language.NL;
             }
         } else {
-            if (concept.conceptDutchLanguages.includes(Language.FORMAL)) {
+            if (concept.conceptNlLanguages.includes(Language.FORMAL)) {
                 return Language.FORMAL;
-            } else if (concept.conceptDutchLanguages.includes(Language.GENERATED_FORMAL) && concept.conceptDutchLanguages.includes(Language.INFORMAL)) {
+            } else if (concept.conceptNlLanguages.includes(Language.GENERATED_FORMAL) && concept.conceptNlLanguages.includes(Language.INFORMAL)) {
                 return Language.GENERATED_FORMAL;
             } else {
                 return Language.NL;

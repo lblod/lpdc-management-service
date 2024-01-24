@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {requiredValue} from "./shared/invariant";
-import {Procedure} from "./procedure";
+import {Language} from "./language";
 
 export class Website {
 
@@ -71,6 +71,9 @@ export class Website {
         return new Website(id, uuid, title, description, url, source);
     }
 
+    get nlLanguage(): Language | undefined {
+        return LanguageString.extractNlLanguage([this._title, this._description]);
+    }
 
     get id(): Iri {
         return this._id;

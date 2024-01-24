@@ -2,6 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {requiredValue} from "./shared/invariant";
+import {Language} from "./language";
 
 export class FinancialAdvantage {
 
@@ -61,6 +62,10 @@ export class FinancialAdvantage {
                         source: Iri | undefined): FinancialAdvantage {
 
         return new FinancialAdvantage(id, uuid, title, description, source);
+    }
+
+    get nlLanguage(): Language | undefined {
+        return LanguageString.extractNlLanguage([this._title, this._description]);
     }
 
     get id(): Iri {

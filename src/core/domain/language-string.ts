@@ -75,7 +75,8 @@ export class LanguageString {
         if (this._nlGeneratedInformal !== undefined) definedLanguages.push(Language.GENERATED_INFORMAL);
         return uniq(definedLanguages);
     }
-    getDefinedNlLanguages():Language[]{
+
+    get definedNlLanguages(): Language[] {
         const definedLanguages = [];
         if (this._nl !== undefined) definedLanguages.push(Language.NL);
         if (this._nlFormal !== undefined) definedLanguages.push(Language.FORMAL);
@@ -92,6 +93,15 @@ export class LanguageString {
         if (language === Language.INFORMAL) return this._nlInformal;
         if (language === Language.GENERATED_FORMAL) return this._nlGeneratedFormal;
         if (language === Language.GENERATED_INFORMAL) return this._nlGeneratedInformal;
+    }
+
+    static extractNlLanguage(languages: (LanguageString | undefined)[]): Language | undefined {
+        const nlLanguages =
+            languages
+                .filter(ls => ls !== undefined)
+                .flatMap(ls => ls.definedNlLanguages);
+        //TODO LPDC-917: what if there are multiple -> throw error ?
+        return nlLanguages[0];
     }
 
     static isFunctionallyChanged(value: LanguageString | undefined, other: LanguageString | undefined): boolean {

@@ -352,7 +352,7 @@ describe('select form language for instance', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
 
-    test('Existing dutch nl language on instance overrides formal informal choice', async () => {
+    test('Existing nl language on instance overrides formal informal choice', async () => {
         const bestuurseenheid =
             aBestuurseenheid()
                 .build();
@@ -374,7 +374,7 @@ describe('select form language for instance', () => {
         expect(selectedLanguage).toEqual(Language.NL);
     });
 
-    test('Existing dutch nl formal language on instance overrides formal informal choice', async () => {
+    test('Existing nl formal language on instance overrides formal informal choice', async () => {
         const bestuurseenheid =
             aBestuurseenheid()
                 .build();
@@ -396,7 +396,7 @@ describe('select form language for instance', () => {
         expect(selectedLanguage).toEqual(Language.FORMAL);
     });
 
-    test('Existing dutch nl informal language on instance overrides formal informal choice', async () => {
+    test('Existing nl informal language on instance overrides formal informal choice', async () => {
         const bestuurseenheid =
             aBestuurseenheid()
                 .build();
@@ -418,7 +418,7 @@ describe('select form language for instance', () => {
         expect(selectedLanguage).toEqual(Language.INFORMAL);
     });
 
-    test('Instance without dutch language uses formal informal choice formal', async () => {
+    test('Instance without nl language uses formal informal choice formal', async () => {
         const bestuurseenheid =
             aBestuurseenheid()
                 .build();
@@ -444,7 +444,7 @@ describe('select form language for instance', () => {
         expect(selectedLanguage).toEqual(Language.FORMAL);
     });
 
-    test('Instance without dutch language uses formal informal choice informal', async () => {
+    test('Instance without nl language uses formal informal choice informal', async () => {
         const bestuurseenheid =
             aBestuurseenheid()
                 .build();
@@ -470,7 +470,7 @@ describe('select form language for instance', () => {
         expect(selectedLanguage).toEqual(Language.INFORMAL);
     });
 
-    test('Instance without dutch language and no formal informal choice made yet returns formal', async () => {
+    test('Instance without nl language and no formal informal choice made yet returns formal', async () => {
         const bestuurseenheid =
             aBestuurseenheid()
                 .build();

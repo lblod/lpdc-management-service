@@ -1,10 +1,12 @@
-import {aFullRequirement} from "./requirement-test-builder";
+import {aFullRequirement, aMinimalRequirementForInstance} from "./requirement-test-builder";
 import {Requirement} from "../../../src/core/domain/requirement";
 import {uuid} from "../../../mu-helper";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
-import {EvidenceTestBuilder} from "./evidence-test-builder";
+import {aMinimalEvidenceForInstance, EvidenceTestBuilder} from "./evidence-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {Language} from "../../../src/core/domain/language";
+import {LanguageString} from "../../../src/core/domain/language-string";
 
 
 describe('forConcept', () => {
@@ -92,4 +94,95 @@ describe('forConceptSnapshot', () => {
             expect(() => Requirement.forConceptSnapshot(requirement.build())).toThrow();
         });
     });
+});
+
+describe('nl language', () => {
+
+    test('empty requirement has no nl language', () => {
+        const requirement
+            = aMinimalRequirementForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .withEvidence(undefined)
+            .build();
+        expect(requirement.nlLanguage).toBeUndefined();
+    });
+
+
+    for (const nlLanguage of [Language.NL, Language.FORMAL, Language.INFORMAL]) {
+
+        let valueInNlLanguage: LanguageString;
+        if (nlLanguage === Language.NL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
+        } else if (nlLanguage == Language.FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
+        } else if (nlLanguage == Language.INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
+        }
+
+        test(`title has nl language ${nlLanguage}`, () => {
+            const requirement
+                = aMinimalRequirementForInstance()
+                .withTitle(valueInNlLanguage)
+                .withDescription(undefined)
+                .withEvidence(undefined)
+                .build();
+            expect(requirement.nlLanguage).toEqual(nlLanguage);
+        });
+
+
+        test(`description has nl language ${nlLanguage}`, () => {
+            const requirement
+                = aMinimalRequirementForInstance()
+                .withTitle(undefined)
+                .withDescription(valueInNlLanguage)
+                .withEvidence(undefined)
+                .build();
+            expect(requirement.nlLanguage).toEqual(nlLanguage);
+        });
+
+        test(`evidence > title has nl language ${nlLanguage}`, () => {
+            const requirement
+                = aMinimalRequirementForInstance()
+                .withTitle(undefined)
+                .withDescription(undefined)
+                .withEvidence(
+                    aMinimalEvidenceForInstance()
+                        .withTitle(valueInNlLanguage)
+                        .withDescription(undefined)
+                        .build())
+                .build();
+            expect(requirement.nlLanguage).toEqual(nlLanguage);
+        });
+
+        test(`evidence > description has nl language ${nlLanguage}`, () => {
+            const requirement
+                = aMinimalRequirementForInstance()
+                .withTitle(undefined)
+                .withDescription(undefined)
+                .withEvidence(
+                    aMinimalEvidenceForInstance()
+                        .withTitle(undefined)
+                        .withDescription(valueInNlLanguage)
+                        .build())
+                .build();
+            expect(requirement.nlLanguage).toEqual(nlLanguage);
+        });
+
+        test(`title, description, evidence > title, evidence > description have nl language ${nlLanguage}`, () => {
+            const requirement
+                = aMinimalRequirementForInstance()
+                .withTitle(valueInNlLanguage)
+                .withDescription(valueInNlLanguage)
+                .withEvidence(
+                    aMinimalEvidenceForInstance()
+                        .withTitle(valueInNlLanguage)
+                        .withDescription(valueInNlLanguage)
+                        .build())
+                .build();
+            expect(requirement.nlLanguage).toEqual(nlLanguage);
+        });
+
+    }
+
 });

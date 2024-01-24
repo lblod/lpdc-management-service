@@ -2,6 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {requiredValue} from "./shared/invariant";
+import {Language} from "./language";
 
 export class Cost {
 
@@ -90,6 +91,10 @@ export class Cost {
                 return LanguageString.isFunctionallyChanged(costs[0].title, costs[1].title)
                     || LanguageString.isFunctionallyChanged(costs[0].description, costs[1].description);
             });
+    }
+
+    get nlLanguage(): Language | undefined {
+        return LanguageString.extractNlLanguage([this._title, this._description]);
     }
 
 }

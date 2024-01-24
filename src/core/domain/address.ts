@@ -3,6 +3,7 @@ import {requiredValue} from "./shared/invariant";
 import {LanguageString} from "./language-string";
 
 export class Address {
+
     private readonly _id: Iri;
     private readonly _uuid: string; //required for mu-cl-resources.
     private readonly _gemeentenaam: LanguageString | undefined;
@@ -12,7 +13,6 @@ export class Address {
     private readonly _postcode: string | undefined;
     private readonly _straatnaam: LanguageString | undefined;
     private readonly _verwijstNaar: Iri | undefined;
-
 
     constructor(id: Iri,
                 uuid: string,

@@ -3,6 +3,7 @@ import {requiredValue} from "./shared/invariant";
 import {Address} from "./address";
 
 export class ContactPoint {
+
     private readonly _id: Iri;
     private readonly _uuid: string; //required for mu-cl-resources.
     private readonly _url: string;
@@ -10,7 +11,6 @@ export class ContactPoint {
     private readonly _telephone: string | undefined;
     private readonly _openingHours: string | undefined;
     private readonly _address: Address | undefined;
-
 
     constructor(id: Iri,
                 uuid: string,
@@ -27,7 +27,6 @@ export class ContactPoint {
         this._openingHours = openingHours;
         this._address = address;
     }
-
 
     get id(): Iri {
         return this._id;

@@ -19,6 +19,13 @@ export function aMinimalFinancialAdvantageForConcept(): FinancialAdvantageBuilde
         .withDescription(aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build());
 }
 
+export function aMinimalFinancialAdvantageForInstance(): FinancialAdvantageBuilder {
+    const uniqueId = uuid();
+    return new FinancialAdvantageBuilder()
+        .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId);
+}
+
 export function aFullFinancialAdvantage(): FinancialAdvantageBuilder {
     const uniqueId = uuid();
     return new FinancialAdvantageBuilder()

@@ -16,7 +16,7 @@ import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/best
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
-import {aFullInstance} from "../domain/instance-test-builder";
+import {aFullInstance, aMinimalInstance} from "../domain/instance-test-builder";
 
 describe('Form application service tests', () => {
 
@@ -250,7 +250,7 @@ describe('Form application service tests', () => {
             await bestuurseenheidRepository.save(bestuurseenheid);
 
             const instance =
-                aFullInstance()
+                aMinimalInstance()
                     .withTitle(
                         LanguageString.of(undefined, undefined, undefined)
                     )

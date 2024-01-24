@@ -3,6 +3,7 @@ import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {Website} from "./website";
 import {requiredValue} from "./shared/invariant";
+import {Language} from "./language";
 
 
 export class Procedure {
@@ -72,6 +73,11 @@ export class Procedure {
         return new Procedure(id, uuid, title, description, websites, source);
     }
 
+    get nlLanguage(): Language | undefined {
+        return [LanguageString.extractNlLanguage([this._title, this._description]),
+            ...this._websites.map(r => r.nlLanguage)]
+            .filter(l => l !== undefined)[0];
+    }
 
     get id(): Iri {
         return this._id;

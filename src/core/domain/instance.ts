@@ -52,7 +52,9 @@ export class Instance {
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
     private readonly _contactPoints: ContactPoint[];
+    //TODO LPDC-917: name ? source points to a concept ?
     private readonly _source: Iri | undefined;
+    //TODO LPDC-917: name ? versionedSource points to a concept snapshot ?
     private readonly _versionedSource: Iri | undefined;
     private readonly _languages: LanguageType[];
     private readonly _dateCreated: FormatPreservingDate;
@@ -101,7 +103,7 @@ export class Instance {
                 spatials: Iri[],
                 legalResources: Iri[]
     ) {
-        this.validateLanguages(title,description);
+        this.validateLanguages(title, description); //TODO LPDC-917: should this also not be on all other fields ?
 
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -141,30 +143,34 @@ export class Instance {
         this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
     }
 
-    private validateLanguages(...values : LanguageString[]): void {
+    private validateLanguages(...values: LanguageString[]): void {
         const languages = new Set();
 
-        values.filter(ls => ls !== undefined).forEach(val => val.getDefinedNlLanguages().forEach(language => languages.add(language)));
+        values.filter(ls => ls !== undefined)
+            .forEach(val => val.definedNlLanguages.forEach(language => languages.add(language)));
 
-        if(languages.size>1){
+        if (languages.size > 1) {
             throw new Error('More then 1 nl-language is present');
         }
     }
 
-    get instanceDutchLanguage(): Language | undefined {
-        // TODO 917: Language can also be included in requirements, procedures, websites, costs, ...
-        const dutchLanguages =
-            [
+    get instanceNlLanguage(): Language | undefined {
+        const nlLanguage =
+            LanguageString.extractNlLanguage([
                 this._title,
                 this._description,
                 this._additionalDescription,
                 this._exception,
                 this._regulation,
-            ]
-                .filter(ls => ls !== undefined)
-                .flatMap(ls => ls.definedLanguages)
-                .filter(l => l !== Language.EN);
-        return dutchLanguages[0];
+            ]);
+        return [nlLanguage,
+            ...this._requirements.map(r => r.nlLanguage),
+            ...this._procedures.map(p => p.nlLanguage),
+            ...this._websites.map(p => p.nlLanguage),
+            ...this._costs.map(p => p.nlLanguage),
+            ...this._financialAdvantages.map(p => p.nlLanguage),
+        ]
+            .filter(l => l !== undefined)[0];
     }
 
     get id(): Iri {
@@ -275,7 +281,7 @@ export class Instance {
         return this._source;
     }
 
-    get versionedSource(): Iri |undefined{
+    get versionedSource(): Iri | undefined {
         return this._versionedSource;
     }
 

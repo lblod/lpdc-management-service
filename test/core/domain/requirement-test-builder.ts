@@ -33,7 +33,6 @@ export function aMinimalRequirementForInstance(): RequirementBuilder {
         .withUuid(uniqueId);
 }
 
-
 export function aFullRequirement(): RequirementBuilder {
     const uniqueId = uuid();
     return new RequirementBuilder()

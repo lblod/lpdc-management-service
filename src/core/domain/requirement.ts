@@ -3,6 +3,7 @@ import {Iri} from "./shared/iri";
 import _ from 'lodash';
 import {Evidence} from "./evidence";
 import {requiredValue} from "./shared/invariant";
+import {Language} from "./language";
 
 export class Requirement {
 
@@ -51,7 +52,7 @@ export class Requirement {
     }
 
     static forInstance(requirement: Requirement): Requirement {
-        // TODO LPDC-917: validate that title, description have only one dutch languageVersion
+        // TODO LPDC-917: validate that title, description have only one nl languageVersion
         return new Requirement(
             requirement.id,
             requiredValue(requirement.uuid, 'uuid'),
@@ -70,6 +71,10 @@ export class Requirement {
                         source: Iri | undefined): Requirement {
 
         return new Requirement(id, uuid, title, description, evidence, source);
+    }
+
+    get nlLanguage(): Language | undefined {
+        return LanguageString.extractNlLanguage([this._title, this._description]) ?? this._evidence?.nlLanguage;
     }
 
     get id(): Iri {
