@@ -63,7 +63,7 @@ export class Instance {
     private readonly _spatials: Iri[];
     private readonly _legalResources: Iri[];
 
-    // TODO LPDC-917: title, description - languageStrings should contain only one language version and should be the same for all (en, nl, nlFormal, nlInformal are allowed ...)
+
     constructor(id: Iri,
                 uuid: string,
                 createdBy: Iri,
