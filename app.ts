@@ -7,7 +7,6 @@ import {
     LOG_INCOMING_DELTA
 } from './config';
 import {updateForm, updateFormAtomic} from './lib/updateForm';
-import {deleteForm} from './lib/deleteForm';
 import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
 import {getContactPointOptions} from "./lib/getContactPointOptions";
@@ -40,6 +39,7 @@ import {FormDefinitionFileRepository} from "./src/driven/persistence/form-defini
 import {SelectFormLanguageDomainService} from "./src/core/domain/select-form-language-domain-service";
 import {FormalInformalChoiceSparqlRepository} from "./src/driven/persistence/formal-informal-choice-sparql-repository";
 import {FormApplicationService} from "./src/core/application/form-application-service";
+import {Bestuurseenheid} from "./src/core/domain/bestuurseenheid";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -217,10 +217,13 @@ app.put('/public-services/:instanceId/form/:formId', async function (req, res): 
 });
 
 app.delete('/public-services/:instanceId', async function (req, res): Promise<any> {
-    const publicServiceId = req.params.instanceId;
-    const header = req.headers['mu-session-id'] as string;
+    const instanceIdRequestParam = req.params.instanceId;
     try {
-        await deleteForm(publicServiceId, header, sessionRepository, bestuurseenheidRepository);
+        const instanceId = new Iri(instanceIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+        await instanceRepository.delete(bestuurseenheid,instanceId);
         return res.sendStatus(204);
     } catch (e) {
         console.error(e);
@@ -229,7 +232,7 @@ app.delete('/public-services/:instanceId', async function (req, res): Promise<an
         }
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while deleting the semantic-form for "${publicServiceId}".`
+            message: `Something unexpected went wrong while deleting the semantic-form for "${instanceIdRequestParam}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
