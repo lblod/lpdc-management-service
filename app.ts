@@ -223,7 +223,8 @@ app.delete('/public-services/:instanceId', async function (req, res): Promise<an
         const session: Session = req['session'];
         const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-        await instanceRepository.delete(bestuurseenheid,instanceId);
+        await instanceRepository.delete(bestuurseenheid, instanceId);
+        //TODO LPDC-917: in the deleteForm code, there is also removeInstantiatedFlag logic ...
         return res.sendStatus(204);
     } catch (e) {
         console.error(e);

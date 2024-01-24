@@ -10,7 +10,7 @@ export class Cost {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
-    private readonly _conceptId: Iri | undefined;
+    private readonly _conceptId: Iri | undefined; //TODO LPDC-917: wijst dit naar de concept id ? of naar de cost die onder het concept hangt ? analoog voor andere?
 
     private constructor(id: Iri,
                         uuid: string | undefined,
