@@ -15,7 +15,9 @@ import {FormatPreservingDate} from '../../core/domain/format-preserving-date';
 import {
     CompetentAuthorityLevelType,
     ConceptTagType,
-    ExecutingAuthorityLevelType, InstancePublicationStatusType, InstanceReviewStatusType,
+    ExecutingAuthorityLevelType,
+    InstancePublicationStatusType,
+    InstanceReviewStatusType,
     InstanceStatusType,
     LanguageType,
     ProductType,
@@ -155,8 +157,8 @@ export class QuadsToDomainMapper {
             this.costs(id),
             this.financialAdvantages(id),
             this.contactPoints(id),
-            this.source(id),
-            this.versionedSource(id),
+            this.conceptId(id),
+            this.conceptSnapshotId(id),
             this.languages(id),
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
@@ -377,7 +379,7 @@ export class QuadsToDomainMapper {
             this.asIris(this.store.statementsMatching(namedNode(id.value), NS.m8g('hasCost'), null, this.graphId));
         costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, NS.m8g('Cost')));
 
-        const costs = costIds.map(costId => Cost.reconstitute(costId, this.uuid(costId), this.title(costId), this.description(costId), this.source(costId)));
+        const costs = costIds.map(costId => Cost.reconstitute(costId, this.uuid(costId), this.title(costId), this.description(costId), this.conceptId(costId)));
 
         return this.sort(costs);
     }
@@ -390,7 +392,7 @@ export class QuadsToDomainMapper {
 
         const financialAdvantages =
             financialAdvantageIds.map(financialAdvantageId =>
-                FinancialAdvantage.reconstitute(financialAdvantageId, this.uuid(financialAdvantageId), this.title(financialAdvantageId), this.description(financialAdvantageId), this.source(financialAdvantageId)));
+                FinancialAdvantage.reconstitute(financialAdvantageId, this.uuid(financialAdvantageId), this.title(financialAdvantageId), this.description(financialAdvantageId), this.conceptId(financialAdvantageId)));
 
         return this.sort(financialAdvantages);
     }
@@ -445,7 +447,7 @@ export class QuadsToDomainMapper {
 
         const websites =
             websiteIds.map(websiteId =>
-                Website.reconstitute(websiteId, this.uuid(websiteId), this.title(websiteId), this.description(websiteId), this.url(websiteId), this.source(websiteId)));
+                Website.reconstitute(websiteId, this.uuid(websiteId), this.title(websiteId), this.description(websiteId), this.url(websiteId), this.conceptId(websiteId)));
 
         return this.sort(websites);
     }
@@ -459,7 +461,7 @@ export class QuadsToDomainMapper {
 
         const procedures =
             procedureIds.map(procedureId =>
-                Procedure.reconstitute(procedureId, this.uuid(procedureId), this.title(procedureId), this.description(procedureId), this.websites(procedureId, NS.lpdcExt('hasWebsite')), this.source(procedureId)));
+                Procedure.reconstitute(procedureId, this.uuid(procedureId), this.title(procedureId), this.description(procedureId), this.websites(procedureId, NS.lpdcExt('hasWebsite')), this.conceptId(procedureId)));
 
         return this.sort(procedures);
     }
@@ -479,7 +481,7 @@ export class QuadsToDomainMapper {
                     this.title(requirementId),
                     this.description(requirementId),
                     this.evidence(requirementId),
-                    this.source(requirementId)
+                    this.conceptId(requirementId)
                 ));
 
         return this.sort(requirements);
@@ -498,14 +500,14 @@ export class QuadsToDomainMapper {
         if (evidenceIds.length === 0) {
             return undefined;
         }
-        return Evidence.reconstitute(evidenceIds[0], this.uuid(evidenceIds[0]), this.title(evidenceIds[0]), this.description(evidenceIds[0]), this.source(evidenceIds[0]));
+        return Evidence.reconstitute(evidenceIds[0], this.uuid(evidenceIds[0]), this.title(evidenceIds[0]), this.description(evidenceIds[0]), this.conceptId(evidenceIds[0]));
     }
 
-    private source(id: Iri): Iri | undefined {
+    private conceptId(id: Iri): Iri | undefined {
         return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.dct('source'), null, this.graphId));
     }
 
-    private versionedSource(id: Iri): Iri | undefined {
+    private conceptSnapshotId(id: Iri): Iri | undefined {
         return this.asIri(this.store.anyStatementMatching(namedNode(id.value), NS.ext('hasVersionedSource'), null, this.graphId));
     }
 

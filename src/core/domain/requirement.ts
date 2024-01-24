@@ -12,21 +12,21 @@ export class Requirement {
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _evidence: Evidence | undefined;
-    private readonly _source: Iri | undefined;
+    private readonly _conceptId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         evidence: Evidence | undefined,
-                        source: Iri | undefined
+                        conceptId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
         this._evidence = evidence;
-        this._source = source;
+        this._conceptId = conceptId;
     }
 
     static forConcept(requirement: Requirement): Requirement {
@@ -59,7 +59,7 @@ export class Requirement {
             requirement.title,
             requirement.description,
             requirement.evidence ? Evidence.forInstance(requirement.evidence) : undefined,
-            requirement.source
+            requirement.conceptId
         );
     }
 
@@ -68,9 +68,9 @@ export class Requirement {
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         evidence: Evidence | undefined,
-                        source: Iri | undefined): Requirement {
+                        conceptId: Iri | undefined): Requirement {
 
-        return new Requirement(id, uuid, title, description, evidence, source);
+        return new Requirement(id, uuid, title, description, evidence, conceptId);
     }
 
     get nlLanguage(): Language | undefined {
@@ -97,8 +97,8 @@ export class Requirement {
         return this._evidence;
     }
 
-    get source(): Iri | undefined {
-        return this._source;
+    get conceptId(): Iri | undefined {
+        return this._conceptId;
     }
 
     static isFunctionallyChanged(value: Requirement[], other: Requirement[]): boolean {
@@ -118,7 +118,7 @@ export class RequirementBuilder {
     private _title: LanguageString | undefined;
     private _description: LanguageString | undefined;
     private _evidence: Evidence | undefined;
-    private _source: Iri | undefined;
+    private _conceptId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/requirement/${uniqueId}`);
@@ -149,8 +149,8 @@ export class RequirementBuilder {
         return this;
     }
 
-    public withSource(source: Iri): RequirementBuilder {
-        this._source = source;
+    public withConceptId(conceptId: Iri): RequirementBuilder {
+        this._conceptId = conceptId;
         return this;
     }
 
@@ -173,7 +173,7 @@ export class RequirementBuilder {
             this._title,
             this._description,
             this._evidence,
-            this._source,
+            this._conceptId,
         );
     }
 }

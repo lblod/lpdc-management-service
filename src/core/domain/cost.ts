@@ -10,19 +10,19 @@ export class Cost {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
-    private readonly _source: Iri | undefined;
+    private readonly _conceptId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
-                        source: Iri | undefined
+                        conceptId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
-        this._source = source;
+        this._conceptId = conceptId;
     }
 
     static forConcept(cost: Cost): Cost {
@@ -51,7 +51,7 @@ export class Cost {
             requiredValue(cost.uuid, 'uuid'),
             cost.title,
             cost.description,
-            cost.source
+            cost.conceptId
         );
     }
 
@@ -60,9 +60,9 @@ export class Cost {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
-                        source: Iri | undefined): Cost {
+                        conceptId: Iri | undefined): Cost {
 
-        return new Cost(id, uuid, title, description, source);
+        return new Cost(id, uuid, title, description, conceptId);
     }
 
     get id(): Iri {
@@ -81,8 +81,8 @@ export class Cost {
         return this._description;
     }
 
-    get source(): Iri | undefined {
-        return this._source;
+    get conceptId(): Iri | undefined {
+        return this._conceptId;
     }
 
     static isFunctionallyChanged(value: Cost[], other: Cost[]): boolean {
@@ -105,7 +105,7 @@ export class CostBuilder {
     private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
-    private source: Iri | undefined;
+    private conceptId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/cost/${uniqueId}`);
@@ -131,8 +131,8 @@ export class CostBuilder {
         return this;
     }
 
-    public withSource(source: Iri): CostBuilder {
-        this.source = source;
+    public withConceptId(conceptId: Iri): CostBuilder {
+        this.conceptId = conceptId;
         return this;
     }
 
@@ -154,7 +154,7 @@ export class CostBuilder {
             this.uuid,
             this.title,
             this.description,
-            this.source
+            this.conceptId
         );
     }
 }

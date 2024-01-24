@@ -11,21 +11,21 @@ export class Website {
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _url: string;
-    private readonly _source: Iri | undefined;
+    private readonly _conceptId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString,
                         description: LanguageString | undefined,
                         url: string,
-                        source: Iri | undefined
+                        conceptId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
         this._url = url;
-        this._source = source;
+        this._conceptId = conceptId;
     }
 
     static forConcept(website: Website): Website {
@@ -57,7 +57,7 @@ export class Website {
             website.title,
             website.description,
             website.url,
-            website.source
+            website.conceptId
         );
     }
 
@@ -66,9 +66,9 @@ export class Website {
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         url: string,
-                        source: Iri | undefined): Website {
+                        conceptId: Iri | undefined): Website {
 
-        return new Website(id, uuid, title, description, url, source);
+        return new Website(id, uuid, title, description, url, conceptId);
     }
 
     get nlLanguage(): Language | undefined {
@@ -95,8 +95,8 @@ export class Website {
         return this._url;
     }
 
-    get source(): Iri | undefined {
-        return this._source;
+    get conceptId(): Iri | undefined {
+        return this._conceptId;
     }
 
     static isFunctionallyChanged(value: Website[], other: Website[]): boolean {
@@ -118,7 +118,7 @@ export class WebsiteBuilder {
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
     private url: string | undefined;
-    private source: Iri | undefined;
+    private conceptId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/website/${uniqueId}`);
@@ -149,8 +149,8 @@ export class WebsiteBuilder {
         return this;
     }
 
-    public withSource(source: Iri): WebsiteBuilder {
-        this.source = source;
+    public withConceptId(conceptId: Iri): WebsiteBuilder {
+        this.conceptId = conceptId;
         return this;
     }
 
@@ -173,7 +173,7 @@ export class WebsiteBuilder {
             this.title,
             this.description,
             this.url,
-            this.source
+            this.conceptId
         );
     }
 }

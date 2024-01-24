@@ -52,10 +52,8 @@ export class Instance {
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
     private readonly _contactPoints: ContactPoint[];
-    //TODO LPDC-917: name ? source points to a concept ?
-    private readonly _source: Iri | undefined;
-    //TODO LPDC-917: name ? versionedSource points to a concept snapshot ?
-    private readonly _versionedSource: Iri | undefined;
+    private readonly _conceptId: Iri | undefined;
+    private readonly _conceptSnapshotId: Iri | undefined;
     private readonly _languages: LanguageType[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
@@ -92,8 +90,8 @@ export class Instance {
                 costs: Cost[],
                 financialAdvantages: FinancialAdvantage[],
                 contactPoints: ContactPoint[],
-                source: Iri | undefined,
-                versionedSource: Iri | undefined,
+                conceptId: Iri | undefined,
+                conceptSnapshotId: Iri | undefined,
                 languages: LanguageType[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
@@ -131,8 +129,8 @@ export class Instance {
         this._costs = [...costs].map(Cost.forInstance);
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forInstance);
         this._contactPoints = [...contactPoints];
-        this._source = source;
-        this._versionedSource = versionedSource; //TODO LPDC-917: should be required when source is defined
+        this._conceptId = conceptId;
+        this._conceptSnapshotId = conceptSnapshotId; //TODO LPDC-917: should be required when conceptId is defined
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
@@ -277,12 +275,12 @@ export class Instance {
         return [...this._contactPoints];
     }
 
-    get source(): Iri | undefined {
-        return this._source;
+    get conceptId(): Iri | undefined {
+        return this._conceptId;
     }
 
-    get versionedSource(): Iri | undefined {
-        return this._versionedSource;
+    get conceptSnapshotId(): Iri | undefined {
+        return this._conceptSnapshotId;
     }
 
     get languages(): LanguageType[] {

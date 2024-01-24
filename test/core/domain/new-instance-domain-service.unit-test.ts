@@ -145,10 +145,10 @@ describe('Creating a new Instance domain service', () => {
                             .withUuid(createdInstance.requirements[0].evidence.uuid)
                             .withTitle(LanguageString.of(concept.requirements[0].evidence.title.en, undefined, concept.requirements[0].evidence.title.nlFormal))
                             .withDescription(LanguageString.of(concept.requirements[0].evidence.description.en, undefined, concept.requirements[0].evidence.description.nlFormal))
-                            .withSource(concept.requirements[0].evidence.id)
+                            .withConceptId(concept.requirements[0].evidence.id)
                             .buildForInstance()
                         )
-                        .withSource(concept.requirements[0].id)
+                        .withConceptId(concept.requirements[0].id)
                         .buildForInstance()
                     ,
                     new RequirementBuilder()
@@ -161,10 +161,10 @@ describe('Creating a new Instance domain service', () => {
                             .withUuid(createdInstance.requirements[1].evidence.uuid)
                             .withTitle(LanguageString.of(concept.requirements[1].evidence.title.en, undefined, concept.requirements[1].evidence.title.nlFormal))
                             .withDescription(LanguageString.of(concept.requirements[1].evidence.description.en, undefined, concept.requirements[1].evidence.description.nlFormal))
-                            .withSource(concept.requirements[1].evidence.id)
+                            .withConceptId(concept.requirements[1].evidence.id)
                             .buildForInstance()
                         )
-                        .withSource(concept.requirements[1].id)
+                        .withConceptId(concept.requirements[1].id)
                         .buildForInstance()
                 ])
                 .withProcedures([
@@ -180,7 +180,7 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[0].websites[0].title.en, undefined, concept.procedures[0].websites[0].title.nlFormal))
                                 .withDescription(LanguageString.of(concept.procedures[0].websites[0].description.en, undefined, concept.procedures[0].websites[0].description.nlFormal))
                                 .withUrl(concept.procedures[0].websites[0].url)
-                                .withSource(concept.procedures[0].websites[0].id)
+                                .withConceptId(concept.procedures[0].websites[0].id)
                                 .buildForInstance(),
                             new WebsiteBuilder()
                                 .withId(createdInstance.procedures[0].websites[1].id)
@@ -188,10 +188,10 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[0].websites[1].title.en, undefined, concept.procedures[0].websites[1].title.nlFormal))
                                 .withDescription(LanguageString.of(concept.procedures[0].websites[1].description.en, undefined, concept.procedures[0].websites[1].description.nlFormal))
                                 .withUrl(concept.procedures[0].websites[1].url)
-                                .withSource(concept.procedures[0].websites[1].id)
+                                .withConceptId(concept.procedures[0].websites[1].id)
                                 .buildForInstance(),
                         ])
-                        .withSource(concept.procedures[0].id)
+                        .withConceptId(concept.procedures[0].id)
                         .buildForInstance(),
                     new ProcedureBuilder()
                         .withId(createdInstance.procedures[1].id)
@@ -205,7 +205,7 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[1].websites[0].title.en, undefined, concept.procedures[1].websites[0].title.nlFormal))
                                 .withDescription(LanguageString.of(concept.procedures[1].websites[0].description.en, undefined, concept.procedures[1].websites[0].description.nlFormal))
                                 .withUrl(concept.procedures[1].websites[0].url)
-                                .withSource(concept.procedures[1].websites[0].id)
+                                .withConceptId(concept.procedures[1].websites[0].id)
                                 .buildForInstance(),
                             new WebsiteBuilder()
                                 .withId(createdInstance.procedures[1].websites[1].id)
@@ -213,10 +213,10 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[1].websites[1].title.en, undefined, concept.procedures[1].websites[1].title.nlFormal))
                                 .withDescription(LanguageString.of(concept.procedures[1].websites[1].description.en, undefined, concept.procedures[1].websites[1].description.nlFormal))
                                 .withUrl(concept.procedures[1].websites[1].url)
-                                .withSource(concept.procedures[1].websites[1].id)
+                                .withConceptId(concept.procedures[1].websites[1].id)
                                 .buildForInstance(),
                         ])
-                        .withSource(concept.procedures[1].id)
+                        .withConceptId(concept.procedures[1].id)
                         .buildForInstance()
                 ])
                 .withWebsites([
@@ -226,7 +226,7 @@ describe('Creating a new Instance domain service', () => {
                         .withTitle(LanguageString.of(concept.websites[0].title.en, undefined, concept.websites[0].title.nlFormal))
                         .withDescription(LanguageString.of(concept.websites[0].description.en, undefined, concept.websites[0].description.nlFormal))
                         .withUrl(concept.websites[0].url)
-                        .withSource(concept.websites[0].id)
+                        .withConceptId(concept.websites[0].id)
                         .buildForInstance(),
                     new WebsiteBuilder()
                         .withId(createdInstance.websites[1].id)
@@ -234,7 +234,7 @@ describe('Creating a new Instance domain service', () => {
                         .withTitle(LanguageString.of(concept.websites[1].title.en, undefined, concept.websites[1].title.nlFormal))
                         .withDescription(LanguageString.of(concept.websites[1].description.en, undefined, concept.websites[1].description.nlFormal))
                         .withUrl(concept.websites[1].url)
-                        .withSource(concept.websites[1].id)
+                        .withConceptId(concept.websites[1].id)
                         .buildForInstance(),
                 ])
                 .withCosts([
@@ -243,14 +243,14 @@ describe('Creating a new Instance domain service', () => {
                         .withUuid(createdInstance.costs[0].uuid)
                         .withTitle(LanguageString.of(concept.costs[0].title.en, undefined, concept.costs[0].title.nlFormal))
                         .withDescription(LanguageString.of(concept.costs[0].description.en, undefined, concept.costs[0].description.nlFormal))
-                        .withSource(concept.costs[0].id)
+                        .withConceptId(concept.costs[0].id)
                         .buildForInstance(),
                     new CostBuilder()
                         .withId(createdInstance.costs[1].id)
                         .withUuid(createdInstance.costs[1].uuid)
                         .withTitle(LanguageString.of(concept.costs[1].title.en, undefined, concept.costs[1].title.nlFormal))
                         .withDescription(LanguageString.of(concept.costs[1].description.en, undefined, concept.costs[1].description.nlFormal))
-                        .withSource(concept.costs[1].id)
+                        .withConceptId(concept.costs[1].id)
                         .buildForInstance(),
                 ])
                 .withFinancialAdvantages([
@@ -259,14 +259,14 @@ describe('Creating a new Instance domain service', () => {
                         .withUuid(createdInstance.financialAdvantages[0].uuid)
                         .withTitle(LanguageString.of(concept.financialAdvantages[0].title.en, undefined, concept.financialAdvantages[0].title.nlFormal))
                         .withDescription(LanguageString.of(concept.financialAdvantages[0].description.en, undefined, concept.financialAdvantages[0].description.nlFormal))
-                        .withSource(concept.financialAdvantages[0].id)
+                        .withConceptId(concept.financialAdvantages[0].id)
                         .buildForInstance(),
                     new FinancialAdvantageBuilder()
                         .withId(createdInstance.financialAdvantages[1].id)
                         .withUuid(createdInstance.financialAdvantages[1].uuid)
                         .withTitle(LanguageString.of(concept.financialAdvantages[1].title.en, undefined, concept.financialAdvantages[1].title.nlFormal))
                         .withDescription(LanguageString.of(concept.financialAdvantages[1].description.en, undefined, concept.financialAdvantages[1].description.nlFormal))
-                        .withSource(concept.financialAdvantages[1].id)
+                        .withConceptId(concept.financialAdvantages[1].id)
                         .buildForInstance(),
                 ])
                 .withContactPoints([])
@@ -382,10 +382,10 @@ describe('Creating a new Instance domain service', () => {
                             .withUuid(createdInstance.requirements[0].evidence.uuid)
                             .withTitle(LanguageString.of(concept.requirements[0].evidence.title.en, undefined, concept.requirements[0].evidence.title.nlFormal))
                             .withDescription(LanguageString.of(concept.requirements[0].evidence.description.en, undefined, concept.requirements[0].evidence.description.nlFormal))
-                            .withSource(concept.requirements[0].evidence.id)
+                            .withConceptId(concept.requirements[0].evidence.id)
                             .buildForInstance()
                         )
-                        .withSource(concept.requirements[0].id)
+                        .withConceptId(concept.requirements[0].id)
                         .buildForInstance()
                     ,
                     new RequirementBuilder()
@@ -398,10 +398,10 @@ describe('Creating a new Instance domain service', () => {
                             .withUuid(createdInstance.requirements[1].evidence.uuid)
                             .withTitle(LanguageString.of(concept.requirements[1].evidence.title.en, undefined, concept.requirements[1].evidence.title.nlFormal))
                             .withDescription(LanguageString.of(concept.requirements[1].evidence.description.en, undefined, concept.requirements[1].evidence.description.nlFormal))
-                            .withSource(concept.requirements[1].evidence.id)
+                            .withConceptId(concept.requirements[1].evidence.id)
                             .buildForInstance()
                         )
-                        .withSource(concept.requirements[1].id)
+                        .withConceptId(concept.requirements[1].id)
                         .buildForInstance()
                 ])
                 .withProcedures([
@@ -417,7 +417,7 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[0].websites[0].title.en, undefined, concept.procedures[0].websites[0].title.nlFormal))
                                 .withDescription(LanguageString.of(concept.procedures[0].websites[0].description.en, undefined, concept.procedures[0].websites[0].description.nlFormal))
                                 .withUrl(concept.procedures[0].websites[0].url)
-                                .withSource(concept.procedures[0].websites[0].id)
+                                .withConceptId(concept.procedures[0].websites[0].id)
                                 .buildForInstance(),
                             new WebsiteBuilder()
                                 .withId(createdInstance.procedures[0].websites[1].id)
@@ -425,10 +425,10 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[0].websites[1].title.en, undefined, concept.procedures[0].websites[1].title.nlFormal))
                                 .withDescription(LanguageString.of(concept.procedures[0].websites[1].description.en, undefined, concept.procedures[0].websites[1].description.nlFormal))
                                 .withUrl(concept.procedures[0].websites[1].url)
-                                .withSource(concept.procedures[0].websites[1].id)
+                                .withConceptId(concept.procedures[0].websites[1].id)
                                 .buildForInstance(),
                         ])
-                        .withSource(concept.procedures[0].id)
+                        .withConceptId(concept.procedures[0].id)
                         .buildForInstance(),
                     new ProcedureBuilder()
                         .withId(createdInstance.procedures[1].id)
@@ -442,7 +442,7 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[1].websites[0].title.en, undefined, concept.procedures[1].websites[0].title.nlFormal))
                                 .withDescription(LanguageString.of(concept.procedures[1].websites[0].description.en, undefined, concept.procedures[1].websites[0].description.nlFormal))
                                 .withUrl(concept.procedures[1].websites[0].url)
-                                .withSource(concept.procedures[1].websites[0].id)
+                                .withConceptId(concept.procedures[1].websites[0].id)
                                 .buildForInstance(),
                             new WebsiteBuilder()
                                 .withId(createdInstance.procedures[1].websites[1].id)
@@ -450,10 +450,10 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[1].websites[1].title.en, undefined, concept.procedures[1].websites[1].title.nlFormal))
                                 .withDescription(LanguageString.of(concept.procedures[1].websites[1].description.en, undefined, concept.procedures[1].websites[1].description.nlFormal))
                                 .withUrl(concept.procedures[1].websites[1].url)
-                                .withSource(concept.procedures[1].websites[1].id)
+                                .withConceptId(concept.procedures[1].websites[1].id)
                                 .buildForInstance(),
                         ])
-                        .withSource(concept.procedures[1].id)
+                        .withConceptId(concept.procedures[1].id)
                         .buildForInstance()
                 ])
                 .withWebsites([
@@ -463,7 +463,7 @@ describe('Creating a new Instance domain service', () => {
                         .withTitle(LanguageString.of(concept.websites[0].title.en, undefined, concept.websites[0].title.nlFormal))
                         .withDescription(LanguageString.of(concept.websites[0].description.en, undefined, concept.websites[0].description.nlFormal))
                         .withUrl(concept.websites[0].url)
-                        .withSource(concept.websites[0].id)
+                        .withConceptId(concept.websites[0].id)
                         .buildForInstance(),
                     new WebsiteBuilder()
                         .withId(createdInstance.websites[1].id)
@@ -471,7 +471,7 @@ describe('Creating a new Instance domain service', () => {
                         .withTitle(LanguageString.of(concept.websites[1].title.en, undefined, concept.websites[1].title.nlFormal))
                         .withDescription(LanguageString.of(concept.websites[1].description.en, undefined, concept.websites[1].description.nlFormal))
                         .withUrl(concept.websites[1].url)
-                        .withSource(concept.websites[1].id)
+                        .withConceptId(concept.websites[1].id)
                         .buildForInstance(),
                 ])
                 .withCosts([
@@ -480,14 +480,14 @@ describe('Creating a new Instance domain service', () => {
                         .withUuid(createdInstance.costs[0].uuid)
                         .withTitle(LanguageString.of(concept.costs[0].title.en, undefined, concept.costs[0].title.nlFormal))
                         .withDescription(LanguageString.of(concept.costs[0].description.en, undefined, concept.costs[0].description.nlFormal))
-                        .withSource(concept.costs[0].id)
+                        .withConceptId(concept.costs[0].id)
                         .buildForInstance(),
                     new CostBuilder()
                         .withId(createdInstance.costs[1].id)
                         .withUuid(createdInstance.costs[1].uuid)
                         .withTitle(LanguageString.of(concept.costs[1].title.en, undefined, concept.costs[1].title.nlFormal))
                         .withDescription(LanguageString.of(concept.costs[1].description.en, undefined, concept.costs[1].description.nlFormal))
-                        .withSource(concept.costs[1].id)
+                        .withConceptId(concept.costs[1].id)
                         .buildForInstance(),
                 ])
                 .withFinancialAdvantages([
@@ -496,14 +496,14 @@ describe('Creating a new Instance domain service', () => {
                         .withUuid(createdInstance.financialAdvantages[0].uuid)
                         .withTitle(LanguageString.of(concept.financialAdvantages[0].title.en, undefined, concept.financialAdvantages[0].title.nlFormal))
                         .withDescription(LanguageString.of(concept.financialAdvantages[0].description.en, undefined, concept.financialAdvantages[0].description.nlFormal))
-                        .withSource(concept.financialAdvantages[0].id)
+                        .withConceptId(concept.financialAdvantages[0].id)
                         .buildForInstance(),
                     new FinancialAdvantageBuilder()
                         .withId(createdInstance.financialAdvantages[1].id)
                         .withUuid(createdInstance.financialAdvantages[1].uuid)
                         .withTitle(LanguageString.of(concept.financialAdvantages[1].title.en, undefined, concept.financialAdvantages[1].title.nlFormal))
                         .withDescription(LanguageString.of(concept.financialAdvantages[1].description.en, undefined, concept.financialAdvantages[1].description.nlFormal))
-                        .withSource(concept.financialAdvantages[1].id)
+                        .withConceptId(concept.financialAdvantages[1].id)
                         .buildForInstance(),
                 ])
                 .withContactPoints([])
@@ -587,10 +587,10 @@ describe('Creating a new Instance domain service', () => {
                             .withUuid(createdInstance.requirements[0].evidence.uuid)
                             .withTitle(LanguageString.of(concept.requirements[0].evidence.title.en, undefined, undefined, concept.requirements[0].evidence.title.nlInformal))
                             .withDescription(LanguageString.of(concept.requirements[0].evidence.description.en, undefined, undefined, concept.requirements[0].evidence.description.nlInformal))
-                            .withSource(concept.requirements[0].evidence.id)
+                            .withConceptId(concept.requirements[0].evidence.id)
                             .buildForInstance()
                         )
-                        .withSource(concept.requirements[0].id)
+                        .withConceptId(concept.requirements[0].id)
                         .buildForInstance()
                     ,
                     new RequirementBuilder()
@@ -603,10 +603,10 @@ describe('Creating a new Instance domain service', () => {
                             .withUuid(createdInstance.requirements[1].evidence.uuid)
                             .withTitle(LanguageString.of(concept.requirements[1].evidence.title.en, undefined, undefined, concept.requirements[1].evidence.title.nlInformal))
                             .withDescription(LanguageString.of(concept.requirements[1].evidence.description.en, undefined, undefined, concept.requirements[1].evidence.description.nlInformal))
-                            .withSource(concept.requirements[1].evidence.id)
+                            .withConceptId(concept.requirements[1].evidence.id)
                             .buildForInstance()
                         )
-                        .withSource(concept.requirements[1].id)
+                        .withConceptId(concept.requirements[1].id)
                         .buildForInstance()
                 ])
                 .withProcedures([
@@ -622,7 +622,7 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[0].websites[0].title.en, undefined, undefined, concept.procedures[0].websites[0].title.nlInformal))
                                 .withDescription(LanguageString.of(concept.procedures[0].websites[0].description.en, undefined, undefined, concept.procedures[0].websites[0].description.nlInformal))
                                 .withUrl(concept.procedures[0].websites[0].url)
-                                .withSource(concept.procedures[0].websites[0].id)
+                                .withConceptId(concept.procedures[0].websites[0].id)
                                 .buildForInstance(),
                             new WebsiteBuilder()
                                 .withId(createdInstance.procedures[0].websites[1].id)
@@ -630,10 +630,10 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[0].websites[1].title.en, undefined, undefined, concept.procedures[0].websites[1].title.nlInformal))
                                 .withDescription(LanguageString.of(concept.procedures[0].websites[1].description.en, undefined, undefined, concept.procedures[0].websites[1].description.nlInformal))
                                 .withUrl(concept.procedures[0].websites[1].url)
-                                .withSource(concept.procedures[0].websites[1].id)
+                                .withConceptId(concept.procedures[0].websites[1].id)
                                 .buildForInstance(),
                         ])
-                        .withSource(concept.procedures[0].id)
+                        .withConceptId(concept.procedures[0].id)
                         .buildForInstance(),
                     new ProcedureBuilder()
                         .withId(createdInstance.procedures[1].id)
@@ -647,7 +647,7 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[1].websites[0].title.en, undefined, undefined, concept.procedures[1].websites[0].title.nlInformal))
                                 .withDescription(LanguageString.of(concept.procedures[1].websites[0].description.en, undefined, undefined, concept.procedures[1].websites[0].description.nlInformal))
                                 .withUrl(concept.procedures[1].websites[0].url)
-                                .withSource(concept.procedures[1].websites[0].id)
+                                .withConceptId(concept.procedures[1].websites[0].id)
                                 .buildForInstance(),
                             new WebsiteBuilder()
                                 .withId(createdInstance.procedures[1].websites[1].id)
@@ -655,10 +655,10 @@ describe('Creating a new Instance domain service', () => {
                                 .withTitle(LanguageString.of(concept.procedures[1].websites[1].title.en, undefined, undefined, concept.procedures[1].websites[1].title.nlInformal))
                                 .withDescription(LanguageString.of(concept.procedures[1].websites[1].description.en, undefined, undefined, concept.procedures[1].websites[1].description.nlInformal))
                                 .withUrl(concept.procedures[1].websites[1].url)
-                                .withSource(concept.procedures[1].websites[1].id)
+                                .withConceptId(concept.procedures[1].websites[1].id)
                                 .buildForInstance(),
                         ])
-                        .withSource(concept.procedures[1].id)
+                        .withConceptId(concept.procedures[1].id)
                         .buildForInstance()
                 ])
                 .withWebsites([
@@ -668,7 +668,7 @@ describe('Creating a new Instance domain service', () => {
                         .withTitle(LanguageString.of(concept.websites[0].title.en, undefined, undefined, concept.websites[0].title.nlInformal))
                         .withDescription(LanguageString.of(concept.websites[0].description.en, undefined, undefined, concept.websites[0].description.nlInformal))
                         .withUrl(concept.websites[0].url)
-                        .withSource(concept.websites[0].id)
+                        .withConceptId(concept.websites[0].id)
                         .buildForInstance(),
                     new WebsiteBuilder()
                         .withId(createdInstance.websites[1].id)
@@ -676,7 +676,7 @@ describe('Creating a new Instance domain service', () => {
                         .withTitle(LanguageString.of(concept.websites[1].title.en, undefined, undefined, concept.websites[1].title.nlInformal))
                         .withDescription(LanguageString.of(concept.websites[1].description.en, undefined, undefined, concept.websites[1].description.nlInformal))
                         .withUrl(concept.websites[1].url)
-                        .withSource(concept.websites[1].id)
+                        .withConceptId(concept.websites[1].id)
                         .buildForInstance(),
                 ])
                 .withCosts([
@@ -685,14 +685,14 @@ describe('Creating a new Instance domain service', () => {
                         .withUuid(createdInstance.costs[0].uuid)
                         .withTitle(LanguageString.of(concept.costs[0].title.en, undefined, undefined, concept.costs[0].title.nlInformal))
                         .withDescription(LanguageString.of(concept.costs[0].description.en, undefined, undefined, concept.costs[0].description.nlInformal))
-                        .withSource(concept.costs[0].id)
+                        .withConceptId(concept.costs[0].id)
                         .buildForInstance(),
                     new CostBuilder()
                         .withId(createdInstance.costs[1].id)
                         .withUuid(createdInstance.costs[1].uuid)
                         .withTitle(LanguageString.of(concept.costs[1].title.en, undefined, undefined, concept.costs[1].title.nlInformal))
                         .withDescription(LanguageString.of(concept.costs[1].description.en, undefined, undefined, concept.costs[1].description.nlInformal))
-                        .withSource(concept.costs[1].id)
+                        .withConceptId(concept.costs[1].id)
                         .buildForInstance(),
                 ])
                 .withFinancialAdvantages([
@@ -701,14 +701,14 @@ describe('Creating a new Instance domain service', () => {
                         .withUuid(createdInstance.financialAdvantages[0].uuid)
                         .withTitle(LanguageString.of(concept.financialAdvantages[0].title.en, undefined, undefined, concept.financialAdvantages[0].title.nlInformal))
                         .withDescription(LanguageString.of(concept.financialAdvantages[0].description.en, undefined, undefined, concept.financialAdvantages[0].description.nlInformal))
-                        .withSource(concept.financialAdvantages[0].id)
+                        .withConceptId(concept.financialAdvantages[0].id)
                         .buildForInstance(),
                     new FinancialAdvantageBuilder()
                         .withId(createdInstance.financialAdvantages[1].id)
                         .withUuid(createdInstance.financialAdvantages[1].uuid)
                         .withTitle(LanguageString.of(concept.financialAdvantages[1].title.en, undefined, undefined, concept.financialAdvantages[1].title.nlInformal))
                         .withDescription(LanguageString.of(concept.financialAdvantages[1].description.en, undefined, undefined, concept.financialAdvantages[1].description.nlInformal))
-                        .withSource(concept.financialAdvantages[1].id)
+                        .withConceptId(concept.financialAdvantages[1].id)
                         .buildForInstance(),
                 ])
                 .withContactPoints([])

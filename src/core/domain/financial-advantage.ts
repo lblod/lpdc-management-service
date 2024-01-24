@@ -10,19 +10,19 @@ export class FinancialAdvantage {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
-    private readonly _source: Iri | undefined;
+    private readonly _conceptId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
-                        source: Iri | undefined
+                        conceptId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
-        this._source = source;
+        this._conceptId = conceptId;
     }
 
     static forConcept(financialAdvantage: FinancialAdvantage): FinancialAdvantage {
@@ -51,7 +51,7 @@ export class FinancialAdvantage {
             requiredValue(financialAdvantage.uuid, 'uuid'),
             financialAdvantage.title,
             financialAdvantage.description,
-            financialAdvantage.source
+            financialAdvantage.conceptId
         );
     }
 
@@ -59,9 +59,9 @@ export class FinancialAdvantage {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
-                        source: Iri | undefined): FinancialAdvantage {
+                        conceptId: Iri | undefined): FinancialAdvantage {
 
-        return new FinancialAdvantage(id, uuid, title, description, source);
+        return new FinancialAdvantage(id, uuid, title, description, conceptId);
     }
 
     get nlLanguage(): Language | undefined {
@@ -84,8 +84,8 @@ export class FinancialAdvantage {
         return this._description;
     }
 
-    get source(): Iri | undefined {
-        return this._source;
+    get conceptId(): Iri | undefined {
+        return this._conceptId;
     }
 
     static isFunctionallyChanged(value: FinancialAdvantage[], other: FinancialAdvantage[]): boolean {
@@ -103,7 +103,7 @@ export class FinancialAdvantageBuilder {
     private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
-    private source: Iri | undefined;
+    private conceptId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/financial-advantage/${uniqueId}`);
@@ -129,8 +129,8 @@ export class FinancialAdvantageBuilder {
         return this;
     }
 
-    public withSource(source: Iri): FinancialAdvantageBuilder {
-        this.source = source;
+    public withConceptId(conceptId: Iri): FinancialAdvantageBuilder {
+        this.conceptId = conceptId;
         return this;
     }
 
@@ -152,7 +152,7 @@ export class FinancialAdvantageBuilder {
             this.uuid,
             this.title,
             this.description,
-            this.source,
+            this.conceptId,
         );
     }
 }

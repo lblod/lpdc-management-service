@@ -115,7 +115,7 @@ describe('Deleting a new Instance domain service', () => {
         await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
 
         await deleteInstanceDomainService.deleteInstanceAndSyncConceptDisPlayConfigurationRepository(bestuurseenheid, instance.id);
-        const actualConceptualDisplayConfiguration = await conceptDisplayConfigurationSparqlRepository.findByConceptId(bestuurseenheid,instance.source);
+        const actualConceptualDisplayConfiguration = await conceptDisplayConfigurationSparqlRepository.findByConceptId(bestuurseenheid,instance.conceptId);
 
         expect(actualConceptualDisplayConfiguration.conceptIsInstantiated).toBeFalsy();
     });
@@ -139,7 +139,7 @@ describe('Deleting a new Instance domain service', () => {
         await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
 
         await deleteInstanceDomainService.deleteInstanceAndSyncConceptDisPlayConfigurationRepository(bestuurseenheid, instance.id);
-        const actualConceptualDisplayConfiguration = await conceptDisplayConfigurationSparqlRepository.findByConceptId(bestuurseenheid,instance.source);
+        const actualConceptualDisplayConfiguration = await conceptDisplayConfigurationSparqlRepository.findByConceptId(bestuurseenheid,instance.conceptId);
 
         expect(actualConceptualDisplayConfiguration.conceptIsInstantiated).toBeTruthy();
     });

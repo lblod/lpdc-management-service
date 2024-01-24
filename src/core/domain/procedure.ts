@@ -13,21 +13,21 @@ export class Procedure {
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _websites: Website[];
-    private readonly _source: Iri | undefined;
+    private readonly _conceptId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         websites: Website[],
-                        source: Iri | undefined
+                        conceptId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
         this._websites = [...websites];
-        this._source = source;
+        this._conceptId = conceptId;
     }
 
     static forConcept(procedure: Procedure): Procedure {
@@ -59,7 +59,7 @@ export class Procedure {
             procedure.title,
             procedure.description,
             procedure.websites.map(Website.forInstance),
-            procedure.source
+            procedure.conceptId
         );
     }
 
@@ -68,9 +68,9 @@ export class Procedure {
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         websites: Website[],
-                        source: Iri | undefined): Procedure {
+                        conceptId: Iri | undefined): Procedure {
 
-        return new Procedure(id, uuid, title, description, websites, source);
+        return new Procedure(id, uuid, title, description, websites, conceptId);
     }
 
     get nlLanguage(): Language | undefined {
@@ -99,8 +99,8 @@ export class Procedure {
         return [...this._websites];
     }
 
-    get source(): Iri | undefined {
-        return this._source;
+    get conceptId(): Iri | undefined {
+        return this._conceptId;
     }
 
     static isFunctionallyChanged(value: Procedure[], other: Procedure[]): boolean {
@@ -120,7 +120,7 @@ export class ProcedureBuilder {
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
     private websites: Website[] = [];
-    private source: Iri | undefined;
+    private conceptId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/rule/${uniqueId}`);
@@ -151,8 +151,8 @@ export class ProcedureBuilder {
         return this;
     }
 
-    withSource(source: Iri): ProcedureBuilder {
-        this.source = source;
+    withConceptId(conceptId: Iri): ProcedureBuilder {
+        this.conceptId = conceptId;
         return this;
     }
 
@@ -175,7 +175,7 @@ export class ProcedureBuilder {
             this.title,
             this.description,
             this.websites,
-            this.source
+            this.conceptId
         );
     }
 }
