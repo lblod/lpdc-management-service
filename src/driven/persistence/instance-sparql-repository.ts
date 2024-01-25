@@ -58,7 +58,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
             const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
 
             const now = new Date();
-            //TODO: add publicatieStatus + api testen
+            // TODO LPDC-917: add publicatieStatus + api testen
+            // TODO LPDC-917 only create tombstone when instance has publicationStatus
             const query = `
                 ${PREFIX.as}
                 ${PREFIX.cpsv}

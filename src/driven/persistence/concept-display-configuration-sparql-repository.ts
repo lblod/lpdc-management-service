@@ -16,6 +16,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         this.querying = new SparqlQuerying(endpoint);
     }
 
+    // TODO LPDC-917: this function should throw error and make existsBy in test repository
     async findByConceptId(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<ConceptDisplayConfiguration | undefined> {
         const query = `
             ${PREFIX.lpdcExt}
@@ -120,6 +121,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         await this.querying.update(updateQuery);
     }
 
+    // TODO LPDC-917: move to test repository
     async ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void> {
         const insertQuery = `
         ${PREFIX.lpdcExt}

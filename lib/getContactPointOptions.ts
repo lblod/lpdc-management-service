@@ -1,5 +1,6 @@
 import {loadContactPointOption} from "./commonQueries";
 
+// TODO LPDC-917 move to ContactPoint application service
 export async function getContactPointOptions(fieldName: string): Promise<any> {
     const fieldNames = ['telephone', 'email', 'url', 'openingHours'];
     if (fieldNames.includes(fieldName)) {
