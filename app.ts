@@ -40,6 +40,7 @@ import {SelectFormLanguageDomainService} from "./src/core/domain/select-form-lan
 import {FormalInformalChoiceSparqlRepository} from "./src/driven/persistence/formal-informal-choice-sparql-repository";
 import {FormApplicationService} from "./src/core/application/form-application-service";
 import {Bestuurseenheid} from "./src/core/domain/bestuurseenheid";
+import {DeleteInstanceDomainService} from "./src/core/domain/delete-instance-domain-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -83,6 +84,12 @@ const selectFormLanguageDomainService =
     new SelectFormLanguageDomainService(
         formalInformalChoiceRepository,
     );
+
+const deleteInstanceDomainService = new DeleteInstanceDomainService(
+    instanceRepository,
+    conceptRepository,
+    conceptDisplayConfigurationRepository
+);
 
 const formApplicationService =
     new FormApplicationService(
@@ -223,7 +230,7 @@ app.delete('/public-services/:instanceId', async function (req, res): Promise<an
         const session: Session = req['session'];
         const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-        await instanceRepository.delete(bestuurseenheid, instanceId);
+        await deleteInstanceDomainService.delete(bestuurseenheid,instanceId);
         //TODO LPDC-917: in the deleteForm code, there is also removeInstantiatedFlag logic ...
         return res.sendStatus(204);
     } catch (e) {

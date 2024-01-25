@@ -66,7 +66,7 @@ describe('Deleting a new Instance domain service', () => {
         await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
 
 
-        await deleteInstanceDomainService.deleteInstanceAndSyncConceptDisPlayConfigurationRepository(bestuurseenheid, instanceId);
+        await deleteInstanceDomainService.delete(bestuurseenheid, instanceId);
 
         await expect(instanceRepository.findById(bestuurseenheid,instance.id)).rejects.toThrow();
         expect(await instanceRepository.findById(bestuurseenheid,anotherInstance.id)).toEqual(anotherInstance);
@@ -80,7 +80,7 @@ describe('Deleting a new Instance domain service', () => {
         await instanceRepository.save(bestuurseenheid,instance);
 
 
-        await expect( deleteInstanceDomainService.deleteInstanceAndSyncConceptDisPlayConfigurationRepository(bestuurseenheid,nonExistingInstanceId)).rejects.toThrow();
+        await expect( deleteInstanceDomainService.delete(bestuurseenheid,nonExistingInstanceId)).rejects.toThrow();
     });
 
     test('if instance exists, but for other bestuurseenheid, then does not remove and throws error',async()=>{
@@ -92,7 +92,7 @@ describe('Deleting a new Instance domain service', () => {
         await instanceRepository.save(bestuurseenheid,instance);
         await instanceRepository.save(anotherBestuurseenheid,anotherInstance);
 
-        await expect( deleteInstanceDomainService.deleteInstanceAndSyncConceptDisPlayConfigurationRepository(bestuurseenheid,anotherInstance.id)).rejects.toThrow();
+        await expect( deleteInstanceDomainService.delete(bestuurseenheid,anotherInstance.id)).rejects.toThrow();
 
         expect(await instanceRepository.findById(anotherBestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
 
@@ -114,7 +114,7 @@ describe('Deleting a new Instance domain service', () => {
             .withConceptIsInstantiated(true).build();
         await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
 
-        await deleteInstanceDomainService.deleteInstanceAndSyncConceptDisPlayConfigurationRepository(bestuurseenheid, instance.id);
+        await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
         const actualConceptualDisplayConfiguration = await conceptDisplayConfigurationSparqlRepository.findByConceptId(bestuurseenheid,instance.conceptId);
 
         expect(actualConceptualDisplayConfiguration.conceptIsInstantiated).toBeFalsy();
@@ -138,7 +138,7 @@ describe('Deleting a new Instance domain service', () => {
             .withConceptIsInstantiated(true).build();
         await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
 
-        await deleteInstanceDomainService.deleteInstanceAndSyncConceptDisPlayConfigurationRepository(bestuurseenheid, instance.id);
+        await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
         const actualConceptualDisplayConfiguration = await conceptDisplayConfigurationSparqlRepository.findByConceptId(bestuurseenheid,instance.conceptId);
 
         expect(actualConceptualDisplayConfiguration.conceptIsInstantiated).toBeTruthy();

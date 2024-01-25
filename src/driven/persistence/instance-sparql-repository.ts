@@ -58,6 +58,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
             const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
 
             const now = new Date();
+            //TODO: add publicatieStatus + api testen
             const query = `
                 ${PREFIX.as}
                 ${PREFIX.cpsv}
@@ -70,7 +71,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())}{
                         ${sparqlEscapeUri(instance.id)} a  as:Tombstone;
                         as:formerType cpsv:PublicService;
-                        as:deleted ${sparqlEscapeDateTime(now)}. 
+                        as:deleted ${sparqlEscapeDateTime(now)}.
                    }   
                 }
             `;
