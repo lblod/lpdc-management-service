@@ -215,7 +215,7 @@ export class QuadsToDomainMapper {
     }
 
     private productType(id: Iri): ProductType | undefined {
-        return this.asEnum(ProductType, NS.dvc.type, this.storeAccess.uniqueValue(namedNode(id.value), NS.dct('type')), id.value);
+        return this.asEnum(ProductType, NS.dvc.type, this.storeAccess.uniqueStatement(namedNode(id.value), NS.dct('type')));
     }
 
     private title(id: Iri): LanguageString | undefined {
@@ -247,15 +247,15 @@ export class QuadsToDomainMapper {
     }
 
     private targetAudiences(id: Iri): TargetAudienceType[] {
-        return this.asEnums(TargetAudienceType, NS.dvc.doelgroep, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('targetAudience')), id.value);
+        return this.asEnums(TargetAudienceType, NS.dvc.doelgroep, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('targetAudience')));
     }
 
     private themes(id: Iri): ThemeType[] {
-        return this.asEnums(ThemeType, NS.dvc.thema, this.storeAccess.statements(namedNode(id.value), NS.m8g('thematicArea')), id.value);
+        return this.asEnums(ThemeType, NS.dvc.thema, this.storeAccess.statements(namedNode(id.value), NS.m8g('thematicArea')));
     }
 
     private competentAuthorityLevels(id: Iri): CompetentAuthorityLevelType[] {
-        return this.asEnums(CompetentAuthorityLevelType, NS.dvc.bevoegdBestuursniveau, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel')), id.value);
+        return this.asEnums(CompetentAuthorityLevelType, NS.dvc.bevoegdBestuursniveau, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel')));
     }
 
     private competentAuthorities(id: Iri): Iri[] {
@@ -263,7 +263,7 @@ export class QuadsToDomainMapper {
     }
 
     private executingAuthorityLevels(id: Iri): ExecutingAuthorityLevelType[] {
-        return this.asEnums(ExecutingAuthorityLevelType, NS.dvc.uitvoerendBestuursniveau, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel')), id.value);
+        return this.asEnums(ExecutingAuthorityLevelType, NS.dvc.uitvoerendBestuursniveau, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel')));
     }
 
     private executingAuthorities(id: Iri): Iri[] {
@@ -271,11 +271,11 @@ export class QuadsToDomainMapper {
     }
 
     private publicationMedia(id: Iri): PublicationMediumType[] {
-        return this.asEnums(PublicationMediumType, NS.dvc.publicatieKanaal, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('publicationMedium')), id.value);
+        return this.asEnums(PublicationMediumType, NS.dvc.publicatieKanaal, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('publicationMedium')));
     }
 
     private yourEuropeCategories(id: Iri): YourEuropeCategoryType[] {
-        return this.asEnums(YourEuropeCategoryType, NS.dvc.yourEuropeCategorie, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('yourEuropeCategory')), id.value);
+        return this.asEnums(YourEuropeCategoryType, NS.dvc.yourEuropeCategorie, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('yourEuropeCategory')));
     }
 
     private email(id: Iri): string | undefined {
@@ -369,11 +369,11 @@ export class QuadsToDomainMapper {
     }
 
     private snapshotType(id: Iri): SnapshotType | undefined {
-        return this.asEnum(SnapshotType, NS.dvc.snapshotType, this.storeAccess.uniqueValue(namedNode(id.value), NS.lpdcExt('snapshotType')), id.value);
+        return this.asEnum(SnapshotType, NS.dvc.snapshotType, this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('snapshotType')));
     }
 
     private conceptTags(id: Iri): ConceptTagType[] {
-        return this.asEnums(ConceptTagType, NS.dvc.conceptTag, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('conceptTag')), id.value);
+        return this.asEnums(ConceptTagType, NS.dvc.conceptTag, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('conceptTag')));
     }
 
     private isConceptArchived(id: Iri): boolean {
@@ -385,15 +385,15 @@ export class QuadsToDomainMapper {
     }
 
     private instanceStatusType(id: Iri): InstanceStatusType | undefined {
-        return this.asEnum(InstanceStatusType, NS.concepts.instanceStatus, this.storeAccess.uniqueValue(namedNode(id.value), NS.adms('status')), id.value);
+        return this.asEnum(InstanceStatusType, NS.concepts.instanceStatus, this.storeAccess.uniqueStatement(namedNode(id.value), NS.adms('status')));
     }
 
     private instanceReviewStatusType(id: Iri): InstanceReviewStatusType | undefined {
-        return this.asEnum(InstanceReviewStatusType, NS.concepts.reviewStatus, this.storeAccess.uniqueValue(namedNode(id.value), NS.ext('reviewStatus')), id.value);
+        return this.asEnum(InstanceReviewStatusType, NS.concepts.reviewStatus, this.storeAccess.uniqueStatement(namedNode(id.value), NS.ext('reviewStatus')));
     }
 
     private instancePublicationStatusType(id: Iri): InstancePublicationStatusType | undefined {
-        return this.asEnum(InstancePublicationStatusType, NS.concepts.publicationStatus, this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('publication')), id.value);
+        return this.asEnum(InstancePublicationStatusType, NS.concepts.publicationStatus, this.storeAccess.uniqueStatement(namedNode(id.value), NS.schema('publication')));
     }
 
     private spatials(id: Iri): Iri[] {
@@ -538,7 +538,7 @@ export class QuadsToDomainMapper {
     }
 
     private languages(id: Iri): LanguageType[] {
-        return this.asEnums(LanguageType, NS.pera.languageType, this.storeAccess.statements(namedNode(id.value), NS.pera.language('')), id.value);
+        return this.asEnums(LanguageType, NS.pera.languageType, this.storeAccess.statements(namedNode(id.value), NS.pera.language('')));
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {
@@ -549,20 +549,18 @@ export class QuadsToDomainMapper {
         return aValue ? Number.parseInt(aValue) : undefined;
     }
 
-    private asEnums<T>(enumObj: T, namespace: Namespace, statements: Statement[], id: string): T[keyof T][] {
-        const namedNodes: NamedNode[] | undefined = this.asNamedNodes(statements);
-        return namedNodes.map(namedNode => this.asEnum(enumObj, namespace, namedNode?.value, id));
+    private asEnums<T>(enumObj: T, namespace: Namespace, statements: Statement[]): T[keyof T][] {
+        return statements.map(statement => this.asEnum(enumObj, namespace, statement));
     }
 
-    //TODO LPDC-917: we don't need the id param, it should accept a Statement, and then it can extract the id from the statement ...
-    private asEnum<T>(enumObj: T, namespace: Namespace, value: any, id: string): T[keyof T] | undefined {
+    private asEnum<T>(enumObj: T, namespace: Namespace, statement: Statement | undefined): T[keyof T] | undefined {
         for (const key in enumObj) {
-            if (namespace(enumObj[key] as string).value === value) {
+            if (namespace(enumObj[key] as string).value === statement?.object?.value) {
                 return enumObj[key];
             }
         }
-        if (value) {
-            throw new Error(`could not map <${value}> for iri: <${id}>`);
+        if (statement?.object?.value) {
+            throw new Error(`could not map <${statement?.object?.value}> for iri: <${statement?.subject?.value}>`);
         }
         return undefined;
     }
