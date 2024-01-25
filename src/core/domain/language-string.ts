@@ -100,7 +100,7 @@ export class LanguageString {
             languages
                 .filter(ls => ls !== undefined)
                 .flatMap(ls => ls.definedNlLanguages);
-        //TODO LPDC-917: what if there are multiple -> throw error ?
+        //TODO LPDC-917: what if there are multiple -> throw error ? or then at least rename the method to reflect
         return nlLanguages[0];
     }
 
