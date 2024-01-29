@@ -1,6 +1,8 @@
 import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
 import {LanguageString} from "./language-string";
+import {Language} from "./language";
+import {isEqual} from "lodash";
 
 export class Address {
 
@@ -24,7 +26,8 @@ export class Address {
                 straatnaam: LanguageString | undefined,
                 verwijstNaar: Iri) {
 
-        // TODO LPDC-917: validate gemeentenaam, land en straatnaam should be only nl
+        this.validateLanguages(gemeentenaam, land, straatnaam);
+
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         this._gemeentenaam = gemeentenaam;
@@ -34,6 +37,14 @@ export class Address {
         this._postcode = postcode;
         this._straatnaam = straatnaam;
         this._verwijstNaar = verwijstNaar;
+    }
+
+    validateLanguages(...values: LanguageString[]): void {
+        const isValid = values.every(value => isEqual(value.definedLanguages, [Language.NL]));
+
+        if (!isValid) {
+            throw new Error('Address languagesStrings should only contain NL');
+        }
     }
 
     get id(): Iri {
