@@ -9,6 +9,7 @@ import {buildInstanceIri, buildSpatialRefNis2019Iri} from "../../core/domain/iri
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
+    InstancePublicationStatusType,
     InstanceStatusType,
     ProductType,
     PublicationMediumType,
@@ -87,16 +88,24 @@ describe('InstanceRepository', () => {
     });
 
     describe('delete', () => {
-
-        test('if exists, Removes all triples related to the instance and create tombstone triples ', async () => {
-
             const fixedToday = '2023-12-13T14:23:54.768Z';
+        beforeAll(() => {
             jest.useFakeTimers();
             const fixedTodayAsDate = new Date(fixedToday);
             jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
+        });
+
+        afterAll(() => {
+            jest.clearAllTimers();
+            jest.useRealTimers();
+            jest.restoreAllMocks();
+        });
+
+        test('if exists with publicationStatus, Removes all triples related to the instance and create tombstone triples ', async () => {
+
 
             const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance().build();
+            const instance = aFullInstance().withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD).build();
 
             await repository.save(bestuurseenheid, instance);
             await repository.delete(bestuurseenheid, instance.id);
@@ -120,10 +129,29 @@ describe('InstanceRepository', () => {
                 quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(fixedToday, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
             ]));
+        });
+        test('if exists without publicationStatus, Removes all triples related to the instance and does not create tombstone triples ', async () => {
 
-            jest.clearAllTimers();
-            jest.useRealTimers();
-            jest.restoreAllMocks();
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance().withPublicationStatus(undefined).build();
+
+            await repository.save(bestuurseenheid, instance);
+            await repository.delete(bestuurseenheid, instance.id);
+
+            const query = `
+            SELECT ?s ?p ?o WHERE {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    VALUES ?s {
+                        <${instance.id.value}>
+                    }
+                    ?s ?p ?o
+                }
+            }
+        `;
+            const queryResult = await directDatabaseAccess.list(query);
+            const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
+
+            expect(quads).toEqual([]);
         });
 
         test('Only the requested instance is deleted', async () => {

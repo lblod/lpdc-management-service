@@ -59,8 +59,21 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
             const now = new Date();
             // TODO LPDC-917: add publicatieStatus + api testen
-            // TODO LPDC-917 only create tombstone when instance has publicationStatus
-            const query = `
+            let query='';
+
+            if(instance.publicationStatus === undefined){
+                query = `
+                ${PREFIX.as}
+                ${PREFIX.cpsv}
+                
+                DELETE DATA FROM ${sparqlEscapeUri(bestuurseenheid.userGraph())}{
+                    ${triples.join("\n")}
+                };
+                `;
+            }
+
+            else{
+                query = `
                 ${PREFIX.as}
                 ${PREFIX.cpsv}
                 
@@ -74,8 +87,9 @@ export class InstanceSparqlRepository implements InstanceRepository {
                         as:formerType cpsv:PublicService;
                         as:deleted ${sparqlEscapeDateTime(now)}.
                    }   
-                }
-            `;
+                }`;
+            }
+
             await this.querying.update(query);
         }
     }
