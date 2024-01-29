@@ -16,7 +16,6 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         this.querying = new SparqlQuerying(endpoint);
     }
 
-    // TODO LPDC-917: this function should throw error and make existsBy in test repository
     async findByConceptId(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<ConceptDisplayConfiguration | undefined> {
         const query = `
             ${PREFIX.lpdcExt}
@@ -41,7 +40,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         const result = await this.querying.singleRow(query);
 
         if (!result) {
-            return undefined;
+            throw new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`);
         }
 
         const conceptDisplayConfiguration = new ConceptDisplayConfiguration(
@@ -62,10 +61,6 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
 
     async removeInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId:Iri): Promise<void>{
       const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid,conceptId);
-
-        if (!conceptDisplayConfiguration) {
-            throw new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`);
-        }
 
         const query = `
         ${PREFIX.lpdcExt}
@@ -93,10 +88,6 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
     async removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void> {
         const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid, conceptId);
 
-        if (!conceptDisplayConfiguration) {
-            throw new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`);
-        }
-
         const updateQuery = `
         ${PREFIX.lpdcExt}
         DELETE {
@@ -121,7 +112,6 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         await this.querying.update(updateQuery);
     }
 
-    // TODO LPDC-917: move to test repository
     async ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void> {
         const insertQuery = `
         ${PREFIX.lpdcExt}

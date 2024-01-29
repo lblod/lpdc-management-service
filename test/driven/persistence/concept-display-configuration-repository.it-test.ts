@@ -44,11 +44,10 @@ describe('ConceptDisplayConfigurationRepository', () => {
             expect(actualConceptDisplayConfiguration).toEqual(conceptDisplayConfiguration);
         });
 
-        test('returns undefined when not found', async () => {
-            const bestuurseenheid =
-                aBestuurseenheid()
-                    .withId(buildBestuurseenheidIri(uuid()))
-                    .build();
+        test('throws error when not found', async () => {
+            const bestuurseenheid = aBestuurseenheid()
+                .withId(buildBestuurseenheidIri(uuid()))
+                .build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
             const conceptDisplayConfiguration =
@@ -61,8 +60,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
 
             const anotherConceptId = buildConceptIri(uuid());
 
-            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, anotherConceptId);
-            expect(actualConceptDisplayConfiguration).toBeUndefined();
+            await expect(() => repository.findByConceptId(bestuurseenheid, anotherConceptId)).rejects.toThrow(new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${anotherConceptId}`));
         });
 
         test('filters on concept id', async () => {
@@ -150,8 +148,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
                     .build();
             await repository.save(anotherBestuurseenheid, conceptDisplayConfiguration);
 
-            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptId);
-            expect(actualConceptDisplayConfiguration).toBeUndefined();
+            await expect(() => repository.findByConceptId(bestuurseenheid, conceptId)).rejects.toThrow(new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`));
         });
 
     });
@@ -299,8 +296,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
                     PREFIX.dct
                 ]);
 
-            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-            expect(actualConceptDisplayConfiguration).toBeUndefined();
+            await expect(() => repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId)).rejects.toThrow(new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptDisplayConfiguration.conceptId}`));
         });
 
         test('Verify mappings', async () => {
