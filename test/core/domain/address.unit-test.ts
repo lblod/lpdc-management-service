@@ -69,6 +69,16 @@ describe('constructing', () => {
             )
                 .not.toThrow();
         });
+
+        test('no gemeentenaam, land and straat does not throw error', () => {
+            expect(() => aFullAddress()
+                .withGemeentenaam(undefined)
+                .withLand(undefined)
+                .withStraatnaam(undefined)
+                .build()
+            )
+                .not.toThrow();
+        });
     });
 
 

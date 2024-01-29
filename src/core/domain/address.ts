@@ -39,8 +39,10 @@ export class Address {
         this._verwijstNaar = verwijstNaar;
     }
 
-    validateLanguages(...values: LanguageString[]): void {
-        const isValid = values.every(value => isEqual(value.definedLanguages, [Language.NL]));
+    validateLanguages(...values: (LanguageString | undefined)[]): void {
+        const isValid = values.every((value: LanguageString | undefined) =>
+            isEqual(value, undefined) || isEqual(value.definedLanguages, [Language.NL])
+        );
 
         if (!isValid) {
             throw new Error('Address languagesStrings should only contain NL');
