@@ -22,7 +22,7 @@ export class DeleteInstanceDomainService {
     public async delete(bestuurseenheid: Bestuurseenheid, instanceId: Iri) {
         const instance = await this._instanceRepository.findById(bestuurseenheid, instanceId);
         await this._instanceRepository.delete(bestuurseenheid, instance.id);
-
+        
         if (instance.conceptId != undefined) {
             const conceptHasInstances = await this._conceptRepository.conceptHasInstancesInBestuurseenheid(instance.conceptId, bestuurseenheid.userGraph());
             if (conceptHasInstances===false) {

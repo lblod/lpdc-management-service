@@ -37,7 +37,7 @@ describe('Deleting a new Instance domain service', () => {
         jest.restoreAllMocks();
     });
 
-    test('if exists, Removes the instance', async () => {
+    test('if exists and in deletable state, Removes the instance', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
 
         const concept = aFullConcept().build();
@@ -113,6 +113,7 @@ describe('Deleting a new Instance domain service', () => {
             .withConceptId(concept.id)
             .withBestuurseenheidId(bestuurseenheid.id)
             .withConceptIsInstantiated(true).build();
+
         await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
 
         await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);

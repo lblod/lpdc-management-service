@@ -1,6 +1,6 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
-import {Invariant, requireAllDefinedOrAllUndefined, requiredValue, requireNoDuplicates} from "./shared/invariant";
+import {requireAllDefinedOrAllUndefined, requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {
     CompetentAuthorityLevelType,
@@ -312,5 +312,9 @@ export class Instance {
 
     get legalResources(): Iri[] {
         return [...this._legalResources];
+    }
+
+    isInDeletableState():boolean {
+        return this.publicationStatus != InstancePublicationStatusType.GEPUBLICEERD;
     }
 }

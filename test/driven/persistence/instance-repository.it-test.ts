@@ -101,11 +101,11 @@ describe('InstanceRepository', () => {
             jest.restoreAllMocks();
         });
 
-        test('if exists with publicationStatus, Removes all triples related to the instance and create tombstone triples ', async () => {
+        test('if exists with publicationStatus te-herpubliceren, Removes all triples related to the instance and create tombstone triples and publicationStatus te-herpubliceren ', async () => {
 
 
             const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance().withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD).build();
+            const instance = aFullInstance().withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN).build();
 
             await repository.save(bestuurseenheid, instance);
             await repository.delete(bestuurseenheid, instance.id);
@@ -123,11 +123,12 @@ describe('InstanceRepository', () => {
             const queryResult = await directDatabaseAccess.list(query);
             const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
 
-            expect(quads).toHaveLength(3);
+            expect(quads).toHaveLength(4);
             expect(quads).toEqual(expect.arrayContaining([
                 quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(fixedToday, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
             ]));
         });
         test('if exists without publicationStatus, Removes all triples related to the instance and does not create tombstone triples ', async () => {
@@ -154,9 +155,19 @@ describe('InstanceRepository', () => {
             expect(quads).toEqual([]);
         });
 
+        test('if exists with publicationStatus gepubliceerd, throws error', async () => {
+
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance().withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD).build();
+
+            await repository.save(bestuurseenheid, instance);
+          await expect(()=>  repository.delete(bestuurseenheid, instance.id)).rejects.toThrow(new Error('Cant delete a published instance'));
+
+        });
+
         test('Only the requested instance is deleted', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance().build();
+            const instance = aFullInstance().withPublicationStatus(undefined).build();
             const anotherInstance = aMinimalInstance().build();
 
             await repository.save(bestuurseenheid, instance);
@@ -481,7 +492,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/reviewStatus> <http://lblod.data.gift/concepts/review-status/concept-gewijzigd>`,
-                    `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/gepubliceerd>`,
+                    `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>`,
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[0].value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[1].value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[2].value}>`,

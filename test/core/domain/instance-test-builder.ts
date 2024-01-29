@@ -193,7 +193,7 @@ export class InstanceTestBuilder {
     public static readonly CONTACT_POINTS = [aFullContactPoint().build(), anotherFullContactPoint().build()];
 
     public static readonly REVIEW_STATUS = InstanceReviewStatusType.CONCEPT_GEWIJZIGD;
-    public static readonly PUBLICATION_STATUS = InstancePublicationStatusType.GEPUBLICEERD;
+    public static readonly PUBLICATION_STATUS = InstancePublicationStatusType.TE_HERPUBLICEREN;
 
     public static readonly LEGAL_RESOURCES = [buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())];
 

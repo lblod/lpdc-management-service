@@ -55,13 +55,19 @@ export class InstanceSparqlRepository implements InstanceRepository {
     async delete(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<void> {
         const instance = await this.findById(bestuurseenheid, id);
         if (instance != undefined) {
+            const publicationStatus = instance.publicationStatus;
+
+            if(!instance.isInDeletableState()){
+                throw new Error(`Cant delete a published instance`);
+            }
+
             const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
 
             const now = new Date();
             // TODO LPDC-917: add publicatieStatus + api testen
             let query='';
 
-            if(instance.publicationStatus === undefined){
+            if(publicationStatus === undefined){
                 query = `
                 ${PREFIX.as}
                 ${PREFIX.cpsv}
@@ -76,7 +82,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 query = `
                 ${PREFIX.as}
                 ${PREFIX.cpsv}
-                
+                ${PREFIX.schema}
+            
                 DELETE DATA FROM ${sparqlEscapeUri(bestuurseenheid.userGraph())}{
                     ${triples.join("\n")}
                 };
@@ -85,7 +92,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())}{
                         ${sparqlEscapeUri(instance.id)} a  as:Tombstone;
                         as:formerType cpsv:PublicService;
-                        as:deleted ${sparqlEscapeDateTime(now)}.
+                        as:deleted ${sparqlEscapeDateTime(now)};
+                        schema:publication ${NS.concepts.publicationStatus('te-herpubliceren')} .
                    }   
                 }`;
             }
@@ -93,7 +101,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
             await this.querying.update(query);
         }
     }
-
 
     async updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void> {
         let reviewStatus = undefined;
