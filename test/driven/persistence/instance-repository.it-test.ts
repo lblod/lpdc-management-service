@@ -486,6 +486,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <https://data.vlaanderen.be/ns/adres#verwijstNaar> <${AddressTestBuilder.VERWIJST_NAAR}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/source> <${instance.conceptId.value}>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${instance.conceptSnapshotId.value}>`,
+                    `<${instanceId}> <http://schema.org/productID> """${instance.productId}"""`,
                     `<${instanceId}> <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/NLD>`,
                     `<${instanceId}> <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/ENG>`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,

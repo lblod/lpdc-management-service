@@ -273,32 +273,42 @@ describe('constructing', () => {
         });
     });
 
-    test('conceptId and conceptSnapshotId not both defined or both undefined should throw error', () => {
+    test('conceptId, conceptSnapshotId and productId not all defined or all undefined should throw error', () => {
         const instanceTestBuilderWithConcept = aFullInstance()
             .withConceptId(buildConceptIri(uuid()))
-            .withConceptSnapshotId(undefined);
+            .withConceptSnapshotId(undefined)
+            .withProductId(undefined);
 
-        expect(() => instanceTestBuilderWithConcept.build()).toThrow(new Error('conceptId, conceptSnapshotId should all be defined or all be undefined'));
+        expect(() => instanceTestBuilderWithConcept.build()).toThrow(new Error('conceptId, conceptSnapshotId and productId should all be defined or all be undefined'));
 
         const instanceTestBuilderWithConceptSnapshotId = aFullInstance()
             .withConceptId(undefined)
-            .withConceptSnapshotId(buildConceptSnapshotIri(uuid()));
+            .withConceptSnapshotId(buildConceptSnapshotIri(uuid()))
+            .withProductId(undefined);
 
-        expect(() => instanceTestBuilderWithConceptSnapshotId.build()).toThrow(new Error('conceptId, conceptSnapshotId should all be defined or all be undefined'));
+        expect(() => instanceTestBuilderWithConceptSnapshotId.build()).toThrow(new Error('conceptId, conceptSnapshotId and productId should all be defined or all be undefined'));
+
+        const instanceTestBuilderWithProductId = aFullInstance()
+            .withConceptId(undefined)
+            .withConceptSnapshotId(undefined)
+            .withProductId('1300');
+
+        expect(() => instanceTestBuilderWithProductId.build()).toThrow(new Error('conceptId, conceptSnapshotId and productId should all be defined or all be undefined'));
     });
 
-    test('conceptId and conceptSnapshotId both defined or undefined should not throw error', () => {
+    test('conceptId, conceptSnapshotId and productId  both defined or undefined should not throw error', () => {
         const instanceTestBuilderWithConceptAndConceptSnapshot = aFullInstance()
             .withConceptId(buildConceptIri(uuid()))
-            .withConceptSnapshotId(buildConceptSnapshotIri(uuid()));
+            .withConceptSnapshotId(buildConceptSnapshotIri(uuid()))
+            .withProductId('1300');
 
         expect(() => instanceTestBuilderWithConceptAndConceptSnapshot.build()).not.toThrow();
 
         const instanceTestBuilderWithoutConceptAndConceptSnapshot = aFullInstance()
             .withConceptId(undefined)
-            .withConceptSnapshotId(undefined);
+            .withConceptSnapshotId(undefined)
+            .withProductId(undefined);
 
-        expect(() => instanceTestBuilderWithConceptAndConceptSnapshot.build()).not.toThrow();
         expect(() => instanceTestBuilderWithoutConceptAndConceptSnapshot.build()).not.toThrow();
     });
 

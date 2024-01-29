@@ -105,6 +105,7 @@ export function aFullInstance(): InstanceTestBuilder {
         .withContactPoints(InstanceTestBuilder.CONTACT_POINTS)
         .withConceptId(buildConceptIri(uuid()))
         .withConceptSnapshotId(buildConceptSnapshotIri(uuid()))
+        .withProductId(InstanceTestBuilder.PRODUCT_ID)
         .withLanguages(InstanceTestBuilder.LANGUAGES)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
@@ -192,6 +193,8 @@ export class InstanceTestBuilder {
 
     public static readonly CONTACT_POINTS = [aFullContactPoint().build(), anotherFullContactPoint().build()];
 
+    public static readonly PRODUCT_ID = "5468";
+
     public static readonly REVIEW_STATUS = InstanceReviewStatusType.CONCEPT_GEWIJZIGD;
     public static readonly PUBLICATION_STATUS = InstancePublicationStatusType.TE_HERPUBLICEREN;
 
@@ -225,6 +228,7 @@ export class InstanceTestBuilder {
     private contactPoints: ContactPoint[] = [];
     private conceptId: Iri | undefined;
     private conceptSnapshotId: Iri | undefined;
+    private productId: string | undefined;
     private languages: LanguageType[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
@@ -374,6 +378,11 @@ export class InstanceTestBuilder {
         return this;
     }
 
+    public withProductId(productId: string): InstanceTestBuilder {
+        this.productId = productId;
+        return this;
+    }
+
     public withLanguages(languages: LanguageType[]): InstanceTestBuilder {
         this.languages = languages;
         return this;
@@ -444,6 +453,7 @@ export class InstanceTestBuilder {
             this.contactPoints,
             this.conceptId,
             this.conceptSnapshotId,
+            this.productId,
             this.languages,
             this.dateCreated,
             this.dateModified,

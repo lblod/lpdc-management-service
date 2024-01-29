@@ -54,6 +54,7 @@ describe('Deleting a new Instance domain service', () => {
                 .withCreatedBy(bestuurseenheid.id)
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withProductId(concept.productId)
                 .build();
 
         await instanceRepository.save(bestuurseenheid, instance);

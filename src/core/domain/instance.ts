@@ -54,6 +54,7 @@ export class Instance {
     private readonly _contactPoints: ContactPoint[];
     private readonly _conceptId: Iri | undefined;
     private readonly _conceptSnapshotId: Iri | undefined;
+    private readonly _productId: string | undefined; //required for search on productId
     private readonly _languages: LanguageType[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
@@ -92,6 +93,7 @@ export class Instance {
                 contactPoints: ContactPoint[],
                 conceptId: Iri | undefined,
                 conceptSnapshotId: Iri | undefined,
+                productId: string,
                 languages: LanguageType[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
@@ -129,7 +131,10 @@ export class Instance {
         this._costs = [...costs].map(Cost.forInstance);
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forInstance);
         this._contactPoints = [...contactPoints];
-        [this._conceptId, this._conceptSnapshotId] = requireAllDefinedOrAllUndefined([conceptId, conceptSnapshotId], 'conceptId, conceptSnapshotId');
+        requireAllDefinedOrAllUndefined([conceptId, conceptSnapshotId, productId], 'conceptId, conceptSnapshotId and productId');
+        this._conceptId = conceptId;
+        this._conceptSnapshotId = conceptSnapshotId;
+        this._productId = productId;
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
@@ -280,6 +285,10 @@ export class Instance {
 
     get conceptSnapshotId(): Iri | undefined {
         return this._conceptSnapshotId;
+    }
+
+    get productId(): string | undefined {
+        return this._productId;
     }
 
     get languages(): LanguageType[] {

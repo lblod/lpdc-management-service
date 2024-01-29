@@ -185,6 +185,7 @@ export class QuadsToDomainMapper {
             this.contactPoints(id),
             this.conceptId(id),
             this.conceptSnapshotId(id),
+            this.productId(id),
             this.languages(id),
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
