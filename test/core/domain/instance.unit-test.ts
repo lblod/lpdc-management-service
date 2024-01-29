@@ -1,7 +1,12 @@
 import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {buildCodexVlaanderenIri, buildSpatialRefNis2019Iri} from "./iri-test-builder";
+import {
+    buildCodexVlaanderenIri,
+    buildConceptIri,
+    buildConceptSnapshotIri,
+    buildSpatialRefNis2019Iri
+} from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
@@ -266,6 +271,35 @@ describe('constructing', () => {
         test('Blank dateModified throws error', () => {
             expect(() => aFullInstance().withDateModified(FormatPreservingDate.of('')).build()).toThrow(new Error('dateModified should not be undefined'));
         });
+    });
+
+    test('conceptId and conceptSnapshotId not both defined or both undefined should throw error', () => {
+        const instanceTestBuilderWithConcept = aFullInstance()
+            .withConceptId(buildConceptIri(uuid()))
+            .withConceptSnapshotId(undefined);
+
+        expect(() => instanceTestBuilderWithConcept.build()).toThrow(new Error('conceptId, conceptSnapshotId should all be defined or all be undefined'));
+
+        const instanceTestBuilderWithConceptSnapshotId = aFullInstance()
+            .withConceptId(undefined)
+            .withConceptSnapshotId(buildConceptSnapshotIri(uuid()));
+
+        expect(() => instanceTestBuilderWithConceptSnapshotId.build()).toThrow(new Error('conceptId, conceptSnapshotId should all be defined or all be undefined'));
+    });
+
+    test('conceptId and conceptSnapshotId both defined or undefined should not throw error', () => {
+        const instanceTestBuilderWithConceptAndConceptSnapshot = aFullInstance()
+            .withConceptId(buildConceptIri(uuid()))
+            .withConceptSnapshotId(buildConceptSnapshotIri(uuid()));
+
+        expect(() => instanceTestBuilderWithConceptAndConceptSnapshot.build()).not.toThrow();
+
+        const instanceTestBuilderWithoutConceptAndConceptSnapshot = aFullInstance()
+            .withConceptId(undefined)
+            .withConceptSnapshotId(undefined);
+
+        expect(() => instanceTestBuilderWithConceptAndConceptSnapshot.build()).not.toThrow();
+        expect(() => instanceTestBuilderWithoutConceptAndConceptSnapshot.build()).not.toThrow();
     });
 
     test('Absent status throws error', () => {

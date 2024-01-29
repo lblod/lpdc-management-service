@@ -44,7 +44,7 @@ describe('Deleting a new Instance domain service', () => {
         await conceptRepository.save(concept);
 
         const instanceId = buildInstanceIri(uuid());
-        const instance = aFullInstance().withId(instanceId).withCreatedBy(bestuurseenheid.id).withSource(concept.id).build();
+        const instance = aFullInstance().withId(instanceId).withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
 
         const anotherInstanceUUID = uuid();
         const anotherInstance =
@@ -52,7 +52,8 @@ describe('Deleting a new Instance domain service', () => {
                 .withId(buildInstanceIri(anotherInstanceUUID))
                 .withUuid(anotherInstanceUUID)
                 .withCreatedBy(bestuurseenheid.id)
-                .withSource(concept.id)
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
                 .build();
 
         await instanceRepository.save(bestuurseenheid, instance);
@@ -105,7 +106,7 @@ describe('Deleting a new Instance domain service', () => {
         const concept = aFullConcept().build();
         await conceptRepository.save(concept);
 
-        const instance = aFullInstance().withSource(concept.id).withCreatedBy(bestuurseenheid.id).build();
+        const instance = aFullInstance().withConceptId(concept.id).withCreatedBy(bestuurseenheid.id).build();
         await instanceRepository.save(bestuurseenheid, instance);
 
         const conceptualDisplayConfiguration = aFullConceptDisplayConfiguration()
@@ -126,8 +127,8 @@ describe('Deleting a new Instance domain service', () => {
         const concept = aFullConcept().build();
         await conceptRepository.save(concept);
 
-        const instance = aFullInstance().withSource(concept.id).withCreatedBy(bestuurseenheid.id).build();
-        const anotherInstance = aFullInstance().withSource(concept.id).withCreatedBy(bestuurseenheid.id).build();
+        const instance = aFullInstance().withConceptId(concept.id).withCreatedBy(bestuurseenheid.id).build();
+        const anotherInstance = aFullInstance().withConceptId(concept.id).withCreatedBy(bestuurseenheid.id).build();
 
         await instanceRepository.save(bestuurseenheid, instance);
         await instanceRepository.save(bestuurseenheid, anotherInstance);

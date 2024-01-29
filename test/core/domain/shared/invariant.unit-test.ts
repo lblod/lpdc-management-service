@@ -159,6 +159,24 @@ describe('noDuplicates', () => {
     });
 });
 
+describe('allDefinedOrAllUndefined', () => {
+    const name = 'fields';
+
+    test('Returns value when all elements are defined', () => {
+        const invariant: Invariant<any> = Invariant.require(['a', 'b', {a: 0}, {a: undefined}], name);
+        expect(invariant.to(invariant.allDefinedOrAllUndefined())).toEqual(['a', 'b', {a: 0}, {a: undefined}]);
+    });
+
+    test('Returns value when all elements are undefined', () => {
+        const invariant: Invariant<any> = Invariant.require([undefined, undefined], name);
+        expect(invariant.to(invariant.allDefinedOrAllUndefined())).toEqual([undefined, undefined]);
+    });
+
+    test('throws error when some elements are defined and others undefined', () => {
+        const invariant: Invariant<any> = Invariant.require(['a', {a: 0}, {a: 1}, undefined], name);
+        expect(() => invariant.to(invariant.allDefinedOrAllUndefined())).toThrow(new Error(`${name} should all be defined or all be undefined`));
+    });
+});
 
 describe('to', () => {
     test('returns first violation', () => {

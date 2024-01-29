@@ -1,6 +1,6 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
-import {requiredValue, requireNoDuplicates} from "./shared/invariant";
+import {Invariant, requireAllDefinedOrAllUndefined, requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {
     CompetentAuthorityLevelType,
@@ -129,8 +129,7 @@ export class Instance {
         this._costs = [...costs].map(Cost.forInstance);
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forInstance);
         this._contactPoints = [...contactPoints];
-        this._conceptId = conceptId;
-        this._conceptSnapshotId = conceptSnapshotId; //TODO LPDC-917: should be required when conceptId is defined
+        [this._conceptId, this._conceptSnapshotId] = requireAllDefinedOrAllUndefined([conceptId, conceptSnapshotId], 'conceptId, conceptSnapshotId');
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');

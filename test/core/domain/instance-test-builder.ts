@@ -103,8 +103,8 @@ export function aFullInstance(): InstanceTestBuilder {
         .withCosts(InstanceTestBuilder.COSTS)
         .withFinancialAdvantages(InstanceTestBuilder.FINANCIAL_ADVANTAGES)
         .withContactPoints(InstanceTestBuilder.CONTACT_POINTS)
-        .withSource(buildConceptIri(uuid()))
-        .withVersionedSource(buildConceptSnapshotIri(uuid()))
+        .withConceptId(buildConceptIri(uuid()))
+        .withConceptSnapshotId(buildConceptSnapshotIri(uuid()))
         .withLanguages(InstanceTestBuilder.LANGUAGES)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
@@ -223,8 +223,8 @@ export class InstanceTestBuilder {
     private costs: Cost[] = [];
     private financialAdvantages: FinancialAdvantage[] = [];
     private contactPoints: ContactPoint[] = [];
-    private source: Iri | undefined;
-    private versionedSource: Iri | undefined;
+    private conceptId: Iri | undefined;
+    private conceptSnapshotId: Iri | undefined;
     private languages: LanguageType[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
@@ -364,13 +364,13 @@ export class InstanceTestBuilder {
         return this;
     }
 
-    public withSource(conceptId: Iri): InstanceTestBuilder {
-        this.source = conceptId;
+    public withConceptId(conceptId: Iri): InstanceTestBuilder {
+        this.conceptId = conceptId;
         return this;
     }
 
-    public withVersionedSource(conceptSnapshotId: Iri): InstanceTestBuilder {
-        this.versionedSource = conceptSnapshotId;
+    public withConceptSnapshotId(conceptSnapshotId: Iri): InstanceTestBuilder {
+        this.conceptSnapshotId = conceptSnapshotId;
         return this;
     }
 
@@ -442,8 +442,8 @@ export class InstanceTestBuilder {
             this.costs,
             this.financialAdvantages,
             this.contactPoints,
-            this.source,
-            this.versionedSource,
+            this.conceptId,
+            this.conceptSnapshotId,
             this.languages,
             this.dateCreated,
             this.dateModified,

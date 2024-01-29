@@ -52,7 +52,12 @@ export class Invariant<V> {
         return () => uniqWith(this._value as any[], (a, b) => isEqual(a, b)).length === (this._value as any[]).length
             ? null
             : `${this._name} should not contain duplicates`;
+    }
 
+    allDefinedOrAllUndefined(): InvariantType<V> {
+        return () => (this._value as any[]).every(a => a === undefined) || (this._value as any[]).every(a => a !== undefined)
+            ? null
+            : `${this._name} should all be defined or all be undefined`;
     }
 
     public to(...invariants: InvariantType<V>[]): V {
@@ -84,4 +89,9 @@ export const requiredValue = <T>(value: T, name: string = 'object'): T => {
 export const requireNoDuplicates = <T>(values: T[], name: string = 'list'): T[] => {
     const invariant: Invariant<T[]> = Invariant.require(values, name);
     return invariant.to(invariant.noDuplicates());
+};
+
+export const requireAllDefinedOrAllUndefined = <T>(values: T[], name: string = 'list'): T[] => {
+    const invariant: Invariant<T[]> = Invariant.require(values, name);
+    return invariant.to(invariant.allDefinedOrAllUndefined());
 };

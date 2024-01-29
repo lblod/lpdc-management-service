@@ -270,8 +270,8 @@ describe('Creating a new Instance domain service', () => {
                         .buildForInstance(),
                 ])
                 .withContactPoints([])
-                .withSource(concept.id)
-                .withVersionedSource(concept.latestConceptSnapshot)
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
                 .withLanguages([])
                 .withReviewStatus(undefined)
                 .withPublicationStatus(undefined)
@@ -507,8 +507,8 @@ describe('Creating a new Instance domain service', () => {
                         .buildForInstance(),
                 ])
                 .withContactPoints([])
-                .withSource(concept.id)
-                .withVersionedSource(concept.latestConceptSnapshot)
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
                 .withLanguages([])
                 .withReviewStatus(undefined)
                 .withPublicationStatus(undefined)
@@ -712,8 +712,8 @@ describe('Creating a new Instance domain service', () => {
                         .buildForInstance(),
                 ])
                 .withContactPoints([])
-                .withSource(concept.id)
-                .withVersionedSource(concept.latestConceptSnapshot)
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
                 .withLanguages([])
                 .withReviewStatus(undefined)
                 .withPublicationStatus(undefined)
