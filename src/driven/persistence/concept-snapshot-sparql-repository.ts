@@ -6,6 +6,7 @@ import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recur
 import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {CONCEPT_SNAPSHOT_LDES_GRAPH} from "../../../config";
+import {Logger} from "../../../platform/logger";
 
 export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepository {
 
@@ -36,7 +37,7 @@ export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepositor
                 NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
 
-        const mapper = new QuadsToDomainMapper(quads, ldesDataGraph);
+        const mapper = new QuadsToDomainMapper(quads, ldesDataGraph, new Logger('ConceptSnapshot-QuadsToDomainLogger'));
 
         return mapper.conceptSnapshot(id);
     }

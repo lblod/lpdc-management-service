@@ -8,6 +8,7 @@ import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
+import {Logger} from "../../../platform/logger";
 
 export class ConceptSparqlRepository implements ConceptRepository {
 
@@ -46,7 +47,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
                 NS.eli('LegalResource').value,
                 NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
-        const mapper = new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH));
+        const mapper = new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new Logger('Concept-QuadsToDomainLogger'));
 
         return mapper.concept(id);
     }

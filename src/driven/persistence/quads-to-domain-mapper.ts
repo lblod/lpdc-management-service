@@ -33,34 +33,68 @@ import {STATUS} from "./status";
 import {Instance} from "../../core/domain/instance";
 import {ContactPoint} from "../../core/domain/contactPoint";
 import {Address} from "../../core/domain/address";
+import {Logger} from "../../../platform/logger";
 
 class StoreAccess {
 
     private readonly store;
     private readonly graphId;
+    private readonly logger: Logger;
 
-    constructor(quads: Quad[], graphId: Iri) {
+    constructor(quads: Quad[], graphId: Iri, logger: Logger) {
         this.store = graph();
         this.store.addAll(quads);
         this.graphId = namedNode(graphId.value);
+        this.logger = logger;
     }
 
-    public uniqueStatement(s: NamedNode,
-                           p: NamedNode,
-                           o?: NamedNode): Statement | undefined {
-        //TODO LPDC-917: use statements matching + log / throw when more than one found ...
-        return this.store.anyStatementMatching(s, p, o, this.graphId);
-    }
-
+    //TODO LPDC-917: for keywords, don't bother to validate
     public statements(s: NamedNode,
                       p: NamedNode,
-                      o?: NamedNode): Statement[] {
-        return this.store.statementsMatching(s, p, o, this.graphId);
+                      options: {
+                          validateUniqueLanguages?: boolean;
+                          o?: any;
+                      } = {validateUniqueLanguages: true, o: null}): Statement[] {
+
+        const result = this.store.statementsMatching(s, p, options?.o, this.graphId);
+
+        if (options?.validateUniqueLanguages) {
+            const languageIncidences: { [l: string]: number; } = result
+                .filter(s => s.object !== undefined && isLiteral(s.object))
+                .map(s => s.object as Literal)
+                .filter(lit => lit.language !== null && lit.language !== undefined && lit.language !== '')
+                .map(lit => lit.language)
+                .reduce((languages: { [l: string]: number; }, language: string) => {
+                    languages[language] = (languages[language] || 0) + 1;
+                    return languages;
+                }, {});
+            const maxLanguageIncidenceOfAnyLanguage = Math.max(...Object.values(languageIncidences));
+            if (maxLanguageIncidenceOfAnyLanguage > 1) {
+                this.logger.log(`Cardinality error: ${s} ${p} ${options?.o} : expecting 1, got ${maxLanguageIncidenceOfAnyLanguage}`);
+            }
+        }
+
+        return result;
     }
 
     public uniqueValue(s: NamedNode,
                        p: NamedNode): string | void {
         return this.uniqueStatement(s, p)?.object?.value;
+    }
+
+    public uniqueStatement(s: NamedNode,
+                           p: NamedNode,
+                           o: NamedNode = null): Statement | undefined {
+        const allStatementsMatching = this.statements(s, p, {o: o});
+        if (!allStatementsMatching || allStatementsMatching.length === 0) {
+            return undefined;
+        }
+
+        if (allStatementsMatching.length > 1) {
+            this.logger.log(`Cardinality error: ${s} ${p} ${o} : expecting 1, got ${allStatementsMatching.length}`);
+        }
+
+        return allStatementsMatching[0];
     }
 
 }
@@ -69,8 +103,8 @@ export class QuadsToDomainMapper {
     private readonly storeAccess;
     private readonly graphId;
 
-    constructor(quads: Quad[], graphId: Iri) {
-        this.storeAccess = new StoreAccess(quads, graphId);
+    constructor(quads: Quad[], graphId: Iri, logger: Logger) {
+        this.storeAccess = new StoreAccess(quads, graphId, logger);
         this.graphId = namedNode(graphId.value);
     }
 
@@ -202,7 +236,7 @@ export class QuadsToDomainMapper {
         if (!typeFoundForId) {
             throw new Error(`Could not find <${id}> for type ${type} in graph ${this.graphId}`);
         }
-        if (!type.equals(namedNode(typeFoundForId))) {
+        if (type.value !== typeFoundForId) {
             throw new Error(`Could not find <${id}> for type ${type}, but found with type <${typeFoundForId}> in graph ${this.graphId}`);
         }
     }
@@ -320,7 +354,7 @@ export class QuadsToDomainMapper {
     }
 
     private keywords(id: Iri): LanguageString[] {
-        return this.storeAccess.statements(namedNode(id.value), NS.dcat('keyword'))
+        return this.storeAccess.statements(namedNode(id.value), NS.dcat('keyword'), {validateUniqueLanguages: false})
             .map(s => [s])
             .flatMap(statements => this.asLanguageString(statements));
     }
@@ -572,7 +606,6 @@ export class QuadsToDomainMapper {
             return undefined;
         }
 
-        //TODO LPDC-917: here we should verify as well if there are duplicates with each language, and report, or throw ...
         return LanguageString.of(
             literals?.find(l => l.language === 'en')?.value,
             literals?.find(l => l.language === 'nl')?.value,

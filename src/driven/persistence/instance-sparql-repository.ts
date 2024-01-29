@@ -10,6 +10,7 @@ import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {InstanceReviewStatusType} from "../../core/domain/types";
+import {Logger} from "../../../platform/logger";
 
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
@@ -33,7 +34,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
             //TODO LPDC-917: add a list of illegalTypesToRecurseInto
             []);
 
-        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph());
+        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new Logger('Instance-QuadsToDomainLogger'));
 
         return mapper.instance(id);
 
