@@ -11,7 +11,6 @@ import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
 import {getContactPointOptions} from "./lib/getContactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
-import {linkConcept, unlinkConcept} from "./lib/linkUnlinkConcept";
 import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
 import LPDCError from "./platform/lpdc-error";
 import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-repository";
@@ -41,6 +40,7 @@ import {FormalInformalChoiceSparqlRepository} from "./src/driven/persistence/for
 import {FormApplicationService} from "./src/core/application/form-application-service";
 import {Bestuurseenheid} from "./src/core/domain/bestuurseenheid";
 import {DeleteInstanceDomainService} from "./src/core/domain/delete-instance-domain-service";
+import {LinkConceptToInstanceDomainService} from "./src/core/domain/link-concept-to-instance-domain-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -80,10 +80,9 @@ const newInstanceDomainService =
         conceptDisplayConfigurationRepository
     );
 
-const selectFormLanguageDomainService =
-    new SelectFormLanguageDomainService(
-        formalInformalChoiceRepository,
-    );
+const selectFormLanguageDomainService = new SelectFormLanguageDomainService(
+    formalInformalChoiceRepository,
+);
 
 const deleteInstanceDomainService = new DeleteInstanceDomainService(
     instanceRepository,
@@ -91,14 +90,19 @@ const deleteInstanceDomainService = new DeleteInstanceDomainService(
     conceptDisplayConfigurationRepository
 );
 
-const formApplicationService =
-    new FormApplicationService(
-        conceptRepository,
-        instanceRepository,
-        formDefinitionRepository,
-        codeRepository,
-        selectFormLanguageDomainService,
-    );
+const formApplicationService = new FormApplicationService(
+    conceptRepository,
+    instanceRepository,
+    formDefinitionRepository,
+    codeRepository,
+    selectFormLanguageDomainService,
+);
+
+const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainService(
+    instanceRepository,
+    conceptRepository,
+    conceptDisplayConfigurationRepository
+);
 
 app.get('/', function (_req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -143,7 +147,7 @@ app.post('/public-services/', async function (req, res): Promise<any> {
         if (conceptIdRequestParam) {
             const conceptId = new Iri(conceptIdRequestParam);
             const concept = await conceptRepository.findById(conceptId);
-            const newInstance = await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept,);
+            const newInstance = await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept);
             return res.status(201).json({
                 data: {
                     "type": "public-service",
@@ -223,47 +227,6 @@ app.put('/public-services/:instanceId/form/:formId', async function (req, res): 
     }
 });
 
-app.delete('/public-services/:instanceId', async function (req, res): Promise<any> {
-    const instanceIdRequestParam = req.params.instanceId;
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-
-        await deleteInstanceDomainService.delete(bestuurseenheid,instanceId);
-        return res.sendStatus(204);
-    } catch (e) {
-        console.error(e);
-        if (e.status) {
-            return res.status(e.status).set('content-type', 'application/json').send(e);
-        }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while deleting the semantic-form for "${instanceIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-
-});
-
-app.put('/public-services/:instanceId/ontkoppelen', async function (req, res): Promise<any> {
-    const instanceUUID = req.params.instanceId;
-    try {
-        await unlinkConcept(instanceUUID);
-        return res.sendStatus(200);
-    } catch (e) {
-        console.error(e);
-        if (e.status) {
-            return res.status(e.status).set('content-type', 'application/json').send(e);
-        }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while ontkoppelen concept from  "${instanceUUID}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
-
 app.get('/public-services/:instanceId/dutch-language-version', async function (req, res): Promise<any> {
     const instanceIdRequestParam = req.params.instanceId;
 
@@ -285,6 +248,75 @@ app.get('/public-services/:instanceId/dutch-language-version', async function (r
     }
 });
 
+app.delete('/public-services/:instanceId', async function (req, res): Promise<any> {
+    const instanceIdRequestParam = req.params.instanceId;
+    try {
+        const instanceId = new Iri(instanceIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+        await deleteInstanceDomainService.delete(bestuurseenheid, instanceId);
+        return res.sendStatus(204);
+    } catch (e) {
+        console.error(e);
+        if (e.status) {
+            return res.status(e.status).set('content-type', 'application/json').send(e);
+        }
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while deleting the semantic-form for "${instanceIdRequestParam}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
+
+});
+
+app.put('/public-services/:instanceId/koppelen/:conceptId', async function (req, res): Promise<any> {
+    const instanceIdRequestParam = req.params.instanceId;
+    const conceptIdRequestParam = req.params.conceptId;
+    try {
+        const instanceId = new Iri(instanceIdRequestParam);
+        const conceptId = new Iri(conceptIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+        const concept = await conceptRepository.findById(conceptId);
+
+        await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
+        return res.sendStatus(200);
+    } catch (e) {
+        console.error(e);
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while koppelen of uuid "${instanceIdRequestParam}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
+});
+
+app.put('/public-services/:instanceId/ontkoppelen', async function (req, res): Promise<any> {
+    const instanceIdRequestParam = req.params.instanceId;
+    try {
+        const instanceId = new Iri(instanceIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+
+        await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
+        return res.sendStatus(200);
+    } catch (e) {
+        console.error(e);
+        if (e.status) {
+            return res.status(e.status).set('content-type', 'application/json').send(e);
+        }
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while ontkoppelen concept from  "${instanceIdRequestParam}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
+});
+
 app.post('/public-services/:instanceId/confirm-bijgewerkt-tot', async function (req, res): Promise<any> {
     const instanceUUID = req.params.instanceId;
     try {
@@ -295,22 +327,6 @@ app.post('/public-services/:instanceId/confirm-bijgewerkt-tot', async function (
         const response = {
             status: 500,
             message: `Something unexpected went wrong while confirming bijgewerkt tot with uuid "${instanceUUID}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
-
-app.put('/public-services/:instanceId/koppelen/:conceptId', async function (req, res): Promise<any> {
-    const instanceUUID = req.params.instanceId;
-    try {
-        const conceptId = req.params.conceptId;
-        await linkConcept(instanceUUID, conceptId);
-        return res.sendStatus(200);
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while koppelen of uuid "${instanceUUID}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }

@@ -93,19 +93,31 @@ describe('LinkConceptToInstanceDomainService', () => {
             expect(updatedConceptDisplayConfiguration).toEqual(expectedConceptDisplayConfiguration);
         });
 
-        test('linking concept which is already linked should throw error', async () => {
+        test('linking concept which is already linked should first unlink', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const concept = aFullConcept().build();
+            const alreadyLinkedConcept = aFullConcept().build();
             const instance = aFullInstance()
+                .withConceptId(alreadyLinkedConcept.id)
+                .withConceptSnapshotId(alreadyLinkedConcept.latestConceptSnapshot)
+                .withProductId(alreadyLinkedConcept.productId)
+                .withCreatedBy(bestuurseenheid.id)
+                .build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            const concept = aFullConcept().build();
+
+            await conceptDisplayConfigurationRepository.save(bestuurseenheid, aFullConceptDisplayConfiguration().withConceptId(alreadyLinkedConcept.id).build());
+            await conceptDisplayConfigurationRepository.save(bestuurseenheid, aFullConceptDisplayConfiguration().withConceptId(concept.id).build());
+
+            await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
+
+            const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
                 .withProductId(concept.productId)
-                .withCreatedBy(bestuurseenheid.id)
-                .build();
-
-            await expect(() => linkConceptToInstanceDomainService.link(bestuurseenheid, instance, aFullConcept().build()))
-                .rejects.toThrow(new Error(`instance ${instance.id} is already linked`));
-
+                .withReviewStatus(undefined)
+                .withDateModified(FormatPreservingDate.now())
+                .build());
         });
     });
 

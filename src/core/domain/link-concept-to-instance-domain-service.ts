@@ -24,7 +24,8 @@ export class LinkConceptToInstanceDomainService {
 
     async link(bestuurseenheid: Bestuurseenheid, instance: Instance, concept: Concept): Promise<void> {
         if (instance.conceptId) {
-            throw new Error(`instance ${instance.id} is already linked`);
+            await this.unlink(bestuurseenheid, instance);
+            instance = await this._instanceRepository.findById(bestuurseenheid, instance.id);
         }
 
         const updatedInstance = InstanceBuilder.from(instance)
