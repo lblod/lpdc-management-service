@@ -16,6 +16,8 @@ export class ConceptDisplayConfiguration {
                        conceptIsInstantiated: boolean,
                        bestuurseenheidId: Iri,
                        conceptId: Iri) {
+
+        // TODO LPDC-917: INVALID COMBINATION conceptIsNew true & conceptIsInitiated true
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         this._conceptIsNew = requiredValue(conceptIsNew, 'conceptIsNew');

@@ -11,13 +11,16 @@ import {
     ConceptDisplayConfigurationSparqlTestRepository
 } from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
 import {ConceptDisplayConfigurationBuilder} from "../../../src/core/domain/concept-display-configuration";
+import {InstanceReviewStatusType} from "../../../src/core/domain/types";
+import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 
 
 describe('LinkConceptToInstanceDomainService', () => {
 
     const instanceRepository = new InstanceSparqlRepository(END2END_TEST_SPARQL_ENDPOINT);
+    const conceptRepository = new ConceptSparqlRepository(END2END_TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(END2END_TEST_SPARQL_ENDPOINT);
-    const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainService(instanceRepository, conceptDisplayConfigurationRepository);
+    const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainService(instanceRepository, conceptRepository, conceptDisplayConfigurationRepository);
 
     beforeAll(() => {
         jest.useFakeTimers();
@@ -31,62 +34,204 @@ describe('LinkConceptToInstanceDomainService', () => {
         jest.restoreAllMocks();
     });
 
-    test('linking concept should add conceptId, conceptSnapshotId and productId to instance and update modified date', async () => {
-        const bestuurseenheid = aBestuurseenheid().build();
-        const instance = aFullInstance()
-            .withConceptId(undefined)
-            .withConceptSnapshotId(undefined)
-            .withProductId(undefined)
-            .withCreatedBy(bestuurseenheid.id)
-            .build();
-        const concept = aFullConcept().build();
-        const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
-            .withConceptId(concept.id)
-            .withBestuurseenheidId(bestuurseenheid.id)
-            .build();
-        await instanceRepository.save(bestuurseenheid, instance);
-        await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
+    describe('link', () => {
 
-        await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
+        test('linking concept should add conceptId, conceptSnapshotId and productId on instance and update modified date', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance()
+                .withConceptId(undefined)
+                .withConceptSnapshotId(undefined)
+                .withProductId(undefined)
+                .withCreatedBy(bestuurseenheid.id)
+                .build();
+            const concept = aFullConcept().build();
+            const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
+                .withConceptId(concept.id)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-        const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
-        const expectedInstance = InstanceBuilder.from(instance)
-            .withConceptId(concept.id)
-            .withConceptSnapshotId(concept.latestConceptSnapshot)
-            .withProductId(concept.productId)
-            .withDateModified(FormatPreservingDate.now())
-            .build();
+            await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
 
-        expect(updatedInstance).toEqual(expectedInstance);
+            const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            const expectedInstance = InstanceBuilder.from(instance)
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withProductId(concept.productId)
+                .withDateModified(FormatPreservingDate.now())
+                .build();
+
+            expect(updatedInstance).toEqual(expectedInstance);
+        });
+
+        test('linking concept should update conceptDisplayConfiguration', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance()
+                .withConceptId(undefined)
+                .withConceptSnapshotId(undefined)
+                .withProductId(undefined)
+                .withCreatedBy(bestuurseenheid.id)
+                .build();
+            const concept = aFullConcept().build();
+            const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
+                .withConceptId(concept.id)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .withConceptIsNew(true)
+                .withConceptIsInstantiated(false)
+                .build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
+
+            const updatedConceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
+            const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
+                .withConceptIsNew(false)
+                .withConceptIsInstantiated(true)
+                .build();
+            expect(updatedConceptDisplayConfiguration).toEqual(expectedConceptDisplayConfiguration);
+        });
+
+        test('linking concept which is already linked should throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const concept = aFullConcept().build();
+            const instance = aFullInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withProductId(concept.productId)
+                .withCreatedBy(bestuurseenheid.id)
+                .build();
+
+            await expect(() => linkConceptToInstanceDomainService.link(bestuurseenheid, instance, aFullConcept().build()))
+                .rejects.toThrow(new Error(`instance ${instance.id} is already linked`));
+
+        });
     });
 
-    test('linking concept should update conceptDisplayConfiguration', async () => {
-        const bestuurseenheid = aBestuurseenheid().build();
-        const instance = aFullInstance()
-            .withConceptId(undefined)
-            .withConceptSnapshotId(undefined)
-            .withProductId(undefined)
-            .withCreatedBy(bestuurseenheid.id)
-            .build();
-        const concept = aFullConcept().build();
-        const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
-            .withConceptId(concept.id)
-            .withBestuurseenheidId(bestuurseenheid.id)
-            .withConceptIsNew(true)
-            .withConceptIsInstantiated(false)
-            .build();
-        await instanceRepository.save(bestuurseenheid, instance);
-        await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
+    describe('unlink', () => {
 
-        await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
+        test('unlinking should remove conceptId, conceptSnapshotId and productId and reviewStatus on instance and update modified date', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const concept = aFullConcept().build();
+            const instance = aFullInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withProductId(concept.productId)
+                .withCreatedBy(bestuurseenheid.id)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
+                .build();
+            const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
+                .withConceptId(concept.id)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-        const updatedConceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
-        const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
-            .withConceptIsNew(false)
-            .withConceptIsInstantiated(true)
-            .build();
-        expect(updatedConceptDisplayConfiguration).toEqual(expectedConceptDisplayConfiguration);
+            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
 
+            const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            const expectedInstance = InstanceBuilder.from(instance)
+                .withConceptId(undefined)
+                .withConceptSnapshotId(undefined)
+                .withProductId(undefined)
+                .withReviewStatus(undefined)
+                .withDateModified(FormatPreservingDate.now())
+                .build();
+
+            expect(updatedInstance).toEqual(expectedInstance);
+        });
+
+        test('unlinking concept should update conceptDisplayConfiguration', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const concept = aFullConcept().build();
+            const instance = aFullInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withProductId(concept.productId)
+                .withCreatedBy(bestuurseenheid.id)
+                .build();
+            const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
+                .withConceptId(concept.id)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .withConceptIsNew(false)
+                .withConceptIsInstantiated(true)
+                .build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
+
+            const updatedConceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
+            const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
+                .withConceptIsNew(false)
+                .withConceptIsInstantiated(false)
+                .build();
+
+            expect(updatedConceptDisplayConfiguration).toEqual(expectedConceptDisplayConfiguration);
+        });
+
+        test('unlinking concept should leave conceptDisplayConfiguration conceptIsInstantiated on true when other instance exists for concept', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const concept = aFullConcept().build();
+            const instance = aFullInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withProductId(concept.productId)
+                .withCreatedBy(bestuurseenheid.id)
+                .build();
+            const otherInstanceForConcept = aFullInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withProductId(concept.productId)
+                .withCreatedBy(bestuurseenheid.id)
+                .build();
+            const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
+                .withConceptId(concept.id)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .withConceptIsNew(false)
+                .withConceptIsInstantiated(true)
+                .build();
+
+            await instanceRepository.save(bestuurseenheid, instance);
+            await instanceRepository.save(bestuurseenheid, otherInstanceForConcept);
+            await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
+
+            const updatedConceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
+            const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
+                .withConceptIsNew(false)
+                .withConceptIsInstantiated(true)
+                .build();
+
+            expect(updatedConceptDisplayConfiguration).toEqual(expectedConceptDisplayConfiguration);
+        });
+
+        test('unlinking concept which is already unlinked should not update instance', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const concept = aFullConcept().build();
+            const instance = aFullInstance()
+                .withConceptId(undefined)
+                .withConceptSnapshotId(undefined)
+                .withProductId(undefined)
+                .withCreatedBy(bestuurseenheid.id)
+                .build();
+
+            const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
+                .withConceptId(concept.id)
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .build();
+
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
+
+            const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+
+            expect(updatedInstance).toEqual(instance);
+        });
     });
 
 });
