@@ -53,6 +53,12 @@ export class Procedure {
     }
 
     static forInstance(procedure: Procedure): Procedure {
+        const websiteLangs = procedure.websites.flatMap(website=> website.title);
+        websiteLangs.concat(procedure.websites.flatMap(website =>website.description));
+
+
+        Procedure.validateLanguagesForInstance(procedure.title, procedure.description,...websiteLangs);
+
         return new Procedure(
             procedure.id,
             requiredValue(procedure.uuid, 'uuid'),
@@ -74,9 +80,11 @@ export class Procedure {
     }
 
     get nlLanguage(): Language | undefined {
-        return [LanguageString.extractNlLanguage([this._title, this._description]),
+        const languages = [LanguageString.extractNlLanguages([this._title, this._description])[0],
             ...this._websites.map(r => r.nlLanguage)]
-            .filter(l => l !== undefined)[0];
+            .filter(l => l !== undefined);
+
+        return languages[0];
     }
 
     get id(): Iri {
@@ -111,6 +119,17 @@ export class Procedure {
                     || Website.isFunctionallyChanged(procs[0].websites, procs[1].websites);
             });
     }
+
+    static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
+        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
+
+        LanguageString.validateUniqueNlLanguage(values);
+        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
+        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
+            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
+        }
+    }
+
 }
 
 export class ProcedureBuilder {

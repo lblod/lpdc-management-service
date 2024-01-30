@@ -46,6 +46,8 @@ export class FinancialAdvantage {
     }
 
     static forInstance(financialAdvantage: FinancialAdvantage): FinancialAdvantage {
+        FinancialAdvantage.validateLanguagesForInstance(financialAdvantage.title,financialAdvantage.description);
+
         return new FinancialAdvantage(
             financialAdvantage.id,
             requiredValue(financialAdvantage.uuid, 'uuid'),
@@ -65,7 +67,7 @@ export class FinancialAdvantage {
     }
 
     get nlLanguage(): Language | undefined {
-        return LanguageString.extractNlLanguage([this._title, this._description]);
+        return LanguageString.extractNlLanguages([this._title, this._description])[0];
     }
 
     get id(): Iri {
@@ -94,6 +96,15 @@ export class FinancialAdvantage {
                 return LanguageString.isFunctionallyChanged(financialAdvantages[0].title, financialAdvantages[1].title)
                     || LanguageString.isFunctionallyChanged(financialAdvantages[0].description, financialAdvantages[1].description);
             });
+    }
+    static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
+        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
+
+        LanguageString.validateUniqueNlLanguage(values);
+        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
+        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
+            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
+        }
     }
 
 }

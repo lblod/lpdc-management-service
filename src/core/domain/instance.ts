@@ -158,14 +158,14 @@ export class Instance {
 
     get instanceNlLanguage(): Language | undefined {
         const nlLanguage =
-            LanguageString.extractNlLanguage([
+            LanguageString.extractNlLanguages([
                 this._title,
                 this._description,
                 this._additionalDescription,
                 this._exception,
                 this._regulation,
             ]);
-        return [nlLanguage,
+        return [nlLanguage[0],
             ...this._requirements.map(r => r.nlLanguage),
             ...this._procedures.map(p => p.nlLanguage),
             ...this._websites.map(p => p.nlLanguage),

@@ -1,4 +1,8 @@
-import {aFullFinancialAdvantage, aMinimalFinancialAdvantageForInstance} from "./financial-advantage-test-builder";
+import {
+    aFullFinancialAdvantage,
+    aFullFinancialAdvantageForInstance,
+    aMinimalFinancialAdvantageForInstance
+} from "./financial-advantage-test-builder";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Language} from "../../../src/core/domain/language";
@@ -57,6 +61,94 @@ describe('forConceptSnapshot', () => {
     });
 
 });
+
+describe('for instance',()=>{
+
+    const validLanguages = [Language.NL, Language.FORMAL, Language.INFORMAL];
+    const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
+
+    test('Undefined id throws error', () => {
+        const financialAdvantage = aFullFinancialAdvantageForInstance().withId(undefined);
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage.build())).toThrow(new Error('id should not be undefined'));
+    });
+    test('Undefined Uuid throws error', () => {
+        const financialAdvantage = aFullFinancialAdvantageForInstance().withUuid(undefined).build();
+        expect(()=> FinancialAdvantage.forInstance(financialAdvantage).uuid).toThrow(new Error('uuid should not be undefined'));
+    });
+
+    test('If title and description have the same nl language financial advantage is created', () => {
+        const langString = LanguageString.of('en', 'nl');
+        const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(langString).withDescription(langString).build();
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
+    });
+    test('If title and description are undefined financial advantage is created', () => {
+        const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(undefined).withDescription(undefined).build();
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
+    });
+
+    test('If title and description have different nl languages, throws error', () => {
+        const title = LanguageString.of('en', 'nl', undefined);
+        const description = LanguageString.of('en', undefined, 'nl-formal');
+        const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(title).withDescription(description).build();
+
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrow(new Error('There is more than one Nl language present'));
+    });
+
+    test('If title has different nl languages, throws error', () => {
+        const title = LanguageString.of('en', 'nl', 'nl-formal');
+        const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(title).withDescription(undefined).build();
+
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrow(new Error('There is more than one Nl language present'));
+    });
+    test('If description has different nl languages, throws error', () => {
+        const description = LanguageString.of('en', 'nl', 'nl-formal');
+        const financialAdvantage = aFullFinancialAdvantageForInstance().withDescription(description).withTitle(undefined).build();
+
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrow(new Error('There is more than one Nl language present'));
+    });
+
+    for(const invalidLanguage of invalidLanguages){
+        let valueInNlLanguage: LanguageString;
+        if (invalidLanguage === Language.GENERATED_FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+        } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+        }
+
+        test('If title contains invalid language, throws error', () => {
+            const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
+            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
+
+        test('If description contains invalid language, throws error', () => {
+            const financialAdvantage = aFullFinancialAdvantageForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
+            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
+    }
+
+    for(const validLanguage of validLanguages){
+        let valueInNlLanguage: LanguageString;
+        if (validLanguage === Language.NL) {
+            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+        } else if (validLanguage == Language.FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+        }else if (validLanguage == Language.INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+        }
+
+        test('If title contains valid language, not throws error', () => {
+            const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
+            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
+        });
+
+        test('If description contains valid language, throws error', () => {
+            const financialAdvantage = aFullFinancialAdvantageForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
+            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
+        });
+    }
+
+});
+
 
 describe('nl language', () => {
 

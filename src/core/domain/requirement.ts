@@ -52,7 +52,8 @@ export class Requirement {
     }
 
     static forInstance(requirement: Requirement): Requirement {
-        // TODO LPDC-917: validate that title, description have only one nl languageVersion
+        Requirement.validateLanguagesForInstance(requirement.title, requirement.description, requirement.evidence?.title, requirement.evidence?.description);
+
         return new Requirement(
             requirement.id,
             requiredValue(requirement.uuid, 'uuid'),
@@ -74,7 +75,7 @@ export class Requirement {
     }
 
     get nlLanguage(): Language | undefined {
-        return LanguageString.extractNlLanguage([this._title, this._description]) ?? this._evidence?.nlLanguage;
+        return LanguageString.extractNlLanguages([this._title, this._description])[0] ?? this._evidence?.nlLanguage;
     }
 
     get id(): Iri {
@@ -108,6 +109,17 @@ export class Requirement {
                     || LanguageString.isFunctionallyChanged(reqs[0].description, reqs[1].description)
                     || Evidence.isFunctionallyChanged(reqs[0].evidence, reqs[1].evidence);
             });
+    }
+
+
+    static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
+        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
+
+        LanguageString.validateUniqueNlLanguage(values);
+        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
+        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
+            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
+        }
     }
 }
 

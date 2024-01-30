@@ -45,6 +45,7 @@ export class Evidence {
     }
 
     static forInstance(evidence: Evidence): Evidence {
+        Evidence.validateLanguagesForInstance(evidence.title, evidence.description);
         return new Evidence(
             evidence.id,
             requiredValue(evidence.uuid, 'uuid'),
@@ -64,7 +65,7 @@ export class Evidence {
     }
 
     get nlLanguage(): Language | undefined {
-        return LanguageString.extractNlLanguage([this._title, this._description]);
+        return LanguageString.extractNlLanguages([this._title, this._description])[0];
     }
 
     get id(): Iri {
@@ -90,6 +91,16 @@ export class Evidence {
     static isFunctionallyChanged(value: Evidence | undefined, other: Evidence | undefined): boolean {
         return LanguageString.isFunctionallyChanged(value?.title, other?.title)
             || LanguageString.isFunctionallyChanged(value?.description, other?.description);
+    }
+    static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
+        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
+
+        LanguageString.validateUniqueNlLanguage(values);
+
+        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
+        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
+            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
+        }
     }
 
 }

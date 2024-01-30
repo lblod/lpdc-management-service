@@ -20,7 +20,7 @@ import {
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {uuid} from "../../../mu-helper";
 import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
-import {aFullRequirement, aMinimalRequirementForInstance} from "./requirement-test-builder";
+import {aFullRequirementForInstance, aMinimalRequirementForInstance} from "./requirement-test-builder";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {aMinimalProcedureForInstance, ProcedureTestBuilder} from "./procedure-test-builder";
@@ -144,7 +144,7 @@ describe('constructing', () => {
                     undefined,
                     undefined
                 );
-                const validRequirement = aFullRequirement().withEvidence(validEvidence).build();
+                const validRequirement = aFullRequirementForInstance().withEvidence(validEvidence).build();
 
                 expect(() => aFullInstance().withRequirements([validRequirement]).build()).not.toThrow();
             });
@@ -157,7 +157,7 @@ describe('constructing', () => {
                     undefined,
                     undefined,
                     undefined);
-                const invalidRequirement = aFullRequirement().withEvidence(invalidEvidence).build();
+                const invalidRequirement = aFullRequirementForInstance().withEvidence(invalidEvidence).build();
 
                 expect(() => aFullInstance().withRequirements([invalidRequirement]).build()).toThrow();
             });

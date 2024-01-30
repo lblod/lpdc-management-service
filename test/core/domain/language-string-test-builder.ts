@@ -16,6 +16,7 @@ export function aFullLanguageString(value: string = ''): LanguageStringTestBuild
         .withNlGeneratedInformal(`${value}${LanguageStringTestBuilder.NL_GENERATED_INFORMAL}`);
 }
 
+
 export class LanguageStringTestBuilder {
     public static readonly EN = ' - en';
     public static readonly NL = ' - nl';

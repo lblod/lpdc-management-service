@@ -51,6 +51,8 @@ export class Website {
     }
 
     static forInstance(website: Website): Website {
+        Website.validateLanguagesForInstance(website.title,website.description);
+
         return new Website(
             website.id,
             requiredValue(website.uuid, 'uuid'),
@@ -72,7 +74,7 @@ export class Website {
     }
 
     get nlLanguage(): Language | undefined {
-        return LanguageString.extractNlLanguage([this._title, this._description]);
+        return LanguageString.extractNlLanguages([this._title, this._description])[0];
     }
 
     get id(): Iri {
@@ -107,6 +109,16 @@ export class Website {
                     || websites[0].url !== websites[1].url;
             });
 
+    }
+
+    static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
+        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
+
+        LanguageString.validateUniqueNlLanguage(values);
+        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
+        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
+            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
+        }
     }
 
 }

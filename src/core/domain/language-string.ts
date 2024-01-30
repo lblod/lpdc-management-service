@@ -3,8 +3,6 @@ import {uniq} from "lodash";
 
 export class LanguageString {
 
-    //TODO LPDC-917: embed the language string invariants in the invariants ...
-
     private readonly _en: string | undefined;
     private readonly _nl: string | undefined;
     private readonly _nlFormal: string | undefined;
@@ -95,13 +93,17 @@ export class LanguageString {
         if (language === Language.GENERATED_INFORMAL) return this._nlGeneratedInformal;
     }
 
-    static extractNlLanguage(languages: (LanguageString | undefined)[]): Language | undefined {
-        const nlLanguages =
-            languages
-                .filter(ls => ls !== undefined)
-                .flatMap(ls => ls.definedNlLanguages);
-        //TODO LPDC-917: what if there are multiple -> throw error ? or then at least rename the method to reflect
-        return nlLanguages[0];
+    static extractNlLanguages(languages: (LanguageString | undefined)[]): Language[] {
+        return languages
+            .filter(ls => ls !== undefined)
+            .flatMap(ls => ls.definedNlLanguages);
+    }
+    static validateUniqueNlLanguage(languages: (LanguageString | undefined)[]):void {
+        const langs = new Set(this.extractNlLanguages(languages).filter(ls=> ls !== undefined ));
+
+        if(langs.size>1){
+            throw new Error('There is more than one Nl language present');
+        }
     }
 
     static isFunctionallyChanged(value: LanguageString | undefined, other: LanguageString | undefined): boolean {

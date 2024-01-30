@@ -262,4 +262,93 @@ describe('is functionally changed', () => {
 
 });
 
+describe('extract nl languages',()=>{
+
+    test('if no nl lang is present, return empty list',()=>{
+        const languages = LanguageString.of();
+
+        expect(LanguageString.extractNlLanguages([languages])).toEqual([]);
+    });
+
+
+    test('if only undefined is present, return empty list',()=>{
+        expect(LanguageString.extractNlLanguages([undefined,undefined])).toEqual([]);
+    });
+
+    test('if only undefined language string is present, return empty list',()=>{
+        expect(LanguageString.extractNlLanguages([LanguageString.of(undefined,undefined, undefined)])).toEqual([]);
+    });
+
+
+    test('if language versions are present, correctly return values ',()=>{
+        const langs1 = LanguageString.of(undefined, 'nl');
+        const langs2 = LanguageString.of(undefined,undefined,'nl-formal');
+        const strings = [langs1,langs2];
+
+        expect(LanguageString.extractNlLanguages(strings)).toEqual( expect.arrayContaining(['nl-be-x-formal','nl']));
+    });
+
+    test('if languages are filled in for multiple values return it only one time',()=>{
+        const langs1 = LanguageString.of(undefined, undefined, 'nl-formal');
+        const langs2 = LanguageString.of(undefined,undefined,'nl-formal');
+        const strings = [langs1,langs2];
+
+        expect(LanguageString.extractNlLanguages(strings)).toEqual( expect.arrayContaining(['nl-be-x-formal']));
+    });
+
+    test('only return nl languages and not en',()=>{
+        expect(LanguageString.extractNlLanguages([LanguageString.of('en','nl')])).toEqual(['nl']);
+
+    });
+
+});
+describe('validate unique nl language',()=>{
+
+    test('if no nl lang is present, do not throw',()=>{
+        const languages = LanguageString.of();
+
+        expect(()=>LanguageString.validateUniqueNlLanguage([languages])).not.toThrow();
+    });
+
+    test('if only undefined is present, do not throw',()=>{
+        expect(()=>LanguageString.validateUniqueNlLanguage([undefined,undefined])).not.toThrow();
+    });
+
+    test('if only undefined language string is present, do not throw',()=>{
+        expect(()=>LanguageString.validateUniqueNlLanguage([LanguageString.of(undefined,undefined, undefined)])).not.toThrow();
+    });
+
+    test('if a language versions is present, do not throw ',()=>{
+        const langs1 = LanguageString.of(undefined, 'nl');
+        const langs2 = LanguageString.of(undefined,undefined);
+        const strings = [langs1,langs2];
+
+        expect(()=>LanguageString.validateUniqueNlLanguage(strings)).not.toThrow();
+    });
+
+    test('if languages are filled in for multiple values, do not throw',()=>{
+        const langs1 = LanguageString.of(undefined, undefined, 'nl-formal');
+        const langs2 = LanguageString.of(undefined,undefined,'nl-formal');
+        const strings = [langs1,langs2];
+
+        expect(()=>LanguageString.validateUniqueNlLanguage(strings)).not.toThrow();
+    });
+
+    test('only nl languages are validated and not en',()=>{
+        expect(()=>LanguageString.validateUniqueNlLanguage([LanguageString.of('en','nl')])).not.toThrow();
+    });
+
+    test('if multiple nl values are present, throw error',()=>{
+        expect(()=>LanguageString.validateUniqueNlLanguage([LanguageString.of('en','nl', 'nl-formal')])).toThrow(new Error("There is more than one Nl language present"));
+    });
+
+    test('if multiple nl values are present throughout multiple values , throw error',()=>{
+        const langs1 = LanguageString.of(undefined, undefined, 'nl-formal');
+        const langs2 = LanguageString.of(undefined,'nl','nl-formal');
+        const strings = [langs1,langs2];
+
+        expect(()=>LanguageString.validateUniqueNlLanguage(strings)).toThrow(new Error("There is more than one Nl language present"));
+    });
+
+});
 
