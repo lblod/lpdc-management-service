@@ -82,13 +82,13 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         }
       `;
 
-        await this.querying.update(query);
+        await this.querying.deleteInsert(query);
     }
 
     async removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void> {
         const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid, conceptId);
 
-        const updateQuery = `
+        const query = `
         ${PREFIX.lpdcExt}
         DELETE {
             GRAPH ?bestuurseenheidGraph {
@@ -109,11 +109,11 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
             }
         }`;
 
-        await this.querying.update(updateQuery);
+        await this.querying.deleteInsert(query);
     }
 
     async ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void> {
-        const insertQuery = `
+        const query = `
         ${PREFIX.lpdcExt}
         ${PREFIX.mu}
         ${PREFIX.dct}
@@ -149,7 +149,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         }
       `;
 
-        await this.querying.update(insertQuery);
+        await this.querying.insert(query);
     }
 
 }

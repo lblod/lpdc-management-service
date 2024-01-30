@@ -44,7 +44,7 @@ export class CodeSparqlRepository implements CodeRepository {
         }
         `;
 
-        await this.querying.update(query);
+        await this.querying.insert(query);
     }
 
     async loadIPDCOrganisatiesTailoredInTurtleFormat(): Promise<string[]> {

@@ -77,7 +77,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
             }
         `;
 
-        await this.querying.update(query);
+        await this.querying.insert(query);
     }
 
     async update(concept: Concept, old: Concept): Promise<void> {
@@ -94,7 +94,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
             }
         `;
 
-        await this.querying.update(query);
+        await this.querying.deleteInsert(query);
     }
 
     asTurtleFormat(concept: Concept): string[] {

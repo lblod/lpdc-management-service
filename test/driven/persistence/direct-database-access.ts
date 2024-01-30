@@ -21,7 +21,7 @@ export class DirectDatabaseAccess {
         }
         `;
 
-        await this.querying.update(query);
+        await this.querying.insert(query);
     }
 
     public async list(query: string): Promise<unknown[]> {

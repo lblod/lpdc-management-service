@@ -32,6 +32,6 @@ export class FormalInformalChoiceSparqlTestRepository extends FormalInformalChoi
                 }
             }
         `;
-        await this.querying.update(query);
+        await this.querying.insert(query);
     }
 }

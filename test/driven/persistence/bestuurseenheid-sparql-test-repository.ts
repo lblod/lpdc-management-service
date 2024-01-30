@@ -39,7 +39,7 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
                 }
             }
         `;
-        await this.querying.update(query);
+        await this.querying.insert(query);
     }
 
     mapBestuurseenheidClassificatieCodeToUri(classificatieCode: BestuurseenheidClassificatieCode | undefined): BestuurseenheidClassificatieCodeUri | undefined {

@@ -71,7 +71,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 }
             }
         `;
-        await this.querying.update(query);
+        await this.querying.insert(query);
     }
 
     async delete(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<void> {
@@ -80,7 +80,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
             const publicationStatus = instance.publicationStatus;
 
             if(!instance.isInDeletableState()){
-                throw new Error(`Cant delete a published instance`);
+                throw new Error(`Cannot delete a published instance`);
             }
 
             const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
@@ -97,29 +97,30 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     ${triples.join("\n")}
                 };
                 `;
-            }
 
+                await this.querying.delete(query);
+            }
             else {
                 query = `
                 ${PREFIX.as}
                 ${PREFIX.cpsv}
                 ${PREFIX.schema}
-            
-                DELETE DATA FROM ${sparqlEscapeUri(bestuurseenheid.userGraph())}{
+                
+                WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
+                DELETE {            
                     ${triples.join("\n")}
-                };
-
-                INSERT DATA {
-                    GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())}{
-                        ${sparqlEscapeUri(instance.id)} a  as:Tombstone;
-                        as:formerType cpsv:PublicService;
-                        as:deleted ${sparqlEscapeDateTime(now)};
-                        schema:publication ${NS.concepts.publicationStatus('te-herpubliceren')} .
-                   }   
+                }
+                INSERT {
+                    ${sparqlEscapeUri(instance.id)} a  as:Tombstone;
+                    as:formerType cpsv:PublicService;
+                    as:deleted ${sparqlEscapeDateTime(now)};
+                    schema:publication ${NS.concepts.publicationStatus('te-herpubliceren')} .
                 }`;
+
+                await this.querying.deleteInsert(query);
             }
 
-            await this.querying.update(query);
+
         }
     }
 
@@ -151,7 +152,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                         <http://purl.org/dc/terms/source> ${sparqlEscapeUri(conceptId)}.
                 }
             }`;
-            await this.querying.update(updateReviewStatusesQuery);
+            await this.querying.deleteInsert(updateReviewStatusesQuery);
         }
     }
 

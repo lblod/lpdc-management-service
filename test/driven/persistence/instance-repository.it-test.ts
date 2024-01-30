@@ -88,7 +88,7 @@ describe('InstanceRepository', () => {
     });
 
     describe('delete', () => {
-            const fixedToday = '2023-12-13T14:23:54.768Z';
+        const fixedToday = '2023-12-13T14:23:54.768Z';
         beforeAll(() => {
             jest.useFakeTimers();
             const fixedTodayAsDate = new Date(fixedToday);
@@ -161,8 +161,7 @@ describe('InstanceRepository', () => {
             const instance = aFullInstance().withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD).build();
 
             await repository.save(bestuurseenheid, instance);
-          await expect(()=>  repository.delete(bestuurseenheid, instance.id)).rejects.toThrow(new Error('Cant delete a published instance'));
-
+            await expect(() => repository.delete(bestuurseenheid, instance.id)).rejects.toThrow(new Error('Cannot delete a published instance'));
         });
 
         test('Only the requested instance is deleted', async () => {

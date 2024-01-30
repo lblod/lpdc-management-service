@@ -9,9 +9,19 @@ export class SparqlQuerying {
         this.endpoint = endpoint;
     }
 
-    public async update(query: string): Promise<void> {
-        //TODO LPDC-917: error handling: we should ensure that we have verified that we did not get any error ...
-        await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
+    public async insert(query: string): Promise<void> {
+        const result = await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
+        this.verifyResultToMatch(query, result, /Insert into <.*>, \d+ \(or less\) (triples|quads) -- done/);
+    }
+
+    public async delete(query: string): Promise<void> {
+        const result = await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
+        this.verifyResultToMatch(query, result, /Delete from <.*>, \d+ \(or less\) (triples|quads) -- done/);
+    }
+
+    public async deleteInsert(query: string): Promise<void> {
+        const result = await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
+        this.verifyResultToMatch(query, result, /(Modify <.*>, delete \d+ \(or less\) and insert \d+ \(or less\) triples -- done|Delete \d+ \(or less\) quads -- done\nInsert into <.*>, \d+ \(or less\) quads -- done)/);
     }
 
     //TODO LPDC-917: test the retrying extensively. e.g. if the single row returns multiple results -> it retries ...
@@ -95,6 +105,16 @@ export class SparqlQuerying {
         }
 
         return namedNode(term.value);
+    }
+
+    private verifyResultToMatch(query: string, result: any, expectedPattern: RegExp) {
+        const results = result.results.bindings.map(b => b['callret-0'].value);
+        if (!results
+            .every(ir => expectedPattern.test(ir))) {
+            const msg = `[${query}] gave incorrect result [${results.join(';')}]`;
+            console.log(msg);
+            throw new Error(msg);
+        }
     }
 }
 
