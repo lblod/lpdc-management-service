@@ -285,7 +285,7 @@ export class DomainToTriplesMapper {
             ...this.languageStringToTriples(namedNode(evidence.id.value), NS.dct(`title`), evidence.title),
             ...this.languageStringToTriples(namedNode(evidence.id.value), NS.dct(`description`), evidence.description),
             evidence.conceptEvidenceId ? this.conceptId(evidence.id, evidence.conceptEvidenceId) : undefined,
-            //TODO LPDC-917: add order triple
+            this.buildQuad(namedNode(evidence.id.value), NS.sh('order'), literal(`1`, NS.xsd('integer'))),
         ] : [];
     }
 
