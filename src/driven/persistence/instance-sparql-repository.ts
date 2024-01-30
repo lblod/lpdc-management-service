@@ -27,12 +27,33 @@ export class InstanceSparqlRepository implements InstanceRepository {
         const quads = await this.fetcher.fetch(
             bestuurseenheid.userGraph(),
             id,
-            //TODO LPDC-917: add a list of predicatesToNotQuery
             [],
-            //TODO LPDC-917: add a list of predicatesToStopRecursion
-            [],
-            //TODO LPDC-917: add a list of illegalTypesToRecurseInto
-            []);
+            [
+                NS.lpdcExt('yourEuropeCategory').value,
+                NS.lpdcExt('targetAudience').value,
+                NS.m8g('thematicArea').value,
+                NS.lpdcExt('competentAuthorityLevel').value,
+                NS.m8g('hasCompetentAuthority').value,
+                NS.lpdcExt('executingAuthorityLevel').value,
+                NS.lpdcExt('hasExecutingAuthority').value,
+                NS.lpdcExt('publicationMedium').value,
+                NS.dct("type").value,
+                NS.lpdcExt("conceptTag").value,
+                NS.adms('status').value,
+                NS.m8g('hasLegalResource').value,
+                NS.ext('hasVersionedSource').value,
+                NS.dct('source').value,
+                NS.dct('spatial').value,
+                NS.pav('createdBy').value,
+            ],
+            [
+                NS.skos('Concept').value,
+                NS.lpdcExt('ConceptDisplayConfiguration').value,
+                NS.besluit('Bestuurseenheid').value,
+                NS.m8g('PublicOrganisation').value,
+                NS.eli('LegalResource').value,
+                NS.eliIncorrectlyInDatabase('LegalResource').value,
+            ]);
 
         const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new Logger('Instance-QuadsToDomainLogger'));
 
@@ -65,7 +86,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
             const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
 
             const now = new Date();
-            // TODO LPDC-917: add publicatieStatus + api testen
             let query='';
 
             if(publicationStatus === undefined){
@@ -79,7 +99,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 `;
             }
 
-            else{
+            else {
                 query = `
                 ${PREFIX.as}
                 ${PREFIX.cpsv}
