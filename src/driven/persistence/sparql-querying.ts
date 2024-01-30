@@ -11,7 +11,7 @@ export class SparqlQuerying {
 
     public async insert(query: string): Promise<void> {
         const result = await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
-        this.verifyResultToMatch(query, result, /Insert into <.*>, \d+ \(or less\) (triples|quads) -- done/);
+        this.verifyResultToMatch(query, result, /(Insert into <.*>, \d+ \(or less\) (triples|quads) -- done)|(Insert into <.*>, 0 quads -- nothing to do)|(Insert into \d+ \(or more\) graphs, total \d+ \(or less\) quads -- done)/);
     }
 
     public async delete(query: string): Promise<void> {
@@ -21,7 +21,7 @@ export class SparqlQuerying {
 
     public async deleteInsert(query: string): Promise<void> {
         const result = await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
-        this.verifyResultToMatch(query, result, /(Modify <.*>, delete \d+ \(or less\) and insert \d+ \(or less\) triples -- done|Delete \d+ \(or less\) quads -- done\nInsert into <.*>, \d+ \(or less\) quads -- done)/);
+        this.verifyResultToMatch(query, result, /(Modify <.*>, delete \d+ \(or less\) and insert \d+ \(or less\) triples -- done|(Delete \d+ \(or less\) quads -- done)|(Delete from <.*>, 0 quads -- nothing to do)\n(Insert into <.*>, \d+ \(or less\) quads -- done)|(Insert into <.*>, 0 quads -- nothing to do))/);
     }
 
     //TODO LPDC-917: test the retrying extensively. e.g. if the single row returns multiple results -> it retries ...
@@ -37,7 +37,7 @@ export class SparqlQuerying {
             return bindings[0];
         }, {
             retries: 10,
-            delay: 200,
+            delay: 100,
             backoff: "FIXED",
             logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`)
         });
@@ -49,7 +49,7 @@ export class SparqlQuerying {
             return result?.results?.bindings || [];
         }, {
             retries: 10,
-            delay: 200,
+            delay: 100,
             backoff: "FIXED",
             logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`)
         });
@@ -61,7 +61,7 @@ export class SparqlQuerying {
             return result?.boolean;
         }, {
             retries: 10,
-            delay: 200,
+            delay: 100,
             backoff: "FIXED",
             logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`)
         });
