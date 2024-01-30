@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import {ADRESSEN_REGISTER_API_KEY} from "../config";
 
-
 export async function fetchMunicipalities(searchString: string): Promise<string[]> {
     const queryParams = new URLSearchParams({
         q: searchString,
