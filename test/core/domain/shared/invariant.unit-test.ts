@@ -108,7 +108,9 @@ describe('haveAtLeastXAmountOfValuesPresent', () => {
 });
 
 describe('startsWith', () => {
+
     const name = 'Starts with';
+
     test('Returns value when value starts with startValue', () => {
         const invariant: Invariant<any> = Invariant.require('abc', name);
         expect(invariant.to(invariant.startsWith('a'))).toEqual('abc');
@@ -128,6 +130,27 @@ describe('startsWith', () => {
         const invariant: Invariant<any> = Invariant.require('abc', name);
         expect(() => invariant.to(invariant.startsWith('b', 'c'))).toThrow(new Error(`${name} does not start with one of [b,c]`));
     });
+});
+
+describe('toMatchPattern', () => {
+
+    const name = 'matches pattern';
+
+    test('Returns value when value matches pattern', () => {
+        const invariant: Invariant<any> = Invariant.require('1234', name);
+        expect(invariant.to(invariant.toMatchPattern(/\d{4}/))).toEqual('1234');
+    });
+
+    test('throws error when value is not of type string', () => {
+        const invariant: Invariant<any> = Invariant.require([], name);
+        expect(() => invariant.to(invariant.toMatchPattern(/\d{4}/))).toThrow(new Error(`${name} does not match pattern`));
+    });
+
+    test('throws error when value does not match pattern', () => {
+        const invariant: Invariant<any> = Invariant.require('abc', name);
+        expect(() => invariant.to(invariant.toMatchPattern(/\d{4}/))).toThrow(new Error(`${name} does not match pattern`));
+    });
+
 });
 
 describe('noDuplicates', () => {

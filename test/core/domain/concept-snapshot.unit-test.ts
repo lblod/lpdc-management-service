@@ -314,17 +314,17 @@ describe('is functionally changed', () => {
                 .build()],
         ['start date the same except formatting',
             aFullConceptSnapshot()
-                .withStartDate(FormatPreservingDate.of('2027-09-16 00:00:00Z'))
+                .withStartDate(FormatPreservingDate.of('2027-09-16T00:00:00Z'))
                 .build(),
             aFullConceptSnapshot()
-                .withStartDate(FormatPreservingDate.of('2027-09-16 00:00:00.000Z'))
+                .withStartDate(FormatPreservingDate.of('2027-09-16T00:00:00.000Z'))
                 .build()],
         ['end date the same except formatting',
             aFullConceptSnapshot()
-                .withEndDate(FormatPreservingDate.of('2027-09-16 00:00:00Z'))
+                .withEndDate(FormatPreservingDate.of('2027-09-16T00:00:00Z'))
                 .build(),
             aFullConceptSnapshot()
-                .withEndDate(FormatPreservingDate.of('2027-09-16 00:00:00.000Z'))
+                .withEndDate(FormatPreservingDate.of('2027-09-16T00:00:00.000Z'))
                 .build()],];
 
     for (const testCase of functionallyUnchangedTestCases) {
@@ -372,42 +372,42 @@ describe('is functionally changed', () => {
                 .build()],
         ['start date changed',
             aFullConceptSnapshot()
-                .withStartDate(FormatPreservingDate.of('2023-11-10 00:00:00.000Z'))
+                .withStartDate(FormatPreservingDate.of('2023-11-10T00:00:00.000Z'))
                 .build(),
             aFullConceptSnapshot()
-                .withStartDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
+                .withStartDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
                 .build()],
         ['start date appeared',
             aFullConceptSnapshot()
                 .withStartDate(undefined)
                 .build(),
             aFullConceptSnapshot()
-                .withStartDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
+                .withStartDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
                 .build()],
         ['start date disappeared',
             aFullConceptSnapshot()
-                .withStartDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
+                .withStartDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
                 .build(),
             aFullConceptSnapshot()
                 .withStartDate(undefined)
                 .build()],
         ['end date changed',
             aFullConceptSnapshot()
-                .withEndDate(FormatPreservingDate.of('2023-11-10 00:00:00.000Z'))
+                .withEndDate(FormatPreservingDate.of('2023-11-10T00:00:00.000Z'))
                 .build(),
             aFullConceptSnapshot()
-                .withEndDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
+                .withEndDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
                 .build()],
         ['end date appeared',
             aFullConceptSnapshot()
                 .withEndDate(undefined)
                 .build(),
             aFullConceptSnapshot()
-                .withEndDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
+                .withEndDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
                 .build()],
         ['end date disappeared',
             aFullConceptSnapshot()
-                .withEndDate(FormatPreservingDate.of('2023-11-09 00:00:00.000Z'))
+                .withEndDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
                 .build(),
             aFullConceptSnapshot()
                 .withEndDate(undefined)

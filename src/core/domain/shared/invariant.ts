@@ -60,6 +60,10 @@ export class Invariant<V> {
             : `${this._name} should all be defined or all be undefined`;
     }
 
+    toMatchPattern(pattern: RegExp): InvariantType<V> {
+        return () => this.matchesPattern(this._value, pattern) ? null : `${this._name} does not match pattern`;
+    }
+
     public to(...invariants: InvariantType<V>[]): V {
         const violations = invariants.map(invariant => invariant(this._value));
         const firstViolation = violations.find(violation => violation !== null);
@@ -77,6 +81,10 @@ export class Invariant<V> {
 
     private isBlank(value: any): boolean {
         return (typeof value === 'string' && value.trim() === '');
+    }
+
+    private matchesPattern(value: any, pattern: RegExp): boolean {
+        return (typeof value === 'string' && pattern.test(value));
     }
 
 }

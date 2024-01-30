@@ -1,12 +1,18 @@
-
 //only a simple wrapper to ensure that we can save exactly in the database what we queried.
+import {Invariant} from "./shared/invariant";
+
 export class FormatPreservingDate {
+
+    private readonly iso8601Regex = /^(\d{4}-\d{2}-\d{2})(T(\d{2}:\d{2}:\d{2})(\.\d{1,9})?(Z|[+-]\d{2}:\d{2})?)?$/;
+
 
     private readonly _value: string;
 
+
     private constructor(valueFormattedInIso8601WithNanosMillisOrSeconds: string) {
-        //TODO LPDC-917: add invariants
         this._value = valueFormattedInIso8601WithNanosMillisOrSeconds;
+        const invariant = Invariant.require(this._value, 'value');
+        invariant.to(invariant.notBeUndefined(), invariant.notBeBlank(), invariant.toMatchPattern(this.iso8601Regex));
     }
 
     public static of(valueFormattedInIso8601WithNanosMillisOrSeconds: string | undefined): FormatPreservingDate | undefined {
