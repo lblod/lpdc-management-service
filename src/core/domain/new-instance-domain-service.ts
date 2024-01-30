@@ -152,7 +152,7 @@ export class NewInstanceDomainService {
                 .withTitle(this.toInstanceLanguageString(conceptRequirement.title, conceptLanguageVersion, chosenForm))
                 .withDescription(this.toInstanceLanguageString(conceptRequirement.description, conceptLanguageVersion, chosenForm))
                 .withEvidence(conceptRequirement.evidence ? this.toInstanceEvidence(conceptRequirement.evidence, conceptLanguageVersion, chosenForm) : undefined)
-                .withConceptId(conceptRequirement.id)
+                .withConceptRequirementId(conceptRequirement.id)
                 .buildForInstance();
         });
     }
@@ -164,7 +164,7 @@ export class NewInstanceDomainService {
             .withUuid(uniqueId)
             .withTitle(this.toInstanceLanguageString(conceptEvidence.title, conceptLanguageVersion, chosenForm))
             .withDescription(this.toInstanceLanguageString(conceptEvidence.description, conceptLanguageVersion, chosenForm))
-            .withConceptId(conceptEvidence.id)
+            .withConceptEvidenceId(conceptEvidence.id)
             .buildForInstance();
     }
 
@@ -177,7 +177,7 @@ export class NewInstanceDomainService {
                 .withTitle(this.toInstanceLanguageString(conceptProcedure.title, conceptLanguageVersion, chosenForm))
                 .withDescription(this.toInstanceLanguageString(conceptProcedure.description, conceptLanguageVersion, chosenForm))
                 .withWebsites(this.toInstanceWebsites(conceptProcedure.websites, conceptLanguageVersion, chosenForm))
-                .withConceptId(conceptProcedure.id)
+                .withConceptProcedureId(conceptProcedure.id)
                 .buildForInstance();
         });
     }
@@ -191,7 +191,7 @@ export class NewInstanceDomainService {
                 .withTitle(this.toInstanceLanguageString(conceptWebsite.title, conceptLanguageVersion, chosenForm))
                 .withDescription(this.toInstanceLanguageString(conceptWebsite.description, conceptLanguageVersion, chosenForm))
                 .withUrl(conceptWebsite.url)
-                .withConceptId(conceptWebsite.id)
+                .withConceptWebsiteId(conceptWebsite.id)
                 .buildForInstance();
         });
     }
@@ -204,7 +204,7 @@ export class NewInstanceDomainService {
                 .withUuid(uniqueId)
                 .withTitle(this.toInstanceLanguageString(conceptCost.title, conceptLanguageVersion, chosenForm))
                 .withDescription(this.toInstanceLanguageString(conceptCost.description, conceptLanguageVersion, chosenForm))
-                .withConceptId(conceptCost.id)
+                .withConceptCostId(conceptCost.id)
                 .buildForInstance();
         });
     }
@@ -217,7 +217,7 @@ export class NewInstanceDomainService {
                 .withUuid(uniqueId)
                 .withTitle(this.toInstanceLanguageString(conceptFinancialAdvantage.title, conceptLanguageVersion, chosenForm))
                 .withDescription(this.toInstanceLanguageString(conceptFinancialAdvantage.description, conceptLanguageVersion, chosenForm))
-                .withConceptId(conceptFinancialAdvantage.id)
+                .withConceptFinancialAdvantageId(conceptFinancialAdvantage.id)
                 .buildForInstance();
         });
     }

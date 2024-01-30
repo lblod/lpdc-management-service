@@ -13,21 +13,21 @@ export class Procedure {
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _websites: Website[];
-    private readonly _conceptId: Iri | undefined;
+    private readonly _conceptProcedureId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         websites: Website[],
-                        conceptId: Iri | undefined
+                        conceptProcedureId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
         this._websites = [...websites];
-        this._conceptId = conceptId;
+        this._conceptProcedureId = conceptProcedureId;
     }
 
     static forConcept(procedure: Procedure): Procedure {
@@ -59,7 +59,7 @@ export class Procedure {
             procedure.title,
             procedure.description,
             procedure.websites.map(Website.forInstance),
-            procedure.conceptId
+            procedure.conceptProcedureId
         );
     }
 
@@ -68,9 +68,9 @@ export class Procedure {
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         websites: Website[],
-                        conceptId: Iri | undefined): Procedure {
+                        conceptProcedureId: Iri | undefined): Procedure {
 
-        return new Procedure(id, uuid, title, description, websites, conceptId);
+        return new Procedure(id, uuid, title, description, websites, conceptProcedureId);
     }
 
     get nlLanguage(): Language | undefined {
@@ -99,8 +99,8 @@ export class Procedure {
         return [...this._websites];
     }
 
-    get conceptId(): Iri | undefined {
-        return this._conceptId;
+    get conceptProcedureId(): Iri | undefined {
+        return this._conceptProcedureId;
     }
 
     static isFunctionallyChanged(value: Procedure[], other: Procedure[]): boolean {
@@ -120,7 +120,7 @@ export class ProcedureBuilder {
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
     private websites: Website[] = [];
-    private conceptId: Iri | undefined;
+    private conceptProcedureId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/rule/${uniqueId}`);
@@ -151,8 +151,8 @@ export class ProcedureBuilder {
         return this;
     }
 
-    withConceptId(conceptId: Iri): ProcedureBuilder {
-        this.conceptId = conceptId;
+    public withConceptProcedureId(conceptProcedureId: Iri): ProcedureBuilder {
+        this.conceptProcedureId = conceptProcedureId;
         return this;
     }
 
@@ -175,7 +175,7 @@ export class ProcedureBuilder {
             this.title,
             this.description,
             this.websites,
-            this.conceptId
+            this.conceptProcedureId
         );
     }
 }

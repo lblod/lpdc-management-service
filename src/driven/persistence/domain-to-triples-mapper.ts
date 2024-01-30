@@ -272,7 +272,7 @@ export class DomainToTriplesMapper {
                 ...this.languageStringToTriples(namedNode(requirement.id.value), NS.dct(`description`), requirement.description),
                 this.buildQuad(namedNode(requirement.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
                 ...this.evidenceToTriples(requirement.id, requirement.evidence),
-                requirement.conceptId ? this.conceptId(requirement.id, requirement.conceptId) : undefined,
+                requirement.conceptRequirementId ? this.conceptId(requirement.id, requirement.conceptRequirementId) : undefined,
             ]
         );
     }
@@ -284,7 +284,7 @@ export class DomainToTriplesMapper {
             this.buildQuad(namedNode(evidence.id.value), NS.rdf('type'), NS.m8g('Evidence')),
             ...this.languageStringToTriples(namedNode(evidence.id.value), NS.dct(`title`), evidence.title),
             ...this.languageStringToTriples(namedNode(evidence.id.value), NS.dct(`description`), evidence.description),
-            evidence.conceptId ? this.conceptId(evidence.id, evidence.conceptId) : undefined,
+            evidence.conceptEvidenceId ? this.conceptId(evidence.id, evidence.conceptEvidenceId) : undefined,
             //TODO LPDC-917: add order triple
         ] : [];
     }
@@ -299,7 +299,7 @@ export class DomainToTriplesMapper {
                 ...this.languageStringToTriples(namedNode(procedure.id.value), NS.dct(`description`), procedure.description),
                 this.buildQuad(namedNode(procedure.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
                 ...this.websites(procedure.id, NS.lpdcExt('hasWebsite'), procedure.websites),
-                procedure.conceptId ? this.conceptId(procedure.id, procedure.conceptId) : undefined,
+                procedure.conceptProcedureId ? this.conceptId(procedure.id, procedure.conceptProcedureId) : undefined,
             ]
         );
     }
@@ -314,7 +314,7 @@ export class DomainToTriplesMapper {
                     ...this.languageStringToTriples(namedNode(website.id.value), NS.dct(`description`), website.description),
                     website.url ? this.buildQuad(namedNode(website.id.value), NS.schema('url'), literal(website.url)) : undefined,
                     this.buildQuad(namedNode(website.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
-                    website.conceptId ? this.conceptId(website.id, website.conceptId) : undefined,
+                    website.conceptWebsiteId ? this.conceptId(website.id, website.conceptWebsiteId) : undefined,
                 ];
             }
         ).filter(t => t != undefined);
@@ -329,7 +329,7 @@ export class DomainToTriplesMapper {
                 ...this.languageStringToTriples(namedNode(cost.id.value), NS.dct(`title`), cost.title),
                 ...this.languageStringToTriples(namedNode(cost.id.value), NS.dct(`description`), cost.description),
                 this.buildQuad(namedNode(cost.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
-                cost.conceptId ? this.conceptId(cost.id, cost.conceptId) : undefined,
+                cost.conceptCostId ? this.conceptId(cost.id, cost.conceptCostId) : undefined,
             ];
         });
     }
@@ -343,7 +343,7 @@ export class DomainToTriplesMapper {
                 ...this.languageStringToTriples(namedNode(financialAdvantage.id.value), NS.dct(`title`), financialAdvantage.title),
                 ...this.languageStringToTriples(namedNode(financialAdvantage.id.value), NS.dct(`description`), financialAdvantage.description),
                 this.buildQuad(namedNode(financialAdvantage.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
-                financialAdvantage.conceptId ? this.conceptId(financialAdvantage.id, financialAdvantage.conceptId) : undefined,
+                financialAdvantage.conceptFinancialAdvantageId ? this.conceptId(financialAdvantage.id, financialAdvantage.conceptFinancialAdvantageId) : undefined,
             ];
         });
     }

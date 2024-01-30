@@ -9,19 +9,19 @@ export class Evidence {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
-    private readonly _conceptId: Iri | undefined;
+    private readonly _conceptEvidenceId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
-                        conceptId: Iri | undefined
+                        conceptEvidenceId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
-        this._conceptId = conceptId;
+        this._conceptEvidenceId = conceptEvidenceId;
     }
 
     static forConcept(evidence: Evidence): Evidence {
@@ -50,7 +50,7 @@ export class Evidence {
             requiredValue(evidence.uuid, 'uuid'),
             evidence.title,
             evidence.description,
-            evidence.conceptId
+            evidence.conceptEvidenceId
         );
     }
 
@@ -58,9 +58,9 @@ export class Evidence {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
-                        conceptId: Iri | undefined): Evidence {
+                        conceptEvidenceId: Iri | undefined): Evidence {
 
-        return new Evidence(id, uuid, title, description, conceptId);
+        return new Evidence(id, uuid, title, description, conceptEvidenceId);
     }
 
     get nlLanguage(): Language | undefined {
@@ -83,8 +83,8 @@ export class Evidence {
         return this._description;
     }
 
-    get conceptId(): Iri | undefined {
-        return this._conceptId;
+    get conceptEvidenceId(): Iri | undefined {
+        return this._conceptEvidenceId;
     }
 
     static isFunctionallyChanged(value: Evidence | undefined, other: Evidence | undefined): boolean {
@@ -99,7 +99,7 @@ export class EvidenceBuilder {
     private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
-    private conceptId: Iri | undefined;
+    private conceptEvidenceId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/evidence/${uniqueId}`);
@@ -125,8 +125,8 @@ export class EvidenceBuilder {
         return this;
     }
 
-    public withConceptId(conceptId: Iri): EvidenceBuilder {
-        this.conceptId = conceptId;
+    public withConceptEvidenceId(conceptEvidenceId: Iri): EvidenceBuilder {
+        this.conceptEvidenceId = conceptEvidenceId;
         return this;
     }
 
@@ -148,7 +148,7 @@ export class EvidenceBuilder {
             this.uuid,
             this.title,
             this.description,
-            this.conceptId
+            this.conceptEvidenceId
         );
     }
 }

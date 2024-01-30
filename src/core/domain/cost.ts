@@ -10,19 +10,19 @@ export class Cost {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
-    private readonly _conceptId: Iri | undefined; //TODO LPDC-917: wijst dit naar de concept id ? of naar de cost die onder het concept hangt ? analoog voor andere?
+    private readonly _conceptCostId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
-                        conceptId: Iri | undefined
+                        conceptCostId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
-        this._conceptId = conceptId;
+        this._conceptCostId = conceptCostId;
     }
 
     static forConcept(cost: Cost): Cost {
@@ -51,7 +51,7 @@ export class Cost {
             requiredValue(cost.uuid, 'uuid'),
             cost.title,
             cost.description,
-            cost.conceptId
+            cost.conceptCostId
         );
     }
 
@@ -81,8 +81,8 @@ export class Cost {
         return this._description;
     }
 
-    get conceptId(): Iri | undefined {
-        return this._conceptId;
+    get conceptCostId(): Iri | undefined {
+        return this._conceptCostId;
     }
 
     static isFunctionallyChanged(value: Cost[], other: Cost[]): boolean {
@@ -105,7 +105,7 @@ export class CostBuilder {
     private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
-    private conceptId: Iri | undefined;
+    private conceptCostId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/cost/${uniqueId}`);
@@ -131,8 +131,8 @@ export class CostBuilder {
         return this;
     }
 
-    public withConceptId(conceptId: Iri): CostBuilder {
-        this.conceptId = conceptId;
+    public withConceptCostId(conceptCostId: Iri): CostBuilder {
+        this.conceptCostId = conceptCostId;
         return this;
     }
 
@@ -154,7 +154,7 @@ export class CostBuilder {
             this.uuid,
             this.title,
             this.description,
-            this.conceptId
+            this.conceptCostId
         );
     }
 }

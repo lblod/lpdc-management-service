@@ -48,7 +48,6 @@ class StoreAccess {
         this.logger = logger;
     }
 
-    //TODO LPDC-917: for keywords, don't bother to validate
     public statements(s: NamedNode,
                       p: NamedNode,
                       options: {
