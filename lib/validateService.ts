@@ -83,7 +83,7 @@ export async function validateService(instanceId: Iri, bestuurseenheid: Bestuurs
     return response;
 }
 
-//TODO LPDC-917: use domain to validate ...
+//TODO LPDC-1014: use domain to validate ...
 async function validateAddresses(serviceUri: string): Promise<boolean> {
     const addresses = await loadContactPointsAddresses(serviceUri, {type: 'cpsv:PublicService', includeUuid: true});
     if (addresses) {
