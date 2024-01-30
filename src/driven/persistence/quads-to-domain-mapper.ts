@@ -653,6 +653,7 @@ export class QuadsToDomainMapper {
                 return [id, order];
             });
 
+        //TODO LPDC-917: verify that all orders are unique ...
         return asSortedArray(anArray, (a: any, b: any) => {
             const orderA = orders.find((idAndOrder: any) => idAndOrder[0] === a.id);
             const orderB = orders.find((idAndOrder: any) => idAndOrder[0] === b.id);

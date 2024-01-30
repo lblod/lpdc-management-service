@@ -119,8 +119,7 @@ describe('Concept Data Integrity Validation', () => {
 
             console.log(new Date().toISOString());
 
-            const randomizedConceptIds = [...conceptIds];
-            shuffle(randomizedConceptIds);
+            const randomizedConceptIds = shuffle([...conceptIds]);
 
             for (const result of randomizedConceptIds) {
                 const id = new Iri(result['id'].value);

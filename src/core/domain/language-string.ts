@@ -98,10 +98,11 @@ export class LanguageString {
             .filter(ls => ls !== undefined)
             .flatMap(ls => ls.definedNlLanguages);
     }
-    static validateUniqueNlLanguage(languages: (LanguageString | undefined)[]):void {
-        const langs = new Set(this.extractNlLanguages(languages).filter(ls=> ls !== undefined ));
 
-        if(langs.size>1){
+    static validateUniqueNlLanguage(languages: (LanguageString | undefined)[]): void {
+        const langs = new Set(this.extractNlLanguages(languages).filter(ls => ls !== undefined));
+
+        if (langs.size > 1) {
             throw new Error('There is more than one Nl language present');
         }
     }

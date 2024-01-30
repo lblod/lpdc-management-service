@@ -77,8 +77,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
 
             console.log(new Date().toISOString());
 
-            const randomizedConceptSnapshotIds = [...conceptSnapshotIds];
-            shuffle(randomizedConceptSnapshotIds);
+            const randomizedConceptSnapshotIds = shuffle([...conceptSnapshotIds]);
 
             for (const result of randomizedConceptSnapshotIds) {
                 try {
