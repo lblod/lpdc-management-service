@@ -4,6 +4,7 @@ import {Bestuurseenheid, BestuurseenheidClassificatieCode,} from "../../core/dom
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
+import {extractResultsFromAllSettled} from "../../../platform/promises";
 
 export class BestuurseenheidSparqlRepository implements BestuurseenheidRepository {
 
@@ -14,7 +15,7 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
     }
 
     async findById(id: Iri): Promise<Bestuurseenheid> {
-        const query = `
+        const bestuurseenheidQuery = `
             ${PREFIX.skos}
             ${PREFIX.besluit}
             ${PREFIX.mu}
@@ -32,31 +33,37 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
                 }
             }
         `;
-        const result = await this.querying.singleRow(query);
-
-        if (!result) {
-            throw new Error(`no Bestuurseenheid found for iri: ${id}`);
-        }
-
         const spatialsQuery = `
             ${PREFIX.besluit}
             ${PREFIX.skos}
             ${PREFIX.lblodIpdcLpdc}
             SELECT DISTINCT ?spatialId WHERE {
-              ${sparqlEscapeUri(id)} besluit:werkingsgebied ?werkingsgebiedId.
-              ?werkingsgebiedId skos:exactMatch ?spatialId.
-              ?spatialId skos:inScheme lblodIpdcLpdc:IPDCLocaties
+                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
+                  ${sparqlEscapeUri(id)} besluit:werkingsgebied ?werkingsgebiedId.
+                  ?werkingsgebiedId skos:exactMatch ?spatialId.
+                  ?spatialId skos:inScheme lblodIpdcLpdc:IPDCLocaties
+                }
             }        
         `;
 
-        const resultSpatials = await this.querying.list(spatialsQuery);
+        const [
+            bestuurseenheidQueryResult,
+            resultSpatials] =
+            await extractResultsFromAllSettled(
+                [
+                    this.querying.singleRow(bestuurseenheidQuery),
+                    this.querying.list(spatialsQuery)]);
+
+        if (!bestuurseenheidQueryResult) {
+            throw new Error(`no Bestuurseenheid found for iri: ${id}`);
+        }
 
         return new Bestuurseenheid(
-            new Iri(result['id'].value),
-            result['uuid'].value,
-            result['prefLabel'].value,
-            this.mapBestuurseenheidClassificatieUriToCode(result['classificatieUri']?.value),
-            resultSpatials.map(r => new Iri(r['spatialId'].value))
+            new Iri(bestuurseenheidQueryResult['id'].value),
+            bestuurseenheidQueryResult['uuid'].value,
+            bestuurseenheidQueryResult['prefLabel'].value,
+            this.mapBestuurseenheidClassificatieUriToCode(bestuurseenheidQueryResult['classificatieUri']?.value),
+            (resultSpatials as Promise<unknown>[]).map(r => new Iri(r['spatialId'].value))
         );
     }
 
