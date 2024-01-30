@@ -24,14 +24,13 @@ export class SparqlQuerying {
         this.verifyResultToMatch(query, result, /(Modify <.*>, delete \d+ \(or less\) and insert \d+ \(or less\) triples -- done|(Delete \d+ \(or less\) quads -- done)|(Delete from <.*>, 0 quads -- nothing to do)\n(Insert into <.*>, \d+ \(or less\) quads -- done)|(Insert into <.*>, 0 quads -- nothing to do))/);
     }
 
-    //TODO LPDC-917: test the retrying extensively. e.g. if the single row returns multiple results -> it retries ...
     public async singleRow(query: string): Promise<unknown | undefined> {
         return retry(async () => {
             const result = await querySudo(query, {}, {sparqlEndpoint: this.endpoint});
             const bindings = result?.results?.bindings;
             if (bindings) {
                 if (bindings.length > 1) {
-                    throw new Error(`Expecting a single row from query (${query}), got ${bindings.length} results.`);
+                    throw new QueryError(`Expecting a single row from query (${query}), got ${bindings.length} results.`);
                 }
             }
             return bindings[0];
@@ -39,7 +38,10 @@ export class SparqlQuerying {
             retries: 10,
             delay: 100,
             backoff: "FIXED",
-            logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`)
+            logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`),
+            retryIf: (error: any) => {
+                return !(error instanceof QueryError);
+            },
         });
     }
 
@@ -51,7 +53,7 @@ export class SparqlQuerying {
             retries: 10,
             delay: 100,
             backoff: "FIXED",
-            logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`)
+            logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`),
         });
     }
 
@@ -63,7 +65,7 @@ export class SparqlQuerying {
             retries: 10,
             delay: 100,
             backoff: "FIXED",
-            logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`)
+            logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`),
         });
     }
 
@@ -85,13 +87,13 @@ export class SparqlQuerying {
             || term.type === 'typed-literal') {
             return this.asLiteral(term);
         }
-        throw new Error(`Could not parse ${JSON.stringify(term)} as Named Node Or Literal`);
+        throw new QueryError(`Could not parse ${JSON.stringify(term)} as Named Node Or Literal`);
     }
 
     private asLiteral(term: any): Literal {
         if (term.type !== 'literal'
             && term.type !== 'typed-literal') {
-            throw new Error(`Expecting a literal for ${term.value}`);
+            throw new QueryError(`Expecting a literal for ${term.value}`);
         }
 
         const lang: string | undefined = term['xml:lang'];
@@ -101,7 +103,7 @@ export class SparqlQuerying {
 
     private asNamedNode(term: any): NamedNode {
         if (term.type !== 'uri') {
-            throw new Error(`Expecting an IRI for ${term.value}`);
+            throw new QueryError(`Expecting an IRI for ${term.value}`);
         }
 
         return namedNode(term.value);
@@ -113,8 +115,14 @@ export class SparqlQuerying {
             .every(ir => expectedPattern.test(ir))) {
             const msg = `[${query}] gave incorrect result [${results.join(';')}]`;
             console.log(msg);
-            throw new Error(msg);
+            throw new QueryError(msg);
         }
     }
+}
+
+class QueryError {
+    constructor(public message: string) {
+    }
+
 }
 

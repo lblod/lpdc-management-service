@@ -7,7 +7,7 @@ export const extractResultsFromAllSettled = async <T>(promises: Promise<T>[]): P
     if (rejectedReasons.length === 0) {
         return results.map(result => (result as PromiseFulfilledResult<T>).value);
     } else {
-        const msg = `Some promises were rejected [${rejectedReasons.join('; ')}]`;
+        const msg = `Some promises were rejected [${rejectedReasons.map(o => JSON.stringify(o)).join('; ')}]`;
         console.log(msg);
         throw new Error(msg);
     }

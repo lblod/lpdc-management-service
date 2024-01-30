@@ -18,7 +18,7 @@ describe('promises tests', () => {
             Promise.reject('this specific promise was rejected!'),
             Promise.resolve('ghi'),
             Promise.resolve(12),
-        ])).rejects.toThrow(new Error('Some promises were rejected [this specific promise was rejected!]'));
+        ])).rejects.toThrow(new Error('Some promises were rejected ["this specific promise was rejected!"]'));
     });
 
 });
