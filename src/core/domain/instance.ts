@@ -323,7 +323,315 @@ export class Instance {
         return [...this._legalResources];
     }
 
-    isInDeletableState():boolean {
+    isInDeletableState(): boolean {
         return this.publicationStatus != InstancePublicationStatusType.GEPUBLICEERD;
+    }
+}
+
+export class InstanceBuilder {
+    private id: Iri;
+    private uuid: string;
+    private createdBy: Iri;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
+    private additionalDescription: LanguageString | undefined;
+    private exception: LanguageString | undefined;
+    private regulation: LanguageString | undefined;
+    private startDate: FormatPreservingDate | undefined;
+    private endDate: FormatPreservingDate | undefined;
+    private type: ProductType | undefined;
+    private targetAudiences: TargetAudienceType[] = [];
+    private themes: ThemeType[] = [];
+    private competentAuthorityLevels: CompetentAuthorityLevelType[] = [];
+    private competentAuthorities: Iri[] = [];
+    private executingAuthorityLevels: ExecutingAuthorityLevelType[] = [];
+    private executingAuthorities: Iri[] = [];
+    private publicationMedia: PublicationMediumType[] = [];
+    private yourEuropeCategories: YourEuropeCategoryType[] = [];
+    private keywords: LanguageString[] = [];
+    private requirements: Requirement[] = [];
+    private procedures: Procedure[] = [];
+    private websites: Website[] = [];
+    private costs: Cost[] = [];
+    private financialAdvantages: FinancialAdvantage[] = [];
+    private contactPoints: ContactPoint[] = [];
+    private conceptId: Iri | undefined;
+    private conceptSnapshotId: Iri | undefined;
+    private productId: string | undefined;
+    private languages: LanguageType[] = [];
+    private dateCreated: FormatPreservingDate;
+    private dateModified: FormatPreservingDate;
+    private status: InstanceStatusType;
+    private reviewStatus: InstanceReviewStatusType;
+    private publicationStatus: InstancePublicationStatusType;
+    private spatials: Iri[] = [];
+    private legalResources: Iri[] = [];
+
+    public static from(instance: Instance): InstanceBuilder {
+        return new InstanceBuilder()
+            .withId(instance.id)
+            .withUuid(instance.uuid)
+            .withCreatedBy(instance.createdBy)
+            .withTitle(instance.title)
+            .withDescription(instance.description)
+            .withAdditionalDescription(instance.additionalDescription)
+            .withException(instance.exception)
+            .withRegulation(instance.regulation)
+            .withStartDate(instance.startDate)
+            .withEndDate(instance.endDate)
+            .withType(instance.type)
+            .withTargetAudiences(instance.targetAudiences)
+            .withThemes(instance.themes)
+            .withCompetentAuthorityLevels(instance.competentAuthorityLevels)
+            .withCompetentAuthorities(instance.competentAuthorities)
+            .withExecutingAuthorityLevels(instance.executingAuthorityLevels)
+            .withExecutingAuthorities(instance.executingAuthorities)
+            .withPublicationMedia(instance.publicationMedia)
+            .withYourEuropeCategories(instance.yourEuropeCategories)
+            .withKeywords(instance.keywords)
+            .withRequirements(instance.requirements)
+            .withProcedures(instance.procedures)
+            .withWebsites(instance.websites)
+            .withCosts(instance.costs)
+            .withFinancialAdvantages(instance.financialAdvantages)
+            .withContactPoints(instance.contactPoints)
+            .withConceptId(instance.conceptId)
+            .withConceptSnapshotId(instance.conceptSnapshotId)
+            .withProductId(instance.productId)
+            .withLanguages(instance.languages)
+            .withDateCreated(instance.dateCreated)
+            .withDateModified(instance.dateModified)
+            .withStatus(instance.status)
+            .withReviewStatus(instance.reviewStatus)
+            .withPublicationStatus(instance.publicationStatus)
+            .withSpatials(instance.spatials)
+            .withLegalResources(instance.legalResources);
+    }
+
+    public withId(id: Iri): InstanceBuilder {
+        this.id = id;
+        return this;
+    }
+
+    public withUuid(uuid: string): InstanceBuilder {
+        this.uuid = uuid;
+        return this;
+    }
+
+    public withCreatedBy(createdBy: Iri): InstanceBuilder {
+        this.createdBy = createdBy;
+        return this;
+    }
+
+    public withTitle(title: LanguageString): InstanceBuilder {
+        this.title = title;
+        return this;
+    }
+
+    public withDescription(description: LanguageString): InstanceBuilder {
+        this.description = description;
+        return this;
+    }
+
+    public withAdditionalDescription(additionalDescription: LanguageString): InstanceBuilder {
+        this.additionalDescription = additionalDescription;
+        return this;
+    }
+
+    public withException(exception: LanguageString): InstanceBuilder {
+        this.exception = exception;
+        return this;
+    }
+
+    public withRegulation(regulation: LanguageString): InstanceBuilder {
+        this.regulation = regulation;
+        return this;
+    }
+
+    public withStartDate(startDate: FormatPreservingDate): InstanceBuilder {
+        this.startDate = startDate;
+        return this;
+    }
+
+    public withEndDate(endDate: FormatPreservingDate): InstanceBuilder {
+        this.endDate = endDate;
+        return this;
+    }
+
+    public withType(type: ProductType): InstanceBuilder {
+        this.type = type;
+        return this;
+    }
+
+    public withTargetAudiences(targetAudiences: TargetAudienceType[]): InstanceBuilder {
+        this.targetAudiences = targetAudiences;
+        return this;
+    }
+
+    public withThemes(themes: ThemeType[]): InstanceBuilder {
+        this.themes = themes;
+        return this;
+    }
+
+    public withCompetentAuthorityLevels(competentAuthorityLevels: CompetentAuthorityLevelType[]): InstanceBuilder {
+        this.competentAuthorityLevels = competentAuthorityLevels;
+        return this;
+    }
+
+    public withCompetentAuthorities(competentAuthorities: Iri[]): InstanceBuilder {
+        this.competentAuthorities = competentAuthorities;
+        return this;
+    }
+
+    public withExecutingAuthorityLevels(executingAuthorityLevels: ExecutingAuthorityLevelType[]): InstanceBuilder {
+        this.executingAuthorityLevels = executingAuthorityLevels;
+        return this;
+    }
+
+    public withExecutingAuthorities(executingAuthorities: Iri[]): InstanceBuilder {
+        this.executingAuthorities = executingAuthorities;
+        return this;
+    }
+
+    public withPublicationMedia(publicationMedia: PublicationMediumType[]): InstanceBuilder {
+        this.publicationMedia = publicationMedia;
+        return this;
+    }
+
+    public withYourEuropeCategories(yourEuropeCategories: YourEuropeCategoryType[]): InstanceBuilder {
+        this.yourEuropeCategories = yourEuropeCategories;
+        return this;
+    }
+
+    public withKeywords(keywords: LanguageString[]): InstanceBuilder {
+        this.keywords = keywords;
+        return this;
+    }
+
+    public withRequirements(requirements: Requirement[]): InstanceBuilder {
+        this.requirements = requirements;
+        return this;
+    }
+
+    public withProcedures(procedures: Procedure[]): InstanceBuilder {
+        this.procedures = procedures;
+        return this;
+    }
+
+    public withWebsites(websites: Website[]): InstanceBuilder {
+        this.websites = websites;
+        return this;
+    }
+
+    public withCosts(costs: Cost[]): InstanceBuilder {
+        this.costs = costs;
+        return this;
+    }
+
+    public withFinancialAdvantages(financialAdvantages: FinancialAdvantage[]): InstanceBuilder {
+        this.financialAdvantages = financialAdvantages;
+        return this;
+    }
+
+    public withContactPoints(contactPoinst: ContactPoint[]): InstanceBuilder {
+        this.contactPoints = contactPoinst;
+        return this;
+    }
+
+    public withConceptId(conceptId: Iri): InstanceBuilder {
+        this.conceptId = conceptId;
+        return this;
+    }
+
+    public withConceptSnapshotId(conceptSnapshotId: Iri): InstanceBuilder {
+        this.conceptSnapshotId = conceptSnapshotId;
+        return this;
+    }
+
+    public withProductId(productId: string): InstanceBuilder {
+        this.productId = productId;
+        return this;
+    }
+
+    public withLanguages(languages: LanguageType[]): InstanceBuilder {
+        this.languages = languages;
+        return this;
+    }
+
+    public withDateCreated(dateCreated: FormatPreservingDate): InstanceBuilder {
+        this.dateCreated = dateCreated;
+        return this;
+    }
+
+    public withDateModified(dateModified: FormatPreservingDate): InstanceBuilder {
+        this.dateModified = dateModified;
+        return this;
+    }
+
+    public withStatus(status: InstanceStatusType): InstanceBuilder {
+        this.status = status;
+        return this;
+    }
+
+    public withReviewStatus(reviewStatus: InstanceReviewStatusType): InstanceBuilder {
+        this.reviewStatus = reviewStatus;
+        return this;
+    }
+
+    public withPublicationStatus(publicationStatus: InstancePublicationStatusType) {
+        this.publicationStatus = publicationStatus;
+        return this;
+    }
+
+    public withSpatials(spatials: Iri[]): InstanceBuilder {
+        this.spatials = spatials;
+        return this;
+    }
+
+    public withLegalResources(legalResources: Iri[]): InstanceBuilder {
+        this.legalResources = legalResources;
+        return this;
+    }
+
+    public build(): Instance {
+        return new Instance(
+            this.id,
+            this.uuid,
+            this.createdBy,
+            this.title,
+            this.description,
+            this.additionalDescription,
+            this.exception,
+            this.regulation,
+            this.startDate,
+            this.endDate,
+            this.type,
+            this.targetAudiences,
+            this.themes,
+            this.competentAuthorityLevels,
+            this.competentAuthorities,
+            this.executingAuthorityLevels,
+            this.executingAuthorities,
+            this.publicationMedia,
+            this.yourEuropeCategories,
+            this.keywords,
+            this.requirements,
+            this.procedures,
+            this.websites,
+            this.costs,
+            this.financialAdvantages,
+            this.contactPoints,
+            this.conceptId,
+            this.conceptSnapshotId,
+            this.productId,
+            this.languages,
+            this.dateCreated,
+            this.dateModified,
+            this.status,
+            this.reviewStatus,
+            this.publicationStatus,
+            this.spatials,
+            this.legalResources
+        );
     }
 }

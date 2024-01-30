@@ -49,3 +49,63 @@ export class ConceptDisplayConfiguration {
     }
 
 }
+
+export class ConceptDisplayConfigurationBuilder {
+    private id: Iri;
+    private uuid: string;
+    private conceptIsNew: boolean;
+    private conceptIsInstantiated: boolean;
+    private bestuurseenheidId: Iri;
+    private conceptId: Iri;
+
+    public static from(conceptDisplayConfiguration: ConceptDisplayConfiguration): ConceptDisplayConfigurationBuilder {
+        return new ConceptDisplayConfigurationBuilder()
+            .withId(conceptDisplayConfiguration.id)
+            .withUuid(conceptDisplayConfiguration.uuid)
+            .withConceptIsNew(conceptDisplayConfiguration.conceptIsNew)
+            .withConceptIsInstantiated(conceptDisplayConfiguration.conceptIsInstantiated)
+            .withBestuurseenheidId(conceptDisplayConfiguration.bestuurseenheidId)
+            .withConceptId(conceptDisplayConfiguration.conceptId);
+    }
+
+    public withId(id: Iri): ConceptDisplayConfigurationBuilder {
+        this.id = id;
+        return this;
+    }
+
+    public withUuid(uuid: string): ConceptDisplayConfigurationBuilder {
+        this.uuid = uuid;
+        return this;
+    }
+
+    public withConceptIsNew(conceptIsNew: boolean): ConceptDisplayConfigurationBuilder {
+        this.conceptIsNew = conceptIsNew;
+        return this;
+    }
+
+    public withConceptIsInstantiated(conceptIsInstantiated: boolean): ConceptDisplayConfigurationBuilder {
+        this.conceptIsInstantiated = conceptIsInstantiated;
+        return this;
+    }
+
+    public withBestuurseenheidId(bestuurseenheidId: Iri): ConceptDisplayConfigurationBuilder {
+        this.bestuurseenheidId = bestuurseenheidId;
+        return this;
+    }
+
+    public withConceptId(conceptId: Iri): ConceptDisplayConfigurationBuilder {
+        this.conceptId = conceptId;
+        return this;
+    }
+
+    public build(): ConceptDisplayConfiguration {
+        return new ConceptDisplayConfiguration(
+            this.id,
+            this.uuid,
+            this.conceptIsNew,
+            this.conceptIsInstantiated,
+            this.bestuurseenheidId,
+            this.conceptId,
+        );
+    }
+}

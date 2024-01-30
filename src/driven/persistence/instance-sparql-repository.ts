@@ -11,6 +11,9 @@ import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {InstanceReviewStatusType} from "../../core/domain/types";
 import {Logger} from "../../../platform/logger";
+import {literal} from "rdflib";
+import LPDCError from "../../../platform/lpdc-error";
+import {isEqual} from "lodash";
 
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
@@ -72,6 +75,36 @@ export class InstanceSparqlRepository implements InstanceRepository {
             }
         `;
         await this.querying.insert(query);
+    }
+
+    async update(bestuurseenheid: Bestuurseenheid, instance: Instance, old: Instance): Promise<void> {
+        const oldTriples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(old).map(s => s.toNT());
+        const newTriples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
+
+        // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
+        if (isEqual(oldTriples, newTriples)) {
+            throw new Error('no change');
+        }
+
+        const query = `
+            WITH <${bestuurseenheid.userGraph()}>
+            DELETE {
+                ${[...oldTriples].join('\n')}
+            }
+            INSERT {
+                ${[...newTriples].join('\n')}
+            }
+            WHERE {
+                <${instance.id}> <${NS.dct('modified').value}> ${literal(old.dateModified.value, NS.xsd('dateTime')).toNT()} .
+            }
+        `;
+
+        await this.querying.deleteInsert(query, (deleteInsertResults: string[]) => {
+            //todo LPDC-917: verify only one result
+            if (deleteInsertResults[0].includes("delete 0 (or less) and insert 0 (or less) triples")) {
+                throw new LPDCError(400, "De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in.");
+            }
+        });
     }
 
     async delete(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<void> {

@@ -1,6 +1,5 @@
-import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {Instance} from "../../../src/core/domain/instance";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {
     buildBestuurseenheidIri,
     buildCodexVlaanderenIri,
@@ -26,26 +25,20 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
-import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullRequirementForInstance, anotherFullRequirementForInstance} from "./requirement-test-builder";
 import {aFullEvidenceForInstance, anotherFullEvidenceForInstance} from "./evidence-test-builder";
-import {Procedure} from "../../../src/core/domain/procedure";
 import {aFullProcedureForInstance, anotherFullProcedureForInstance} from "./procedure-test-builder";
 import {aFullWebsiteForInstance, anotherFullWebsiteForInstance} from "./website-test-builder";
-import {Website} from "../../../src/core/domain/website";
-import {Cost} from "../../../src/core/domain/cost";
 import {aFullCostForInstance, anotherFullCostForInstance} from "./cost-test-builder";
-import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {
     aFullFinancialAdvantageForInstance,
     anotherFullFinancialAdvantageForInstance
 } from "./financial-advantage-test-builder";
-import {ContactPoint} from "../../../src/core/domain/contactPoint";
 import {aFullContactPoint, anotherFullContactPoint} from "./contactPoint-test-builder";
 
-export function aMinimalInstance(): InstanceTestBuilder {
+export function aMinimalInstance(): InstanceBuilder {
     const uniqueId = uuid();
-    return new InstanceTestBuilder()
+    return new InstanceBuilder()
         .withId(buildInstanceIri(uniqueId))
         .withUuid(uniqueId)
         .withCreatedBy(buildBestuurseenheidIri(uuid()))
@@ -54,9 +47,9 @@ export function aMinimalInstance(): InstanceTestBuilder {
         .withStatus(InstanceTestBuilder.STATUS);
 }
 
-export function aFullInstance(): InstanceTestBuilder {
+export function aFullInstance(): InstanceBuilder {
     const uniqueId = uuid();
-    return new InstanceTestBuilder()
+    return new InstanceBuilder()
         .withId(buildInstanceIri(uniqueId))
         .withUuid(uniqueId)
         .withCreatedBy(buildBestuurseenheidIri(uuid()))
@@ -200,270 +193,6 @@ export class InstanceTestBuilder {
 
     public static readonly LEGAL_RESOURCES = [buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())];
 
-    private id: Iri;
-    private uuid: string;
-    private createdBy: Iri;
-    private title: LanguageString | undefined;
-    private description: LanguageString | undefined;
-    private additionalDescription: LanguageString | undefined;
-    private exception: LanguageString | undefined;
-    private regulation: LanguageString | undefined;
-    private startDate: FormatPreservingDate | undefined;
-    private endDate: FormatPreservingDate | undefined;
-    private type: ProductType | undefined;
-    private targetAudiences: TargetAudienceType[] = [];
-    private themes: ThemeType[] = [];
-    private competentAuthorityLevels: CompetentAuthorityLevelType[] = [];
-    private competentAuthorities: Iri[] = [];
-    private executingAuthorityLevels: ExecutingAuthorityLevelType[] = [];
-    private executingAuthorities: Iri[] = [];
-    private publicationMedia: PublicationMediumType[] = [];
-    private yourEuropeCategories: YourEuropeCategoryType[] = [];
-    private keywords: LanguageString[] = [];
-    private requirements: Requirement[] = [];
-    private procedures: Procedure[] = [];
-    private websites: Website[] = [];
-    private costs: Cost[] = [];
-    private financialAdvantages: FinancialAdvantage[] = [];
-    private contactPoints: ContactPoint[] = [];
-    private conceptId: Iri | undefined;
-    private conceptSnapshotId: Iri | undefined;
-    private productId: string | undefined;
-    private languages: LanguageType[] = [];
-    private dateCreated: FormatPreservingDate;
-    private dateModified: FormatPreservingDate;
-    private status: InstanceStatusType;
-    private reviewStatus: InstanceReviewStatusType;
-    private publicationStatus: InstancePublicationStatusType;
-    private spatials: Iri[] = [];
-    private legalResources: Iri[] = [];
-
-    public withId(id: Iri): InstanceTestBuilder {
-        this.id = id;
-        return this;
-    }
-
-    public withUuid(uuid: string): InstanceTestBuilder {
-        this.uuid = uuid;
-        return this;
-    }
-
-    public withCreatedBy(createdBy: Iri): InstanceTestBuilder {
-        this.createdBy = createdBy;
-        return this;
-    }
-
-    public withTitle(title: LanguageString): InstanceTestBuilder {
-        this.title = title;
-        return this;
-    }
-
-    public withDescription(description: LanguageString): InstanceTestBuilder {
-        this.description = description;
-        return this;
-    }
-
-    public withAdditionalDescription(additionalDescription: LanguageString): InstanceTestBuilder {
-        this.additionalDescription = additionalDescription;
-        return this;
-    }
-
-    public withException(exception: LanguageString): InstanceTestBuilder {
-        this.exception = exception;
-        return this;
-    }
-
-    public withRegulation(regulation: LanguageString): InstanceTestBuilder {
-        this.regulation = regulation;
-        return this;
-    }
-
-    public withStartDate(startDate: FormatPreservingDate): InstanceTestBuilder {
-        this.startDate = startDate;
-        return this;
-    }
-
-    public withEndDate(endDate: FormatPreservingDate): InstanceTestBuilder {
-        this.endDate = endDate;
-        return this;
-    }
-
-    public withType(type: ProductType): InstanceTestBuilder {
-        this.type = type;
-        return this;
-    }
-
-    public withTargetAudiences(targetAudiences: TargetAudienceType[]): InstanceTestBuilder {
-        this.targetAudiences = targetAudiences;
-        return this;
-    }
-
-    public withThemes(themes: ThemeType[]): InstanceTestBuilder {
-        this.themes = themes;
-        return this;
-    }
-
-    public withCompetentAuthorityLevels(competentAuthorityLevels: CompetentAuthorityLevelType[]): InstanceTestBuilder {
-        this.competentAuthorityLevels = competentAuthorityLevels;
-        return this;
-    }
-
-    public withCompetentAuthorities(competentAuthorities: Iri[]): InstanceTestBuilder {
-        this.competentAuthorities = competentAuthorities;
-        return this;
-    }
-
-    public withExecutingAuthorityLevels(executingAuthorityLevels: ExecutingAuthorityLevelType[]): InstanceTestBuilder {
-        this.executingAuthorityLevels = executingAuthorityLevels;
-        return this;
-    }
-
-    public withExecutingAuthorities(executingAuthorities: Iri[]): InstanceTestBuilder {
-        this.executingAuthorities = executingAuthorities;
-        return this;
-    }
-
-    public withPublicationMedia(publicationMedia: PublicationMediumType[]): InstanceTestBuilder {
-        this.publicationMedia = publicationMedia;
-        return this;
-    }
-
-    public withYourEuropeCategories(yourEuropeCategories: YourEuropeCategoryType[]): InstanceTestBuilder {
-        this.yourEuropeCategories = yourEuropeCategories;
-        return this;
-    }
-
-    public withKeywords(keywords: LanguageString[]): InstanceTestBuilder {
-        this.keywords = keywords;
-        return this;
-    }
-
-    public withRequirements(requirements: Requirement[]): InstanceTestBuilder {
-        this.requirements = requirements;
-        return this;
-    }
-
-    public withProcedures(procedures: Procedure[]): InstanceTestBuilder {
-        this.procedures = procedures;
-        return this;
-    }
-
-    public withWebsites(websites: Website[]): InstanceTestBuilder {
-        this.websites = websites;
-        return this;
-    }
-
-    public withCosts(costs: Cost[]): InstanceTestBuilder {
-        this.costs = costs;
-        return this;
-    }
-
-    public withFinancialAdvantages(financialAdvantages: FinancialAdvantage[]): InstanceTestBuilder {
-        this.financialAdvantages = financialAdvantages;
-        return this;
-    }
-
-    public withContactPoints(contactPoinst: ContactPoint[]): InstanceTestBuilder {
-        this.contactPoints = contactPoinst;
-        return this;
-    }
-
-    public withConceptId(conceptId: Iri): InstanceTestBuilder {
-        this.conceptId = conceptId;
-        return this;
-    }
-
-    public withConceptSnapshotId(conceptSnapshotId: Iri): InstanceTestBuilder {
-        this.conceptSnapshotId = conceptSnapshotId;
-        return this;
-    }
-
-    public withProductId(productId: string): InstanceTestBuilder {
-        this.productId = productId;
-        return this;
-    }
-
-    public withLanguages(languages: LanguageType[]): InstanceTestBuilder {
-        this.languages = languages;
-        return this;
-    }
-
-    public withDateCreated(dateCreated: FormatPreservingDate): InstanceTestBuilder {
-        this.dateCreated = dateCreated;
-        return this;
-    }
-
-    public withDateModified(dateModified: FormatPreservingDate): InstanceTestBuilder {
-        this.dateModified = dateModified;
-        return this;
-    }
-
-    public withStatus(status: InstanceStatusType): InstanceTestBuilder {
-        this.status = status;
-        return this;
-    }
-
-    public withReviewStatus(reviewStatus: InstanceReviewStatusType): InstanceTestBuilder {
-        this.reviewStatus = reviewStatus;
-        return this;
-    }
-
-    public withPublicationStatus(publicationStatus: InstancePublicationStatusType) {
-        this.publicationStatus = publicationStatus;
-        return this;
-    }
-
-    public withSpatials(spatials: Iri[]): InstanceTestBuilder {
-        this.spatials = spatials;
-        return this;
-    }
-
-    public withLegalResources(legalResources: Iri[]): InstanceTestBuilder {
-        this.legalResources = legalResources;
-        return this;
-    }
-
-    public build(): Instance {
-        return new Instance(
-            this.id,
-            this.uuid,
-            this.createdBy,
-            this.title,
-            this.description,
-            this.additionalDescription,
-            this.exception,
-            this.regulation,
-            this.startDate,
-            this.endDate,
-            this.type,
-            this.targetAudiences,
-            this.themes,
-            this.competentAuthorityLevels,
-            this.competentAuthorities,
-            this.executingAuthorityLevels,
-            this.executingAuthorities,
-            this.publicationMedia,
-            this.yourEuropeCategories,
-            this.keywords,
-            this.requirements,
-            this.procedures,
-            this.websites,
-            this.costs,
-            this.financialAdvantages,
-            this.contactPoints,
-            this.conceptId,
-            this.conceptSnapshotId,
-            this.productId,
-            this.languages,
-            this.dateCreated,
-            this.dateModified,
-            this.status,
-            this.reviewStatus,
-            this.publicationStatus,
-            this.spatials,
-            this.legalResources
-        );
-    }
 }
 
 

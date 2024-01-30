@@ -19,6 +19,10 @@ export class FormatPreservingDate {
         return valueFormattedInIso8601WithNanosMillisOrSeconds ? new FormatPreservingDate(valueFormattedInIso8601WithNanosMillisOrSeconds) : undefined;
     }
 
+    public static now(): FormatPreservingDate {
+        return new FormatPreservingDate(new Date().toISOString());
+    }
+
     get value(): string {
         return this._value;
     }

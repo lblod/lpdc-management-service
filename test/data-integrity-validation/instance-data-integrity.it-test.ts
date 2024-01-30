@@ -5,7 +5,6 @@ import {namedNode, Statement} from "rdflib";
 import {shuffle, sortedUniq, uniq} from "lodash";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {sparqlEscapeUri} from "../../mu-helper";
-import {InstanceSparqlTestRepository} from "../driven/persistence/instance-sparql-test-repository";
 import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
@@ -14,12 +13,13 @@ import {
 } from "../../src/driven/persistence/datastore-to-quads-recursive-sparql-fetcher";
 import {asSortedArray} from "../../src/core/domain/shared/collections-helper";
 import fs from "fs";
+import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 
 describe('Instance Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
 
-    const repository = new InstanceSparqlTestRepository(endPoint);
+    const repository = new InstanceSparqlRepository(endPoint);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
 
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);

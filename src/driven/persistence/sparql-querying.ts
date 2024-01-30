@@ -19,9 +19,13 @@ export class SparqlQuerying {
         this.verifyResultToMatch(query, result, /Delete from <.*>, \d+ \(or less\) (triples|quads) -- done/);
     }
 
-    public async deleteInsert(query: string): Promise<void> {
+    public async deleteInsert(query: string, resultVerification?: (deleteInsertResults: string[]) => void): Promise<void> {
         const result = await updateSudo(query, {}, {sparqlEndpoint: this.endpoint});
         this.verifyResultToMatch(query, result, /(Modify <.*>, delete \d+ \(or less\) and insert \d+ \(or less\) triples -- done|(Delete \d+ \(or less\) quads -- done)|(Delete from <.*>, 0 quads -- nothing to do)\n(Insert into <.*>, \d+ \(or less\) quads -- done)|(Insert into <.*>, 0 quads -- nothing to do))/);
+        if(resultVerification) {
+            const results = result.results.bindings.map(b => b['callret-0'].value);
+            resultVerification(results);
+        }
     }
 
     public async singleRow(query: string): Promise<unknown | undefined> {

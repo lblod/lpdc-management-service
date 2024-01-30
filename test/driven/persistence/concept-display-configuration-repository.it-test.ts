@@ -16,6 +16,7 @@ import {DirectDatabaseAccess} from "./direct-database-access";
 import {PREFIX} from "../../../config";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {aFullConcept} from "../../core/domain/concept-test-builder";
+import {ConceptDisplayConfigurationBuilder} from "../../../src/core/domain/concept-display-configuration";
 
 describe('ConceptDisplayConfigurationRepository', () => {
 
@@ -199,7 +200,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
             await repository.removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
 
             const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-            const expectedConceptDisplayConfiguration = new ConceptDisplayConfigurationTestBuilder()
+            const expectedConceptDisplayConfiguration = new ConceptDisplayConfigurationBuilder()
                 .withId(conceptDisplayConfiguration.id)
                 .withBestuurseenheidId(conceptDisplayConfiguration.bestuurseenheidId)
                 .withConceptId(conceptDisplayConfiguration.conceptId)
@@ -213,22 +214,17 @@ describe('ConceptDisplayConfigurationRepository', () => {
 
         test('When conceptIsNew is false and conceptIsInstantiated false', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const conceptDisplayConfiguration =
-                aFullConceptDisplayConfiguration()
-                    .withBestuurseenheidId(bestuurseenheid.id)
-                    .withConceptIsNew(false)
-                    .withConceptIsInstantiated(false)
-                    .build();
+            const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .withConceptIsNew(false)
+                .withConceptIsInstantiated(false)
+                .build();
 
             await repository.save(bestuurseenheid, conceptDisplayConfiguration);
             await repository.removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
             const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
 
-            const expectedConceptDisplayConfiguration = new ConceptDisplayConfigurationTestBuilder()
-                .withId(conceptDisplayConfiguration.id)
-                .withBestuurseenheidId(conceptDisplayConfiguration.bestuurseenheidId)
-                .withConceptId(conceptDisplayConfiguration.conceptId)
-                .withUuid(conceptDisplayConfiguration.uuid)
+            const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
                 .withConceptIsNew(false)
                 .withConceptIsInstantiated(true)
                 .build();

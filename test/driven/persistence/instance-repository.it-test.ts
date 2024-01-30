@@ -1,6 +1,5 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "../../core/domain/instance-test-builder";
-import {InstanceSparqlTestRepository} from "./instance-sparql-test-repository";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
@@ -26,12 +25,30 @@ import {aFullContactPoint} from "../../core/domain/contactPoint-test-builder";
 import {AddressTestBuilder, aFullAddress} from "../../core/domain/address-test-builder";
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
+import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
+import LPDCError from "../../../platform/lpdc-error";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 describe('InstanceRepository', () => {
 
-    const repository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const repository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
+
+    const fixedNow = new Date().toISOString();
+    beforeAll(() => {
+        jest.useFakeTimers();
+        const fixedTodayAsDate = new Date(fixedNow);
+        jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
+    });
+
+    afterAll(() => {
+        jest.clearAllTimers();
+        jest.useRealTimers();
+        jest.restoreAllMocks();
+    });
+
 
     describe('findById', () => {
 
@@ -87,22 +104,64 @@ describe('InstanceRepository', () => {
         });
     });
 
-    describe('delete', () => {
-        const fixedToday = '2023-12-13T14:23:54.768Z';
-        beforeAll(() => {
-            jest.useFakeTimers();
-            const fixedTodayAsDate = new Date(fixedToday);
-            jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
+    describe('update', () => {
+
+        test('should update instance', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const oldInstance = aFullInstance()
+                .withCreatedBy(bestuurseenheid.id)
+                .withDateModified(FormatPreservingDate.of('2023-10-20T00:00:00.657Z'))
+                .build();
+            await repository.save(bestuurseenheid, oldInstance);
+
+            const newInstance = InstanceBuilder.from(oldInstance)
+                .withDateModified(FormatPreservingDate.of(fixedNow))
+                .build();
+
+            await repository.update(bestuurseenheid, newInstance, oldInstance);
+
+            const actualInstance = await repository.findById(bestuurseenheid, newInstance.id);
+
+            expect(actualInstance).toEqual(newInstance);
         });
 
-        afterAll(() => {
-            jest.clearAllTimers();
-            jest.useRealTimers();
-            jest.restoreAllMocks();
+        test('should update instance when old instance is equal to new instance', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const oldInstance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+            await repository.save(bestuurseenheid, oldInstance);
+
+            const newInstance = InstanceBuilder.from(oldInstance).build();
+
+            expect(oldInstance).toEqual(newInstance);
+            await expect(() => repository.update(bestuurseenheid, newInstance, oldInstance)).rejects.toThrow(new Error('no change'));
         });
+
+        test('should throw error when modified date of old instance is not the same as in db', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const dbInstance = aFullInstance()
+                .withCreatedBy(bestuurseenheid.id)
+                .withDateModified(FormatPreservingDate.of('2023-10-30T00:00:00.657Z'))
+                .build();
+            await repository.save(bestuurseenheid, dbInstance);
+
+            const oldInstance = InstanceBuilder.from(dbInstance)
+                .withDateModified(FormatPreservingDate.of('2023-10-28T00:00:00.657Z'))
+                .build();
+
+            const newInstance = InstanceBuilder.from(dbInstance)
+                .withDateModified(FormatPreservingDate.of('2023-10-31T00:00:00.657Z'))
+                .build();
+
+            await expect(() => repository.update(bestuurseenheid, newInstance, oldInstance)).rejects.toBeInstanceOf(LPDCError);
+
+            const actualInstance = await repository.findById(bestuurseenheid, newInstance.id);
+            expect(actualInstance).toEqual(dbInstance);
+        });
+    });
+
+    describe('delete', () => {
 
         test('if exists with publicationStatus te-herpubliceren, Removes all triples related to the instance and create tombstone triples and publicationStatus te-herpubliceren ', async () => {
-
 
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance().withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN).build();
@@ -126,11 +185,12 @@ describe('InstanceRepository', () => {
             expect(quads).toHaveLength(4);
             expect(quads).toEqual(expect.arrayContaining([
                 quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(fixedToday, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(fixedNow, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
             ]));
         });
+
         test('if exists without publicationStatus, Removes all triples related to the instance and does not create tombstone triples ', async () => {
 
             const bestuurseenheid = aBestuurseenheid().build();

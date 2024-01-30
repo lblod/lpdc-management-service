@@ -1,6 +1,7 @@
 import {aFullConceptDisplayConfiguration} from "./concept-display-configuration-test-builder";
+import {ConceptDisplayConfigurationBuilder} from "../../../src/core/domain/concept-display-configuration";
 
-describe('Concept Display Configuration', () => {
+describe('Constructing', () => {
 
     test('Undefined id throws error', () => {
         expect(() => aFullConceptDisplayConfiguration().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
@@ -26,5 +27,15 @@ describe('Concept Display Configuration', () => {
         expect(() => aFullConceptDisplayConfiguration().withConceptId(undefined).build()).toThrow(new Error('conceptId should not be undefined'));
     });
 
+});
 
+describe('builder', () => {
+
+    test("from copies all fields", () => {
+       const conceptDisplayConfiguration = aFullConceptDisplayConfiguration().build();
+       const fromConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration).build();
+
+       expect(fromConceptDisplayConfiguration).toEqual(conceptDisplayConfiguration);
+
+    });
 });

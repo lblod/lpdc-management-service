@@ -32,6 +32,7 @@ import {aMinimalCostForInstance, CostTestBuilder} from "./cost-test-builder";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {aMinimalFinancialAdvantageForInstance, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {Language} from "../../../src/core/domain/language";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -326,7 +327,6 @@ describe('constructing', () => {
         expect(() => instanceTestBuilder.build()).toThrow(new Error('legalResources should not contain duplicates'));
     });
 
-
 });
 
 describe('validateLanguages',()=>{
@@ -600,4 +600,15 @@ describe('nl language version', () => {
 
     }
 
+});
+
+describe('builder', () => {
+
+    test("from copies all fields", () => {
+        const instance = aFullInstance().build();
+        const fromInstance = InstanceBuilder.from(instance).build();
+
+        expect(fromInstance).toEqual(instance);
+
+    });
 });

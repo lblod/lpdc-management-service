@@ -4,7 +4,6 @@ import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuurseenheid-te
 import {buildBestuurseenheidIri, buildSpatialRefNis2019Iri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {ChosenFormType, InstanceStatusType} from "../../../src/core/domain/types";
-import {InstanceTestBuilder} from "./instance-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {aFullConcept, aMinimalConcept} from "./concept-test-builder";
@@ -29,6 +28,7 @@ import {
 import {
     ConceptDisplayConfigurationSparqlTestRepository
 } from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 
 describe('Creating a new Instance domain service', () => {
 
@@ -69,7 +69,7 @@ describe('Creating a new Instance domain service', () => {
         expect(createdInstance.uuid).not.toBeUndefined();
 
         const expectedInstance =
-            new InstanceTestBuilder()
+            new InstanceBuilder()
                 .withId(createdInstance.id)
                 .withUuid(createdInstance.uuid)
                 .withCreatedBy(bestuurseenheid.id)
@@ -109,7 +109,7 @@ describe('Creating a new Instance domain service', () => {
         expect(createdInstance.uuid).not.toBeUndefined();
 
         const expectedInstance =
-            new InstanceTestBuilder()
+            new InstanceBuilder()
                 .withId(createdInstance.id)
                 .withUuid(createdInstance.uuid)
                 .withCreatedBy(bestuurseenheid.id)
@@ -347,7 +347,7 @@ describe('Creating a new Instance domain service', () => {
         expect(createdInstance.uuid).not.toBeUndefined();
 
         const expectedInstance =
-            new InstanceTestBuilder()
+            new InstanceBuilder()
                 .withId(createdInstance.id)
                 .withUuid(createdInstance.uuid)
                 .withCreatedBy(bestuurseenheid.id)
@@ -553,7 +553,7 @@ describe('Creating a new Instance domain service', () => {
         expect(createdInstance.uuid).not.toBeUndefined();
 
         const expectedInstance =
-            new InstanceTestBuilder()
+            new InstanceBuilder()
                 .withId(createdInstance.id)
                 .withUuid(createdInstance.uuid)
                 .withCreatedBy(bestuurseenheid.id)

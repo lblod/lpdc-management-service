@@ -57,5 +57,16 @@ describe('format preserving date', () => {
 
     });
 
+    test('now', () => {
+        jest.useFakeTimers();
+        const fixedTodayAsDate = new Date();
+        jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
+
+        expect(FormatPreservingDate.now()).toEqual(FormatPreservingDate.of(new Date().toISOString()));
+
+        jest.clearAllTimers();
+        jest.useRealTimers();
+        jest.restoreAllMocks();
+    });
 
 });
