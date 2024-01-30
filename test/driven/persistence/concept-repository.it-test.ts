@@ -516,7 +516,7 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(ConceptTestBuilder.CONCEPT_TAGS[0]).value}>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(ConceptTestBuilder.CONCEPT_TAGS[1]).value}>`,
-                    `<${conceptId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/3f2666df-1dae-4cc2-a8dc-e8213e713081>`,
+                    `<${conceptId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/concept-status/gearchiveerd>`,
                     `<${conceptId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptTestBuilder.LEGAL_RESOURCES[0]}>`,
                     `<${conceptId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptTestBuilder.LEGAL_RESOURCES[1]}>`,
                     `<${conceptId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptTestBuilder.LEGAL_RESOURCES[2]}>`,

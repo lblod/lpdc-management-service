@@ -125,7 +125,6 @@ export class Concept {
         this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
     }
 
-    //TODO LPDC-917: what is the correct business term for this method?
     get conceptNlLanguages(): Language[] {
         return [...this._title.definedNlLanguages];
     }

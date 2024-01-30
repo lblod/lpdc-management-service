@@ -44,7 +44,7 @@ export const NS = {
     },
     dvcs: Namespace('https://productencatalogus.data.vlaanderen.be/id/conceptscheme/'),
     concepts: {
-        identity: lblodConceptsNS,
+        conceptStatus: Namespace(lblodConceptsNS('concept-status/').value),
         instanceStatus: Namespace(lblodConceptsNS('instance-status/').value),
         reviewStatus: Namespace(lblodConceptsNS('review-status/').value),
         publicationStatus: Namespace(lblodConceptsNS('publication-status/').value)
