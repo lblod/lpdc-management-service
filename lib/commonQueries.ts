@@ -64,6 +64,7 @@ export async function serviceUriForId(publicServiceId: string, type: string = 'c
     `, {}, connectionOptions)).results.bindings[0]?.service?.value;
 }
 
+//TODO LPDC-1014: move to domain
 export async function loadContactPointOption(option: string): Promise<any> {
     const unsortedContactPointOptions = (await query(`
         SELECT DISTINCT ?option
