@@ -115,15 +115,11 @@ export class InstanceTestBuilder {
     public static readonly TITLE_NL = 'Instance Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Instance Title - nl-formal';
     public static readonly TITLE_NL_INFORMAL = 'Instance Title - nl-informal';
-    public static readonly TITLE_NL_GENERATED_FORMAL = 'Instance Title - nl-generated-formal';
-    public static readonly TITLE_NL_GENERATED_INFORMAL = 'Instance Title - nl-generated-informal';
 
     public static readonly DESCRIPTION_EN = 'Instance Description - en';
     public static readonly DESCRIPTION_NL = 'Instance Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Instance Description - nl-formal';
     public static readonly DESCRIPTION_NL_INFORMAL = 'Instance Description - nl-informal';
-    public static readonly DESCRIPTION_NL_GENERATED_FORMAL = 'Instance Description - nl-generated-formal';
-    public static readonly DESCRIPTION_NL_GENERATED_INFORMAL = 'Instance Description - nl-generated-informal';
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2022-10-01T13:00:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2023-10-02T20:00:20.242928Z');

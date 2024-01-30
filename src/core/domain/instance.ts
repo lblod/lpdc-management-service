@@ -103,8 +103,6 @@ export class Instance {
                 spatials: Iri[],
                 legalResources: Iri[]
     ) {
-        this.validateLanguages(title, description); //TODO LPDC-917: should this also not be on all other fields ?
-
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
         this._createdBy = requiredValue(createdBy, 'createdBy');
@@ -143,17 +141,40 @@ export class Instance {
         this._publicationStatus = publicationStatus;
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
         this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
+        this.validateLanguages();
     }
 
-    private validateLanguages(...values: LanguageString[]): void {
-        const languages = new Set();
+    private validateLanguages(): void {
+        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
 
-        values.filter(ls => ls !== undefined)
-            .forEach(val => val.definedNlLanguages.forEach(language => languages.add(language)));
+        const values = [
+            this._title,
+            this._description,
+            this._additionalDescription,
+            this._exception,
+            this._regulation
+        ];
+        LanguageString.validateUniqueNlLanguage(values);
 
-        if (languages.size > 1) {
-            throw new Error('More then 1 nl-language is present');
+        const nlLanguages = LanguageString.extractNlLanguages(values);
+        const allNlLanguages = new Set([
+            ...nlLanguages,
+            ...this._requirements.map(r => r.nlLanguage),
+            ...this._procedures.map(p => p.nlLanguage),
+            ...this._websites.map(w => w.nlLanguage),
+            ...this._costs.map(c => c.nlLanguage),
+            ...this._financialAdvantages.map(fa => fa.nlLanguage)].filter(ls=> ls !== undefined ));
+
+
+        if(allNlLanguages.size>1){
+            throw new Error('There is more than one Nl language present');
         }
+        const instanceLang = allNlLanguages.values().next().value;
+
+        if(!acceptedLanguages.includes(instanceLang) && instanceLang!==undefined ){
+            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
+        }
+
     }
 
     get instanceNlLanguage(): Language | undefined {

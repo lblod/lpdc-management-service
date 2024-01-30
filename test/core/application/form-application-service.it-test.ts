@@ -15,9 +15,10 @@ import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
-        "../../driven/persistence/instance-sparql-test-repository";
 import {aFullInstance, aMinimalInstance} from "../domain/instance-test-builder";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+
+"../../driven/persistence/instance-sparql-test-repository";
 
 describe('Form application service tests', () => {
 
@@ -170,7 +171,7 @@ describe('Form application service tests', () => {
             const instance =
                 aFullInstance()
                     .withTitle(
-                        LanguageString.of(undefined, undefined, undefined, 'nl informal')
+                        LanguageString.of(undefined, undefined,  'nl formal')
                     )
                     .withDescription(undefined)
                     .withAdditionalDescription(undefined)
@@ -186,7 +187,7 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CONTENT, Language.INFORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CONTENT, Language.FORMAL, false).mockReturnValue('formdefinition');
 
             const {
                 form,

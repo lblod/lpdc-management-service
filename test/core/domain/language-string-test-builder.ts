@@ -5,6 +5,10 @@ export function aMinimalLanguageString(value: string = ''): LanguageStringTestBu
         .withNl(`${value}${LanguageStringTestBuilder.NL}`);
 }
 
+export function aMinimalFormalLanguageString(value: string = ''):LanguageStringTestBuilder{
+    return new LanguageStringTestBuilder().withNlFormal(`${value}${LanguageStringTestBuilder.NL_FORMAL}`);
+}
+
 
 export function aFullLanguageString(value: string = ''): LanguageStringTestBuilder {
     return new LanguageStringTestBuilder()

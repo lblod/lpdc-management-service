@@ -24,9 +24,9 @@ import {aFullRequirementForInstance, aMinimalRequirementForInstance} from "./req
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {aMinimalProcedureForInstance, ProcedureTestBuilder} from "./procedure-test-builder";
-import {aMinimalLanguageString} from "./language-string-test-builder";
+import {aMinimalFormalLanguageString} from "./language-string-test-builder";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
-import {aMinimalWebsiteForInstance, WebsiteTestBuilder} from "./website-test-builder";
+import {aFullWebsiteForInstance, aMinimalWebsiteForInstance, WebsiteTestBuilder} from "./website-test-builder";
 import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {aMinimalCostForInstance, CostTestBuilder} from "./cost-test-builder";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
@@ -171,8 +171,8 @@ describe('constructing', () => {
             const validProcedure = Procedure.reconstitute(
                 ProcedureBuilder.buildIri(uuidValue),
                 uuidValue,
-                aMinimalLanguageString(ProcedureTestBuilder.TITLE).build(),
-                aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(),
+                aMinimalFormalLanguageString(ProcedureTestBuilder.TITLE).build(),
+                aMinimalFormalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(),
                 [],
                 undefined
             );
@@ -193,8 +193,8 @@ describe('constructing', () => {
             const validWebsite = Website.reconstitute(
                 WebsiteBuilder.buildIri(uuidValue),
                 uuidValue,
-                aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
-                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
+                aMinimalFormalLanguageString(WebsiteTestBuilder.TITLE).build(),
+                aMinimalFormalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
                 WebsiteTestBuilder.URL,
                 undefined
             );
@@ -215,8 +215,8 @@ describe('constructing', () => {
             const validCost = Cost.reconstitute(
                 CostBuilder.buildIri(uuidValue),
                 uuidValue,
-                aMinimalLanguageString(CostTestBuilder.TITLE).build(),
-                aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build(),
+                aMinimalFormalLanguageString(CostTestBuilder.TITLE).build(),
+                aMinimalFormalLanguageString(CostTestBuilder.DESCRIPTION).build(),
                 undefined
             );
 
@@ -233,8 +233,8 @@ describe('constructing', () => {
     describe('financialAdvantage ', () => {
         test('valid financialAdvantage for instance does not throw error', () => {
             const uuidValue = uuid();
-            const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
-                aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build(), undefined);
+            const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuidValue), uuidValue, aMinimalFormalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
+                aMinimalFormalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build(), undefined);
 
             expect(() => aFullInstance().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
         });
@@ -330,13 +330,17 @@ describe('constructing', () => {
 });
 
 describe('validateLanguages',()=>{
+
+    const validLanguages = [Language.NL, Language.FORMAL, Language.INFORMAL];
+    const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
+
     test('if values have different nl language strings, then throws error',()=>{
         const title = LanguageString.of(undefined,'nl',undefined);
         const description = LanguageString.of(undefined, undefined,'nl-formal');
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(()=>instance.build()).toThrow(new Error('More then 1 nl-language is present'));
+        expect(()=>instance.build()).toThrow(new Error('There is more than one Nl language present'));
     });
     test('if 1 value has different nl language strings, then throws error',()=>{
         const title = LanguageString.of(undefined,'nl','nl-formal');
@@ -344,7 +348,7 @@ describe('validateLanguages',()=>{
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(()=>instance.build()).toThrow(new Error('More then 1 nl-language is present'));
+        expect(()=>instance.build()).toThrow(new Error('There is more than one Nl language present'));
     });
 
     test('if values have no nl language strings, then no error is thrown',()=>{
@@ -373,6 +377,83 @@ describe('validateLanguages',()=>{
 
         expect(()=>instance.build()).not.toThrow(new Error());
     });
+
+    test('if a nested object contains a different nl version, then throws error',()=>{
+       const website = aFullWebsiteForInstance().withTitle(LanguageString.of(undefined,undefined,undefined,'nl-informal')).build();
+        const instance = aFullInstance().withWebsites([website]);
+
+        expect(()=>instance.build()).toThrow(new Error('There is more than one Nl language present'));
+    });
+
+    test('an instance fully in formal nl languages does not throw',()=>{
+        expect(()=> aFullInstance().build()).not.toThrow();
+    });
+
+
+    for(const invalidLanguage of invalidLanguages){
+        let valueInNlLanguage: LanguageString;
+        if (invalidLanguage === Language.GENERATED_FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+        } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+        }
+
+        test('If title contains invalid language, throws error', () => {
+            const instance = aMinimalInstance().withTitle(valueInNlLanguage);
+            expect(() => (instance.build())).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
+        test('If description contains invalid language, throws error', () => {
+            const instance = aMinimalInstance().withDescription(valueInNlLanguage);
+            expect(() => (instance.build())).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
+        test('If additionalDescription contains invalid language, throws error', () => {
+            const instance = aMinimalInstance().withAdditionalDescription(valueInNlLanguage);
+            expect(() => (instance.build())).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
+        test('If exception contains invalid language, throws error', () => {
+            const instance = aMinimalInstance().withException(valueInNlLanguage);
+            expect(() => (instance.build())).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
+        test('If regulation contains invalid language, throws error', () => {
+            const instance = aMinimalInstance().withRegulation(valueInNlLanguage);
+            expect(() => (instance.build())).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
+
+
+    }
+
+    for(const validLanguage of validLanguages){
+        let valueInNlLanguage: LanguageString;
+        if (validLanguage === Language.NL) {
+            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+        } else if (validLanguage == Language.FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+        }else if (validLanguage == Language.INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+        }
+        test('If title contains valid language, does not throws error', () => {
+            const instance = aMinimalInstance().withTitle(valueInNlLanguage);
+            expect(() => (instance.build())).not.toThrow();
+        });
+        test('If description contains valid language,does not throws error', () => {
+            const instance = aMinimalInstance().withDescription(valueInNlLanguage);
+            expect(() => (instance.build())).not.toThrow();
+        });
+        test('If additionalDescription contains valid language,does not throws error', () => {
+            const instance = aMinimalInstance().withAdditionalDescription(valueInNlLanguage);
+            expect(() => (instance.build())).not.toThrow();
+        });
+        test('If exception contains valid language,does not throws error', () => {
+            const instance = aMinimalInstance().withException(valueInNlLanguage);
+            expect(() => (instance.build())).not.toThrow();
+        });
+        test('If regulation contains valid language,does not throws error', () => {
+            const instance = aMinimalInstance().withRegulation(valueInNlLanguage);
+            expect(() => (instance.build())).not.toThrow();
+        });
+
+    }
+
 });
 
 describe('nl language version', () => {
