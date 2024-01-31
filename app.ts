@@ -41,6 +41,7 @@ import {FormApplicationService} from "./src/core/application/form-application-se
 import {Bestuurseenheid} from "./src/core/domain/bestuurseenheid";
 import {DeleteInstanceDomainService} from "./src/core/domain/delete-instance-domain-service";
 import {LinkConceptToInstanceDomainService} from "./src/core/domain/link-concept-to-instance-domain-service";
+import {ConfirmBijgewerktTotDomainService} from "./src/core/domain/confirm-bijgewerkt-tot-domain-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -102,6 +103,12 @@ const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainServic
     instanceRepository,
     conceptRepository,
     conceptDisplayConfigurationRepository
+);
+
+const confirmBijgewerktTotDomainService = new ConfirmBijgewerktTotDomainService(
+    instanceRepository,
+    conceptRepository,
+    conceptSnapshotRepository
 );
 
 app.get('/', function (_req, res): void {
@@ -318,15 +325,22 @@ app.put('/public-services/:instanceId/ontkoppelen', async function (req, res): P
 });
 
 app.post('/public-services/:instanceId/confirm-bijgewerkt-tot', async function (req, res): Promise<any> {
-    const instanceUUID = req.params.instanceId;
+    const instanceIdRequestParam = req.params.instanceId;
+    const conceptSnapshotIdRequestParam = req.body.bijgewerktTot;
     try {
-        await confirmBijgewerktTot(instanceUUID, req.body.bijgewerktTot);
+        const instanceId = new Iri(instanceIdRequestParam);
+        const conceptSnapshotId = new Iri(conceptSnapshotIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+        const conceptSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
+        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, conceptSnapshot);
         return res.sendStatus(200);
     } catch (e) {
         console.error(e);
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while confirming bijgewerkt tot with uuid "${instanceUUID}".`
+            message: `Something unexpected went wrong while confirming bijgewerkt tot with uuid "${instanceIdRequestParam}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }
