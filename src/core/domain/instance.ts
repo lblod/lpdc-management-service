@@ -1,6 +1,11 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
-import {requireAllDefinedOrAllUndefined, requiredValue, requireNoDuplicates} from "./shared/invariant";
+import {
+    requireAllDefinedOrAllUndefined,
+    requiredCanBeOnlyBeDefinedIfOtherValuePresent,
+    requiredValue,
+    requireNoDuplicates
+} from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {
     CompetentAuthorityLevelType,
@@ -137,7 +142,7 @@ export class Instance {
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
-        this._reviewStatus = reviewStatus; //TODO LPDC-917 reviewStatus can only be set when linked to concept
+        this._reviewStatus = requiredCanBeOnlyBeDefinedIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId,'concept');
         this._publicationStatus = publicationStatus;
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
         this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');

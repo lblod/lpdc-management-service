@@ -11,6 +11,7 @@ import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
+    InstanceReviewStatusType,
     LanguageType,
     PublicationMediumType,
     TargetAudienceType,
@@ -308,7 +309,8 @@ describe('constructing', () => {
         const instanceTestBuilderWithoutConceptAndConceptSnapshot = aFullInstance()
             .withConceptId(undefined)
             .withConceptSnapshotId(undefined)
-            .withProductId(undefined);
+            .withProductId(undefined)
+            .withReviewStatus(undefined);
 
         expect(() => instanceTestBuilderWithoutConceptAndConceptSnapshot.build()).not.toThrow();
     });
@@ -325,6 +327,34 @@ describe('constructing', () => {
         const iri = uuid();
         const instanceTestBuilder = aFullInstance().withLegalResources([buildCodexVlaanderenIri(iri), buildCodexVlaanderenIri(iri)]);
         expect(() => instanceTestBuilder.build()).toThrow(new Error('legalResources should not contain duplicates'));
+    });
+
+    test('reviewStatus present and conceptId present should not throw error',()=>{
+        const instance = aFullInstance()
+            .withConceptId(buildConceptIri(uuid()))
+            .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD);
+
+        expect(() => instance.build()).not.toThrow();
+    });
+
+
+    test('reviewStatus and conceptId not present should not throw error',()=>{
+        const instance = aFullInstance()
+            .withConceptId(undefined)
+            .withConceptSnapshotId(undefined)
+            .withProductId(undefined)
+            .withReviewStatus(undefined);
+        expect(() => instance.build()).not.toThrow();
+    });
+
+    test('reviewStatus present and conceptId not present throws error', () => {
+        const instance = aFullInstance()
+            .withConceptId(undefined)
+            .withConceptSnapshotId(undefined)
+            .withProductId(undefined)
+            .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD);
+
+        expect(() => instance.build()).toThrow(new Error('reviewStatus can only be defined when concept is defined'));
     });
 
 });

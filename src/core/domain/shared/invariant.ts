@@ -60,6 +60,12 @@ export class Invariant<V> {
             : `${this._name} should all be defined or all be undefined`;
     }
 
+    canBeOnlyBeDefinedIfOtherValuePresent(presentValue: any, presentName: string){
+        return () => (presentValue !=undefined) || (presentValue === undefined && this._value ===undefined)
+        ? null
+        : `${this._name} can only be defined when ${presentName} is defined`;
+    }
+
     toMatchPattern(pattern: RegExp): InvariantType<V> {
         return () => this.matchesPattern(this._value, pattern) ? null : `${this._name} does not match pattern`;
     }
@@ -102,4 +108,9 @@ export const requireNoDuplicates = <T>(values: T[], name: string = 'list'): T[] 
 export const requireAllDefinedOrAllUndefined = <T>(values: T[], name: string = 'list'): T[] => {
     const invariant: Invariant<T[]> = Invariant.require(values, name);
     return invariant.to(invariant.allDefinedOrAllUndefined());
+};
+
+export const requiredCanBeOnlyBeDefinedIfOtherValuePresent = <T>(value: T, name: string = 'object', presentValue: any, presentName:string): T => {
+    const invariant: Invariant<T> = Invariant.require(value, name);
+    return invariant.to(invariant.canBeOnlyBeDefinedIfOtherValuePresent(presentValue,presentName));
 };

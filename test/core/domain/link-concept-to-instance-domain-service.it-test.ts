@@ -42,6 +42,7 @@ describe('LinkConceptToInstanceDomainService', () => {
                 .withConceptId(undefined)
                 .withConceptSnapshotId(undefined)
                 .withProductId(undefined)
+                .withReviewStatus(undefined)
                 .withCreatedBy(bestuurseenheid.id)
                 .build();
             const concept = aFullConcept().build();
@@ -71,6 +72,7 @@ describe('LinkConceptToInstanceDomainService', () => {
                 .withConceptId(undefined)
                 .withConceptSnapshotId(undefined)
                 .withProductId(undefined)
+                .withReviewStatus(undefined)
                 .withCreatedBy(bestuurseenheid.id)
                 .build();
             const concept = aFullConcept().build();
@@ -227,6 +229,7 @@ describe('LinkConceptToInstanceDomainService', () => {
                 .withConceptId(undefined)
                 .withConceptSnapshotId(undefined)
                 .withProductId(undefined)
+                .withReviewStatus(undefined)
                 .withCreatedBy(bestuurseenheid.id)
                 .build();
 

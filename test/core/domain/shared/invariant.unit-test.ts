@@ -201,6 +201,37 @@ describe('allDefinedOrAllUndefined', () => {
     });
 });
 
+
+describe('canBeOnlyBeDefinedIfOtherValuePresent',()=>{
+    const name ='field';
+    const presentName = 'presentField';
+
+    test('Returns value when presentValue and new value are undefined',()=>{
+        const invariant: Invariant<any> = Invariant.require(undefined, name);
+        expect(invariant.to(invariant.canBeOnlyBeDefinedIfOtherValuePresent(undefined,presentName))).toEqual(undefined);
+    });
+
+    test('Returns value when presentValue and new value are both present',()=>{
+        const newValue = 'newValue';
+        const presentValue ='presentValue';
+        const invariant: Invariant<any> = Invariant.require(newValue, name);
+        expect(invariant.to(invariant.canBeOnlyBeDefinedIfOtherValuePresent(presentValue,presentName))).toEqual(newValue);
+    });
+
+    test('Returns value when presentValue and new value are both present even though different types',()=>{
+        const newValue = 'newValue';
+        const presentValue =123456;
+        const invariant: Invariant<any> = Invariant.require(newValue, name);
+        expect(invariant.to(invariant.canBeOnlyBeDefinedIfOtherValuePresent(presentValue,presentName))).toEqual(newValue);
+    });
+
+    test('throws error when new value is defined and presentValue undefined', () => {
+        const newValue = 'newValue';
+        const invariant: Invariant<any> = Invariant.require(newValue, name);
+        expect(() => invariant.to(invariant.canBeOnlyBeDefinedIfOtherValuePresent(undefined,presentName))).toThrow(new Error(`${name} can only be defined when ${presentName} is defined`));
+    });
+});
+
 describe('to', () => {
     test('returns first violation', () => {
         const name = 'name';
