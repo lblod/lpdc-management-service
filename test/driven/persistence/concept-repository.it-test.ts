@@ -10,6 +10,7 @@ import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-s
 import {aMinimalLanguageString} from "../../core/domain/language-string-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 
 describe('ConceptRepository', () => {
     const repository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -62,6 +63,35 @@ describe('ConceptRepository', () => {
             await expect(repository.findById(nonExistentConceptId)).rejects.toThrow(new Error(`Could not find <https://ipdc.tni-vlaanderen.be/id/concept/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> in graph <http://mu.semte.ch/graphs/public>`));
         });
     });
+
+    describe('update', () => {
+
+                test('should update concept', async () => {
+                        const oldConcept = aFullConcept()
+                            .build();
+
+                        await repository.save(oldConcept);
+
+                        const newConcept = aFullConcept().withEndDate(FormatPreservingDate.now())
+                            .build();
+
+                        await repository.update(newConcept,oldConcept);
+
+                        const actualConcept = await repository.findById(newConcept.id);
+
+                        expect(actualConcept).toEqual(newConcept);
+                });
+
+                test('should throw error when old concept is equal to new concept', async () => {
+                        const oldConcept = aFullConcept().build();
+                        await repository.save(oldConcept);
+
+                        const newConcept = oldConcept;
+
+                        expect(oldConcept).toEqual(newConcept);
+                        await expect(() => repository.update(newConcept, oldConcept)).rejects.toThrow(new Error('no change'));
+                });
+        });
 
     describe('exists', () => {
         test('Concept with id exists', async () => {

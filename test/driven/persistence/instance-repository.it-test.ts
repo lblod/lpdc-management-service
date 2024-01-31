@@ -117,7 +117,7 @@ describe('InstanceRepository', () => {
             expect(actualInstance).toEqual(newInstance);
         });
 
-        test('should update instance when old instance is equal to new instance', async () => {
+        test('should throw error when old instance is equal to new instance', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const oldInstance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
             await repository.save(bestuurseenheid, oldInstance);

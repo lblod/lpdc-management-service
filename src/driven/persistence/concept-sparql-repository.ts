@@ -9,6 +9,7 @@ import {NS} from "./namespaces";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
 import {Logger} from "../../../platform/logger";
+import {isEqual} from "lodash";
 
 export class ConceptSparqlRepository implements ConceptRepository {
 
@@ -84,7 +85,10 @@ export class ConceptSparqlRepository implements ConceptRepository {
         const oldTriples = new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(old).map(s => s.toNT());
         const newTriples = new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(concept).map(s => s.toNT());
 
-        //TODO LPDC-917: guard against virtuoso bug ...
+        // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
+        if (isEqual(oldTriples, newTriples)) {
+            throw new Error('no change');
+        }
 
         const query = `
             WITH <${CONCEPT_GRAPH}>
