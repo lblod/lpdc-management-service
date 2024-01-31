@@ -18,10 +18,14 @@ import {isEqual} from "lodash";
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
     protected readonly fetcher: DatastoreToQuadsRecursiveSparqlFetcher;
+    protected readonly logger: Logger = new Logger('Instance-QuadsToDomainLogger');
 
-    constructor(endpoint?: string) {
+    constructor(endpoint?: string, logger?: Logger) {
         this.querying = new SparqlQuerying(endpoint);
         this.fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endpoint);
+        if(logger){
+            this.logger = logger;
+        }
     }
 
     async findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<Instance> {
@@ -58,7 +62,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
 
-        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new Logger('Instance-QuadsToDomainLogger'));
+        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), this.logger);
 
         return mapper.instance(id);
 
