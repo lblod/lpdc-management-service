@@ -1,7 +1,7 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {requiredValue} from "./shared/invariant";
-import {Language} from "./language";
+import {instanceLanguages, Language} from "./language";
 
 export class Evidence {
 
@@ -45,7 +45,8 @@ export class Evidence {
     }
 
     static forInstance(evidence: Evidence): Evidence {
-        Evidence.validateLanguagesForInstance(evidence.title, evidence.description);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, evidence.title,evidence.description);
+
         return new Evidence(
             evidence.id,
             requiredValue(evidence.uuid, 'uuid'),
@@ -92,17 +93,6 @@ export class Evidence {
         return LanguageString.isFunctionallyChanged(value?.title, other?.title)
             || LanguageString.isFunctionallyChanged(value?.description, other?.description);
     }
-    static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
-        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
-
-        LanguageString.validateUniqueNlLanguage(values);
-
-        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
-        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
-            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
-        }
-    }
-
 }
 
 export class EvidenceBuilder {

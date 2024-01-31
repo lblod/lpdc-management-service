@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {requiredValue} from "./shared/invariant";
-import {Language} from "./language";
+import {instanceLanguages, Language} from "./language";
 
 export class Cost {
 
@@ -46,7 +46,7 @@ export class Cost {
     }
 
     static forInstance(cost: Cost): Cost {
-        Cost.validateLanguagesForInstance(cost.title, cost.description);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, cost.title,cost.description);
 
         return new Cost(
             cost.id,
@@ -97,16 +97,6 @@ export class Cost {
 
     get nlLanguage(): Language | undefined {
         return LanguageString.extractNlLanguages([this._title, this._description])[0];
-    }
-
-     static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
-        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
-
-        LanguageString.validateUniqueNlLanguage(values);
-        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
-         if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
-            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
-        }
     }
 }
 

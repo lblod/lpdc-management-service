@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {requiredValue} from "./shared/invariant";
-import {Language} from "./language";
+import {instanceLanguages, Language} from "./language";
 
 export class FinancialAdvantage {
 
@@ -46,7 +46,7 @@ export class FinancialAdvantage {
     }
 
     static forInstance(financialAdvantage: FinancialAdvantage): FinancialAdvantage {
-        FinancialAdvantage.validateLanguagesForInstance(financialAdvantage.title,financialAdvantage.description);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, financialAdvantage.title,financialAdvantage.description);
 
         return new FinancialAdvantage(
             financialAdvantage.id,
@@ -97,16 +97,6 @@ export class FinancialAdvantage {
                     || LanguageString.isFunctionallyChanged(financialAdvantages[0].description, financialAdvantages[1].description);
             });
     }
-    static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
-        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
-
-        LanguageString.validateUniqueNlLanguage(values);
-        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
-        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
-            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
-        }
-    }
-
 }
 
 export class FinancialAdvantageBuilder {

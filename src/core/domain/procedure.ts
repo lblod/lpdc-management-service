@@ -3,7 +3,7 @@ import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {Website} from "./website";
 import {requiredValue} from "./shared/invariant";
-import {Language} from "./language";
+import {instanceLanguages, Language} from "./language";
 
 
 export class Procedure {
@@ -56,8 +56,7 @@ export class Procedure {
         const websiteLangs = procedure.websites.flatMap(website=> website.title);
         websiteLangs.concat(procedure.websites.flatMap(website =>website.description));
 
-
-        Procedure.validateLanguagesForInstance(procedure.title, procedure.description,...websiteLangs);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, procedure.title,procedure.description,...websiteLangs);
 
         return new Procedure(
             procedure.id,
@@ -119,17 +118,6 @@ export class Procedure {
                     || Website.isFunctionallyChanged(procs[0].websites, procs[1].websites);
             });
     }
-
-    static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
-        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
-
-        LanguageString.validateUniqueNlLanguage(values);
-        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
-        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
-            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
-        }
-    }
-
 }
 
 export class ProcedureBuilder {

@@ -3,7 +3,7 @@ import {Iri} from "./shared/iri";
 import _ from 'lodash';
 import {Evidence} from "./evidence";
 import {requiredValue} from "./shared/invariant";
-import {Language} from "./language";
+import {instanceLanguages, Language} from "./language";
 
 export class Requirement {
 
@@ -52,7 +52,11 @@ export class Requirement {
     }
 
     static forInstance(requirement: Requirement): Requirement {
-        Requirement.validateLanguagesForInstance(requirement.title, requirement.description, requirement.evidence?.title, requirement.evidence?.description);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages,
+            requirement.title,
+            requirement.description,
+            requirement.evidence?.title,
+            requirement.evidence?.description);
 
         return new Requirement(
             requirement.id,
@@ -109,17 +113,6 @@ export class Requirement {
                     || LanguageString.isFunctionallyChanged(reqs[0].description, reqs[1].description)
                     || Evidence.isFunctionallyChanged(reqs[0].evidence, reqs[1].evidence);
             });
-    }
-
-
-    static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
-        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
-
-        LanguageString.validateUniqueNlLanguage(values);
-        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
-        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
-            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
-        }
     }
 }
 

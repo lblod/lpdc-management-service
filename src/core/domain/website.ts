@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import _ from "lodash";
 import {requiredValue} from "./shared/invariant";
-import {Language} from "./language";
+import {instanceLanguages, Language} from "./language";
 
 export class Website {
 
@@ -51,7 +51,7 @@ export class Website {
     }
 
     static forInstance(website: Website): Website {
-        Website.validateLanguagesForInstance(website.title,website.description);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, website.title,website.description);
 
         return new Website(
             website.id,
@@ -110,17 +110,6 @@ export class Website {
             });
 
     }
-
-    static validateLanguagesForInstance(...values: (LanguageString|undefined)[]): void {
-        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
-
-        LanguageString.validateUniqueNlLanguage(values);
-        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
-        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
-            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
-        }
-    }
-
 }
 
 export class WebsiteBuilder {

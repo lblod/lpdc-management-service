@@ -22,7 +22,7 @@ import {Website} from "./website";
 import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
 import {ContactPoint} from "./contact-point";
-import {Language} from "./language";
+import {instanceLanguages, Language} from "./language";
 
 export class Instance {
 
@@ -145,7 +145,6 @@ export class Instance {
     }
 
     private validateLanguages(): void {
-        const acceptedLanguages = ['nl', 'nl-be-x-formal', 'nl-be-x-informal'];
 
         const values = [
             this._title,
@@ -154,7 +153,7 @@ export class Instance {
             this._exception,
             this._regulation
         ];
-        LanguageString.validateUniqueNlLanguage(values);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...values);
 
         const nlLanguages = LanguageString.extractNlLanguages(values);
         const allNlLanguages = new Set([
@@ -169,12 +168,6 @@ export class Instance {
         if (allNlLanguages.size > 1) {
             throw new Error('There is more than one Nl language present');
         }
-        const instanceLang = allNlLanguages.values().next().value;
-
-        if (!acceptedLanguages.includes(instanceLang) && instanceLang !== undefined) {
-            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
-        }
-
     }
 
     get instanceNlLanguage(): Language | undefined {
