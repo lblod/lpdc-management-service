@@ -252,7 +252,6 @@ export class ConceptSnapshot {
         return [...this._legalResources];
     }
 
-    //TODO LPDC-956: implement the interface to use a 'type', which describes the functional fields common to concept and concept snapshot; so we can extract this function and reuse in other contexts
     static isFunctionallyChanged(value: ConceptSnapshot, other: ConceptSnapshot): boolean {
         return LanguageString.isFunctionallyChanged(value.title, other.title)
             || LanguageString.isFunctionallyChanged(value.description, other.description)

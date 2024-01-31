@@ -14,6 +14,9 @@ import {
 import {asSortedArray} from "../../src/core/domain/shared/collections-helper";
 import fs from "fs";
 import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
+import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
+import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
+import {InstanceReviewStatusType} from "../../src/core/domain/types";
 
 describe('Instance Data Integrity Validation', () => {
 
@@ -24,6 +27,9 @@ describe('Instance Data Integrity Validation', () => {
 
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);
+
+    const conceptRepository = new ConceptSparqlRepository(endPoint);
+    const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
 
     test.skip('Load all instances; print errors to console.log', async () => {
 
@@ -44,7 +50,6 @@ describe('Instance Data Integrity Validation', () => {
         let verifiedInstances = 0;
         const totalErrors = [];
         const totalStartTime = new Date();
-
 
         console.log(`Verifying ${randomizedInstanceIds.length} bestuurseenheden`);
         for (const bestuurseenheidId of randomizedInstanceIds) {
@@ -107,24 +112,30 @@ describe('Instance Data Integrity Validation', () => {
                     for (const instanceId of randomizedInstanceIds) {
                         try {
                             const id = new Iri(instanceId['id'].value);
-                            const instanceForId = await repository.findById(bestuurseenheid, id);
+                            const instance = await repository.findById(bestuurseenheid, id);
 
-                            expect(instanceForId.id).toEqual(id);
+                            expect(instance.id).toEqual(id);
                             const quadsForInstanceForId =
-                                domainToTriplesMapper.instanceToTriples(instanceForId);
+                                domainToTriplesMapper.instanceToTriples(instance);
                             quadsFromRequeriedInstances =
                                 [...quadsForInstanceForId, ...quadsFromRequeriedInstances];
 
-                            //TODO LPDC-1003: add extra deep integrity checks
-                            //TODO LPDC-1003: can we load linked concept ?
-                            //TODO LPDC-1003: can we load linked conceptsnapshot ?
-                            //TODO LPDC-1003: product id from instance should match that of the concept ?
+                            if(instance.conceptId) {
+                                const concept = await conceptRepository.findById(instance.conceptId);
+                                await conceptSnapshotRepository.findById(instance.conceptSnapshotId);
 
-                            //TODO LPDC-1003: if latestfunctionally changed snapshot from linked snapshot is not the same as the linked one from instantie -> reviewstatus should be enabled on instantie
-                            //TODO LPDC-1003: if latestfunctionally changed snapshot from linked snapshot is not the same as the linked one from instantie and concept is archived -> reviewstatus archived should be enabled on instantie
-                            //TODO LPDC-1003: is the created by the same as the bestuurseenheid ?
-                            //TODO LPDC-1003: can we load all competentAuthorities ?
-                            //TODO LPDC-1003: can we load all executingAuthorities ?
+                                expect(instance.productId).toEqual(concept.productId);
+
+                                if(!instance.conceptSnapshotId.equals(concept.latestFunctionallyChangedConceptSnapshot)) {
+                                    if(concept.isArchived) {
+                                        expect(instance.reviewStatus).toEqual(InstanceReviewStatusType.CONCEPT_GEARCHIVEERD);
+                                    } else {
+                                        expect(instance.reviewStatus).toEqual(InstanceReviewStatusType.CONCEPT_GEWIJZIGD);
+                                    }
+                                }
+                            }
+
+                            expect(instance.createdBy).toEqual(bestuurseenheid.id);
 
                         } catch (e) {
                             console.error(e);
@@ -161,9 +172,9 @@ describe('Instance Data Integrity Validation', () => {
                     return accumulator + currentValue;
                 }, 0) / averageTimes.length;
                 if (dataErrors.length > 0) {
-                    console.log(`Data Errors [${dataErrors}]`);
+                    console.log(`Data Errors [${dataErrors.map(o => JSON.stringify(o))}]`);
                     totalErrors.push(dataErrors);
-                    console.log("totalErrors" + totalErrors);
+                    console.log("totalErrors" + totalErrors.map(o => JSON.stringify(o)));
                 }
 
                 console.log(`Total average time: ${totalAverageTime}`);
