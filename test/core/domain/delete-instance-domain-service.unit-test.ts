@@ -56,6 +56,7 @@ describe('Deleting a new Instance domain service', () => {
         const conceptualDisplayConfiguration = aFullConceptDisplayConfiguration()
             .withConceptId(concept.id)
             .withBestuurseenheidId(bestuurseenheid.id)
+            .withConceptIsNew(false)
             .withConceptIsInstantiated(true).build();
         await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
 
@@ -105,6 +106,7 @@ describe('Deleting a new Instance domain service', () => {
         const conceptualDisplayConfiguration = aFullConceptDisplayConfiguration()
             .withConceptId(concept.id)
             .withBestuurseenheidId(bestuurseenheid.id)
+            .withConceptIsNew(false)
             .withConceptIsInstantiated(true).build();
 
         await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
@@ -130,6 +132,7 @@ describe('Deleting a new Instance domain service', () => {
         const conceptualDisplayConfiguration = aFullConceptDisplayConfiguration()
             .withConceptId(concept.id)
             .withBestuurseenheidId(bestuurseenheid.id)
+            .withConceptIsNew(false)
             .withConceptIsInstantiated(true).build();
         await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
 

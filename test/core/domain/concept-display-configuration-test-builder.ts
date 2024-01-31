@@ -15,5 +15,5 @@ export function aFullConceptDisplayConfiguration(): ConceptDisplayConfigurationB
 
 export class ConceptDisplayConfigurationTestBuilder {
     public static readonly CONCEPT_IS_NEW = true;
-    public static readonly CONCEPT_IS_INSTANTIATED = true;
+    public static readonly CONCEPT_IS_INSTANTIATED = false;
 }

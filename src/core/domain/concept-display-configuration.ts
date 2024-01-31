@@ -24,6 +24,7 @@ export class ConceptDisplayConfiguration {
         this._conceptIsInstantiated = requiredValue(conceptIsInstantiated, 'conceptIsInstantiated');
         this._bestuurseenheidId = requiredValue(bestuurseenheidId, 'bestuurseenheidId');
         this._conceptId = requiredValue(conceptId, 'conceptId');
+        this.conceptIsNewAndInstantiatedCantBothBeTrue();
     }
 
     get id(): Iri {
@@ -50,6 +51,11 @@ export class ConceptDisplayConfiguration {
         return this._conceptId;
     }
 
+    conceptIsNewAndInstantiatedCantBothBeTrue(){
+        if(this.conceptIsNew===true && this.conceptIsInstantiated){
+            throw new Error('ConceptIsNew and conceptIsInstantiated cant both be true');
+        }
+    }
 }
 
 export class ConceptDisplayConfigurationBuilder {

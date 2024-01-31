@@ -27,6 +27,16 @@ describe('Constructing', () => {
         expect(() => aFullConceptDisplayConfiguration().withConceptId(undefined).build()).toThrow(new Error('conceptId should not be undefined'));
     });
 
+    test('when concept is new and concept is instantiated are equal, throws error',()=>{
+        const conceptDisplayConfiguration = aFullConceptDisplayConfiguration().withConceptIsNew(true).withConceptIsInstantiated(true);
+        expect(() => conceptDisplayConfiguration.build()).toThrow(new Error('ConceptIsNew and conceptIsInstantiated cant both be true'));
+    });
+
+    test('when concept is new and concept is instantiated are different, dont throws error',()=>{
+        const conceptDisplayConfiguration = aFullConceptDisplayConfiguration().withConceptIsNew(true).withConceptIsInstantiated(false);
+        expect(() => conceptDisplayConfiguration.build()).not.toThrow(new Error());
+    });
+
 });
 
 describe('builder', () => {
