@@ -4,8 +4,8 @@ import {InstanceRepository} from "../port/driven/persistence/instance-repository
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snapshot-repository";
-import {Iri} from "./shared/iri";
 import {Concept} from "./concept";
+import {FormatPreservingDate} from "./format-preserving-date";
 
 
 export class ConfirmBijgewerktTotDomainService {
@@ -37,6 +37,7 @@ export class ConfirmBijgewerktTotDomainService {
         const updatedInstance = InstanceBuilder.from(instance)
             .withConceptSnapshotId(conceptSnapshot.id)
             .withReviewStatus(isBijgewerktTotLatestFunctionalChange ? undefined : instance.reviewStatus)
+            .withDateModified(FormatPreservingDate.now())
             .build();
 
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instance);

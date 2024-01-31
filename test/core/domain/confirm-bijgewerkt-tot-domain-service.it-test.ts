@@ -25,6 +25,18 @@ describe('ConfirmBijgewerktTotDomainService', () => {
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(END2END_TEST_SPARQL_ENDPOINT);
     const confirmBijgewerktTotDomainService = new ConfirmBijgewerktTotDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository);
 
+    beforeAll(() => {
+        jest.useFakeTimers();
+        const fixedTodayAsDate = new Date();
+        jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
+    });
+
+    afterAll(() => {
+        jest.clearAllTimers();
+        jest.useRealTimers();
+        jest.restoreAllMocks();
+    });
+
     test('should update conceptSnapshot on instance', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         const conceptId = buildConceptIri(uuid());
@@ -50,6 +62,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         const expectedInstance= InstanceBuilder.from(instance)
             .withConceptSnapshotId(newConceptSnapshot.id)
             .withReviewStatus(undefined)
+            .withDateModified(FormatPreservingDate.now())
             .build();
 
         expect(actualInstance).toEqual(expectedInstance);
@@ -79,6 +92,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         const expectedInstance= InstanceBuilder.from(instance)
             .withConceptSnapshotId(latestFunctionalChangedSnapshot.id)
             .withReviewStatus(undefined)
+            .withDateModified(FormatPreservingDate.now())
             .build();
 
         expect(actualInstance).toEqual(expectedInstance);
@@ -111,6 +125,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         const expectedInstance= InstanceBuilder.from(instance)
             .withConceptSnapshotId(conceptSnapshot2.id)
             .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
+            .withDateModified(FormatPreservingDate.now())
             .build();
 
         expect(actualInstance).toEqual(expectedInstance);
@@ -143,6 +158,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         const expectedInstance= InstanceBuilder.from(instance)
             .withConceptSnapshotId(conceptSnapshot3.id)
             .withReviewStatus(undefined)
+            .withDateModified(FormatPreservingDate.now())
             .build();
 
         expect(actualInstance).toEqual(expectedInstance);
