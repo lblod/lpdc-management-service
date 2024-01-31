@@ -21,7 +21,7 @@ import {Procedure} from "./procedure";
 import {Website} from "./website";
 import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
-import {ContactPoint} from "./contactPoint";
+import {ContactPoint} from "./contact-point";
 import {Language} from "./language";
 
 export class Instance {
@@ -93,7 +93,7 @@ export class Instance {
                 contactPoints: ContactPoint[],
                 conceptId: Iri | undefined,
                 conceptSnapshotId: Iri | undefined,
-                productId: string,
+                productId: string | undefined,
                 languages: LanguageType[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
@@ -145,7 +145,7 @@ export class Instance {
     }
 
     private validateLanguages(): void {
-        const acceptedLanguages = ['nl', 'nl-be-x-formal','nl-be-x-informal'];
+        const acceptedLanguages = ['nl', 'nl-be-x-formal', 'nl-be-x-informal'];
 
         const values = [
             this._title,
@@ -163,15 +163,15 @@ export class Instance {
             ...this._procedures.map(p => p.nlLanguage),
             ...this._websites.map(w => w.nlLanguage),
             ...this._costs.map(c => c.nlLanguage),
-            ...this._financialAdvantages.map(fa => fa.nlLanguage)].filter(ls=> ls !== undefined ));
+            ...this._financialAdvantages.map(fa => fa.nlLanguage)]
+            .filter(ls => ls !== undefined));
 
-
-        if(allNlLanguages.size>1){
+        if (allNlLanguages.size > 1) {
             throw new Error('There is more than one Nl language present');
         }
         const instanceLang = allNlLanguages.values().next().value;
 
-        if(!acceptedLanguages.includes(instanceLang) && instanceLang!==undefined ){
+        if (!acceptedLanguages.includes(instanceLang) && instanceLang !== undefined) {
             throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
         }
 

@@ -84,6 +84,8 @@ export class ConceptSparqlRepository implements ConceptRepository {
         const oldTriples = new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(old).map(s => s.toNT());
         const newTriples = new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(concept).map(s => s.toNT());
 
+        //TODO LPDC-917: guard against virtuoso bug ...
+
         const query = `
             WITH <${CONCEPT_GRAPH}>
             DELETE {

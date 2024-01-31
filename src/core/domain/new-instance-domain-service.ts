@@ -232,10 +232,7 @@ export class NewInstanceDomainService {
             languageString.en,
             undefined,
             chosenForm === ChosenFormType.FORMAL || chosenForm === undefined ? selectedVersion : undefined,
-            chosenForm === ChosenFormType.INFORMAL ? selectedVersion : undefined,
-            undefined,
-            undefined,
-        );
+            chosenForm === ChosenFormType.INFORMAL ? selectedVersion : undefined);
     }
 
     private selectLanguageVersionForConcept(concept: Concept, chosenForm: ChosenFormType | undefined): Language {

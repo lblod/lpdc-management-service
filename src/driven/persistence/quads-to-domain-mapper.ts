@@ -31,7 +31,7 @@ import {Concept} from '../../core/domain/concept';
 import {Namespace} from "rdflib/lib/factories/factory-types";
 import {STATUS} from "./status";
 import {Instance} from "../../core/domain/instance";
-import {ContactPoint} from "../../core/domain/contactPoint";
+import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
 import {Logger} from "../../../platform/logger";
 

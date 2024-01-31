@@ -1,6 +1,6 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
-import {ContactPoint} from "../../../src/core/domain/contactPoint";
+import {ContactPoint} from "../../../src/core/domain/contact-point";
 import {Address} from "../../../src/core/domain/address";
 import {aFullAddress, anotherAddress} from "./address-test-builder";
 

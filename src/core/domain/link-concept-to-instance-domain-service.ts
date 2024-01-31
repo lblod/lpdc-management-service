@@ -55,7 +55,7 @@ export class LinkConceptToInstanceDomainService {
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instance);
 
         const conceptHasInstances = await this._conceptRepository.conceptHasInstancesInBestuurseenheid(instance.conceptId, bestuurseenheid.userGraph());
-        if (conceptHasInstances === false) {
+        if (!conceptHasInstances) {
             await this._conceptDisplayConfigurationRepository.removeInstantiatedFlag(bestuurseenheid, instance.conceptId);
         }
     }

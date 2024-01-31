@@ -25,7 +25,7 @@ import {Cost} from "../../core/domain/cost";
 import {FinancialAdvantage} from "../../core/domain/financial-advantage";
 import {STATUS} from "./status";
 import {Instance} from "../../core/domain/instance";
-import {ContactPoint} from "../../core/domain/contactPoint";
+import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
 
 export class DomainToTriplesMapper {

@@ -86,7 +86,6 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
             await this.ensureLinkedAuthoritiesExistAsCodeList(newConceptSnapshot);
 
-
             await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptSnapshotFunctionallyChanged, shouldConceptBeArchived);
 
             await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
