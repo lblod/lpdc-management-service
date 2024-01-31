@@ -345,6 +345,16 @@ export class Instance {
     isInDeletableState(): boolean {
         return this.publicationStatus != InstancePublicationStatusType.GEPUBLICEERD;
     }
+
+    reopen(): Instance {
+        if (this.status === InstanceStatusType.ONTWERP) {
+            throw new Error('Instance status already in ontwerp');
+        }
+        return InstanceBuilder.from(this)
+            .withStatus(InstanceStatusType.ONTWERP)
+            .withDateModified(FormatPreservingDate.now())
+            .build();
+    }
 }
 
 export class InstanceBuilder {

@@ -29,6 +29,7 @@ import {
     ConceptDisplayConfigurationSparqlTestRepository
 } from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
+import {restoreRealTime, setFixedTime} from "../../fixed-time";
 
 describe('Creating a new Instance domain service', () => {
 
@@ -38,19 +39,10 @@ describe('Creating a new Instance domain service', () => {
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationTestRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, conceptDisplayConfigurationRepository);
-    const fixedToday = '2023-12-13T14:23:54.768Z';
 
-    beforeAll(() => {
-        jest.useFakeTimers();
-        const fixedTodayAsDate = new Date(fixedToday);
-        jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
-    });
+    beforeAll(() => setFixedTime());
 
-    afterAll(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
-        jest.restoreAllMocks();
-    });
+    afterAll(() => restoreRealTime());
 
     test('Create new empty', async () => {
         const spatial1 = buildSpatialRefNis2019Iri(12345);
@@ -73,8 +65,8 @@ describe('Creating a new Instance domain service', () => {
                 .withId(createdInstance.id)
                 .withUuid(createdInstance.uuid)
                 .withCreatedBy(bestuurseenheid.id)
-                .withDateCreated(FormatPreservingDate.of(fixedToday))
-                .withDateModified(FormatPreservingDate.of(fixedToday))
+                .withDateCreated(FormatPreservingDate.now())
+                .withDateModified(FormatPreservingDate.now())
                 .withStatus(InstanceStatusType.ONTWERP)
                 .withSpatials([spatial1, spatial2])
                 .withCompetentAuthorities([bestuurseenheid.id])
@@ -113,8 +105,8 @@ describe('Creating a new Instance domain service', () => {
                 .withId(createdInstance.id)
                 .withUuid(createdInstance.uuid)
                 .withCreatedBy(bestuurseenheid.id)
-                .withDateCreated(FormatPreservingDate.of(fixedToday))
-                .withDateModified(FormatPreservingDate.of(fixedToday))
+                .withDateCreated(FormatPreservingDate.now())
+                .withDateModified(FormatPreservingDate.now())
                 .withStatus(InstanceStatusType.ONTWERP)
                 .withSpatials([spatial1, spatial2])
                 .withTitle(LanguageString.of(concept.title.en, undefined, concept.title.nlFormal))
@@ -351,8 +343,8 @@ describe('Creating a new Instance domain service', () => {
                 .withId(createdInstance.id)
                 .withUuid(createdInstance.uuid)
                 .withCreatedBy(bestuurseenheid.id)
-                .withDateCreated(FormatPreservingDate.of(fixedToday))
-                .withDateModified(FormatPreservingDate.of(fixedToday))
+                .withDateCreated(FormatPreservingDate.now())
+                .withDateModified(FormatPreservingDate.now())
                 .withStatus(InstanceStatusType.ONTWERP)
                 .withSpatials([spatial1, spatial2])
                 .withTitle(LanguageString.of(concept.title.en, undefined, concept.title.nlFormal))
@@ -557,8 +549,8 @@ describe('Creating a new Instance domain service', () => {
                 .withId(createdInstance.id)
                 .withUuid(createdInstance.uuid)
                 .withCreatedBy(bestuurseenheid.id)
-                .withDateCreated(FormatPreservingDate.of(fixedToday))
-                .withDateModified(FormatPreservingDate.of(fixedToday))
+                .withDateCreated(FormatPreservingDate.now())
+                .withDateModified(FormatPreservingDate.now())
                 .withStatus(InstanceStatusType.ONTWERP)
                 .withSpatials([spatial1, spatial2])
                 .withTitle(LanguageString.of(concept.title.en, undefined, undefined, concept.title.nlInformal))

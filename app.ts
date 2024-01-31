@@ -11,7 +11,6 @@ import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
 import {getContactPointOptions} from "./lib/getContactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
-import {confirmBijgewerktTot} from "./lib/confirm-bijgewerkt-tot";
 import LPDCError from "./platform/lpdc-error";
 import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
@@ -319,6 +318,28 @@ app.put('/public-services/:instanceId/ontkoppelen', async function (req, res): P
         const response = {
             status: 500,
             message: `Something unexpected went wrong while ontkoppelen concept from  "${instanceIdRequestParam}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
+});
+
+app.put('/public-services/:instanceId/reopen', async function (req, res): Promise<any> {
+    const instanceIdRequestParam = req.params.instanceId;
+    try {
+        const instanceId = new Iri(instanceIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+        const updatedInstance = instance.reopen();
+        await instanceRepository.update(bestuurseenheid, updatedInstance, instance);
+
+        return res.sendStatus(200);
+    } catch (e) {
+        console.error(e);
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while confirming bijgewerkt tot with uuid "${instanceIdRequestParam}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }

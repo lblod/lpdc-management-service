@@ -29,6 +29,7 @@ import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import LPDCError from "../../../platform/lpdc-error";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+import {restoreRealTime, setFixedTime} from "../../fixed-time";
 
 describe('InstanceRepository', () => {
 
@@ -36,18 +37,9 @@ describe('InstanceRepository', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
-    const fixedNow = new Date().toISOString();
-    beforeAll(() => {
-        jest.useFakeTimers();
-        const fixedTodayAsDate = new Date(fixedNow);
-        jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
-    });
+    beforeAll(() => setFixedTime());
 
-    afterAll(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
-        jest.restoreAllMocks();
-    });
+    afterAll(() => restoreRealTime());
 
 
     describe('findById', () => {
@@ -115,7 +107,7 @@ describe('InstanceRepository', () => {
             await repository.save(bestuurseenheid, oldInstance);
 
             const newInstance = InstanceBuilder.from(oldInstance)
-                .withDateModified(FormatPreservingDate.of(fixedNow))
+                .withDateModified(FormatPreservingDate.now())
                 .build();
 
             await repository.update(bestuurseenheid, newInstance, oldInstance);
@@ -185,7 +177,7 @@ describe('InstanceRepository', () => {
             expect(quads).toHaveLength(4);
             expect(quads).toEqual(expect.arrayContaining([
                 quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(fixedNow, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
             ]));

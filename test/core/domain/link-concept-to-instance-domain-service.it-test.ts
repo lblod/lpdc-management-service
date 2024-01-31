@@ -13,6 +13,7 @@ import {
 import {ConceptDisplayConfigurationBuilder} from "../../../src/core/domain/concept-display-configuration";
 import {InstanceReviewStatusType} from "../../../src/core/domain/types";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
+import {restoreRealTime, setFixedTime} from "../../fixed-time";
 
 
 describe('LinkConceptToInstanceDomainService', () => {
@@ -22,17 +23,9 @@ describe('LinkConceptToInstanceDomainService', () => {
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(END2END_TEST_SPARQL_ENDPOINT);
     const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainService(instanceRepository, conceptRepository, conceptDisplayConfigurationRepository);
 
-    beforeAll(() => {
-        jest.useFakeTimers();
-        const fixedTodayAsDate = new Date();
-        jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
-    });
+    beforeAll(() => setFixedTime());
 
-    afterAll(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
-        jest.restoreAllMocks();
-    });
+    afterAll(() => restoreRealTime());
 
     describe('link', () => {
 

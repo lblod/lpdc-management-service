@@ -1,4 +1,5 @@
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
+import {restoreRealTime, setFixedTime} from "../../fixed-time";
 
 
 describe('format preserving date', () => {
@@ -57,16 +58,15 @@ describe('format preserving date', () => {
 
     });
 
-    test('now', () => {
-        jest.useFakeTimers();
-        const fixedTodayAsDate = new Date();
-        jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
+    describe('now', () => {
 
-        expect(FormatPreservingDate.now()).toEqual(FormatPreservingDate.of(new Date().toISOString()));
+        beforeAll(setFixedTime);
+        afterAll(restoreRealTime);
 
-        jest.clearAllTimers();
-        jest.useRealTimers();
-        jest.restoreAllMocks();
+        test('now', () => {
+            expect(FormatPreservingDate.now()).toEqual(FormatPreservingDate.of(new Date().toISOString()));
+        });
+
     });
 
 });

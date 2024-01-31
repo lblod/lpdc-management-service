@@ -11,6 +11,7 @@ import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
+    InstanceStatusType,
     InstanceReviewStatusType,
     LanguageType,
     PublicationMediumType,
@@ -34,6 +35,7 @@ import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/d
 import {aMinimalFinancialAdvantageForInstance, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
+import {restoreRealTime, setFixedTime} from "../../fixed-time";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
@@ -329,7 +331,7 @@ describe('constructing', () => {
         expect(() => instanceTestBuilder.build()).toThrow(new Error('legalResources should not contain duplicates'));
     });
 
-    test('reviewStatus present and conceptId present should not throw error',()=>{
+    test('reviewStatus present and conceptId present should not throw error', () => {
         const instance = aFullInstance()
             .withConceptId(buildConceptIri(uuid()))
             .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD);
@@ -338,7 +340,7 @@ describe('constructing', () => {
     });
 
 
-    test('reviewStatus and conceptId not present should not throw error',()=>{
+    test('reviewStatus and conceptId not present should not throw error', () => {
         const instance = aFullInstance()
             .withConceptId(undefined)
             .withConceptSnapshotId(undefined)
@@ -359,68 +361,68 @@ describe('constructing', () => {
 
 });
 
-describe('validateLanguages',()=>{
+describe('validateLanguages', () => {
 
     const validLanguages = [Language.NL, Language.FORMAL, Language.INFORMAL];
     const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
 
-    test('if values have different nl language strings, then throws error',()=>{
-        const title = LanguageString.of(undefined,'nl',undefined);
-        const description = LanguageString.of(undefined, undefined,'nl-formal');
+    test('if values have different nl language strings, then throws error', () => {
+        const title = LanguageString.of(undefined, 'nl', undefined);
+        const description = LanguageString.of(undefined, undefined, 'nl-formal');
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(()=>instance.build()).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => instance.build()).toThrow(new Error('There is more than one Nl language present'));
     });
-    test('if 1 value has different nl language strings, then throws error',()=>{
-        const title = LanguageString.of(undefined,'nl','nl-formal');
-        const description = LanguageString.of(undefined, undefined,undefined);
+    test('if 1 value has different nl language strings, then throws error', () => {
+        const title = LanguageString.of(undefined, 'nl', 'nl-formal');
+        const description = LanguageString.of(undefined, undefined, undefined);
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(()=>instance.build()).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => instance.build()).toThrow(new Error('There is more than one Nl language present'));
     });
 
-    test('if values have no nl language strings, then no error is thrown',()=>{
-        const title = LanguageString.of(undefined,undefined,undefined);
-        const description = LanguageString.of(undefined, undefined,undefined);
+    test('if values have no nl language strings, then no error is thrown', () => {
+        const title = LanguageString.of(undefined, undefined, undefined);
+        const description = LanguageString.of(undefined, undefined, undefined);
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(()=>instance.build()).not.toThrow(new Error());
+        expect(() => instance.build()).not.toThrow(new Error());
     });
 
-    test('if values have 1 nl language string but non-consistent en language strings, then no error is thrown',()=>{
-        const title = LanguageString.of(undefined,undefined,undefined);
-        const description = LanguageString.of('en', undefined,undefined);
+    test('if values have 1 nl language string but non-consistent en language strings, then no error is thrown', () => {
+        const title = LanguageString.of(undefined, undefined, undefined);
+        const description = LanguageString.of('en', undefined, undefined);
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(()=>instance.build()).not.toThrow(new Error());
+        expect(() => instance.build()).not.toThrow(new Error());
     });
 
-    test('if only 1 value has 1 nl language string, then no error is thrown',()=>{
-        const title = LanguageString.of(undefined,undefined,undefined);
-        const description = LanguageString.of('en', 'nl',undefined);
+    test('if only 1 value has 1 nl language string, then no error is thrown', () => {
+        const title = LanguageString.of(undefined, undefined, undefined);
+        const description = LanguageString.of('en', 'nl', undefined);
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(()=>instance.build()).not.toThrow(new Error());
+        expect(() => instance.build()).not.toThrow(new Error());
     });
 
-    test('if a nested object contains a different nl version, then throws error',()=>{
-       const website = aFullWebsiteForInstance().withTitle(LanguageString.of(undefined,undefined,undefined,'nl-informal')).build();
+    test('if a nested object contains a different nl version, then throws error', () => {
+        const website = aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal')).build();
         const instance = aFullInstance().withWebsites([website]);
 
-        expect(()=>instance.build()).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => instance.build()).toThrow(new Error('There is more than one Nl language present'));
     });
 
-    test('an instance fully in formal nl languages does not throw',()=>{
-        expect(()=> aFullInstance().build()).not.toThrow();
+    test('an instance fully in formal nl languages does not throw', () => {
+        expect(() => aFullInstance().build()).not.toThrow();
     });
 
 
-    for(const invalidLanguage of invalidLanguages){
+    for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
@@ -452,13 +454,13 @@ describe('validateLanguages',()=>{
 
     }
 
-    for(const validLanguage of validLanguages){
+    for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
             valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
-        }else if (validLanguage == Language.INFORMAL) {
+        } else if (validLanguage == Language.INFORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
         }
         test('If title contains valid language, does not throws error', () => {
@@ -711,6 +713,34 @@ describe('nl language version', () => {
 
     }
 
+});
+
+describe('reopen', () => {
+
+    beforeAll(setFixedTime);
+    afterAll(restoreRealTime);
+
+    test('should update status and modified date', () => {
+        const instance = aFullInstance()
+            .withStatus(InstanceStatusType.VERSTUURD)
+            .build();
+
+        const updatedInstance = instance.reopen();
+
+        expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
+            .withStatus(InstanceStatusType.ONTWERP)
+            .withDateModified(FormatPreservingDate.now())
+            .build());
+    });
+
+    test('should throw error when instance status is ontwerp', () => {
+        const instance = aFullInstance()
+            .withStatus(InstanceStatusType.ONTWERP)
+            .build();
+
+        expect(() => instance.reopen()).toThrow(new Error('Instance status already in ontwerp'));
+
+    });
 });
 
 describe('builder', () => {

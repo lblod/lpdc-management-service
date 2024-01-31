@@ -14,6 +14,7 @@ import {aFullConceptDisplayConfiguration} from "./concept-display-configuration-
 import {
     ConceptDisplayConfigurationSparqlTestRepository
 } from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
+import {restoreRealTime, setFixedTime} from "../../fixed-time";
 
 describe('Deleting a new Instance domain service', () => {
 
@@ -23,19 +24,10 @@ describe('Deleting a new Instance domain service', () => {
     const conceptDisplayConfigurationSparqlTestRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
 
     const deleteInstanceDomainService = new DeleteInstanceDomainService(instanceRepository,conceptRepository,conceptDisplayConfigurationSparqlRepository);
-    const fixedToday = '2023-12-13T14:23:54.768Z';
 
-    beforeAll(() => {
-        jest.useFakeTimers();
-        const fixedTodayAsDate = new Date(fixedToday);
-        jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
-    });
+    beforeAll(() => setFixedTime());
 
-    afterAll(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
-        jest.restoreAllMocks();
-    });
+    afterAll(() => restoreRealTime());
 
     test('if exists and in deletable state, Removes the instance', async () => {
         const bestuurseenheid = aBestuurseenheid().build();

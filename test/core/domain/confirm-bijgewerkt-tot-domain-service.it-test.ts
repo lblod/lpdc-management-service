@@ -12,6 +12,7 @@ import {buildConceptIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {ConceptSnapshotSparqlTestRepository} from "../../driven/persistence/concept-snapshot-sparql-test-repository";
+import {restoreRealTime, setFixedTime} from "../../fixed-time";
 
 
 describe('ConfirmBijgewerktTotDomainService', () => {
@@ -25,17 +26,9 @@ describe('ConfirmBijgewerktTotDomainService', () => {
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(END2END_TEST_SPARQL_ENDPOINT);
     const confirmBijgewerktTotDomainService = new ConfirmBijgewerktTotDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository);
 
-    beforeAll(() => {
-        jest.useFakeTimers();
-        const fixedTodayAsDate = new Date();
-        jest.spyOn(global, 'Date').mockImplementation(() => fixedTodayAsDate);
-    });
+    beforeAll(() => setFixedTime());
 
-    afterAll(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
-        jest.restoreAllMocks();
-    });
+    afterAll(() => restoreRealTime());
 
     test('should update conceptSnapshot on instance', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
