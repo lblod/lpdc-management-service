@@ -116,9 +116,15 @@ describe('Instance Data Integrity Validation', () => {
                                 [...quadsForInstanceForId, ...quadsFromRequeriedInstances];
 
                             //TODO LPDC-1003: add extra deep integrity checks
-                            //TODO LPDC-1003: can we load attached concept ?
-                            //TODO LPDC-1003: can we load attached conceptsnapshot ?
+                            //TODO LPDC-1003: can we load linked concept ?
+                            //TODO LPDC-1003: can we load linked conceptsnapshot ?
                             //TODO LPDC-1003: product id from instance should match that of the concept ?
+
+                            //TODO LPDC-1003: if latestfunctionally changed snapshot from linked snapshot is not the same as the linked one from instantie -> reviewstatus should be enabled on instantie
+                            //TODO LPDC-1003: if latestfunctionally changed snapshot from linked snapshot is not the same as the linked one from instantie and concept is archived -> reviewstatus archived should be enabled on instantie
+                            //TODO LPDC-1003: is the created by the same as the bestuurseenheid ?
+                            //TODO LPDC-1003: can we load all competentAuthorities ?
+                            //TODO LPDC-1003: can we load all executingAuthorities ?
 
                         } catch (e) {
                             console.error(e);
@@ -180,12 +186,14 @@ describe('Instance Data Integrity Validation', () => {
     }, 60000 * 15 * 100);
 
     test.skip('Find all triples for instance', async () => {
-        const bestuurseenheidGraph = new Iri("http://mu.semte.ch/graphs/organizations/d9f7c0ab4920fdecf3f9a60b92e921b5ca07248fcb0eac2113eb97392ddd6c6c/LoketLB-LPDCGebruiker");
-        const instanceUUID = new Iri("http://data.lblod.info/id/public-service/144c7496-bb5e-47d2-8874-a2c9efc0ac0d");
-        const triples = await getInstanceTriples(endPoint, bestuurseenheidGraph, instanceUUID);
+        const bestuurseenheidId = new Iri("http://data.lblod.info/id/bestuurseenheden/2d6f7aa09c55d347a56da51c583f762843fca5da4acd824ee2dede879a197a7a");
+        const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
+        const instanceId = new Iri("http://data.lblod.info/id/public-service/ffc962f5-bb4f-4045-9288-0ff48408e9da");
+        const triples = await getInstanceTriples(endPoint, bestuurseenheid.userGraph(), instanceId);
         console.log(triples);
-        fs.writeFileSync(`/tmp/remaining-quads-instance.txt`, sortedUniq(triples).join('\n'));
 
+        const instance = await repository.findById(bestuurseenheid, instanceId);
+        instance.title;
     });
 
     function wait(milliseconds: number) {
