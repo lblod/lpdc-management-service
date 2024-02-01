@@ -11,8 +11,9 @@ import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
-    InstanceStatusType,
+    InstancePublicationStatusType,
     InstanceReviewStatusType,
+    InstanceStatusType,
     LanguageType,
     PublicationMediumType,
     TargetAudienceType,
@@ -739,7 +740,21 @@ describe('reopen', () => {
             .build();
 
         expect(() => instance.reopen()).toThrow(new Error('Instance status already in ontwerp'));
+    });
 
+    test('When instance publication state is published then publication state should be set to Te herpubliceren', () => {
+        const instance = aFullInstance()
+            .withStatus(InstanceStatusType.VERSTUURD)
+            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+            .build();
+
+        const updatedInstance = instance.reopen();
+
+        expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
+            .withStatus(InstanceStatusType.ONTWERP)
+            .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
+            .withDateModified(FormatPreservingDate.now())
+            .build());
     });
 });
 

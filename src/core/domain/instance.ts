@@ -142,7 +142,7 @@ export class Instance {
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._status = requiredValue(status, 'status');
-        this._reviewStatus = requiredCanBeOnlyBeDefinedIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId,'concept');
+        this._reviewStatus = requiredCanBeOnlyBeDefinedIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId, 'concept');
         this._publicationStatus = publicationStatus;
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
         this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
@@ -350,9 +350,14 @@ export class Instance {
         if (this.status === InstanceStatusType.ONTWERP) {
             throw new Error('Instance status already in ontwerp');
         }
+        const newPublicationStatus = this.publicationStatus === InstancePublicationStatusType.GEPUBLICEERD ?
+            InstancePublicationStatusType.TE_HERPUBLICEREN
+            : undefined;
+        this.publicationStatus;
         return InstanceBuilder.from(this)
             .withStatus(InstanceStatusType.ONTWERP)
             .withDateModified(FormatPreservingDate.now())
+            .withPublicationStatus(newPublicationStatus)
             .build();
     }
 }
