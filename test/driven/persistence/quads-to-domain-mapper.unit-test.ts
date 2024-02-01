@@ -1,6 +1,6 @@
 import {LoggingDoubleTripleReporter, QuadsToDomainMapper} from "../../../src/driven/persistence/quads-to-domain-mapper";
 import {literal, namedNode, quad} from "rdflib";
-import {buildBestuurseenheidIri, buildConceptSnapshotIri} from "../../core/domain/iri-test-builder";
+import {buildBestuurseenheidIri, buildConceptSnapshotIri, buildInstanceIri} from "../../core/domain/iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {CONCEPT_GRAPH} from "../../../config";
@@ -8,12 +8,14 @@ import {Logger} from "../../../platform/logger";
 import {NS} from "../../../src/driven/persistence/namespaces";
 import {InstanceTestBuilder} from "../../core/domain/instance-test-builder";
 import {Language} from "../../../src/core/domain/language";
+import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
+import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
 
 describe('quads to domain mapper', () => {
 
+    const logger = new Logger('QuadsToDomainMapper');
     describe('logs integrity problems', () => {
 
-        const logger = new Logger('QuadsToDomainMapper');
 
         const loggerSpy = jest.spyOn(logger, 'log');
 
@@ -93,7 +95,7 @@ describe('quads to domain mapper', () => {
         });
 
         test('language string contains more than one triple for same language', () => {
-            const instanceId = buildConceptSnapshotIri(uuid());
+            const instanceId = buildInstanceIri(uuid());
             const subject = namedNode(instanceId.value);
             const graph = namedNode(CONCEPT_GRAPH);
 
@@ -116,7 +118,146 @@ describe('quads to domain mapper', () => {
             expect(loggerSpy).toHaveBeenCalledWith(`DoubleTriple|${instanceId}|http://purl.org/dc/terms/title|undefined|1|3|"title nl"@nl|"title nl another triple"@nl|"title nl yet another triple"@nl`);
         });
 
-
     });
+    describe('sort', () => {
+        const instanceId = buildInstanceIri(uuid());
+        const bestuurseenheid = aBestuurseenheid().build();
+        const cost1 = aMinimalCostForInstance().build();
+        const subjectCost1 = namedNode(cost1.id.value);
+        const cost2 = aMinimalCostForInstance().build();
+        const subjectCost2 = namedNode(cost2.id.value);
+        const subject = namedNode(instanceId.value);
+        const graph = namedNode(bestuurseenheid.userGraph().value);
 
+        test('When not all orders are unique, throw error', () => {
+            const quads =
+                [
+                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
+                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+
+                    quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
+                    quad(subjectCost1, NS.rdf('type'), NS.m8g('Cost'), graph),
+                    quad(subjectCost1, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subjectCost1, NS.dct('title'), literal('title 1', Language.NL), graph),
+                    quad(subjectCost1, NS.dct('description'), literal('description 1', Language.NL), graph),
+                    quad(subjectCost1, NS.sh('order'), literal('1', NS.xsd('integer')), graph),
+
+                    quad(subject, NS.m8g('hasCost'), subjectCost2, graph),
+                    quad(subjectCost2, NS.rdf('type'), NS.m8g('Cost'), graph),
+                    quad(subjectCost2, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subjectCost2, NS.dct('title'), literal('title 2', Language.NL), graph),
+                    quad(subjectCost2, NS.dct('description'), literal('description 2', Language.NL), graph),
+                    quad(subjectCost2, NS.sh('order'), literal('1', NS.xsd('integer')), graph),
+                ];
+
+            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
+            expect(() => domainMapper.instance(instanceId)).toThrow(new Error('Not all orders are unique'));
+
+
+        });
+        test('When all orders are unique, dont throw error', () => {
+            const quads =
+                [
+                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
+                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+
+                    quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
+                    quad(subjectCost1, NS.rdf('type'), NS.m8g('Cost'), graph),
+                    quad(subjectCost1, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subjectCost1, NS.dct('title'), literal('title 1', Language.NL), graph),
+                    quad(subjectCost1, NS.dct('description'), literal('description 1', Language.NL), graph),
+                    quad(subjectCost1, NS.sh('order'), literal('0', NS.xsd('integer')), graph),
+
+                    quad(subject, NS.m8g('hasCost'), subjectCost2, graph),
+                    quad(subjectCost2, NS.rdf('type'), NS.m8g('Cost'), graph),
+                    quad(subjectCost2, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subjectCost2, NS.dct('title'), literal('title 2', Language.NL), graph),
+                    quad(subjectCost2, NS.dct('description'), literal('description 2', Language.NL), graph),
+                    quad(subjectCost2, NS.sh('order'), literal('1', NS.xsd('integer')), graph),
+                ];
+
+            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
+            expect(() => domainMapper.instance(instanceId)).not.toThrow();
+        });
+
+        test('When correctly no orders are present, dont throw error', () => {
+            const quads =
+                [
+                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
+                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+                ];
+
+            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
+            expect(() => domainMapper.instance(instanceId)).not.toThrow();
+        });
+
+        test('When a order is missing, throw error', () => {
+            const quads =
+                [
+                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
+                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+
+                    quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
+                    quad(subjectCost1, NS.rdf('type'), NS.m8g('Cost'), graph),
+                    quad(subjectCost1, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subjectCost1, NS.dct('title'), literal('title 1', Language.NL), graph),
+                    quad(subjectCost1, NS.dct('description'), literal('description 1', Language.NL), graph),
+
+                    quad(subject, NS.m8g('hasCost'), subjectCost2, graph),
+                    quad(subjectCost2, NS.rdf('type'), NS.m8g('Cost'), graph),
+                    quad(subjectCost2, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subjectCost2, NS.dct('title'), literal('title 2', Language.NL), graph),
+                    quad(subjectCost2, NS.dct('description'), literal('description 2', Language.NL), graph),
+                    quad(subjectCost2, NS.sh('order'), literal('1', NS.xsd('integer')), graph),
+                ];
+
+            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
+            expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`No order found for ${cost1.id.value}`));
+        });
+
+        test('When 2 orders are 0, throw error', () => {
+            const quads =
+                [
+                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
+                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+
+                    quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
+                    quad(subjectCost1, NS.rdf('type'), NS.m8g('Cost'), graph),
+                    quad(subjectCost1, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subjectCost1, NS.dct('title'), literal('title 1', Language.NL), graph),
+                    quad(subjectCost1, NS.dct('description'), literal('description 1', Language.NL), graph),
+                    quad(subjectCost2, NS.sh('order'), literal('0', NS.xsd('integer')), graph),
+
+                    quad(subject, NS.m8g('hasCost'), subjectCost2, graph),
+                    quad(subjectCost2, NS.rdf('type'), NS.m8g('Cost'), graph),
+                    quad(subjectCost2, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subjectCost2, NS.dct('title'), literal('title 2', Language.NL), graph),
+                    quad(subjectCost2, NS.dct('description'), literal('description 2', Language.NL), graph),
+                    quad(subjectCost2, NS.sh('order'), literal('0', NS.xsd('integer')), graph),
+                ];
+
+            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
+            expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`No order found for ${cost1.id.value}`));
+        });
+    });
 });

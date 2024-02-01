@@ -665,22 +665,27 @@ export class QuadsToDomainMapper {
     }
 
     private sort(anArray: any) {
+        const uniqueOrders = new Set();
         const orders = anArray
             .map((obj: { id: any; }) => {
                 const id = obj.id;
                 const order: number | undefined = this.asNumber(this.storeAccess.uniqueValue(namedNode(id), NS.sh('order')));
+                uniqueOrders.add(order);
                 return [id, order];
             });
 
-        //TODO LPDC-917: verify that all orders are unique ...
+        if (uniqueOrders.size != orders.length) {
+            throw new Error('Not all orders are unique');
+        }
+
         return asSortedArray(anArray, (a: any, b: any) => {
             const orderA = orders.find((idAndOrder: any) => idAndOrder[0] === a.id);
             const orderB = orders.find((idAndOrder: any) => idAndOrder[0] === b.id);
 
-            if (!orderA) {
+            if (orderA[1] === undefined) {
                 throw new Error(`No order found for ${a.id}`);
             }
-            if (!orderB) {
+            if (orderB[1] === undefined) {
                 throw new Error(`No order found for ${b.id}`);
             }
             return orderA[1] - orderB[1];
