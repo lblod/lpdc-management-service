@@ -367,7 +367,7 @@ app.post('/public-services/:instanceId/confirm-bijgewerkt-tot', async function (
     }
 });
 
-app.post('/public-services/:instanceId/submit', async function (req, res): Promise<any> {
+app.post('/public-services/:instanceId/validate-for-publish', async function (req, res): Promise<any> {
 
     const instanceIdRequestParam = req.params.instanceId;
 
