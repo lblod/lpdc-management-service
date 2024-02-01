@@ -399,6 +399,28 @@ app.post('/public-services/:instanceId/validate-for-publish', async function (re
 
 });
 
+app.put('/public-services/:instanceId/publish', async function (req, res): Promise<any> {
+    const instanceIdRequestParam = req.params.instanceId;
+
+    try {
+        const instanceId = new Iri(instanceIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+        const updatedInstance = instance.publish();
+        await instanceRepository.update(bestuurseenheid, updatedInstance, instance);
+        return res.sendStatus(200);
+    } catch (e) {
+        console.error(e);
+        const response = {
+            status: 500,
+            message: `Unexpected error during validation of service "${instanceIdRequestParam}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
+});
+
 app.use('/conceptual-public-services/', authenticateAndAuthorizeRequest(sessionRepository));
 
 app.get('/conceptual-public-services/:conceptId/dutch-language-version', async (req, res): Promise<any> => {

@@ -360,6 +360,16 @@ export class Instance {
             .withPublicationStatus(newPublicationStatus)
             .build();
     }
+
+    publish() {
+        if (this.status === InstanceStatusType.VERSTUURD) {
+            throw new Error('Instance status already has status verstuurd');
+        }
+        return InstanceBuilder.from(this)
+            .withStatus(InstanceStatusType.VERSTUURD)
+            .withDateModified(FormatPreservingDate.now())
+            .build();
+    }
 }
 
 export class InstanceBuilder {

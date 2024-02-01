@@ -38,6 +38,9 @@ import {Language} from "../../../src/core/domain/language";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 
+beforeAll(() => setFixedTime());
+afterAll(() => restoreRealTime());
+
 describe('constructing', () => {
     test('Undefined id throws error', () => {
         expect(() => aFullInstance().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
@@ -718,12 +721,10 @@ describe('nl language version', () => {
 
 describe('reopen', () => {
 
-    beforeAll(setFixedTime);
-    afterAll(restoreRealTime);
-
     test('should update status and modified date', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.VERSTUURD)
+            .withPublicationStatus(undefined)
             .build();
 
         const updatedInstance = instance.reopen();
@@ -737,6 +738,7 @@ describe('reopen', () => {
     test('should throw error when instance status is ontwerp', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.ONTWERP)
+            .withPublicationStatus(undefined)
             .build();
 
         expect(() => instance.reopen()).toThrow(new Error('Instance status already in ontwerp'));
@@ -756,6 +758,31 @@ describe('reopen', () => {
             .withDateModified(FormatPreservingDate.now())
             .build());
     });
+});
+
+describe('publish', () => {
+
+    test('should update status and modified date', () => {
+        const instance = aFullInstance()
+            .withStatus(InstanceStatusType.ONTWERP)
+            .build();
+
+        const updatedInstance = instance.publish();
+
+        expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
+            .withStatus(InstanceStatusType.VERSTUURD)
+            .withDateModified(FormatPreservingDate.now())
+            .build());
+    });
+
+    test('should throw error when instance status is Verstuurd', () => {
+        const instance = aFullInstance()
+            .withStatus(InstanceStatusType.VERSTUURD)
+            .build();
+
+        expect(() => instance.publish()).toThrow(new Error('Instance status already has status verstuurd'));
+    });
+
 });
 
 describe('builder', () => {
