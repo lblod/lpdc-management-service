@@ -104,7 +104,10 @@ export class InstanceSparqlRepository implements InstanceRepository {
         `;
 
         await this.querying.deleteInsert(query, (deleteInsertResults: string[]) => {
-            //todo LPDC-917: verify only one result
+
+            if (deleteInsertResults.length != 1) {
+                throw new Error('Updating for more than 1 graph');
+            }
             if (deleteInsertResults[0].includes("delete 0 (or less) and insert 0 (or less) triples")) {
                 throw new LPDCError(400, "De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in.");
             }
