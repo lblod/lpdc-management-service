@@ -64,7 +64,7 @@ describe('Instance Data Integrity Validation', () => {
         const bestuurseenheidIdsResult = await directDatabaseAccess.list(query);
         let randomizedInstanceIds = shuffle([...bestuurseenheidIdsResult]);
         //TODO LPDC-1003: take them all eventually, for now take the first n (from a randomized list).
-        //randomizedInstanceIds = randomizedInstanceIds.slice(0, 100);
+        //randomizedInstanceIds = randomizedInstanceIds.slice(0, 50);
 
         let verifiedBestuurseenheden = 0;
         let verifiedInstances = 0;
@@ -72,7 +72,12 @@ describe('Instance Data Integrity Validation', () => {
         const totalStartTime = new Date();
         const totalDoubleTriples: string[] = [];
 
-            console.log(`Verifying ${randomizedInstanceIds.length} bestuurseenheden`);
+        console.log(`Verifying ${randomizedInstanceIds.length} bestuurseenheden`);
+
+        if(!fs.existsSync(`/tmp/remaining-quads-instance`)) {
+            fs.mkdirSync(`/tmp/remaining-quads-instance`);
+        }
+
         for (const bestuurseenheidId of randomizedInstanceIds) {
 
             const bestuurseenheid = await bestuurseenheidRepository.findById(new Iri(bestuurseenheidId['id'].value));
@@ -101,31 +106,25 @@ describe('Instance Data Integrity Validation', () => {
             const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
             let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, bestuurseenheid.userGraph().value));
 
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://www.w3.org/ns/activitystreams#deleted')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/hasVersionedSource')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://schema.org/publication')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://www.w3.org/2000/01/rdf-schema#seeAlso')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://www.w3.org/ns/activitystreams#formerType')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://publications.europa.eu/resource/authority/language')));
+            const thombStonesSubjects = new Set([...allQuadsOfGraph.filter(q => q.object.equals(namedNode('https://www.w3.org/ns/activitystreams#Tombstone'))).map(q => q.subject.value)]);
 
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptDisplayConfiguration')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#FormalInformalChoice')));
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.object.equals(namedNode('https://www.w3.org/ns/activitystreams#Tombstone')));
+            //filter out thombstones triples
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !thombStonesSubjects.has(q.subject.value));
 
+            //filter out conceptual display configurations and formal informal choices
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/conceptual-display-configuration/'));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasConceptDisplayConfiguration')));
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/formalInformalChoice/'));
 
             const delayTime = 0;
             const numberOfLoops = 1;
             const averageTimes = [];
             const dataErrors = [];
+
             if (instanceIds.length > 0) {
 
-
                 for (let i = 0; i < numberOfLoops; i++) {
-                    let quadsFromRequeriedInstances: Statement[] = [];
+                    const quadsFromRequeriedInstances: Statement[] = [];
 
                     const before = new Date().valueOf();
 
@@ -142,8 +141,8 @@ describe('Instance Data Integrity Validation', () => {
                             expect(instance.id).toEqual(id);
                             const quadsForInstanceForId =
                                 domainToTriplesMapper.instanceToTriples(instance);
-                            quadsFromRequeriedInstances =
-                                [...quadsForInstanceForId, ...quadsFromRequeriedInstances];
+
+                            quadsFromRequeriedInstances.push(...quadsForInstanceForId);
 
                             if (instance.conceptId) {
                                 const concept = await conceptRepository.findById(instance.conceptId);
@@ -183,13 +182,9 @@ describe('Instance Data Integrity Validation', () => {
                         .filter(q => !quadsFromRequeriedInstancesAsStrings.includes(q));
 
 
-                    //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
-                    //fs.writeFileSync(`/tmp/remaining-quads-instance.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
-
-                    if (allRemainingQuadsOfGraphAsTurtle.length > 0) {
-                        //TODO LPDC-1003: also verify the remaining quads ... (after first loading all succesfully)
-                        //totalErrors.push(...allRemainingQuadsOfGraphAsTurtle);
-
+                    if(allRemainingQuadsOfGraphAsTurtle.length > 0) {
+                        fs.writeFileSync(`/tmp/remaining-quads-instance/remaining-quads-instance-${bestuurseenheid.uuid}.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
+                        totalErrors.push(...allRemainingQuadsOfGraphAsTurtle);
                     }
                     //TODO LPDC-1003: in the end this should be enabled
                     // expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
