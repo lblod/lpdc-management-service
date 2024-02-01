@@ -7,7 +7,7 @@ import {Instance} from "../../core/domain/instance";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
-import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {DoubleTripleReporter, LoggingDoubleTripleReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {InstanceReviewStatusType} from "../../core/domain/types";
 import {Logger} from "../../../platform/logger";
@@ -18,13 +18,13 @@ import {isEqual} from "lodash";
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
     protected readonly fetcher: DatastoreToQuadsRecursiveSparqlFetcher;
-    protected readonly logger: Logger = new Logger('Instance-QuadsToDomainLogger');
+    protected doubleTripleReporter: DoubleTripleReporter = new LoggingDoubleTripleReporter(new Logger('Instance-QuadsToDomainLogger'));
 
-    constructor(endpoint?: string, logger?: Logger) {
+    constructor(endpoint?: string, doubleTripleReporter?: DoubleTripleReporter) {
         this.querying = new SparqlQuerying(endpoint);
         this.fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endpoint);
-        if(logger){
-            this.logger = logger;
+        if (doubleTripleReporter) {
+            this.doubleTripleReporter = doubleTripleReporter;
         }
     }
 
@@ -62,7 +62,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
 
-        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), this.logger);
+        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), this.doubleTripleReporter);
 
         return mapper.instance(id);
 
@@ -116,28 +116,30 @@ export class InstanceSparqlRepository implements InstanceRepository {
         if (instance != undefined) {
             const publicationStatus = instance.publicationStatus;
 
-            if(!instance.isInDeletableState()){
+            if (!instance.isInDeletableState()) {
                 throw new Error(`Cannot delete a published instance`);
             }
 
             const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
 
             const now = new Date();
-            let query='';
+            let query = '';
 
-            if(publicationStatus === undefined){
+            if (publicationStatus === undefined) {
                 query = `
-                ${PREFIX.as}
-                ${PREFIX.cpsv}
+                    ${PREFIX.as}
+                    ${PREFIX.cpsv}
                 
-                DELETE DATA FROM ${sparqlEscapeUri(bestuurseenheid.userGraph())}{
+                DELETE
+                    DATA FROM
+                    ${sparqlEscapeUri(bestuurseenheid.userGraph())}
+                    {
                     ${triples.join("\n")}
-                };
+                    };
                 `;
 
                 await this.querying.delete(query);
-            }
-            else {
+            } else {
                 query = `
                 ${PREFIX.as}
                 ${PREFIX.cpsv}

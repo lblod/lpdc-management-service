@@ -4,7 +4,7 @@ import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recur
 import {Iri} from "../../core/domain/shared/iri";
 import {Concept} from "../../core/domain/concept";
 import {CONCEPT_GRAPH, PREFIX} from "../../../config";
-import {QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {LoggingDoubleTripleReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
@@ -50,7 +50,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
                 NS.eli('LegalResource').value,
                 NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
-        const mapper = new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new Logger('Concept-QuadsToDomainLogger'));
+        const mapper = new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleTripleReporter(new Logger('Concept-QuadsToDomainLogger')));
 
         return mapper.concept(id);
     }

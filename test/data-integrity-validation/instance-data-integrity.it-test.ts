@@ -17,12 +17,32 @@ import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sp
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {InstanceReviewStatusType} from "../../src/core/domain/types";
+import {DoubleTripleReporter} from "../../src/driven/persistence/quads-to-domain-mapper";
+import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
+import {Instance} from "../../src/core/domain/instance";
+
+class DoubleTripleReporterCapture implements DoubleTripleReporter{
+
+    private readonly _bestuurseenheid: Bestuurseenheid;
+    private _logs: string[] = [];
+
+    constructor(bestuurseenheid: Bestuurseenheid) {
+        this._bestuurseenheid = bestuurseenheid;
+    }
+
+    report(subject: string, predicate: string, object: string, expectedCount: number, actualCount: number, triples: string[]): void {
+        this._logs.push(`${this._bestuurseenheid.id.value}|${this._bestuurseenheid.prefLabel}|INSTANCE_MARKER|${subject}|${predicate}|${object}|${expectedCount}|${actualCount}|${triples.join('|')}`);
+    }
+
+    logs(instance: Instance): string [] {
+        return this._logs.map(str => str.replace('INSTANCE_MARKER', `${instance.id}|${instance.title?.nl}`));
+    }
+}
 
 describe('Instance Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
 
-    const repository = new InstanceSparqlRepository(endPoint);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
 
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
@@ -50,8 +70,9 @@ describe('Instance Data Integrity Validation', () => {
         let verifiedInstances = 0;
         const totalErrors = [];
         const totalStartTime = new Date();
+        const totalDoubleTriples: string[] = [];
 
-        console.log(`Verifying ${randomizedInstanceIds.length} bestuurseenheden`);
+            console.log(`Verifying ${randomizedInstanceIds.length} bestuurseenheden`);
         for (const bestuurseenheidId of randomizedInstanceIds) {
 
             const bestuurseenheid = await bestuurseenheidRepository.findById(new Iri(bestuurseenheidId['id'].value));
@@ -102,6 +123,7 @@ describe('Instance Data Integrity Validation', () => {
             const dataErrors = [];
             if (instanceIds.length > 0) {
 
+
                 for (let i = 0; i < numberOfLoops; i++) {
                     let quadsFromRequeriedInstances: Statement[] = [];
 
@@ -111,6 +133,9 @@ describe('Instance Data Integrity Validation', () => {
 
                     for (const instanceId of randomizedInstanceIds) {
                         try {
+                            const doubleTripleReporterCapture = new DoubleTripleReporterCapture(bestuurseenheid);
+                            const repository = new InstanceSparqlRepository(endPoint, doubleTripleReporterCapture);
+
                             const id = new Iri(instanceId['id'].value);
                             const instance = await repository.findById(bestuurseenheid, id);
 
@@ -120,14 +145,14 @@ describe('Instance Data Integrity Validation', () => {
                             quadsFromRequeriedInstances =
                                 [...quadsForInstanceForId, ...quadsFromRequeriedInstances];
 
-                            if(instance.conceptId) {
+                            if (instance.conceptId) {
                                 const concept = await conceptRepository.findById(instance.conceptId);
                                 await conceptSnapshotRepository.findById(instance.conceptSnapshotId);
 
                                 expect(instance.productId).toEqual(concept.productId);
 
-                                if(!instance.conceptSnapshotId.equals(concept.latestFunctionallyChangedConceptSnapshot)) {
-                                    if(concept.isArchived) {
+                                if (!instance.conceptSnapshotId.equals(concept.latestFunctionallyChangedConceptSnapshot)) {
+                                    if (concept.isArchived) {
                                         expect(instance.reviewStatus).toEqual(InstanceReviewStatusType.CONCEPT_GEARCHIVEERD);
                                     } else {
                                         expect(instance.reviewStatus).toEqual(InstanceReviewStatusType.CONCEPT_GEWIJZIGD);
@@ -137,9 +162,16 @@ describe('Instance Data Integrity Validation', () => {
 
                             expect(instance.createdBy).toEqual(bestuurseenheid.id);
 
+                            const doubleTripleErrorsForInstance = doubleTripleReporterCapture.logs(instance);
+                            totalDoubleTriples.push(...doubleTripleErrorsForInstance);
+
                         } catch (e) {
                             console.error(e);
-                            dataErrors.push({bestuurseenheidId: bestuurseenheidId, instanceId: instanceId, error: e.stack});
+                            dataErrors.push({
+                                bestuurseenheidId: bestuurseenheidId,
+                                instanceId: instanceId,
+                                error: e.stack
+                            });
                         }
                         await wait(delayTime);
                     }
@@ -157,10 +189,9 @@ describe('Instance Data Integrity Validation', () => {
                     if (allRemainingQuadsOfGraphAsTurtle.length > 0) {
                         //TODO LPDC-1003: also verify the remaining quads ... (after first loading all succesfully)
                         //totalErrors.push(...allRemainingQuadsOfGraphAsTurtle);
-                        //console.log(`Remaining errors [${allRemainingQuadsOfGraphAsTurtle}]`);
-                        //console.log(`total errors  ${totalErrors}`);
 
                     }
+                    //TODO LPDC-1003: in the end this should be enabled
                     // expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
 
                     const averageTime = (new Date().valueOf() - before - delayTime * instanceIds.length) / instanceIds.length;
@@ -178,7 +209,6 @@ describe('Instance Data Integrity Validation', () => {
                 }
 
                 console.log(`Total average time: ${totalAverageTime}`);
-                //expect(totalAverageTime).toBeLessThan(100);
             }
 
             verifiedBestuurseenheden++;
@@ -193,18 +223,19 @@ describe('Instance Data Integrity Validation', () => {
 
         }
         fs.writeFileSync(`/tmp/instance-total-errors.json`, sortedUniq(totalErrors.map(o => JSON.stringify(o))).join('\n'));
+        fs.writeFileSync(`/tmp/instance-total-double-triples.csv`, totalDoubleTriples.join('\n'));
         expect(totalErrors).toEqual([]);
     }, 60000 * 15 * 100);
 
     test.skip('Find all triples for instance', async () => {
-        const bestuurseenheidId = new Iri("http://data.lblod.info/id/bestuurseenheden/2d6f7aa09c55d347a56da51c583f762843fca5da4acd824ee2dede879a197a7a");
+        const bestuurseenheidId = new Iri("http://data.lblod.info/id/bestuurseenheden/17e71437ad9e1abbfd416b7bcb1485c0e6e21ac4f65f2a1584eb0985e246b1c9");
         const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
-        const instanceId = new Iri("http://data.lblod.info/id/public-service/ffc962f5-bb4f-4045-9288-0ff48408e9da");
+        const instanceId = new Iri("http://data.lblod.info/id/public-service/e239d70b-252c-4175-81ca-1c5ee30f89a9");
         const triples = await getInstanceTriples(endPoint, bestuurseenheid.userGraph(), instanceId);
         console.log(triples);
 
+        const repository = new InstanceSparqlRepository(endPoint);
         const instance = await repository.findById(bestuurseenheid, instanceId);
-        instance.title;
     });
 
     function wait(milliseconds: number) {
@@ -229,3 +260,4 @@ describe('Instance Data Integrity Validation', () => {
     }
 
 });
+
