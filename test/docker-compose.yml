@@ -12,7 +12,3 @@ services:
       - ./virtuoso.ini:/data/virtuoso.ini
     ports:
       - "8899:8890"
-  latest-virtuoso:
-    image: openlink/virtuoso-opensource-7:7.2.11
-    ports:
-      - "7200:8890"
