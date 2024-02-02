@@ -178,7 +178,7 @@ export class ConceptSnapshotTestBuilder {
 
     public static readonly PROCEDURES = [aFullProcedure().build(), anotherFullProcedure().build()];
 
-    public static readonly WEBSITES = [anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()];
+    public static readonly WEBSITES = [anotherFullWebsite(uuid()).withOrder(1).build(), anotherFullWebsite(uuid()).withOrder(2).build()];
 
     public static readonly COSTS = [aFullCost().build(), anotherFullCost().build()];
 

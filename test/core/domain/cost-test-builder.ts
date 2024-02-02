@@ -8,7 +8,8 @@ export function aMinimalCostForConceptSnapshot(): CostBuilder {
     return new CostBuilder()
         .withId(CostBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(CostTestBuilder.TITLE).build())
-        .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
+        .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build())
+        .withOrder(1);
 }
 
 export function aMinimalCostForConcept(): CostBuilder {
@@ -17,13 +18,15 @@ export function aMinimalCostForConcept(): CostBuilder {
         .withId(CostBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(CostTestBuilder.TITLE).build())
-        .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build());
+        .withDescription(aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build())
+        .withOrder(1);
 }
 
 export function aMinimalCostForInstance(): CostBuilder {
     return new CostBuilder()
         .withId(CostBuilder.buildIri(uuid()))
-        .withUuid(uuid());
+        .withUuid(uuid())
+        .withOrder(1);
 }
 
 export function aFullCost(): CostBuilder {
@@ -44,7 +47,8 @@ export function aFullCost(): CostBuilder {
                 CostTestBuilder.DESCRIPTION_NL_FORMAL,
                 CostTestBuilder.DESCRIPTION_NL_INFORMAL,
                 CostTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
-                CostTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL));
+                CostTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withOrder(1);
 }
 
 export function anotherFullCost(): CostBuilder {
@@ -65,7 +69,8 @@ export function anotherFullCost(): CostBuilder {
                 CostTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
                 CostTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL,
                 CostTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL,
-                CostTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL));
+                CostTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withOrder(2);
 }
 
 export function aFullCostForInstance(): CostBuilder {
@@ -79,7 +84,8 @@ export function aFullCostForInstance(): CostBuilder {
         .withDescription(LanguageString.of(
             CostTestBuilder.DESCRIPTION_EN,
             undefined,
-            CostTestBuilder.DESCRIPTION_NL_FORMAL));
+            CostTestBuilder.DESCRIPTION_NL_FORMAL))
+        .withOrder(1);
 }
 
 export function anotherFullCostForInstance(): CostBuilder {
@@ -93,7 +99,8 @@ export function anotherFullCostForInstance(): CostBuilder {
         .withDescription(LanguageString.of(
             CostTestBuilder.ANOTHER_DESCRIPTION_EN,
             undefined,
-            CostTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL));
+            CostTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL))
+        .withOrder(2);
 }
 
 export class CostTestBuilder {

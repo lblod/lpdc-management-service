@@ -11,6 +11,7 @@ export class Requirement {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
+    private readonly _order: number;
     private readonly _evidence: Evidence | undefined;
     private readonly _conceptRequirementId: Iri | undefined;
 
@@ -18,6 +19,7 @@ export class Requirement {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
+                        order: number,
                         evidence: Evidence | undefined,
                         conceptRequirementId: Iri | undefined
     ) {
@@ -25,6 +27,7 @@ export class Requirement {
         this._uuid = uuid;
         this._title = title;
         this._description = description;
+        this._order = requiredValue(order, 'order');
         this._evidence = evidence;
         this._conceptRequirementId = conceptRequirementId;
     }
@@ -35,6 +38,7 @@ export class Requirement {
             requiredValue(requirement.uuid, 'uuid'),
             requiredValue(requirement.title, 'title'),
             requiredValue(requirement.description, 'description'),
+            requirement.order,
             requirement.evidence ? Evidence.forConcept(requirement.evidence) : undefined,
             undefined
         );
@@ -46,6 +50,7 @@ export class Requirement {
             undefined,
             requiredValue(requirement.title, 'title'),
             requiredValue(requirement.description, 'description'),
+            requirement.order,
             requirement.evidence ? Evidence.forConceptSnapshot(requirement.evidence) : undefined,
             undefined
         );
@@ -63,6 +68,7 @@ export class Requirement {
             requiredValue(requirement.uuid, 'uuid'),
             requirement.title,
             requirement.description,
+            requirement.order,
             requirement.evidence ? Evidence.forInstance(requirement.evidence) : undefined,
             requirement.conceptRequirementId
         );
@@ -72,10 +78,11 @@ export class Requirement {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
+                        order: number,
                         evidence: Evidence | undefined,
                         conceptRequirementId: Iri | undefined): Requirement {
 
-        return new Requirement(id, uuid, title, description, evidence, conceptRequirementId);
+        return new Requirement(id, uuid, title, description, order, evidence, conceptRequirementId);
     }
 
     get nlLanguage(): Language | undefined {
@@ -96,6 +103,10 @@ export class Requirement {
 
     get description(): LanguageString | undefined {
         return this._description;
+    }
+
+    get order(): number {
+        return this._order;
     }
 
     get evidence(): Evidence | undefined {
@@ -122,6 +133,7 @@ export class RequirementBuilder {
     private _uuid: string | undefined;
     private _title: LanguageString | undefined;
     private _description: LanguageString | undefined;
+    private _order: number;
     private _evidence: Evidence | undefined;
     private _conceptRequirementId: Iri | undefined;
 
@@ -146,6 +158,11 @@ export class RequirementBuilder {
 
     public withDescription(description: LanguageString): RequirementBuilder {
         this._description = description;
+        return this;
+    }
+
+    public withOrder(order: number): RequirementBuilder {
+        this._order = order;
         return this;
     }
 
@@ -177,6 +194,7 @@ export class RequirementBuilder {
             this._uuid,
             this._title,
             this._description,
+            this._order,
             this._evidence,
             this._conceptRequirementId,
         );

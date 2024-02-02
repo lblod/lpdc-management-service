@@ -228,10 +228,10 @@ describe('quads to domain mapper', () => {
                 ];
 
             const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
-            expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`No order found for ${cost1.id.value}`));
+            expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`order should not be undefined`));
         });
 
-        test('When 2 orders are 0, throw error', () => {
+        test('When 2 orders have same order, throw error', () => {
             const quads =
                 [
                     quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
@@ -246,18 +246,18 @@ describe('quads to domain mapper', () => {
                     quad(subjectCost1, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subjectCost1, NS.dct('title'), literal('title 1', Language.NL), graph),
                     quad(subjectCost1, NS.dct('description'), literal('description 1', Language.NL), graph),
-                    quad(subjectCost2, NS.sh('order'), literal('0', NS.xsd('integer')), graph),
+                    quad(subjectCost1, NS.sh('order'), literal('1', NS.xsd('integer')), graph),
 
                     quad(subject, NS.m8g('hasCost'), subjectCost2, graph),
                     quad(subjectCost2, NS.rdf('type'), NS.m8g('Cost'), graph),
                     quad(subjectCost2, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subjectCost2, NS.dct('title'), literal('title 2', Language.NL), graph),
                     quad(subjectCost2, NS.dct('description'), literal('description 2', Language.NL), graph),
-                    quad(subjectCost2, NS.sh('order'), literal('0', NS.xsd('integer')), graph),
+                    quad(subjectCost2, NS.sh('order'), literal('1', NS.xsd('integer')), graph),
                 ];
 
             const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
-            expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`No order found for ${cost1.id.value}`));
+            expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`Not all orders are unique`));
         });
     });
 });

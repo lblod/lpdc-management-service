@@ -13,7 +13,8 @@ export function aMinimalProcedureForConceptSnapshot(): ProcedureBuilder {
     return new ProcedureBuilder()
         .withId(ProcedureBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(ProcedureTestBuilder.TITLE).build())
-        .withDescription(aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build());
+        .withDescription(aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build())
+        .withOrder(1);
 }
 
 export function aMinimalProcedureForConcept(): ProcedureBuilder {
@@ -22,14 +23,16 @@ export function aMinimalProcedureForConcept(): ProcedureBuilder {
         .withId(ProcedureBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(ProcedureTestBuilder.TITLE).build())
-        .withDescription(aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build());
+        .withDescription(aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build())
+        .withOrder(1);
 }
 
 export function aMinimalProcedureForInstance(): ProcedureBuilder {
     const uniqueId = uuid();
     return new ProcedureBuilder()
         .withId(ProcedureBuilder.buildIri(uniqueId))
-        .withUuid(uniqueId);
+        .withUuid(uniqueId)
+        .withOrder(1);
 }
 
 export function aFullProcedure(): ProcedureBuilder {
@@ -52,6 +55,7 @@ export function aFullProcedure(): ProcedureBuilder {
                 ProcedureTestBuilder.DESCRIPTION_NL_INFORMAL,
                 ProcedureTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
                 ProcedureTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withOrder(1)
         .withWebsites(ProcedureTestBuilder.WEBSITES);
 }
 
@@ -73,6 +77,7 @@ export function anotherFullProcedure(): ProcedureBuilder {
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL,
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL,
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withOrder(2)
         .withWebsites(ProcedureTestBuilder.ANOTHER_WEBSITES);
 }
 
@@ -92,6 +97,7 @@ export function aFullProcedureForInstance(): ProcedureBuilder {
                 undefined,
                 ProcedureTestBuilder.DESCRIPTION_NL_FORMAL
             ))
+        .withOrder(1)
         .withWebsites(ProcedureTestBuilder.WEBSITES_FOR_INSTANCE);
 }
 
@@ -108,6 +114,7 @@ export function anotherFullProcedureForInstance() {
             undefined,
             ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL
         ))
+        .withOrder(2)
         .withWebsites(ProcedureTestBuilder.ANOTHER_WEBSITES_FOR_INSTANCE);
 }
 
@@ -143,9 +150,9 @@ export class ProcedureTestBuilder {
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL = 'Procedure Another Description - nl-generated-formal';
     public static readonly ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL = 'Procedure Another Description - nl-generated-informal';
 
-    public static readonly WEBSITES = [aFullWebsite().build(), anotherFullWebsite(uuid()).build()];
-    public static readonly ANOTHER_WEBSITES = [anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()];
-    public static readonly WEBSITES_FOR_INSTANCE = [aFullWebsiteForInstance().build(), anotherFullWebsiteForInstance(uuid()).build()];
-    public static readonly ANOTHER_WEBSITES_FOR_INSTANCE = [anotherFullWebsiteForInstance(uuid()).build(), anotherFullWebsiteForInstance(uuid()).build()];
+    public static readonly WEBSITES = [aFullWebsite().withOrder(1).build(), anotherFullWebsite(uuid()).withOrder(2).build()];
+    public static readonly ANOTHER_WEBSITES = [anotherFullWebsite(uuid()).withOrder(1).build(), anotherFullWebsite(uuid()).withOrder(2).build()];
+    public static readonly WEBSITES_FOR_INSTANCE = [aFullWebsiteForInstance().withOrder(1).build(), anotherFullWebsiteForInstance(uuid()).withOrder(2).build()];
+    public static readonly ANOTHER_WEBSITES_FOR_INSTANCE = [anotherFullWebsiteForInstance(uuid()).withOrder(1).build(), anotherFullWebsiteForInstance(uuid()).withOrder(2).build()];
 
 }

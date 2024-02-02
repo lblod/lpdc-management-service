@@ -10,14 +10,17 @@ export class ContactPoint {
     private readonly _email: string | undefined;
     private readonly _telephone: string | undefined;
     private readonly _openingHours: string | undefined;
+    private readonly _order: number;
     private readonly _address: Address | undefined;
 
+    //TODO LPDC-917: add test for invariants
     constructor(id: Iri,
                 uuid: string,
                 url: string | undefined,
                 email: string | undefined,
                 telephone: string | undefined,
                 openingHours: string | undefined,
+                order: number,
                 address: Address | undefined) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -25,6 +28,7 @@ export class ContactPoint {
         this._email = email;
         this._telephone = telephone;
         this._openingHours = openingHours;
+        this._order = requiredValue(order, 'order');
         this._address = address;
     }
 
@@ -50,6 +54,10 @@ export class ContactPoint {
 
     get openingHours(): string | undefined {
         return this._openingHours;
+    }
+
+    get order(): number {
+        return this._order;
     }
 
     get address(): Address | undefined {

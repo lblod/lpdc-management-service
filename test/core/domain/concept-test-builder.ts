@@ -175,12 +175,12 @@ export class ConceptTestBuilder {
     ];
 
     public static readonly PROCEDURES = [
-        aFullProcedure().withUuid(uuid()).withWebsites([aFullWebsite().withUuid(uuid()).build(), anotherFullWebsite(uuid()).withUuid(uuid()).build()]).build(),
-        anotherFullProcedure().withUuid(uuid()).withWebsites([anotherFullWebsite(uuid()).withUuid(uuid()).build(), anotherFullWebsite(uuid()).withUuid(uuid()).build()]).build()];
+        aFullProcedure().withUuid(uuid()).withWebsites([aFullWebsite().withUuid(uuid()).withOrder(1).build(), anotherFullWebsite(uuid()).withUuid(uuid()).withOrder(2).build()]).build(),
+        anotherFullProcedure().withUuid(uuid()).withWebsites([anotherFullWebsite(uuid()).withUuid(uuid()).withOrder(1).build(), anotherFullWebsite(uuid()).withUuid(uuid()).withOrder(2).build()]).build()];
 
     public static readonly WEBSITES = [
-        anotherFullWebsite(uuid()).withUuid(uuid()).build(),
-        anotherFullWebsite(uuid()).withUuid(uuid()).build()];
+        anotherFullWebsite(uuid()).withUuid(uuid()).withOrder(1).build(),
+        anotherFullWebsite(uuid()).withUuid(uuid()).withOrder(2).build()];
 
     public static readonly COSTS = [aFullCost().withUuid(uuid()).build(), anotherFullCost().withUuid(uuid()).build()];
 

@@ -168,11 +168,11 @@ export class InstanceTestBuilder {
     ];
 
     public static readonly PROCEDURES = [
-        aFullProcedureForInstance().withUuid(uuid()).withWebsites([aFullWebsiteForInstance().withUuid(uuid()).build(), anotherFullWebsiteForInstance(uuid()).withUuid(uuid()).build()]).build(),
-        anotherFullProcedureForInstance().withUuid(uuid()).withWebsites([anotherFullWebsiteForInstance(uuid()).withUuid(uuid()).build(), anotherFullWebsiteForInstance(uuid()).withUuid(uuid()).build()]).build()
+        aFullProcedureForInstance().withUuid(uuid()).withWebsites([aFullWebsiteForInstance().withUuid(uuid()).withOrder(1).build(), anotherFullWebsiteForInstance(uuid()).withOrder(2).build()]).build(),
+        anotherFullProcedureForInstance().withUuid(uuid()).withWebsites([anotherFullWebsiteForInstance(uuid()).withOrder(1).build(), anotherFullWebsiteForInstance(uuid()).withOrder(2).build()]).build()
     ];
 
-    public static readonly WEBSITES = [anotherFullWebsiteForInstance(uuid()).build(), anotherFullWebsiteForInstance(uuid()).build()];
+    public static readonly WEBSITES = [anotherFullWebsiteForInstance(uuid()).withOrder(1).build(), anotherFullWebsiteForInstance(uuid()).withOrder(2).build()];
 
     public static readonly COSTS = [aFullCostForInstance().withUuid(uuid()).build(), anotherFullCostForInstance().withUuid(uuid()).build()];
 

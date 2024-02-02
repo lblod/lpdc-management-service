@@ -6,10 +6,12 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 
 
 describe('forConcept', () => {
+
     test('Undefined id throws error', () => {
         const website = aFullWebsite().withId(undefined);
         expect(() => Website.forConcept(website.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Invalid iri id throws error', () => {
         expect(() => Website.forConcept(aFullWebsite().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
@@ -18,6 +20,7 @@ describe('forConcept', () => {
         const website = aFullWebsite().withUuid(undefined);
         expect(() => Website.forConcept(website.build())).toThrow(new Error('uuid should not be undefined'));
     });
+
     test('Blank uuid throws error', () => {
         const website = aFullWebsite().withUuid('   ');
         expect(() => Website.forConcept(website.build())).toThrow(new Error('uuid should not be blank'));
@@ -32,10 +35,16 @@ describe('forConcept', () => {
         const website = aFullWebsite().withUrl(undefined);
         expect(() => Website.forConcept(website.build())).toThrow(new Error('url should not be undefined'));
     });
+
     test('Blank url throws error', () => {
         const website = aFullWebsite().withUrl('   ');
         expect(() => Website.forConcept(website.build())).toThrow(new Error('url should not be blank'));
     });
+
+    test('Undefined order throws error', () => {
+        expect(() => Website.forConcept(aFullWebsite().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+    });
+
 });
 
 describe('forConceptSnapshot', () => {
@@ -44,24 +53,33 @@ describe('forConceptSnapshot', () => {
         const website = aFullWebsite().withId(undefined);
         expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Invalid iri id throws error', () => {
         expect(() => Website.forConceptSnapshot(aFullWebsite().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
+
     test('Uuid is undefined ', () => {
         const website = aFullWebsite().build();
         expect(Website.forConceptSnapshot(website).uuid).toBeUndefined();
     });
+
     test('Undefined title throws error', () => {
         const website = aFullWebsite().withTitle(undefined).build();
         expect(() => Website.forConceptSnapshot(website)).toThrow(new Error('title should not be undefined'));
     });
+
     test('Undefined url throws error', () => {
         const website = aFullWebsite().withUrl(undefined);
         expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('url should not be undefined'));
     });
+
     test('Blank url throws error', () => {
         const website = aFullWebsite().withUrl('   ');
         expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('url should not be blank'));
+    });
+
+    test('Undefined order throws error', () => {
+        expect(() => Website.forConceptSnapshot(aFullWebsite().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
     });
 });
 
@@ -74,6 +92,7 @@ describe('for instance',()=>{
         const website = aFullWebsiteForInstance().withId(undefined);
         expect(() => Website.forInstance(website.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Undefined Uuid throws error', () => {
         const website = aFullWebsiteForInstance().withUuid(undefined).build();
         expect(()=>Website.forInstance(website).uuid).toThrow(new Error('uuid should not be undefined'));
@@ -104,6 +123,7 @@ describe('for instance',()=>{
 
         expect(() => Website.forInstance(website)).toThrow(new Error('There is more than one Nl language present'));
     });
+
     test('If description has different nl languages, throws error', () => {
         const description = LanguageString.of('en', 'nl', 'nl-formal');
         const website = aFullWebsiteForInstance().withDescription(description).withTitle(undefined).build();
@@ -151,4 +171,7 @@ describe('for instance',()=>{
         });
     }
 
+    test('Undefined error throws error', () => {
+        expect(() => Website.forInstance(aFullWebsiteForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+    });
 });

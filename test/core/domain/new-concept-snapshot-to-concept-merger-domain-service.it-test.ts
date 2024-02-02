@@ -17,7 +17,8 @@ import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
 import {
     CompetentAuthorityLevelType,
     ConceptTagType,
-    ExecutingAuthorityLevelType, InstanceReviewStatusType,
+    ExecutingAuthorityLevelType,
+    InstanceReviewStatusType,
     ProductType,
     PublicationMediumType,
     SnapshotType,
@@ -110,6 +111,7 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.requirements[0].title,
                         _description: conceptSnapshot.requirements[0].description,
+                        _order: conceptSnapshot.requirements[0].order,
                         _evidence: expect.objectContaining({
                             _id: expect.not.objectContaining(conceptSnapshot.requirements[0].evidence.id),
                             _uuid: expect.stringMatching(uuidRegex),
@@ -122,6 +124,7 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.requirements[1].title,
                         _description: conceptSnapshot.requirements[1].description,
+                        _order: conceptSnapshot.requirements[1].order,
                         _evidence: expect.objectContaining({
                             _id: expect.not.objectContaining(conceptSnapshot.requirements[1].evidence.id),
                             _uuid: expect.stringMatching(uuidRegex),
@@ -137,12 +140,14 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.procedures[0].title,
                         _description: conceptSnapshot.procedures[0].description,
+                        _order: conceptSnapshot.procedures[0].order,
                         _websites: expect.arrayContaining([
                             expect.objectContaining({
                                 _id: expect.not.objectContaining(conceptSnapshot.procedures[0].websites[0].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: conceptSnapshot.procedures[0].websites[0].title,
                                 _description: conceptSnapshot.procedures[0].websites[0].description,
+                                _order: conceptSnapshot.procedures[0].websites[0].order,
                                 _url: conceptSnapshot.procedures[0].websites[0].url,
                             }),
                             expect.objectContaining({
@@ -150,6 +155,7 @@ describe('merges a new concept snapshot into a concept', () => {
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: conceptSnapshot.procedures[0].websites[1].title,
                                 _description: conceptSnapshot.procedures[0].websites[1].description,
+                                _order: conceptSnapshot.procedures[0].websites[1].order,
                                 _url: conceptSnapshot.procedures[0].websites[1].url,
                             })
                         ])
@@ -159,12 +165,14 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.procedures[1].title,
                         _description: conceptSnapshot.procedures[1].description,
+                        _order: conceptSnapshot.procedures[1].order,
                         _websites: expect.arrayContaining([
                             expect.objectContaining({
                                 _id: expect.not.objectContaining(conceptSnapshot.procedures[1].websites[0].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: conceptSnapshot.procedures[1].websites[0].title,
                                 _description: conceptSnapshot.procedures[1].websites[0].description,
+                                _order: conceptSnapshot.procedures[1].websites[0].order,
                                 _url: conceptSnapshot.procedures[1].websites[0].url,
                             }),
                             expect.objectContaining({
@@ -172,6 +180,7 @@ describe('merges a new concept snapshot into a concept', () => {
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: conceptSnapshot.procedures[1].websites[1].title,
                                 _description: conceptSnapshot.procedures[1].websites[1].description,
+                                _order: conceptSnapshot.procedures[1].websites[1].order,
                                 _url: conceptSnapshot.procedures[1].websites[1].url,
                             })
                         ])
@@ -185,6 +194,7 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.websites[0].title,
                         _description: conceptSnapshot.websites[0].description,
+                        _order: conceptSnapshot.websites[0].order,
                         _url: conceptSnapshot.websites[0].url,
                     }),
                     expect.objectContaining({
@@ -192,6 +202,7 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.websites[1].title,
                         _description: conceptSnapshot.websites[1].description,
+                        _order: conceptSnapshot.websites[1].order,
                         _url: conceptSnapshot.websites[1].url,
                     })
                 ]));
@@ -202,13 +213,15 @@ describe('merges a new concept snapshot into a concept', () => {
                         _id: expect.not.objectContaining(conceptSnapshot.costs[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.costs[0].title,
-                        _description: conceptSnapshot.costs[0].description
+                        _description: conceptSnapshot.costs[0].description,
+                        _order: conceptSnapshot.costs[0].order
                     }),
                     expect.objectContaining({
                         _id: expect.not.objectContaining(conceptSnapshot.costs[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.costs[1].title,
-                        _description: conceptSnapshot.costs[1].description
+                        _description: conceptSnapshot.costs[1].description,
+                        _order: conceptSnapshot.costs[1].order
                     })
                 ]));
             expect(createdConcept.financialAdvantages)
@@ -217,13 +230,15 @@ describe('merges a new concept snapshot into a concept', () => {
                         _id: expect.not.objectContaining(conceptSnapshot.financialAdvantages[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.financialAdvantages[0].title,
-                        _description: conceptSnapshot.financialAdvantages[0].description
+                        _description: conceptSnapshot.financialAdvantages[0].description,
+                        _order: conceptSnapshot.financialAdvantages[0].order
                     }),
                     expect.objectContaining({
                         _id: expect.not.objectContaining(conceptSnapshot.financialAdvantages[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: conceptSnapshot.financialAdvantages[1].title,
-                        _description: conceptSnapshot.financialAdvantages[1].description
+                        _description: conceptSnapshot.financialAdvantages[1].description,
+                        _order: conceptSnapshot.financialAdvantages[1].order
                     })
                 ]));
             expect(createdConcept.productId).toEqual(conceptSnapshot.productId);
@@ -355,6 +370,7 @@ describe('merges a new concept snapshot into a concept', () => {
                         anotherFullRequirement()
                             .withTitle(suffixUnique(conceptSnapshot.requirements[1].title))
                             .withDescription(suffixUnique(conceptSnapshot.requirements[1].description))
+                            .withOrder(1)
                             .withEvidence(
                                 aFullEvidence()
                                     .withTitle(suffixUnique(conceptSnapshot.requirements[1].evidence.title))
@@ -364,6 +380,7 @@ describe('merges a new concept snapshot into a concept', () => {
                         aFullRequirement()
                             .withTitle(suffixUnique(conceptSnapshot.requirements[0].title))
                             .withDescription(suffixUnique(conceptSnapshot.requirements[0].description))
+                            .withOrder(2)
                             .withEvidence(
                                 anotherFullEvidence()
                                     .withTitle(suffixUnique(conceptSnapshot.requirements[0].evidence.title))
@@ -374,32 +391,38 @@ describe('merges a new concept snapshot into a concept', () => {
                         anotherFullProcedure()
                             .withTitle(suffixUnique(conceptSnapshot.procedures[1].title))
                             .withDescription(suffixUnique(conceptSnapshot.procedures[1].description))
-                            .withWebsites([anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()])
+                            .withOrder(1)
+                            .withWebsites([anotherFullWebsite(uuid()).withOrder(1).build(), anotherFullWebsite(uuid()).withOrder(2).build(), anotherFullWebsite(uuid()).withOrder(3).build()])
                             .build(),
                         aFullProcedure()
                             .withTitle(suffixUnique(conceptSnapshot.procedures[0].title))
                             .withDescription(suffixUnique(conceptSnapshot.procedures[0].description))
-                            .withWebsites([anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()])
+                            .withOrder(2)
+                            .withWebsites([anotherFullWebsite(uuid()).withOrder(1).build(), anotherFullWebsite(uuid()).withOrder(2).build()])
                             .build()])
-                    .withWebsites([anotherFullWebsite(uuid()).build(), anotherFullWebsite(uuid()).build()])
+                    .withWebsites([anotherFullWebsite(uuid()).withOrder(1).build(), anotherFullWebsite(uuid()).withOrder(2).build()])
                     .withCosts([
                         anotherFullCost()
                             .withTitle(suffixUnique(conceptSnapshot.costs[1].title))
                             .withDescription(suffixUnique(conceptSnapshot.costs[1].description))
+                            .withOrder(1)
                             .build(),
                         aFullCost()
                             .withTitle(suffixUnique(conceptSnapshot.costs[0].title))
                             .withDescription(suffixUnique(conceptSnapshot.costs[0].description))
+                            .withOrder(2)
                             .build()])
                     .withFinancialAdvantages(
                         [
                             anotherFullFinancialAdvantage()
                                 .withTitle(suffixUnique(conceptSnapshot.financialAdvantages[1].title))
                                 .withDescription(suffixUnique(conceptSnapshot.financialAdvantages[1].description))
+                                .withOrder(1)
                                 .build(),
                             aFullFinancialAdvantage()
                                 .withTitle(suffixUnique(conceptSnapshot.financialAdvantages[0].title))
                                 .withDescription(suffixUnique(conceptSnapshot.financialAdvantages[0].description))
+                                .withOrder(2)
                                 .build()
                         ])
                     .withProductId(conceptSnapshot.productId + uuid())
@@ -441,6 +464,7 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.requirements[0].title,
                         _description: updatedConceptSnapshot.requirements[0].description,
+                        _order: 1,
                         _evidence: expect.objectContaining({
                             _id: expect.not.objectContaining(updatedConceptSnapshot.requirements[0].evidence.id),
                             _uuid: expect.stringMatching(uuidRegex),
@@ -453,6 +477,7 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.requirements[1].title,
                         _description: updatedConceptSnapshot.requirements[1].description,
+                        _order: 2,
                         _evidence: expect.objectContaining({
                             _id: expect.not.objectContaining(updatedConceptSnapshot.requirements[1].evidence.id),
                             _uuid: expect.stringMatching(uuidRegex),
@@ -469,12 +494,14 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.procedures[0].title,
                         _description: updatedConceptSnapshot.procedures[0].description,
+                        _order: 1,
                         _websites: expect.arrayContaining([
                             expect.objectContaining({
                                 _id: expect.not.objectContaining(updatedConceptSnapshot.procedures[0].websites[0].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: updatedConceptSnapshot.procedures[0].websites[0].title,
                                 _description: updatedConceptSnapshot.procedures[0].websites[0].description,
+                                _order: 1,
                                 _url: updatedConceptSnapshot.procedures[0].websites[0].url,
                             }),
                             expect.objectContaining({
@@ -482,6 +509,7 @@ describe('merges a new concept snapshot into a concept', () => {
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: updatedConceptSnapshot.procedures[0].websites[1].title,
                                 _description: updatedConceptSnapshot.procedures[0].websites[1].description,
+                                _order: 2,
                                 _url: updatedConceptSnapshot.procedures[0].websites[1].url,
                             }),
                             expect.objectContaining({
@@ -489,6 +517,7 @@ describe('merges a new concept snapshot into a concept', () => {
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: updatedConceptSnapshot.procedures[0].websites[2].title,
                                 _description: updatedConceptSnapshot.procedures[0].websites[2].description,
+                                _order: 3,
                                 _url: updatedConceptSnapshot.procedures[0].websites[2].url,
                             })
                         ])
@@ -498,12 +527,14 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.procedures[1].title,
                         _description: updatedConceptSnapshot.procedures[1].description,
+                        _order: 2,
                         _websites: expect.arrayContaining([
                             expect.objectContaining({
                                 _id: expect.not.objectContaining(updatedConceptSnapshot.procedures[1].websites[0].id),
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: updatedConceptSnapshot.procedures[1].websites[0].title,
                                 _description: updatedConceptSnapshot.procedures[1].websites[0].description,
+                                _order: 1,
                                 _url: updatedConceptSnapshot.procedures[1].websites[0].url,
                             }),
                             expect.objectContaining({
@@ -511,6 +542,7 @@ describe('merges a new concept snapshot into a concept', () => {
                                 _uuid: expect.stringMatching(uuidRegex),
                                 _title: updatedConceptSnapshot.procedures[1].websites[1].title,
                                 _description: updatedConceptSnapshot.procedures[1].websites[1].description,
+                                _order: 2,
                                 _url: updatedConceptSnapshot.procedures[1].websites[1].url,
                             })
                         ])
@@ -524,6 +556,7 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.websites[0].title,
                         _description: updatedConceptSnapshot.websites[0].description,
+                        _order: 1,
                         _url: updatedConceptSnapshot.websites[0].url,
                     }),
                     expect.objectContaining({
@@ -531,6 +564,7 @@ describe('merges a new concept snapshot into a concept', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.websites[1].title,
                         _description: updatedConceptSnapshot.websites[1].description,
+                        _order: 2,
                         _url: updatedConceptSnapshot.websites[1].url,
                     })
                 ]));
@@ -541,13 +575,15 @@ describe('merges a new concept snapshot into a concept', () => {
                         _id: expect.not.objectContaining(updatedConceptSnapshot.costs[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.costs[0].title,
-                        _description: updatedConceptSnapshot.costs[0].description
+                        _description: updatedConceptSnapshot.costs[0].description,
+                        _order: 1
                     }),
                     expect.objectContaining({
                         _id: expect.not.objectContaining(updatedConceptSnapshot.costs[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: updatedConceptSnapshot.costs[1].title,
-                        _description: updatedConceptSnapshot.costs[1].description
+                        _description: updatedConceptSnapshot.costs[1].description,
+                        _order: 2
                     })
                 ]));
 

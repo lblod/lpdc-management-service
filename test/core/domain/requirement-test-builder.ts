@@ -9,12 +9,12 @@ import {
 } from "./evidence-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
-
 export function aMinimalRequirementForConceptSnapshot(): RequirementBuilder {
     return new RequirementBuilder()
         .withId(RequirementBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(RequirementTestBuilder.TITLE).build())
-        .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
+        .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build())
+        .withOrder(1);
 }
 
 export function aMinimalRequirementForConcept(): RequirementBuilder {
@@ -23,14 +23,16 @@ export function aMinimalRequirementForConcept(): RequirementBuilder {
         .withId(RequirementBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(RequirementTestBuilder.TITLE).build())
-        .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
+        .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build())
+        .withOrder(1);
 }
 
 export function aMinimalRequirementForInstance(): RequirementBuilder {
     const uniqueId = uuid();
     return new RequirementBuilder()
         .withId(RequirementBuilder.buildIri(uniqueId))
-        .withUuid(uniqueId);
+        .withUuid(uniqueId)
+        .withOrder(1);
 }
 
 export function aFullRequirement(): RequirementBuilder {
@@ -53,6 +55,7 @@ export function aFullRequirement(): RequirementBuilder {
                 RequirementTestBuilder.DESCRIPTION_NL_INFORMAL,
                 RequirementTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
                 RequirementTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withOrder(1)
         .withEvidence(RequirementTestBuilder.EVIDENCE);
 }
 
@@ -74,6 +77,7 @@ export function anotherFullRequirement(): RequirementBuilder {
                 RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL,
                 RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_FORMAL,
                 RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withOrder(2)
         .withEvidence(RequirementTestBuilder.ANOTHER_EVIDENCE);
 }
 
@@ -90,6 +94,7 @@ export function aFullRequirementForInstance(): RequirementBuilder {
             RequirementTestBuilder.DESCRIPTION_EN,
             undefined,
             RequirementTestBuilder.DESCRIPTION_NL_FORMAL))
+        .withOrder(1)
         .withEvidence(RequirementTestBuilder.EVIDENCE_FOR_INSTANCE);
 }
 
@@ -106,6 +111,7 @@ export function anotherFullRequirementForInstance(): RequirementBuilder {
             RequirementTestBuilder.ANOTHER_DESCRIPTION_EN,
             undefined,
             RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL))
+        .withOrder(2)
         .withEvidence(RequirementTestBuilder.ANOTHER_EVIDENCE_FOR_INSTANCE);
 }
 

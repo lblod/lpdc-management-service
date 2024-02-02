@@ -10,18 +10,21 @@ export class FinancialAdvantage {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
+    private readonly _order: number;
     private readonly _conceptFinancialAdvantageId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
+                        order: number,
                         conceptFinancialAdvantageId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
+        this._order = requiredValue(order, 'order');
         this._conceptFinancialAdvantageId = conceptFinancialAdvantageId;
     }
 
@@ -31,6 +34,7 @@ export class FinancialAdvantage {
             requiredValue(financialAdvantage.uuid, 'uuid'),
             requiredValue(financialAdvantage.title, 'title'),
             requiredValue(financialAdvantage.description, 'description'),
+            financialAdvantage.order,
             undefined
         );
     }
@@ -41,6 +45,7 @@ export class FinancialAdvantage {
             undefined,
             requiredValue(financialAdvantage.title, 'title'),
             requiredValue(financialAdvantage.description, 'description'),
+            financialAdvantage.order,
             undefined
         );
     }
@@ -53,6 +58,7 @@ export class FinancialAdvantage {
             requiredValue(financialAdvantage.uuid, 'uuid'),
             financialAdvantage.title,
             financialAdvantage.description,
+            financialAdvantage.order,
             financialAdvantage.conceptFinancialAdvantageId
         );
     }
@@ -61,9 +67,10 @@ export class FinancialAdvantage {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
+                        order: number,
                         conceptFinancialAdvantageId: Iri | undefined): FinancialAdvantage {
 
-        return new FinancialAdvantage(id, uuid, title, description, conceptFinancialAdvantageId);
+        return new FinancialAdvantage(id, uuid, title, description, order, conceptFinancialAdvantageId);
     }
 
     get nlLanguage(): Language | undefined {
@@ -86,6 +93,10 @@ export class FinancialAdvantage {
         return this._description;
     }
 
+    get order(): number {
+        return this._order;
+    }
+
     get conceptFinancialAdvantageId(): Iri | undefined {
         return this._conceptFinancialAdvantageId;
     }
@@ -104,6 +115,7 @@ export class FinancialAdvantageBuilder {
     private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
+    private order: number;
     private conceptFinancialAdvantageId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
@@ -130,6 +142,11 @@ export class FinancialAdvantageBuilder {
         return this;
     }
 
+    public withOrder(order: number) {
+        this.order = order;
+        return this;
+    }
+
     public withConceptFinancialAdvantageId(conceptFinancialAdvantageId: Iri): FinancialAdvantageBuilder {
         this.conceptFinancialAdvantageId = conceptFinancialAdvantageId;
         return this;
@@ -153,6 +170,7 @@ export class FinancialAdvantageBuilder {
             this.uuid,
             this.title,
             this.description,
+            this.order,
             this.conceptFinancialAdvantageId,
         );
     }

@@ -33,6 +33,19 @@ describe('forConcept', () => {
         expect(() => Cost.forConcept(cost.build())).toThrow(new Error('description should not be undefined'));
     });
 
+    test('Undefined order throws error', () => {
+        const cost = aFullCost().withOrder(undefined);
+        expect(() => Cost.forConcept(cost.build())).toThrow(new Error('order should not be undefined'));
+    });
+
+});
+
+describe('forReconstituted', () => {
+
+    test('Undefined order throws error', () => {
+        expect(() => aFullCost().withOrder(undefined).build()).toThrow(new Error('order should not be undefined'));
+    });
+
 });
 
 describe('forConceptSnapshot', () => {
@@ -41,22 +54,28 @@ describe('forConceptSnapshot', () => {
         const cost = aFullCost().withId(undefined);
         expect(() => Cost.forConceptSnapshot(cost.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Uuid is undefined ', () => {
         const cost = aFullCost().build();
         expect(Cost.forConceptSnapshot(cost).uuid).toBeUndefined();
     });
+
     test('Undefined title throws error', () => {
         const cost = aFullCost().withTitle(undefined).build();
         expect(() => Cost.forConceptSnapshot(cost)).toThrow(new Error('title should not be undefined'));
     });
+
     test('Undefined description throws error', () => {
         const cost = aFullCost().withDescription(undefined).build();
         expect(() => Cost.forConceptSnapshot(cost)).toThrow(new Error('description should not be undefined'));
     });
 
+    test('Undefined order throws error', () => {
+        expect(() => Cost.forConceptSnapshot(aFullCost().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+    });
 });
 
-describe('for instance',()=>{
+describe('for instance', () => {
 
     const validLanguages = [Language.NL, Language.FORMAL, Language.INFORMAL];
     const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
@@ -65,9 +84,10 @@ describe('for instance',()=>{
         const cost = aFullCostForInstance().withId(undefined);
         expect(() => Cost.forInstance(cost.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Undefined Uuid throws error', () => {
         const cost = aFullCostForInstance().withUuid(undefined).build();
-        expect(()=>Cost.forInstance(cost).uuid).toThrow(new Error('uuid should not be undefined'));
+        expect(() => Cost.forInstance(cost).uuid).toThrow(new Error('uuid should not be undefined'));
     });
 
     test('If title and description have the same nl language cost is created', () => {
@@ -95,6 +115,7 @@ describe('for instance',()=>{
 
         expect(() => Cost.forInstance(cost)).toThrow(new Error('There is more than one Nl language present'));
     });
+
     test('If description has different nl languages, throws error', () => {
         const description = LanguageString.of('en', 'nl', 'nl-formal');
         const cost = aFullCostForInstance().withDescription(description).withTitle(undefined).build();
@@ -102,45 +123,49 @@ describe('for instance',()=>{
         expect(() => Cost.forInstance(cost)).toThrow(new Error('There is more than one Nl language present'));
     });
 
-    for(const invalidLanguage of invalidLanguages){
+    for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
         } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
         }
+        test('If title contains invalid language, throws error', () => {
+            const cost = aFullCostForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
+            expect(() => Cost.forInstance(cost)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
 
-    test('If title contains invalid language, throws error', () => {
-        const cost = aFullCostForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
-        expect(() => Cost.forInstance(cost)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
-    });
+        test('If description contains invalid language, throws error', () => {
+            const cost = aFullCostForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
+            expect(() => Cost.forInstance(cost)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
 
-    test('If description contains invalid language, throws error', () => {
-        const cost = aFullCostForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
-        expect(() => Cost.forInstance(cost)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
-    });
     }
 
-    for(const validLanguage of validLanguages){
+    for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
             valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
-        }else if (validLanguage == Language.INFORMAL) {
+        } else if (validLanguage == Language.INFORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
         }
 
-    test('If title contains valid language, not throws error', () => {
-        const cost = aFullCostForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
-        expect(() => Cost.forInstance(cost)).not.toThrow(new Error());
-    });
+        test('If title contains valid language, not throws error', () => {
+            const cost = aFullCostForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
+            expect(() => Cost.forInstance(cost)).not.toThrow(new Error());
+        });
 
-    test('If description contains valid language, throws error', () => {
-        const cost = aFullCostForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
-        expect(() => Cost.forInstance(cost)).not.toThrow(new Error());
-    });
+        test('If description contains valid language, throws error', () => {
+            const cost = aFullCostForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
+            expect(() => Cost.forInstance(cost)).not.toThrow(new Error());
+        });
     }
+
+    test('Undefined order throws error', () => {
+        expect(() => Cost.forInstance(aFullCostForInstance().withOrder(undefined).build()).uuid).toThrow(new Error('order should not be undefined'));
+    });
 
 });
 

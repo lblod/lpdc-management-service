@@ -10,18 +10,21 @@ export class Cost {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
+    private readonly _order: number;
     private readonly _conceptCostId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
+                        order: number,
                         conceptCostId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
+        this._order = requiredValue(order, 'order');
         this._conceptCostId = conceptCostId;
     }
 
@@ -31,6 +34,7 @@ export class Cost {
             requiredValue(cost.uuid, 'uuid'),
             requiredValue(cost.title, 'title'),
             requiredValue(cost.description, 'description'),
+            cost.order,
             undefined
         );
     }
@@ -41,6 +45,7 @@ export class Cost {
             undefined,
             requiredValue(cost.title, 'title'),
             requiredValue(cost.description, 'description'),
+            cost.order,
             undefined
         );
     }
@@ -53,6 +58,7 @@ export class Cost {
             requiredValue(cost.uuid, 'uuid'),
             cost.title,
             cost.description,
+            cost.order,
             cost.conceptCostId
         );
     }
@@ -62,9 +68,10 @@ export class Cost {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
-                        conceptId: Iri | undefined): Cost {
+                        order: number,
+                        conceptCostId: Iri | undefined): Cost {
 
-        return new Cost(id, uuid, title, description, conceptId);
+        return new Cost(id, uuid, title, description, order, conceptCostId);
     }
 
     get id(): Iri {
@@ -81,6 +88,10 @@ export class Cost {
 
     get description(): LanguageString | undefined {
         return this._description;
+    }
+
+    get order(): number {
+        return this._order;
     }
 
     get conceptCostId(): Iri | undefined {
@@ -106,6 +117,7 @@ export class CostBuilder {
     private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
+    private order: number;
     private conceptCostId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
@@ -132,6 +144,11 @@ export class CostBuilder {
         return this;
     }
 
+    public withOrder(order: number): CostBuilder {
+        this.order = order;
+        return this;
+    }
+
     public withConceptCostId(conceptCostId: Iri): CostBuilder {
         this.conceptCostId = conceptCostId;
         return this;
@@ -155,6 +172,7 @@ export class CostBuilder {
             this.uuid,
             this.title,
             this.description,
+            this.order,
             this.conceptCostId
         );
     }

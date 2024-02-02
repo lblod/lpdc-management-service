@@ -225,6 +225,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
                         newUuid,
                         r.title,
                         r.description,
+                        r.order,
                         r.evidence ? this.copyEvidence(r.evidence) : undefined,
                         undefined
                     )
@@ -242,6 +243,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
                         newUuid,
                         p.title,
                         p.description,
+                        p.order,
                         this.copyWebsites(p.websites),
                         undefined
                     )
@@ -254,7 +256,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         return websites.map(w => {
                 const newUuid = uuid();
                 return Website.forConcept(
-                    Website.reconstitute(new Iri(`http://data.lblod.info/id/website/${newUuid}`), newUuid, w.title, w.description, w.url, undefined)
+                    Website.reconstitute(new Iri(`http://data.lblod.info/id/website/${newUuid}`), newUuid, w.title, w.description, w.order, w.url, undefined)
                 );
             }
         );
@@ -263,7 +265,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
     private copyCosts(costs: Cost[]) {
         return costs.map(c => {
             const newUuid = uuid();
-            return Cost.forConcept(Cost.reconstitute(new Iri(`http://data.lblod.info/id/cost/${newUuid}`), newUuid, c.title, c.description, undefined));
+            return Cost.forConcept(Cost.reconstitute(new Iri(`http://data.lblod.info/id/cost/${newUuid}`), newUuid, c.title, c.description, c.order, undefined));
         });
     }
 
@@ -271,7 +273,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         return financialAdvantages.map(fa => {
                 const newUuid = uuid();
                 return FinancialAdvantage.forConcept(
-                    FinancialAdvantage.reconstitute(new Iri(`http://data.lblod.info/id/financial-advantage/${newUuid}`), newUuid, fa.title, fa.description, undefined)
+                    FinancialAdvantage.reconstitute(new Iri(`http://data.lblod.info/id/financial-advantage/${newUuid}`), newUuid, fa.title, fa.description, fa.order, undefined)
                 );
             }
         );

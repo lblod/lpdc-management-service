@@ -10,7 +10,8 @@ export function aMinimalContactPoint(): ContactPointTestBuilder {
     return new ContactPointTestBuilder()
         .withId(ContactPointTestBuilder
             .buildIri(uniqueId))
-        .withUuid(uniqueId);
+        .withUuid(uniqueId)
+        .withOrder(1);
 
 }
 
@@ -23,6 +24,7 @@ export function aFullContactPoint(): ContactPointTestBuilder {
         .withEmail(ContactPointTestBuilder.EMAIL)
         .withTelephone(ContactPointTestBuilder.TELEPHONE)
         .withOpeningHours(ContactPointTestBuilder.OPENING_HOURS)
+        .withOrder(1)
         .withAddress(ContactPointTestBuilder.ADDRESS);
 }
 
@@ -35,6 +37,7 @@ export function anotherFullContactPoint(): ContactPointTestBuilder {
         .withEmail(ContactPointTestBuilder.ANOTHER_EMAIL)
         .withTelephone(ContactPointTestBuilder.ANOTHER_TELEPHONE)
         .withOpeningHours(ContactPointTestBuilder.OPENING_HOURS)
+        .withOrder(2)
         .withAddress(ContactPointTestBuilder.ANOTHER_ADDRESS);
 }
 
@@ -58,6 +61,7 @@ export class ContactPointTestBuilder {
     private email: string | undefined;
     private telephone: string | undefined;
     private openingHours: string | undefined;
+    private order: number;
     private address: Address | undefined;
 
 
@@ -95,6 +99,11 @@ export class ContactPointTestBuilder {
         return this;
     }
 
+    public withOrder(order: number): ContactPointTestBuilder {
+        this.order = order;
+        return this;
+    }
+
     public withAddress(address: Address): ContactPointTestBuilder {
         this.address = address;
         return this;
@@ -109,6 +118,7 @@ export class ContactPointTestBuilder {
             this.email,
             this.telephone,
             this.openingHours,
+            this.order,
             this.address);
     }
 }

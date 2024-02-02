@@ -10,6 +10,7 @@ export class Website {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
+    private readonly _order: number;
     private readonly _url: string;
     private readonly _conceptWebsiteId: Iri | undefined;
 
@@ -17,6 +18,7 @@ export class Website {
                         uuid: string | undefined,
                         title: LanguageString,
                         description: LanguageString | undefined,
+                        order: number,
                         url: string,
                         conceptWebsiteId: Iri | undefined
     ) {
@@ -24,6 +26,7 @@ export class Website {
         this._uuid = uuid;
         this._title = title;
         this._description = description;
+        this._order = requiredValue(order, 'order');
         this._url = url;
         this._conceptWebsiteId = conceptWebsiteId;
     }
@@ -34,6 +37,7 @@ export class Website {
             requiredValue(website.uuid, 'uuid'),
             requiredValue(website.title, 'title'),
             website.description,
+            website.order,
             requiredValue(website.url, 'url'),
             undefined
         );
@@ -45,19 +49,21 @@ export class Website {
             undefined,
             requiredValue(website.title, 'title'),
             website.description,
+            website.order,
             requiredValue(website.url, 'url'),
             undefined
         );
     }
 
     static forInstance(website: Website): Website {
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, website.title,website.description);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, website.title, website.description);
 
         return new Website(
             website.id,
             requiredValue(website.uuid, 'uuid'),
             website.title,
             website.description,
+            website.order,
             website.url,
             website.conceptWebsiteId
         );
@@ -67,10 +73,11 @@ export class Website {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
+                        order: number,
                         url: string,
                         conceptWebsiteId: Iri | undefined): Website {
 
-        return new Website(id, uuid, title, description, url, conceptWebsiteId);
+        return new Website(id, uuid, title, description, order, url, conceptWebsiteId);
     }
 
     get nlLanguage(): Language | undefined {
@@ -91,6 +98,10 @@ export class Website {
 
     get description(): LanguageString | undefined {
         return this._description;
+    }
+
+    get order(): number {
+        return this._order;
     }
 
     get url(): string {
@@ -118,6 +129,7 @@ export class WebsiteBuilder {
     private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
+    private order: number;
     private url: string | undefined;
     private conceptWebsiteId: Iri | undefined;
 
@@ -142,6 +154,11 @@ export class WebsiteBuilder {
 
     public withDescription(description: LanguageString): WebsiteBuilder {
         this.description = description;
+        return this;
+    }
+
+    public withOrder(order: number): WebsiteBuilder {
+        this.order = order;
         return this;
     }
 
@@ -173,6 +190,7 @@ export class WebsiteBuilder {
             this.uuid,
             this.title,
             this.description,
+            this.order,
             this.url,
             this.conceptWebsiteId
         );

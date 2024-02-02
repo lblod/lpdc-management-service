@@ -12,6 +12,7 @@ export class Procedure {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
+    private readonly _order: number;
     private readonly _websites: Website[];
     private readonly _conceptProcedureId: Iri | undefined;
 
@@ -19,6 +20,7 @@ export class Procedure {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
+                        order: number,
                         websites: Website[],
                         conceptProcedureId: Iri | undefined
     ) {
@@ -26,6 +28,7 @@ export class Procedure {
         this._uuid = uuid;
         this._title = title;
         this._description = description;
+        this._order = requiredValue(order, 'order');
         this._websites = [...websites];
         this._conceptProcedureId = conceptProcedureId;
     }
@@ -36,6 +39,7 @@ export class Procedure {
             requiredValue(procedure.uuid, 'uuid'),
             requiredValue(procedure.title, 'title'),
             requiredValue(procedure.description, 'description'),
+            procedure.order,
             procedure.websites.map(Website.forConcept),
             undefined
         );
@@ -47,22 +51,24 @@ export class Procedure {
             undefined,
             requiredValue(procedure.title, 'title'),
             requiredValue(procedure.description, 'description'),
+            procedure.order,
             procedure.websites.map(Website.forConceptSnapshot),
             undefined
         );
     }
 
     static forInstance(procedure: Procedure): Procedure {
-        const websiteLangs = procedure.websites.flatMap(website=> website.title);
-        websiteLangs.concat(procedure.websites.flatMap(website =>website.description));
+        const websiteLangs = procedure.websites.flatMap(website => website.title);
+        websiteLangs.concat(procedure.websites.flatMap(website => website.description));
 
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, procedure.title,procedure.description,...websiteLangs);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, procedure.title, procedure.description, ...websiteLangs);
 
         return new Procedure(
             procedure.id,
             requiredValue(procedure.uuid, 'uuid'),
             procedure.title,
             procedure.description,
+            procedure.order,
             procedure.websites.map(Website.forInstance),
             procedure.conceptProcedureId
         );
@@ -72,10 +78,11 @@ export class Procedure {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
+                        order: number,
                         websites: Website[],
                         conceptProcedureId: Iri | undefined): Procedure {
 
-        return new Procedure(id, uuid, title, description, websites, conceptProcedureId);
+        return new Procedure(id, uuid, title, description, order, websites, conceptProcedureId);
     }
 
     get nlLanguage(): Language | undefined {
@@ -102,6 +109,10 @@ export class Procedure {
         return this._description;
     }
 
+    get order(): number {
+        return this._order;
+    }
+
     get websites(): Website[] {
         return [...this._websites];
     }
@@ -126,6 +137,7 @@ export class ProcedureBuilder {
     private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
+    private order: number;
     private websites: Website[] = [];
     private conceptProcedureId: Iri | undefined;
 
@@ -150,6 +162,11 @@ export class ProcedureBuilder {
 
     public withDescription(description: LanguageString): ProcedureBuilder {
         this.description = description;
+        return this;
+    }
+
+    public withOrder(order: number): ProcedureBuilder {
+        this.order = order;
         return this;
     }
 
@@ -181,6 +198,7 @@ export class ProcedureBuilder {
             this.uuid,
             this.title,
             this.description,
+            this.order,
             this.websites,
             this.conceptProcedureId
         );

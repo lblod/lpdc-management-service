@@ -7,6 +7,7 @@ export function aMinimalWebsiteForConceptSnapshot(): WebsiteBuilder {
     return new WebsiteBuilder()
         .withId(WebsiteBuilder.buildIri(uuid()))
         .withTitle(aMinimalLanguageString(WebsiteTestBuilder.TITLE).build())
+        .withOrder(1)
         .withUrl(WebsiteTestBuilder.URL);
 }
 
@@ -16,6 +17,7 @@ export function aMinimalWebsiteForConcept(): WebsiteBuilder {
         .withId(WebsiteBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(aMinimalLanguageString(WebsiteTestBuilder.TITLE).build())
+        .withOrder(1)
         .withUrl(WebsiteTestBuilder.URL);
 }
 
@@ -23,7 +25,8 @@ export function aMinimalWebsiteForInstance(): WebsiteBuilder {
     const uniqueId = uuid();
     return new WebsiteBuilder()
         .withId(WebsiteBuilder.buildIri(uniqueId))
-        .withUuid(uniqueId);
+        .withUuid(uniqueId)
+        .withOrder(1);
 }
 
 export function aFullWebsite(): WebsiteBuilder {
@@ -46,12 +49,14 @@ export function aFullWebsite(): WebsiteBuilder {
                 WebsiteTestBuilder.DESCRIPTION_NL_INFORMAL,
                 WebsiteTestBuilder.DESCRIPTION_NL_GENERATED_FORMAL,
                 WebsiteTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
+        .withOrder(1)
         .withUrl(WebsiteTestBuilder.URL);
 }
 
 export function anotherFullWebsite(aUuid: string): WebsiteBuilder {
     return new WebsiteBuilder()
         .withId(WebsiteBuilder.buildIri(aUuid))
+        .withUuid(aUuid)
         .withTitle(LanguageString.of(
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_EN(aUuid),
             WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL(aUuid),
@@ -67,6 +72,7 @@ export function anotherFullWebsite(aUuid: string): WebsiteBuilder {
                 WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_INFORMAL(aUuid),
                 WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_GENERATED_FORMAL(aUuid),
                 WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_GENERATED_INFORMAL(aUuid)))
+        .withOrder(2)
         .withUrl(WebsiteTestBuilder.ANOTHER_URL_TEMPLATE(aUuid));
 }
 
@@ -84,6 +90,7 @@ export function aFullWebsiteForInstance(): WebsiteBuilder {
                 WebsiteTestBuilder.DESCRIPTION_EN,
                 undefined,
                 WebsiteTestBuilder.DESCRIPTION_NL_FORMAL))
+        .withOrder(1)
         .withUrl(WebsiteTestBuilder.URL);
 }
 
@@ -100,6 +107,7 @@ export function anotherFullWebsiteForInstance(aUuid: string): WebsiteBuilder {
             WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_EN(aUuid),
             undefined,
             WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_FORMAL(aUuid)))
+        .withOrder(2)
         .withUrl(WebsiteTestBuilder.ANOTHER_URL_TEMPLATE(aUuid));
 }
 

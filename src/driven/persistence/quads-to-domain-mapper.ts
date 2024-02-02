@@ -458,7 +458,7 @@ export class QuadsToDomainMapper {
             this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasCost')));
         costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, NS.m8g('Cost')));
 
-        const costs = costIds.map(costId => Cost.reconstitute(costId, this.uuid(costId), this.title(costId), this.description(costId), this.conceptId(costId)));
+        const costs = costIds.map(costId => Cost.reconstitute(costId, this.uuid(costId), this.title(costId), this.description(costId), this.order(costId), this.conceptId(costId)));
 
         return this.sort(costs);
     }
@@ -471,7 +471,7 @@ export class QuadsToDomainMapper {
 
         const financialAdvantages =
             financialAdvantageIds.map(financialAdvantageId =>
-                FinancialAdvantage.reconstitute(financialAdvantageId, this.uuid(financialAdvantageId), this.title(financialAdvantageId), this.description(financialAdvantageId), this.conceptId(financialAdvantageId)));
+                FinancialAdvantage.reconstitute(financialAdvantageId, this.uuid(financialAdvantageId), this.title(financialAdvantageId), this.description(financialAdvantageId), this.order(financialAdvantageId), this.conceptId(financialAdvantageId)));
 
         return this.sort(financialAdvantages);
     }
@@ -485,7 +485,7 @@ export class QuadsToDomainMapper {
 
         const contactPoints: ContactPoint[] =
             contactPointIds.map(contactPointId => {
-                return new ContactPoint(contactPointId, this.uuid(contactPointId), this.url(contactPointId), this.email(contactPointId), this.telephone(contactPointId), this.openingHours(contactPointId), this.address(contactPointId));
+                return new ContactPoint(contactPointId, this.uuid(contactPointId), this.url(contactPointId), this.email(contactPointId), this.telephone(contactPointId), this.openingHours(contactPointId), this.order(contactPointId), this.address(contactPointId));
             });
         return this.sort(contactPoints);
     }
@@ -526,7 +526,7 @@ export class QuadsToDomainMapper {
 
         const websites =
             websiteIds.map(websiteId =>
-                Website.reconstitute(websiteId, this.uuid(websiteId), this.title(websiteId), this.description(websiteId), this.url(websiteId), this.conceptId(websiteId)));
+                Website.reconstitute(websiteId, this.uuid(websiteId), this.title(websiteId), this.description(websiteId), this.order(websiteId), this.url(websiteId), this.conceptId(websiteId)));
 
         return this.sort(websites);
     }
@@ -540,7 +540,7 @@ export class QuadsToDomainMapper {
 
         const procedures =
             procedureIds.map(procedureId =>
-                Procedure.reconstitute(procedureId, this.uuid(procedureId), this.title(procedureId), this.description(procedureId), this.websites(procedureId, NS.lpdcExt('hasWebsite')), this.conceptId(procedureId)));
+                Procedure.reconstitute(procedureId, this.uuid(procedureId), this.title(procedureId), this.description(procedureId), this.order(procedureId), this.websites(procedureId, NS.lpdcExt('hasWebsite')), this.conceptId(procedureId)));
 
         return this.sort(procedures);
     }
@@ -559,6 +559,7 @@ export class QuadsToDomainMapper {
                     this.uuid(requirementId),
                     this.title(requirementId),
                     this.description(requirementId),
+                    this.order(requirementId),
                     this.evidence(requirementId),
                     this.conceptId(requirementId)
                 ));
@@ -567,6 +568,7 @@ export class QuadsToDomainMapper {
     }
 
     private evidence(id: Iri): Evidence | undefined {
+        //TODO LPDC-917: add order ?
         const evidenceIds =
             this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasSupportingEvidence')));
 
@@ -584,6 +586,10 @@ export class QuadsToDomainMapper {
 
     private conceptId(id: Iri): Iri | undefined {
         return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.dct('source')));
+    }
+
+    private order(id: Iri): number | undefined {
+        return this.asNumber(this.storeAccess.uniqueValue(namedNode(id.value), NS.sh('order')));
     }
 
     private conceptSnapshotId(id: Iri): Iri | undefined {

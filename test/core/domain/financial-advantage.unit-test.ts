@@ -10,10 +10,12 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {uuid} from "../../../mu-helper";
 
 describe('forConcept', () => {
+
     test('Undefined id throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withId(undefined);
         expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Invalid iri id throws error', () => {
         expect(() => FinancialAdvantage.forConcept(aFullFinancialAdvantage().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
@@ -22,6 +24,7 @@ describe('forConcept', () => {
         const financialAdvantage = aFullFinancialAdvantage().withUuid(undefined);
         expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('uuid should not be undefined'));
     });
+
     test('Blank uuid throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withUuid('   ');
         expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('uuid should not be blank'));
@@ -36,6 +39,11 @@ describe('forConcept', () => {
         const financialAdvantage = aFullFinancialAdvantage().withDescription(undefined);
         expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('description should not be undefined'));
     });
+
+    test('Undefined order throws error', () => {
+        expect(() => FinancialAdvantage.forConcept(aFullFinancialAdvantage().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+    });
+
 });
 
 describe('forConceptSnapshot', () => {
@@ -44,25 +52,33 @@ describe('forConceptSnapshot', () => {
         const financialAdvantage = aFullFinancialAdvantage().withId(undefined);
         expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Invalid iri id throws error', () => {
         expect(() => FinancialAdvantage.forConceptSnapshot(aFullFinancialAdvantage().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
+
     test('Uuid is undefined ', () => {
         const financialAdvantage = aFullFinancialAdvantage().build();
         expect(FinancialAdvantage.forConceptSnapshot(financialAdvantage).uuid).toBeUndefined();
     });
+
     test('Undefined title throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withTitle(undefined).build();
         expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage)).toThrow(new Error('title should not be undefined'));
     });
+
     test('Undefined description throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withDescription(undefined).build();
         expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage)).toThrow(new Error('description should not be undefined'));
     });
 
+    test('Undefined order throws error', () => {
+        expect(() => FinancialAdvantage.forConceptSnapshot(aFullFinancialAdvantage().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+    });
+
 });
 
-describe('for instance',()=>{
+describe('for instance', () => {
 
     const validLanguages = [Language.NL, Language.FORMAL, Language.INFORMAL];
     const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
@@ -71,9 +87,10 @@ describe('for instance',()=>{
         const financialAdvantage = aFullFinancialAdvantageForInstance().withId(undefined);
         expect(() => FinancialAdvantage.forInstance(financialAdvantage.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Undefined Uuid throws error', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstance().withUuid(undefined).build();
-        expect(()=> FinancialAdvantage.forInstance(financialAdvantage).uuid).toThrow(new Error('uuid should not be undefined'));
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage).uuid).toThrow(new Error('uuid should not be undefined'));
     });
 
     test('If title and description have the same nl language financial advantage is created', () => {
@@ -81,6 +98,7 @@ describe('for instance',()=>{
         const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(langString).withDescription(langString).build();
         expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
     });
+
     test('If title and description are undefined financial advantage is created', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(undefined).withDescription(undefined).build();
         expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
@@ -100,6 +118,7 @@ describe('for instance',()=>{
 
         expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrow(new Error('There is more than one Nl language present'));
     });
+
     test('If description has different nl languages, throws error', () => {
         const description = LanguageString.of('en', 'nl', 'nl-formal');
         const financialAdvantage = aFullFinancialAdvantageForInstance().withDescription(description).withTitle(undefined).build();
@@ -107,7 +126,7 @@ describe('for instance',()=>{
         expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrow(new Error('There is more than one Nl language present'));
     });
 
-    for(const invalidLanguage of invalidLanguages){
+    for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
@@ -126,13 +145,13 @@ describe('for instance',()=>{
         });
     }
 
-    for(const validLanguage of validLanguages){
+    for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
             valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
-        }else if (validLanguage == Language.INFORMAL) {
+        } else if (validLanguage == Language.INFORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
         }
 
@@ -146,6 +165,10 @@ describe('for instance',()=>{
             expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
         });
     }
+
+    test('Undefined order throws error', () => {
+        expect(() => FinancialAdvantage.forInstance(aFullFinancialAdvantageForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+    });
 
 });
 

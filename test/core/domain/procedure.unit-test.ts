@@ -9,10 +9,12 @@ import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
 
 describe('forConcept', () => {
+
     test('Undefined id throws error', () => {
         const procedure = aFullProcedure().withId(undefined);
         expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Invalid iri id throws error', () => {
         expect(() => Procedure.forConcept(aFullProcedure().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
@@ -21,6 +23,7 @@ describe('forConcept', () => {
         const procedure = aFullProcedure().withUuid(undefined);
         expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('uuid should not be undefined'));
     });
+
     test('Blank uuid throws error', () => {
         const procedure = aFullProcedure().withUuid('   ');
         expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('uuid should not be blank'));
@@ -40,7 +43,7 @@ describe('forConcept', () => {
         test('valid website does not throw error', () => {
             const uuidValue = uuid();
             const validWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuidValue), uuid(), aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
-                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), WebsiteTestBuilder.URL, undefined);
+                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), 1, WebsiteTestBuilder.URL, undefined);
             const procedure = aFullProcedure().withWebsites([validWebsite]);
             expect(() => Procedure.forConcept(procedure.build())).not.toThrow();
         });
@@ -48,10 +51,14 @@ describe('forConcept', () => {
         test('invalid evidence does throw error', () => {
             const uuidValue = uuid();
             const validWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuidValue), undefined, aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
-                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), WebsiteTestBuilder.URL, undefined);
+                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), 1, WebsiteTestBuilder.URL, undefined);
             const procedure = aFullProcedure().withWebsites([validWebsite]);
             expect(() => Procedure.forConcept(procedure.build())).toThrow();
         });
+    });
+
+    test('Undefined order throws error', () => {
+        expect(() => Procedure.forConcept(aFullProcedure().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
     });
 });
 
@@ -61,22 +68,28 @@ describe('forConceptSnapshot', () => {
         const procedure = aFullProcedure().withId(undefined);
         expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Invalid iri id throws error', () => {
         expect(() => Procedure.forConceptSnapshot(aFullProcedure().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
+
     test('Uuid is undefined ', () => {
         const procedure = aFullProcedure().build();
         expect(Procedure.forConceptSnapshot(procedure).uuid).toBeUndefined();
     });
+
     test('Undefined title throws error', () => {
         const procedure = aFullProcedure().withTitle(undefined).build();
         expect(() => Procedure.forConceptSnapshot(procedure)).toThrow(new Error('title should not be undefined'));
     });
+
     test('Undefined description throws error', () => {
         const procedure = aFullProcedure().withDescription(undefined).build();
         expect(() => Procedure.forConceptSnapshot(procedure)).toThrow(new Error('description should not be undefined'));
     });
+
     describe('website ', () => {
+
         test('valid website does not throw error', () => {
             const uuidValue = uuid();
             const validWebsite = Website.reconstitute(
@@ -84,6 +97,7 @@ describe('forConceptSnapshot', () => {
                 undefined,
                 aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
                 aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
+                1,
                 WebsiteTestBuilder.URL,
                 undefined
             );
@@ -98,6 +112,7 @@ describe('forConceptSnapshot', () => {
                 undefined,
                 undefined,
                 undefined,
+                1,
                 WebsiteTestBuilder.URL,
                 undefined
             );
@@ -105,6 +120,11 @@ describe('forConceptSnapshot', () => {
             expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrow();
         });
     });
+
+    test('Undefined order throws error', () => {
+        expect(() => Procedure.forConceptSnapshot(aFullProcedure().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+    });
+
 });
 
 describe('for instance',()=>{
@@ -116,6 +136,7 @@ describe('for instance',()=>{
         const procedure = aFullProcedureForInstance().withId(undefined);
         expect(() => Procedure.forInstance(procedure.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Undefined Uuid throws error', () => {
         const procedure = aFullProcedureForInstance().withUuid(undefined).build();
         expect(()=>Procedure.forInstance(procedure).uuid).toThrow(new Error('uuid should not be undefined'));
@@ -126,6 +147,7 @@ describe('for instance',()=>{
         const procedure = aFullProcedureForInstance().withTitle(langString).withDescription(langString).build();
         expect(() => Procedure.forInstance(procedure)).not.toThrow(new Error());
     });
+
     test('If title and description are undefined procedure is created', () => {
         const procedure = aFullProcedureForInstance().withTitle(undefined).withDescription(undefined).build();
         expect(() => Procedure.forInstance(procedure)).not.toThrow(new Error());
@@ -145,6 +167,7 @@ describe('for instance',()=>{
 
         expect(() => Procedure.forInstance(procedure)).toThrow(new Error('There is more than one Nl language present'));
     });
+
     test('If description has different nl languages, throws error', () => {
         const description = LanguageString.of('en', 'nl', 'nl-formal');
         const procedure = aFullProcedureForInstance().withDescription(description).withTitle(undefined).build();
@@ -168,7 +191,6 @@ describe('for instance',()=>{
         expect(() => Procedure.forInstance(procedure)).toThrow(new Error('There is more than one Nl language present'));
 
     });
-
 
     for(const invalidLanguage of invalidLanguages){
         let valueInNlLanguage: LanguageString;
@@ -237,6 +259,10 @@ describe('for instance',()=>{
             expect(() => Procedure.forInstance(procedure)).not.toThrow(new Error());
         });
     }
+
+    test('Undefined order throws error', () => {
+        expect(()=>Procedure.forInstance(aFullProcedureForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+    });
 
 });
 
