@@ -270,7 +270,7 @@ export class DomainToTriplesMapper {
                 this.buildQuad(namedNode(requirement.id.value), NS.rdf('type'), NS.m8g('Requirement')),
                 ...this.languageStringToTriples(namedNode(requirement.id.value), NS.dct(`title`), requirement.title),
                 ...this.languageStringToTriples(namedNode(requirement.id.value), NS.dct(`description`), requirement.description),
-                this.buildQuad(namedNode(requirement.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                this.buildQuad(namedNode(requirement.id.value), NS.sh('order'), literal(`${index + 1}`, NS.xsd('integer'))),
                 ...this.evidenceToTriples(requirement.id, requirement.evidence),
                 requirement.conceptRequirementId ? this.conceptId(requirement.id, requirement.conceptRequirementId) : undefined,
             ]
@@ -297,7 +297,7 @@ export class DomainToTriplesMapper {
                 this.buildQuad(namedNode(procedure.id.value), NS.rdf('type'), NS.cpsv('Rule')),
                 ...this.languageStringToTriples(namedNode(procedure.id.value), NS.dct(`title`), procedure.title),
                 ...this.languageStringToTriples(namedNode(procedure.id.value), NS.dct(`description`), procedure.description),
-                this.buildQuad(namedNode(procedure.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                this.buildQuad(namedNode(procedure.id.value), NS.sh('order'), literal(`${index + 1}`, NS.xsd('integer'))),
                 ...this.websites(procedure.id, NS.lpdcExt('hasWebsite'), procedure.websites),
                 procedure.conceptProcedureId ? this.conceptId(procedure.id, procedure.conceptProcedureId) : undefined,
             ]
@@ -313,7 +313,7 @@ export class DomainToTriplesMapper {
                     ...this.languageStringToTriples(namedNode(website.id.value), NS.dct(`title`), website.title),
                     ...this.languageStringToTriples(namedNode(website.id.value), NS.dct(`description`), website.description),
                     website.url ? this.buildQuad(namedNode(website.id.value), NS.schema('url'), literal(website.url)) : undefined,
-                    this.buildQuad(namedNode(website.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                    this.buildQuad(namedNode(website.id.value), NS.sh('order'), literal(`${index + 1}`, NS.xsd('integer'))),
                     website.conceptWebsiteId ? this.conceptId(website.id, website.conceptWebsiteId) : undefined,
                 ];
             }
@@ -328,7 +328,7 @@ export class DomainToTriplesMapper {
                 this.buildQuad(namedNode(cost.id.value), NS.rdf('type'), NS.m8g('Cost')),
                 ...this.languageStringToTriples(namedNode(cost.id.value), NS.dct(`title`), cost.title),
                 ...this.languageStringToTriples(namedNode(cost.id.value), NS.dct(`description`), cost.description),
-                this.buildQuad(namedNode(cost.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                this.buildQuad(namedNode(cost.id.value), NS.sh('order'), literal(`${index + 1}`, NS.xsd('integer'))),
                 cost.conceptCostId ? this.conceptId(cost.id, cost.conceptCostId) : undefined,
             ];
         });
@@ -342,7 +342,7 @@ export class DomainToTriplesMapper {
                 this.buildQuad(namedNode(financialAdvantage.id.value), NS.rdf('type'), NS.lpdcExt('FinancialAdvantage')),
                 ...this.languageStringToTriples(namedNode(financialAdvantage.id.value), NS.dct(`title`), financialAdvantage.title),
                 ...this.languageStringToTriples(namedNode(financialAdvantage.id.value), NS.dct(`description`), financialAdvantage.description),
-                this.buildQuad(namedNode(financialAdvantage.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                this.buildQuad(namedNode(financialAdvantage.id.value), NS.sh('order'), literal(`${index + 1}`, NS.xsd('integer'))),
                 financialAdvantage.conceptFinancialAdvantageId ? this.conceptId(financialAdvantage.id, financialAdvantage.conceptFinancialAdvantageId) : undefined,
             ];
         });
@@ -358,7 +358,7 @@ export class DomainToTriplesMapper {
                 contactPoint.email ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('email'), contactPoint.email) : undefined,
                 contactPoint.telephone ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('telephone'), contactPoint.telephone) : undefined,
                 contactPoint.openingHours ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('openingHours'), contactPoint.openingHours) : undefined,
-                this.buildQuad(namedNode(contactPoint.id.value), NS.sh('order'), literal(`${index}`, NS.xsd('integer'))),
+                this.buildQuad(namedNode(contactPoint.id.value), NS.sh('order'), literal(`${index + 1}`, NS.xsd('integer'))),
                 ...this.addressToTriples(contactPoint.id, contactPoint.address),
             ];
         });
