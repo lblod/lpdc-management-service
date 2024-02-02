@@ -62,13 +62,13 @@ describe('Instance Data Integrity Validation', () => {
             }
         `;
         const bestuurseenheidIdsResult = await directDatabaseAccess.list(query);
-        let randomizedInstanceIds = shuffle([...bestuurseenheidIdsResult]);
-        //TODO LPDC-1003: take them all eventually, for now take the first n (from a randomized list).
+        const randomizedInstanceIds = shuffle([...bestuurseenheidIdsResult]);
         //randomizedInstanceIds = randomizedInstanceIds.slice(0, 50);
 
         let verifiedBestuurseenheden = 0;
         let verifiedInstances = 0;
         const totalErrors = [];
+        const totalRemainingQuadsInstance = [];
         const totalStartTime = new Date();
         const totalDoubleTriples: string[] = [];
 
@@ -184,7 +184,7 @@ describe('Instance Data Integrity Validation', () => {
 
                     if(allRemainingQuadsOfGraphAsTurtle.length > 0) {
                         fs.writeFileSync(`/tmp/remaining-quads-instance/remaining-quads-instance-${bestuurseenheid.uuid}.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
-                        totalErrors.push(...allRemainingQuadsOfGraphAsTurtle);
+                        totalRemainingQuadsInstance.push(...allRemainingQuadsOfGraphAsTurtle);
                     }
                     //TODO LPDC-1003: in the end this should be enabled
                     // expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
@@ -219,6 +219,7 @@ describe('Instance Data Integrity Validation', () => {
         }
         fs.writeFileSync(`/tmp/instance-total-errors.json`, sortedUniq(totalErrors.map(o => JSON.stringify(o))).join('\n'));
         fs.writeFileSync(`/tmp/instance-total-double-triples.csv`, totalDoubleTriples.join('\n'));
+        fs.writeFileSync(`/tmp/instance-total-remaining-quads.txt`, totalRemainingQuadsInstance.join('\n'));
         expect(totalErrors).toEqual([]);
     }, 60000 * 15 * 100);
 
