@@ -1,8 +1,9 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {aFullContactPoint} from "./contactPoint-test-builder";
+import {aFullContactPoint} from "./contact-point-test-builder";
 import {aFullAddress} from "./address-test-builder";
 
 describe('constructing', () => {
+
     test('Undefined id throws error', () => {
         expect(() => aFullContactPoint().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
     });
@@ -19,7 +20,12 @@ describe('constructing', () => {
         expect(() => aFullContactPoint().withUuid('   ').build()).toThrow(new Error('uuid should not be blank'));
     });
 
+    test('Blank order throws error', () => {
+        expect(() => aFullContactPoint().withOrder(undefined).build()).toThrow(new Error('order should not be undefined'));
+    });
+
     describe('address ', () => {
+
         test('valid address does not throw error', () => {
             const validAddress = aFullAddress().build();
             const contactPoint = aFullContactPoint().withAddress(validAddress);
@@ -30,5 +36,6 @@ describe('constructing', () => {
             const invalidAddress = aFullAddress().withId(undefined);
             expect(() => aFullContactPoint().withAddress(invalidAddress.build()).build()).toThrow();
         });
+
     });
 });

@@ -21,7 +21,7 @@ import {aMinimalRequirementForInstance} from "../../core/domain/requirement-test
 import {aMinimalEvidenceForInstance} from "../../core/domain/evidence-test-builder";
 import {aMinimalProcedureForInstance} from "../../core/domain/procedure-test-builder";
 import {aMinimalWebsiteForInstance} from "../../core/domain/website-test-builder";
-import {aFullContactPoint} from "../../core/domain/contactPoint-test-builder";
+import {aFullContactPoint} from "../../core/domain/contact-point-test-builder";
 import {AddressTestBuilder, aFullAddress} from "../../core/domain/address-test-builder";
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";

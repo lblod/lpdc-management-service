@@ -34,7 +34,7 @@ import {
     aFullFinancialAdvantageForInstance,
     anotherFullFinancialAdvantageForInstance
 } from "./financial-advantage-test-builder";
-import {aFullContactPoint, anotherFullContactPoint} from "./contactPoint-test-builder";
+import {aFullContactPoint, anotherFullContactPoint} from "./contact-point-test-builder";
 
 export function aMinimalInstance(): InstanceBuilder {
     const uniqueId = uuid();

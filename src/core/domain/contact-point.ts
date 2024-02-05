@@ -13,7 +13,6 @@ export class ContactPoint {
     private readonly _order: number;
     private readonly _address: Address | undefined;
 
-    //TODO LPDC-917: add test for invariants
     constructor(id: Iri,
                 uuid: string,
                 url: string | undefined,
