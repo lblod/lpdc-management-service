@@ -224,14 +224,21 @@ describe('Instance Data Integrity Validation', () => {
     }, 60000 * 15 * 100);
 
     test.skip('Find all triples for instance', async () => {
-        const bestuurseenheidId = new Iri("http://data.lblod.info/id/bestuurseenheden/17e71437ad9e1abbfd416b7bcb1485c0e6e21ac4f65f2a1584eb0985e246b1c9");
+        const bestuurseenheidId = new Iri("http://data.lblod.info/id/bestuurseenheden/0916618d3560fe5a168ef536c25ffaddb15ef6ce43105d3ed20df38615803c77");
         const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
-        const instanceId = new Iri("http://data.lblod.info/id/public-service/e239d70b-252c-4175-81ca-1c5ee30f89a9");
+        const instanceId = new Iri("http://data.lblod.info/id/public-service/38c47504-7e2c-4290-a2fb-778b7f5ca05c");
         const triples = await getInstanceTriples(endPoint, bestuurseenheid.userGraph(), instanceId);
         console.log(triples);
 
         const repository = new InstanceSparqlRepository(endPoint);
         const instance = await repository.findById(bestuurseenheid, instanceId);
+        instance.id;
+        const domainToTriplesMapper = new DomainToTriplesMapper(bestuurseenheid.userGraph());
+
+        const quadsForInstanceForId =
+            domainToTriplesMapper.instanceToTriples(instance);
+
+        quadsForInstanceForId.toString();
     });
 
     function wait(milliseconds: number) {
