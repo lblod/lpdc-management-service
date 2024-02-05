@@ -4,10 +4,10 @@ import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recur
 import {Iri} from "../../core/domain/shared/iri";
 import {Concept} from "../../core/domain/concept";
 import {CONCEPT_GRAPH, PREFIX} from "../../../config";
-import {LoggingDoubleTripleReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {sparqlEscapeUri} from "../../../mu-helper";
-import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
+import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {Logger} from "../../../platform/logger";
 import {isEqual} from "lodash";
 
@@ -50,7 +50,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
                 NS.eli('LegalResource').value,
                 NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
-        const mapper = new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleTripleReporter(new Logger('Concept-QuadsToDomainLogger')));
+        const mapper = new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleQuadReporter(new Logger('Concept-QuadsToDomainLogger')));
 
         return mapper.concept(id);
     }
@@ -68,7 +68,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
     }
 
     async save(concept: Concept): Promise<void> {
-        const triples = new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(concept).map(s => s.toNT());
+        const triples = new DomainToQuadsMapper(new Iri(CONCEPT_GRAPH)).conceptToQuads(concept).map(s => s.toNT());
 
         const query = `
             INSERT DATA { 
@@ -82,10 +82,10 @@ export class ConceptSparqlRepository implements ConceptRepository {
     }
 
     async update(concept: Concept, old: Concept): Promise<void> {
-        const oldTriples = new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(old).map(s => s.toNT());
-        const newTriples = new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(concept).map(s => s.toNT());
+        const oldTriples = new DomainToQuadsMapper(new Iri(CONCEPT_GRAPH)).conceptToQuads(old).map(s => s.toNT());
+        const newTriples = new DomainToQuadsMapper(new Iri(CONCEPT_GRAPH)).conceptToQuads(concept).map(s => s.toNT());
 
-        // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
+        // Virtuoso bug: when triples/quads in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
         if (isEqual(oldTriples, newTriples)) {
             throw new Error('no change');
         }

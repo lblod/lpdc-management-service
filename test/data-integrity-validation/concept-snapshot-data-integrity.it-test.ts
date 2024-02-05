@@ -4,7 +4,7 @@ import {CONCEPT_SNAPSHOT_LDES_GRAPH, PREFIX} from "../../config";
 import {ConceptSnapshotSparqlTestRepository} from "../driven/persistence/concept-snapshot-sparql-test-repository";
 import {shuffle, sortedUniq, uniq} from "lodash";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
-import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
+import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
 import {asSortedArray} from "../../src/core/domain/shared/collections-helper";
 import {isLiteral, namedNode, Statement} from "rdflib";
 import {Iri} from "../../src/core/domain/shared/iri";
@@ -23,7 +23,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
     const sparqlQuerying = new SparqlQuerying(endPoint);
     const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endPoint);
     const graph = new Iri(CONCEPT_SNAPSHOT_LDES_GRAPH);
-    const domainToTriplesMapper = new DomainToTriplesMapper(graph);
+    const domainToQuadsMapper = new DomainToQuadsMapper(graph);
 
     test.skip('Load all concept snapshots; print errors to console.log', async () => {
 
@@ -85,7 +85,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
                     const conceptSnapshotForId = await repository.findById(id);
                     expect(conceptSnapshotForId.id).toEqual(id);
                     const quadsForConceptSnapshotForId =
-                        new DomainToTriplesMapper(graph).conceptSnapshotToTriples(conceptSnapshotForId);
+                        new DomainToQuadsMapper(graph).conceptSnapshotToQuads(conceptSnapshotForId);
                     quadsFromRequeriedConceptSnapshots =
                         [...quadsForConceptSnapshotForId, ...quadsFromRequeriedConceptSnapshots];
                 } catch (e) {
@@ -150,12 +150,12 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         console.log(allQuadsAsStrings.join('\n'));
 
         const conceptSnapshot = await repository.findById(id);
-        const conceptSnapshotToTriples = domainToTriplesMapper.conceptSnapshotToTriples(conceptSnapshot);
+        const conceptSnapshotToQuads = domainToQuadsMapper.conceptSnapshotToQuads(conceptSnapshot);
         console.log('saving back');
-        const allConceptSnapshotToTriplesAsStrings = asSortedArray(conceptSnapshotToTriples.map(q => q.toString()));
-        console.log(allConceptSnapshotToTriplesAsStrings.join('\n'));
+        const allConceptSnapshotToQuadsAsStrings = asSortedArray(conceptSnapshotToQuads.map(q => q.toString()));
+        console.log(allConceptSnapshotToQuadsAsStrings.join('\n'));
 
-        expect(allQuadsAsStrings).toEqual(allConceptSnapshotToTriplesAsStrings);
+        expect(allQuadsAsStrings).toEqual(allConceptSnapshotToQuadsAsStrings);
 
     });
 

@@ -1,4 +1,4 @@
-import {LoggingDoubleTripleReporter, QuadsToDomainMapper} from "../../../src/driven/persistence/quads-to-domain-mapper";
+import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../../../src/driven/persistence/quads-to-domain-mapper";
 import {literal, namedNode, quad} from "rdflib";
 import {buildBestuurseenheidIri, buildConceptSnapshotIri, buildInstanceIri} from "../../core/domain/iri-test-builder";
 import {uuid} from "../../../mu-helper";
@@ -40,7 +40,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.dct('title'), literal('title nl', Language.NL), graph),
                 ];
 
-            new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleTripleReporter(logger)).instance(instanceId);
+            new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleQuadReporter(logger)).instance(instanceId);
 
             expect(loggerSpy).not.toHaveBeenCalled();
             jest.clearAllMocks();
@@ -64,10 +64,10 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
                 ];
 
-            new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleTripleReporter(logger))
+            new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleQuadReporter(logger))
                 .instance(instanceId);
 
-            expect(loggerSpy).toHaveBeenCalledWith(`DoubleTriple|${instanceId}|http://mu.semte.ch/vocabularies/core/uuid|undefined|1|2|"${uuid1}"|"${uuid2}"`);
+            expect(loggerSpy).toHaveBeenCalledWith(`DoubleQuad|http://mu.semte.ch/graphs/public|${instanceId}|http://mu.semte.ch/vocabularies/core/uuid|undefined|1|2|"${uuid1}"|"${uuid2}"`);
         });
 
         test('unique statement contains more than one triple', () => {
@@ -88,10 +88,10 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
                 ];
 
-            new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleTripleReporter(logger))
+            new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleQuadReporter(logger))
                 .instance(instanceId);
 
-            expect(loggerSpy).toHaveBeenCalledWith(`DoubleTriple|${instanceId}|http://purl.org/pav/createdBy|undefined|1|2|<${createdByIri1}>|<${createdByIri2}>`);
+            expect(loggerSpy).toHaveBeenCalledWith(`DoubleQuad|http://mu.semte.ch/graphs/public|${instanceId}|http://purl.org/pav/createdBy|undefined|1|2|<${createdByIri1}>|<${createdByIri2}>`);
         });
 
         test('language string contains more than one triple for same language', () => {
@@ -112,10 +112,10 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.dct('title'), literal('title nl yet another triple', Language.NL), graph),
                 ];
 
-            new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleTripleReporter(logger))
+            new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleQuadReporter(logger))
                 .instance(instanceId);
 
-            expect(loggerSpy).toHaveBeenCalledWith(`DoubleTriple|${instanceId}|http://purl.org/dc/terms/title|undefined|1|3|"title nl"@nl|"title nl another triple"@nl|"title nl yet another triple"@nl`);
+            expect(loggerSpy).toHaveBeenCalledWith(`DoubleQuad|http://mu.semte.ch/graphs/public|${instanceId}|http://purl.org/dc/terms/title|undefined|1|3|"title nl"@nl|"title nl another triple"@nl|"title nl yet another triple"@nl`);
         });
 
     });
@@ -154,7 +154,7 @@ describe('quads to domain mapper', () => {
                     quad(subjectCost2, NS.sh('order'), literal('1', NS.xsd('integer')), graph),
                 ];
 
-            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
+            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
             expect(() => domainMapper.instance(instanceId)).toThrow(new Error('Not all orders are unique'));
 
 
@@ -184,7 +184,7 @@ describe('quads to domain mapper', () => {
                     quad(subjectCost2, NS.sh('order'), literal('1', NS.xsd('integer')), graph),
                 ];
 
-            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
+            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
             expect(() => domainMapper.instance(instanceId)).not.toThrow();
         });
 
@@ -199,7 +199,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
                 ];
 
-            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
+            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
             expect(() => domainMapper.instance(instanceId)).not.toThrow();
         });
 
@@ -227,7 +227,7 @@ describe('quads to domain mapper', () => {
                     quad(subjectCost2, NS.sh('order'), literal('1', NS.xsd('integer')), graph),
                 ];
 
-            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
+            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
             expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`order should not be undefined`));
         });
 
@@ -256,7 +256,7 @@ describe('quads to domain mapper', () => {
                     quad(subjectCost2, NS.sh('order'), literal('1', NS.xsd('integer')), graph),
                 ];
 
-            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleTripleReporter(logger));
+            const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
             expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`Not all orders are unique`));
         });
     });

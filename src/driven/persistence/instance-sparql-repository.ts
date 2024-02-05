@@ -5,9 +5,9 @@ import {PREFIX} from "../../../config";
 import {sparqlEscapeDateTime, sparqlEscapeUri} from "../../../mu-helper";
 import {Instance} from "../../core/domain/instance";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
-import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
+import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
-import {DoubleTripleReporter, LoggingDoubleTripleReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {InstanceReviewStatusType} from "../../core/domain/types";
 import {Logger} from "../../../platform/logger";
@@ -18,13 +18,13 @@ import {isEqual} from "lodash";
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
     protected readonly fetcher: DatastoreToQuadsRecursiveSparqlFetcher;
-    protected doubleTripleReporter: DoubleTripleReporter = new LoggingDoubleTripleReporter(new Logger('Instance-QuadsToDomainLogger'));
+    protected doubleQuadReporter: DoubleQuadReporter = new LoggingDoubleQuadReporter(new Logger('Instance-QuadsToDomainLogger'));
 
-    constructor(endpoint?: string, doubleTripleReporter?: DoubleTripleReporter) {
+    constructor(endpoint?: string, doubleQuadReporter?: DoubleQuadReporter) {
         this.querying = new SparqlQuerying(endpoint);
         this.fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endpoint);
-        if (doubleTripleReporter) {
-            this.doubleTripleReporter = doubleTripleReporter;
+        if (doubleQuadReporter) {
+            this.doubleQuadReporter = doubleQuadReporter;
         }
     }
 
@@ -62,19 +62,19 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
 
-        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), this.doubleTripleReporter);
+        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), this.doubleQuadReporter);
 
         return mapper.instance(id);
 
     }
 
     async save(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void> {
-        const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
+        const quads = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
         const query = `
             INSERT DATA { 
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                    ${triples.join("\n")}
+                    ${quads.join("\n")}
                 }
             }
         `;
@@ -82,8 +82,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
     }
 
     async update(bestuurseenheid: Bestuurseenheid, instance: Instance, old: Instance): Promise<void> {
-        const oldTriples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(old).map(s => s.toNT());
-        const newTriples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
+        const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(old).map(s => s.toNT());
+        const newTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
         // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
         if (isEqual(oldTriples, newTriples)) {
@@ -123,7 +123,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 throw new Error(`Cannot delete a published instance`);
             }
 
-            const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
+            const triples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
             const now = new Date();
             let query: string;

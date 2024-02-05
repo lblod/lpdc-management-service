@@ -6,7 +6,7 @@ import {shuffle, sortedUniq, uniq} from "lodash";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {sparqlEscapeUri} from "../../mu-helper";
 import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuurseenheid-sparql-test-repository";
-import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
+import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {
     DatastoreToQuadsRecursiveSparqlFetcher
@@ -17,11 +17,11 @@ import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sp
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {InstanceReviewStatusType} from "../../src/core/domain/types";
-import {DoubleTripleReporter} from "../../src/driven/persistence/quads-to-domain-mapper";
+import {DoubleQuadReporter} from "../../src/driven/persistence/quads-to-domain-mapper";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import {Instance} from "../../src/core/domain/instance";
 
-class DoubleTripleReporterCapture implements DoubleTripleReporter{
+class DoubleQuadReporterCapture implements DoubleQuadReporter {
 
     private readonly _bestuurseenheid: Bestuurseenheid;
     private _logs: string[] = [];
@@ -30,7 +30,7 @@ class DoubleTripleReporterCapture implements DoubleTripleReporter{
         this._bestuurseenheid = bestuurseenheid;
     }
 
-    report(subject: string, predicate: string, object: string, expectedCount: number, actualCount: number, triples: string[]): void {
+    report(graph: string, subject: string, predicate: string, object: string, expectedCount: number, actualCount: number, triples: string[]): void {
         this._logs.push(`${this._bestuurseenheid.id.value}|${this._bestuurseenheid.prefLabel}|INSTANCE_MARKER|${subject}|${predicate}|${object}|${expectedCount}|${actualCount}|${triples.join('|')}`);
     }
 
@@ -70,18 +70,18 @@ describe('Instance Data Integrity Validation', () => {
         const totalErrors = [];
         const totalRemainingQuadsInstance = [];
         const totalStartTime = new Date();
-        const totalDoubleTriples: string[] = [];
+        const totalDoubleQuads: string[] = [];
 
         console.log(`Verifying ${randomizedInstanceIds.length} bestuurseenheden`);
 
-        if(!fs.existsSync(`/tmp/remaining-quads-instance`)) {
+        if (!fs.existsSync(`/tmp/remaining-quads-instance`)) {
             fs.mkdirSync(`/tmp/remaining-quads-instance`);
         }
 
         for (const bestuurseenheidId of randomizedInstanceIds) {
 
             const bestuurseenheid = await bestuurseenheidRepository.findById(new Iri(bestuurseenheidId['id'].value));
-            const domainToTriplesMapper = new DomainToTriplesMapper(bestuurseenheid.userGraph());
+            const domainToQuadsMapper = new DomainToQuadsMapper(bestuurseenheid.userGraph());
 
             const instanceIdsQuery = `
             ${PREFIX.cpsv}
@@ -132,15 +132,15 @@ describe('Instance Data Integrity Validation', () => {
 
                     for (const instanceId of randomizedInstanceIds) {
                         try {
-                            const doubleTripleReporterCapture = new DoubleTripleReporterCapture(bestuurseenheid);
-                            const repository = new InstanceSparqlRepository(endPoint, doubleTripleReporterCapture);
+                            const doubleQuadReporterCapture = new DoubleQuadReporterCapture(bestuurseenheid);
+                            const repository = new InstanceSparqlRepository(endPoint, doubleQuadReporterCapture);
 
                             const id = new Iri(instanceId['id'].value);
                             const instance = await repository.findById(bestuurseenheid, id);
 
                             expect(instance.id).toEqual(id);
                             const quadsForInstanceForId =
-                                domainToTriplesMapper.instanceToTriples(instance);
+                                domainToQuadsMapper.instanceToQuads(instance);
 
                             quadsFromRequeriedInstances.push(...quadsForInstanceForId);
 
@@ -161,8 +161,8 @@ describe('Instance Data Integrity Validation', () => {
 
                             expect(instance.createdBy).toEqual(bestuurseenheid.id);
 
-                            const doubleTripleErrorsForInstance = doubleTripleReporterCapture.logs(instance);
-                            totalDoubleTriples.push(...doubleTripleErrorsForInstance);
+                            const doubleQuadsErrorsForInstance = doubleQuadReporterCapture.logs(instance);
+                            totalDoubleQuads.push(...doubleQuadsErrorsForInstance);
 
                         } catch (e) {
                             console.error(e);
@@ -182,11 +182,11 @@ describe('Instance Data Integrity Validation', () => {
                         .filter(q => !quadsFromRequeriedInstancesAsStrings.includes(q));
 
 
-                    if(allRemainingQuadsOfGraphAsTurtle.length > 0) {
+                    if (allRemainingQuadsOfGraphAsTurtle.length > 0) {
                         fs.writeFileSync(`/tmp/remaining-quads-instance/remaining-quads-instance-${bestuurseenheid.uuid}.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
                         totalRemainingQuadsInstance.push(...allRemainingQuadsOfGraphAsTurtle);
                     }
-                    //TODO LPDC-1003: in the end this should be enabled
+                    //in the end this should be enabled
                     // expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
 
                     const averageTime = (new Date().valueOf() - before - delayTime * instanceIds.length) / instanceIds.length;
@@ -218,7 +218,7 @@ describe('Instance Data Integrity Validation', () => {
 
         }
         fs.writeFileSync(`/tmp/instance-total-errors.json`, sortedUniq(totalErrors.map(o => JSON.stringify(o))).join('\n'));
-        fs.writeFileSync(`/tmp/instance-total-double-triples.csv`, totalDoubleTriples.join('\n'));
+        fs.writeFileSync(`/tmp/instance-total-double-triples.csv`, totalDoubleQuads.join('\n'));
         fs.writeFileSync(`/tmp/instance-total-remaining-quads.txt`, totalRemainingQuadsInstance.join('\n'));
         expect(totalErrors).toEqual([]);
     }, 60000 * 15 * 100);
@@ -233,10 +233,10 @@ describe('Instance Data Integrity Validation', () => {
         const repository = new InstanceSparqlRepository(endPoint);
         const instance = await repository.findById(bestuurseenheid, instanceId);
         instance.id;
-        const domainToTriplesMapper = new DomainToTriplesMapper(bestuurseenheid.userGraph());
+        const domainToTriplesMapper = new DomainToQuadsMapper(bestuurseenheid.userGraph());
 
         const quadsForInstanceForId =
-            domainToTriplesMapper.instanceToTriples(instance);
+            domainToTriplesMapper.instanceToQuads(instance);
 
         quadsForInstanceForId.toString();
     });

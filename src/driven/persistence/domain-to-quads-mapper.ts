@@ -28,15 +28,14 @@ import {Instance} from "../../core/domain/instance";
 import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
 
-//TODO LPDC-917: rename 2 DomainToQuadsMapper (+ methods)
-export class DomainToTriplesMapper {
+export class DomainToQuadsMapper {
     private readonly graphId;
 
     constructor(graphId: Iri) {
         this.graphId = namedNode(graphId.value);
     }
 
-    public conceptToTriples(concept: Concept): Statement[] {
+    public conceptToQuads(concept: Concept): Statement[] {
         return [
             this.rdfType(concept.id, NS.lpdcExt('ConceptualPublicService')),
             concept.uuid ? this.buildQuad(namedNode(concept.id.value), NS.mu('uuid'), literal(concept.uuid)) : undefined,
@@ -72,7 +71,7 @@ export class DomainToTriplesMapper {
         ].filter(t => t !== undefined);
     }
 
-    public conceptSnapshotToTriples(conceptSnapshot: ConceptSnapshot): Statement[] {
+    public conceptSnapshotToQuads(conceptSnapshot: ConceptSnapshot): Statement[] {
         return [
             this.rdfType(conceptSnapshot.id, NS.lpdcExt('ConceptualPublicService')),
             this.startDate(conceptSnapshot.id, conceptSnapshot.startDate),
@@ -109,7 +108,7 @@ export class DomainToTriplesMapper {
         ].filter(t => t !== undefined);
     }
 
-    public instanceToTriples(instance: Instance): Statement[] {
+    public instanceToQuads(instance: Instance): Statement[] {
         return [
             this.rdfType(instance.id, NS.cpsv('PublicService')),
             instance.uuid ? this.buildQuad(namedNode(instance.id.value), NS.mu('uuid'), literal(instance.uuid)) : undefined,
@@ -179,64 +178,64 @@ export class DomainToTriplesMapper {
     }
 
     private title(id: Iri, value: LanguageString): Statement [] {
-        return this.languageStringToTriples(namedNode(id.value), NS.dct('title'), value);
+        return this.languageStringToQuads(namedNode(id.value), NS.dct('title'), value);
     }
 
     private description(id: Iri, value: LanguageString): Statement [] {
-        return this.languageStringToTriples(namedNode(id.value), NS.dct('description'), value);
+        return this.languageStringToQuads(namedNode(id.value), NS.dct('description'), value);
     }
 
     private additionalDescription(id: Iri, value: LanguageString): Statement [] {
-        return this.languageStringToTriples(namedNode(id.value), NS.lpdcExt('additionalDescription'), value);
+        return this.languageStringToQuads(namedNode(id.value), NS.lpdcExt('additionalDescription'), value);
     }
 
     private exception(id: Iri, value: LanguageString): Statement [] {
-        return this.languageStringToTriples(namedNode(id.value), NS.lpdcExt('exception'), value);
+        return this.languageStringToQuads(namedNode(id.value), NS.lpdcExt('exception'), value);
     }
 
     private regulation(id: Iri, value: LanguageString): Statement[] {
-        return this.languageStringToTriples(namedNode(id.value), NS.lpdcExt('regulation'), value);
+        return this.languageStringToQuads(namedNode(id.value), NS.lpdcExt('regulation'), value);
     }
 
     private targetAudiences(id: Iri, values: TargetAudienceType[]): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('targetAudience'), this.enumsToIris(values, NS.dvc.doelgroep));
+        return this.irisToQuads(namedNode(id.value), NS.lpdcExt('targetAudience'), this.enumsToIris(values, NS.dvc.doelgroep));
     }
 
     private themes(id: Iri, values: ThemeType[]): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.m8g('thematicArea'), this.enumsToIris(values, NS.dvc.thema));
+        return this.irisToQuads(namedNode(id.value), NS.m8g('thematicArea'), this.enumsToIris(values, NS.dvc.thema));
     }
 
     private competentAuthorityLevels(id: Iri, values: CompetentAuthorityLevelType[]): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel'), this.enumsToIris(values, NS.dvc.bevoegdBestuursniveau));
+        return this.irisToQuads(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel'), this.enumsToIris(values, NS.dvc.bevoegdBestuursniveau));
     }
 
     private competentAuthorities(id: Iri, values: Iri[]): Statement [] {
-        return this.irisToTriples(namedNode(id.value), NS.m8g('hasCompetentAuthority'), values);
+        return this.irisToQuads(namedNode(id.value), NS.m8g('hasCompetentAuthority'), values);
     }
 
     private executingAuthorityLevels(id: Iri, values: ExecutingAuthorityLevelType[]): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel'), this.enumsToIris(values, NS.dvc.uitvoerendBestuursniveau));
+        return this.irisToQuads(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel'), this.enumsToIris(values, NS.dvc.uitvoerendBestuursniveau));
     }
 
     private executingAuthorities(id: Iri, values: Iri[]): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('hasExecutingAuthority'), values);
+        return this.irisToQuads(namedNode(id.value), NS.lpdcExt('hasExecutingAuthority'), values);
     }
 
     private publicationMedia(id: Iri, values: PublicationMediumType[]): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('publicationMedium'), this.enumsToIris(values, NS.dvc.publicatieKanaal));
+        return this.irisToQuads(namedNode(id.value), NS.lpdcExt('publicationMedium'), this.enumsToIris(values, NS.dvc.publicatieKanaal));
     }
 
     private yourEuropeCategories(id: Iri, values: YourEuropeCategoryType[]): Statement [] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), this.enumsToIris(values, NS.dvc.yourEuropeCategorie));
+        return this.irisToQuads(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), this.enumsToIris(values, NS.dvc.yourEuropeCategorie));
     }
 
     private keywords(id: Iri, values: LanguageString[]): Statement[] {
         return values
-            .flatMap(keyword => this.languageStringToTriples(namedNode(id.value), namedNode(NS.dcat('keyword').value), keyword));
+            .flatMap(keyword => this.languageStringToQuads(namedNode(id.value), namedNode(NS.dcat('keyword').value), keyword));
     }
 
     private conceptTags(id: Iri, values: ConceptTagType[]): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.lpdcExt('conceptTag'), this.enumsToIris(values, NS.dvc.conceptTag));
+        return this.irisToQuads(namedNode(id.value), NS.lpdcExt('conceptTag'), this.enumsToIris(values, NS.dvc.conceptTag));
     }
 
     private isArchived(id: Iri, isArchived: boolean): Statement | undefined {
@@ -244,11 +243,11 @@ export class DomainToTriplesMapper {
     }
 
     private legalResources(id: Iri, values: Iri[]): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.m8g('hasLegalResource'), values);
+        return this.irisToQuads(namedNode(id.value), NS.m8g('hasLegalResource'), values);
     }
 
     private spatials(id: Iri, values: Iri[]): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.dct('spatial'), values);
+        return this.irisToQuads(namedNode(id.value), NS.dct('spatial'), values);
     }
 
     private latestConceptSnapshot(id: Iri, value: Iri): Statement {
@@ -269,22 +268,22 @@ export class DomainToTriplesMapper {
                 this.buildQuad(namedNode(id.value), NS.ps('hasRequirement'), namedNode(requirement.id.value)),
                 requirement.uuid ? this.buildQuad(namedNode(requirement.id.value), NS.mu('uuid'), literal(requirement.uuid)) : undefined,
                 this.buildQuad(namedNode(requirement.id.value), NS.rdf('type'), NS.m8g('Requirement')),
-                ...this.languageStringToTriples(namedNode(requirement.id.value), NS.dct(`title`), requirement.title),
-                ...this.languageStringToTriples(namedNode(requirement.id.value), NS.dct(`description`), requirement.description),
+                ...this.languageStringToQuads(namedNode(requirement.id.value), NS.dct(`title`), requirement.title),
+                ...this.languageStringToQuads(namedNode(requirement.id.value), NS.dct(`description`), requirement.description),
                 this.buildQuad(namedNode(requirement.id.value), NS.sh('order'), literal(requirement.order.toString(), NS.xsd('integer'))),
-                ...this.evidenceToTriples(requirement.id, requirement.evidence),
+                ...this.evidenceToQuads(requirement.id, requirement.evidence),
                 requirement.conceptRequirementId ? this.conceptId(requirement.id, requirement.conceptRequirementId) : undefined,
             ]
         );
     }
 
-    private evidenceToTriples(requirementId: Iri, evidence: Evidence | undefined): Statement[] {
+    private evidenceToQuads(requirementId: Iri, evidence: Evidence | undefined): Statement[] {
         return evidence ? [
             this.buildQuad(namedNode(requirementId.value), NS.m8g('hasSupportingEvidence'), namedNode(evidence.id.value)),
             evidence.uuid ? this.buildQuad(namedNode(evidence.id.value), NS.mu('uuid'), literal(evidence.uuid)) : undefined,
             this.buildQuad(namedNode(evidence.id.value), NS.rdf('type'), NS.m8g('Evidence')),
-            ...this.languageStringToTriples(namedNode(evidence.id.value), NS.dct(`title`), evidence.title),
-            ...this.languageStringToTriples(namedNode(evidence.id.value), NS.dct(`description`), evidence.description),
+            ...this.languageStringToQuads(namedNode(evidence.id.value), NS.dct(`title`), evidence.title),
+            ...this.languageStringToQuads(namedNode(evidence.id.value), NS.dct(`description`), evidence.description),
             evidence.conceptEvidenceId ? this.conceptId(evidence.id, evidence.conceptEvidenceId) : undefined,
             this.buildQuad(namedNode(evidence.id.value), NS.sh('order'), literal(`1`, NS.xsd('integer'))),
         ] : [];
@@ -296,8 +295,8 @@ export class DomainToTriplesMapper {
                 this.buildQuad(namedNode(id.value), NS.cpsv('follows'), namedNode(procedure.id.value)),
                 procedure.uuid ? this.buildQuad(namedNode(procedure.id.value), NS.mu('uuid'), literal(procedure.uuid)) : undefined,
                 this.buildQuad(namedNode(procedure.id.value), NS.rdf('type'), NS.cpsv('Rule')),
-                ...this.languageStringToTriples(namedNode(procedure.id.value), NS.dct(`title`), procedure.title),
-                ...this.languageStringToTriples(namedNode(procedure.id.value), NS.dct(`description`), procedure.description),
+                ...this.languageStringToQuads(namedNode(procedure.id.value), NS.dct(`title`), procedure.title),
+                ...this.languageStringToQuads(namedNode(procedure.id.value), NS.dct(`description`), procedure.description),
                 this.buildQuad(namedNode(procedure.id.value), NS.sh('order'), literal(procedure.order.toString(), NS.xsd('integer'))),
                 ...this.websites(procedure.id, NS.lpdcExt('hasWebsite'), procedure.websites),
                 procedure.conceptProcedureId ? this.conceptId(procedure.id, procedure.conceptProcedureId) : undefined,
@@ -311,8 +310,8 @@ export class DomainToTriplesMapper {
                     this.buildQuad(namedNode(id.value), predicate, namedNode(website.id.value)),
                     website.uuid ? this.buildQuad(namedNode(website.id.value), NS.mu('uuid'), literal(website.uuid)) : undefined,
                     this.buildQuad(namedNode(website.id.value), NS.rdf('type'), NS.schema('WebSite')),
-                    ...this.languageStringToTriples(namedNode(website.id.value), NS.dct(`title`), website.title),
-                    ...this.languageStringToTriples(namedNode(website.id.value), NS.dct(`description`), website.description),
+                    ...this.languageStringToQuads(namedNode(website.id.value), NS.dct(`title`), website.title),
+                    ...this.languageStringToQuads(namedNode(website.id.value), NS.dct(`description`), website.description),
                     website.url ? this.buildQuad(namedNode(website.id.value), NS.schema('url'), literal(website.url)) : undefined,
                     this.buildQuad(namedNode(website.id.value), NS.sh('order'), literal(website.order.toString(), NS.xsd('integer'))),
                     website.conceptWebsiteId ? this.conceptId(website.id, website.conceptWebsiteId) : undefined,
@@ -327,8 +326,8 @@ export class DomainToTriplesMapper {
                 this.buildQuad(namedNode(id.value), NS.m8g('hasCost'), namedNode(cost.id.value)),
                 cost.uuid ? this.buildQuad(namedNode(cost.id.value), NS.mu('uuid'), literal(cost.uuid)) : undefined,
                 this.buildQuad(namedNode(cost.id.value), NS.rdf('type'), NS.m8g('Cost')),
-                ...this.languageStringToTriples(namedNode(cost.id.value), NS.dct(`title`), cost.title),
-                ...this.languageStringToTriples(namedNode(cost.id.value), NS.dct(`description`), cost.description),
+                ...this.languageStringToQuads(namedNode(cost.id.value), NS.dct(`title`), cost.title),
+                ...this.languageStringToQuads(namedNode(cost.id.value), NS.dct(`description`), cost.description),
                 this.buildQuad(namedNode(cost.id.value), NS.sh('order'), literal(cost.order.toString(), NS.xsd('integer'))),
                 cost.conceptCostId ? this.conceptId(cost.id, cost.conceptCostId) : undefined,
             ];
@@ -341,8 +340,8 @@ export class DomainToTriplesMapper {
                 this.buildQuad(namedNode(id.value), NS.cpsv('produces'), namedNode(financialAdvantage.id.value)),
                 financialAdvantage.uuid ? this.buildQuad(namedNode(financialAdvantage.id.value), NS.mu('uuid'), literal(financialAdvantage.uuid)) : undefined,
                 this.buildQuad(namedNode(financialAdvantage.id.value), NS.rdf('type'), NS.lpdcExt('FinancialAdvantage')),
-                ...this.languageStringToTriples(namedNode(financialAdvantage.id.value), NS.dct(`title`), financialAdvantage.title),
-                ...this.languageStringToTriples(namedNode(financialAdvantage.id.value), NS.dct(`description`), financialAdvantage.description),
+                ...this.languageStringToQuads(namedNode(financialAdvantage.id.value), NS.dct(`title`), financialAdvantage.title),
+                ...this.languageStringToQuads(namedNode(financialAdvantage.id.value), NS.dct(`description`), financialAdvantage.description),
                 this.buildQuad(namedNode(financialAdvantage.id.value), NS.sh('order'), literal(financialAdvantage.order.toString(), NS.xsd('integer'))),
                 financialAdvantage.conceptFinancialAdvantageId ? this.conceptId(financialAdvantage.id, financialAdvantage.conceptFinancialAdvantageId) : undefined,
             ];
@@ -360,22 +359,22 @@ export class DomainToTriplesMapper {
                 contactPoint.telephone ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('telephone'), contactPoint.telephone) : undefined,
                 contactPoint.openingHours ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('openingHours'), contactPoint.openingHours) : undefined,
                 this.buildQuad(namedNode(contactPoint.id.value), NS.sh('order'), literal(contactPoint.order.toString(), NS.xsd('integer'))),
-                ...this.addressToTriples(contactPoint.id, contactPoint.address),
+                ...this.addressToQuads(contactPoint.id, contactPoint.address),
             ];
         });
     }
 
-    private addressToTriples(contactPointId: Iri, address: Address | undefined): Statement[] {
+    private addressToQuads(contactPointId: Iri, address: Address | undefined): Statement[] {
         return address ? [
             this.buildQuad(namedNode(contactPointId.value), NS.lpdcExt('address'), namedNode(address.id.value)),
             address.uuid ? this.buildQuad(namedNode(address.id.value), NS.mu('uuid'), literal(address.uuid)) : undefined,
             this.buildQuad(namedNode(address.id.value), NS.rdf('type'), NS.locn('Address')),
-            ...this.languageStringToTriples(namedNode(address.id.value), NS.adres(`gemeentenaam`), address.gemeentenaam),
-            ...this.languageStringToTriples(namedNode(address.id.value), NS.adres(`land`), address.land),
+            ...this.languageStringToQuads(namedNode(address.id.value), NS.adres(`gemeentenaam`), address.gemeentenaam),
+            ...this.languageStringToQuads(namedNode(address.id.value), NS.adres(`land`), address.land),
             address.huisnummer ? this.buildQuad(namedNode(address.id.value), NS.adres('Adresvoorstelling.huisnummer'), address.huisnummer) : undefined,
             address.busnummer ? this.buildQuad(namedNode(address.id.value), NS.adres('Adresvoorstelling.busnummer'), address.busnummer) : undefined,
             address.postcode ? this.buildQuad(namedNode(address.id.value), NS.adres('postcode'), address.postcode) : undefined,
-            ...this.languageStringToTriples(namedNode(address.id.value), NS.adres(`Straatnaam`), address.straatnaam),
+            ...this.languageStringToQuads(namedNode(address.id.value), NS.adres(`Straatnaam`), address.straatnaam),
             this.verwijstNaar(address.id, address.verwijstNaar),
             this.buildQuad(namedNode(address.id.value), NS.sh('order'), literal(`1`, NS.xsd('integer'))),
         ] : [];
@@ -394,14 +393,14 @@ export class DomainToTriplesMapper {
     }
 
     private languages(id: Iri, values: LanguageType[]): Statement[] {
-        return this.irisToTriples(namedNode(id.value), NS.pera.language(''), this.enumsToIris(values, NS.pera.languageType));
+        return this.irisToQuads(namedNode(id.value), NS.pera.language(''), this.enumsToIris(values, NS.pera.languageType));
     }
 
     private verwijstNaar(id: Iri, verwijstNaar: Iri | undefined): Statement | undefined {
         return verwijstNaar ? this.buildQuad(namedNode(id.value), NS.adres('verwijstNaar'), namedNode(verwijstNaar.value)) : undefined;
     }
 
-    private languageStringToTriples(subject: NamedNode, predicate: NamedNode, object: LanguageString | undefined): Statement[] {
+    private languageStringToQuads(subject: NamedNode, predicate: NamedNode, object: LanguageString | undefined): Statement[] {
         return object ?
             [
                 ["en", object.en],
@@ -414,7 +413,7 @@ export class DomainToTriplesMapper {
                 .map(tuple => this.buildQuad(subject, predicate, literal(tuple[1], tuple[0]))) : [];
     }
 
-    private irisToTriples(subject: NamedNode, predicate: NamedNode, values: any[]): Statement[] {
+    private irisToQuads(subject: NamedNode, predicate: NamedNode, values: any[]): Statement[] {
         return values.map(e => this.buildQuad(subject, predicate, namedNode(e)));
     }
 

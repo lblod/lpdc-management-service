@@ -1,7 +1,7 @@
 import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
-import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
+import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
 import {CONCEPT_GRAPH, PREFIX} from "../../config";
 import {Statement} from "rdflib";
 import {isEqual, shuffle, sortedUniq, uniq} from "lodash";
@@ -33,7 +33,7 @@ describe('Concept Data Integrity Validation', () => {
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
     const sparqlQuerying = new SparqlQuerying(endPoint);
     const conceptGraph = new Iri(CONCEPT_GRAPH);
-    const domainToTriplesMapper = new DomainToTriplesMapper(conceptGraph);
+    const domainToQuadsMapper = new DomainToQuadsMapper(conceptGraph);
 
     test.skip('Load all concepts; print errors to console.log', async () => {
 
@@ -127,7 +127,7 @@ describe('Concept Data Integrity Validation', () => {
                     const conceptForId = await repository.findById(id);
                     expect(conceptForId.id).toEqual(id);
                     const quadsForConceptForId =
-                        domainToTriplesMapper.conceptToTriples(conceptForId);
+                        domainToQuadsMapper.conceptToQuads(conceptForId);
                     quadsFromRequeriedConcepts =
                         [...quadsForConceptForId, ...quadsFromRequeriedConcepts];
 
@@ -225,12 +225,12 @@ describe('Concept Data Integrity Validation', () => {
         console.log(allQuadsAsStrings.join('\n'));
 
         const concept = await repository.findById(id);
-        const conceptToTriples = domainToTriplesMapper.conceptToTriples(concept);
+        const conceptToQuads = domainToQuadsMapper.conceptToQuads(concept);
         console.log('saving back');
-        const allConceptsToTriplesAsStrings = asSortedArray(conceptToTriples.map(q => q.toString()));
-        console.log(allConceptsToTriplesAsStrings.join('\n'));
+        const allConceptsToQuadsAsStrings = asSortedArray(conceptToQuads.map(q => q.toString()));
+        console.log(allConceptsToQuadsAsStrings.join('\n'));
 
-        expect(allQuadsAsStrings).toEqual(allConceptsToTriplesAsStrings);
+        expect(allQuadsAsStrings).toEqual(allConceptsToQuadsAsStrings);
 
         const latestConceptSnapshot = await snapshotRepository.findById(concept.latestConceptSnapshot);
         const latestFunctionallyChangedConceptSnapshot = await snapshotRepository.findById(concept.latestFunctionallyChangedConceptSnapshot);

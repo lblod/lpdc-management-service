@@ -35,21 +35,21 @@ import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
 import {Logger} from "../../../platform/logger";
 
-export interface DoubleTripleReporter {
+export interface DoubleQuadReporter {
 
-    report(subject: string, predicate: string, object: string | undefined, expectedCount: number, actualCount: number, triples: string[]): void;
+    report(graph: string, subject: string, predicate: string, object: string | undefined, expectedCount: number, actualCount: number, triples: string[]): void;
 
 }
 
-export class LoggingDoubleTripleReporter implements DoubleTripleReporter {
+export class LoggingDoubleQuadReporter implements DoubleQuadReporter {
     private _logger: Logger;
 
     constructor(logger: Logger) {
         this._logger = logger;
     }
 
-    report(subject: string, predicate: string, object: string, expectedCount: number, actualCount: number, triples: string[]): void {
-        this._logger.log(`DoubleTriple|${subject}|${predicate}|${object}|${expectedCount}|${actualCount}|${triples.join('|')}`);
+    report(graph: string, subject: string, predicate: string, object: string, expectedCount: number, actualCount: number, triples: string[]): void {
+        this._logger.log(`DoubleQuad|${graph}|${subject}|${predicate}|${object}|${expectedCount}|${actualCount}|${triples.join('|')}`);
     }
 
 }
@@ -58,13 +58,13 @@ class StoreAccess {
 
     private readonly store;
     private readonly graphId;
-    private readonly doubleTripleReporter: DoubleTripleReporter;
+    private readonly doubleQuadReporter: DoubleQuadReporter;
 
-    constructor(quads: Quad[], graphId: Iri, doubleTripleReporter: DoubleTripleReporter) {
+    constructor(quads: Quad[], graphId: Iri, doubleQuadReporter: DoubleQuadReporter) {
         this.store = graph();
         this.store.addAll(quads);
         this.graphId = namedNode(graphId.value);
-        this.doubleTripleReporter = doubleTripleReporter;
+        this.doubleQuadReporter = doubleQuadReporter;
     }
 
     public statements(s: NamedNode,
@@ -88,7 +88,7 @@ class StoreAccess {
                 }, {});
             const maxLanguageIncidenceOfAnyLanguage = Math.max(...Object.values(languageIncidences));
             if (maxLanguageIncidenceOfAnyLanguage > 1) {
-                this.doubleTripleReporter.report(s.value, p.value, options?.o?.value, 1, maxLanguageIncidenceOfAnyLanguage, result.map(r => r?.object?.toNT()));
+                this.doubleQuadReporter.report(this.graphId.value, s.value, p.value, options?.o?.value, 1, maxLanguageIncidenceOfAnyLanguage, result.map(r => r?.object?.toNT()));
             }
         }
 
@@ -109,7 +109,7 @@ class StoreAccess {
         }
 
         if (allStatementsMatching.length > 1) {
-            this.doubleTripleReporter.report(s.value, p.value, o?.value, 1, allStatementsMatching.length, allStatementsMatching.map(r => r?.object?.toNT()));
+            this.doubleQuadReporter.report(this.graphId.value, s.value, p.value, o?.value, 1, allStatementsMatching.length, allStatementsMatching.map(r => r?.object?.toNT()));
         }
 
         return allStatementsMatching[0];
@@ -121,8 +121,8 @@ export class QuadsToDomainMapper {
     private readonly storeAccess;
     private readonly graphId;
 
-    constructor(quads: Quad[], graphId: Iri, doubleTripleReporter: DoubleTripleReporter) {
-        this.storeAccess = new StoreAccess(quads, graphId, doubleTripleReporter);
+    constructor(quads: Quad[], graphId: Iri, doubleQuadReporter: DoubleQuadReporter) {
+        this.storeAccess = new StoreAccess(quads, graphId, doubleQuadReporter);
         this.graphId = namedNode(graphId.value);
     }
 

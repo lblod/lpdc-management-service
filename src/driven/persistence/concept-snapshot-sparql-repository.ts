@@ -3,7 +3,7 @@ import {ConceptSnapshotRepository} from "../../core/port/driven/persistence/conc
 import {ConceptSnapshot} from "../../core/domain/concept-snapshot";
 import {Iri} from "../../core/domain/shared/iri";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
-import {LoggingDoubleTripleReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {CONCEPT_SNAPSHOT_LDES_GRAPH} from "../../../config";
 import {Logger} from "../../../platform/logger";
@@ -37,7 +37,7 @@ export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepositor
                 NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
 
-        const mapper = new QuadsToDomainMapper(quads, ldesDataGraph, new LoggingDoubleTripleReporter(new Logger('ConceptSnapshot-QuadsToDomainLogger')));
+        const mapper = new QuadsToDomainMapper(quads, ldesDataGraph, new LoggingDoubleQuadReporter(new Logger('ConceptSnapshot-QuadsToDomainLogger')));
 
         return mapper.conceptSnapshot(id);
     }
