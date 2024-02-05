@@ -213,9 +213,8 @@ app.get('/public-services/:instanceId/form/:formId', async function (req, res): 
     }
 });
 
-//TODO LDPC-917: add end 2 end test to add a procedure, and remove it again, and then verify it has disappeared.
-//TODO LPDC-917: remove /form/:formId from url
-app.put('/public-services/:instanceId/form/:formId', async function (req, res): Promise<any> {
+//TODO LPDC-917: add end 2 end test to add a procedure, and remove it again, and then verify it has disappeared.
+app.put('/public-services/:instanceId', async function (req, res): Promise<any> {
     const instanceIdRequestParam = req.params.instanceId;
     const delta = req.body;
 
