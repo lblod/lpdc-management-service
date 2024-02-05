@@ -1,4 +1,4 @@
-import {FORM_ID_TO_TYPE_MAPPING, FORM_MAPPING_TRANSLATIONS} from '../config';
+import {ENABLE_ADDRESS_VALIDATION, FORM_ID_TO_TYPE_MAPPING, FORM_MAPPING_TRANSLATIONS} from '../config';
 import ForkingStore from "forking-store";
 import * as rdflib from 'rdflib';
 import {validateForm} from '@lblod/submission-form-helpers';
@@ -60,7 +60,7 @@ export async function validateService(instanceId: Iri, bestuurseenheid: Bestuurs
             FORM_GRAPHS.formGraph
         );
 
-        if (form.type === FormType.CONTENT) {
+        if (ENABLE_ADDRESS_VALIDATION && form.type === FormType.CONTENT) {
             const addressesAreValid = await validateAddresses(form.serviceUri);
             if (!addressesAreValid) {
                 response.errors.push({
