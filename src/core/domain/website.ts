@@ -1,6 +1,6 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
-import _ from "lodash";
+import {zip} from "lodash";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
 
@@ -114,7 +114,7 @@ export class Website {
 
     static isFunctionallyChanged(value: Website[], other: Website[]): boolean {
         return value.length !== other.length
-            || _.zip(value, other).some((websites: [Website, Website]) => {
+            || zip(value, other).some((websites: [Website, Website]) => {
                 return LanguageString.isFunctionallyChanged(websites[0].title, websites[1].title)
                     || LanguageString.isFunctionallyChanged(websites[0].description, websites[1].description)
                     || websites[0].url !== websites[1].url;

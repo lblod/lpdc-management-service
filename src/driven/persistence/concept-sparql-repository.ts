@@ -103,10 +103,6 @@ export class ConceptSparqlRepository implements ConceptRepository {
         await this.querying.deleteInsert(query);
     }
 
-    asTurtleFormat(concept: Concept): string[] {
-        return new DomainToTriplesMapper(new Iri(CONCEPT_GRAPH)).conceptToTriples(concept).map(s => s.toNT());
-    }
-
     async conceptHasInstancesInBestuurseenheid(conceptId: Iri, bestuurseenheidsGraph:Iri): Promise<boolean> {
         const query = `
         ${PREFIX.cpsv}

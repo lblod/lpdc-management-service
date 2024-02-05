@@ -1,6 +1,6 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
-import _ from "lodash";
+import {zip} from "lodash";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
 
@@ -103,7 +103,7 @@ export class FinancialAdvantage {
 
     static isFunctionallyChanged(value: FinancialAdvantage[], other: FinancialAdvantage[]): boolean {
         return value.length !== other.length
-            || _.zip(value, other).some((financialAdvantages: [FinancialAdvantage, FinancialAdvantage]) => {
+            || zip(value, other).some((financialAdvantages: [FinancialAdvantage, FinancialAdvantage]) => {
                 return LanguageString.isFunctionallyChanged(financialAdvantages[0].title, financialAdvantages[1].title)
                     || LanguageString.isFunctionallyChanged(financialAdvantages[0].description, financialAdvantages[1].description);
             });

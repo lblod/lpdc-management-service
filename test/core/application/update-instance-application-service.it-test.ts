@@ -16,6 +16,7 @@ import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {SemanticFormsMapperImpl} from "../../../src/driven/persistence/semantic-forms-mapper-impl";
 
 describe('Update Instance Application Service tests', () => {
 
@@ -46,8 +47,9 @@ describe('Update Instance Application Service tests', () => {
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, conceptDisplayConfigurationRepository);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const semanticFormsMapper = new SemanticFormsMapperImpl();
 
-    const updateInstanceApplicationService = new UpdateInstanceApplicationService(instanceRepository);
+    const updateInstanceApplicationService = new UpdateInstanceApplicationService(instanceRepository, semanticFormsMapper);
 
     test('Can update an instance by setting an initial title, and updating that title in a second update using a turtle input', async () => {
         const bestuurseenheid =
@@ -258,7 +260,7 @@ nodes:02c296ca-d194-4971-9325-e17809afe087\n
     dct:title\n
             "engelse titel procedure"@en, "titel procedure"@nl-be-x-formal,\n
             nodes:f17a330b-2d2b-491b-a6ce-0afd95c42bfb.\n
-pub:051bf4bf-9505-41e0-9436-09f20ded884e\n
+pub:${instance.uuid}\n
     cpsv:follows nodes:02c296ca-d194-4971-9325-e17809afe087 .\n\n`,
             '@prefix : <#>.\n\n');
 

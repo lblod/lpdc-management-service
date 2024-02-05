@@ -1,6 +1,5 @@
 import {FormType} from "./src/core/domain/types";
 
-const FORM_STATUS_ONTWERP = 'http://lblod.data.gift/concepts/instance-status/ontwerp';
 const APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH;
 
 const PUBLIC_GRAPH = 'http://mu.semte.ch/graphs/public';
@@ -105,7 +104,6 @@ export {
     CONCEPT_GRAPH,
     PUBLIC_GRAPH,
     CONCEPT_SNAPSHOT_LDES_GRAPH,
-    FORM_STATUS_ONTWERP,
     APPLICATION_GRAPH,
     USER_SESSIONS_GRAPH,
     FORM_ID_TO_TYPE_MAPPING,

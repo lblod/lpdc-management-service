@@ -4,7 +4,7 @@ import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {DomainToTriplesMapper} from "../../src/driven/persistence/domain-to-triples-mapper";
 import {CONCEPT_GRAPH, PREFIX} from "../../config";
 import {Statement} from "rdflib";
-import _, {shuffle, sortedUniq, uniq} from "lodash";
+import {isEqual, shuffle, sortedUniq, uniq} from "lodash";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {Iri} from "../../src/core/domain/shared/iri";
@@ -254,15 +254,15 @@ describe('Concept Data Integrity Validation', () => {
             || FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate)
             || FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate)
             || value.type !== other.type
-            || !_.isEqual(value.targetAudiences, other.targetAudiences)
-            || !_.isEqual(value.themes, other.themes)
-            || !_.isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels)
-            || !_.isEqual(value.competentAuthorities, other.competentAuthorities)
-            || !_.isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels)
-            || !_.isEqual(value.executingAuthorities, other.executingAuthorities)
-            || !_.isEqual(value.publicationMedia, other.publicationMedia)
-            || !_.isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
-            || !_.isEqual(value.keywords, other.keywords)
+            || !isEqual(value.targetAudiences, other.targetAudiences)
+            || !isEqual(value.themes, other.themes)
+            || !isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels)
+            || !isEqual(value.competentAuthorities, other.competentAuthorities)
+            || !isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels)
+            || !isEqual(value.executingAuthorities, other.executingAuthorities)
+            || !isEqual(value.publicationMedia, other.publicationMedia)
+            || !isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
+            || !isEqual(value.keywords, other.keywords)
             || Requirement.isFunctionallyChanged(value.requirements, other.requirements)
             || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
             || Website.isFunctionallyChanged(value.websites, other.websites)

@@ -17,6 +17,7 @@ import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {aFullInstance, aMinimalInstance} from "../domain/instance-test-builder";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+import {SemanticFormsMapperImpl} from "../../../src/driven/persistence/semantic-forms-mapper-impl";
 
 describe('Form application service tests', () => {
 
@@ -29,8 +30,9 @@ describe('Form application service tests', () => {
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
         const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+        const semanticFormsMapper = new SemanticFormsMapperImpl();
 
-        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService);
+        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);
 
         test('can load a content form for a concept in correct language', async () => {
             const concept =
@@ -64,7 +66,7 @@ describe('Form application service tests', () => {
 
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('');
-            expect(source).toEqual(conceptRepository.asTurtleFormat(concept).join("\r\n"));
+            expect(source).toEqual(semanticFormsMapper.conceptAsTurtleFormat(concept).join("\r\n"));
             expect(source).toContain(`<${concept.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> .`);
             expect(serviceUri).toEqual(concept.id.value);
         });
@@ -101,7 +103,7 @@ describe('Form application service tests', () => {
 
             expect(form).toEqual('formdefinition with english requirements');
             expect(meta).toEqual('');
-            expect(source).toEqual(conceptRepository.asTurtleFormat(concept).join("\r\n"));
+            expect(source).toEqual(semanticFormsMapper.conceptAsTurtleFormat(concept).join("\r\n"));
             expect(source).toContain(`<${concept.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> .`);
             expect(serviceUri).toEqual(concept.id.value);
 
@@ -140,7 +142,7 @@ describe('Form application service tests', () => {
 
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('org1 a concept.\r\norg2 a concept.');
-            expect(source).toEqual(conceptRepository.asTurtleFormat(concept).join("\r\n"));
+            expect(source).toEqual(semanticFormsMapper.conceptAsTurtleFormat(concept).join("\r\n"));
             expect(source).toContain(`<${concept.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> .`);
             expect(serviceUri).toEqual(concept.id.value);
 
@@ -157,8 +159,9 @@ describe('Form application service tests', () => {
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
         const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+        const semanticFormsMapper = new SemanticFormsMapperImpl();
 
-        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService);
+        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);
 
         test('can load a content form for an instance in correct language', async () => {
             const bestuurseenheid =
@@ -196,7 +199,7 @@ describe('Form application service tests', () => {
 
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('');
-            expect(source).toEqual(instanceRepository.asTurtleFormat(bestuurseenheid, instance).join("\r\n"));
+            expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
             expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/vocab/cpsv#PublicService> .`);
             expect(serviceUri).toEqual(instance.id.value);
         });
@@ -237,7 +240,7 @@ describe('Form application service tests', () => {
 
             expect(form).toEqual('formdefinition with english requirements');
             expect(meta).toEqual('');
-            expect(source).toEqual(instanceRepository.asTurtleFormat(bestuurseenheid, instance).join("\r\n"));
+            expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
             expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/vocab/cpsv#PublicService> .`);
             expect(serviceUri).toEqual(instance.id.value);
 
@@ -280,7 +283,7 @@ describe('Form application service tests', () => {
 
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('org1 a concept.\r\norg2 a concept.');
-            expect(source).toEqual(instanceRepository.asTurtleFormat(bestuurseenheid, instance).join("\r\n"));
+            expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
             expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/vocab/cpsv#PublicService> .`);
             expect(serviceUri).toEqual(instance.id.value);
 

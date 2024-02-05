@@ -3,21 +3,25 @@ import {Iri} from "../domain/shared/iri";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {InstanceBuilder} from "../domain/instance";
 import {FormatPreservingDate} from "../domain/format-preserving-date";
+import {SemanticFormsMapper} from "../port/driven/persistence/semantic-forms-mapper";
 
 export class UpdateInstanceApplicationService {
 
     private readonly _instanceRepository: InstanceRepository;
+    private readonly _semanticFormsMapper: SemanticFormsMapper;
 
     constructor(
         instanceRepository: InstanceRepository,
+        semanticFormsMapper: SemanticFormsMapper,
     ) {
         this._instanceRepository = instanceRepository;
+        this._semanticFormsMapper = semanticFormsMapper;
     }
 
     //Note: the update instance application service is directly tied to semantic forms, hence that part of the input parameters are xxxAsTurtleFormat
     async update(bestuurseenheid: Bestuurseenheid, instanceId: Iri, instanceAsTurtleFormat: string, removalsAsTurtleFormat: string, additionsAsTurtleFormat: string): Promise<void> {
 
-        const parsedInstance = this._instanceRepository.fromTurtleFormat(bestuurseenheid, instanceId, instanceAsTurtleFormat);
+        const parsedInstance = this._semanticFormsMapper.instanceFromTurtleFormat(bestuurseenheid, instanceId, instanceAsTurtleFormat);
 
         const loadedInstance =
             InstanceBuilder.from(
@@ -26,7 +30,7 @@ export class UpdateInstanceApplicationService {
                 .build();
 
         const mergedInstance =
-            InstanceBuilder.from(this._instanceRepository.merge(bestuurseenheid, loadedInstance, removalsAsTurtleFormat, additionsAsTurtleFormat))
+            InstanceBuilder.from(this._semanticFormsMapper.mergeInstance(bestuurseenheid, loadedInstance, removalsAsTurtleFormat, additionsAsTurtleFormat))
                 .withDateModified(FormatPreservingDate.now())
                 .build();
 

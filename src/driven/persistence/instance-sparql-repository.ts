@@ -2,7 +2,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {InstanceRepository} from "../../core/port/driven/persistence/instance-repository";
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX} from "../../../config";
-import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {sparqlEscapeDateTime, sparqlEscapeUri} from "../../../mu-helper";
 import {Instance} from "../../core/domain/instance";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {DomainToTriplesMapper} from "./domain-to-triples-mapper";
@@ -11,11 +11,9 @@ import {DoubleTripleReporter, LoggingDoubleTripleReporter, QuadsToDomainMapper} 
 import {NS} from "./namespaces";
 import {InstanceReviewStatusType} from "../../core/domain/types";
 import {Logger} from "../../../platform/logger";
-import {literal, namedNode, quad, Statement} from "rdflib";
+import {literal} from "rdflib";
 import LPDCError from "../../../platform/lpdc-error";
 import {isEqual} from "lodash";
-import {Quad} from "rdflib/lib/tf-types";
-import {Graph, parse, RDFNode} from "../../../utils/rdflib";
 
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
@@ -128,7 +126,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
             const triples = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
 
             const now = new Date();
-            let query = '';
+            let query: string;
 
             if (publicationStatus === undefined) {
                 query = `
@@ -199,40 +197,5 @@ export class InstanceSparqlRepository implements InstanceRepository {
             await this.querying.deleteInsert(updateReviewStatusesQuery);
         }
     }
-
-    asTurtleFormat(bestuurseenheid: Bestuurseenheid, instance: Instance): string[] {
-        return new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance).map(s => s.toNT());
-    }
-
-    fromTurtleFormat(bestuurseenheid: Bestuurseenheid, id: Iri, rawData: string): Instance {
-        const quads = this.parseStatements(bestuurseenheid.userGraph(), rawData as unknown as Statement[]);
-        const quadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), this.doubleTripleReporter);
-        return quadsToDomainMapper.instance(id);
-    }
-
-    merge(bestuurseenheid: Bestuurseenheid, instance: Instance, removalsAsTurtleFormat: string, additionsAsTurtleFormat: string): Instance {
-
-        const instanceQuads = new DomainToTriplesMapper(bestuurseenheid.userGraph()).instanceToTriples(instance);
-
-        const removals = this.parseStatements(bestuurseenheid.userGraph(), removalsAsTurtleFormat as unknown as Statement[]);
-        const additions = this.parseStatements(bestuurseenheid.userGraph(), additionsAsTurtleFormat as unknown as Statement[]);
-
-        const mergedQuads =
-            [...instanceQuads.filter(q => !removals.find(toRemoveQuad => toRemoveQuad.equals(q))),
-                ...additions];
-
-        return new QuadsToDomainMapper(mergedQuads, bestuurseenheid.userGraph(), this.doubleTripleReporter)
-            .instance(instance.id);
-    }
-
-    private parseStatements(graph: Iri, statements: Statement[]): Quad[] {
-        const store = Graph();
-        const mutatingGraph = `http://mutate-graph/${uuid()}`;
-        parse(statements, store, {graph: mutatingGraph});
-        return store
-            .match(undefined, undefined, undefined, RDFNode(mutatingGraph))
-            .map(q => quad(q.subject, q.predicate, q.object, namedNode(graph.value)));
-    }
-
 
 }

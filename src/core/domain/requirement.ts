@@ -1,6 +1,6 @@
 import {LanguageString} from "./language-string";
 import {Iri} from "./shared/iri";
-import _ from 'lodash';
+import {zip} from 'lodash';
 import {Evidence} from "./evidence";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
@@ -119,7 +119,7 @@ export class Requirement {
 
     static isFunctionallyChanged(value: Requirement[], other: Requirement[]): boolean {
         return value.length !== other.length
-            || _.zip(value, other).some((reqs: [Requirement, Requirement]) => {
+            || zip(value, other).some((reqs: [Requirement, Requirement]) => {
                 return LanguageString.isFunctionallyChanged(reqs[0].title, reqs[1].title)
                     || LanguageString.isFunctionallyChanged(reqs[0].description, reqs[1].description)
                     || Evidence.isFunctionallyChanged(reqs[0].evidence, reqs[1].evidence);

@@ -28,6 +28,7 @@ import {Instance} from "../../core/domain/instance";
 import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
 
+//TODO LPDC-917: rename 2 DomainToQuadsMapper (+ methods)
 export class DomainToTriplesMapper {
     private readonly graphId;
 

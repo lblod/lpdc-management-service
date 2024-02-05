@@ -6,6 +6,7 @@ import {SelectFormLanguageDomainService} from "../domain/select-form-language-do
 import {Bestuurseenheid} from "../domain/bestuurseenheid";
 import {FormType, PublicationMediumType} from "../domain/types";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
+import {SemanticFormsMapper} from "../port/driven/persistence/semantic-forms-mapper";
 
 export class FormApplicationService {
 
@@ -14,6 +15,7 @@ export class FormApplicationService {
     private readonly _formDefinitionRepository: FormDefinitionRepository;
     private readonly _codeRepository: CodeRepository;
     private readonly _selectFormLanguageDomainService: SelectFormLanguageDomainService;
+    private readonly _semanticFormsMapper: SemanticFormsMapper;
 
     constructor(
         conceptRepository: ConceptRepository,
@@ -21,12 +23,14 @@ export class FormApplicationService {
         formDefinitionRepository: FormDefinitionRepository,
         codeRepository: CodeRepository,
         selectFormLanguageDomainService: SelectFormLanguageDomainService,
+        semanticFormsMapper: SemanticFormsMapper,
         ) {
         this._conceptRepository = conceptRepository;
         this._instanceRepository = instanceRepository;
         this._formDefinitionRepository = formDefinitionRepository;
         this._codeRepository = codeRepository;
         this._selectFormLanguageDomainService = selectFormLanguageDomainService;
+        this._semanticFormsMapper = semanticFormsMapper;
     }
 
     async loadConceptForm(bestuurseenheid: Bestuurseenheid, conceptId: Iri, formType: FormType): Promise<{
@@ -47,7 +51,7 @@ export class FormApplicationService {
         return {
             form: formDefinition,
             meta: tailoredSchemes.join("\r\n"),
-            source: this._conceptRepository.asTurtleFormat(concept).join("\r\n"),
+            source: this._semanticFormsMapper.conceptAsTurtleFormat(concept).join("\r\n"),
             serviceUri: conceptId.value,
         };
     }
@@ -70,7 +74,7 @@ export class FormApplicationService {
         return {
             form: formDefinition,
             meta: tailoredSchemes.join("\r\n"),
-            source: this._instanceRepository.asTurtleFormat(bestuurseenheid, instance).join("\r\n"),
+            source: this._semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"),
             serviceUri: instanceId.value,
         };
     }

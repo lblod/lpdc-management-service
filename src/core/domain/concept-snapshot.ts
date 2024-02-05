@@ -1,6 +1,6 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
-import _ from 'lodash';
+import {isEqual} from 'lodash';
 import {Requirement} from "./requirement";
 import {asSortedArray} from "./shared/collections-helper";
 import {Procedure} from "./procedure";
@@ -261,15 +261,15 @@ export class ConceptSnapshot {
             || FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate)
             || FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate)
             || value.type !== other.type
-            || !_.isEqual(value.targetAudiences, other.targetAudiences)
-            || !_.isEqual(value.themes, other.themes)
-            || !_.isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels)
-            || !_.isEqual(value.competentAuthorities, other.competentAuthorities)
-            || !_.isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels)
-            || !_.isEqual(value.executingAuthorities, other.executingAuthorities)
-            || !_.isEqual(value.publicationMedia, other.publicationMedia)
-            || !_.isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
-            || !_.isEqual(value.keywords, other.keywords)
+            || !isEqual(value.targetAudiences, other.targetAudiences)
+            || !isEqual(value.themes, other.themes)
+            || !isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels)
+            || !isEqual(value.competentAuthorities, other.competentAuthorities)
+            || !isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels)
+            || !isEqual(value.executingAuthorities, other.executingAuthorities)
+            || !isEqual(value.publicationMedia, other.publicationMedia)
+            || !isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
+            || !isEqual(value.keywords, other.keywords)
             || Requirement.isFunctionallyChanged(value.requirements, other.requirements)
             || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
             || Website.isFunctionallyChanged(value.websites, other.websites)

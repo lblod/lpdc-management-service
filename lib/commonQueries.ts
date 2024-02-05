@@ -1,4 +1,4 @@
-import {query, sparqlEscapeString, sparqlEscapeUri, update} from '../mu-helper';
+import {query, sparqlEscapeUri} from '../mu-helper';
 import {querySudo} from '@lblod/mu-auth-sudo';
 import {APPLICATION_GRAPH, PREFIXES} from '../config';
 import {sortBy} from "lodash";
@@ -48,22 +48,6 @@ export async function loadContactPointsAddresses(service: string, {
     return (await queryClient(queryStr, {}, connectionOptions)).results.bindings;
 }
 
-export async function serviceUriForId(publicServiceId: string, type: string = 'cpsv:PublicService', connectionOptions?: object): Promise<string> {
-    connectionOptions = connectionOptions || {};
-
-    return (await querySudo(`
-      ${PREFIXES}
-
-      SELECT DISTINCT ?service
-      WHERE {
-        BIND( ${sparqlEscapeString(publicServiceId)} as ?uuid)
-        ?service a ${type};
-          mu:uuid ?uuid.
-      }
-      LIMIT 1
-    `, {}, connectionOptions)).results.bindings[0]?.service?.value;
-}
-
 //TODO LPDC-1014: move to domain
 export async function loadContactPointOption(option: string): Promise<any> {
     const unsortedContactPointOptions = (await query(`
@@ -75,23 +59,6 @@ export async function loadContactPointOption(option: string): Promise<any> {
           }
     `)).results.bindings.map((object) => object.option.value);
     return sortBy(unsortedContactPointOptions, (option) => option.toUpperCase());
-}
-
-export async function removeReviewStatus(instanceUri: string): Promise<void> {
-    const queryString = `
-        ${PREFIXES}
-        DELETE {
-            GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
-                ${sparqlEscapeUri(instanceUri)} ext:reviewStatus ?o.
-            }
-        } 
-        WHERE {
-            GRAPH ${sparqlEscapeUri(APPLICATION_GRAPH)} {
-                ${sparqlEscapeUri(instanceUri)} ext:reviewStatus ?o.
-            }
-        }
-    `;
-    await update(queryString);
 }
 
 type QueryOptions = {

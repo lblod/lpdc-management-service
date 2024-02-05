@@ -1,6 +1,6 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
-import _ from "lodash";
+import {zip} from "lodash";
 import {Website} from "./website";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
@@ -123,7 +123,7 @@ export class Procedure {
 
     static isFunctionallyChanged(value: Procedure[], other: Procedure[]): boolean {
         return value.length !== other.length
-            || _.zip(value, other).some((procs: [Procedure, Procedure]) => {
+            || zip(value, other).some((procs: [Procedure, Procedure]) => {
                 return LanguageString.isFunctionallyChanged(procs[0].title, procs[1].title)
                     || LanguageString.isFunctionallyChanged(procs[0].description, procs[1].description)
                     || Website.isFunctionallyChanged(procs[0].websites, procs[1].websites);

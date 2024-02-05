@@ -36,6 +36,7 @@ import {DeleteInstanceDomainService} from "./src/core/domain/delete-instance-dom
 import {LinkConceptToInstanceDomainService} from "./src/core/domain/link-concept-to-instance-domain-service";
 import {ConfirmBijgewerktTotDomainService} from "./src/core/domain/confirm-bijgewerkt-tot-domain-service";
 import {UpdateInstanceApplicationService} from "./src/core/application/update-instance-application-service";
+import {SemanticFormsMapperImpl} from "./src/driven/persistence/semantic-forms-mapper-impl";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -57,6 +58,7 @@ const codeRepository = new CodeSparqlRepository();
 const instanceRepository = new InstanceSparqlRepository();
 const formDefinitionRepository = new FormDefinitionFileRepository();
 const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository();
+const semanticFormsMapper = new SemanticFormsMapperImpl();
 
 const newConceptSnapshotToConceptMergerDomainService =
     new NewConceptSnapshotToConceptMergerDomainService(
@@ -91,6 +93,7 @@ const formApplicationService = new FormApplicationService(
     formDefinitionRepository,
     codeRepository,
     selectFormLanguageDomainService,
+    semanticFormsMapper,
 );
 
 const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainService(
@@ -106,7 +109,8 @@ const confirmBijgewerktTotDomainService = new ConfirmBijgewerktTotDomainService(
 );
 
 const updateInstanceApplicationService = new UpdateInstanceApplicationService(
-  instanceRepository
+    instanceRepository,
+    semanticFormsMapper
 );
 
 app.get('/', function (_req, res): void {
@@ -209,6 +213,8 @@ app.get('/public-services/:instanceId/form/:formId', async function (req, res): 
     }
 });
 
+//TODO LDPC-917: add end 2 end test to add a procedure, and remove it again, and then verify it has disappeared.
+//TODO LPDC-917: remove /form/:formId from url
 app.put('/public-services/:instanceId/form/:formId', async function (req, res): Promise<any> {
     const instanceIdRequestParam = req.params.instanceId;
     const delta = req.body;
@@ -217,8 +223,9 @@ app.put('/public-services/:instanceId/form/:formId', async function (req, res): 
         const instanceId = new Iri(instanceIdRequestParam);
         const session: Session = req['session'];
         const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+        const instanceData = delta.graph;
 
-        await updateInstanceApplicationService.update(bestuurseenheid, instanceId, delta.graph, delta.removals, delta.additions);
+        await updateInstanceApplicationService.update(bestuurseenheid, instanceId, instanceData, delta.removals, delta.additions);
 
         return res.sendStatus(200);
     } catch (e) {
