@@ -18,8 +18,6 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {aFullInstance, aMinimalInstance} from "../domain/instance-test-builder";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
-"../../driven/persistence/instance-sparql-test-repository";
-
 describe('Form application service tests', () => {
 
     describe('loadConceptForm', () => {
@@ -171,7 +169,7 @@ describe('Form application service tests', () => {
             const instance =
                 aFullInstance()
                     .withTitle(
-                        LanguageString.of(undefined, undefined,  'nl formal')
+                        LanguageString.of(undefined, undefined, 'nl formal')
                     )
                     .withDescription(undefined)
                     .withAdditionalDescription(undefined)

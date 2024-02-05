@@ -14,7 +14,7 @@ export class UpdateInstanceApplicationService {
         this._instanceRepository = instanceRepository;
     }
 
-    //TODO LPDC-917: write tests
+    //Note: the update instance application service is directly tied to semantic forms, hence that part of the input parameters are xxxAsTurtleFormat
     async update(bestuurseenheid: Bestuurseenheid, instanceId: Iri, instanceAsTurtleFormat: string, removalsAsTurtleFormat: string, additionsAsTurtleFormat: string): Promise<void> {
 
         const parsedInstance = this._instanceRepository.fromTurtleFormat(bestuurseenheid, instanceId, instanceAsTurtleFormat);

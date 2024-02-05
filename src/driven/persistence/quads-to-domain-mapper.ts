@@ -568,7 +568,6 @@ export class QuadsToDomainMapper {
     }
 
     private evidence(id: Iri): Evidence | undefined {
-        //TODO LPDC-917: add order ?
         const evidenceIds =
             this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasSupportingEvidence')));
 
