@@ -5,6 +5,9 @@ const QUEUE_POLL_INTERVAL = process.env.QUEUE_POLL_INTERVAL || 60000; //1min
 const LOG_INCOMING_DELTA = process.env.LOG_INCOMING_DELTA == 'true' || false;
 const ADRESSEN_REGISTER_API_KEY = process.env.ADRESSEN_REGISTER_API_KEY;
 
+const ENABLE_ADDRESS_VALIDATION = (process.env.ENABLE_ADDRESS_VALIDATION ?? 'true') == 'true';
+
+
 const FORM_MAPPING = {
     "cd0b5eba-33c1-45d9-aed9-75194c3728d3": "content",
     "149a7247-0294-44a5-a281-0a4d3782b4fd": "characteristics",
@@ -62,5 +65,6 @@ export {
     FORM_MAPPING,
     FORM_MAPPING_TRANSLATIONS,
     PREFIXES,
-    ADRESSEN_REGISTER_API_KEY
+    ADRESSEN_REGISTER_API_KEY,
+    ENABLE_ADDRESS_VALIDATION
 };
