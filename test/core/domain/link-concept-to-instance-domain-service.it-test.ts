@@ -3,7 +3,7 @@ import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
 import {aFullConcept} from "./concept-test-builder";
 import {LinkConceptToInstanceDomainService} from "../../../src/core/domain/link-concept-to-instance-domain-service";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {END2END_TEST_SPARQL_ENDPOINT} from "../../test.config";
+import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {aFullConceptDisplayConfiguration} from "./concept-display-configuration-test-builder";
@@ -18,9 +18,9 @@ import {restoreRealTime, setFixedTime} from "../../fixed-time";
 
 describe('LinkConceptToInstanceDomainService', () => {
 
-    const instanceRepository = new InstanceSparqlRepository(END2END_TEST_SPARQL_ENDPOINT);
-    const conceptRepository = new ConceptSparqlRepository(END2END_TEST_SPARQL_ENDPOINT);
-    const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(END2END_TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainService(instanceRepository, conceptRepository, conceptDisplayConfigurationRepository);
 
     beforeAll(() => setFixedTime());

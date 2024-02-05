@@ -5,7 +5,7 @@ import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {aFullConcept} from "./concept-test-builder";
-import {END2END_TEST_SPARQL_ENDPOINT} from "../../test.config";
+import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {InstanceReviewStatusType} from "../../../src/core/domain/types";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {buildConceptIri} from "./iri-test-builder";
@@ -21,9 +21,9 @@ describe('ConfirmBijgewerktTotDomainService', () => {
     const date2 = FormatPreservingDate.of('2023-11-06T00:00:00.657Z');
     const date3 = FormatPreservingDate.of('2023-11-07T00:00:00.657Z');
     const date4 = FormatPreservingDate.of('2023-11-08T00:00:00.657Z');
-    const instanceRepository = new InstanceSparqlRepository(END2END_TEST_SPARQL_ENDPOINT);
-    const conceptRepository = new ConceptSparqlRepository(END2END_TEST_SPARQL_ENDPOINT);
-    const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(END2END_TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const confirmBijgewerktTotDomainService = new ConfirmBijgewerktTotDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository);
 
     beforeAll(() => setFixedTime());
