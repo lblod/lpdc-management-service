@@ -4,6 +4,7 @@ function parse(ttl, store, {graph, contentType = 'text/turtle'}: { graph?: strin
     rdflibParse(ttl, store, graph, contentType);
 }
 
+//TODO LPDC-917: remove file
 export {
     parse,
     Graph,

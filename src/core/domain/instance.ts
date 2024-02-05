@@ -361,7 +361,7 @@ export class Instance {
             .build();
     }
 
-    publish() {
+    publish(): Instance {
         if (this.status === InstanceStatusType.VERSTUURD) {
             throw new Error('Instance status already has status verstuurd');
         }

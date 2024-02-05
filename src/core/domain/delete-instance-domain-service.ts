@@ -18,7 +18,6 @@ export class DeleteInstanceDomainService {
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
     }
 
-
     public async delete(bestuurseenheid: Bestuurseenheid, instanceId: Iri) {
         const instance = await this._instanceRepository.findById(bestuurseenheid, instanceId);
         await this._instanceRepository.delete(bestuurseenheid, instance.id);

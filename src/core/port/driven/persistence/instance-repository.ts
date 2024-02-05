@@ -16,4 +16,8 @@ export interface InstanceRepository {
 
     asTurtleFormat(bestuurseenheid: Bestuurseenheid, instance: Instance): string[];
 
+    fromTurtleFormat(bestuurseenheid: Bestuurseenheid, id: Iri, rawData: string): Instance;
+
+    merge(bestuurseenheid: Bestuurseenheid, instance: Instance, removalsAsTurtleFormat: string, additionsAsTurtleFormat: string): Instance;
+
 }

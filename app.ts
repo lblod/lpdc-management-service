@@ -1,12 +1,6 @@
 import {createApp, errorHandler, uuid} from './mu-helper';
 import bodyparser from 'body-parser';
-import {
-    CONCEPT_SNAPSHOT_LDES_GRAPH,
-    FEATURE_FLAG_ATOMIC_UPDATE,
-    FORM_ID_TO_TYPE_MAPPING,
-    LOG_INCOMING_DELTA
-} from './config';
-import {updateForm, updateFormAtomic} from './lib/updateForm';
+import {CONCEPT_SNAPSHOT_LDES_GRAPH, FORM_ID_TO_TYPE_MAPPING, LOG_INCOMING_DELTA} from './config';
 import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
 import {getContactPointOptions} from "./lib/getContactPointOptions";
@@ -41,6 +35,7 @@ import {Bestuurseenheid} from "./src/core/domain/bestuurseenheid";
 import {DeleteInstanceDomainService} from "./src/core/domain/delete-instance-domain-service";
 import {LinkConceptToInstanceDomainService} from "./src/core/domain/link-concept-to-instance-domain-service";
 import {ConfirmBijgewerktTotDomainService} from "./src/core/domain/confirm-bijgewerkt-tot-domain-service";
+import {UpdateInstanceApplicationService} from "./src/core/application/update-instance-application-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -108,6 +103,10 @@ const confirmBijgewerktTotDomainService = new ConfirmBijgewerktTotDomainService(
     instanceRepository,
     conceptRepository,
     conceptSnapshotRepository
+);
+
+const updateInstanceApplicationService = new UpdateInstanceApplicationService(
+  instanceRepository
 );
 
 app.get('/', function (_req, res): void {
@@ -211,11 +210,16 @@ app.get('/public-services/:instanceId/form/:formId', async function (req, res): 
 });
 
 app.put('/public-services/:instanceId/form/:formId', async function (req, res): Promise<any> {
+    const instanceIdRequestParam = req.params.instanceId;
     const delta = req.body;
-    const header = req.headers['mu-session-id'] as string;
 
     try {
-        FEATURE_FLAG_ATOMIC_UPDATE ? await updateFormAtomic(delta, header, sessionRepository, bestuurseenheidRepository) : await updateForm(delta, header, sessionRepository, bestuurseenheidRepository);
+        const instanceId = new Iri(instanceIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+        await updateInstanceApplicationService.update(bestuurseenheid, instanceId, delta.graph, delta.removals, delta.additions);
+
         return res.sendStatus(200);
     } catch (e) {
         console.error(e);
