@@ -152,4 +152,27 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         await this.querying.insert(query);
     }
 
+    async removeConceptIsNewFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void> {
+        const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid, conceptId);
+
+        const query = `
+        ${PREFIX.lpdcExt}
+        DELETE {
+            GRAPH ?bestuurseenheidGraph {
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew ?oldIsNew .
+            }
+        }
+        INSERT {
+            GRAPH ?bestuurseenheidGraph {
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
+            }
+        } 
+        WHERE {
+            GRAPH ?bestuurseenheidGraph {
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew ?oldIsNew .
+            }
+        }`;
+
+        await this.querying.deleteInsert(query);
+    }
 }

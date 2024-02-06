@@ -482,6 +482,28 @@ app.get('/conceptual-public-services/:conceptId/form/:formId', async function (r
     }
 });
 
+app.put('/conceptual-public-services/:conceptId/remove-is-new-flag', async function (req, res): Promise<any> {
+    const conceptIdRequestParam = req.params.conceptId;
+
+    try {
+        const conceptId = new Iri(conceptIdRequestParam);
+        const session: Session = req['session'];
+        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+        await conceptDisplayConfigurationRepository.removeConceptIsNewFlag(bestuurseenheid, conceptId);
+        return res.status(200).send();
+    } catch (e) {
+        console.error(e);
+        if (e.status) {
+            return res.status(e.status).set('content-type', 'application/json').send(e);
+        }
+        const response = {
+            status: 500,
+            message: `Something unexpected went wrong while submitting semantic-form for "${conceptIdRequestParam}".`
+        };
+        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    }
+});
+
 app.use('/contact-info-options/', authenticateAndAuthorizeRequest(sessionRepository));
 
 app.get('/contact-info-options/:fieldName', async (req, res): Promise<any> => {

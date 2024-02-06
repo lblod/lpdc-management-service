@@ -256,6 +256,55 @@ describe('ConceptDisplayConfigurationRepository', () => {
         });
     });
 
+    describe('removeConceptIsNewFlag', () => {
+
+        test('When conceptIsNew is true', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const conceptDisplayConfiguration =
+                aFullConceptDisplayConfiguration()
+                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withConceptIsNew(true)
+                    .build();
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            await repository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+
+            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+            const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder
+                .from(conceptDisplayConfiguration)
+                .withConceptIsNew(false)
+                .build();
+
+            expect(actualConceptDisplayConfiguration).toEqual(expectedConceptDisplayConfiguration);
+        });
+
+        test('When conceptIsNew is false', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .withConceptIsNew(false)
+                .build();
+
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
+            await repository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+
+            const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
+                .withConceptIsNew(false)
+                .build();
+
+            expect(actualConceptDisplayConfiguration).toEqual(expectedConceptDisplayConfiguration);
+        });
+
+        test('if concept-displayConfig does not exists, throws error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const conceptId = buildConceptIri(uuid());
+
+            await expect(repository.removeConceptIsNewFlag(bestuurseenheid, conceptId))
+                .rejects.toThrow(new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`));
+        });
+    });
+
     describe('Verify ontology and mapping', () => {
 
         test('Verify correct type', async () => {
@@ -280,7 +329,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
                     `<${conceptDisplayConfiguration.conceptId}> lpdcExt:hasConceptDisplayConfiguration <${idForIncorrectType}>`,
                     `<${idForIncorrectType}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType>`,
                     `<${idForIncorrectType}> mu:uuid """${conceptDisplayConfiguration.uuid}"""`,
-                    `<${idForIncorrectType}> lpdcExt:conceptIsNew "true"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>`,
+                    `<${idForIncorrectType}> lpdcExt:conceptIsNew "true"^^<http://mu.semte—.ch/vocabularies/typed-literals/boolean>`,
                     `<${idForIncorrectType}> lpdcExt:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>`,
                     `<${idForIncorrectType}> dct:relation <${conceptDisplayConfiguration.bestuurseenheidId}>`,
                 ],

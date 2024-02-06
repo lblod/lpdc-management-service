@@ -10,6 +10,8 @@ export interface ConceptDisplayConfigurationRepository {
 
     removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void>;
 
+    removeConceptIsNewFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void>;
+
     ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void>;
 
 }
