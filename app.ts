@@ -481,14 +481,17 @@ app.get('/conceptual-public-services/:conceptId/form/:formId', async function (r
     }
 });
 
-app.put('/conceptual-public-services/:conceptId/remove-is-new-flag', async function (req, res): Promise<any> {
-    const conceptIdRequestParam = req.params.conceptId;
+app.use('/concept-display-configuration/', authenticateAndAuthorizeRequest(sessionRepository));
+
+app.put('/concept-display-configuration/:conceptDisplayConfigurationId/remove-is-new-flag', async function (req, res): Promise<any> {
+    const conceptDisplayConfigurationIdRequestParam = req.params.conceptDisplayConfigurationId;
 
     try {
-        const conceptId = new Iri(conceptIdRequestParam);
+        const conceptDisplayConfigurationId = new Iri(conceptDisplayConfigurationIdRequestParam);
         const session: Session = req['session'];
         const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        await conceptDisplayConfigurationRepository.removeConceptIsNewFlag(bestuurseenheid, conceptId);
+
+        await conceptDisplayConfigurationRepository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfigurationId);
         return res.status(200).send();
     } catch (e) {
         console.error(e);
@@ -497,7 +500,7 @@ app.put('/conceptual-public-services/:conceptId/remove-is-new-flag', async funct
         }
         const response = {
             status: 500,
-            message: `Something unexpected went wrong while submitting semantic-form for "${conceptIdRequestParam}".`
+            message: `Something unexpected went wrong for "${conceptDisplayConfigurationIdRequestParam}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }

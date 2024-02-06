@@ -100,8 +100,8 @@ describe('LinkConceptToInstanceDomainService', () => {
             await instanceRepository.save(bestuurseenheid, instance);
             const concept = aFullConcept().build();
 
-            await conceptDisplayConfigurationRepository.save(bestuurseenheid, aFullConceptDisplayConfiguration().withConceptId(alreadyLinkedConcept.id).build());
-            await conceptDisplayConfigurationRepository.save(bestuurseenheid, aFullConceptDisplayConfiguration().withConceptId(concept.id).build());
+            await conceptDisplayConfigurationRepository.save(bestuurseenheid, aFullConceptDisplayConfiguration().withConceptId(alreadyLinkedConcept.id).withBestuurseenheidId(bestuurseenheid.id).build());
+            await conceptDisplayConfigurationRepository.save(bestuurseenheid, aFullConceptDisplayConfiguration().withConceptId(concept.id).withBestuurseenheidId(bestuurseenheid.id).build());
 
             await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
 

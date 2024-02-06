@@ -22,6 +22,70 @@ describe('ConceptDisplayConfigurationRepository', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
 
+    describe('findById', () => {
+
+        test('Is returned when found', async () => {
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .withId(buildBestuurseenheidIri(uuid()))
+                    .build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const conceptDisplayConfiguration =
+                aFullConceptDisplayConfiguration()
+                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .build();
+
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            const actualConceptDisplayConfiguration = await repository.findById(bestuurseenheid, conceptDisplayConfiguration.id);
+            expect(actualConceptDisplayConfiguration).toEqual(conceptDisplayConfiguration);
+        });
+
+        test('throws error when not found', async () => {
+            const bestuurseenheid = aBestuurseenheid()
+                .withId(buildBestuurseenheidIri(uuid()))
+                .build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const conceptDisplayConfiguration =
+                aFullConceptDisplayConfiguration()
+                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withConceptId(buildConceptIri(uuid()))
+                    .build();
+
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            const anotherConceptDisplayConfigurationId = buildConceptDisplayConfigurationIri(uuid());
+
+            await expect(() => repository.findById(bestuurseenheid, anotherConceptDisplayConfigurationId)).rejects.toThrow(new Error(`No conceptDisplayConfiguration exists with id ${anotherConceptDisplayConfigurationId}`));
+        });
+
+        test('only searches in configured bestuurseenheid graph of bestuurseenheid', async () => {
+            const bestuurseenheid = aBestuurseenheid()
+                .withId(buildBestuurseenheidIri(uuid()))
+                .build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const anotherBestuurseenheid = aBestuurseenheid()
+                .withId(buildBestuurseenheidIri(uuid()))
+                .build();
+            await bestuurseenheidRepository.save(anotherBestuurseenheid);
+
+            const conceptId = buildConceptIri(uuid());
+
+            const conceptDisplayConfiguration =
+                aFullConceptDisplayConfiguration()
+                    .withBestuurseenheidId(anotherBestuurseenheid.id)
+                    .withConceptId(conceptId)
+                    .build();
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            await expect(() => repository.findById(bestuurseenheid, conceptDisplayConfiguration.id)).rejects.toThrow(new Error(`concept display configuration ${conceptDisplayConfiguration.id} found in incorrect user graph`));
+        });
+
+    });
+
     describe('findByConceptId', () => {
 
         test('Is returned when found', async () => {
@@ -144,9 +208,9 @@ describe('ConceptDisplayConfigurationRepository', () => {
                     .withBestuurseenheidId(anotherBestuurseenheid.id)
                     .withConceptId(conceptId)
                     .build();
-            await repository.save(anotherBestuurseenheid, conceptDisplayConfiguration);
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-            await expect(() => repository.findByConceptId(bestuurseenheid, conceptId)).rejects.toThrow(new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`));
+            await expect(() => repository.findByConceptId(bestuurseenheid, conceptId)).rejects.toThrow(new Error(`concept display configuration found for concept id ${conceptId} in incorrect user graph`));
         });
 
     });
@@ -267,9 +331,9 @@ describe('ConceptDisplayConfigurationRepository', () => {
                     .build();
             await repository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-            await repository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+            await repository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfiguration.id);
 
-            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+            const actualConceptDisplayConfiguration = await repository.findById(bestuurseenheid, conceptDisplayConfiguration.id);
             const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder
                 .from(conceptDisplayConfiguration)
                 .withConceptIsNew(false)
@@ -286,8 +350,8 @@ describe('ConceptDisplayConfigurationRepository', () => {
                 .build();
 
             await repository.save(bestuurseenheid, conceptDisplayConfiguration);
-            await repository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+            await repository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfiguration.id);
+            const actualConceptDisplayConfiguration = await repository.findById(bestuurseenheid, conceptDisplayConfiguration.id);
 
             const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
                 .withConceptIsNew(false)
@@ -298,10 +362,10 @@ describe('ConceptDisplayConfigurationRepository', () => {
 
         test('if concept-displayConfig does not exists, throws error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const conceptId = buildConceptIri(uuid());
+            const conceptDisplayConfigurationIri = buildConceptDisplayConfigurationIri(uuid());
 
-            await expect(repository.removeConceptIsNewFlag(bestuurseenheid, conceptId))
-                .rejects.toThrow(new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`));
+            await expect(repository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfigurationIri))
+                .rejects.toThrow(new Error(`No conceptDisplayConfiguration exists with id ${conceptDisplayConfigurationIri}`));
         });
     });
 

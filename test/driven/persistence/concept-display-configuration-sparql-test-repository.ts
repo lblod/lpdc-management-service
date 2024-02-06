@@ -28,7 +28,7 @@ export class ConceptDisplayConfigurationSparqlTestRepository extends ConceptDisp
                     ${sparqlEscapeUri(conceptDisplayConfiguration.id)} mu:uuid ${sparqlEscapeString(conceptDisplayConfiguration.uuid)} .
                     ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew ${this.sparqlEscapeTypedBool(conceptDisplayConfiguration.conceptIsNew)} .
                     ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ${this.sparqlEscapeTypedBool(conceptDisplayConfiguration.conceptIsInstantiated)} .
-                    ${sparqlEscapeUri(conceptDisplayConfiguration.id)} dct:relation ${sparqlEscapeUri(bestuurseenheid.id)} . 
+                    ${sparqlEscapeUri(conceptDisplayConfiguration.id)} dct:relation ${sparqlEscapeUri(conceptDisplayConfiguration.bestuurseenheidId)} . 
                 }
             }
         `;

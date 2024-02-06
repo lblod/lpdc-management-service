@@ -4,13 +4,15 @@ import {Bestuurseenheid} from "../../../domain/bestuurseenheid";
 
 export interface ConceptDisplayConfigurationRepository {
 
-    findByConceptId(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<ConceptDisplayConfiguration | undefined>;
+    findById(bestuurseenheid: Bestuurseenheid, conceptDisplayConfigurationId: Iri): Promise<ConceptDisplayConfiguration>;
 
-    removeInstantiatedFlag(bestuurseenheid: Bestuurseenheid, concept: Iri): Promise<void>;
+    findByConceptId(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<ConceptDisplayConfiguration>;
+
+    removeInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void>;
 
     removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void>;
 
-    removeConceptIsNewFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void>;
+    removeConceptIsNewFlag(bestuurseenheid: Bestuurseenheid, conceptDisplayConfigurationId: Iri): Promise<void>;
 
     ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void>;
 
