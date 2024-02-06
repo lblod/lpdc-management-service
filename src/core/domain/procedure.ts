@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {zip} from "lodash";
 import {Website} from "./website";
-import {requiredValue} from "./shared/invariant";
+import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
 
 
@@ -30,6 +30,7 @@ export class Procedure {
         this._description = description;
         this._order = requiredValue(order, 'order');
         this._websites = [...websites];
+        requireNoDuplicates(this._websites.map(r => r.order), 'websites > order');
         this._conceptProcedureId = conceptProcedureId;
     }
 

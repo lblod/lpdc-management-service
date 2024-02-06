@@ -9,10 +9,14 @@ import {
     RequirementTestBuilder
 } from "./requirement-test-builder";
 import {aFullEvidence, aMinimalEvidenceForConceptSnapshot, EvidenceTestBuilder} from "./evidence-test-builder";
-import {aFullProcedure, ProcedureTestBuilder} from "./procedure-test-builder";
+import {aFullProcedure, aMinimalProcedureForConceptSnapshot, ProcedureTestBuilder} from "./procedure-test-builder";
 import {aFullWebsite, aMinimalWebsiteForConceptSnapshot, WebsiteTestBuilder} from "./website-test-builder";
-import {aFullCost, CostTestBuilder} from "./cost-test-builder";
-import {aFullFinancialAdvantage, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
+import {aFullCost, aMinimalCostForConceptSnapshot, CostTestBuilder} from "./cost-test-builder";
+import {
+    aFullFinancialAdvantage,
+    aMinimalFinancialAdvantageForConceptSnapshot,
+    FinancialAdvantageTestBuilder
+} from "./financial-advantage-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,
@@ -152,9 +156,11 @@ describe('constructing', () => {
         test('Undefined dateCreated throws error', () => {
             expect(() => aFullConceptSnapshot().withDateCreated(undefined).build()).toThrow(new Error('dateCreated should not be undefined'));
         });
+
         test('Blank dateCreated throws error', () => {
             expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of('')).build()).toThrow(new Error('dateCreated should not be undefined'));
         });
+
     });
 
     describe('dateModified', () => {
@@ -166,9 +172,11 @@ describe('constructing', () => {
         test('Undefined dateModified throws error', () => {
             expect(() => aFullConceptSnapshot().withDateModified(undefined).build()).toThrow(new Error('dateModified should not be undefined'));
         });
+
         test('Blank dateModified throws error', () => {
             expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of('')).build()).toThrow(new Error('dateModified should not be undefined'));
         });
+
     });
 
     describe('generatedAtTime', () => {
@@ -180,10 +188,13 @@ describe('constructing', () => {
         test('Undefined generatedAtTime throws error', () => {
             expect(() => aFullConceptSnapshot().withGeneratedAtTime(undefined).build()).toThrow(new Error('generatedAtTime should not be undefined'));
         });
+
         test('Blank generatedAtTime throws error', () => {
             expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of('')).build()).toThrow(new Error('generatedAtTime should not be undefined'));
         });
+
     });
+
     test('conceptTags with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT, ConceptTagType.YOUREUROPEVERPLICHT]);
         expect(() => conceptTestBuilder.build()).toThrow(new Error('conceptTags should not contain duplicates'));
@@ -196,6 +207,7 @@ describe('constructing', () => {
     });
 
     describe('cost ', () => {
+
         test('valid cost does not throw error', () => {
             const validCost = Cost.reconstitute(CostBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(CostTestBuilder.TITLE).build(),
                 aMinimalLanguageString(CostTestBuilder.DESCRIPTION).build(), 1, undefined);
@@ -208,9 +220,29 @@ describe('constructing', () => {
 
             expect(() => aFullConceptSnapshot().withCosts([invalidCost]).build()).toThrow();
         });
+
+        test('costs that dont have have unique order throws error', () => {
+            const cost1 =
+                aMinimalCostForConceptSnapshot().withOrder(1).build();
+            const cost2 =
+                aMinimalCostForConceptSnapshot().withOrder(1).build();
+
+            expect(() => aFullConceptSnapshot().withCosts([cost1, cost2]).build()).toThrow(new Error('costs > order should not contain duplicates'));
+        });
+
+        test('costs that have have unique does not throw error', () => {
+            const cost1 =
+                aMinimalCostForConceptSnapshot().withOrder(1).build();
+            const cost2 =
+                aMinimalCostForConceptSnapshot().withOrder(2).build();
+
+            expect(() => aFullConceptSnapshot().withCosts([cost1, cost2]).build()).not.toThrow();
+        });
+
     });
 
     describe('financialAdvantage ', () => {
+
         test('valid financial advantage does not throw error', () => {
             const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuid()), undefined, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
                 aMinimalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build(), 1, undefined);
@@ -223,9 +255,29 @@ describe('constructing', () => {
 
             expect(() => aFullConceptSnapshot().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
         });
+
+        test('financial advantages that dont have have unique order throws error', () => {
+            const financialAdvantage1 =
+                aMinimalFinancialAdvantageForConceptSnapshot().withOrder(1).build();
+            const financialAdvantage2 =
+                aMinimalFinancialAdvantageForConceptSnapshot().withOrder(1).build();
+
+            expect(() => aFullConceptSnapshot().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).toThrow(new Error('financial advantages > order should not contain duplicates'));
+        });
+
+        test('financial advantages that have have unique does not throw error', () => {
+            const financialAdvantage1 =
+                aMinimalFinancialAdvantageForConceptSnapshot().withOrder(1).build();
+            const financialAdvantage2 =
+                aMinimalFinancialAdvantageForConceptSnapshot().withOrder(2).build();
+
+            expect(() => aFullConceptSnapshot().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).not.toThrow();
+        });
+
     });
 
     describe('procedure ', () => {
+
         test('valid procedure does not throw error', () => {
             const uuidValue = uuid();
             const validProcedure = Procedure.reconstitute(ProcedureBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(ProcedureTestBuilder.TITLE).build(),
@@ -239,9 +291,29 @@ describe('constructing', () => {
 
             expect(() => aFullConceptSnapshot().withProcedures([invalidProcedure]).build()).toThrow();
         });
+
+        test('procedures that dont have have unique order throws error', () => {
+            const procedure1 =
+                aMinimalProcedureForConceptSnapshot().withOrder(1).build();
+            const procedure2 =
+                aMinimalProcedureForConceptSnapshot().withOrder(1).build();
+
+            expect(() => aFullConceptSnapshot().withProcedures([procedure1, procedure2]).build()).toThrow(new Error('procedures > order should not contain duplicates'));
+        });
+
+        test('procedures that have have unique does not throw error', () => {
+            const procedure1 =
+                aMinimalProcedureForConceptSnapshot().withOrder(1).build();
+            const procedure2 =
+                aMinimalProcedureForConceptSnapshot().withOrder(2).build();
+
+            expect(() => aFullConceptSnapshot().withProcedures([procedure1, procedure2]).build()).not.toThrow();
+        });
+
     });
 
     describe('website ', () => {
+
         test('valid website does not throw error', () => {
             const uuidValue = uuid();
             const validWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
@@ -255,9 +327,30 @@ describe('constructing', () => {
 
             expect(() => aFullConceptSnapshot().withWebsites([invalidWebsite]).build()).toThrow();
         });
+
+        test('websites that dont have have unique order throws error', () => {
+            const website1 =
+                aMinimalWebsiteForConceptSnapshot().withOrder(1).build();
+            const website2 =
+                aMinimalWebsiteForConceptSnapshot().withOrder(1).build();
+
+            expect(() => aFullConceptSnapshot().withWebsites([website1, website2]).build()).toThrow(new Error('websites > order should not contain duplicates'));
+        });
+
+        test('websites that have have unique does not throw error', () => {
+            const website1 =
+                aMinimalWebsiteForConceptSnapshot().withOrder(1).build();
+            const website2 =
+                aMinimalWebsiteForConceptSnapshot().withOrder(2).build();
+
+
+            expect(() => aFullConceptSnapshot().withWebsites([website1, website2]).build()).not.toThrow();
+        });
+
     });
 
     describe('requirement ', () => {
+
         test('valid requirement does not throw error', () => {
             const uuidValue = uuid();
             const validRequirement = Requirement.reconstitute(RequirementBuilder.buildIri(uuidValue), undefined, aMinimalLanguageString(RequirementTestBuilder.TITLE).build(),
@@ -266,12 +359,32 @@ describe('constructing', () => {
             expect(() => aFullConceptSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
         });
 
-        test('invalid financialAdvantage does throw error', () => {
+        test('invalid requirement does throw error', () => {
             const invalidRequirement = Requirement.reconstitute(RequirementBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined, undefined);
 
             expect(() => aFullConceptSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
         });
+
+        test('requirements that dont have have unique order throws error', () => {
+            const requirement1 =
+                aMinimalRequirementForConceptSnapshot().withOrder(1).build();
+            const requirement2 =
+                aMinimalRequirementForConceptSnapshot().withOrder(1).build();
+
+            expect(() => aFullConceptSnapshot().withRequirements([requirement1, requirement2]).build()).toThrow(new Error('requirements > order should not contain duplicates'));
+        });
+
+        test('requirements that have have unique does not throw error', () => {
+            const requirement1 =
+                aMinimalRequirementForConceptSnapshot().withOrder(1).build();
+            const requirement2 =
+                aMinimalRequirementForConceptSnapshot().withOrder(2).build();
+
+            expect(() => aFullConceptSnapshot().withRequirements([requirement1, requirement2]).build()).not.toThrow();
+        });
+
         describe('evidence ', () => {
+
             test('valid evidence does not throw error', () => {
                 const uuidValue = uuid();
                 const validEvidence = Evidence.reconstitute(EvidenceBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
@@ -288,6 +401,7 @@ describe('constructing', () => {
 
                 expect(() => aFullConceptSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
             });
+
         });
     });
 });
@@ -652,12 +766,12 @@ describe('is functionally changed', () => {
                 .build()],
         ['requirement order changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-1')).build(),
-                    aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-2')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-1')).withOrder(1).build(),
+                    aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-2')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-2')).build(),
-                    aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-1')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-2')).withOrder(1).build(),
+                    aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-1')).withOrder(2).build()])
                 .build()],
         ['requirement title updated : en changed',
             aFullConceptSnapshot()
@@ -759,12 +873,12 @@ describe('is functionally changed', () => {
                 .build()],
         ['procedure order changed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en')).build(),
-                    aFullProcedure().withTitle(LanguageString.of('procedure title en another')).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en')).withOrder(1).build(),
+                    aFullProcedure().withTitle(LanguageString.of('procedure title en another')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en another')).build(),
-                    aFullProcedure().withTitle(LanguageString.of('procedure title en')).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en another')).withOrder(1).build(),
+                    aFullProcedure().withTitle(LanguageString.of('procedure title en')).withOrder(2).build()])
                 .build()],
         ['procedure title updated',
             aFullConceptSnapshot()
@@ -831,10 +945,10 @@ describe('is functionally changed', () => {
                 .build()],
         ['procedure website order changed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').withOrder(1).build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').withOrder(2).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').withOrder(1).build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').withOrder(2).build()]).build()])
                 .build()],
         ['website added',
             aFullConceptSnapshot()
@@ -887,10 +1001,10 @@ describe('is functionally changed', () => {
                 .build()],
         ['website order changed',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').withOrder(1).build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').withOrder(1).build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').withOrder(2).build()])
                 .build()],
         ['cost added',
             aFullConceptSnapshot()
@@ -922,10 +1036,10 @@ describe('is functionally changed', () => {
                 .build()],
         ['cost order changed',
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(LanguageString.of('cost title 1 en')).build(), aFullCost().withTitle(LanguageString.of('cost title 2 en')).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title 1 en')).withOrder(1).build(), aFullCost().withTitle(LanguageString.of('cost title 2 en')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(LanguageString.of('cost title 2 en')).build(), aFullCost().withTitle(LanguageString.of('cost title 1 en')).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title 2 en')).withOrder(1).build(), aFullCost().withTitle(LanguageString.of('cost title 1 en')).withOrder(2).build()])
                 .build()],
         ['financial advantage added',
             aFullConceptSnapshot()
@@ -957,10 +1071,10 @@ describe('is functionally changed', () => {
                 .build()],
         ['financial advantage order changed',
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 en')).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 en')).withOrder(1).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 en')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 en')).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 en')).withOrder(1).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 en')).withOrder(2).build()])
                 .build()],
 
     ];

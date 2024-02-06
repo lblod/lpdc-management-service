@@ -129,11 +129,17 @@ export class Instance {
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
         this._requirements = [...requirements].map(Requirement.forInstance);
+        requireNoDuplicates(this._requirements.map(r => r.order), 'requirements > order');
         this._procedures = [...procedures].map(Procedure.forInstance);
+        requireNoDuplicates(this._procedures.map(p => p.order), 'procedures > order');
         this._websites = [...websites].map(Website.forInstance);
+        requireNoDuplicates(this._websites.map(w => w.order), 'websites > order');
         this._costs = [...costs].map(Cost.forInstance);
+        requireNoDuplicates(this._costs.map(c => c.order), 'costs > order');
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forInstance);
+        requireNoDuplicates(this._financialAdvantages.map(fa => fa.order), 'financial advantages > order');
         this._contactPoints = [...contactPoints];
+        requireNoDuplicates(this._contactPoints.map(cp => cp.order), 'contact points > order');
         requireAllDefinedOrAllUndefined([conceptId, conceptSnapshotId, productId], 'conceptId, conceptSnapshotId and productId');
         this._conceptId = conceptId;
         this._conceptSnapshotId = conceptSnapshotId;

@@ -110,10 +110,15 @@ export class ConceptSnapshot {
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
         this._requirements = [...requirements].map(Requirement.forConceptSnapshot);
+        requireNoDuplicates(this._requirements.map(r => r.order), 'requirements > order');
         this._procedures = [...procedures].map(Procedure.forConceptSnapshot);
+        requireNoDuplicates(this._procedures.map(p => p.order), 'procedures > order');
         this._websites = [...websites].map(Website.forConceptSnapshot);
+        requireNoDuplicates(this._websites.map(w => w.order), 'websites > order');
         this._costs = [...costs].map(Cost.forConceptSnapshot);
+        requireNoDuplicates(this._costs.map(c => c.order), 'costs > order');
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConceptSnapshot);
+        requireNoDuplicates(this._financialAdvantages.map(fa => fa.order), 'financial advantages > order');
         this._isVersionOfConcept = isVersionOfConcept;
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');

@@ -112,10 +112,15 @@ export class Concept {
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
         this._requirements = [...requirements].map(Requirement.forConcept);
+        requireNoDuplicates(this._requirements.map(r => r.order), 'requirements > order');
         this._procedures = [...procedures].map(Procedure.forConcept);
+        requireNoDuplicates(this._procedures.map(p => p.order), 'procedures > order');
         this._websites = [...websites].map(Website.forConcept);
+        requireNoDuplicates(this._websites.map(w => w.order), 'websites > order');
         this._costs = [...costs].map(Cost.forConcept);
+        requireNoDuplicates(this._costs.map(c => c.order), 'costs > order');
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConcept);
+        requireNoDuplicates(this._financialAdvantages.map(fa => fa.order), 'financial advantages > order');
         this._productId = requiredValue(productId, 'productId');
         this._latestConceptSnapshot = requiredValue(latestConceptSnapshot, 'latestConceptSnapshot');
         this._previousConceptSnapshots = requireNoDuplicates(asSortedArray(previousConceptSnapshots, Iri.compare), 'previousConceptSnapshots');

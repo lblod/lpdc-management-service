@@ -6,10 +6,12 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {uuid} from "../../../mu-helper";
 
 describe('forConcept', () => {
+
     test('Undefined id throws error', () => {
         const cost = aFullCost().withId(undefined);
         expect(() => Cost.forConcept(cost.build())).toThrow(new Error('id should not be undefined'));
     });
+
     test('Invalid iri id throws error', () => {
         expect(() => Cost.forConcept(aFullCost().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
     });
@@ -18,6 +20,7 @@ describe('forConcept', () => {
         const cost = aFullCost().withUuid(undefined);
         expect(() => Cost.forConcept(cost.build())).toThrow(new Error('uuid should not be undefined'));
     });
+
     test('Blank uuid throws error', () => {
         const cost = aFullCost().withUuid('   ');
         expect(() => Cost.forConcept(cost.build())).toThrow(new Error('uuid should not be blank'));
@@ -73,6 +76,7 @@ describe('forConceptSnapshot', () => {
     test('Undefined order throws error', () => {
         expect(() => Cost.forConceptSnapshot(aFullCost().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
     });
+
 });
 
 describe('for instance', () => {

@@ -3,19 +3,19 @@ import {aFullConcept, ConceptTestBuilder} from "./concept-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {buildCodexVlaanderenIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
-import {CostTestBuilder} from "./cost-test-builder";
+import {aMinimalCostForConcept, CostTestBuilder} from "./cost-test-builder";
 import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
-import {FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
+import {aMinimalFinancialAdvantageForConcept, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
 import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
-import {aFullRequirement, RequirementTestBuilder} from "./requirement-test-builder";
+import {aFullRequirement, aMinimalRequirementForConcept, RequirementTestBuilder} from "./requirement-test-builder";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {EvidenceTestBuilder} from "./evidence-test-builder";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
-import {ProcedureTestBuilder} from "./procedure-test-builder";
+import {aMinimalProcedureForConcept, ProcedureTestBuilder} from "./procedure-test-builder";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
-import {WebsiteTestBuilder} from "./website-test-builder";
+import {aMinimalWebsiteForConcept, WebsiteTestBuilder} from "./website-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {
     CompetentAuthorityLevelType,
@@ -203,6 +203,7 @@ describe('constructing', () => {
     });
 
     describe('cost ', () => {
+
         test('valid cost for concept does not throw error', () => {
             const uuidValue = uuid();
             const validCost = Cost.reconstitute(CostBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(CostTestBuilder.TITLE).build(),
@@ -216,9 +217,28 @@ describe('constructing', () => {
 
             expect(() => aFullConcept().withCosts([invalidCost]).build()).toThrow();
         });
+
+        test('costs that dont have have unique order throws error', () => {
+            const cost1 =
+                aMinimalCostForConcept().withOrder(1).build();
+            const cost2 =
+                aMinimalCostForConcept().withOrder(1).build();
+
+            expect(() => aFullConcept().withCosts([cost1, cost2]).build()).toThrow(new Error('costs > order should not contain duplicates'));
+        });
+
+        test('costs that have have unique does not throw error', () => {
+            const cost1 =
+                aMinimalCostForConcept().withOrder(1).build();
+            const cost2 =
+                aMinimalCostForConcept().withOrder(2).build();
+
+            expect(() => aFullConcept().withCosts([cost1, cost2]).build()).not.toThrow();
+        });
     });
 
     describe('financialAdvantage ', () => {
+
         test('valid financialAdvantage for concept does not throw error', () => {
             const uuidValue = uuid();
             const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
@@ -232,9 +252,28 @@ describe('constructing', () => {
 
             expect(() => aFullConcept().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
         });
+
+        test('financial advantages that dont have have unique order throws error', () => {
+            const financialAdvantage1 =
+                aMinimalFinancialAdvantageForConcept().withOrder(1).build();
+            const financialAdvantage2 =
+                aMinimalFinancialAdvantageForConcept().withOrder(1).build();
+
+            expect(() => aFullConcept().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).toThrow(new Error('financial advantages > order should not contain duplicates'));
+        });
+
+        test('financial advantages that have have unique does not throw error', () => {
+            const financialAdvantage1 =
+                aMinimalFinancialAdvantageForConcept().withOrder(1).build();
+            const financialAdvantage2 =
+                aMinimalFinancialAdvantageForConcept().withOrder(2).build();
+
+            expect(() => aFullConcept().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).not.toThrow();
+        });
     });
 
     describe('procedure ', () => {
+
         test('valid procedure for concept does not throw error', () => {
             const uuidValue = uuid();
             const validProcedure = Procedure.reconstitute(ProcedureBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(ProcedureTestBuilder.TITLE).build(),
@@ -248,9 +287,28 @@ describe('constructing', () => {
 
             expect(() => aFullConcept().withProcedures([invalidProcedure]).build()).toThrow();
         });
+
+        test('procedures that dont have have unique order throws error', () => {
+            const procedure1 =
+                aMinimalProcedureForConcept().withOrder(1).build();
+            const procedure2 =
+                aMinimalProcedureForConcept().withOrder(1).build();
+
+            expect(() => aFullConcept().withProcedures([procedure1, procedure2]).build()).toThrow(new Error('procedures > order should not contain duplicates'));
+        });
+
+        test('procedures that have have unique does not throw error', () => {
+            const procedure1 =
+                aMinimalProcedureForConcept().withOrder(1).build();
+            const procedure2 =
+                aMinimalProcedureForConcept().withOrder(2).build();
+
+            expect(() => aFullConcept().withProcedures([procedure1, procedure2]).build()).not.toThrow();
+        });
     });
 
     describe('website ', () => {
+
         test('valid website does not throw error', () => {
             const uuidValue = uuid();
             const validWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
@@ -264,9 +322,30 @@ describe('constructing', () => {
 
             expect(() => aFullConcept().withWebsites([invalidWebsite]).build()).toThrow();
         });
+
+        test('websites that dont have have unique order throws error', () => {
+            const website1 =
+                aMinimalWebsiteForConcept().withOrder(1).build();
+            const website2 =
+                aMinimalWebsiteForConcept().withOrder(1).build();
+
+            expect(() => aFullConcept().withWebsites([website1, website2]).build()).toThrow(new Error('websites > order should not contain duplicates'));
+        });
+
+        test('websites that have have unique does not throw error', () => {
+            const website1 =
+                aMinimalWebsiteForConcept().withOrder(1).build();
+            const website2 =
+                aMinimalWebsiteForConcept().withOrder(2).build();
+
+
+            expect(() => aFullConcept().withWebsites([website1, website2]).build()).not.toThrow();
+        });
+
     });
 
     describe('requirement ', () => {
+
         test('valid requirement does not throw error', () => {
             const uuidValue = uuid();
             const validRequirement = Requirement.reconstitute(RequirementBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(RequirementTestBuilder.TITLE).build(),
@@ -280,7 +359,27 @@ describe('constructing', () => {
 
             expect(() => aFullConcept().withRequirements([invalidRequirement]).build()).toThrow();
         });
+
+        test('requirements that dont have have unique order throws error', () => {
+            const requirement1 =
+                aMinimalRequirementForConcept().withOrder(1).build();
+            const requirement2 =
+                aMinimalRequirementForConcept().withOrder(1).build();
+
+            expect(() => aFullConcept().withRequirements([requirement1, requirement2]).build()).toThrow(new Error('requirements > order should not contain duplicates'));
+        });
+
+        test('requirements that have have unique does not throw error', () => {
+            const requirement1 =
+                aMinimalRequirementForConcept().withOrder(1).build();
+            const requirement2 =
+                aMinimalRequirementForConcept().withOrder(2).build();
+
+            expect(() => aFullConcept().withRequirements([requirement1, requirement2]).build()).not.toThrow();
+        });
+
         describe('evidence ', () => {
+
             test('valid evidence does not throw error', () => {
                 const uuidValue = uuid();
                 const validEvidence = Evidence.reconstitute(EvidenceBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
@@ -297,6 +396,7 @@ describe('constructing', () => {
 
                 expect(() => aFullConcept().withRequirements([invalidRequirement]).build()).toThrow();
             });
+
         });
     });
 });
