@@ -142,6 +142,8 @@ export class DomainToQuadsMapper {
             ...this.languages(instance.id, instance.languages),
             instance.dateCreated ? this.buildQuad(namedNode(instance.id.value), NS.dct('created'), literal(instance.dateCreated.value, NS.xsd('dateTime'))) : undefined,
             instance.dateModified ? this.buildQuad(namedNode(instance.id.value), NS.dct('modified'), literal(instance.dateModified.value, NS.xsd('dateTime'))) : undefined,
+            instance.dateSent ? this.buildQuad(namedNode(instance.id.value), NS.schema('dateSent'), literal(instance.dateSent.value, NS.xsd('dateTime'))) : undefined,
+            instance.datePublished ? this.buildQuad(namedNode(instance.id.value), NS.schema('datePublished'), literal(instance.datePublished.value, NS.xsd('dateTime'))) : undefined,
             this.buildQuad(namedNode(instance.id.value), NS.adms('status'), namedNode(this.enumToIri(instance.status, NS.concepts.instanceStatus).value)),
             instance.reviewStatus ? this.buildQuad(namedNode(instance.id.value), NS.ext('reviewStatus'), namedNode(this.enumToIri(instance.reviewStatus, NS.concepts.reviewStatus).value)) : undefined,
             instance.publicationStatus ? this.buildQuad(namedNode(instance.id.value), NS.schema('publication'), namedNode(this.enumToIri(instance.publicationStatus, NS.concepts.publicationStatus).value)) : undefined,

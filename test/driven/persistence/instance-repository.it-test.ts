@@ -186,7 +186,10 @@ describe('InstanceRepository', () => {
         test('if exists without publicationStatus, Removes all triples related to the instance and does not create tombstone triples ', async () => {
 
             const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance().withPublicationStatus(undefined).build();
+            const instance = aFullInstance()
+                .withPublicationStatus(undefined)
+                .withDatePublished(undefined)
+                .build();
 
             await repository.save(bestuurseenheid, instance);
             await repository.delete(bestuurseenheid, instance.id);
@@ -218,7 +221,10 @@ describe('InstanceRepository', () => {
 
         test('Only the requested instance is deleted', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance().withPublicationStatus(undefined).build();
+            const instance = aFullInstance()
+                .withPublicationStatus(undefined)
+                .withDatePublished(undefined)
+                .build();
             const anotherInstance = aMinimalInstance().build();
 
             await repository.save(bestuurseenheid, instance);
@@ -542,6 +548,8 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/ENG>`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <http://schema.org/dateSent> """${InstanceTestBuilder.DATE_SENT.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <http://schema.org/datePublished> """${InstanceTestBuilder.DATE_PUBLISHED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/reviewStatus> <http://lblod.data.gift/concepts/review-status/concept-gewijzigd>`,
                     `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>`,
@@ -688,7 +696,7 @@ describe('InstanceRepository', () => {
 
         for (const type of Object.values(InstanceStatusType)) {
             test(`Instance Status type ${type} can be mapped`, async () => {
-                const instance = aMinimalInstance().withStatus(type).build();
+                const instance = aMinimalInstance().withStatus(type).withDateSent(InstanceTestBuilder.DATE_SENT).build();
                 const bestuurseenheid = aBestuurseenheid().build();
                 await repository.save(bestuurseenheid, instance);
 

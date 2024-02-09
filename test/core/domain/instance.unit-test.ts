@@ -1,4 +1,4 @@
-import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
+import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "./instance-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
@@ -409,6 +409,31 @@ describe('constructing', () => {
             expect(() => aFullInstance().withDateModified(FormatPreservingDate.of('')).build()).toThrow(new Error('dateModified should not be undefined'));
         });
     });
+
+    test('When status is verstuurd and dateSent is undefined should throw error', () => {
+        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.VERSTUURD).withDateSent(undefined);
+
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('dateSent should be defined when status equals verstuurd '));
+
+    });
+
+    test('When status is ontwerp and dateSent is undefined should not throw error', () => {
+        const instanceTestBuilder = aFullInstance()
+            .withStatus(InstanceStatusType.ONTWERP)
+            .withDateSent(undefined)
+            .withDatePublished(undefined)
+            .withPublicationStatus(undefined);
+
+        expect(() => instanceTestBuilder.build()).not.toThrow();
+
+    });
+
+    test('When datePublished is present and dateSent is undefined should throw error', () => {
+        const instanceTestBuilder = aFullInstance().withDateSent(undefined).withDatePublished(InstanceTestBuilder.DATE_PUBLISHED);
+
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('datePublished can only be defined when dateSent is defined'));
+    });
+
 
     test('conceptId, conceptSnapshotId and productId not all defined or all undefined should throw error', () => {
         const instanceTestBuilderWithConcept = aFullInstance()
@@ -854,6 +879,7 @@ describe('reopen', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.VERSTUURD)
             .withPublicationStatus(undefined)
+            .withDatePublished(undefined)
             .build();
 
         const updatedInstance = instance.reopen();
@@ -868,6 +894,7 @@ describe('reopen', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.ONTWERP)
             .withPublicationStatus(undefined)
+            .withDatePublished(undefined)
             .build();
 
         expect(() => instance.reopen()).toThrow(new Error('Instance status already in ontwerp'));

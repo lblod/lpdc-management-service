@@ -102,6 +102,8 @@ export function aFullInstance(): InstanceBuilder {
         .withLanguages(InstanceTestBuilder.LANGUAGES)
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
+        .withDateSent(InstanceTestBuilder.DATE_SENT)
+        .withDatePublished(InstanceTestBuilder.DATE_PUBLISHED)
         .withStatus(InstanceTestBuilder.STATUS)
         .withReviewStatus(InstanceTestBuilder.REVIEW_STATUS)
         .withPublicationStatus(InstanceTestBuilder.PUBLICATION_STATUS)
@@ -123,6 +125,9 @@ export class InstanceTestBuilder {
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2022-10-01T13:00:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2023-10-02T20:00:20.242928Z');
+
+    public static readonly DATE_SENT = FormatPreservingDate.of('2023-10-03T20:00:20.242928Z');
+    public static readonly DATE_PUBLISHED = FormatPreservingDate.of('2023-10-03T21:00:20.242928Z');
 
     public static readonly STATUS = InstanceStatusType.ONTWERP;
 

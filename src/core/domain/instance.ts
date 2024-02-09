@@ -4,7 +4,8 @@ import {
     requireAllDefinedOrAllUndefined,
     requiredCanBeOnlyBeDefinedIfOtherValuePresent,
     requiredValue,
-    requireNoDuplicates
+    requireNoDuplicates,
+    requireShouldBeDefinedWhenOtherValueEquals
 } from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {
@@ -63,6 +64,8 @@ export class Instance {
     private readonly _languages: LanguageType[];
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
+    private readonly _dateSent: FormatPreservingDate | undefined;
+    private readonly _datePublished: FormatPreservingDate | undefined;
     private readonly _status: InstanceStatusType;
     private readonly _reviewStatus: InstanceReviewStatusType | undefined;
     private readonly _publicationStatus: InstancePublicationStatusType | undefined;
@@ -102,6 +105,8 @@ export class Instance {
                 languages: LanguageType[],
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
+                dateSent: FormatPreservingDate | undefined,
+                datePublished: FormatPreservingDate | undefined,
                 status: InstanceStatusType,
                 reviewStatus: InstanceReviewStatusType,
                 publicationStatus: InstancePublicationStatusType,
@@ -147,9 +152,12 @@ export class Instance {
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
+        this._dateSent = requireShouldBeDefinedWhenOtherValueEquals(dateSent, 'dateSent', InstanceStatusType.VERSTUURD, status, 'status');
+        this._datePublished = requiredCanBeOnlyBeDefinedIfOtherValuePresent(datePublished, 'datePublished', dateSent, 'dateSent');
         this._status = requiredValue(status, 'status');
         this._reviewStatus = requiredCanBeOnlyBeDefinedIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId, 'concept');
         this._publicationStatus = publicationStatus;
+        requireAllDefinedOrAllUndefined([datePublished, publicationStatus], 'datePublished ans publicationStatus');
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
         this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
         this.validateLanguages();
@@ -328,6 +336,14 @@ export class Instance {
         return this._dateModified;
     }
 
+    get dateSent(): FormatPreservingDate | undefined {
+        return this._dateSent;
+    }
+
+    get datePublished(): FormatPreservingDate | undefined {
+        return this._datePublished;
+    }
+
     get status(): InstanceStatusType {
         return this._status;
     }
@@ -411,6 +427,8 @@ export class InstanceBuilder {
     private languages: LanguageType[] = [];
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
+    private dateSent: FormatPreservingDate | undefined;
+    private datePublished: FormatPreservingDate | undefined;
     private status: InstanceStatusType;
     private reviewStatus: InstanceReviewStatusType;
     private publicationStatus: InstancePublicationStatusType;
@@ -451,6 +469,8 @@ export class InstanceBuilder {
             .withLanguages(instance.languages)
             .withDateCreated(instance.dateCreated)
             .withDateModified(instance.dateModified)
+            .withDateSent(instance.dateSent)
+            .withDatePublished(instance.datePublished)
             .withStatus(instance.status)
             .withReviewStatus(instance.reviewStatus)
             .withPublicationStatus(instance.publicationStatus)
@@ -618,6 +638,16 @@ export class InstanceBuilder {
         return this;
     }
 
+    public withDateSent(dateSent: FormatPreservingDate): InstanceBuilder {
+        this.dateSent = dateSent;
+        return this;
+    }
+
+    public withDatePublished(datePublished: FormatPreservingDate): InstanceBuilder {
+        this.datePublished = datePublished;
+        return this;
+    }
+
     public withStatus(status: InstanceStatusType): InstanceBuilder {
         this.status = status;
         return this;
@@ -677,6 +707,8 @@ export class InstanceBuilder {
             this.languages,
             this.dateCreated,
             this.dateModified,
+            this.dateSent,
+            this.datePublished,
             this.status,
             this.reviewStatus,
             this.publicationStatus,
