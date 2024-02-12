@@ -10,11 +10,11 @@ describe('Hexagonal Architecture', () => {
     const drivenAdapter = 'driven';
     const drivingAdapter = 'driving';
 
-    test('Domain should only depend port', () => {
+    test('Domain should only depend on port', () => {
         expect(checkDependency(domain, [ports])).toEqual([]);
     });
 
-    test('Ports should only depend domain', () => {
+    test('Ports should only depend on domain', () => {
         expect(checkDependency(ports, [domain])).toEqual([]);
     });
 
