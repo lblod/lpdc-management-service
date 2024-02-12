@@ -919,7 +919,7 @@ describe('reopen', () => {
 describe('publish', () => {
 
     test('should update status and modified date', () => {
-        const instance = aFullInstance()
+        const instance = aMinimalInstance()
             .withStatus(InstanceStatusType.ONTWERP)
             .build();
 
@@ -928,6 +928,7 @@ describe('publish', () => {
         expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
             .withStatus(InstanceStatusType.VERSTUURD)
             .withDateModified(FormatPreservingDate.now())
+            .withDateSent(FormatPreservingDate.now())
             .build());
     });
 
