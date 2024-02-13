@@ -1,4 +1,4 @@
-# case 1: some concept snapshots websites have a title with the same language (2 times nl, 2 times en)  (not solved)
+# case 1: some concept snapshots websites have a title with the same language (2 times nl, 2 times en)  (solved)
 
 ![case1.png](img%2Fcase1.png)
 
