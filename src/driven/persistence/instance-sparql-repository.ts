@@ -9,7 +9,7 @@ import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
-import {InstanceReviewStatusType} from "../../core/domain/types";
+import {InstancePublicationStatusType, InstanceReviewStatusType} from "../../core/domain/types";
 import {Logger} from "../../../platform/logger";
 import {literal} from "rdflib";
 import LPDCError from "../../../platform/lpdc-error";
@@ -153,10 +153,10 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     ${triples.join("\n")}
                 }
                 INSERT {
-                    ${sparqlEscapeUri(instance.id)} a  as:Tombstone;
+                    ${sparqlEscapeUri(instance.id)} a as:Tombstone;
                     as:formerType cpsv:PublicService;
                     as:deleted ${sparqlEscapeDateTime(now)};
-                    schema:publication ${NS.concepts.publicationStatus('te-herpubliceren')} .
+                    schema:publication ${NS.concepts.publicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)} .
                 }`;
 
                 await this.querying.deleteInsert(query);
