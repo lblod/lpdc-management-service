@@ -165,6 +165,7 @@ describe('Instance Data Integrity Validation', () => {
                             totalDoubleQuads.push(...doubleQuadsErrorsForInstance);
 
                         } catch (e) {
+                            console.error(instanceId);
                             console.error(e);
                             dataErrors.push({
                                 bestuurseenheidId: bestuurseenheidId,
