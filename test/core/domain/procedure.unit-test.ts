@@ -18,7 +18,7 @@ describe('forConcept', () => {
 
     test('Undefined id throws error', () => {
         const procedure = aFullProcedure().withId(undefined);
-        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -27,7 +27,7 @@ describe('forConcept', () => {
 
     test('Undefined uuid throws error', () => {
         const procedure = aFullProcedure().withUuid(undefined);
-        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('uuid should not be undefined'));
+        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('uuid should not be absent'));
     });
 
     test('Blank uuid throws error', () => {
@@ -37,12 +37,12 @@ describe('forConcept', () => {
 
     test('Undefined title throws error', () => {
         const procedure = aFullProcedure().withTitle(undefined);
-        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('title should not be undefined'));
+        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('title should not be absent'));
     });
 
     test('Undefined description throws error', () => {
         const procedure = aFullProcedure().withDescription(undefined);
-        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('description should not be undefined'));
+        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('description should not be absent'));
     });
 
     describe('website ', () => {
@@ -84,7 +84,7 @@ describe('forConcept', () => {
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Procedure.forConcept(aFullProcedure().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => Procedure.forConcept(aFullProcedure().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 });
 
@@ -92,7 +92,7 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined id throws error', () => {
         const procedure = aFullProcedure().withId(undefined);
-        expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -106,12 +106,12 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined title throws error', () => {
         const procedure = aFullProcedure().withTitle(undefined).build();
-        expect(() => Procedure.forConceptSnapshot(procedure)).toThrow(new Error('title should not be undefined'));
+        expect(() => Procedure.forConceptSnapshot(procedure)).toThrow(new Error('title should not be absent'));
     });
 
     test('Undefined description throws error', () => {
         const procedure = aFullProcedure().withDescription(undefined).build();
-        expect(() => Procedure.forConceptSnapshot(procedure)).toThrow(new Error('description should not be undefined'));
+        expect(() => Procedure.forConceptSnapshot(procedure)).toThrow(new Error('description should not be absent'));
     });
 
     describe('website ', () => {
@@ -166,7 +166,7 @@ describe('forConceptSnapshot', () => {
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Procedure.forConceptSnapshot(aFullProcedure().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => Procedure.forConceptSnapshot(aFullProcedure().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 
 });
@@ -178,12 +178,12 @@ describe('for instance', () => {
 
     test('Undefined id throws error', () => {
         const procedure = aFullProcedureForInstance().withId(undefined);
-        expect(() => Procedure.forInstance(procedure.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Procedure.forInstance(procedure.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Undefined Uuid throws error', () => {
         const procedure = aFullProcedureForInstance().withUuid(undefined).build();
-        expect(() => Procedure.forInstance(procedure).uuid).toThrow(new Error('uuid should not be undefined'));
+        expect(() => Procedure.forInstance(procedure).uuid).toThrow(new Error('uuid should not be absent'));
     });
 
     test('If title and description have the same nl language procedure is created', () => {
@@ -322,7 +322,7 @@ describe('for instance', () => {
     }
 
     test('Undefined order throws error', () => {
-        expect(() => Procedure.forInstance(aFullProcedureForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => Procedure.forInstance(aFullProcedureForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 
 });

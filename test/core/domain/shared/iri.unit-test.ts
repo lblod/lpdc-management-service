@@ -7,7 +7,7 @@ describe('constructing', () => {
     });
 
     test('undefined throws error', () => {
-        expect(() => new Iri(undefined)).toThrow(new Error('iri should not be undefined'));
+        expect(() => new Iri(undefined)).toThrow(new Error('iri should not be absent'));
     });
 
     test('Blank id throws error', () => {

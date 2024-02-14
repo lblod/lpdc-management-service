@@ -1,19 +1,19 @@
 import {Invariant} from "../../../../src/core/domain/shared/invariant";
 
-describe('notBeUndefined', () => {
+describe('notBeAbsent', () => {
 
     test('Returns the value when value is not undefined  ', () => {
 
         const invariant: Invariant<any> = Invariant.require('not undefined');
 
-        expect(invariant.to(invariant.notBeUndefined())).toEqual('not undefined');
+        expect(invariant.to(invariant.notBeAbsent())).toEqual('not undefined');
     });
 
     test('Returns error when value is undefined  ', () => {
         const name = 'undefined value';
         const invariant: Invariant<any> = Invariant.require(undefined, name);
 
-        expect(() => invariant.to(invariant.notBeUndefined())).toThrow(new Error(`${name} should not be undefined`));
+        expect(() => invariant.to(invariant.notBeAbsent())).toThrow(new Error(`${name} should not be absent`));
     });
 
 });
@@ -182,69 +182,70 @@ describe('noDuplicates', () => {
     });
 });
 
-describe('allDefinedOrAllUndefined', () => {
+describe('allPresentOrAllAbsent', () => {
     const name = 'fields';
 
     test('Returns value when all elements are defined', () => {
         const invariant: Invariant<any> = Invariant.require(['a', 'b', {a: 0}, {a: undefined}], name);
-        expect(invariant.to(invariant.allDefinedOrAllUndefined())).toEqual(['a', 'b', {a: 0}, {a: undefined}]);
+        expect(invariant.to(invariant.allPresentOrAllAbsent())).toEqual(['a', 'b', {a: 0}, {a: undefined}]);
     });
 
     test('Returns value when all elements are undefined', () => {
         const invariant: Invariant<any> = Invariant.require([undefined, undefined], name);
-        expect(invariant.to(invariant.allDefinedOrAllUndefined())).toEqual([undefined, undefined]);
+        expect(invariant.to(invariant.allPresentOrAllAbsent())).toEqual([undefined, undefined]);
     });
 
     test('throws error when some elements are defined and others undefined', () => {
         const invariant: Invariant<any> = Invariant.require(['a', {a: 0}, {a: 1}, undefined], name);
-        expect(() => invariant.to(invariant.allDefinedOrAllUndefined())).toThrow(new Error(`${name} should all be defined or all be undefined`));
+        expect(() => invariant.to(invariant.allPresentOrAllAbsent())).toThrow(new Error(`${name} should all be present or all be absent`));
     });
 });
 
 
-describe('canBeOnlyBeDefinedIfOtherValuePresent',()=>{
+describe('canOnlyBePresentIfOtherValuePresent',()=>{
     const name ='field';
     const presentName = 'presentField';
 
     test('Returns value when presentValue and new value are undefined',()=>{
         const invariant: Invariant<any> = Invariant.require(undefined, name);
-        expect(invariant.to(invariant.canBeOnlyBeDefinedIfOtherValuePresent(undefined,presentName))).toEqual(undefined);
+        expect(invariant.to(invariant.canOnlyBePresentIfOtherValuePresent(undefined,presentName))).toEqual(undefined);
     });
 
     test('Returns value when presentValue and new value are both present',()=>{
         const newValue = 'newValue';
         const presentValue ='presentValue';
         const invariant: Invariant<any> = Invariant.require(newValue, name);
-        expect(invariant.to(invariant.canBeOnlyBeDefinedIfOtherValuePresent(presentValue,presentName))).toEqual(newValue);
+        expect(invariant.to(invariant.canOnlyBePresentIfOtherValuePresent(presentValue,presentName))).toEqual(newValue);
     });
 
     test('Returns value when presentValue and new value are both present even though different types',()=>{
         const newValue = 'newValue';
         const presentValue =123456;
         const invariant: Invariant<any> = Invariant.require(newValue, name);
-        expect(invariant.to(invariant.canBeOnlyBeDefinedIfOtherValuePresent(presentValue,presentName))).toEqual(newValue);
+        expect(invariant.to(invariant.canOnlyBePresentIfOtherValuePresent(presentValue,presentName))).toEqual(newValue);
     });
 
     test('throws error when new value is defined and presentValue undefined', () => {
         const newValue = 'newValue';
         const invariant: Invariant<any> = Invariant.require(newValue, name);
-        expect(() => invariant.to(invariant.canBeOnlyBeDefinedIfOtherValuePresent(undefined,presentName))).toThrow(new Error(`${name} can only be defined when ${presentName} is defined`));
+        expect(() => invariant.to(invariant.canOnlyBePresentIfOtherValuePresent(undefined,presentName))).toThrow(new Error(`${name} can only be present when ${presentName} is present`));
     });
 });
 
 describe('to', () => {
+
     test('returns first violation', () => {
         const name = 'name';
         const invariant: Invariant<any> = Invariant.require('', name);
 
-        expect(() => invariant.to(invariant.notBeBlank(), invariant.notBeUndefined())).toThrow(new Error(`${name} should not be blank`));
-        expect(() => invariant.to(invariant.notBeUndefined(), invariant.notBeBlank())).toThrow(new Error(`${name} should not be blank`));
+        expect(() => invariant.to(invariant.notBeBlank(), invariant.notBeAbsent())).toThrow(new Error(`${name} should not be blank`));
+        expect(() => invariant.to(invariant.notBeAbsent(), invariant.notBeBlank())).toThrow(new Error(`${name} should not be blank`));
     });
 
     test('returns the value when there are no violations', () => {
         const name = 'name';
         const invariant: Invariant<any> = Invariant.require('value', name);
 
-        expect(invariant.to(invariant.notBeBlank(), invariant.notBeUndefined())).toEqual('value');
+        expect(invariant.to(invariant.notBeBlank(), invariant.notBeAbsent())).toEqual('value');
     });
 });

@@ -67,7 +67,7 @@ describe('constructing', () => {
     });
 
     test('Undefined id throws error', () => {
-        expect(() => aFullConceptSnapshot().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
+        expect(() => aFullConceptSnapshot().withId(undefined).build()).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -75,23 +75,23 @@ describe('constructing', () => {
     });
 
     test('Undefined title throws error', () => {
-        expect(() => aFullConceptSnapshot().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));
+        expect(() => aFullConceptSnapshot().withTitle(undefined).build()).toThrow(new Error('title should not be absent'));
     });
 
     test('NL not present in title throws error', () => {
-        expect(() => aFullConceptSnapshot().withTitle(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in title should not be undefined'));
+        expect(() => aFullConceptSnapshot().withTitle(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in title should not be absent'));
     });
 
     test('Undefined description throws error', () => {
-        expect(() => aFullConceptSnapshot().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
+        expect(() => aFullConceptSnapshot().withDescription(undefined).build()).toThrow(new Error('description should not be absent'));
     });
 
     test('NL not present in description throws error', () => {
-        expect(() => aFullConceptSnapshot().withDescription(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in description should not be undefined'));
+        expect(() => aFullConceptSnapshot().withDescription(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in description should not be absent'));
     });
 
     test('Undefined productId throws error', () => {
-        expect(() => aFullConceptSnapshot().withProductId(undefined).build()).toThrow(new Error('productId should not be undefined'));
+        expect(() => aFullConceptSnapshot().withProductId(undefined).build()).toThrow(new Error('productId should not be absent'));
     });
 
     test('Blank productId throws error', () => {
@@ -99,7 +99,7 @@ describe('constructing', () => {
     });
 
     test('Undefined snapshotType throws error', () => {
-        expect(() => aFullConceptSnapshot().withSnapshotType(undefined).build()).toThrow(new Error('snapshotType should not be undefined'));
+        expect(() => aFullConceptSnapshot().withSnapshotType(undefined).build()).toThrow(new Error('snapshotType should not be absent'));
     });
 
     test('TargetAudience with duplicates throws error', () => {
@@ -150,15 +150,15 @@ describe('constructing', () => {
     describe('dateCreated', () => {
 
         test('Invalid dateCreated throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateCreated should not be undefined'));
+            expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateCreated should not be absent'));
         });
 
         test('Undefined dateCreated throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateCreated(undefined).build()).toThrow(new Error('dateCreated should not be undefined'));
+            expect(() => aFullConceptSnapshot().withDateCreated(undefined).build()).toThrow(new Error('dateCreated should not be absent'));
         });
 
         test('Blank dateCreated throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of('')).build()).toThrow(new Error('dateCreated should not be undefined'));
+            expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of('')).build()).toThrow(new Error('dateCreated should not be absent'));
         });
 
     });
@@ -166,15 +166,15 @@ describe('constructing', () => {
     describe('dateModified', () => {
 
         test('Invalid dateModified throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateModified should not be undefined'));
+            expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateModified should not be absent'));
         });
 
         test('Undefined dateModified throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateModified(undefined).build()).toThrow(new Error('dateModified should not be undefined'));
+            expect(() => aFullConceptSnapshot().withDateModified(undefined).build()).toThrow(new Error('dateModified should not be absent'));
         });
 
         test('Blank dateModified throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of('')).build()).toThrow(new Error('dateModified should not be undefined'));
+            expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of('')).build()).toThrow(new Error('dateModified should not be absent'));
         });
 
     });
@@ -182,15 +182,15 @@ describe('constructing', () => {
     describe('generatedAtTime', () => {
 
         test('Invalid generatedAtTime throws error', () => {
-            expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('generatedAtTime should not be undefined'));
+            expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('generatedAtTime should not be absent'));
         });
 
         test('Undefined generatedAtTime throws error', () => {
-            expect(() => aFullConceptSnapshot().withGeneratedAtTime(undefined).build()).toThrow(new Error('generatedAtTime should not be undefined'));
+            expect(() => aFullConceptSnapshot().withGeneratedAtTime(undefined).build()).toThrow(new Error('generatedAtTime should not be absent'));
         });
 
         test('Blank generatedAtTime throws error', () => {
-            expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of('')).build()).toThrow(new Error('generatedAtTime should not be undefined'));
+            expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of('')).build()).toThrow(new Error('generatedAtTime should not be absent'));
         });
 
     });

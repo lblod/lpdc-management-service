@@ -5,7 +5,7 @@ import {aFullAddress} from "./address-test-builder";
 describe('constructing', () => {
 
     test('Undefined id throws error', () => {
-        expect(() => aFullContactPoint().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
+        expect(() => aFullContactPoint().withId(undefined).build()).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -13,7 +13,7 @@ describe('constructing', () => {
     });
 
     test('Undefined uuid throws error', () => {
-        expect(() => aFullContactPoint().withUuid(undefined).build()).toThrow(new Error('uuid should not be undefined'));
+        expect(() => aFullContactPoint().withUuid(undefined).build()).toThrow(new Error('uuid should not be absent'));
     });
 
     test('Blank uuid throws error', () => {
@@ -21,7 +21,7 @@ describe('constructing', () => {
     });
 
     test('Blank order throws error', () => {
-        expect(() => aFullContactPoint().withOrder(undefined).build()).toThrow(new Error('order should not be undefined'));
+        expect(() => aFullContactPoint().withOrder(undefined).build()).toThrow(new Error('order should not be absent'));
     });
 
     describe('address ', () => {

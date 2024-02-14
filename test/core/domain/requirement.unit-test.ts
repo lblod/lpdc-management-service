@@ -17,7 +17,7 @@ describe('forConcept', () => {
 
     test('Undefined id throws error', () => {
         const requirement = aFullRequirement().withId(undefined);
-        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -26,7 +26,7 @@ describe('forConcept', () => {
 
     test('Undefined uuid throws error', () => {
         const requirement = aFullRequirement().withUuid(undefined);
-        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('uuid should not be undefined'));
+        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('uuid should not be absent'));
     });
 
     test('Blank uuid throws error', () => {
@@ -36,12 +36,12 @@ describe('forConcept', () => {
 
     test('Undefined title throws error', () => {
         const requirement = aFullRequirement().withTitle(undefined);
-        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('title should not be undefined'));
+        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('title should not be absent'));
     });
 
     test('Undefined description throws error', () => {
         const requirement = aFullRequirement().withDescription(undefined);
-        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('description should not be undefined'));
+        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('description should not be absent'));
     });
 
     describe('evidence ', () => {
@@ -62,7 +62,7 @@ describe('forConcept', () => {
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Requirement.forConcept(aFullRequirement().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => Requirement.forConcept(aFullRequirement().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 
 });
@@ -71,7 +71,7 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined id throws error', () => {
         const requirement = aFullRequirement().withId(undefined);
-        expect(() => Requirement.forConceptSnapshot(requirement.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Requirement.forConceptSnapshot(requirement.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -85,12 +85,12 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined title throws error', () => {
         const requirement = aFullRequirement().withTitle(undefined).build();
-        expect(() => Requirement.forConceptSnapshot(requirement)).toThrow(new Error('title should not be undefined'));
+        expect(() => Requirement.forConceptSnapshot(requirement)).toThrow(new Error('title should not be absent'));
     });
 
     test('Undefined description throws error', () => {
         const requirement = aFullRequirement().withDescription(undefined).build();
-        expect(() => Requirement.forConceptSnapshot(requirement)).toThrow(new Error('description should not be undefined'));
+        expect(() => Requirement.forConceptSnapshot(requirement)).toThrow(new Error('description should not be absent'));
     });
 
     describe('evidence ', () => {
@@ -111,7 +111,7 @@ describe('forConceptSnapshot', () => {
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Requirement.forConceptSnapshot(aFullRequirement().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => Requirement.forConceptSnapshot(aFullRequirement().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 
 });
@@ -123,12 +123,12 @@ describe('for instance', () => {
 
     test('Undefined id throws error', () => {
         const requirement = aFullRequirementForInstance().withId(undefined);
-        expect(() => Requirement.forInstance(requirement.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Requirement.forInstance(requirement.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Undefined Uuid throws error', () => {
         const requirement = aFullRequirementForInstance().withUuid(undefined).build();
-        expect(() => Requirement.forInstance(requirement).uuid).toThrow(new Error('uuid should not be undefined'));
+        expect(() => Requirement.forInstance(requirement).uuid).toThrow(new Error('uuid should not be absent'));
     });
 
     test('If title and description have the same nl language requirement is created', () => {
@@ -249,7 +249,7 @@ describe('for instance', () => {
     }
 
     test('Undefined order throws error', () => {
-        expect(() => Requirement.forInstance(aFullRequirementForInstance().withOrder(undefined).build()).uuid).toThrow(new Error('order should not be undefined'));
+        expect(() => Requirement.forInstance(aFullRequirementForInstance().withOrder(undefined).build()).uuid).toThrow(new Error('order should not be absent'));
     });
 
 });

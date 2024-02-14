@@ -7,7 +7,7 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 describe('forConcept', () => {
     test('Undefined id throws error', () => {
         const evidence = aFullEvidence().withId(undefined);
-        expect(() => Evidence.forConcept(evidence.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Evidence.forConcept(evidence.build())).toThrow(new Error('id should not be absent'));
     });
     test('Invalid iri id throws error', () => {
         expect(() => Evidence.forConcept(aFullEvidence().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
@@ -15,7 +15,7 @@ describe('forConcept', () => {
 
     test('Undefined uuid throws error', () => {
         const evidence = aFullEvidence().withUuid(undefined);
-        expect(() => Evidence.forConcept(evidence.build())).toThrow(new Error('uuid should not be undefined'));
+        expect(() => Evidence.forConcept(evidence.build())).toThrow(new Error('uuid should not be absent'));
     });
     test('Blank uuid throws error', () => {
         const evidence = aFullEvidence().withUuid('   ');
@@ -24,12 +24,12 @@ describe('forConcept', () => {
 
     test('Undefined title throws error', () => {
         const evidence = aFullEvidence().withTitle(undefined);
-        expect(() => Evidence.forConcept(evidence.build())).toThrow(new Error('title should not be undefined'));
+        expect(() => Evidence.forConcept(evidence.build())).toThrow(new Error('title should not be absent'));
     });
 
     test('Undefined description throws error', () => {
         const evidence = aFullEvidence().withDescription(undefined);
-        expect(() => Evidence.forConcept(evidence.build())).toThrow(new Error('description should not be undefined'));
+        expect(() => Evidence.forConcept(evidence.build())).toThrow(new Error('description should not be absent'));
     });
 
 });
@@ -38,7 +38,7 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined id throws error', () => {
         const evidence = aFullEvidence().withId(undefined);
-        expect(() => Evidence.forConceptSnapshot(evidence.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Evidence.forConceptSnapshot(evidence.build())).toThrow(new Error('id should not be absent'));
     });
     test('Invalid iri id throws error', () => {
         expect(() => Evidence.forConceptSnapshot(aFullEvidence().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
@@ -49,11 +49,11 @@ describe('forConceptSnapshot', () => {
     });
     test('Undefined title throws error', () => {
         const evidence = aFullEvidence().withTitle(undefined).build();
-        expect(() => Evidence.forConceptSnapshot(evidence)).toThrow(new Error('title should not be undefined'));
+        expect(() => Evidence.forConceptSnapshot(evidence)).toThrow(new Error('title should not be absent'));
     });
     test('Undefined description throws error', () => {
         const evidence = aFullEvidence().withDescription(undefined).build();
-        expect(() => Evidence.forConceptSnapshot(evidence)).toThrow(new Error('description should not be undefined'));
+        expect(() => Evidence.forConceptSnapshot(evidence)).toThrow(new Error('description should not be absent'));
     });
 
 });
@@ -65,11 +65,11 @@ describe('for instance',()=>{
 
     test('Undefined id throws error', () => {
         const evidence = aFullEvidenceForInstance().withId(undefined);
-        expect(() => Evidence.forInstance(evidence.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Evidence.forInstance(evidence.build())).toThrow(new Error('id should not be absent'));
     });
     test('Undefined Uuid throws error', () => {
         const evidence = aFullEvidenceForInstance().withUuid(undefined).build();
-        expect(()=>Evidence.forInstance(evidence).uuid).toThrow(new Error('uuid should not be undefined'));
+        expect(()=>Evidence.forInstance(evidence).uuid).toThrow(new Error('uuid should not be absent'));
     });
 
     test('If title and description have the same nl language evidence is created', () => {

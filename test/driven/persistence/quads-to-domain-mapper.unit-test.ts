@@ -228,7 +228,7 @@ describe('quads to domain mapper', () => {
                 ];
 
             const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
-            expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`order should not be undefined`));
+            expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`order should not be absent`));
         });
 
         test('When 2 orders have same order, throw error', () => {

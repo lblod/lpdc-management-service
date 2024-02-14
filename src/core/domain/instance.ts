@@ -1,11 +1,11 @@
 import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {
-    requireAllDefinedOrAllUndefined,
-    requiredCanBeOnlyBeDefinedIfOtherValuePresent,
+    requireAllPresentOrAllAbsent,
+    requiredCanOnlyBePresentIfOtherValuePresent,
     requiredValue,
     requireNoDuplicates,
-    requireShouldBeDefinedWhenOtherValueEquals
+    requireShouldBePresentWhenOtherValueEquals
 } from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {
@@ -145,19 +145,19 @@ export class Instance {
         requireNoDuplicates(this._financialAdvantages.map(fa => fa.order), 'financial advantages > order');
         this._contactPoints = [...contactPoints];
         requireNoDuplicates(this._contactPoints.map(cp => cp.order), 'contact points > order');
-        requireAllDefinedOrAllUndefined([conceptId, conceptSnapshotId, productId], 'conceptId, conceptSnapshotId and productId');
+        requireAllPresentOrAllAbsent([conceptId, conceptSnapshotId, productId], 'conceptId, conceptSnapshotId and productId');
         this._conceptId = conceptId;
         this._conceptSnapshotId = conceptSnapshotId;
         this._productId = productId;
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
-        this._dateSent = requireShouldBeDefinedWhenOtherValueEquals(dateSent, 'dateSent', InstanceStatusType.VERSTUURD, status, 'status');
-        this._datePublished = requiredCanBeOnlyBeDefinedIfOtherValuePresent(datePublished, 'datePublished', dateSent, 'dateSent');
+        this._dateSent = requireShouldBePresentWhenOtherValueEquals(dateSent, 'dateSent', InstanceStatusType.VERSTUURD, status, 'status');
+        this._datePublished = requiredCanOnlyBePresentIfOtherValuePresent(datePublished, 'datePublished', dateSent, 'dateSent');
         this._status = requiredValue(status, 'status');
-        this._reviewStatus = requiredCanBeOnlyBeDefinedIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId, 'concept');
+        this._reviewStatus = requiredCanOnlyBePresentIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId, 'concept');
         this._publicationStatus = publicationStatus;
-        requireAllDefinedOrAllUndefined([datePublished, publicationStatus], 'datePublished and publicationStatus');
+        requireAllPresentOrAllAbsent([datePublished, publicationStatus], 'datePublished and publicationStatus');
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
         this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
         this.validateLanguages();

@@ -16,8 +16,8 @@ export class Invariant<V> {
         return new Invariant(value, name ?? 'name');
     }
 
-    notBeUndefined(): InvariantType<V> {
-        return () => !this.isUndefined(this._value) ? null : `${this._name} should not be undefined`;
+    notBeAbsent(): InvariantType<V> {
+        return () => !this.isUndefined(this._value) ? null : `${this._name} should not be absent`;
     }
 
     notBeBlank(): InvariantType<V> {
@@ -54,21 +54,21 @@ export class Invariant<V> {
             : `${this._name} should not contain duplicates`;
     }
 
-    allDefinedOrAllUndefined(): InvariantType<V> {
+    allPresentOrAllAbsent(): InvariantType<V> {
         return () => (this._value as any[]).every(a => a === undefined) || (this._value as any[]).every(a => a !== undefined)
             ? null
-            : `${this._name} should all be defined or all be undefined`;
+            : `${this._name} should all be present or all be absent`;
     }
 
-    canBeOnlyBeDefinedIfOtherValuePresent(presentValue: any, presentName: string) {
+    canOnlyBePresentIfOtherValuePresent(presentValue: any, presentName: string) {
         return () => (presentValue != undefined) || (presentValue === undefined && this._value === undefined)
             ? null
-            : `${this._name} can only be defined when ${presentName} is defined`;
+            : `${this._name} can only be present when ${presentName} is present`;
     }
 
-    shouldBeDefinedWhenOtherValueEquals(expectedValue: any, presentValue: any, presentName: string) {
+    shouldBePresentWhenOtherValueEquals(expectedValue: any, presentValue: any, presentName: string) {
         return () => ((this.isUndefined(this._value) || this.isBlank(this._value)) && presentValue === expectedValue)
-            ? `${this._name} should be defined when ${presentName} equals ${expectedValue} `
+            ? `${this._name} should be present when ${presentName} equals ${expectedValue} `
             : null;
     }
     toMatchPattern(pattern: RegExp): InvariantType<V> {
@@ -102,7 +102,7 @@ export class Invariant<V> {
 
 export const requiredValue = <T>(value: T, name: string = 'object'): T => {
     const invariant: Invariant<T> = Invariant.require(value, name);
-    return invariant.to(invariant.notBeUndefined(), invariant.notBeBlank());
+    return invariant.to(invariant.notBeAbsent(), invariant.notBeBlank());
 };
 
 export const requireNoDuplicates = <T>(values: T[], name: string = 'list'): T[] => {
@@ -110,17 +110,17 @@ export const requireNoDuplicates = <T>(values: T[], name: string = 'list'): T[] 
     return invariant.to(invariant.noDuplicates());
 };
 
-export const requireAllDefinedOrAllUndefined = <T>(values: T[], name: string = 'list'): T[] => {
+export const requireAllPresentOrAllAbsent = <T>(values: T[], name: string = 'list'): T[] => {
     const invariant: Invariant<T[]> = Invariant.require(values, name);
-    return invariant.to(invariant.allDefinedOrAllUndefined());
+    return invariant.to(invariant.allPresentOrAllAbsent());
 };
 
-export const requiredCanBeOnlyBeDefinedIfOtherValuePresent = <T>(value: T, name: string = 'object', presentValue: any, presentName: string): T => {
+export const requiredCanOnlyBePresentIfOtherValuePresent = <T>(value: T, name: string = 'object', presentValue: any, presentName: string): T => {
     const invariant: Invariant<T> = Invariant.require(value, name);
-    return invariant.to(invariant.canBeOnlyBeDefinedIfOtherValuePresent(presentValue, presentName));
+    return invariant.to(invariant.canOnlyBePresentIfOtherValuePresent(presentValue, presentName));
 };
 
-export const requireShouldBeDefinedWhenOtherValueEquals = <T>(value: T, name: string = 'object', expectedValue: any, presentValue: any, presentName: string): T => {
+export const requireShouldBePresentWhenOtherValueEquals = <T>(value: T, name: string = 'object', expectedValue: any, presentValue: any, presentName: string): T => {
     const invariant: Invariant<T> = Invariant.require(value, name);
-    return invariant.to(invariant.shouldBeDefinedWhenOtherValueEquals(expectedValue, presentValue, presentName));
+    return invariant.to(invariant.shouldBePresentWhenOtherValueEquals(expectedValue, presentValue, presentName));
 };

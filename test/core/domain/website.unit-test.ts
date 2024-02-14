@@ -9,7 +9,7 @@ describe('forConcept', () => {
 
     test('Undefined id throws error', () => {
         const website = aFullWebsite().withId(undefined);
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Website.forConcept(website.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -18,7 +18,7 @@ describe('forConcept', () => {
 
     test('Undefined uuid throws error', () => {
         const website = aFullWebsite().withUuid(undefined);
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('uuid should not be undefined'));
+        expect(() => Website.forConcept(website.build())).toThrow(new Error('uuid should not be absent'));
     });
 
     test('Blank uuid throws error', () => {
@@ -28,12 +28,12 @@ describe('forConcept', () => {
 
     test('Undefined title throws error', () => {
         const website = aFullWebsite().withTitle(undefined);
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('title should not be undefined'));
+        expect(() => Website.forConcept(website.build())).toThrow(new Error('title should not be absent'));
     });
 
     test('Undefined url throws error', () => {
         const website = aFullWebsite().withUrl(undefined);
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('url should not be undefined'));
+        expect(() => Website.forConcept(website.build())).toThrow(new Error('url should not be absent'));
     });
 
     test('Blank url throws error', () => {
@@ -42,7 +42,7 @@ describe('forConcept', () => {
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Website.forConcept(aFullWebsite().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => Website.forConcept(aFullWebsite().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 
 });
@@ -51,7 +51,7 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined id throws error', () => {
         const website = aFullWebsite().withId(undefined);
-        expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -65,12 +65,12 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined title throws error', () => {
         const website = aFullWebsite().withTitle(undefined).build();
-        expect(() => Website.forConceptSnapshot(website)).toThrow(new Error('title should not be undefined'));
+        expect(() => Website.forConceptSnapshot(website)).toThrow(new Error('title should not be absent'));
     });
 
     test('Undefined url throws error', () => {
         const website = aFullWebsite().withUrl(undefined);
-        expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('url should not be undefined'));
+        expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('url should not be absent'));
     });
 
     test('Blank url throws error', () => {
@@ -79,7 +79,7 @@ describe('forConceptSnapshot', () => {
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Website.forConceptSnapshot(aFullWebsite().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => Website.forConceptSnapshot(aFullWebsite().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 });
 
@@ -90,12 +90,12 @@ describe('for instance',()=>{
 
     test('Undefined id throws error', () => {
         const website = aFullWebsiteForInstance().withId(undefined);
-        expect(() => Website.forInstance(website.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => Website.forInstance(website.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Undefined Uuid throws error', () => {
         const website = aFullWebsiteForInstance().withUuid(undefined).build();
-        expect(()=>Website.forInstance(website).uuid).toThrow(new Error('uuid should not be undefined'));
+        expect(()=>Website.forInstance(website).uuid).toThrow(new Error('uuid should not be absent'));
     });
 
     test('If title and description have the same nl language website is created', () => {
@@ -172,6 +172,6 @@ describe('for instance',()=>{
     }
 
     test('Undefined error throws error', () => {
-        expect(() => Website.forInstance(aFullWebsiteForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => Website.forInstance(aFullWebsiteForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 });

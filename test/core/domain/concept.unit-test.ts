@@ -81,7 +81,7 @@ describe('constructing', () => {
     });
 
     test('Undefined id throws error', () => {
-        expect(() => aFullConcept().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
+        expect(() => aFullConcept().withId(undefined).build()).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -89,7 +89,7 @@ describe('constructing', () => {
     });
 
     test('Undefined uuid throws error', () => {
-        expect(() => aFullConcept().withUuid(undefined).build()).toThrow(new Error('uuid should not be undefined'));
+        expect(() => aFullConcept().withUuid(undefined).build()).toThrow(new Error('uuid should not be absent'));
     });
 
     test('Blank uuid throws error', () => {
@@ -97,27 +97,27 @@ describe('constructing', () => {
     });
 
     test('Undefined title throws error', () => {
-        expect(() => aFullConcept().withTitle(undefined).build()).toThrow(new Error('title should not be undefined'));
+        expect(() => aFullConcept().withTitle(undefined).build()).toThrow(new Error('title should not be absent'));
     });
 
     test('NL not present in title throws error', () => {
-        expect(() => aFullConcept().withTitle(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in title should not be undefined'));
+        expect(() => aFullConcept().withTitle(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in title should not be absent'));
     });
 
     test('NL not present in description throws error', () => {
-        expect(() => aFullConcept().withDescription(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in description should not be undefined'));
+        expect(() => aFullConcept().withDescription(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in description should not be absent'));
     });
 
     test('Undefined description throws error', () => {
-        expect(() => aFullConcept().withDescription(undefined).build()).toThrow(new Error('description should not be undefined'));
+        expect(() => aFullConcept().withDescription(undefined).build()).toThrow(new Error('description should not be absent'));
     });
 
     test('Undefined isArchived throws error', () => {
-        expect(() => aFullConcept().withIsArchived(undefined).build()).toThrow(new Error('isArchived should not be undefined'));
+        expect(() => aFullConcept().withIsArchived(undefined).build()).toThrow(new Error('isArchived should not be absent'));
     });
 
     test('Undefined productId throws error', () => {
-        expect(() => aFullConcept().withProductId(undefined).build()).toThrow(new Error('productId should not be undefined'));
+        expect(() => aFullConcept().withProductId(undefined).build()).toThrow(new Error('productId should not be absent'));
     });
 
     test('Blank productId throws error', () => {
@@ -125,7 +125,7 @@ describe('constructing', () => {
     });
 
     test('Undefined latestConceptSnapshot throws error', () => {
-        expect(() => aFullConcept().withLatestConceptSnapshot(undefined).build()).toThrow(new Error('latestConceptSnapshot should not be undefined'));
+        expect(() => aFullConcept().withLatestConceptSnapshot(undefined).build()).toThrow(new Error('latestConceptSnapshot should not be absent'));
     });
 
     test('invalid Iri latestConceptSnapshot throws error', () => {
@@ -133,7 +133,7 @@ describe('constructing', () => {
     });
 
     test('Undefined LatestFunctionallyChangedConceptSnapshot throws error', () => {
-        expect(() => aFullConcept().withLatestFunctionallyChangedConceptSnapshot(undefined).build()).toThrow(new Error('latestFunctionallyChangedConceptSnapshot should not be undefined'));
+        expect(() => aFullConcept().withLatestFunctionallyChangedConceptSnapshot(undefined).build()).toThrow(new Error('latestFunctionallyChangedConceptSnapshot should not be absent'));
     });
 
     test('invalid Iri LatestFunctionallyChangedConceptSnapshot throws error', () => {

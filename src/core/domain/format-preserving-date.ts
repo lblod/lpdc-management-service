@@ -12,7 +12,7 @@ export class FormatPreservingDate {
     private constructor(valueFormattedInIso8601WithNanosMillisOrSeconds: string) {
         this._value = valueFormattedInIso8601WithNanosMillisOrSeconds;
         const invariant = Invariant.require(this._value, 'value');
-        invariant.to(invariant.notBeUndefined(), invariant.notBeBlank(), invariant.toMatchPattern(this.iso8601Regex));
+        invariant.to(invariant.notBeAbsent(), invariant.notBeBlank(), invariant.toMatchPattern(this.iso8601Regex));
     }
 
     public static of(valueFormattedInIso8601WithNanosMillisOrSeconds: string | undefined): FormatPreservingDate | undefined {

@@ -13,7 +13,7 @@ describe('forConcept', () => {
 
     test('Undefined id throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withId(undefined);
-        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -22,7 +22,7 @@ describe('forConcept', () => {
 
     test('Undefined uuid throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withUuid(undefined);
-        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('uuid should not be undefined'));
+        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('uuid should not be absent'));
     });
 
     test('Blank uuid throws error', () => {
@@ -32,16 +32,16 @@ describe('forConcept', () => {
 
     test('Undefined title throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withTitle(undefined);
-        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('title should not be undefined'));
+        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('title should not be absent'));
     });
 
     test('Undefined description throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withDescription(undefined);
-        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('description should not be undefined'));
+        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrow(new Error('description should not be absent'));
     });
 
     test('Undefined order throws error', () => {
-        expect(() => FinancialAdvantage.forConcept(aFullFinancialAdvantage().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => FinancialAdvantage.forConcept(aFullFinancialAdvantage().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 
 });
@@ -50,7 +50,7 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined id throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withId(undefined);
-        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -64,16 +64,16 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined title throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withTitle(undefined).build();
-        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage)).toThrow(new Error('title should not be undefined'));
+        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage)).toThrow(new Error('title should not be absent'));
     });
 
     test('Undefined description throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withDescription(undefined).build();
-        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage)).toThrow(new Error('description should not be undefined'));
+        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage)).toThrow(new Error('description should not be absent'));
     });
 
     test('Undefined order throws error', () => {
-        expect(() => FinancialAdvantage.forConceptSnapshot(aFullFinancialAdvantage().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => FinancialAdvantage.forConceptSnapshot(aFullFinancialAdvantage().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 
 });
@@ -85,12 +85,12 @@ describe('for instance', () => {
 
     test('Undefined id throws error', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstance().withId(undefined);
-        expect(() => FinancialAdvantage.forInstance(financialAdvantage.build())).toThrow(new Error('id should not be undefined'));
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage.build())).toThrow(new Error('id should not be absent'));
     });
 
     test('Undefined Uuid throws error', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstance().withUuid(undefined).build();
-        expect(() => FinancialAdvantage.forInstance(financialAdvantage).uuid).toThrow(new Error('uuid should not be undefined'));
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage).uuid).toThrow(new Error('uuid should not be absent'));
     });
 
     test('If title and description have the same nl language financial advantage is created', () => {
@@ -167,7 +167,7 @@ describe('for instance', () => {
     }
 
     test('Undefined order throws error', () => {
-        expect(() => FinancialAdvantage.forInstance(aFullFinancialAdvantageForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be undefined'));
+        expect(() => FinancialAdvantage.forInstance(aFullFinancialAdvantageForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 
 });

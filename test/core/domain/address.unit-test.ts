@@ -4,7 +4,7 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
-        expect(() => aFullAddress().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
+        expect(() => aFullAddress().withId(undefined).build()).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -12,7 +12,7 @@ describe('constructing', () => {
     });
 
     test('Undefined uuid throws error', () => {
-        expect(() => aFullAddress().withUuid(undefined).build()).toThrow(new Error('uuid should not be undefined'));
+        expect(() => aFullAddress().withUuid(undefined).build()).toThrow(new Error('uuid should not be absent'));
     });
 
     test('Blank uuid throws error', () => {

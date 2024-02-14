@@ -4,7 +4,7 @@ export class Iri {
 
     constructor(private _value: string) {
         const invariant = Invariant.require(_value, 'iri');
-        invariant.to(invariant.notBeUndefined(), invariant.notBeBlank(), invariant.startsWith('http://', 'https://'));
+        invariant.to(invariant.notBeAbsent(), invariant.notBeBlank(), invariant.startsWith('http://', 'https://'));
     }
 
     get value(): string {

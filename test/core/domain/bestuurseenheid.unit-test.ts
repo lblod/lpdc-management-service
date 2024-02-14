@@ -5,7 +5,7 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {buildSpatialRefNis2019Iri} from "./iri-test-builder";
 
 test('Undefined id throws error', () => {
-    expect(() => new Bestuurseenheid(undefined, uuid(),'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrow(new Error('id should not be undefined'));
+    expect(() => new Bestuurseenheid(undefined, uuid(),'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrow(new Error('id should not be absent'));
 });
 
 test('Invalid iri id throws error', () => {
@@ -13,15 +13,15 @@ test('Invalid iri id throws error', () => {
 });
 
 test('Undefined uuid throws error', () => {
-    expect(() => new Bestuurseenheid(new Iri('http://anIri'), undefined,'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrow(new Error('uuid should not be undefined'));
+    expect(() => new Bestuurseenheid(new Iri('http://anIri'), undefined,'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrow(new Error('uuid should not be absent'));
 });
 
 test('Undefined prefLabel throws error', () => {
-    expect(() => new Bestuurseenheid(new Iri('http://anIri'), uuid(),undefined, BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrow(new Error('prefLabel should not be undefined'));
+    expect(() => new Bestuurseenheid(new Iri('http://anIri'), uuid(),undefined, BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrow(new Error('prefLabel should not be absent'));
 });
 
 test('Undefined classificatieCode throws error', () => {
-    expect(() => new Bestuurseenheid(new Iri('http://anIri'), uuid(),'prefLabel', undefined, [])).toThrow(new Error('classificatieCode should not be undefined'));
+    expect(() => new Bestuurseenheid(new Iri('http://anIri'), uuid(),'prefLabel', undefined, [])).toThrow(new Error('classificatieCode should not be absent'));
 });
 
 test('Undefined classificatieCode does not throw error for ABB', () => {

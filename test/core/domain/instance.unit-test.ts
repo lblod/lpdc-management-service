@@ -44,7 +44,7 @@ afterAll(() => restoreRealTime());
 
 describe('constructing', () => {
     test('Undefined id throws error', () => {
-        expect(() => aFullInstance().withId(undefined).build()).toThrow(new Error('id should not be undefined'));
+        expect(() => aFullInstance().withId(undefined).build()).toThrow(new Error('id should not be absent'));
     });
 
     test('Invalid iri id throws error', () => {
@@ -52,7 +52,7 @@ describe('constructing', () => {
     });
 
     test('Undefined createdBy throws error', () => {
-        expect(() => aFullInstance().withCreatedBy(undefined).build()).toThrow(new Error('createdBy should not be undefined'));
+        expect(() => aFullInstance().withCreatedBy(undefined).build()).toThrow(new Error('createdBy should not be absent'));
     });
 
     test('Invalid iri createdBy throws error', () => {
@@ -60,7 +60,7 @@ describe('constructing', () => {
     });
 
     test('Undefined uuid throws error', () => {
-        expect(() => aFullInstance().withUuid(undefined).build()).toThrow(new Error('uuid should not be undefined'));
+        expect(() => aFullInstance().withUuid(undefined).build()).toThrow(new Error('uuid should not be absent'));
     });
 
     test('Blank uuid throws error', () => {
@@ -385,35 +385,35 @@ describe('constructing', () => {
     describe('dateCreated', () => {
 
         test('Invalid dateCreated throws error', () => {
-            expect(() => aFullInstance().withDateCreated(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateCreated should not be undefined'));
+            expect(() => aFullInstance().withDateCreated(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateCreated should not be absent'));
         });
 
         test('Undefined dateCreated throws error', () => {
-            expect(() => aFullInstance().withDateCreated(undefined).build()).toThrow(new Error('dateCreated should not be undefined'));
+            expect(() => aFullInstance().withDateCreated(undefined).build()).toThrow(new Error('dateCreated should not be absent'));
         });
         test('Blank dateCreated throws error', () => {
-            expect(() => aFullInstance().withDateCreated(FormatPreservingDate.of('')).build()).toThrow(new Error('dateCreated should not be undefined'));
+            expect(() => aFullInstance().withDateCreated(FormatPreservingDate.of('')).build()).toThrow(new Error('dateCreated should not be absent'));
         });
     });
 
     describe('dateModified', () => {
 
         test('Invalid dateModified throws error', () => {
-            expect(() => aFullInstance().withDateModified(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateModified should not be undefined'));
+            expect(() => aFullInstance().withDateModified(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateModified should not be absent'));
         });
 
         test('Undefined dateModified throws error', () => {
-            expect(() => aFullInstance().withDateModified(undefined).build()).toThrow(new Error('dateModified should not be undefined'));
+            expect(() => aFullInstance().withDateModified(undefined).build()).toThrow(new Error('dateModified should not be absent'));
         });
         test('Blank dateModified throws error', () => {
-            expect(() => aFullInstance().withDateModified(FormatPreservingDate.of('')).build()).toThrow(new Error('dateModified should not be undefined'));
+            expect(() => aFullInstance().withDateModified(FormatPreservingDate.of('')).build()).toThrow(new Error('dateModified should not be absent'));
         });
     });
 
     test('When status is verstuurd and dateSent is undefined should throw error', () => {
         const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.VERSTUURD).withDateSent(undefined);
 
-        expect(() => instanceTestBuilder.build()).toThrow(new Error('dateSent should be defined when status equals verstuurd '));
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('dateSent should be present when status equals verstuurd '));
 
     });
 
@@ -431,7 +431,7 @@ describe('constructing', () => {
     test('When datePublished is present and dateSent is undefined should throw error', () => {
         const instanceTestBuilder = aFullInstance().withDateSent(undefined).withDatePublished(InstanceTestBuilder.DATE_PUBLISHED);
 
-        expect(() => instanceTestBuilder.build()).toThrow(new Error('datePublished can only be defined when dateSent is defined'));
+        expect(() => instanceTestBuilder.build()).toThrow(new Error('datePublished can only be present when dateSent is present'));
     });
 
 
@@ -441,21 +441,21 @@ describe('constructing', () => {
             .withConceptSnapshotId(undefined)
             .withProductId(undefined);
 
-        expect(() => instanceTestBuilderWithConcept.build()).toThrow(new Error('conceptId, conceptSnapshotId and productId should all be defined or all be undefined'));
+        expect(() => instanceTestBuilderWithConcept.build()).toThrow(new Error('conceptId, conceptSnapshotId and productId should all be present or all be absent'));
 
         const instanceTestBuilderWithConceptSnapshotId = aFullInstance()
             .withConceptId(undefined)
             .withConceptSnapshotId(buildConceptSnapshotIri(uuid()))
             .withProductId(undefined);
 
-        expect(() => instanceTestBuilderWithConceptSnapshotId.build()).toThrow(new Error('conceptId, conceptSnapshotId and productId should all be defined or all be undefined'));
+        expect(() => instanceTestBuilderWithConceptSnapshotId.build()).toThrow(new Error('conceptId, conceptSnapshotId and productId should all be present or all be absent'));
 
         const instanceTestBuilderWithProductId = aFullInstance()
             .withConceptId(undefined)
             .withConceptSnapshotId(undefined)
             .withProductId('1300');
 
-        expect(() => instanceTestBuilderWithProductId.build()).toThrow(new Error('conceptId, conceptSnapshotId and productId should all be defined or all be undefined'));
+        expect(() => instanceTestBuilderWithProductId.build()).toThrow(new Error('conceptId, conceptSnapshotId and productId should all be present or all be absent'));
     });
 
     test('conceptId, conceptSnapshotId and productId  both defined or undefined should not throw error', () => {
@@ -476,7 +476,7 @@ describe('constructing', () => {
     });
 
     test('Absent status throws error', () => {
-        expect(() => aFullInstance().withStatus(undefined).build()).toThrow(new Error('status should not be undefined'));
+        expect(() => aFullInstance().withStatus(undefined).build()).toThrow(new Error('status should not be absent'));
     });
 
     test('Spatials with duplicates throws error', () => {
@@ -514,7 +514,7 @@ describe('constructing', () => {
             .withProductId(undefined)
             .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD);
 
-        expect(() => instance.build()).toThrow(new Error('reviewStatus can only be defined when concept is defined'));
+        expect(() => instance.build()).toThrow(new Error('reviewStatus can only be present when concept is present'));
     });
 
 });
