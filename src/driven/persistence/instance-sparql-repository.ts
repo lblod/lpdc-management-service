@@ -130,15 +130,12 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
             if (publicationStatus === undefined) {
                 query = `
-                    ${PREFIX.as}
-                    ${PREFIX.cpsv}
+                ${PREFIX.as}
+                ${PREFIX.cpsv}
                 
-                DELETE
-                    DATA FROM
-                    ${sparqlEscapeUri(bestuurseenheid.userGraph())}
-                    {
+                DELETE DATA FROM ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                     ${triples.join("\n")}
-                    };
+                };
                 `;
 
                 await this.querying.delete(query);
