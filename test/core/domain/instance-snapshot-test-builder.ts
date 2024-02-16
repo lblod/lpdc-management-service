@@ -20,6 +20,7 @@ import {ContactPoint} from "../../../src/core/domain/contact-point";
 import {InstanceSnapshot} from "../../../src/core/domain/instance-snapshot";
 import {uuid} from "../../../mu-helper";
 import {buildBestuurseenheidIri, buildInstanceIri, buildInstanceSnapshotIri} from "./iri-test-builder";
+import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
     const uniqueId = uuid();
@@ -68,7 +69,12 @@ export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
         .withEndDate(InstanceSnapshotTestBuilder.END_DATE)
         .withType(InstanceSnapshotTestBuilder.TYPE)
         .withTargetAudiences(InstanceSnapshotTestBuilder.TARGET_AUDIENCES)
-        .withThemes(InstanceSnapshotTestBuilder.THEMES);
+        .withThemes(InstanceSnapshotTestBuilder.THEMES)
+        .withCompetentAuthorityLevels(InstanceSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)
+        .withCompetentAuthorities(InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES)
+        .withExecutingAuthorityLevels(InstanceSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)
+        .withExecutingAuthorities(InstanceSnapshotTestBuilder.EXECUTING_AUTHORITIES)
+        .withPublicationMedia(InstanceSnapshotTestBuilder.PUBLICATION_MEDIA);
 }
 
 export class InstanceSnapshotTestBuilder {
@@ -103,6 +109,13 @@ export class InstanceSnapshotTestBuilder {
     public static readonly TARGET_AUDIENCES = [TargetAudienceType.LOKAALBESTUUR, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER];
 
     public static readonly THEMES = [ThemeType.ECONOMIEWERK, ThemeType.ONDERWIJSWETENSCHAP, ThemeType.BURGEROVERHEID];
+
+    public static readonly COMPETENT_AUTHORITY_LEVELS = [CompetentAuthorityLevelType.FEDERAAL, CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.VLAAMS];
+    public static readonly COMPETENT_AUTHORITIES = [BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI];
+    public static readonly EXECUTING_AUTHORITY_LEVELS = [ExecutingAuthorityLevelType.DERDEN, ExecutingAuthorityLevelType.VLAAMS, ExecutingAuthorityLevelType.FEDERAAL];
+    public static readonly EXECUTING_AUTHORITIES = [BestuurseenheidTestBuilder.BORGLOON_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI];
+
+    public static readonly PUBLICATION_MEDIA = [PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER];
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-08T12:13:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2024-02-06T16:16:20.242928Z');

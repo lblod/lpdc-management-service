@@ -12,7 +12,14 @@ import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test
 import {InstanceSnapshotSparqlTestRepository} from "./instance-snapshot-sparql-test-repository";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {NS} from "../../../src/driven/persistence/namespaces";
-import {ProductType, TargetAudienceType, ThemeType} from "../../../src/core/domain/types";
+import {
+    CompetentAuthorityLevelType,
+    ExecutingAuthorityLevelType,
+    ProductType,
+    PublicationMediumType,
+    TargetAudienceType,
+    ThemeType
+} from "../../../src/core/domain/types";
 
 describe('InstanceSnapshotRepository', () => {
 
@@ -22,7 +29,7 @@ describe('InstanceSnapshotRepository', () => {
 
     describe('findById', () => {
 
-        test('When full instance snapshots exists with id, then return instance snapshot', async () => {
+        test('When full instance snapshot exists with id, then return instance snapshot', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const anotherBestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
@@ -165,6 +172,19 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(InstanceSnapshotTestBuilder.THEMES[0]).value}>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(InstanceSnapshotTestBuilder.THEMES[1]).value}>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(InstanceSnapshotTestBuilder.THEMES[2]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(InstanceSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS[0]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(InstanceSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS[1]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(InstanceSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS[2]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0]}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[1]}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[2]}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(InstanceSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS[0]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(InstanceSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS[1]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(InstanceSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS[2]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${InstanceSnapshotTestBuilder.EXECUTING_AUTHORITIES[0]}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${InstanceSnapshotTestBuilder.EXECUTING_AUTHORITIES[1]}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(InstanceSnapshotTestBuilder.PUBLICATION_MEDIA[0]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(InstanceSnapshotTestBuilder.PUBLICATION_MEDIA[1]).value}>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -256,6 +276,81 @@ describe('InstanceSnapshotRepository', () => {
                 ]);
 
             await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme> for iri: <${instanceSnapshotIri}>`));
+        });
+
+        for (const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
+            test(`CompetentAuthorityLevelType ${competentAuthorityLevel} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instanceSnapshot = aMinimalInstanceSnapshot().withCompetentAuthorityLevels([competentAuthorityLevel]).build();
+                await repository.save(bestuurseenheid, instanceSnapshot);
+
+                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+
+                expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
+            });
+        }
+
+        test('Unknown Competent Authority Level type can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                [`<${instanceSnapshotIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel> for iri: <${instanceSnapshotIri}>`));
+        });
+
+        for (const executingAuthorityLevel of Object.values(ExecutingAuthorityLevelType)) {
+            test(`ExecutingAuthorityLevelType ${executingAuthorityLevel} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instanceSnapshot = aMinimalInstanceSnapshot().withExecutingAuthorityLevels([executingAuthorityLevel]).build();
+                await repository.save(bestuurseenheid, instanceSnapshot);
+
+                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+
+                expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
+            });
+        }
+
+        test('Unknown ExecutingAuthorityLevelType can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                [`<${instanceSnapshotIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel> for iri: <${instanceSnapshotIri}>`));
+        });
+
+        for (const publicationMedium of Object.values(PublicationMediumType)) {
+            test(`PublicationMediumType ${publicationMedium} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instanceSnapshot = aMinimalInstanceSnapshot().withPublicationMedia([publicationMedium]).build();
+                await repository.save(bestuurseenheid, instanceSnapshot);
+
+                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+
+                expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
+            });
+        }
+
+        test('Unknown PublicationMediumType can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                [`<${instanceSnapshotId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceSnapshotId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> for iri: <${instanceSnapshotId}>`));
         });
 
 

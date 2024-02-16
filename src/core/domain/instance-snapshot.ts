@@ -105,11 +105,11 @@ export class InstanceSnapshot {
         this._type = type;
         this._targetAudiences = asSortedArray(targetAudiences);
         this._themes = asSortedArray(themes);
-        this._competentAuthorityLevels = competentAuthorityLevels;
-        this._competentAuthorities = competentAuthorities;
-        this._executingAuthorityLevels = executingAuthorityLevels;
-        this._executingAuthorities = executingAuthorities;
-        this._publicationMedia = publicationMedia;
+        this._competentAuthorityLevels = asSortedArray(competentAuthorityLevels);
+        this._competentAuthorities = asSortedArray(competentAuthorities);
+        this._executingAuthorityLevels = asSortedArray(executingAuthorityLevels);
+        this._executingAuthorities = asSortedArray(executingAuthorities);
+        this._publicationMedia = asSortedArray(publicationMedia);
         this._yourEuropeCategories = yourEuropeCategories;
         this._keywords = keywords;
         this._requirements = requirements;

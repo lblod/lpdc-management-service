@@ -152,7 +152,7 @@ export class InstanceTestBuilder {
     public static readonly THEMES = [ThemeType.BOUWENWONEN, ThemeType.MILIEUENERGIE, ThemeType.WELZIJNGEZONDHEID];
 
     public static readonly COMPETENT_AUTHORITY_LEVELS = [CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.EUROPEES, CompetentAuthorityLevelType.FEDERAAL];
-    public static readonly EXECUTING_AUTHORITY_LEVELS = [ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.EUROPEES, ExecutingAuthorityLevelType.FEDERAAL];
+    public static readonly EXECUTING_AUTHORITY_LEVELS = [ExecutingAuthorityLevelType.DERDEN, ExecutingAuthorityLevelType.VLAAMS, ExecutingAuthorityLevelType.FEDERAAL];
 
     public static readonly PUBLICATION_MEDIA = [PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER];
 

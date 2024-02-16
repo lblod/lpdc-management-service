@@ -168,6 +168,11 @@ export class DomainToQuadsMapper {
             this.type(instanceSnapshot.id, instanceSnapshot.type),
             ...this.targetAudiences(instanceSnapshot.id, instanceSnapshot.targetAudiences),
             ...this.themes(instanceSnapshot.id, instanceSnapshot.themes),
+            ...this.competentAuthorityLevels(instanceSnapshot.id, instanceSnapshot.competentAuthorityLevels),
+            ...this.competentAuthorities(instanceSnapshot.id, instanceSnapshot.competentAuthorities),
+            ...this.executingAuthorityLevels(instanceSnapshot.id, instanceSnapshot.executingAuthorityLevels),
+            ...this.executingAuthorities(instanceSnapshot.id, instanceSnapshot.executingAuthorities),
+            ...this.publicationMedia(instanceSnapshot.id, instanceSnapshot.publicationMedia),
             //TODO LPDC-910: factor out duplication
             instanceSnapshot.dateCreated ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('created'), literal(instanceSnapshot.dateCreated.value, NS.xsd('dateTime'))) : undefined,
             instanceSnapshot.dateModified ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('modified'), literal(instanceSnapshot.dateModified.value, NS.xsd('dateTime'))) : undefined,
