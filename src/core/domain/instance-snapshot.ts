@@ -17,6 +17,7 @@ import {Website} from "./website";
 import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
 import {ContactPoint} from "./contact-point";
+import {asSortedArray} from "./shared/collections-helper";
 
 export class InstanceSnapshot {
 
@@ -102,8 +103,8 @@ export class InstanceSnapshot {
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
-        this._targetAudiences = targetAudiences;
-        this._themes = themes;
+        this._targetAudiences = asSortedArray(targetAudiences);
+        this._themes = asSortedArray(themes);
         this._competentAuthorityLevels = competentAuthorityLevels;
         this._competentAuthorities = competentAuthorities;
         this._executingAuthorityLevels = executingAuthorityLevels;

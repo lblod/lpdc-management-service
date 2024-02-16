@@ -65,7 +65,10 @@ export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
                 undefined,
                 InstanceSnapshotTestBuilder.REGULATION_NL_INFORMAL))
         .withStartDate(InstanceSnapshotTestBuilder.START_DATE)
-        .withEndDate(InstanceSnapshotTestBuilder.END_DATE);
+        .withEndDate(InstanceSnapshotTestBuilder.END_DATE)
+        .withType(InstanceSnapshotTestBuilder.TYPE)
+        .withTargetAudiences(InstanceSnapshotTestBuilder.TARGET_AUDIENCES)
+        .withThemes(InstanceSnapshotTestBuilder.THEMES);
 }
 
 export class InstanceSnapshotTestBuilder {
@@ -94,6 +97,12 @@ export class InstanceSnapshotTestBuilder {
 
     public static readonly START_DATE = FormatPreservingDate.of('2019-09-21T00:00:00.456Z');
     public static readonly END_DATE = FormatPreservingDate.of('2042-02-11T00:00:00.123Z');
+
+    public static readonly TYPE = ProductType.FINANCIELEVERPLICHTING;
+
+    public static readonly TARGET_AUDIENCES = [TargetAudienceType.LOKAALBESTUUR, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER];
+
+    public static readonly THEMES = [ThemeType.ECONOMIEWERK, ThemeType.ONDERWIJSWETENSCHAP, ThemeType.BURGEROVERHEID];
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-08T12:13:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2024-02-06T16:16:20.242928Z');

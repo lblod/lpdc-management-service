@@ -11,6 +11,8 @@ import {
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {InstanceSnapshotSparqlTestRepository} from "./instance-snapshot-sparql-test-repository";
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {NS} from "../../../src/driven/persistence/namespaces";
+import {ProductType, TargetAudienceType, ThemeType} from "../../../src/core/domain/types";
 
 describe('InstanceSnapshotRepository', () => {
 
@@ -156,6 +158,13 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """${InstanceSnapshotTestBuilder.REGULATION_NL_INFORMAL}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://schema.org/startDate> """${InstanceSnapshotTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://schema.org/endDate> """${InstanceSnapshotTestBuilder.END_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/type> <${NS.dvc.type(InstanceSnapshotTestBuilder.TYPE).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(InstanceSnapshotTestBuilder.TARGET_AUDIENCES[0]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(InstanceSnapshotTestBuilder.TARGET_AUDIENCES[1]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <${NS.dvc.doelgroep(InstanceSnapshotTestBuilder.TARGET_AUDIENCES[2]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(InstanceSnapshotTestBuilder.THEMES[0]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(InstanceSnapshotTestBuilder.THEMES[1]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(InstanceSnapshotTestBuilder.THEMES[2]).value}>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -166,8 +175,90 @@ describe('InstanceSnapshotRepository', () => {
 
             expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
 
-
         });
+
+        for (const type of Object.values(ProductType)) {
+            test(`Product type ${type} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instance = aMinimalInstanceSnapshot()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withType(type)
+                    .build();
+
+                await repository.save(bestuurseenheid, instance);
+
+                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instance.id);
+
+                expect(actualInstanceSnapshot).toEqual(instance);
+            });
+        }
+
+
+        test('Unknown Product Type can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                [
+                    `<${instanceSnapshotIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceSnapshotIri}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> for iri: <${instanceSnapshotIri}>`));
+        });
+
+        for (const targetAudience of Object.values(TargetAudienceType)) {
+            test(`TargetAudienceType ${targetAudience} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instanceSnapshot = aMinimalInstanceSnapshot().withTargetAudiences([targetAudience]).build();
+                await repository.save(bestuurseenheid, instanceSnapshot);
+
+                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+
+                expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
+            });
+        }
+
+        test('Unknown Target Audience Type can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                [`<${instanceSnapshotIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience> for iri: <${instanceSnapshotIri}>`));
+        });
+
+        for (const theme of Object.values(ThemeType)) {
+            test(`ThemeType ${theme} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instanceSnapshot = aMinimalInstanceSnapshot().withThemes([theme]).build();
+                await repository.save(bestuurseenheid, instanceSnapshot);
+
+                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+
+                expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
+            });
+        }
+
+        test('Unknown Theme type can not be mapped', async () => {
+            const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
+            const bestuurseenheid = aBestuurseenheid().build();
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                [`<${instanceSnapshotIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceSnapshotIri}> <http://data.europa.eu/m8g/thematicArea> <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme> for iri: <${instanceSnapshotIri}>`));
+        });
+
+
 
     });
 

@@ -730,9 +730,9 @@ describe('InstanceRepository', () => {
 
                 await repository.save(bestuurseenheid, instance);
 
-                const actualConceptSnapshot = await repository.findById(bestuurseenheid, instance.id);
+                const actualInstance = await repository.findById(bestuurseenheid, instance.id);
 
-                expect(actualConceptSnapshot).toEqual(instance);
+                expect(actualInstance).toEqual(instance);
             });
         }
 
@@ -756,9 +756,9 @@ describe('InstanceRepository', () => {
                 const instance = aMinimalInstance().withTargetAudiences([targetAudience]).build();
                 await repository.save(bestuurseenheid, instance);
 
-                const actualConceptSnapshot = await repository.findById(bestuurseenheid, instance.id);
+                const actualInstance = await repository.findById(bestuurseenheid, instance.id);
 
-                expect(actualConceptSnapshot).toEqual(instance);
+                expect(actualInstance).toEqual(instance);
             });
         }
 
