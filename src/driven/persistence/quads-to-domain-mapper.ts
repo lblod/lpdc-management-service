@@ -207,16 +207,18 @@ export class QuadsToDomainMapper {
 
     instanceSnapshot(id: Iri): InstanceSnapshot {
 
+        this.errorIfMissingOrIncorrectType(id, NS.cpsv('PublicService'));
+
         return new InstanceSnapshot(
             id,
             this.createdBy(id),
             this.title(id),
             this.description(id),
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
+            this.additionalDescription(id),
+            this.exception(id),
+            this.regulation(id),
+            this.startDate(id),
+            this.endDate(id),
             undefined,
             [],
             [],

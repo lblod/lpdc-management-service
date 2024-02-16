@@ -48,11 +48,7 @@ export function aMinimalInstance(): InstanceBuilder {
 }
 
 export function aFullInstance(): InstanceBuilder {
-    const uniqueId = uuid();
-    return new InstanceBuilder()
-        .withId(buildInstanceIri(uniqueId))
-        .withUuid(uniqueId)
-        .withCreatedBy(buildBestuurseenheidIri(uuid()))
+    return aMinimalInstance()
         .withTitle(
             LanguageString.of(
                 InstanceTestBuilder.TITLE_EN,
@@ -100,11 +96,8 @@ export function aFullInstance(): InstanceBuilder {
         .withConceptSnapshotId(buildConceptSnapshotIri(uuid()))
         .withProductId(InstanceTestBuilder.PRODUCT_ID)
         .withLanguages(InstanceTestBuilder.LANGUAGES)
-        .withDateCreated(InstanceTestBuilder.DATE_CREATED)
-        .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withDateSent(InstanceTestBuilder.DATE_SENT)
         .withDatePublished(InstanceTestBuilder.DATE_PUBLISHED)
-        .withStatus(InstanceTestBuilder.STATUS)
         .withReviewStatus(InstanceTestBuilder.REVIEW_STATUS)
         .withPublicationStatus(InstanceTestBuilder.PUBLICATION_STATUS)
         .withSpatials(InstanceTestBuilder.SPATIALS)

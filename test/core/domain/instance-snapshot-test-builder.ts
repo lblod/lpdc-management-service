@@ -44,6 +44,30 @@ export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
         .withGeneratedAtTime(InstanceSnapshotTestBuilder.GENERATED_AT_TIME);
 }
 
+export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
+    return aMinimalInstanceSnapshot()
+        .withAdditionalDescription(
+            LanguageString.of(
+                InstanceSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_EN,
+                undefined,
+                undefined,
+                InstanceSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_INFORMAL))
+        .withException(
+            LanguageString.of(
+                InstanceSnapshotTestBuilder.EXCEPTION_EN,
+                undefined,
+                undefined,
+                InstanceSnapshotTestBuilder.EXCEPTION_NL_INFORMAL))
+        .withRegulation(
+            LanguageString.of(
+                InstanceSnapshotTestBuilder.REGULATION_EN,
+                undefined,
+                undefined,
+                InstanceSnapshotTestBuilder.REGULATION_NL_INFORMAL))
+        .withStartDate(InstanceSnapshotTestBuilder.START_DATE)
+        .withEndDate(InstanceSnapshotTestBuilder.END_DATE);
+}
+
 export class InstanceSnapshotTestBuilder {
 
     public static readonly TITLE_EN = 'Instance Snapshot Title - en';
@@ -56,6 +80,20 @@ export class InstanceSnapshotTestBuilder {
     public static readonly DESCRIPTION_NL_FORMAL = 'Instance Snapshot Description - nl-formal';
     public static readonly DESCRIPTION_NL_INFORMAL = 'Instance Snapshot Description - nl-informal';
 
+    public static readonly ADDITIONAL_DESCRIPTION_EN = 'Instance Snapshot Additional Description - en';
+    public static readonly ADDITIONAL_DESCRIPTION_NL_FORMAL = 'Instance Snapshot Additional Description - nl-formal';
+    public static readonly ADDITIONAL_DESCRIPTION_NL_INFORMAL = 'Instance Snapshot Additional Description - nl-informal';
+
+    public static readonly EXCEPTION_EN = 'Instance Snapshot Exception - en';
+    public static readonly EXCEPTION_NL_FORMAL = 'Instance Snapshot Exception - nl-formal';
+    public static readonly EXCEPTION_NL_INFORMAL = 'Instance Snapshot Exception - nl-informal';
+
+    public static readonly REGULATION_EN = 'Instance Snapshot Regulation - en';
+    public static readonly REGULATION_NL_FORMAL = 'Instance Snapshot Regulation - nl-formal';
+    public static readonly REGULATION_NL_INFORMAL = 'Instance Snapshot Regulation - nl-informal';
+
+    public static readonly START_DATE = FormatPreservingDate.of('2019-09-21T00:00:00.456Z');
+    public static readonly END_DATE = FormatPreservingDate.of('2042-02-11T00:00:00.123Z');
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-08T12:13:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2024-02-06T16:16:20.242928Z');
