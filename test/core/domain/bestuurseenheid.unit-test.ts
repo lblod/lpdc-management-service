@@ -40,5 +40,14 @@ test('userGraph', () => {
             .build();
 
     expect(bestuurseenheid.userGraph().value).toEqual(`http://mu.semte.ch/graphs/organizations/${uniqueId}/LoketLB-LPDCGebruiker`);
+});
 
+test('instanceSnapshotsLdesDataGraph', () => {
+    const uniqueId = '353234a365664e581db5c2f7cc07add2534b47b8e1ab87c821fc6e6365e6bef5';
+    const bestuurseenheid =
+        aBestuurseenheid()
+            .withUuid(uniqueId)
+            .build();
+
+    expect(bestuurseenheid.instanceSnapshotsLdesDataGraph().value).toEqual('http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/353234a365664e581db5c2f7cc07add2534b47b8e1ab87c821fc6e6365e6bef5');
 });

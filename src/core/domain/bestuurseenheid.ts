@@ -49,6 +49,10 @@ export class Bestuurseenheid {
     userGraph(): Iri {
         return new Iri(`http://mu.semte.ch/graphs/organizations/${this.uuid}/${SessionRoleType.LOKETLB_LPDCGEBRUIKER}`);
     }
+
+    instanceSnapshotsLdesDataGraph(): Iri {
+        return new Iri(`http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/${this.uuid}`);
+    }
 }
 
 export enum BestuurseenheidClassificatieCode {

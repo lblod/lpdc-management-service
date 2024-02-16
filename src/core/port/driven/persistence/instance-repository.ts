@@ -4,7 +4,7 @@ import {Bestuurseenheid} from "../../../domain/bestuurseenheid";
 
 export interface InstanceRepository {
 
-    findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<Instance | undefined>;
+    findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<Instance>;
 
     save(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void>
 

@@ -47,6 +47,7 @@ export class InstanceSnapshot {
     private readonly _contactPoints: ContactPoint[];
     private readonly _conceptId: Iri | undefined;
     private readonly _languages: LanguageType[];
+    private readonly _isVersionOfInstance: Iri;
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _generatedAtTime: FormatPreservingDate;
@@ -81,6 +82,7 @@ export class InstanceSnapshot {
                 contactPoints: ContactPoint[],
                 conceptId: Iri | undefined,
                 languages: LanguageType[],
+                isVersionOfInstance: Iri,
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 generatedAtTime: FormatPreservingDate,
@@ -117,6 +119,7 @@ export class InstanceSnapshot {
         this._contactPoints = contactPoints;
         this._conceptId = conceptId;
         this._languages = languages;
+        this._isVersionOfInstance = isVersionOfInstance;
         this._dateCreated = dateCreated;
         this._dateModified = dateModified;
         this._generatedAtTime = generatedAtTime;
@@ -231,6 +234,10 @@ export class InstanceSnapshot {
 
     get languages(): LanguageType[] {
         return this._languages;
+    }
+
+    get isVersionOfInstance(): Iri {
+        return this._isVersionOfInstance;
     }
 
     get dateCreated(): FormatPreservingDate {

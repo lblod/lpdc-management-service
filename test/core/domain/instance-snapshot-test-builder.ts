@@ -19,15 +19,29 @@ import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {ContactPoint} from "../../../src/core/domain/contact-point";
 import {InstanceSnapshot} from "../../../src/core/domain/instance-snapshot";
 import {uuid} from "../../../mu-helper";
-import {buildBestuurseenheidIri, buildInstanceSnapshotIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildInstanceIri, buildInstanceSnapshotIri} from "./iri-test-builder";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
     const uniqueId = uuid();
     return new InstanceSnapshotTestBuilder()
         .withId(buildInstanceSnapshotIri(uniqueId))
         .withCreatedBy(buildBestuurseenheidIri(uuid()))
+        .withIsVersionOfInstance(buildInstanceIri(uuid()))
+        .withTitle(
+            LanguageString.of(
+                InstanceSnapshotTestBuilder.TITLE_EN,
+                undefined,
+                undefined,
+                InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL))
+        .withDescription(
+            LanguageString.of(
+                InstanceSnapshotTestBuilder.DESCRIPTION_EN,
+                undefined,
+                undefined,
+                InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
         .withDateCreated(InstanceSnapshotTestBuilder.DATE_CREATED)
-        .withDateModified(InstanceSnapshotTestBuilder.DATE_MODIFIED);
+        .withDateModified(InstanceSnapshotTestBuilder.DATE_MODIFIED)
+        .withGeneratedAtTime(InstanceSnapshotTestBuilder.GENERATED_AT_TIME);
 }
 
 export class InstanceSnapshotTestBuilder {
@@ -37,8 +51,16 @@ export class InstanceSnapshotTestBuilder {
     public static readonly TITLE_NL_FORMAL = 'Instance Title Snapshot - nl-formal';
     public static readonly TITLE_NL_INFORMAL = 'Instance Title Snapshot - nl-informal';
 
+    public static readonly DESCRIPTION_EN = 'Instance Snapshot Description - en';
+    public static readonly DESCRIPTION_NL = 'Instance Snapshot Description - nl';
+    public static readonly DESCRIPTION_NL_FORMAL = 'Instance Snapshot Description - nl-formal';
+    public static readonly DESCRIPTION_NL_INFORMAL = 'Instance Snapshot Description - nl-informal';
+
+
     public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-08T12:13:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2024-02-06T16:16:20.242928Z');
+
+    public static readonly GENERATED_AT_TIME = FormatPreservingDate.of('2024-02-06T17:13:21.242924Z');
 
     private id: Iri;
     private createdBy: Iri;
@@ -67,6 +89,7 @@ export class InstanceSnapshotTestBuilder {
     private contactPoints: ContactPoint[] = [];
     private conceptId: Iri | undefined;
     private languages: LanguageType[] = [];
+    private isVersionOfInstance: Iri;
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private generatedAtTime: FormatPreservingDate;
@@ -209,6 +232,11 @@ export class InstanceSnapshotTestBuilder {
         return this;
     }
 
+    public withIsVersionOfInstance(isVersionOfInstance: Iri): InstanceSnapshotTestBuilder {
+        this.isVersionOfInstance = isVersionOfInstance;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceSnapshotTestBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -268,6 +296,7 @@ export class InstanceSnapshotTestBuilder {
             this.contactPoints,
             this.conceptId,
             this.languages,
+            this.isVersionOfInstance,
             this.dateCreated,
             this.dateModified,
             this.generatedAtTime,

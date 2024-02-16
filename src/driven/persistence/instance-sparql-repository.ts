@@ -29,8 +29,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
     }
 
     async findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<Instance> {
-
-
         const quads = await this.fetcher.fetch(
             bestuurseenheid.userGraph(),
             id,

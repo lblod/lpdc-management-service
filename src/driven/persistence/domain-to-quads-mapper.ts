@@ -27,6 +27,7 @@ import {STATUS} from "./status";
 import {Instance} from "../../core/domain/instance";
 import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
+import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
 
 export class DomainToQuadsMapper {
     private readonly graphId;
@@ -149,6 +150,19 @@ export class DomainToQuadsMapper {
             instance.publicationStatus ? this.buildQuad(namedNode(instance.id.value), NS.schema('publication'), namedNode(this.enumToIri(instance.publicationStatus, NS.concepts.publicationStatus).value)) : undefined,
             ...this.spatials(instance.id, instance.spatials),
             ...this.legalResources(instance.id, instance.legalResources)
+        ].filter(t => t !== undefined);
+    }
+
+    public instanceSnapshotToQuads(instanceSnapshot: InstanceSnapshot): Statement[] {
+        return [
+            this.rdfType(instanceSnapshot.id, NS.cpsv('PublicService')),
+            this.bestuurseenheidId(instanceSnapshot.id, instanceSnapshot.createdBy),
+            instanceSnapshot.isVersionOfInstance ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('isVersionOf'), namedNode(instanceSnapshot.isVersionOfInstance.value)) : undefined,
+            ...this.title(instanceSnapshot.id, instanceSnapshot.title),
+            ...this.description(instanceSnapshot.id, instanceSnapshot.description),
+            instanceSnapshot.dateCreated ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('created'), literal(instanceSnapshot.dateCreated.value, NS.xsd('dateTime'))) : undefined,
+            instanceSnapshot.dateModified ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('modified'), literal(instanceSnapshot.dateModified.value, NS.xsd('dateTime'))) : undefined,
+            instanceSnapshot.generatedAtTime ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.prov('generatedAtTime'), literal(instanceSnapshot.generatedAtTime.value, NS.xsd('dateTime'))) : undefined,
         ].filter(t => t !== undefined);
     }
 

@@ -34,6 +34,7 @@ import {Instance} from "../../core/domain/instance";
 import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
 import {Logger} from "../../../platform/logger";
+import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
 
 export interface DoubleQuadReporter {
 
@@ -154,7 +155,7 @@ export class QuadsToDomainMapper {
             this.websites(id),
             this.costs(id),
             this.financialAdvantages(id),
-            this.isVersionOfConcept(id),
+            this.isVersionOf(id),
             this.dateCreated(id),
             this.dateModified(id),
             this.generatedAtTime(id),
@@ -201,6 +202,46 @@ export class QuadsToDomainMapper {
             this.conceptTags(id),
             this.isConceptArchived(id),
             this.legalResources(id),
+        );
+    }
+
+    instanceSnapshot(id: Iri): InstanceSnapshot {
+
+        return new InstanceSnapshot(
+            id,
+            this.createdBy(id),
+            this.title(id),
+            this.description(id),
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            undefined,
+            [],
+            this.isVersionOf(id),
+            this.instanceDateCreated(id),
+            this.instanceDateModified(id),
+            this.generatedAtTime(id),
+            undefined,
+            [],
+            [],
         );
     }
 
@@ -383,7 +424,7 @@ export class QuadsToDomainMapper {
         return this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('url'));
     }
 
-    private isVersionOfConcept(id: Iri): Iri | undefined {
+    private isVersionOf(id: Iri): Iri | undefined {
         return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.dct('isVersionOf')));
     }
 

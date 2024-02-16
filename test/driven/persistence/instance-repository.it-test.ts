@@ -41,7 +41,6 @@ describe('InstanceRepository', () => {
 
     afterAll(() => restoreRealTime());
 
-
     describe('findById', () => {
 
         test('When full instance exists with id, then return instance', async () => {
