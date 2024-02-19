@@ -75,6 +75,24 @@ export class Procedure {
         );
     }
 
+    static forInstanceSnapshot(procedure: Procedure): Procedure {
+        const websiteLangs = [
+            ...procedure.websites.flatMap(website => website.title),
+            ...procedure.websites.flatMap(website => website.description)];
+
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, procedure.title, procedure.description, ...websiteLangs);
+
+        return new Procedure(
+            procedure.id,
+            undefined,
+            requiredValue(procedure.title, 'title'),
+            requiredValue(procedure.description, 'description'),
+            procedure.order,
+            procedure.websites.map(Website.forInstanceSnapshot),
+            undefined
+        );
+    }
+
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,

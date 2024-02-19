@@ -114,6 +114,7 @@ export class InstanceSnapshot {
         this._requirements = [...requirements].map(r => Requirement.forInstanceSnapshot(r));
         requireNoDuplicates(this._requirements.map(r => r.order), 'requirements > order');
         this._procedures = [...procedures];
+        requireNoDuplicates(this._procedures.map(r => r.order), 'procedures > order');
         this._websites = [...websites].map(w => Website.forInstanceSnapshot(w));
         requireNoDuplicates(this._websites.map(w => w.order), 'websites > order');
         this._costs = [...costs];

@@ -4,10 +4,12 @@ import {ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {
     aFullWebsite,
     aFullWebsiteForInstance,
+    aFullWebsiteForInstanceSnapshot,
     anotherFullWebsite,
-    anotherFullWebsiteForInstance
+    anotherFullWebsiteForInstance,
+    anotherFullWebsiteForInstanceSnapshot
 } from "./website-test-builder";
-import {aMinimalLanguageString} from "./language-string-test-builder";
+import {aMinimalInformalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
 
 export function aMinimalProcedureForConceptSnapshot(): ProcedureBuilder {
     return new ProcedureBuilder()
@@ -33,6 +35,15 @@ export function aMinimalProcedureForInstance(): ProcedureBuilder {
         .withId(ProcedureBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withOrder(1);
+}
+
+export function aMinimalProcedureForInstanceSnapshot(): ProcedureBuilder {
+    const uniqueId = uuid();
+    return new ProcedureBuilder()
+        .withId(ProcedureBuilder.buildIri(uniqueId))
+        .withOrder(1)
+        .withTitle(aMinimalInformalLanguageString(ProcedureTestBuilder.TITLE).build())
+        .withDescription(aMinimalInformalLanguageString(ProcedureTestBuilder.DESCRIPTION).build());
 }
 
 export function aFullProcedure(): ProcedureBuilder {
@@ -102,8 +113,10 @@ export function aFullProcedureForInstance(): ProcedureBuilder {
 }
 
 export function anotherFullProcedureForInstance() {
+    const uniqueId = uuid();
     return new ProcedureBuilder()
-        .withId(ProcedureBuilder.buildIri(uuid()))
+        .withId(ProcedureBuilder.buildIri(uniqueId))
+        .withUuid(uniqueId)
         .withTitle(LanguageString.of(
             ProcedureTestBuilder.ANOTHER_TITLE_EN,
             undefined,
@@ -116,6 +129,46 @@ export function anotherFullProcedureForInstance() {
         ))
         .withOrder(2)
         .withWebsites(ProcedureTestBuilder.ANOTHER_WEBSITES_FOR_INSTANCE);
+}
+
+export function aFullProcedureForInstanceSnapshot(): ProcedureBuilder {
+    const uniqueId = uuid();
+    return new ProcedureBuilder()
+        .withId(ProcedureBuilder.buildIri(uniqueId))
+        .withTitle(LanguageString.of(
+            ProcedureTestBuilder.TITLE_EN,
+            undefined,
+            undefined,
+            ProcedureTestBuilder.TITLE_NL_FORMAL
+        ))
+        .withDescription(
+            LanguageString.of(
+                ProcedureTestBuilder.DESCRIPTION_EN,
+                undefined,
+                undefined,
+                ProcedureTestBuilder.DESCRIPTION_NL_FORMAL
+            ))
+        .withOrder(1)
+        .withWebsites(ProcedureTestBuilder.WEBSITES_FOR_INSTANCE_SNAPSHOT);
+}
+
+export function anotherFullProcedureForInstanceSnapshot() {
+    return new ProcedureBuilder()
+        .withId(ProcedureBuilder.buildIri(uuid()))
+        .withTitle(LanguageString.of(
+            ProcedureTestBuilder.ANOTHER_TITLE_EN,
+            undefined,
+            undefined,
+            ProcedureTestBuilder.ANOTHER_TITLE_NL_FORMAL
+        ))
+        .withDescription(LanguageString.of(
+            ProcedureTestBuilder.ANOTHER_DESCRIPTION_EN,
+            undefined,
+            undefined,
+            ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL
+        ))
+        .withOrder(2)
+        .withWebsites(ProcedureTestBuilder.ANOTHER_WEBSITES_FOR_INSTANCE_SNAPSHOT);
 }
 
 export class ProcedureTestBuilder {
@@ -154,5 +207,8 @@ export class ProcedureTestBuilder {
     public static readonly ANOTHER_WEBSITES = [anotherFullWebsite(uuid()).withOrder(1).build(), anotherFullWebsite(uuid()).withOrder(2).build()];
     public static readonly WEBSITES_FOR_INSTANCE = [aFullWebsiteForInstance().withOrder(1).build(), anotherFullWebsiteForInstance(uuid()).withOrder(2).build()];
     public static readonly ANOTHER_WEBSITES_FOR_INSTANCE = [anotherFullWebsiteForInstance(uuid()).withOrder(1).build(), anotherFullWebsiteForInstance(uuid()).withOrder(2).build()];
+    public static readonly WEBSITES_FOR_INSTANCE_SNAPSHOT = [aFullWebsiteForInstanceSnapshot().withOrder(1).build(), anotherFullWebsiteForInstanceSnapshot(uuid()).withOrder(2).build()];
+    public static readonly ANOTHER_WEBSITES_FOR_INSTANCE_SNAPSHOT = [anotherFullWebsiteForInstanceSnapshot(uuid()).withOrder(1).build(), anotherFullWebsiteForInstanceSnapshot(uuid()).withOrder(2).build()];
+
 
 }

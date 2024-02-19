@@ -1,4 +1,10 @@
-import {aFullProcedure, aFullProcedureForInstance, aMinimalProcedureForInstance} from "./procedure-test-builder";
+import {
+    aFullProcedure,
+    aFullProcedureForInstance,
+    aFullProcedureForInstanceSnapshot,
+    aMinimalProcedureForInstance,
+    aMinimalProcedureForInstanceSnapshot
+} from "./procedure-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Procedure} from "../../../src/core/domain/procedure";
 import {uuid} from "../../../mu-helper";
@@ -9,6 +15,7 @@ import {
     aMinimalWebsiteForConcept,
     aMinimalWebsiteForConceptSnapshot,
     aMinimalWebsiteForInstance,
+    aMinimalWebsiteForInstanceSnapshot,
     WebsiteTestBuilder
 } from "./website-test-builder";
 import {Language} from "../../../src/core/domain/language";
@@ -63,7 +70,7 @@ describe('forConcept', () => {
             expect(() => Procedure.forConcept(procedure.build())).toThrow();
         });
 
-        test('websites that dont have have unique order throws error', () => {
+        test('websites that dont have unique order throws error', () => {
             const website1 =
                 aMinimalWebsiteForConcept().withOrder(1).build();
             const website2 =
@@ -72,7 +79,7 @@ describe('forConcept', () => {
             expect(() => Procedure.forConcept(aFullProcedure().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
         });
 
-        test('websites that have have unique does not throw error', () => {
+        test('websites that have unique does not throw error', () => {
             const website1 =
                 aMinimalWebsiteForConcept().withOrder(1).build();
             const website2 =
@@ -146,7 +153,7 @@ describe('forConceptSnapshot', () => {
             expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrow();
         });
 
-        test('websites that dont have have unique order throws error', () => {
+        test('websites that dont have unique order throws error', () => {
             const website1 =
                 aMinimalWebsiteForConceptSnapshot().withOrder(1).build();
             const website2 =
@@ -155,7 +162,7 @@ describe('forConceptSnapshot', () => {
             expect(() => Procedure.forConceptSnapshot(aFullProcedure().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
         });
 
-        test('websites that have have unique does not throw error', () => {
+        test('websites that have unique does not throw error', () => {
             const website1 =
                 aMinimalWebsiteForConceptSnapshot().withOrder(1).build();
             const website2 =
@@ -235,7 +242,7 @@ describe('for instance', () => {
         expect(() => Procedure.forInstance(procedure)).toThrow(new Error('There is more than one Nl language present'));
     });
 
-    test('websites that dont have have unique order throws error', () => {
+    test('websites that dont have unique order throws error', () => {
         const website1 =
             aMinimalWebsiteForInstance().withOrder(1).build();
         const website2 =
@@ -244,7 +251,7 @@ describe('for instance', () => {
         expect(() => Procedure.forInstance(aMinimalProcedureForInstance().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
     });
 
-    test('websites that have have unique does not throw error', () => {
+    test('websites that have unique does not throw error', () => {
         const website1 =
             aMinimalWebsiteForInstance().withOrder(1).build();
         const website2 =
@@ -323,6 +330,122 @@ describe('for instance', () => {
 
     test('Undefined order throws error', () => {
         expect(() => Procedure.forInstance(aFullProcedureForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+    });
+
+});
+
+describe('for instance snapshot', () => {
+
+    const validLanguages = [Language.NL, Language.FORMAL, Language.INFORMAL];
+    const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
+
+    test('Undefined id throws error', () => {
+        const procedure = aFullProcedureForInstanceSnapshot().withId(undefined);
+        expect(() => Procedure.forInstanceSnapshot(procedure.build())).toThrow(new Error('id should not be absent'));
+    });
+
+    test('Undefined Uuid does not throw error', () => {
+        const procedure = aFullProcedureForInstanceSnapshot().withUuid(undefined).build();
+        expect(Procedure.forInstanceSnapshot(procedure).uuid).toBeUndefined();
+    });
+
+    test('If title and description have the same nl language procedure is created', () => {
+        const langString = LanguageString.of('en', 'nl');
+        const procedure = aFullProcedureForInstanceSnapshot().withTitle(langString).withDescription(langString).withWebsites([]).build();
+        expect(() => Procedure.forInstanceSnapshot(procedure)).not.toThrow();
+    });
+
+    test('If title and description have different nl languages, throws error', () => {
+        const title = LanguageString.of('en', 'nl', undefined);
+        const description = LanguageString.of('en', undefined, 'nl-formal');
+        const procedure = aFullProcedureForInstanceSnapshot().withTitle(title).withDescription(description).withWebsites([]).build();
+
+        expect(() => Procedure.forInstanceSnapshot(procedure)).toThrow(new Error('There is more than one Nl language present'));
+    });
+
+    test('If title description and all websites have the same nl language procedure is created', () => {
+        const langString = LanguageString.of('en', undefined, 'nl');
+        const website = aFullWebsiteForInstance().withTitle(langString).withDescription(langString).withOrder(1).build();
+        const anotherWebsite = aFullWebsiteForInstance().withTitle(langString).withDescription(langString).withOrder(2).build();
+
+        const procedure = aFullProcedureForInstanceSnapshot().withTitle(langString).withDescription(langString).withWebsites([website, anotherWebsite]).build();
+        expect(() => Procedure.forInstanceSnapshot(procedure)).not.toThrow();
+    });
+
+    test('If a website has a different nl language than title or description, throws error', () => {
+        const languageString = LanguageString.of('en', 'nl', undefined);
+        const anotherLanguageString = LanguageString.of('en', undefined, 'nl');
+        const website = aFullWebsiteForInstance().withTitle(anotherLanguageString).withDescription(anotherLanguageString).build();
+        const procedure = aFullProcedureForInstanceSnapshot().withDescription(languageString).withTitle(languageString).withWebsites([website]).build();
+        expect(() => Procedure.forInstanceSnapshot(procedure)).toThrow(new Error('There is more than one Nl language present'));
+    });
+
+    test('websites that dont have unique order throws error', () => {
+        const website1 =
+            aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
+        const website2 =
+            aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
+
+        expect(() => Procedure.forInstanceSnapshot(aMinimalProcedureForInstanceSnapshot().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
+    });
+
+    test('websites that have unique order does not throw error', () => {
+        const website1 =
+            aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
+        const website2 =
+            aMinimalWebsiteForInstanceSnapshot().withOrder(2).build();
+
+        expect(() => Procedure.forInstanceSnapshot(aMinimalProcedureForInstanceSnapshot().withWebsites([website1, website2]).build())).not.toThrow();
+    });
+
+    for (const invalidLanguage of invalidLanguages) {
+        let valueInNlLanguage: LanguageString;
+        if (invalidLanguage === Language.GENERATED_FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+        } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+        }
+
+        test(`If title and description contains invalid language ${invalidLanguage}, throws error`, () => {
+            const procedure = aFullProcedureForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).withWebsites([]).build();
+            expect(() => Procedure.forInstanceSnapshot(procedure)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
+
+        test(`if a nested website title contains invalid language ${invalidLanguage}, throws error`, () => {
+            const website = aFullWebsiteForInstance().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).build();
+            const procedure = aFullProcedureForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).withWebsites([website]).build();
+
+            expect(() => Procedure.forInstanceSnapshot(procedure)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
+
+    }
+
+    for (const validLanguage of validLanguages) {
+        let valueInNlLanguage: LanguageString;
+        if (validLanguage === Language.NL) {
+            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+        } else if (validLanguage == Language.FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+        } else if (validLanguage == Language.INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+        }
+
+        test(`If title and description contains valid language ${validLanguage}, does not throw error`, () => {
+            const procedure = aFullProcedureForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).withWebsites([]).build();
+            expect(() => Procedure.forInstanceSnapshot(procedure)).not.toThrow();
+        });
+
+        test(`if a nested website title contains valid language ${validLanguage}, does not throw error`, () => {
+            const website = aFullWebsiteForInstance().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).build();
+            const procedure = aFullProcedureForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).withWebsites([website]).build();
+
+            expect(() => Procedure.forInstanceSnapshot(procedure)).not.toThrow();
+        });
+    }
+
+    test('Undefined order throws error', () => {
+        expect(() => Procedure.forInstanceSnapshot(aFullProcedureForInstanceSnapshot().withOrder(undefined).build()))
+            .toThrow(new Error('order should not be absent'));
     });
 
 });

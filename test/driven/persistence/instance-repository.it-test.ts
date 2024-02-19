@@ -367,6 +367,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[1].nl}"""@nl`,
                     `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[2].nl}"""@nl`,
                     `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[3].en}"""@en`,
+
                     `<${instanceId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${InstanceTestBuilder.REQUIREMENTS[1].id}>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].id}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.REQUIREMENTS[1].uuid}"""`,
@@ -397,6 +398,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.title.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.description.en}"""@EN`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.description.nlFormal}"""@nl-BE-x-formal`,
+
                     `<${instanceId}> <http://purl.org/vocab/cpsv#follows> <${InstanceTestBuilder.PROCEDURES[1].id}>`,
                     `<${InstanceTestBuilder.PROCEDURES[1].id}> a <http://purl.org/vocab/cpsv#Rule>`,
                     `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[1].uuid}"""`,
@@ -485,6 +487,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.COSTS[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.COSTS[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.COSTS[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.COSTS[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.COSTS[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+
                     `<${instanceId}> <http://purl.org/vocab/cpsv#produces> <${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}>`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#FinancialAdvantage>`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].uuid}"""`,

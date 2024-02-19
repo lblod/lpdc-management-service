@@ -181,7 +181,7 @@ describe('requirement', () => {
         expect(() => aFullInstanceSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
     });
 
-    test('requirements that dont have have unique order throws error', () => {
+    test('requirements that dont have unique order throws error', () => {
         const requirement1 =
             aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
         const requirement2 =
@@ -190,7 +190,7 @@ describe('requirement', () => {
         expect(() => aFullInstanceSnapshot().withRequirements([requirement1, requirement2]).build()).toThrow(new Error('requirements > order should not contain duplicates'));
     });
 
-    test('requirements that have have unique does not throw error', () => {
+    test('requirements that have unique does not throw error', () => {
         const requirement1 =
             aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
         const requirement2 =
@@ -254,7 +254,7 @@ describe('website ', () => {
         expect(() => aFullInstanceSnapshot().withWebsites([invalidWebsite]).build()).toThrow();
     });
 
-    test('websites that dont have have unique order throws error', () => {
+    test('websites that dont have unique order throws error', () => {
         const website1 =
             aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
         const website2 =
@@ -263,7 +263,7 @@ describe('website ', () => {
         expect(() => aFullInstanceSnapshot().withWebsites([website1, website2]).build()).toThrow(new Error('websites > order should not contain duplicates'));
     });
 
-    test('websites that have have unique does not throw error', () => {
+    test('websites that have unique does not throw error', () => {
         const website1 =
             aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
         const website2 =

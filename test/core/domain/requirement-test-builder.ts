@@ -9,7 +9,7 @@ import {
     anotherFullEvidenceForInstance,
     anotherFullEvidenceForInstanceSnapshot
 } from "./evidence-test-builder";
-import {aMinimalLanguageString} from "./language-string-test-builder";
+import {aMinimalInformalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
 
 export function aMinimalRequirementForConceptSnapshot(): RequirementBuilder {
     return new RequirementBuilder()
@@ -42,8 +42,8 @@ export function aMinimalRequirementForInstanceSnapshot(): RequirementBuilder {
     return new RequirementBuilder()
         .withId(RequirementBuilder.buildIri(uniqueId))
         .withOrder(1)
-        .withTitle(aMinimalLanguageString(RequirementTestBuilder.TITLE).build())
-        .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
+        .withTitle(aMinimalInformalLanguageString(RequirementTestBuilder.TITLE).build())
+        .withDescription(aMinimalInformalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
 }
 
 export function aFullRequirement(): RequirementBuilder {

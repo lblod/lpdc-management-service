@@ -218,7 +218,7 @@ describe('constructing', () => {
             expect(() => aFullConcept().withCosts([invalidCost]).build()).toThrow();
         });
 
-        test('costs that dont have have unique order throws error', () => {
+        test('costs that dont have unique order throws error', () => {
             const cost1 =
                 aMinimalCostForConcept().withOrder(1).build();
             const cost2 =
@@ -227,7 +227,7 @@ describe('constructing', () => {
             expect(() => aFullConcept().withCosts([cost1, cost2]).build()).toThrow(new Error('costs > order should not contain duplicates'));
         });
 
-        test('costs that have have unique does not throw error', () => {
+        test('costs that have unique does not throw error', () => {
             const cost1 =
                 aMinimalCostForConcept().withOrder(1).build();
             const cost2 =
@@ -253,7 +253,7 @@ describe('constructing', () => {
             expect(() => aFullConcept().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
         });
 
-        test('financial advantages that dont have have unique order throws error', () => {
+        test('financial advantages that dont have unique order throws error', () => {
             const financialAdvantage1 =
                 aMinimalFinancialAdvantageForConcept().withOrder(1).build();
             const financialAdvantage2 =
@@ -262,7 +262,7 @@ describe('constructing', () => {
             expect(() => aFullConcept().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).toThrow(new Error('financial advantages > order should not contain duplicates'));
         });
 
-        test('financial advantages that have have unique does not throw error', () => {
+        test('financial advantages that have unique does not throw error', () => {
             const financialAdvantage1 =
                 aMinimalFinancialAdvantageForConcept().withOrder(1).build();
             const financialAdvantage2 =
@@ -288,7 +288,7 @@ describe('constructing', () => {
             expect(() => aFullConcept().withProcedures([invalidProcedure]).build()).toThrow();
         });
 
-        test('procedures that dont have have unique order throws error', () => {
+        test('procedures that dont have unique order throws error', () => {
             const procedure1 =
                 aMinimalProcedureForConcept().withOrder(1).build();
             const procedure2 =
@@ -297,7 +297,7 @@ describe('constructing', () => {
             expect(() => aFullConcept().withProcedures([procedure1, procedure2]).build()).toThrow(new Error('procedures > order should not contain duplicates'));
         });
 
-        test('procedures that have have unique does not throw error', () => {
+        test('procedures that have unique does not throw error', () => {
             const procedure1 =
                 aMinimalProcedureForConcept().withOrder(1).build();
             const procedure2 =
@@ -323,7 +323,7 @@ describe('constructing', () => {
             expect(() => aFullConcept().withWebsites([invalidWebsite]).build()).toThrow();
         });
 
-        test('websites that dont have have unique order throws error', () => {
+        test('websites that dont have unique order throws error', () => {
             const website1 =
                 aMinimalWebsiteForConcept().withOrder(1).build();
             const website2 =
@@ -332,7 +332,7 @@ describe('constructing', () => {
             expect(() => aFullConcept().withWebsites([website1, website2]).build()).toThrow(new Error('websites > order should not contain duplicates'));
         });
 
-        test('websites that have have unique does not throw error', () => {
+        test('websites that have unique does not throw error', () => {
             const website1 =
                 aMinimalWebsiteForConcept().withOrder(1).build();
             const website2 =
@@ -360,7 +360,7 @@ describe('constructing', () => {
             expect(() => aFullConcept().withRequirements([invalidRequirement]).build()).toThrow();
         });
 
-        test('requirements that dont have have unique order throws error', () => {
+        test('requirements that dont have unique order throws error', () => {
             const requirement1 =
                 aMinimalRequirementForConcept().withOrder(1).build();
             const requirement2 =
@@ -369,7 +369,7 @@ describe('constructing', () => {
             expect(() => aFullConcept().withRequirements([requirement1, requirement2]).build()).toThrow(new Error('requirements > order should not contain duplicates'));
         });
 
-        test('requirements that have have unique does not throw error', () => {
+        test('requirements that have unique does not throw error', () => {
             const requirement1 =
                 aMinimalRequirementForConcept().withOrder(1).build();
             const requirement2 =
