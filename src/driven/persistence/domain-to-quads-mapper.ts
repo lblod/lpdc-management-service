@@ -97,10 +97,10 @@ export class DomainToQuadsMapper {
             ...this.websites(conceptSnapshot.id, NS.rdfs('seeAlso'), conceptSnapshot.websites),
             ...this.costs(conceptSnapshot.id, conceptSnapshot.costs),
             ...this.financialAdvantages(conceptSnapshot.id, conceptSnapshot.financialAdvantages),
-            conceptSnapshot.isVersionOfConcept ? this.buildQuad(namedNode(conceptSnapshot.id.value), NS.dct('isVersionOf'), namedNode(conceptSnapshot.isVersionOfConcept.value)) : undefined,
+            this.isVersionOf(conceptSnapshot.id, conceptSnapshot.isVersionOfConcept),
             conceptSnapshot.dateCreated ? this.buildQuad(namedNode(conceptSnapshot.id.value), NS.schema('dateCreated'), literal(conceptSnapshot.dateCreated.value, NS.xsd('dateTime'))) : undefined,
             conceptSnapshot.dateModified ? this.buildQuad(namedNode(conceptSnapshot.id.value), NS.schema('dateModified'), literal(conceptSnapshot.dateModified.value, NS.xsd('dateTime'))) : undefined,
-            conceptSnapshot.generatedAtTime ? this.buildQuad(namedNode(conceptSnapshot.id.value), NS.prov('generatedAtTime'), literal(conceptSnapshot.generatedAtTime.value, NS.xsd('dateTime'))) : undefined,
+            this.generatedAtTime(conceptSnapshot.id, conceptSnapshot.generatedAtTime),
             this.buildQuad(namedNode(conceptSnapshot.id.value), NS.schema('identifier'), literal(conceptSnapshot.identifier)),
             this.productId(conceptSnapshot.id, conceptSnapshot.productId),
             conceptSnapshot.snapshotType ? this.buildQuad(namedNode(conceptSnapshot.id.value), NS.lpdcExt('snapshotType'), namedNode(this.enumToIri(conceptSnapshot.snapshotType, NS.dvc.snapshotType).value)) : undefined,
@@ -141,8 +141,8 @@ export class DomainToQuadsMapper {
             this.conceptSnapshotId(instance.id, instance.conceptSnapshotId),
             this.productId(instance.id, instance.productId),
             ...this.languages(instance.id, instance.languages),
-            instance.dateCreated ? this.buildQuad(namedNode(instance.id.value), NS.dct('created'), literal(instance.dateCreated.value, NS.xsd('dateTime'))) : undefined,
-            instance.dateModified ? this.buildQuad(namedNode(instance.id.value), NS.dct('modified'), literal(instance.dateModified.value, NS.xsd('dateTime'))) : undefined,
+            this.instanceDateCreated(instance.id, instance.dateCreated),
+            this.instanceDateModified(instance.id, instance.dateModified),
             instance.dateSent ? this.buildQuad(namedNode(instance.id.value), NS.schema('dateSent'), literal(instance.dateSent.value, NS.xsd('dateTime'))) : undefined,
             instance.datePublished ? this.buildQuad(namedNode(instance.id.value), NS.schema('datePublished'), literal(instance.datePublished.value, NS.xsd('dateTime'))) : undefined,
             this.buildQuad(namedNode(instance.id.value), NS.adms('status'), namedNode(this.enumToIri(instance.status, NS.concepts.instanceStatus).value)),
@@ -157,8 +157,8 @@ export class DomainToQuadsMapper {
         return [
             this.rdfType(instanceSnapshot.id, NS.cpsv('PublicService')),
             this.bestuurseenheidId(instanceSnapshot.id, instanceSnapshot.createdBy),
-            instanceSnapshot.isVersionOfInstance ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('isVersionOf'), namedNode(instanceSnapshot.isVersionOfInstance.value)) : undefined,
-            instanceSnapshot.conceptId ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('source'), namedNode(instanceSnapshot.conceptId.value)): undefined,
+            this.isVersionOf(instanceSnapshot.id, instanceSnapshot.isVersionOfInstance),
+            this.conceptId(instanceSnapshot.id, instanceSnapshot.conceptId),
             ...this.title(instanceSnapshot.id, instanceSnapshot.title),
             ...this.description(instanceSnapshot.id, instanceSnapshot.description),
             ...this.additionalDescription(instanceSnapshot.id, instanceSnapshot.additionalDescription),
@@ -179,10 +179,9 @@ export class DomainToQuadsMapper {
             ...this.languages(instanceSnapshot.id, instanceSnapshot.languages),
             ...this.spatials(instanceSnapshot.id, instanceSnapshot.spatials),
             ...this.legalResources(instanceSnapshot.id, instanceSnapshot.legalResources),
-            //TODO LPDC-910: factor out duplication
-            instanceSnapshot.dateCreated ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('created'), literal(instanceSnapshot.dateCreated.value, NS.xsd('dateTime'))) : undefined,
-            instanceSnapshot.dateModified ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('modified'), literal(instanceSnapshot.dateModified.value, NS.xsd('dateTime'))) : undefined,
-            instanceSnapshot.generatedAtTime ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.prov('generatedAtTime'), literal(instanceSnapshot.generatedAtTime.value, NS.xsd('dateTime'))) : undefined,
+            this.instanceDateCreated(instanceSnapshot.id, instanceSnapshot.dateCreated),
+            this.instanceDateModified(instanceSnapshot.id, instanceSnapshot.dateModified),
+            this.generatedAtTime(instanceSnapshot.id, instanceSnapshot.generatedAtTime),
             this.buildQuad(namedNode(instanceSnapshot.id.value), NS.lpdcExt('isArchived'), literal(instanceSnapshot.isArchived.toString(), 'boolean'))
         ].filter(t => t !== undefined);
     }
@@ -203,6 +202,18 @@ export class DomainToQuadsMapper {
 
     private endDate(id: Iri, value: FormatPreservingDate | undefined): Statement | undefined {
         return value ? this.buildQuad(namedNode(id.value), NS.schema('endDate'), literal(value.value, NS.xsd('dateTime'))) : undefined;
+    }
+
+    private instanceDateCreated(id: Iri, value: FormatPreservingDate | undefined) {
+        return value ? this.buildQuad(namedNode(id.value), NS.dct('created'), literal(value.value, NS.xsd('dateTime'))) : undefined;
+    }
+
+    private instanceDateModified(id: Iri, value: FormatPreservingDate | undefined) {
+        return value ? this.buildQuad(namedNode(id.value), NS.dct('modified'), literal(value.value, NS.xsd('dateTime'))) : undefined;
+    }
+
+    private generatedAtTime(id: Iri, value: FormatPreservingDate | undefined): Statement | undefined {
+        return value ? this.buildQuad(namedNode(id.value), NS.prov('generatedAtTime'), literal(value.value, NS.xsd('dateTime'))) : undefined;
     }
 
     private type(id: Iri, value: ProductType): Statement | undefined {
@@ -423,6 +434,10 @@ export class DomainToQuadsMapper {
 
     private conceptId(id: Iri, conceptId: Iri | undefined): Statement | undefined {
         return conceptId ? this.buildQuad(namedNode(id.value), NS.dct('source'), namedNode(conceptId.value)) : undefined;
+    }
+
+    private isVersionOf(id: Iri, anIri: Iri | undefined): Statement | undefined {
+        return anIri ? this.buildQuad(namedNode(id.value), NS.dct('isVersionOf'), namedNode(anIri.value)) : undefined;
     }
 
     private conceptSnapshotId(id: Iri, versionedSource: Iri | undefined): Statement | undefined {
