@@ -238,7 +238,7 @@ export class InstanceSnapshot {
     }
 
     get languages(): LanguageType[] {
-        return this._languages;
+        return [...this._languages];
     }
 
     get isVersionOfInstance(): Iri {

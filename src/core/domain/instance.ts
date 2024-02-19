@@ -325,7 +325,7 @@ export class Instance {
     }
 
     get languages(): LanguageType[] {
-        return this._languages;
+        return [...this._languages];
     }
 
     get dateCreated(): FormatPreservingDate {
