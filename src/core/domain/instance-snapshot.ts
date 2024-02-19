@@ -18,6 +18,7 @@ import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
 import {ContactPoint} from "./contact-point";
 import {asSortedArray} from "./shared/collections-helper";
+import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 
 export class InstanceSnapshot {
 
@@ -91,42 +92,45 @@ export class InstanceSnapshot {
                 spatials: Iri[],
                 legalResources: Iri[]
     ) {
-        //TODO LPDC-910: verify invariants
-        //TODO LPDC-910: safe copy
-        this._id = id;
-        this._createdBy = createdBy;
-        this._title = title;
-        this._description = description;
+        this._id = requiredValue(id, 'id');
+        this._createdBy = requiredValue(createdBy, 'createdBy');
+        this._title = requiredValue(title, 'title');
+        this._description = requiredValue(description, 'description');
         this._additionalDescription = additionalDescription;
         this._exception = exception;
         this._regulation = regulation;
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
-        this._targetAudiences = asSortedArray(targetAudiences);
-        this._themes = asSortedArray(themes);
-        this._competentAuthorityLevels = asSortedArray(competentAuthorityLevels);
-        this._competentAuthorities = asSortedArray(competentAuthorities);
-        this._executingAuthorityLevels = asSortedArray(executingAuthorityLevels);
-        this._executingAuthorities = asSortedArray(executingAuthorities);
-        this._publicationMedia = asSortedArray(publicationMedia);
-        this._yourEuropeCategories = asSortedArray(yourEuropeCategories);
-        this._keywords = asSortedArray(keywords, LanguageString.compare);
-        this._requirements = requirements;
-        this._procedures = procedures;
-        this._websites = websites;
-        this._costs = costs;
-        this._financialAdvantages = financialAdvantages;
-        this._contactPoints = contactPoints;
+        this._targetAudiences = requireNoDuplicates(asSortedArray(targetAudiences), 'targetAudiences');
+        this._themes = requireNoDuplicates(asSortedArray(themes), 'themes');
+        this._competentAuthorityLevels = requireNoDuplicates(asSortedArray(competentAuthorityLevels), 'competentAuthorityLevels');
+        this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities), 'competentAuthorities');
+        this._executingAuthorityLevels = requireNoDuplicates(asSortedArray(executingAuthorityLevels), 'executingAuthorityLevels');
+        this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities), 'executingAuthorities');
+        this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
+        this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
+        this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
+        this._requirements = [...requirements];
+        this._procedures = [...procedures];
+        this._websites = [...websites];
+        this._costs = [...costs];
+        this._financialAdvantages = [...financialAdvantages];
+        this._contactPoints = [...contactPoints];
         this._conceptId = conceptId;
-        this._languages = asSortedArray(languages);
-        this._isVersionOfInstance = isVersionOfInstance;
-        this._dateCreated = dateCreated;
-        this._dateModified = dateModified;
-        this._generatedAtTime = generatedAtTime;
-        this._isArchived = isArchived;
-        this._spatials = asSortedArray(spatials);
-        this._legalResources = asSortedArray(legalResources);
+        this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
+        this._isVersionOfInstance = requiredValue(isVersionOfInstance, 'isVersionOfInstance');
+        this._dateCreated = requiredValue(dateCreated, 'dateCreated');
+        this._dateModified = requiredValue(dateModified, 'dateModified');
+        this._generatedAtTime = requiredValue(generatedAtTime, 'generatedAtTime');
+        this._isArchived = requiredValue(isArchived, 'isArchived');
+        this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
+        this._legalResources = requireNoDuplicates(asSortedArray(legalResources), 'legalResources');
+        this.validateLanguages();
+    }
+
+    private validateLanguages(): void {
+        //TODO LPDC-910: implement me
     }
 
     get id(): Iri {

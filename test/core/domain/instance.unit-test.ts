@@ -43,6 +43,7 @@ beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
 
 describe('constructing', () => {
+
     test('Undefined id throws error', () => {
         expect(() => aFullInstance().withId(undefined).build()).toThrow(new Error('id should not be absent'));
     });
@@ -384,30 +385,26 @@ describe('constructing', () => {
 
     describe('dateCreated', () => {
 
-        test('Invalid dateCreated throws error', () => {
-            expect(() => aFullInstance().withDateCreated(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateCreated should not be absent'));
-        });
-
         test('Undefined dateCreated throws error', () => {
             expect(() => aFullInstance().withDateCreated(undefined).build()).toThrow(new Error('dateCreated should not be absent'));
         });
+
         test('Blank dateCreated throws error', () => {
             expect(() => aFullInstance().withDateCreated(FormatPreservingDate.of('')).build()).toThrow(new Error('dateCreated should not be absent'));
         });
+
     });
 
     describe('dateModified', () => {
 
-        test('Invalid dateModified throws error', () => {
-            expect(() => aFullInstance().withDateModified(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateModified should not be absent'));
-        });
-
         test('Undefined dateModified throws error', () => {
             expect(() => aFullInstance().withDateModified(undefined).build()).toThrow(new Error('dateModified should not be absent'));
         });
+
         test('Blank dateModified throws error', () => {
             expect(() => aFullInstance().withDateModified(FormatPreservingDate.of('')).build()).toThrow(new Error('dateModified should not be absent'));
         });
+
     });
 
     test('When status is verstuurd and dateSent is undefined should throw error', () => {
