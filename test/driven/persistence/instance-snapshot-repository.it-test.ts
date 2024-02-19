@@ -1,7 +1,7 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
-import {buildInstanceIri, buildInstanceSnapshotIri} from "../../core/domain/iri-test-builder";
+import {buildConceptIri, buildInstanceIri, buildInstanceSnapshotIri} from "../../core/domain/iri-test-builder";
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {
     aFullInstanceSnapshot,
@@ -15,10 +15,12 @@ import {NS} from "../../../src/driven/persistence/namespaces";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
+    LanguageType,
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
-    ThemeType
+    ThemeType,
+    YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 
 describe('InstanceSnapshotRepository', () => {
@@ -65,7 +67,7 @@ describe('InstanceSnapshotRepository', () => {
 
         });
 
-        test('When instance snapshot does not exist with id, then throw error', async() => {
+        test('When instance snapshot does not exist with id, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
@@ -132,10 +134,13 @@ describe('InstanceSnapshotRepository', () => {
             expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
         });
 
-        test('Verify full mapping', async() => {
+        test('Verify full mapping', async () => {
             const instanceUUID = uuid();
             const instanceId = buildInstanceIri(instanceUUID);
             const instanceSnapshotUUID = uuid();
+
+            const conceptId = buildConceptIri(uuid());
+
             const instanceSnapshotId = buildInstanceSnapshotIri(instanceSnapshotUUID);
 
             const bestuurseenheid = aBestuurseenheid().build();
@@ -145,6 +150,7 @@ describe('InstanceSnapshotRepository', () => {
                     .withId(instanceSnapshotId)
                     .withCreatedBy(bestuurseenheid.id)
                     .withIsVersionOfInstance(instanceId)
+                    .withConceptId(conceptId)
                     .build();
 
             await directDatabaseAccess.insertData(
@@ -153,6 +159,7 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} a <http://purl.org/vocab/cpsv#PublicService>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/source> ${sparqlEscapeUri(conceptId)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_EN}"""@EN`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_EN}"""@EN`,
@@ -185,10 +192,26 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${InstanceSnapshotTestBuilder.EXECUTING_AUTHORITIES[1]}>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(InstanceSnapshotTestBuilder.PUBLICATION_MEDIA[0]).value}>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(InstanceSnapshotTestBuilder.PUBLICATION_MEDIA[1]).value}>`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES[0]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES[1]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES[2]).value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[0].en}"""@en`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[1].nl}"""@nl`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[2].nl}"""@nl`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[3].en}"""@en`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/NLD>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/FRA>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/ENG>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> <${InstanceSnapshotTestBuilder.SPATIALS[0].value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> <${InstanceSnapshotTestBuilder.SPATIALS[1].value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> <${InstanceSnapshotTestBuilder.SPATIALS[2].value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasLegalResource> <${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0]}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasLegalResource> <${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1]}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasLegalResource> <${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[2]}>`,
+
                 ]);
 
             const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
@@ -351,6 +374,140 @@ describe('InstanceSnapshotRepository', () => {
                 ]);
 
             await expect(repository.findById(bestuurseenheid, instanceSnapshotId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> for iri: <${instanceSnapshotId}>`));
+        });
+
+        for (const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
+            test(`YourEuropeCategoryType ${yourEuropeCategory} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instanceSnapshot = aMinimalInstanceSnapshot().withYourEuropeCategories([yourEuropeCategory]).build();
+                await repository.save(bestuurseenheid, instanceSnapshot);
+
+                const actualInstance = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+
+                expect(actualInstance).toEqual(instanceSnapshot);
+            });
+        }
+
+        test('Unknown YourEuropeCategoryType can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const buildInstanceSnapshotIri1 = buildInstanceSnapshotIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                [`<${buildInstanceSnapshotIri1}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${buildInstanceSnapshotIri1}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, buildInstanceSnapshotIri1)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> for iri: <${buildInstanceSnapshotIri1}>`));
+        });
+
+        for (const languageType of Object.values(LanguageType)) {
+            test(`LanguageType ${languageType} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instanceSnapshot = aMinimalInstanceSnapshot().withLanguages([languageType]).build();
+                await repository.save(bestuurseenheid, instanceSnapshot);
+
+                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+
+                expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
+            });
+        }
+
+        test('Unknown LanguageType can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                [`<${instanceSnapshotId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceSnapshotId}> <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceSnapshotId)).rejects.toThrow(new Error(`could not map <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType> for iri: <${instanceSnapshotId}>`));
+        });
+
+        describe('isArchived', () => {
+
+            test('Absent isArchived maps to false', async () => {
+                const instanceId = buildInstanceIri(uuid());
+
+                const bestuurseenheid = aBestuurseenheid().build();
+
+                const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
+
+                await directDatabaseAccess.insertData(
+                    `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                    [
+                        `${sparqlEscapeUri(instanceSnapshotId)} a <http://purl.org/vocab/cpsv#PublicService>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    ]);
+
+                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+
+                expect(actualInstanceSnapshot.isArchived).toEqual(false);
+            });
+
+            test('Present, but false isArchived maps to false', async () => {
+                const instanceId = buildInstanceIri(uuid());
+
+                const bestuurseenheid = aBestuurseenheid().build();
+
+                const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
+
+                await directDatabaseAccess.insertData(
+                    `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                    [
+                        `${sparqlEscapeUri(instanceSnapshotId)} a <http://purl.org/vocab/cpsv#PublicService>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
+                    ]);
+
+                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+
+                expect(actualInstanceSnapshot.isArchived).toEqual(false);
+            });
+
+            test('Present, and true, isArchived maps to true', async () => {
+                const instanceId = buildInstanceIri(uuid());
+
+                const bestuurseenheid = aBestuurseenheid().build();
+
+                const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
+
+                await directDatabaseAccess.insertData(
+                    `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                    [
+                        `${sparqlEscapeUri(instanceSnapshotId)} a <http://purl.org/vocab/cpsv#PublicService>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
+                    ]);
+
+                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+
+                expect(actualInstanceSnapshot.isArchived).toEqual(true);
+            });
+
         });
 
 

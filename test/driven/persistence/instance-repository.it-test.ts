@@ -10,6 +10,7 @@ import {
     ExecutingAuthorityLevelType,
     InstancePublicationStatusType,
     InstanceStatusType,
+    LanguageType,
     ProductType,
     PublicationMediumType,
     TargetAudienceType,
@@ -550,7 +551,6 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[0].value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[1].value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[2].value}>`,
-                    `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[2].value}>`,
                     `<${instanceId}> <http://data.europa.eu/m8g/hasLegalResource> <${InstanceTestBuilder.LEGAL_RESOURCES[0]}>`,
                     `<${instanceId}> <http://data.europa.eu/m8g/hasLegalResource> <${InstanceTestBuilder.LEGAL_RESOURCES[1]}>`,
                     `<${instanceId}> <http://data.europa.eu/m8g/hasLegalResource> <${InstanceTestBuilder.LEGAL_RESOURCES[2]}>`,
@@ -894,5 +894,31 @@ describe('InstanceRepository', () => {
 
             await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrow(new Error(`could not map <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> for iri: <${instanceId}>`));
         });
+
+        for (const languageType of Object.values(LanguageType)) {
+            test(`LanguageType ${languageType} can be mapped`, async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                const instance = aMinimalInstance().withLanguages([languageType]).build();
+                await repository.save(bestuurseenheid, instance);
+
+                const actualInstance = await repository.findById(bestuurseenheid, instance.id);
+
+                expect(actualInstance).toEqual(instance);
+            });
+        }
+
+        test('Unknown LanguageType can not be mapped', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceId = buildInstanceIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [`<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType>`,
+                ]);
+
+            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrow(new Error(`could not map <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType> for iri: <${instanceId}>`));
+        });
+
     });
 });

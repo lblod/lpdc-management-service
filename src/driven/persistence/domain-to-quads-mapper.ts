@@ -158,6 +158,7 @@ export class DomainToQuadsMapper {
             this.rdfType(instanceSnapshot.id, NS.cpsv('PublicService')),
             this.bestuurseenheidId(instanceSnapshot.id, instanceSnapshot.createdBy),
             instanceSnapshot.isVersionOfInstance ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('isVersionOf'), namedNode(instanceSnapshot.isVersionOfInstance.value)) : undefined,
+            instanceSnapshot.conceptId ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('source'), namedNode(instanceSnapshot.conceptId.value)): undefined,
             ...this.title(instanceSnapshot.id, instanceSnapshot.title),
             ...this.description(instanceSnapshot.id, instanceSnapshot.description),
             ...this.additionalDescription(instanceSnapshot.id, instanceSnapshot.additionalDescription),
@@ -173,10 +174,16 @@ export class DomainToQuadsMapper {
             ...this.executingAuthorityLevels(instanceSnapshot.id, instanceSnapshot.executingAuthorityLevels),
             ...this.executingAuthorities(instanceSnapshot.id, instanceSnapshot.executingAuthorities),
             ...this.publicationMedia(instanceSnapshot.id, instanceSnapshot.publicationMedia),
+            ...this.yourEuropeCategories(instanceSnapshot.id, instanceSnapshot.yourEuropeCategories),
+            ...this.keywords(instanceSnapshot.id, instanceSnapshot.keywords),
+            ...this.languages(instanceSnapshot.id, instanceSnapshot.languages),
+            ...this.spatials(instanceSnapshot.id, instanceSnapshot.spatials),
+            ...this.legalResources(instanceSnapshot.id, instanceSnapshot.legalResources),
             //TODO LPDC-910: factor out duplication
             instanceSnapshot.dateCreated ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('created'), literal(instanceSnapshot.dateCreated.value, NS.xsd('dateTime'))) : undefined,
             instanceSnapshot.dateModified ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.dct('modified'), literal(instanceSnapshot.dateModified.value, NS.xsd('dateTime'))) : undefined,
             instanceSnapshot.generatedAtTime ? this.buildQuad(namedNode(instanceSnapshot.id.value), NS.prov('generatedAtTime'), literal(instanceSnapshot.generatedAtTime.value, NS.xsd('dateTime'))) : undefined,
+            this.buildQuad(namedNode(instanceSnapshot.id.value), NS.lpdcExt('isArchived'), literal(instanceSnapshot.isArchived.toString(), 'boolean'))
         ].filter(t => t !== undefined);
     }
 

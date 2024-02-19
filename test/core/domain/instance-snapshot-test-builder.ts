@@ -19,7 +19,14 @@ import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {ContactPoint} from "../../../src/core/domain/contact-point";
 import {InstanceSnapshot} from "../../../src/core/domain/instance-snapshot";
 import {uuid} from "../../../mu-helper";
-import {buildBestuurseenheidIri, buildInstanceIri, buildInstanceSnapshotIri} from "./iri-test-builder";
+import {
+    buildBestuurseenheidIri,
+    buildCodexVlaanderenIri,
+    buildConceptIri,
+    buildInstanceIri,
+    buildInstanceSnapshotIri,
+    buildSpatialRefNis2019Iri
+} from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
@@ -42,7 +49,8 @@ export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
                 InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
         .withDateCreated(InstanceSnapshotTestBuilder.DATE_CREATED)
         .withDateModified(InstanceSnapshotTestBuilder.DATE_MODIFIED)
-        .withGeneratedAtTime(InstanceSnapshotTestBuilder.GENERATED_AT_TIME);
+        .withGeneratedAtTime(InstanceSnapshotTestBuilder.GENERATED_AT_TIME)
+        .withIsArchived(false);
 }
 
 export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
@@ -74,7 +82,13 @@ export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
         .withCompetentAuthorities(InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES)
         .withExecutingAuthorityLevels(InstanceSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)
         .withExecutingAuthorities(InstanceSnapshotTestBuilder.EXECUTING_AUTHORITIES)
-        .withPublicationMedia(InstanceSnapshotTestBuilder.PUBLICATION_MEDIA);
+        .withPublicationMedia(InstanceSnapshotTestBuilder.PUBLICATION_MEDIA)
+        .withYourEuropeCategories(InstanceSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)
+        .withKeywords(InstanceSnapshotTestBuilder.KEYWORDS)
+        .withLanguages(InstanceSnapshotTestBuilder.LANGUAGES)
+        .withSpatials(InstanceSnapshotTestBuilder.SPATIALS)
+        .withLegalResources(InstanceSnapshotTestBuilder.LEGAL_RESOURCES)
+        .withConceptId(buildConceptIri(uuid()));
 }
 
 export class InstanceSnapshotTestBuilder {
@@ -116,6 +130,16 @@ export class InstanceSnapshotTestBuilder {
     public static readonly EXECUTING_AUTHORITIES = [BestuurseenheidTestBuilder.BORGLOON_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI];
 
     public static readonly PUBLICATION_MEDIA = [PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER];
+
+    public static readonly YOUR_EUROPE_CATEGORIES = [YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFKENNISGEVING, YourEuropeCategoryType.BEDRIJFREGISTRATIEPROCEDURESRECHTSVORMEN, YourEuropeCategoryType.ONDERWIJSOFSTAGEONDERZOEK];
+
+    public static readonly KEYWORDS = [LanguageString.of('geboorte - en'), LanguageString.of(undefined, 'geboorte - nl'), LanguageString.of(undefined, 'feestartikelen'), LanguageString.of('administratie')];
+
+    public static readonly LANGUAGES = [LanguageType.NLD, LanguageType.ENG, LanguageType.FRA];
+
+    public static readonly SPATIALS = [buildSpatialRefNis2019Iri(45700), buildSpatialRefNis2019Iri(52000), buildSpatialRefNis2019Iri(98786)];
+
+    public static readonly LEGAL_RESOURCES = [buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())];
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-08T12:13:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2024-02-06T16:16:20.242928Z');
@@ -363,7 +387,7 @@ export class InstanceSnapshotTestBuilder {
             this.isArchived,
             this.spatials,
             this.legalResources,
-            );
+        );
     }
 
 }

@@ -227,23 +227,23 @@ export class QuadsToDomainMapper {
             this.executingAuthorityLevels(id),
             this.executingAuthorities(id),
             this.publicationMedia(id),
+            this.yourEuropeCategories(id),
+            this.keywords(id),
             [],
             [],
             [],
             [],
             [],
             [],
-            [],
-            [],
-            undefined,
-            [],
+            this.conceptId(id),
+            this.languages(id),
             this.isVersionOf(id),
             this.instanceDateCreated(id),
             this.instanceDateModified(id),
             this.generatedAtTime(id),
-            undefined,
-            [],
-            [],
+            this.isArchived(id),
+            this.spatials(id),
+            this.legalResources(id),
         );
     }
 
@@ -492,6 +492,16 @@ export class QuadsToDomainMapper {
 
     private instanceStatusType(id: Iri): InstanceStatusType | undefined {
         return this.asEnum(InstanceStatusType, NS.concepts.instanceStatus, this.storeAccess.uniqueStatement(namedNode(id.value), NS.adms('status')));
+    }
+
+    private isArchived(id: Iri): boolean {
+        return this.parseBoolean(this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('isArchived'))?.object as Literal);
+    }
+
+    private parseBoolean(literal: Literal | undefined): boolean {
+        return literal !== undefined
+            && literal.datatype.equals(NS.xsd('boolean'))
+            && (literal.value === "1" || literal.value === "true");
     }
 
     private instanceReviewStatusType(id: Iri): InstanceReviewStatusType | undefined {

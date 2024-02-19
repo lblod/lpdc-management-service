@@ -110,8 +110,8 @@ export class InstanceSnapshot {
         this._executingAuthorityLevels = asSortedArray(executingAuthorityLevels);
         this._executingAuthorities = asSortedArray(executingAuthorities);
         this._publicationMedia = asSortedArray(publicationMedia);
-        this._yourEuropeCategories = yourEuropeCategories;
-        this._keywords = keywords;
+        this._yourEuropeCategories = asSortedArray(yourEuropeCategories);
+        this._keywords = asSortedArray(keywords, LanguageString.compare);
         this._requirements = requirements;
         this._procedures = procedures;
         this._websites = websites;
@@ -119,14 +119,14 @@ export class InstanceSnapshot {
         this._financialAdvantages = financialAdvantages;
         this._contactPoints = contactPoints;
         this._conceptId = conceptId;
-        this._languages = languages;
+        this._languages = asSortedArray(languages);
         this._isVersionOfInstance = isVersionOfInstance;
         this._dateCreated = dateCreated;
         this._dateModified = dateModified;
         this._generatedAtTime = generatedAtTime;
         this._isArchived = isArchived;
-        this._spatials = spatials;
-        this._legalResources = legalResources;
+        this._spatials = asSortedArray(spatials);
+        this._legalResources = asSortedArray(legalResources);
     }
 
     get id(): Iri {
