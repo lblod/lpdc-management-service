@@ -97,12 +97,12 @@ describe('for instance', () => {
     test('If title and description have the same nl language cost is created', () => {
         const langString = LanguageString.of('en', 'nl');
         const cost = aFullCostForInstance().withTitle(langString).withDescription(langString).build();
-        expect(() => Cost.forInstance(cost)).not.toThrow(new Error());
+        expect(() => Cost.forInstance(cost)).not.toThrow();
     });
 
     test('If title and description are undefined cost is created', () => {
         const cost = aFullCostForInstance().withTitle(undefined).withDescription(undefined).build();
-        expect(() => Cost.forInstance(cost)).not.toThrow(new Error());
+        expect(() => Cost.forInstance(cost)).not.toThrow();
     });
 
     test('If title and description have different nl languages, throws error', () => {
@@ -158,12 +158,12 @@ describe('for instance', () => {
 
         test('If title contains valid language, not throws error', () => {
             const cost = aFullCostForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
-            expect(() => Cost.forInstance(cost)).not.toThrow(new Error());
+            expect(() => Cost.forInstance(cost)).not.toThrow();
         });
 
         test('If description contains valid language, throws error', () => {
             const cost = aFullCostForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
-            expect(() => Cost.forInstance(cost)).not.toThrow(new Error());
+            expect(() => Cost.forInstance(cost)).not.toThrow();
         });
     }
 

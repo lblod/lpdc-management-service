@@ -101,12 +101,12 @@ describe('for instance',()=>{
     test('If title and description have the same nl language website is created', () => {
         const langString = LanguageString.of('en', 'nl');
         const website = aFullWebsiteForInstance().withTitle(langString).withDescription(langString).build();
-        expect(() => Website.forInstance(website)).not.toThrow(new Error());
+        expect(() => Website.forInstance(website)).not.toThrow();
     });
 
     test('If title and description are undefined website is created', () => {
         const website = aFullWebsiteForInstance().withTitle(undefined).withDescription(undefined).build();
-        expect(() => Website.forInstance(website)).not.toThrow(new Error());
+        expect(() => Website.forInstance(website)).not.toThrow();
     });
 
     test('If title and description have different nl languages, throws error', () => {
@@ -162,12 +162,12 @@ describe('for instance',()=>{
 
         test('If title contains valid language, not throws error', () => {
             const website = aFullWebsiteForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
-            expect(() => Website.forInstance(website)).not.toThrow(new Error());
+            expect(() => Website.forInstance(website)).not.toThrow();
         });
 
         test('If description contains valid language, throws error', () => {
             const website = aFullWebsiteForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
-            expect(() => Website.forInstance(website)).not.toThrow(new Error());
+            expect(() => Website.forInstance(website)).not.toThrow();
         });
     }
 

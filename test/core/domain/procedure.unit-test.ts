@@ -188,13 +188,13 @@ describe('for instance', () => {
 
     test('If title and description have the same nl language procedure is created', () => {
         const langString = LanguageString.of('en', 'nl');
-        const procedure = aFullProcedureForInstance().withTitle(langString).withDescription(langString).build();
-        expect(() => Procedure.forInstance(procedure)).not.toThrow(new Error());
+        const procedure = aFullProcedureForInstance().withTitle(langString).withDescription(langString).withWebsites([]).build();
+        expect(() => Procedure.forInstance(procedure)).not.toThrow();
     });
 
     test('If title and description are undefined procedure is created', () => {
         const procedure = aFullProcedureForInstance().withTitle(undefined).withDescription(undefined).build();
-        expect(() => Procedure.forInstance(procedure)).not.toThrow(new Error());
+        expect(() => Procedure.forInstance(procedure)).not.toThrow();
     });
 
     test('If title and description have different nl languages, throws error', () => {
@@ -225,7 +225,7 @@ describe('for instance', () => {
         const anotherWebsite = aFullWebsiteForInstance().withTitle(LanguageString.of('en', undefined, 'nl-formal-website2')).withOrder(2).build();
 
         const procedure = aFullProcedureForInstance().withTitle(langString).withDescription(langString).withWebsites([website, anotherWebsite]).build();
-        expect(() => Procedure.forInstance(procedure)).not.toThrow(new Error());
+        expect(() => Procedure.forInstance(procedure)).not.toThrow();
     });
 
     test('If a website has a different nl language than title or description, throws error', () => {
@@ -296,28 +296,28 @@ describe('for instance', () => {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
         }
 
-        test('If title contains valid language, not throws error', () => {
-            const procedure = aFullProcedureForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
-            expect(() => Procedure.forInstance(procedure)).not.toThrow(new Error());
+        test('If title contains valid language, does not throw error', () => {
+            const procedure = aFullProcedureForInstance().withTitle(valueInNlLanguage).withDescription(undefined).withWebsites([]).build();
+            expect(() => Procedure.forInstance(procedure)).not.toThrow();
         });
 
-        test('If description contains valid language, throws error', () => {
-            const procedure = aFullProcedureForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
-            expect(() => Procedure.forInstance(procedure)).not.toThrow(new Error());
+        test('If description contains valid language, does not throw error', () => {
+            const procedure = aFullProcedureForInstance().withDescription(valueInNlLanguage).withTitle(undefined).withWebsites([]).build();
+            expect(() => Procedure.forInstance(procedure)).not.toThrow();
         });
 
-        test('if a nested website title contains valid language, throws error', () => {
+        test('if a nested website title contains valid language, does not throw error', () => {
             const website = aFullWebsiteForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
             const procedure = aFullProcedureForInstance().withTitle(undefined).withDescription(undefined).withWebsites([website]).build();
 
-            expect(() => Procedure.forInstance(procedure)).not.toThrow(new Error());
+            expect(() => Procedure.forInstance(procedure)).not.toThrow();
         });
 
-        test('if a nested website description contains valid language, throws error', () => {
+        test('if a nested website description contains valid language, does not throw error', () => {
             const website = aFullWebsiteForInstance().withTitle(undefined).withDescription(valueInNlLanguage).build();
             const procedure = aFullProcedureForInstance().withTitle(undefined).withDescription(undefined).withWebsites([website]).build();
 
-            expect(() => Procedure.forInstance(procedure)).not.toThrow(new Error());
+            expect(() => Procedure.forInstance(procedure)).not.toThrow();
         });
     }
 

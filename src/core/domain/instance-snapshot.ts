@@ -111,7 +111,7 @@ export class InstanceSnapshot {
         this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
-        this._requirements = [...requirements];
+        this._requirements = [...requirements].map(r => Requirement.forInstanceSnapshot(r));
         this._procedures = [...procedures];
         this._websites = [...websites];
         this._costs = [...costs];

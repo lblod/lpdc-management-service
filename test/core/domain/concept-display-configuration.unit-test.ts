@@ -34,7 +34,7 @@ describe('Constructing', () => {
 
     test('when concept is new and concept is instantiated are different, dont throws error',()=>{
         const conceptDisplayConfiguration = aFullConceptDisplayConfiguration().withConceptIsNew(true).withConceptIsInstantiated(false);
-        expect(() => conceptDisplayConfiguration.build()).not.toThrow(new Error());
+        expect(() => conceptDisplayConfiguration.build()).not.toThrow();
     });
 
 });

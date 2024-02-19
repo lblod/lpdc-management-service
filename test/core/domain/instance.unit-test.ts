@@ -544,7 +544,7 @@ describe('validateLanguages', () => {
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(() => instance.build()).not.toThrow(new Error());
+        expect(() => instance.build()).not.toThrow();
     });
 
     test('if values have 1 nl language string but non-consistent en language strings, then no error is thrown', () => {
@@ -553,16 +553,16 @@ describe('validateLanguages', () => {
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(() => instance.build()).not.toThrow(new Error());
+        expect(() => instance.build()).not.toThrow();
     });
 
     test('if only 1 value has 1 nl language string, then no error is thrown', () => {
         const title = LanguageString.of(undefined, undefined, undefined);
         const description = LanguageString.of('en', 'nl', undefined);
 
-        const instance = aFullInstance().withTitle(title).withDescription(description);
+        const instance = aMinimalInstance().withTitle(title).withDescription(description);
 
-        expect(() => instance.build()).not.toThrow(new Error());
+        expect(() => instance.build()).not.toThrow();
     });
 
     test('if a nested object contains a different nl version, then throws error', () => {

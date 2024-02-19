@@ -96,12 +96,12 @@ describe('for instance', () => {
     test('If title and description have the same nl language financial advantage is created', () => {
         const langString = LanguageString.of('en', 'nl');
         const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(langString).withDescription(langString).build();
-        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow();
     });
 
     test('If title and description are undefined financial advantage is created', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(undefined).withDescription(undefined).build();
-        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow();
     });
 
     test('If title and description have different nl languages, throws error', () => {
@@ -157,12 +157,12 @@ describe('for instance', () => {
 
         test('If title contains valid language, not throws error', () => {
             const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
-            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
+            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow();
         });
 
         test('If description contains valid language, throws error', () => {
             const financialAdvantage = aFullFinancialAdvantageForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
-            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow(new Error());
+            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).not.toThrow();
         });
     }
 

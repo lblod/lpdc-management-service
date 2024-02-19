@@ -45,7 +45,7 @@ export class Evidence {
     }
 
     static forInstance(evidence: Evidence): Evidence {
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, evidence.title,evidence.description);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, evidence.title, evidence.description);
 
         return new Evidence(
             evidence.id,
@@ -53,6 +53,18 @@ export class Evidence {
             evidence.title,
             evidence.description,
             evidence.conceptEvidenceId
+        );
+    }
+
+    static forInstanceSnapshot(evidence: Evidence): Evidence {
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, evidence.title, evidence.description);
+
+        return new Evidence(
+            evidence.id,
+            undefined,
+            requiredValue(evidence.title, 'title'),
+            requiredValue(evidence.description, 'description'),
+            undefined
         );
     }
 

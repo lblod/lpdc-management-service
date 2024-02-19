@@ -74,6 +74,24 @@ export class Requirement {
         );
     }
 
+    static forInstanceSnapshot(requirement: Requirement): Requirement {
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages,
+            requirement.title,
+            requirement.description,
+            requirement.evidence?.title,
+            requirement.evidence?.description);
+
+        return new Requirement(
+            requirement.id,
+            undefined,
+            requiredValue(requirement.title, 'title'),
+            requiredValue(requirement.description, 'description'),
+            requirement.order,
+            requirement.evidence ? Evidence.forInstanceSnapshot(requirement.evidence) : undefined,
+            undefined
+        );
+    }
+
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,

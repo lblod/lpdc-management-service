@@ -107,15 +107,14 @@ export class LanguageString {
         }
     }
 
-    static validateUniqueAndCorrectLanguages(acceptedLanguages: Language[], ...values: (LanguageString|undefined)[]): void {
+    static validateUniqueAndCorrectLanguages(acceptedLanguages: Language[], ...values: (LanguageString | undefined)[]): void {
         LanguageString.validateUniqueNlLanguage(values);
 
         const nlLanguage = LanguageString.extractNlLanguages(values)[0];
-        if(!acceptedLanguages.includes(nlLanguage) && nlLanguage!==undefined ){
+        if (!acceptedLanguages.includes(nlLanguage) && nlLanguage !== undefined) {
             throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
         }
     }
-
 
     static isFunctionallyChanged(value: LanguageString | undefined, other: LanguageString | undefined): boolean {
         return value?.en !== other?.en
