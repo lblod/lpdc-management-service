@@ -98,6 +98,38 @@ export function anotherFullEvidenceForInstance(): EvidenceBuilder {
             EvidenceTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL));
 }
 
+export function aFullEvidenceForInstanceSnapshot(): EvidenceBuilder {
+    const uniqueId = uuid();
+    return new EvidenceBuilder()
+        .withId(EvidenceBuilder.buildIri(uniqueId))
+        .withTitle(LanguageString.of(
+            EvidenceTestBuilder.TITLE_EN,
+            undefined,
+            undefined,
+            EvidenceTestBuilder.TITLE_NL_INFORMAL))
+        .withDescription(LanguageString.of(
+            EvidenceTestBuilder.DESCRIPTION_EN,
+            undefined,
+            undefined,
+            EvidenceTestBuilder.DESCRIPTION_NL_INFORMAL));
+}
+
+export function anotherFullEvidenceForInstanceSnapshot(): EvidenceBuilder {
+    const uniqueId = uuid();
+    return new EvidenceBuilder()
+        .withId(EvidenceBuilder.buildIri(uniqueId))
+        .withTitle(LanguageString.of(
+            EvidenceTestBuilder.ANOTHER_TITLE_EN,
+            undefined,
+            undefined,
+            EvidenceTestBuilder.ANOTHER_TITLE_NL_INFORMAL))
+        .withDescription(LanguageString.of(
+            EvidenceTestBuilder.ANOTHER_DESCRIPTION_EN,
+            undefined,
+            undefined,
+            EvidenceTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL));
+}
+
 export class EvidenceTestBuilder {
 
     public static readonly TITLE = 'Evidence Title';

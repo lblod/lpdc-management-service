@@ -212,6 +212,34 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasLegalResource> <${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1]}>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasLegalResource> <${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[2]}>`,
 
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${InstanceSnapshotTestBuilder.REQUIREMENTS[1].id}>`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].id}> a <http://data.europa.eu/m8g/Requirement>`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].title.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].description.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].description.nlInformal}"""@nl-BE-x-informal`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].id}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id}>`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id}> a <http://data.europa.eu/m8g/Evidence>`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.title.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.description.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.description.nlInformal}"""@nl-BE-x-informal`,
+
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${InstanceSnapshotTestBuilder.REQUIREMENTS[0].id}>`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].id}> a <http://data.europa.eu/m8g/Requirement>`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].title.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].description.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].description.nlInformal}"""@nl-BE-x-informal`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].id}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id}>`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id}> a <http://data.europa.eu/m8g/Evidence>`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.title.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.description.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.description.nlInformal}"""@nl-BE-x-informal`,
+
                 ]);
 
             const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);

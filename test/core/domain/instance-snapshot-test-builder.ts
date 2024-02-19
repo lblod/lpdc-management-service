@@ -28,6 +28,11 @@ import {
     buildSpatialRefNis2019Iri
 } from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
+import {
+    aFullRequirementForInstanceSnapshot,
+    anotherFullRequirementForInstanceSnapshot
+} from "./requirement-test-builder";
+import {aFullEvidenceForInstanceSnapshot, anotherFullEvidenceForInstanceSnapshot} from "./evidence-test-builder";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
     const uniqueId = uuid();
@@ -88,7 +93,8 @@ export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
         .withLanguages(InstanceSnapshotTestBuilder.LANGUAGES)
         .withSpatials(InstanceSnapshotTestBuilder.SPATIALS)
         .withLegalResources(InstanceSnapshotTestBuilder.LEGAL_RESOURCES)
-        .withConceptId(buildConceptIri(uuid()));
+        .withConceptId(buildConceptIri(uuid()))
+        .withRequirements(InstanceSnapshotTestBuilder.REQUIREMENTS);
 }
 
 export class InstanceSnapshotTestBuilder {
@@ -140,6 +146,11 @@ export class InstanceSnapshotTestBuilder {
     public static readonly SPATIALS = [buildSpatialRefNis2019Iri(45700), buildSpatialRefNis2019Iri(52000), buildSpatialRefNis2019Iri(98786)];
 
     public static readonly LEGAL_RESOURCES = [buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())];
+
+    public static readonly REQUIREMENTS = [
+        aFullRequirementForInstanceSnapshot().withEvidence(aFullEvidenceForInstanceSnapshot().build()).build(),
+        anotherFullRequirementForInstanceSnapshot().withEvidence(anotherFullEvidenceForInstanceSnapshot().build()).build()
+    ];
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-08T12:13:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2024-02-06T16:16:20.242928Z');

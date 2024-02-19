@@ -229,7 +229,7 @@ export class QuadsToDomainMapper {
             this.publicationMedia(id),
             this.yourEuropeCategories(id),
             this.keywords(id),
-            [],
+            this.requirements(id),
             [],
             [],
             [],

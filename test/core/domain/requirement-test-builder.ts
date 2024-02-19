@@ -4,8 +4,10 @@ import {RequirementBuilder} from "../../../src/core/domain/requirement";
 import {
     aFullEvidence,
     aFullEvidenceForInstance,
+    aFullEvidenceForInstanceSnapshot,
     anotherFullEvidence,
-    anotherFullEvidenceForInstance
+    anotherFullEvidenceForInstance,
+    anotherFullEvidenceForInstanceSnapshot
 } from "./evidence-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 
@@ -115,6 +117,42 @@ export function anotherFullRequirementForInstance(): RequirementBuilder {
         .withEvidence(RequirementTestBuilder.ANOTHER_EVIDENCE_FOR_INSTANCE);
 }
 
+export function aFullRequirementForInstanceSnapshot(): RequirementBuilder {
+    const uniqueId = uuid();
+    return new RequirementBuilder()
+        .withId(RequirementBuilder.buildIri(uniqueId))
+        .withTitle(LanguageString.of(
+            RequirementTestBuilder.TITLE_EN,
+            undefined,
+            undefined,
+            RequirementTestBuilder.TITLE_NL_INFORMAL))
+        .withDescription(LanguageString.of(
+            RequirementTestBuilder.DESCRIPTION_EN,
+            undefined,
+            undefined,
+            RequirementTestBuilder.DESCRIPTION_NL_INFORMAL))
+        .withOrder(1)
+        .withEvidence(RequirementTestBuilder.EVIDENCE_FOR_INSTANCE_SNAPSHOT);
+}
+
+export function anotherFullRequirementForInstanceSnapshot(): RequirementBuilder {
+    const uniqueId = uuid();
+    return new RequirementBuilder()
+        .withId(RequirementBuilder.buildIri(uniqueId))
+        .withTitle(LanguageString.of(
+            RequirementTestBuilder.ANOTHER_TITLE_EN,
+            undefined,
+            undefined,
+            RequirementTestBuilder.ANOTHER_TITLE_NL_INFORMAL))
+        .withDescription(LanguageString.of(
+            RequirementTestBuilder.ANOTHER_DESCRIPTION_EN,
+            undefined,
+            undefined,
+            RequirementTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL))
+        .withOrder(2)
+        .withEvidence(RequirementTestBuilder.ANOTHER_EVIDENCE_FOR_INSTANCE_SNAPSHOT);
+}
+
 export class RequirementTestBuilder {
 
     public static readonly TITLE = 'Requirement Title';
@@ -149,7 +187,9 @@ export class RequirementTestBuilder {
 
     public static readonly EVIDENCE = aFullEvidence().build();
     public static readonly EVIDENCE_FOR_INSTANCE = aFullEvidenceForInstance().build();
+    public static readonly EVIDENCE_FOR_INSTANCE_SNAPSHOT = aFullEvidenceForInstanceSnapshot().build();
     public static readonly ANOTHER_EVIDENCE = anotherFullEvidence().build();
     public static readonly ANOTHER_EVIDENCE_FOR_INSTANCE = anotherFullEvidenceForInstance().build();
+    public static readonly ANOTHER_EVIDENCE_FOR_INSTANCE_SNAPSHOT = anotherFullEvidenceForInstanceSnapshot().build();
 
 }
