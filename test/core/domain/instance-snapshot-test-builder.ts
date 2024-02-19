@@ -33,6 +33,7 @@ import {
     anotherFullRequirementForInstanceSnapshot
 } from "./requirement-test-builder";
 import {aFullEvidenceForInstanceSnapshot, anotherFullEvidenceForInstanceSnapshot} from "./evidence-test-builder";
+import {anotherFullWebsiteForInstanceSnapshot} from "./website-test-builder";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
     const uniqueId = uuid();
@@ -94,7 +95,8 @@ export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
         .withSpatials(InstanceSnapshotTestBuilder.SPATIALS)
         .withLegalResources(InstanceSnapshotTestBuilder.LEGAL_RESOURCES)
         .withConceptId(buildConceptIri(uuid()))
-        .withRequirements(InstanceSnapshotTestBuilder.REQUIREMENTS);
+        .withRequirements(InstanceSnapshotTestBuilder.REQUIREMENTS)
+        .withWebsites(InstanceSnapshotTestBuilder.WEBSITES);
 }
 
 export class InstanceSnapshotTestBuilder {
@@ -151,6 +153,8 @@ export class InstanceSnapshotTestBuilder {
         aFullRequirementForInstanceSnapshot().withEvidence(aFullEvidenceForInstanceSnapshot().build()).build(),
         anotherFullRequirementForInstanceSnapshot().withEvidence(anotherFullEvidenceForInstanceSnapshot().build()).build()
     ];
+
+    public static readonly WEBSITES = [anotherFullWebsiteForInstanceSnapshot(uuid()).withOrder(1).build(), anotherFullWebsiteForInstanceSnapshot(uuid()).withOrder(2).build()];
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-08T12:13:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2024-02-06T16:16:20.242928Z');

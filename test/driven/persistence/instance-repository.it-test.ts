@@ -449,6 +449,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].websites[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://schema.org/url> """${InstanceTestBuilder.PROCEDURES[0].websites[0].url}"""`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+
                     `<${instanceId}> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <${InstanceTestBuilder.WEBSITES[1].id}>`,
                     `<${InstanceTestBuilder.WEBSITES[1].id}> a <http://schema.org/WebSite>`,
                     `<${InstanceTestBuilder.WEBSITES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.WEBSITES[1].uuid}"""`,
@@ -467,6 +468,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.WEBSITES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.WEBSITES[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.WEBSITES[0].id}> <http://schema.org/url> """${InstanceTestBuilder.WEBSITES[0].url}"""`,
                     `<${InstanceTestBuilder.WEBSITES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+
                     `<${instanceId}> <http://data.europa.eu/m8g/hasCost> <${InstanceTestBuilder.COSTS[1].id}>`,
                     `<${InstanceTestBuilder.COSTS[1].id}> a <http://data.europa.eu/m8g/Cost>`,
                     `<${InstanceTestBuilder.COSTS[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.COSTS[1].uuid}"""`,

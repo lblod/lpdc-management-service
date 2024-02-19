@@ -37,6 +37,15 @@ export function aMinimalRequirementForInstance(): RequirementBuilder {
         .withOrder(1);
 }
 
+export function aMinimalRequirementForInstanceSnapshot(): RequirementBuilder {
+    const uniqueId = uuid();
+    return new RequirementBuilder()
+        .withId(RequirementBuilder.buildIri(uniqueId))
+        .withOrder(1)
+        .withTitle(aMinimalLanguageString(RequirementTestBuilder.TITLE).build())
+        .withDescription(aMinimalLanguageString(RequirementTestBuilder.DESCRIPTION).build());
+}
+
 export function aFullRequirement(): RequirementBuilder {
     const uniqueId = uuid();
     return new RequirementBuilder()

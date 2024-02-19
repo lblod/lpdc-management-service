@@ -231,7 +231,7 @@ export class QuadsToDomainMapper {
             this.keywords(id),
             this.requirements(id),
             [],
-            [],
+            this.websites(id),
             [],
             [],
             [],

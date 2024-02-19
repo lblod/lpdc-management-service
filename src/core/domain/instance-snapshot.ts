@@ -112,8 +112,10 @@ export class InstanceSnapshot {
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
         this._requirements = [...requirements].map(r => Requirement.forInstanceSnapshot(r));
+        requireNoDuplicates(this._requirements.map(r => r.order), 'requirements > order');
         this._procedures = [...procedures];
-        this._websites = [...websites];
+        this._websites = [...websites].map(w => Website.forInstanceSnapshot(w));
+        requireNoDuplicates(this._websites.map(w => w.order), 'websites > order');
         this._costs = [...costs];
         this._financialAdvantages = [...financialAdvantages];
         this._contactPoints = [...contactPoints];

@@ -1,6 +1,6 @@
 import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {aMinimalLanguageString} from "./language-string-test-builder";
+import {aMinimalInformalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
 import {WebsiteBuilder} from "../../../src/core/domain/website";
 
 export function aMinimalWebsiteForConceptSnapshot(): WebsiteBuilder {
@@ -27,6 +27,15 @@ export function aMinimalWebsiteForInstance(): WebsiteBuilder {
         .withId(WebsiteBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withOrder(1);
+}
+
+export function aMinimalWebsiteForInstanceSnapshot(): WebsiteBuilder {
+    const uniqueId = uuid();
+    return new WebsiteBuilder()
+        .withId(WebsiteBuilder.buildIri(uniqueId))
+        .withTitle(aMinimalInformalLanguageString(WebsiteTestBuilder.TITLE).build())
+        .withOrder(1)
+        .withUrl(WebsiteTestBuilder.URL);
 }
 
 export function aFullWebsite(): WebsiteBuilder {
@@ -107,6 +116,43 @@ export function anotherFullWebsiteForInstance(aUuid: string): WebsiteBuilder {
             WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_EN(aUuid),
             undefined,
             WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_FORMAL(aUuid)))
+        .withOrder(2)
+        .withUrl(WebsiteTestBuilder.ANOTHER_URL_TEMPLATE(aUuid));
+}
+
+export function aFullWebsiteForInstanceSnapshot(): WebsiteBuilder {
+    const uniqueId = uuid();
+    return new WebsiteBuilder()
+        .withId(WebsiteBuilder.buildIri(uniqueId))
+        .withTitle(LanguageString.of(
+            WebsiteTestBuilder.TITLE_EN,
+            undefined,
+            undefined,
+            WebsiteTestBuilder.TITLE_NL_INFORMAL))
+        .withDescription(
+            LanguageString.of(
+                WebsiteTestBuilder.DESCRIPTION_EN,
+                undefined,
+                undefined,
+                WebsiteTestBuilder.DESCRIPTION_NL_INFORMAL))
+        .withOrder(1)
+        .withUrl(WebsiteTestBuilder.URL);
+}
+
+export function anotherFullWebsiteForInstanceSnapshot(aUuid: string): WebsiteBuilder {
+    const uniqueId = uuid();
+    return new WebsiteBuilder()
+        .withId(WebsiteBuilder.buildIri(uniqueId))
+        .withTitle(LanguageString.of(
+            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_EN(aUuid),
+            undefined,
+            undefined,
+            WebsiteTestBuilder.ANOTHER_TITLE_TEMPLATE_NL_INFORMAL(aUuid)))
+        .withDescription(LanguageString.of(
+            WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_EN(aUuid),
+            undefined,
+            undefined,
+            WebsiteTestBuilder.ANOTHER_DESCRIPTION_TEMPLATE_NL_INFORMAL(aUuid)))
         .withOrder(2)
         .withUrl(WebsiteTestBuilder.ANOTHER_URL_TEMPLATE(aUuid));
 }

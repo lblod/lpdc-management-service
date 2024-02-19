@@ -20,8 +20,7 @@ export class Website {
                         description: LanguageString | undefined,
                         order: number,
                         url: string,
-                        conceptWebsiteId: Iri | undefined
-    ) {
+                        conceptWebsiteId: Iri | undefined) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
@@ -66,6 +65,20 @@ export class Website {
             website.order,
             website.url,
             website.conceptWebsiteId
+        );
+    }
+
+    static forInstanceSnapshot(website: Website): Website {
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, website.title, website.description);
+
+        return new Website(
+            website.id,
+            undefined,
+            requiredValue(website.title, 'title'),
+            website.description,
+            website.order,
+            requiredValue(website.url, 'url'),
+            undefined
         );
     }
 

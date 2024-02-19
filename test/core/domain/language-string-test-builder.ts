@@ -9,6 +9,10 @@ export function aMinimalFormalLanguageString(value: string = ''):LanguageStringT
     return new LanguageStringTestBuilder().withNlFormal(`${value}${LanguageStringTestBuilder.NL_FORMAL}`);
 }
 
+export function aMinimalInformalLanguageString(value: string = ''):LanguageStringTestBuilder{
+    return new LanguageStringTestBuilder().withNlInformal(`${value}${LanguageStringTestBuilder.NL_INFORMAL}`);
+}
+
 
 export function aFullLanguageString(value: string = ''): LanguageStringTestBuilder {
     return new LanguageStringTestBuilder()

@@ -116,7 +116,7 @@ describe('constructing', () => {
         expect(() => instanceTestBuilder.build()).toThrow(new Error('languages should not contain duplicates'));
     });
 
-    describe('requirement ', () => {
+    describe('requirement', () => {
 
         test('valid requirement does not throw error', () => {
             const uuidValue = uuid();

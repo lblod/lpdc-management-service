@@ -1,4 +1,4 @@
-import {aFullWebsite, aFullWebsiteForInstance} from "./website-test-builder";
+import {aFullWebsite, aFullWebsiteForInstance, aFullWebsiteForInstanceSnapshot} from "./website-test-builder";
 import {Website} from "../../../src/core/domain/website";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Language} from "../../../src/core/domain/language";
@@ -83,7 +83,7 @@ describe('forConceptSnapshot', () => {
     });
 });
 
-describe('for instance',()=>{
+describe('for instance', () => {
 
     const validLanguages = [Language.NL, Language.FORMAL, Language.INFORMAL];
     const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
@@ -95,7 +95,7 @@ describe('for instance',()=>{
 
     test('Undefined Uuid throws error', () => {
         const website = aFullWebsiteForInstance().withUuid(undefined).build();
-        expect(()=>Website.forInstance(website).uuid).toThrow(new Error('uuid should not be absent'));
+        expect(() => Website.forInstance(website).uuid).toThrow(new Error('uuid should not be absent'));
     });
 
     test('If title and description have the same nl language website is created', () => {
@@ -131,7 +131,7 @@ describe('for instance',()=>{
         expect(() => Website.forInstance(website)).toThrow(new Error('There is more than one Nl language present'));
     });
 
-    for(const invalidLanguage of invalidLanguages){
+    for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
@@ -150,13 +150,13 @@ describe('for instance',()=>{
         });
     }
 
-    for(const validLanguage of validLanguages){
+    for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
             valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
-        }else if (validLanguage == Language.INFORMAL) {
+        } else if (validLanguage == Language.INFORMAL) {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
         }
 
@@ -171,7 +171,88 @@ describe('for instance',()=>{
         });
     }
 
-    test('Undefined error throws error', () => {
+    test('Undefined order throws error', () => {
         expect(() => Website.forInstance(aFullWebsiteForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+    });
+});
+
+describe('for instance snapshot', () => {
+
+    const validLanguages = [Language.NL, Language.FORMAL, Language.INFORMAL];
+    const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
+
+    test('Undefined id throws error', () => {
+        const website = aFullWebsiteForInstanceSnapshot().withId(undefined);
+        expect(() => Website.forInstanceSnapshot(website.build())).toThrow(new Error('id should not be absent'));
+    });
+
+    test('Undefined Uuid does not throw error', () => {
+        const website = aFullWebsiteForInstanceSnapshot().withUuid(undefined).build();
+        expect(Website.forInstanceSnapshot(website).uuid).toBeUndefined();
+    });
+
+    test('Undefined title throws error', () => {
+        const website = aFullWebsiteForInstanceSnapshot().withTitle(undefined);
+        expect(() => Website.forInstanceSnapshot(website.build())).toThrow(new Error('title should not be absent'));
+    });
+
+    test('Undefined description does not throw error', () => {
+        const website = aFullWebsiteForInstanceSnapshot().withDescription(undefined).build();
+        expect(Website.forInstanceSnapshot(website).description).toBeUndefined();
+    });
+
+    test('Undefined url throws error', () => {
+        const website = aFullWebsiteForInstanceSnapshot().withUrl(undefined);
+        expect(() => Website.forInstanceSnapshot(website.build())).toThrow(new Error('url should not be absent'));
+    });
+
+    test('If title and description have the same nl language website is created', () => {
+        const langString = LanguageString.of('en', 'nl');
+        const website = aFullWebsiteForInstanceSnapshot().withTitle(langString).withDescription(langString).build();
+        expect(() => Website.forInstanceSnapshot(website)).not.toThrow();
+    });
+
+    test('If title and description have different nl languages, throws error', () => {
+        const title = LanguageString.of('en', 'nl', undefined);
+        const description = LanguageString.of('en', undefined, 'nl-formal');
+        const website = aFullWebsiteForInstanceSnapshot().withTitle(title).withDescription(description).build();
+
+        expect(() => Website.forInstanceSnapshot(website)).toThrow(new Error('There is more than one Nl language present'));
+    });
+
+    for (const invalidLanguage of invalidLanguages) {
+        let valueInNlLanguage: LanguageString;
+        if (invalidLanguage === Language.GENERATED_FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+        } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+        }
+
+        test(`If title or description contains invalid language ${invalidLanguage}, throws error`, () => {
+            const website = aFullWebsiteForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(undefined).build();
+            expect(() => Website.forInstanceSnapshot(website)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+        });
+
+    }
+
+    for (const validLanguage of validLanguages) {
+        let valueInNlLanguage: LanguageString;
+        if (validLanguage === Language.NL) {
+            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+        } else if (validLanguage == Language.FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+        } else if (validLanguage == Language.INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+        }
+
+        test(`If title and description contains valid language ${validLanguage}, does not throw error`, () => {
+            const website = aFullWebsiteForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).build();
+            expect(() => Website.forInstanceSnapshot(website)).not.toThrow();
+        });
+
+    }
+
+    test('Undefined order throws error', () => {
+        expect(() => Website.forInstanceSnapshot(aFullWebsiteForInstanceSnapshot().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
     });
 });
