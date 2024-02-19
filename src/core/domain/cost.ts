@@ -68,7 +68,7 @@ export class Cost {
 
         return new Cost(
             cost.id,
-            cost.uuid,
+            undefined,
             requiredValue(cost.title, 'title'),
             requiredValue(cost.description, 'description'),
             cost.order,

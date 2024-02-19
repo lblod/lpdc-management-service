@@ -119,7 +119,8 @@ export class InstanceSnapshot {
         requireNoDuplicates(this._websites.map(w => w.order), 'websites > order');
         this._costs = [...costs].map(c => Cost.forInstanceSnapshot(c));
         requireNoDuplicates(this._costs.map(w => w.order), 'costs > order');
-        this._financialAdvantages = [...financialAdvantages];
+        this._financialAdvantages = [...financialAdvantages].map(fa => FinancialAdvantage.forInstanceSnapshot(fa));
+        requireNoDuplicates(this._financialAdvantages.map(fa => fa.order), 'financial advantages > order');
         this._contactPoints = [...contactPoints];
         this._conceptId = conceptId;
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');

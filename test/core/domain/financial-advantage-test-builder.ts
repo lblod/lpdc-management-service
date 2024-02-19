@@ -1,7 +1,7 @@
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {uuid} from "../../../mu-helper";
-import {aMinimalLanguageString} from "./language-string-test-builder";
+import {aMinimalInformalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
 
 export function aMinimalFinancialAdvantageForConceptSnapshot(): FinancialAdvantageBuilder {
     return new FinancialAdvantageBuilder()
@@ -26,6 +26,15 @@ export function aMinimalFinancialAdvantageForInstance(): FinancialAdvantageBuild
     return new FinancialAdvantageBuilder()
         .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
+        .withOrder(1);
+}
+
+export function aMinimalFinancialAdvantageForInstanceSnapshot(): FinancialAdvantageBuilder {
+    const uniqueId = uuid();
+    return new FinancialAdvantageBuilder()
+        .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
+        .withTitle(aMinimalInformalLanguageString(FinancialAdvantageTestBuilder.TITLE).build())
+        .withDescription(aMinimalInformalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build())
         .withOrder(1);
 }
 
@@ -102,6 +111,40 @@ export function anotherFullFinancialAdvantageForInstance(): FinancialAdvantageBu
             FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_EN,
             undefined,
             FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL))
+        .withOrder(2);
+}
+
+export function aFullFinancialAdvantageForInstanceSnapshot(): FinancialAdvantageBuilder {
+    const uniqueId = uuid();
+    return new FinancialAdvantageBuilder()
+        .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
+        .withTitle(LanguageString.of(
+            FinancialAdvantageTestBuilder.TITLE_EN,
+            undefined,
+            undefined,
+            FinancialAdvantageTestBuilder.TITLE_NL_INFORMAL))
+        .withDescription(LanguageString.of(
+            FinancialAdvantageTestBuilder.DESCRIPTION_EN,
+            undefined,
+            undefined,
+            FinancialAdvantageTestBuilder.DESCRIPTION_NL_INFORMAL))
+        .withOrder(1);
+}
+
+export function anotherFullFinancialAdvantageForInstanceSnapshot(): FinancialAdvantageBuilder {
+    const uniqueId = uuid();
+    return new FinancialAdvantageBuilder()
+        .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
+        .withTitle(LanguageString.of(
+            FinancialAdvantageTestBuilder.ANOTHER_TITLE_EN,
+            undefined,
+            undefined,
+            FinancialAdvantageTestBuilder.ANOTHER_TITLE_NL_INFORMAL))
+        .withDescription(LanguageString.of(
+            FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_EN,
+            undefined,
+            undefined,
+            FinancialAdvantageTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL))
         .withOrder(2);
 }
 

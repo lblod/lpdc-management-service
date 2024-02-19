@@ -187,6 +187,7 @@ export class DomainToQuadsMapper {
             ...this.websites(instanceSnapshot.id, NS.rdfs('seeAlso'), instanceSnapshot.websites),
             ...this.procedures(instanceSnapshot.id, instanceSnapshot.procedures),
             ...this.costs(instanceSnapshot.id, instanceSnapshot.costs),
+            ...this.financialAdvantages(instanceSnapshot.id, instanceSnapshot.financialAdvantages),
         ].filter(t => t !== undefined);
     }
 

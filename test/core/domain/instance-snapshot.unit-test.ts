@@ -22,6 +22,11 @@ import {aMinimalFormalLanguageString, aMinimalInformalLanguageString} from "./la
 import {aMinimalWebsiteForInstanceSnapshot, WebsiteTestBuilder} from "./website-test-builder";
 import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {aMinimalCostForInstanceSnapshot, CostTestBuilder} from "./cost-test-builder";
+import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
+import {
+    aMinimalFinancialAdvantageForInstanceSnapshot,
+    FinancialAdvantageTestBuilder
+} from "./financial-advantage-test-builder";
 
 beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
@@ -316,6 +321,47 @@ describe('constructing', () => {
             expect(() => aFullInstanceSnapshot().withCosts([cost1, cost2]).build()).not.toThrow();
         });
 
+    });
+
+    describe('financialAdvantage ', () => {
+
+        test('valid financialAdvantage does not throw error', () => {
+            const uuidValue = uuid();
+            const validFinancialAdvantage = FinancialAdvantage.reconstitute(
+                FinancialAdvantageBuilder.buildIri(uuidValue),
+                undefined,
+                aMinimalInformalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
+                aMinimalInformalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build(),
+                1,
+                undefined);
+
+            expect(() => aFullInstanceSnapshot().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
+        });
+
+        test('invalid financialAdvantage does throw error', () => {
+            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined);
+
+            expect(() => aFullInstanceSnapshot().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
+        });
+
+        test('financial advantages that dont have unique order throws error', () => {
+            const financialAdvantage1 =
+                aMinimalFinancialAdvantageForInstanceSnapshot().withOrder(1).build();
+            const financialAdvantage2 =
+                aMinimalFinancialAdvantageForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullInstanceSnapshot().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build())
+                .toThrow(new Error('financial advantages > order should not contain duplicates'));
+        });
+
+        test('financial advantages that have unique order does not throw error', () => {
+            const financialAdvantage1 =
+                aMinimalFinancialAdvantageForInstanceSnapshot().withOrder(1).build();
+            const financialAdvantage2 =
+                aMinimalFinancialAdvantageForInstanceSnapshot().withOrder(2).build();
+
+            expect(() => aFullInstanceSnapshot().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).not.toThrow();
+        });
     });
 
 });

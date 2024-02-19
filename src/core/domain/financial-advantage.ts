@@ -18,8 +18,7 @@ export class FinancialAdvantage {
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         order: number,
-                        conceptFinancialAdvantageId: Iri | undefined
-    ) {
+                        conceptFinancialAdvantageId: Iri | undefined) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
@@ -51,7 +50,7 @@ export class FinancialAdvantage {
     }
 
     static forInstance(financialAdvantage: FinancialAdvantage): FinancialAdvantage {
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, financialAdvantage.title,financialAdvantage.description);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, financialAdvantage.title, financialAdvantage.description);
 
         return new FinancialAdvantage(
             financialAdvantage.id,
@@ -60,6 +59,19 @@ export class FinancialAdvantage {
             financialAdvantage.description,
             financialAdvantage.order,
             financialAdvantage.conceptFinancialAdvantageId
+        );
+    }
+
+    static forInstanceSnapshot(financialAdvantage: FinancialAdvantage): FinancialAdvantage {
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, financialAdvantage.title,financialAdvantage.description);
+
+        return new FinancialAdvantage(
+            financialAdvantage.id,
+            undefined,
+            requiredValue(financialAdvantage.title, 'title'),
+            requiredValue(financialAdvantage.description, 'description'),
+            financialAdvantage.order,
+            undefined
         );
     }
 
