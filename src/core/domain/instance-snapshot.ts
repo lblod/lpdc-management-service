@@ -117,7 +117,8 @@ export class InstanceSnapshot {
         requireNoDuplicates(this._procedures.map(r => r.order), 'procedures > order');
         this._websites = [...websites].map(w => Website.forInstanceSnapshot(w));
         requireNoDuplicates(this._websites.map(w => w.order), 'websites > order');
-        this._costs = [...costs];
+        this._costs = [...costs].map(c => Cost.forInstanceSnapshot(c));
+        requireNoDuplicates(this._costs.map(w => w.order), 'costs > order');
         this._financialAdvantages = [...financialAdvantages];
         this._contactPoints = [...contactPoints];
         this._conceptId = conceptId;

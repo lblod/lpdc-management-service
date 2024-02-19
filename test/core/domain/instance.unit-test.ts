@@ -156,7 +156,7 @@ describe('constructing', () => {
             expect(() => aFullInstance().withRequirements([requirement1, requirement2]).build()).toThrow(new Error('requirements > order should not contain duplicates'));
         });
 
-        test('requirements that have unique does not throw error', () => {
+        test('requirements that have unique order does not throw error', () => {
             const requirement1 =
                 aMinimalRequirementForInstance().withOrder(1).build();
             const requirement2 =
@@ -229,7 +229,7 @@ describe('constructing', () => {
             expect(() => aFullInstance().withProcedures([procedure1, procedure2]).build()).toThrow(new Error('procedures > order should not contain duplicates'));
         });
 
-        test('procedures that have unique does not throw error', () => {
+        test('procedures that have unique order does not throw error', () => {
             const procedure1 =
                 aMinimalProcedureForInstance().withOrder(1).build();
             const procedure2 =
@@ -272,7 +272,7 @@ describe('constructing', () => {
             expect(() => aFullInstance().withWebsites([website1, website2]).build()).toThrow(new Error('websites > order should not contain duplicates'));
         });
 
-        test('websites that have unique does not throw error', () => {
+        test('websites that have unique order does not throw error', () => {
             const website1 =
                 aMinimalWebsiteForInstance().withOrder(1).build();
             const website2 =
@@ -315,7 +315,7 @@ describe('constructing', () => {
             expect(() => aFullInstance().withCosts([cost1, cost2]).build()).toThrow(new Error('costs > order should not contain duplicates'));
         });
 
-        test('costs that have unique does not throw error', () => {
+        test('costs that have unique order does not throw error', () => {
             const cost1 =
                 aMinimalCostForInstance().withOrder(1).build();
             const cost2 =
@@ -351,7 +351,7 @@ describe('constructing', () => {
             expect(() => aFullInstance().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).toThrow(new Error('financial advantages > order should not contain duplicates'));
         });
 
-        test('financial advantages that have unique does not throw error', () => {
+        test('financial advantages that have unique order does not throw error', () => {
             const financialAdvantage1 =
                 aMinimalFinancialAdvantageForInstance().withOrder(1).build();
             const financialAdvantage2 =
@@ -372,7 +372,7 @@ describe('constructing', () => {
             expect(() => aFullInstance().withContactPoints([contactPoint1, contactPoint2]).build()).toThrow(new Error('contact points > order should not contain duplicates'));
         });
 
-        test('contact points that have unique does not throw error', () => {
+        test('contact points that have unique order does not throw error', () => {
             const contactPoint1 =
                 aMinimalContactPoint().withOrder(1).build();
             const contactPoint2 =

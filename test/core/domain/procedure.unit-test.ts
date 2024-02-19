@@ -79,7 +79,7 @@ describe('forConcept', () => {
             expect(() => Procedure.forConcept(aFullProcedure().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
         });
 
-        test('websites that have unique does not throw error', () => {
+        test('websites that have unique order does not throw error', () => {
             const website1 =
                 aMinimalWebsiteForConcept().withOrder(1).build();
             const website2 =
@@ -162,7 +162,7 @@ describe('forConceptSnapshot', () => {
             expect(() => Procedure.forConceptSnapshot(aFullProcedure().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
         });
 
-        test('websites that have unique does not throw error', () => {
+        test('websites that have unique order does not throw error', () => {
             const website1 =
                 aMinimalWebsiteForConceptSnapshot().withOrder(1).build();
             const website2 =
@@ -251,7 +251,7 @@ describe('for instance', () => {
         expect(() => Procedure.forInstance(aMinimalProcedureForInstance().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
     });
 
-    test('websites that have unique does not throw error', () => {
+    test('websites that have unique order does not throw error', () => {
         const website1 =
             aMinimalWebsiteForInstance().withOrder(1).build();
         const website2 =
@@ -349,6 +349,16 @@ describe('for instance snapshot', () => {
         expect(Procedure.forInstanceSnapshot(procedure).uuid).toBeUndefined();
     });
 
+    test('Undefined title error', () => {
+        const procedure = aFullProcedureForInstanceSnapshot().withTitle(undefined);
+        expect(() => Procedure.forInstanceSnapshot(procedure.build())).toThrow(new Error('title should not be absent'));
+    });
+
+    test('Undefined description throws error', () => {
+        const procedure = aFullProcedureForInstanceSnapshot().withDescription(undefined);
+        expect(() => Procedure.forInstanceSnapshot(procedure.build())).toThrow(new Error('description should not be absent'));
+    });
+
     test('If title and description have the same nl language procedure is created', () => {
         const langString = LanguageString.of('en', 'nl');
         const procedure = aFullProcedureForInstanceSnapshot().withTitle(langString).withDescription(langString).withWebsites([]).build();
@@ -389,7 +399,7 @@ describe('for instance snapshot', () => {
         expect(() => Procedure.forInstanceSnapshot(aMinimalProcedureForInstanceSnapshot().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
     });
 
-    test('websites that have unique order does not throw error', () => {
+    test('websites that have unique orderorder does not throw error', () => {
         const website1 =
             aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
         const website2 =

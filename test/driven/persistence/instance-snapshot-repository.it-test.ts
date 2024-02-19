@@ -303,6 +303,21 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)} <http://schema.org/url> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].url}"""`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCost> <${InstanceSnapshotTestBuilder.COSTS[1].id}>`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} a <http://data.europa.eu/m8g/Cost>`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.COSTS[1].title.en}"""@EN`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.COSTS[1].title.nlInformal}"""@nl-BE-x-informal`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.COSTS[1].description.en}"""@EN`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.COSTS[1].description.nlInformal}"""@nl-BE-x-informal`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCost> <${InstanceSnapshotTestBuilder.COSTS[0].id}>`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} a <http://data.europa.eu/m8g/Cost>`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.COSTS[0].title.en}"""@EN`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.COSTS[0].title.nlInformal}"""@nl-BE-x-informal`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.COSTS[0].description.en}"""@EN`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.COSTS[0].description.nlInformal}"""@nl-BE-x-informal`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                 ]);
 
             const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);

@@ -51,7 +51,7 @@ export class Cost {
     }
 
     static forInstance(cost: Cost): Cost {
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, cost.title,cost.description);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, cost.title, cost.description);
 
         return new Cost(
             cost.id,
@@ -63,6 +63,18 @@ export class Cost {
         );
     }
 
+    static forInstanceSnapshot(cost: Cost): Cost {
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, cost.title, cost.description);
+
+        return new Cost(
+            cost.id,
+            cost.uuid,
+            requiredValue(cost.title, 'title'),
+            requiredValue(cost.description, 'description'),
+            cost.order,
+            undefined
+        );
+    }
 
     static reconstitute(id: Iri,
                         uuid: string | undefined,

@@ -35,6 +35,7 @@ import {
 import {aFullEvidenceForInstanceSnapshot, anotherFullEvidenceForInstanceSnapshot} from "./evidence-test-builder";
 import {aFullWebsiteForInstanceSnapshot, anotherFullWebsiteForInstanceSnapshot} from "./website-test-builder";
 import {aFullProcedureForInstanceSnapshot, anotherFullProcedureForInstanceSnapshot} from "./procedure-test-builder";
+import {aFullCostForInstanceSnapshot, anotherFullCostForInstanceSnapshot} from "./cost-test-builder";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
     const uniqueId = uuid();
@@ -98,7 +99,8 @@ export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
         .withConceptId(buildConceptIri(uuid()))
         .withRequirements(InstanceSnapshotTestBuilder.REQUIREMENTS)
         .withWebsites(InstanceSnapshotTestBuilder.WEBSITES)
-        .withProcedures(InstanceSnapshotTestBuilder.PROCEDURES);
+        .withProcedures(InstanceSnapshotTestBuilder.PROCEDURES)
+        .withCosts(InstanceSnapshotTestBuilder.COSTS);
 }
 
 export class InstanceSnapshotTestBuilder {
@@ -162,6 +164,8 @@ export class InstanceSnapshotTestBuilder {
         aFullProcedureForInstanceSnapshot().withWebsites([aFullWebsiteForInstanceSnapshot().withOrder(1).build(), anotherFullWebsiteForInstanceSnapshot(uuid()).withOrder(2).build()]).build(),
         anotherFullProcedureForInstanceSnapshot().withWebsites([anotherFullWebsiteForInstanceSnapshot(uuid()).withOrder(1).build(), anotherFullWebsiteForInstanceSnapshot(uuid()).withOrder(2).build()]).build()
     ];
+
+    public static readonly COSTS = [aFullCostForInstanceSnapshot().build(), anotherFullCostForInstanceSnapshot().build()];
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-08T12:13:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2024-02-06T16:16:20.242928Z');

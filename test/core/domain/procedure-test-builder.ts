@@ -139,14 +139,14 @@ export function aFullProcedureForInstanceSnapshot(): ProcedureBuilder {
             ProcedureTestBuilder.TITLE_EN,
             undefined,
             undefined,
-            ProcedureTestBuilder.TITLE_NL_FORMAL
+            ProcedureTestBuilder.TITLE_NL_INFORMAL
         ))
         .withDescription(
             LanguageString.of(
                 ProcedureTestBuilder.DESCRIPTION_EN,
                 undefined,
                 undefined,
-                ProcedureTestBuilder.DESCRIPTION_NL_FORMAL
+                ProcedureTestBuilder.DESCRIPTION_NL_INFORMAL
             ))
         .withOrder(1)
         .withWebsites(ProcedureTestBuilder.WEBSITES_FOR_INSTANCE_SNAPSHOT);
@@ -159,13 +159,13 @@ export function anotherFullProcedureForInstanceSnapshot() {
             ProcedureTestBuilder.ANOTHER_TITLE_EN,
             undefined,
             undefined,
-            ProcedureTestBuilder.ANOTHER_TITLE_NL_FORMAL
+            ProcedureTestBuilder.ANOTHER_TITLE_NL_INFORMAL
         ))
         .withDescription(LanguageString.of(
             ProcedureTestBuilder.ANOTHER_DESCRIPTION_EN,
             undefined,
             undefined,
-            ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL
+            ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL
         ))
         .withOrder(2)
         .withWebsites(ProcedureTestBuilder.ANOTHER_WEBSITES_FOR_INSTANCE_SNAPSHOT);

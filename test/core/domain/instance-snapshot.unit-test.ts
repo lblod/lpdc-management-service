@@ -18,8 +18,10 @@ import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirem
 import {aFullRequirementForInstanceSnapshot, aMinimalRequirementForInstanceSnapshot} from "./requirement-test-builder";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
-import {aMinimalFormalLanguageString} from "./language-string-test-builder";
+import {aMinimalFormalLanguageString, aMinimalInformalLanguageString} from "./language-string-test-builder";
 import {aMinimalWebsiteForInstanceSnapshot, WebsiteTestBuilder} from "./website-test-builder";
+import {Cost, CostBuilder} from "../../../src/core/domain/cost";
+import {aMinimalCostForInstanceSnapshot, CostTestBuilder} from "./cost-test-builder";
 
 beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
@@ -148,130 +150,172 @@ describe('constructing', () => {
             .toThrow(new Error('legalResources should not contain duplicates'));
     });
 
-});
 
-describe('requirement', () => {
+    describe('requirement', () => {
 
-    test('valid requirement does not throw error', () => {
-        const uuidValue = uuid();
-        const validRequirement = Requirement.reconstitute(
-            RequirementBuilder.buildIri(uuidValue),
-            undefined,
-            LanguageString.of('title', 'title'),
-            LanguageString.of('description', 'omschrijving'),
-            1,
-            undefined,
-            undefined
-        );
-
-        expect(() => aFullInstanceSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
-    });
-
-    test('invalid requirement does throw error', () => {
-        const invalidRequirement = Requirement.reconstitute(
-            RequirementBuilder.buildIri(uuid()),
-            undefined,
-            undefined,
-            undefined,
-            1,
-            undefined,
-            undefined
-        );
-
-        expect(() => aFullInstanceSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
-    });
-
-    test('requirements that dont have unique order throws error', () => {
-        const requirement1 =
-            aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
-        const requirement2 =
-            aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
-
-        expect(() => aFullInstanceSnapshot().withRequirements([requirement1, requirement2]).build()).toThrow(new Error('requirements > order should not contain duplicates'));
-    });
-
-    test('requirements that have unique does not throw error', () => {
-        const requirement1 =
-            aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
-        const requirement2 =
-            aMinimalRequirementForInstanceSnapshot().withOrder(2).build();
-
-        expect(() => aFullInstanceSnapshot().withRequirements([requirement1, requirement2]).build()).not.toThrow();
-    });
-
-    describe('evidence ', () => {
-
-        test('valid evidence does not throw error', () => {
+        test('valid requirement does not throw error', () => {
             const uuidValue = uuid();
-            const validEvidence = Evidence.reconstitute(
-                EvidenceBuilder.buildIri(uuidValue),
+            const validRequirement = Requirement.reconstitute(
+                RequirementBuilder.buildIri(uuidValue),
                 undefined,
-                LanguageString.of('title', undefined, undefined, 'title'),
-                LanguageString.of('description', undefined, undefined, 'omschrijving'),
+                LanguageString.of('title', 'title'),
+                LanguageString.of('description', 'omschrijving'),
+                1,
+                undefined,
                 undefined
             );
-            const validRequirement = aFullRequirementForInstanceSnapshot().withEvidence(validEvidence).build();
 
             expect(() => aFullInstanceSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
         });
 
-        test('invalid evidence does throw error', () => {
-            const uuidValue = uuid();
-            const invalidEvidence = Evidence.reconstitute(
-                EvidenceBuilder.buildIri(uuidValue),
+        test('invalid requirement does throw error', () => {
+            const invalidRequirement = Requirement.reconstitute(
+                RequirementBuilder.buildIri(uuid()),
                 undefined,
                 undefined,
                 undefined,
-                undefined);
-            const invalidRequirement = aFullRequirementForInstanceSnapshot().withEvidence(invalidEvidence).build();
+                1,
+                undefined,
+                undefined
+            );
 
             expect(() => aFullInstanceSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
         });
 
+        test('requirements that dont have unique order throws error', () => {
+            const requirement1 =
+                aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
+            const requirement2 =
+                aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullInstanceSnapshot().withRequirements([requirement1, requirement2]).build()).toThrow(new Error('requirements > order should not contain duplicates'));
+        });
+
+        test('requirements that have unique order does not throw error', () => {
+            const requirement1 =
+                aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
+            const requirement2 =
+                aMinimalRequirementForInstanceSnapshot().withOrder(2).build();
+
+            expect(() => aFullInstanceSnapshot().withRequirements([requirement1, requirement2]).build()).not.toThrow();
+        });
+
+        describe('evidence ', () => {
+
+            test('valid evidence does not throw error', () => {
+                const uuidValue = uuid();
+                const validEvidence = Evidence.reconstitute(
+                    EvidenceBuilder.buildIri(uuidValue),
+                    undefined,
+                    LanguageString.of('title', undefined, undefined, 'title'),
+                    LanguageString.of('description', undefined, undefined, 'omschrijving'),
+                    undefined
+                );
+                const validRequirement = aFullRequirementForInstanceSnapshot().withEvidence(validEvidence).build();
+
+                expect(() => aFullInstanceSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
+            });
+
+            test('invalid evidence does throw error', () => {
+                const uuidValue = uuid();
+                const invalidEvidence = Evidence.reconstitute(
+                    EvidenceBuilder.buildIri(uuidValue),
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined);
+                const invalidRequirement = aFullRequirementForInstanceSnapshot().withEvidence(invalidEvidence).build();
+
+                expect(() => aFullInstanceSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
+            });
+
+        });
     });
+
+    describe('website ', () => {
+
+        test('valid website does not throw error', () => {
+            const uuidValue = uuid();
+            const validWebsite = Website.reconstitute(
+                WebsiteBuilder.buildIri(uuidValue),
+                undefined,
+                aMinimalFormalLanguageString(WebsiteTestBuilder.TITLE).build(),
+                aMinimalFormalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
+                1,
+                WebsiteTestBuilder.URL,
+                undefined
+            );
+
+            expect(() => aFullInstanceSnapshot().withWebsites([validWebsite]).build()).not.toThrow();
+        });
+
+        test('invalid website does throw error', () => {
+            const invalidWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined, undefined);
+
+            expect(() => aFullInstanceSnapshot().withWebsites([invalidWebsite]).build()).toThrow();
+        });
+
+        test('websites that dont have unique order throws error', () => {
+            const website1 =
+                aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
+            const website2 =
+                aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullInstanceSnapshot().withWebsites([website1, website2]).build()).toThrow(new Error('websites > order should not contain duplicates'));
+        });
+
+        test('websites that have unique order does not throw error', () => {
+            const website1 =
+                aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
+            const website2 =
+                aMinimalWebsiteForInstanceSnapshot().withOrder(2).build();
+
+
+            expect(() => aFullInstanceSnapshot().withWebsites([website1, website2]).build()).not.toThrow();
+        });
+
+    });
+
+    describe('cost ', () => {
+
+        test('valid cost does not throw error', () => {
+            const uuidValue = uuid();
+            const validCost = Cost.reconstitute(
+                CostBuilder.buildIri(uuidValue),
+                undefined,
+                aMinimalInformalLanguageString(CostTestBuilder.TITLE).build(),
+                aMinimalInformalLanguageString(CostTestBuilder.DESCRIPTION).build(),
+                1,
+                undefined
+            );
+
+            expect(() => aFullInstanceSnapshot().withCosts([validCost]).build()).not.toThrow();
+        });
+
+        test('invalid cost does throw error', () => {
+            const invalidCost = Cost.reconstitute(CostBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined);
+
+            expect(() => aFullInstanceSnapshot().withCosts([invalidCost]).build()).toThrow();
+        });
+
+        test('costs that dont have unique order throws error', () => {
+            const cost1 =
+                aMinimalCostForInstanceSnapshot().withOrder(1).build();
+            const cost2 =
+                aMinimalCostForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullInstanceSnapshot().withCosts([cost1, cost2]).build()).toThrow(new Error('costs > order should not contain duplicates'));
+        });
+
+        test('costs that have unique order does not throw error', () => {
+            const cost1 =
+                aMinimalCostForInstanceSnapshot().withOrder(1).build();
+            const cost2 =
+                aMinimalCostForInstanceSnapshot().withOrder(2).build();
+
+            expect(() => aFullInstanceSnapshot().withCosts([cost1, cost2]).build()).not.toThrow();
+        });
+
+    });
+
 });
-
-describe('website ', () => {
-
-    test('valid website does not throw error', () => {
-        const uuidValue = uuid();
-        const validWebsite = Website.reconstitute(
-            WebsiteBuilder.buildIri(uuidValue),
-            undefined,
-            aMinimalFormalLanguageString(WebsiteTestBuilder.TITLE).build(),
-            aMinimalFormalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
-            1,
-            WebsiteTestBuilder.URL,
-            undefined
-        );
-
-        expect(() => aFullInstanceSnapshot().withWebsites([validWebsite]).build()).not.toThrow();
-    });
-
-    test('invalid website does throw error', () => {
-        const invalidWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined, undefined);
-
-        expect(() => aFullInstanceSnapshot().withWebsites([invalidWebsite]).build()).toThrow();
-    });
-
-    test('websites that dont have unique order throws error', () => {
-        const website1 =
-            aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
-        const website2 =
-            aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
-
-        expect(() => aFullInstanceSnapshot().withWebsites([website1, website2]).build()).toThrow(new Error('websites > order should not contain duplicates'));
-    });
-
-    test('websites that have unique does not throw error', () => {
-        const website1 =
-            aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
-        const website2 =
-            aMinimalWebsiteForInstanceSnapshot().withOrder(2).build();
-
-
-        expect(() => aFullInstanceSnapshot().withWebsites([website1, website2]).build()).not.toThrow();
-    });
-
-});
-

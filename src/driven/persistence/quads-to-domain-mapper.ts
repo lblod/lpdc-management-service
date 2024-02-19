@@ -232,7 +232,7 @@ export class QuadsToDomainMapper {
             this.requirements(id),
             this.procedures(id),
             this.websites(id),
-            [],
+            this.costs(id),
             [],
             [],
             this.conceptId(id),

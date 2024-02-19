@@ -1,7 +1,7 @@
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {CostBuilder} from "../../../src/core/domain/cost";
 import {uuid} from "../../../mu-helper";
-import {aMinimalLanguageString} from "./language-string-test-builder";
+import {aMinimalInformalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
 
 
 export function aMinimalCostForConceptSnapshot(): CostBuilder {
@@ -26,6 +26,14 @@ export function aMinimalCostForInstance(): CostBuilder {
     return new CostBuilder()
         .withId(CostBuilder.buildIri(uuid()))
         .withUuid(uuid())
+        .withOrder(1);
+}
+
+export function aMinimalCostForInstanceSnapshot(): CostBuilder {
+    return new CostBuilder()
+        .withId(CostBuilder.buildIri(uuid()))
+        .withTitle(aMinimalInformalLanguageString(CostTestBuilder.TITLE).build())
+        .withDescription(aMinimalInformalLanguageString(CostTestBuilder.DESCRIPTION).build())
         .withOrder(1);
 }
 
@@ -100,6 +108,38 @@ export function anotherFullCostForInstance(): CostBuilder {
             CostTestBuilder.ANOTHER_DESCRIPTION_EN,
             undefined,
             CostTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL))
+        .withOrder(2);
+}
+
+export function aFullCostForInstanceSnapshot(): CostBuilder {
+    return new CostBuilder()
+        .withId(CostBuilder.buildIri(uuid()))
+        .withTitle(LanguageString.of(
+            CostTestBuilder.TITLE_EN,
+            undefined,
+            undefined,
+            CostTestBuilder.TITLE_NL_INFORMAL))
+        .withDescription(LanguageString.of(
+            CostTestBuilder.DESCRIPTION_EN,
+            undefined,
+            undefined,
+            CostTestBuilder.DESCRIPTION_NL_INFORMAL))
+        .withOrder(1);
+}
+
+export function anotherFullCostForInstanceSnapshot(): CostBuilder {
+    return new CostBuilder()
+        .withId(CostBuilder.buildIri(uuid()))
+        .withTitle(LanguageString.of(
+            CostTestBuilder.ANOTHER_TITLE_EN,
+            undefined,
+            undefined,
+            CostTestBuilder.ANOTHER_TITLE_NL_INFORMAL))
+        .withDescription(LanguageString.of(
+            CostTestBuilder.ANOTHER_DESCRIPTION_EN,
+            undefined,
+            undefined,
+            CostTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL))
         .withOrder(2);
 }
 
