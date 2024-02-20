@@ -5,24 +5,24 @@ import {Address} from "./address";
 export class ContactPoint {
 
     private readonly _id: Iri;
-    private readonly _uuid: string; //required for mu-cl-resources.
-    private readonly _url: string;
+    private readonly _uuid: string | undefined; //required for mu-cl-resources.
+    private readonly _url: string | undefined;
     private readonly _email: string | undefined;
     private readonly _telephone: string | undefined;
     private readonly _openingHours: string | undefined;
     private readonly _order: number;
     private readonly _address: Address | undefined;
 
-    constructor(id: Iri,
-                uuid: string,
-                url: string | undefined,
-                email: string | undefined,
-                telephone: string | undefined,
-                openingHours: string | undefined,
-                order: number,
-                address: Address | undefined) {
+    private constructor(id: Iri,
+                        uuid: string | undefined,
+                        url: string | undefined,
+                        email: string | undefined,
+                        telephone: string | undefined,
+                        openingHours: string | undefined,
+                        order: number,
+                        address: Address | undefined) {
         this._id = requiredValue(id, 'id');
-        this._uuid = requiredValue(uuid, 'uuid');
+        this._uuid = uuid;
         this._url = url;
         this._email = email;
         this._telephone = telephone;
@@ -31,15 +31,43 @@ export class ContactPoint {
         this._address = address;
     }
 
+    static forInstance(contactPoint: ContactPoint): ContactPoint {
+        return new ContactPoint(
+            contactPoint.id,
+            requiredValue(contactPoint.uuid, 'uuid'),
+            contactPoint.url,
+            contactPoint.email,
+            contactPoint.telephone,
+            contactPoint.openingHours,
+            contactPoint.order,
+            contactPoint.address !== undefined ? Address.forInstance(contactPoint.address) : undefined);
+    }
+
+    static forInstanceSnapshot(contactPoint: ContactPoint): ContactPoint {
+        return contactPoint;
+    }
+
+    static reconstitute(id: Iri,
+                        uuid: string | undefined,
+                        url: string | undefined,
+                        email: string | undefined,
+                        telephone: string | undefined,
+                        openingHours: string | undefined,
+                        order: number,
+                        address: Address | undefined): ContactPoint {
+
+        return new ContactPoint(id, uuid, url, email, telephone, openingHours, order, address);
+    }
+
     get id(): Iri {
         return this._id;
     }
 
-    get uuid(): string {
+    get uuid(): string | undefined {
         return this._uuid;
     }
 
-    get url(): string {
+    get url(): string | undefined {
         return this._url;
     }
 
@@ -61,5 +89,76 @@ export class ContactPoint {
 
     get address(): Address | undefined {
         return this._address;
+    }
+
+}
+
+export class ContactPointBuilder {
+
+    private id: Iri;
+    private uuid: string | undefined;
+    private url: string | undefined;
+    private email: string | undefined;
+    private telephone: string | undefined;
+    private openingHours: string | undefined;
+    private order: number;
+    private address: Address | undefined;
+
+
+    static buildIri(uniqueId: string): Iri {
+        return new Iri(`http://data.lblod.info/id/contact-punten/${uniqueId}`);
+    }
+
+    public withId(id: Iri): ContactPointBuilder {
+        this.id = id;
+        return this;
+    }
+
+    public withUuid(uuid: string): ContactPointBuilder {
+        this.uuid = uuid;
+        return this;
+    }
+
+    public withUrl(url: string): ContactPointBuilder {
+        this.url = url;
+        return this;
+    }
+
+    public withEmail(email: string): ContactPointBuilder {
+        this.email = email;
+        return this;
+    }
+
+    public withTelephone(telephone: string): ContactPointBuilder {
+        this.telephone = telephone;
+        return this;
+    }
+
+    public withOpeningHours(openingHours: string): ContactPointBuilder {
+        this.openingHours = openingHours;
+        return this;
+    }
+
+    public withOrder(order: number): ContactPointBuilder {
+        this.order = order;
+        return this;
+    }
+
+    public withAddress(address: Address): ContactPointBuilder {
+        this.address = address;
+        return this;
+    }
+
+
+    public build(): ContactPoint {
+        return ContactPoint.reconstitute(
+            this.id,
+            this.uuid,
+            this.url,
+            this.email,
+            this.telephone,
+            this.openingHours,
+            this.order,
+            this.address);
     }
 }

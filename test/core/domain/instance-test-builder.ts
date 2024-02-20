@@ -34,7 +34,7 @@ import {
     aFullFinancialAdvantageForInstance,
     anotherFullFinancialAdvantageForInstance
 } from "./financial-advantage-test-builder";
-import {aFullContactPoint, anotherFullContactPoint} from "./contact-point-test-builder";
+import {aFullContactPointForInstance, anotherFullContactPointForInstance} from "./contact-point-test-builder";
 
 export function aMinimalInstance(): InstanceBuilder {
     const uniqueId = uuid();
@@ -178,7 +178,7 @@ export class InstanceTestBuilder {
 
     public static readonly LANGUAGES = [LanguageType.NLD, LanguageType.ENG];
 
-    public static readonly CONTACT_POINTS = [aFullContactPoint().build(), anotherFullContactPoint().build()];
+    public static readonly CONTACT_POINTS = [aFullContactPointForInstance().build(), anotherFullContactPointForInstance().build()];
 
     public static readonly PRODUCT_ID = "5468";
 

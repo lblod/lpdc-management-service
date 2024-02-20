@@ -548,7 +548,7 @@ export class QuadsToDomainMapper {
 
         const contactPoints: ContactPoint[] =
             contactPointIds.map(contactPointId => {
-                return new ContactPoint(contactPointId, this.uuid(contactPointId), this.url(contactPointId), this.email(contactPointId), this.telephone(contactPointId), this.openingHours(contactPointId), this.order(contactPointId), this.address(contactPointId));
+                return ContactPoint.reconstitute(contactPointId, this.uuid(contactPointId), this.url(contactPointId), this.email(contactPointId), this.telephone(contactPointId), this.openingHours(contactPointId), this.order(contactPointId), this.address(contactPointId));
             });
         return this.sort(contactPoints);
     }
@@ -567,7 +567,7 @@ export class QuadsToDomainMapper {
             return undefined;
         }
         const addressId = addressIds[0];
-        return new Address(
+        return Address.reconstitute(
             addressId,
             this.uuid(addressId),
             this.gemeentenaam(addressId),

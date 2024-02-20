@@ -22,8 +22,8 @@ import {aMinimalRequirementForInstance} from "../../core/domain/requirement-test
 import {aMinimalEvidenceForInstance} from "../../core/domain/evidence-test-builder";
 import {aMinimalProcedureForInstance} from "../../core/domain/procedure-test-builder";
 import {aMinimalWebsiteForInstance} from "../../core/domain/website-test-builder";
-import {aFullContactPoint} from "../../core/domain/contact-point-test-builder";
-import {AddressTestBuilder, aFullAddress} from "../../core/domain/address-test-builder";
+import {aFullContactPointForInstance} from "../../core/domain/contact-point-test-builder";
+import {AddressTestBuilder, aFullAddressForInstance} from "../../core/domain/address-test-builder";
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
@@ -46,10 +46,10 @@ describe('InstanceRepository', () => {
 
         test('When full instance exists with id, then return instance', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const contactPoint = aFullContactPoint().withAddress(aFullAddress().build()).build();
+            const contactPoint = aFullContactPointForInstance().withAddress(aFullAddressForInstance().build()).build();
 
             const anotherBestuurseenheid = aBestuurseenheid().build();
-            const anotherContactPoint = aFullContactPoint().withAddress(aFullAddress().build()).build();
+            const anotherContactPoint = aFullContactPointForInstance().withAddress(aFullAddressForInstance().build()).build();
             await bestuurseenheidRepository.save(bestuurseenheid);
             await bestuurseenheidRepository.save(anotherBestuurseenheid);
 
@@ -520,7 +520,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#land> """${AddressTestBuilder.LAND_NL}"""@NL`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#Adresvoorstelling.huisnummer> """${AddressTestBuilder.ANTOHER_HUISNUMMER}"""`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#postcode> """${AddressTestBuilder.ANOTHER_POSTCODE}"""`,
-                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#Straatnaam> """${AddressTestBuilder.ANTOHER_STRAATNAAM}"""@NL`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#Straatnaam> """${AddressTestBuilder.ANOTHER_STRAATNAAM}"""@NL`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#verwijstNaar> <${AddressTestBuilder.ANOTHER_VERWIJST_NAAR}>`,
 
                     `<${instanceId}> <http://data.europa.eu/m8g/hasContactPoint> <${InstanceTestBuilder.CONTACT_POINTS[0].id}>`,

@@ -143,7 +143,7 @@ export class Instance {
         requireNoDuplicates(this._costs.map(c => c.order), 'costs > order');
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forInstance);
         requireNoDuplicates(this._financialAdvantages.map(fa => fa.order), 'financial advantages > order');
-        this._contactPoints = [...contactPoints];
+        this._contactPoints = [...contactPoints].map(cp => ContactPoint.forInstance(cp));
         requireNoDuplicates(this._contactPoints.map(cp => cp.order), 'contact points > order');
         requireAllPresentOrAllAbsent([conceptId, conceptSnapshotId, productId], 'conceptId, conceptSnapshotId and productId');
         this._conceptId = conceptId;

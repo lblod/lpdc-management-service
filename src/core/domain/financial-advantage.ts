@@ -123,6 +123,7 @@ export class FinancialAdvantage {
 }
 
 export class FinancialAdvantageBuilder {
+
     private id: Iri;
     private uuid: string | undefined;
     private title: LanguageString | undefined;

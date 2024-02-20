@@ -27,7 +27,7 @@ import {aFullRequirementForInstance, aMinimalRequirementForInstance} from "./req
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {aMinimalProcedureForInstance, ProcedureTestBuilder} from "./procedure-test-builder";
-import {aMinimalFormalLanguageString} from "./language-string-test-builder";
+import {aMinimalFormalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
 import {aFullWebsiteForInstance, aMinimalWebsiteForInstance, WebsiteTestBuilder} from "./website-test-builder";
 import {Cost, CostBuilder} from "../../../src/core/domain/cost";
@@ -37,7 +37,10 @@ import {aMinimalFinancialAdvantageForInstance, FinancialAdvantageTestBuilder} fr
 import {Language} from "../../../src/core/domain/language";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
-import {aMinimalContactPoint} from "./contact-point-test-builder";
+import {aMinimalContactPointForInstance, ContactPointTestBuilder} from "./contact-point-test-builder";
+import {ContactPoint, ContactPointBuilder} from "../../../src/core/domain/contact-point";
+import {Address, AddressBuilder} from "../../../src/core/domain/address";
+import {AddressTestBuilder} from "./address-test-builder";
 
 beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
@@ -363,22 +366,71 @@ describe('constructing', () => {
 
     describe('contact points ', () => {
 
+        test('valid contact point does not throw error', () => {
+            const uuidValue = uuid();
+            const validContactPoint = ContactPoint.reconstitute(ContactPointBuilder.buildIri(uuidValue), uuidValue, ContactPointTestBuilder.URL, ContactPointTestBuilder.EMAIL, ContactPointTestBuilder.TELEPHONE, ContactPointTestBuilder.OPENING_HOURS, 1, undefined);
+
+            expect(() => aFullInstance().withContactPoints([validContactPoint]).build()).not.toThrow();
+        });
+
+        test('invalid contact point does throw error', () => {
+            const invalidContactPoint = ContactPoint.reconstitute(ContactPointBuilder.buildIri(uuid()), undefined, undefined, undefined, undefined, undefined, 1, undefined);
+            expect(() => aFullInstance().withContactPoints([invalidContactPoint]).build()).toThrow();
+        });
+
         test('contact points that dont have unique order throws error', () => {
             const contactPoint1 =
-                aMinimalContactPoint().withOrder(1).build();
+                aMinimalContactPointForInstance().withOrder(1).build();
             const contactPoint2 =
-                aMinimalContactPoint().withOrder(1).build();
+                aMinimalContactPointForInstance().withOrder(1).build();
 
             expect(() => aFullInstance().withContactPoints([contactPoint1, contactPoint2]).build()).toThrow(new Error('contact points > order should not contain duplicates'));
         });
 
         test('contact points that have unique order does not throw error', () => {
             const contactPoint1 =
-                aMinimalContactPoint().withOrder(1).build();
+                aMinimalContactPointForInstance().withOrder(1).build();
             const contactPoint2 =
-                aMinimalContactPoint().withOrder(2).build();
+                aMinimalContactPointForInstance().withOrder(2).build();
 
             expect(() => aFullInstance().withContactPoints([contactPoint1, contactPoint2]).build()).not.toThrow();
+        });
+
+        describe('address', () => {
+
+            test('valid contact point with valid address does not throw error', () => {
+                const uuidValue = uuid();
+                const validContactPoint =
+                    ContactPoint.reconstitute(ContactPointBuilder.buildIri(uuidValue), uuidValue, ContactPointTestBuilder.URL, ContactPointTestBuilder.EMAIL, ContactPointTestBuilder.TELEPHONE, ContactPointTestBuilder.OPENING_HOURS, 1,
+                        Address.reconstitute(
+                            AddressBuilder.buildIri(uuid()), uuid(),
+                            aMinimalLanguageString(AddressTestBuilder.GEMEENTENAAM_NL).build(),
+                            aMinimalLanguageString(AddressTestBuilder.LAND_NL).build(),
+                            AddressTestBuilder.HUISNUMMER,
+                            AddressTestBuilder.BUSNUMMER,
+                            AddressTestBuilder.POSTCODE,
+                            aMinimalLanguageString(AddressTestBuilder.STRAATNAAM_NL).build(),
+                            AddressTestBuilder.VERWIJST_NAAR));
+
+                expect(() => aFullInstance().withContactPoints([validContactPoint]).build()).not.toThrow();
+            });
+
+            test('valid contact point with invalid address does throw error', () => {
+                const uuidValue = uuid();
+                const invalidContactPoint = ContactPoint.reconstitute(ContactPointBuilder.buildIri(uuidValue), uuidValue, ContactPointTestBuilder.URL, ContactPointTestBuilder.EMAIL, ContactPointTestBuilder.TELEPHONE, ContactPointTestBuilder.OPENING_HOURS, 1,
+                    Address.reconstitute(
+                        AddressBuilder.buildIri(uuid()),
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined));
+                expect(() => aFullInstance().withContactPoints([invalidContactPoint]).build()).toThrow();
+            });
+
         });
 
     });
