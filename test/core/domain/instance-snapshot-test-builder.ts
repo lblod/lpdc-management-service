@@ -53,13 +53,13 @@ export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
         .withIsVersionOfInstance(buildInstanceIri(uuid()))
         .withTitle(
             LanguageString.of(
-                InstanceSnapshotTestBuilder.TITLE_EN,
+                undefined,
                 undefined,
                 undefined,
                 InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL))
         .withDescription(
             LanguageString.of(
-                InstanceSnapshotTestBuilder.DESCRIPTION_EN,
+                undefined,
                 undefined,
                 undefined,
                 InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
@@ -71,6 +71,18 @@ export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
 
 export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
     return aMinimalInstanceSnapshot()
+        .withTitle(
+            LanguageString.of(
+                InstanceSnapshotTestBuilder.TITLE_EN,
+                undefined,
+                undefined,
+                InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL))
+        .withDescription(
+            LanguageString.of(
+                InstanceSnapshotTestBuilder.DESCRIPTION_EN,
+                undefined,
+                undefined,
+                InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
         .withAdditionalDescription(
             LanguageString.of(
                 InstanceSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_EN,

@@ -21,6 +21,7 @@ import {asSortedArray} from "./shared/collections-helper";
 import {requiredAtLeastOneValuePresent, requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {instanceLanguages} from "./language";
 
+//TODO LPDC-910: moeten we structuur van _id en _isVersionof valideren? http://data.lblod.info/id/public-service-snapshot/uuid en http://data.lblod.info/id/public-service/uuid
 export class InstanceSnapshot {
 
     private readonly _id: Iri;

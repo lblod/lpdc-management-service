@@ -56,6 +56,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
             ]);
 
         const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.instanceSnapshotsLdesDataGraph(), this.doubleQuadReporter);
+        //TODO LPDC-910: validate that the created by is equal to the bestuurseenheid
 
         return mapper.instanceSnapshot(id);
     }
