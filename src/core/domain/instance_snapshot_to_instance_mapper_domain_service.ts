@@ -16,32 +16,38 @@ import {FinancialAdvantage} from "./financial-advantage";
 import {ContactPoint} from "./contact-point";
 import {Address} from "./address";
 import {FormatPreservingDate} from "./format-preserving-date";
+import {ConceptRepository} from "../port/driven/persistence/concept-repository";
+import {Concept} from "./concept";
 
 export class InstanceSnapshotToInstanceMapperDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
     private readonly _instanceRepository: InstanceRepository;
     private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
+    private readonly _conceptRepository: ConceptRepository;
 
 
     constructor(
         instanceSnapshotRepository: InstanceSnapshotRepository,
         instanceRepository: InstanceRepository,
-        bestuurseenheidRepository: BestuurseenheidRepository
+        bestuurseenheidRepository: BestuurseenheidRepository,
+        conceptRepository: ConceptRepository
     ) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
         this._bestuurseenheidRepository = bestuurseenheidRepository;
+        this._conceptRepository = conceptRepository;
     }
 
     async merge(bestuurseenheidId: Iri, instanceSnapshotId: Iri) {
         try {
             const bestuurseenheid = await this._bestuurseenheidRepository.findById(bestuurseenheidId);
             const instanceSnapshot = await this._instanceSnapshotRepository.findById(bestuurseenheid, instanceSnapshotId);
-
             const existingInstance = await this._instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
 
+            const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
+
             if (!existingInstance) {
-                const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot);
+                const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
 
                 await this._instanceRepository.save(bestuurseenheid, instance);
             }
@@ -53,8 +59,7 @@ export class InstanceSnapshotToInstanceMapperDomainService {
         }
     }
 
-    private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot) {
-
+    private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
 
         return new Instance(
             instanceSnapshot.isVersionOfInstance,
@@ -83,9 +88,9 @@ export class InstanceSnapshotToInstanceMapperDomainService {
             this.copyCosts(instanceSnapshot.costs),
             this.copyFinancialAdvantage(instanceSnapshot.financialAdvantages),
             this.copyContactPoints(instanceSnapshot.contactPoints),
-            undefined,
-            undefined,
-            undefined,
+            concept ? concept.id : undefined,
+            concept ? concept.latestConceptSnapshot : undefined,
+            concept ? concept.productId : undefined,
             instanceSnapshot.languages,
             instanceSnapshot.dateCreated,
             instanceSnapshot.dateModified,
@@ -184,5 +189,17 @@ export class InstanceSnapshotToInstanceMapperDomainService {
         return Address.forInstance(
             Address.reconstitute(new Iri(`http://data.lblod.info/id/adressen/${newUuid}`), newUuid, address.gemeentenaam, address.land, address.huisnummer, address.busnummer, address.postcode, address.straatnaam, address.verwijstNaar)
         );
+    }
+
+    private async getConceptIfExists(conceptId: Iri | undefined): Promise<Concept | undefined> {
+        
+        if (conceptId) {
+            const existingConcept = await this._conceptRepository.exists(conceptId);
+            if (existingConcept) {
+                return await this._conceptRepository.findById(conceptId);
+            }
+
+        }
+        return undefined;
     }
 }
