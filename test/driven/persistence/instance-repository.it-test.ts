@@ -518,7 +518,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.CONTACT_POINTS[1].address.uuid}"""`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#gemeentenaam> """${AddressTestBuilder.ANOTHER_GEMEENTENAAM}"""@NL`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#land> """${AddressTestBuilder.LAND_NL}"""@NL`,
-                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#Adresvoorstelling.huisnummer> """${AddressTestBuilder.ANTOHER_HUISNUMMER}"""`,
+                    `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#Adresvoorstelling.huisnummer> """${AddressTestBuilder.ANOTHER_HUISNUMMER}"""`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#postcode> """${AddressTestBuilder.ANOTHER_POSTCODE}"""`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#Straatnaam> """${AddressTestBuilder.ANOTHER_STRAATNAAM}"""@NL`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[1].address.id}> <https://data.vlaanderen.be/ns/adres#verwijstNaar> <${AddressTestBuilder.ANOTHER_VERWIJST_NAAR}>`,
@@ -541,6 +541,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <https://data.vlaanderen.be/ns/adres#postcode> """${AddressTestBuilder.POSTCODE}"""`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <https://data.vlaanderen.be/ns/adres#Straatnaam> """${AddressTestBuilder.STRAATNAAM_NL}"""@NL`,
                     `<${InstanceTestBuilder.CONTACT_POINTS[0].address.id}> <https://data.vlaanderen.be/ns/adres#verwijstNaar> <${AddressTestBuilder.VERWIJST_NAAR}>`,
+
                     `<${instanceId}> <http://purl.org/dc/terms/source> <${instance.conceptId.value}>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${instance.conceptSnapshotId.value}>`,
                     `<${instanceId}> <http://schema.org/productID> """${instance.productId}"""`,

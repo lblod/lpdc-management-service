@@ -40,6 +40,10 @@ import {
     aFullFinancialAdvantageForInstanceSnapshot,
     anotherFullFinancialAdvantageForInstanceSnapshot
 } from "./financial-advantage-test-builder";
+import {
+    aFullContactPointForInstanceSnapshot,
+    anotherFullContactPointForInstanceSnapshot
+} from "./contact-point-test-builder";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
     const uniqueId = uuid();
@@ -105,7 +109,8 @@ export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
         .withWebsites(InstanceSnapshotTestBuilder.WEBSITES)
         .withProcedures(InstanceSnapshotTestBuilder.PROCEDURES)
         .withCosts(InstanceSnapshotTestBuilder.COSTS)
-        .withFinancialAdvantages(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES);
+        .withFinancialAdvantages(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES)
+        .withContactPoints(InstanceSnapshotTestBuilder.CONTACT_POINTS);
 }
 
 export class InstanceSnapshotTestBuilder {
@@ -173,6 +178,8 @@ export class InstanceSnapshotTestBuilder {
     public static readonly COSTS = [aFullCostForInstanceSnapshot().build(), anotherFullCostForInstanceSnapshot().build()];
 
     public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantageForInstanceSnapshot().build(), anotherFullFinancialAdvantageForInstanceSnapshot().build()];
+
+    public static readonly CONTACT_POINTS = [aFullContactPointForInstanceSnapshot().build(), anotherFullContactPointForInstanceSnapshot().build()];
 
     public static readonly DATE_CREATED = FormatPreservingDate.of('2024-01-08T12:13:42.074442Z');
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2024-02-06T16:16:20.242928Z');

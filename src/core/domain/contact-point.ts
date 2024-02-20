@@ -44,7 +44,15 @@ export class ContactPoint {
     }
 
     static forInstanceSnapshot(contactPoint: ContactPoint): ContactPoint {
-        return contactPoint;
+        return new ContactPoint(
+            contactPoint.id,
+            undefined,
+            contactPoint.url,
+            contactPoint.email,
+            contactPoint.telephone,
+            contactPoint.openingHours,
+            contactPoint.order,
+            contactPoint.address !== undefined ? Address.forInstanceSnapshot(contactPoint.address) : undefined);
     }
 
     static reconstitute(id: Iri,

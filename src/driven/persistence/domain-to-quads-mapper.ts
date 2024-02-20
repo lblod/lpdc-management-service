@@ -188,6 +188,7 @@ export class DomainToQuadsMapper {
             ...this.procedures(instanceSnapshot.id, instanceSnapshot.procedures),
             ...this.costs(instanceSnapshot.id, instanceSnapshot.costs),
             ...this.financialAdvantages(instanceSnapshot.id, instanceSnapshot.financialAdvantages),
+            ...this.contactPoints(instanceSnapshot.id, instanceSnapshot.contactPoints),
         ].filter(t => t !== undefined);
     }
 

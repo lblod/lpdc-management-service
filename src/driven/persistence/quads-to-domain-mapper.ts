@@ -234,7 +234,7 @@ export class QuadsToDomainMapper {
             this.websites(id),
             this.costs(id),
             this.financialAdvantages(id),
-            [],
+            this.contactPoints(id),
             this.conceptId(id),
             this.languages(id),
             this.isVersionOf(id),

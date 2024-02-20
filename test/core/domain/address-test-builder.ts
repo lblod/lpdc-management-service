@@ -71,7 +71,7 @@ export class AddressTestBuilder {
     public static readonly LAND_NL_GENERATED_INFORMAL = 'België - nl-generated-informal';
 
     public static readonly HUISNUMMER = '1';
-    public static readonly ANTOHER_HUISNUMMER = '10';
+    public static readonly ANOTHER_HUISNUMMER = '10';
     public static readonly BUSNUMMER = 'A';
     public static readonly POSTCODE = '3000';
     public static readonly ANOTHER_POSTCODE = '9000';
