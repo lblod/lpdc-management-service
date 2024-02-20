@@ -265,6 +265,28 @@ describe('InstanceRepository', () => {
         });
     });
 
+    describe('exits', () => {
+
+        test('When exits, then return true', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance().build();
+            await repository.save(bestuurseenheid, instance);
+
+            const actual = await repository.exits(bestuurseenheid, instance.id);
+
+            expect(actual).toEqual(true);
+        });
+
+        test('When not exits, then return false', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance().build();
+
+            const actual = await repository.exits(bestuurseenheid, instance.id);
+
+            expect(actual).toEqual(false);
+        });
+    });
+
     describe('Verify ontology and mapping', () => {
 
         test('Verify minimal mapping', async () => {
@@ -927,4 +949,5 @@ describe('InstanceRepository', () => {
         });
 
     });
+
 });

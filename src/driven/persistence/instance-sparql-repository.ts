@@ -193,4 +193,16 @@ export class InstanceSparqlRepository implements InstanceRepository {
         }
     }
 
+    async exits(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean> {
+        const query = `
+            ${PREFIX.cpsv}
+            ASK WHERE {
+                GRAPH <${bestuurseenheid.userGraph()}> {
+                    ${sparqlEscapeUri(instanceId)} a cpsv:PublicService .
+                }
+            }
+        `;
+        return this.querying.ask(query);
+    }
+
 }
