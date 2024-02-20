@@ -29,7 +29,7 @@ export class Invariant<V> {
             if ((this._value as any[]).find(value => (!this.isUndefined(value) && !this.isBlank(value))) !== undefined) {
                 return null;
             }
-            return `${this._name} does not contain one value`;
+            return `${this._name} should contain at least one value`;
         };
     }
 
@@ -113,6 +113,11 @@ export const requireNoDuplicates = <T>(values: T[], name: string = 'list'): T[] 
 export const requireAllPresentOrAllAbsent = <T>(values: T[], name: string = 'list'): T[] => {
     const invariant: Invariant<T[]> = Invariant.require(values, name);
     return invariant.to(invariant.allPresentOrAllAbsent());
+};
+
+export const requiredAtLeastOneValuePresent = <T>(values: T[], name: string = 'list'): T[] => {
+    const invariant: Invariant<T[]> = Invariant.require(values, name);
+    return invariant.to(invariant.haveAtLeastOneValuePresent());
 };
 
 export const requiredCanOnlyBePresentIfOtherValuePresent = <T>(value: T, name: string = 'object', presentValue: any, presentName: string): T => {

@@ -18,7 +18,8 @@ import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
 import {ContactPoint} from "./contact-point";
 import {asSortedArray} from "./shared/collections-helper";
-import {requiredValue, requireNoDuplicates} from "./shared/invariant";
+import {requiredAtLeastOneValuePresent, requiredValue, requireNoDuplicates} from "./shared/invariant";
+import {instanceLanguages} from "./language";
 
 export class InstanceSnapshot {
 
@@ -136,7 +137,30 @@ export class InstanceSnapshot {
     }
 
     private validateLanguages(): void {
-        //TODO LPDC-910: implement me
+        const values = [
+            this._title,
+            this._description,
+            this._additionalDescription,
+            this._exception,
+            this._regulation
+        ];
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...values);
+
+        requiredAtLeastOneValuePresent(LanguageString.extractNlLanguages(values), 'Fields in nl language');
+
+        const nlLanguages = LanguageString.extractNlLanguages(values);
+        const allNlLanguages = new Set([
+            ...nlLanguages,
+            ...this._requirements.map(r => r.nlLanguage),
+            ...this._procedures.map(p => p.nlLanguage),
+            ...this._websites.map(w => w.nlLanguage),
+            ...this._costs.map(c => c.nlLanguage),
+            ...this._financialAdvantages.map(fa => fa.nlLanguage),
+        ].filter(ls => ls !== undefined));
+
+        if (allNlLanguages.size > 1) {
+            throw new Error('There is more than one Nl language present');
+        }
     }
 
     get id(): Iri {

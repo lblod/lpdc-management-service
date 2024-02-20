@@ -62,7 +62,7 @@ describe('haveAtLeastOneValuePresent', () => {
     test('Throws error when no value is present', () => {
 
         const invariant: Invariant<any> = Invariant.require([undefined, '', "  \n  \t  "], name);
-        expect(() => invariant.to(invariant.haveAtLeastOneValuePresent())).toThrow(new Error(`${name} does not contain one value`));
+        expect(() => invariant.to(invariant.haveAtLeastOneValuePresent())).toThrow(new Error(`${name} should contain at least one value`));
     });
 
     test('Returns all values when one value is present', () => {

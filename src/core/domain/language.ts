@@ -6,4 +6,5 @@ export enum Language {
     GENERATED_FORMAL = 'nl-be-x-generated-formal',
     GENERATED_INFORMAL = 'nl-be-x-generated-informal',
 }
-export const instanceLanguages=[Language.NL,Language.FORMAL, Language.INFORMAL];
+
+export const instanceLanguages = [Language.NL, Language.FORMAL, Language.INFORMAL];

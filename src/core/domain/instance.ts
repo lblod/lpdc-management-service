@@ -164,7 +164,6 @@ export class Instance {
     }
 
     private validateLanguages(): void {
-
         const values = [
             this._title,
             this._description,
@@ -181,8 +180,8 @@ export class Instance {
             ...this._procedures.map(p => p.nlLanguage),
             ...this._websites.map(w => w.nlLanguage),
             ...this._costs.map(c => c.nlLanguage),
-            ...this._financialAdvantages.map(fa => fa.nlLanguage)]
-            .filter(ls => ls !== undefined));
+            ...this._financialAdvantages.map(fa => fa.nlLanguage),
+        ].filter(ls => ls !== undefined));
 
         if (allNlLanguages.size > 1) {
             throw new Error('There is more than one Nl language present');

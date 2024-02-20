@@ -29,7 +29,7 @@ import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {aMinimalProcedureForInstance, ProcedureTestBuilder} from "./procedure-test-builder";
 import {aMinimalFormalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
-import {aFullWebsiteForInstance, aMinimalWebsiteForInstance, WebsiteTestBuilder} from "./website-test-builder";
+import {aMinimalWebsiteForInstance, WebsiteTestBuilder} from "./website-test-builder";
 import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {aMinimalCostForInstance, CostTestBuilder} from "./cost-test-builder";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
@@ -617,11 +617,58 @@ describe('validateLanguages', () => {
         expect(() => instance.build()).not.toThrow();
     });
 
-    test('if a nested object contains a different nl version, then throws error', () => {
-        const website = aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal')).build();
-        const instance = aFullInstance().withWebsites([website]);
+    describe('nested objects', () => {
 
-        expect(() => instance.build()).toThrow(new Error('There is more than one Nl language present'));
+        test('if a requirement contains a different nl version, then throws error', () => {
+            const requirement = aMinimalRequirementForInstance()
+                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .build();
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withRequirements([requirement]);
+
+            expect(() => instance.build()).toThrow(new Error('There is more than one Nl language present'));
+        });
+
+        test('if a procedure contains a different nl version, then throws error', () => {
+            const procedure = aMinimalProcedureForInstance()
+                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .build();
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withProcedures([procedure]);
+
+            expect(() => instance.build()).toThrow(new Error('There is more than one Nl language present'));
+        });
+
+        test('if a website contains a different nl version, then throws error', () => {
+            const website = aMinimalWebsiteForInstance()
+                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .build();
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withWebsites([website]);
+
+            expect(() => instance.build()).toThrow(new Error('There is more than one Nl language present'));
+        });
+
+        test('if a cost contains a different nl version, then throws error', () => {
+            const cost = aMinimalCostForInstance()
+                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .build();
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withCosts([cost]);
+
+            expect(() => instance.build()).toThrow(new Error('There is more than one Nl language present'));
+        });
+
+        test('if a financial advantage contains a different nl version, then throws error', () => {
+            const financialAdvantage = aMinimalFinancialAdvantageForInstance()
+                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .build();
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withFinancialAdvantages([financialAdvantage]);
+
+            expect(() => instance.build()).toThrow(new Error('There is more than one Nl language present'));
+        });
+
     });
 
     test('an instance fully in formal nl languages does not throw', () => {
@@ -657,7 +704,6 @@ describe('validateLanguages', () => {
             const instance = aMinimalInstance().withRegulation(valueInNlLanguage);
             expect(() => (instance.build())).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
         });
-
 
     }
 

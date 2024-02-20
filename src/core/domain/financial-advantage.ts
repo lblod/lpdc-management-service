@@ -63,7 +63,7 @@ export class FinancialAdvantage {
     }
 
     static forInstanceSnapshot(financialAdvantage: FinancialAdvantage): FinancialAdvantage {
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, financialAdvantage.title,financialAdvantage.description);
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, financialAdvantage.title, financialAdvantage.description);
 
         return new FinancialAdvantage(
             financialAdvantage.id,
