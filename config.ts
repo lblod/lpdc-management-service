@@ -3,7 +3,7 @@ import {FormType} from "./src/core/domain/types";
 const APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH;
 
 const PUBLIC_GRAPH = 'http://mu.semte.ch/graphs/public';
-const CONCEPT_SNAPSHOT_LDES_GRAPH = 'http://mu.semte.ch/graphs/lpdc/ldes-data';
+const CONCEPT_SNAPSHOT_LDES_GRAPH = 'http://mu.semte.ch/graphs/lpdc/conceptsnapshots-ldes-data/ipdc';
 const CONCEPT_GRAPH = 'http://mu.semte.ch/graphs/public';
 
 const USER_SESSIONS_GRAPH = 'http://mu.semte.ch/graphs/sessions';
