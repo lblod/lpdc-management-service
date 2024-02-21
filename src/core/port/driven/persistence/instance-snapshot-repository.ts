@@ -6,7 +6,7 @@ export interface InstanceSnapshotRepository {
 
     findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<InstanceSnapshot>;
 
-    findNonProcessedInstanceSnapshots(): Promise<{ bestuurseenheidId: Iri, instanceSnapshotId: Iri }[]>;
+    findToProcessInstanceSnapshots(): Promise<{ bestuurseenheidId: Iri, instanceSnapshotId: Iri }[]>;
 
     addToProcessedInstanceSnapshots(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri): Promise<void>;
 

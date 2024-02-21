@@ -86,7 +86,7 @@ describe('InstanceSnapshotRepository', () => {
 
     });
 
-    describe('findNonProcessedInstanceSnapshots', () => {
+    describe('findToProcessInstanceSnapshots', () => {
 
        test('When no instanceSnapshots processed, then return all', async () => {
            const bestuurseenheid = aBestuurseenheid().build();
@@ -98,7 +98,7 @@ describe('InstanceSnapshotRepository', () => {
            await repository.save(bestuurseenheid, instanceSnapshot2);
            await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
 
-           const actual = await repository.findNonProcessedInstanceSnapshots();
+           const actual = await repository.findToProcessInstanceSnapshots();
            expect(actual).toEqual([
                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot2.id},
@@ -106,7 +106,7 @@ describe('InstanceSnapshotRepository', () => {
            ]);
        });
 
-       test('When some instanceSnapshots are already processed, then return only unprocessed instanceSnapshots', async () => {
+       test('When some instanceSnapshots are already processed, then return only to process instanceSnapshots', async () => {
            const bestuurseenheid = aBestuurseenheid().build();
            const otherBestuurseenheid = aBestuurseenheid().build();
            const instanceSnapshot1 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
@@ -123,14 +123,14 @@ describe('InstanceSnapshotRepository', () => {
                ]
            );
 
-           const actual = await repository.findNonProcessedInstanceSnapshots();
+           const actual = await repository.findToProcessInstanceSnapshots();
            expect(actual).toEqual([
                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
                {bestuurseenheidId: otherBestuurseenheid.id, instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id},
            ]);
        });
 
-        test('should return findNonProcessedInstanceSnapshots sorted by generatedAt date', async () => {
+        test('should return findToProcessInstanceSnapshots sorted by generatedAt date', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const otherBestuurseenheid = aBestuurseenheid().build();
             const instanceSnapshot1 = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-05T00:00:00.657Z')).withCreatedBy(bestuurseenheid.id).build();
@@ -140,7 +140,7 @@ describe('InstanceSnapshotRepository', () => {
             await repository.save(bestuurseenheid, instanceSnapshot2);
             await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
 
-            const actual = await repository.findNonProcessedInstanceSnapshots();
+            const actual = await repository.findToProcessInstanceSnapshots();
             expect(actual).toEqual([
                 {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
                 {bestuurseenheidId: otherBestuurseenheid.id, instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id},

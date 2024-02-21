@@ -64,7 +64,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
         return mapper.instanceSnapshot(id);
     }
 
-    async findNonProcessedInstanceSnapshots(): Promise<{ bestuurseenheidId: Iri, instanceSnapshotId: Iri }[]> {
+    async findToProcessInstanceSnapshots(): Promise<{ bestuurseenheidId: Iri, instanceSnapshotId: Iri }[]> {
         const query = `
             SELECT ?instanceSnapshotIri ?createdBy WHERE {
                 GRAPH ?graph {

@@ -19,7 +19,7 @@ export class InstanceSnapshotProcessorApplicationService {
     }
 
     async process() {
-        const toProcessInstanceSnapshots = await this._instanceSnapshotRepository.findNonProcessedInstanceSnapshots();
+        const toProcessInstanceSnapshots = await this._instanceSnapshotRepository.findToProcessInstanceSnapshots();
 
         for (const {bestuurseenheidId, instanceSnapshotId} of toProcessInstanceSnapshots) {
             try {
