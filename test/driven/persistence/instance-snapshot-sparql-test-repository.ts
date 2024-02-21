@@ -23,4 +23,19 @@ export class InstanceSnapshotSparqlTestRepository extends InstanceSnapshotSparql
             ]);
     }
 
+    async clearAllInstanceSnapshotGraphs(): Promise<void> {
+        const query = `
+        SELECT DISTINCT ?graph WHERE {
+            GRAPH ?graph {
+                ?s ?p ?o
+            } 
+            FILTER(STRSTARTS(STR(?graph), "http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data"))
+        }`;
+        const queryResult = await this.directDatabaseAccess.list(query);
+        const graphs: string[] = queryResult.map(it => it['graph'].value);
+        for (const graph of graphs) {
+            await this.directDatabaseAccess.clearGraph(graph);
+        }
+    }
+
 }

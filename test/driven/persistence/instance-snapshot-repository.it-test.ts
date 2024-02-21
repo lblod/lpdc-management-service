@@ -29,6 +29,10 @@ describe('InstanceSnapshotRepository', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
+    beforeEach(async () => {
+       await repository.clearAllInstanceSnapshotGraphs();
+    });
+
     describe('findById', () => {
 
         test('When full instance snapshot exists with id, then return instance snapshot', async () => {
@@ -79,6 +83,72 @@ describe('InstanceSnapshotRepository', () => {
 
         });
 
+    });
+
+    describe('findNonProcessedInstanceSnapshots', () => {
+
+       test('When no instanceSnapshots processed, then return all', async () => {
+           const bestuurseenheid = aBestuurseenheid().build();
+           const otherBestuurseenheid = aBestuurseenheid().build();
+           const instanceSnapshot1 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
+           const instanceSnapshot2 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
+           const instanceSnapshotOtherBestuurseenheid = aFullInstanceSnapshot().withCreatedBy(otherBestuurseenheid.id).build();
+           await repository.save(bestuurseenheid, instanceSnapshot1);
+           await repository.save(bestuurseenheid, instanceSnapshot2);
+           await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
+
+           const actual = await repository.findNonProcessedInstanceSnapshots();
+           expect(actual).toEqual([
+               {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
+               {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot2.id},
+               {bestuurseenheidId: otherBestuurseenheid.id, instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id},
+           ]);
+       });
+
+       test('When some instanceSnapshots are already processed, then return only unprocessed instanceSnapshots', async () => {
+           const bestuurseenheid = aBestuurseenheid().build();
+           const otherBestuurseenheid = aBestuurseenheid().build();
+           const instanceSnapshot1 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
+           const instanceSnapshot2 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
+           const instanceSnapshotOtherBestuurseenheid = aFullInstanceSnapshot().withCreatedBy(otherBestuurseenheid.id).build();
+           await repository.save(bestuurseenheid, instanceSnapshot1);
+           await repository.save(bestuurseenheid, instanceSnapshot2);
+           await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
+
+           await directDatabaseAccess.insertData(
+               bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+               [
+                   `<http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> <${instanceSnapshot2.id}>`
+               ]
+           );
+
+           const actual = await repository.findNonProcessedInstanceSnapshots();
+           expect(actual).toEqual([
+               {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
+               {bestuurseenheidId: otherBestuurseenheid.id, instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id},
+           ]);
+       });
+
+    });
+
+    describe('addToProcessedInstanceSnapshots', () => {
+
+        test('should add to processedInstanceSnapshot to given graph', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
+
+            await repository.addToProcessedInstanceSnapshots(bestuurseenheid, instanceSnapshotId);
+
+            const query = `
+                SELECT ?graph WHERE {
+                    GRAPH ?graph {
+                        <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> <${instanceSnapshotId}> .
+                    }
+                } 
+            `;
+            const result = await directDatabaseAccess.list(query);
+            expect(result[0]['graph']?.value).toEqual(bestuurseenheid.instanceSnapshotsLdesDataGraph().value);
+        });
     });
 
     describe('Verify ontology and mapping', () => {
@@ -666,6 +736,5 @@ describe('InstanceSnapshotRepository', () => {
 
 
     });
-
 
 });

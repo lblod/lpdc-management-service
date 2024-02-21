@@ -7,6 +7,7 @@ import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recur
 import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {Logger} from "../../../platform/logger";
 import {NS} from "./namespaces";
+import {sparqlEscapeUri} from "../../../mu-helper";
 
 export class InstanceSnapshotSparqlRepository implements InstanceSnapshotRepository {
 
@@ -58,7 +59,44 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
         const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.instanceSnapshotsLdesDataGraph(), this.doubleQuadReporter);
         //TODO LPDC-910: validate that the created by is equal to the bestuurseenheid
 
+        // TODO LPDC-910 validate createdBy is same bestuurseenheid as graph
+
         return mapper.instanceSnapshot(id);
     }
 
+    async findNonProcessedInstanceSnapshots(): Promise<{ bestuurseenheidId: Iri, instanceSnapshotId: Iri }[]> {
+        const query = `
+            SELECT ?instanceSnapshotIri ?createdBy WHERE {
+                GRAPH ?graph {
+                     ?instanceSnapshotIri a <http://purl.org/vocab/cpsv#PublicService> .
+                     ?instanceSnapshotIri <http://purl.org/pav/createdBy> ?createdBy .
+                }
+                FILTER(STRSTARTS(STR(?graph), "http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/"))
+                FILTER NOT EXISTS {
+                    GRAPH ?graph {
+                        <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ?instanceSnapshotIri .
+                    }
+                }
+            }
+        `;
+        // TODO sort on generatedAt date
+
+        const result = await this.querying.list(query);
+
+        return result.map(item => ({
+            bestuurseenheidId: new Iri(item['createdBy'].value),
+            instanceSnapshotId: new Iri(item['instanceSnapshotIri'].value)
+        }));
+    }
+
+    async addToProcessedInstanceSnapshots(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri): Promise<void> {
+        const query = `
+            INSERT DATA {
+                GRAPH <${bestuurseenheid.instanceSnapshotsLdesDataGraph()}> {
+                    <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ${sparqlEscapeUri(instanceSnapshotId)} .
+                }
+            }
+        `;
+        await this.querying.insert(query);
+    }
 }

@@ -38,25 +38,18 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     }
 
     async merge(bestuurseenheidId: Iri, instanceSnapshotId: Iri) {
-        try {
-            const bestuurseenheid = await this._bestuurseenheidRepository.findById(bestuurseenheidId);
-            const instanceSnapshot = await this._instanceSnapshotRepository.findById(bestuurseenheid, instanceSnapshotId);
-            const existingInstance = await this._instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+        const bestuurseenheid = await this._bestuurseenheidRepository.findById(bestuurseenheidId);
+        const instanceSnapshot = await this._instanceSnapshotRepository.findById(bestuurseenheid, instanceSnapshotId);
+        const existingInstance = await this._instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
 
-            const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
+        const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
 
-            //TODO LPDC-910: if instance exists -> delete first using delete-instance-domain-service.ts
+        //TODO LPDC-910: if instance exists -> delete first using delete-instance-domain-service.ts
 
-            if (!existingInstance) {
-                const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
+        if (!existingInstance) {
+            const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
 
-                await this._instanceRepository.save(bestuurseenheid, instance);
-            }
-
-        } catch (e) {
-            //TODO LPDC-910: error handling ok ?
-            console.error(`Error processing: ${JSON.stringify(instanceSnapshotId)}`);
-            console.error(e);
+            await this._instanceRepository.save(bestuurseenheid, instance);
         }
     }
 

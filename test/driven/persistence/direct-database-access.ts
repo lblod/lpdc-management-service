@@ -28,5 +28,16 @@ export class DirectDatabaseAccess {
         return this.querying.list(query);
     }
 
+    public async clearGraph(graph: string): Promise<void> {
+        const query = `
+        DELETE WHERE { 
+            GRAPH ${sparqlEscapeUri(graph)} {
+                ?s ?p ?o .
+            }                     
+        }`;
+
+        await this.querying.delete(query);
+    }
+
 
 }
