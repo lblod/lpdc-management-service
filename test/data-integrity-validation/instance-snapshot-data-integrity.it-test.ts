@@ -47,6 +47,8 @@ describe('Instance Snapshot Data Integrity Validation', () => {
                         const instanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
                         expect(instanceSnapshot.id).toEqual(instanceSnapshotId);
 
+                        //TODO LPDC-910: also verify if all quads are mapped
+
                     } catch (e) {
                         console.error(instanceSnapshotId);
                         console.error(e);

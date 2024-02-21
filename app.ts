@@ -1,6 +1,11 @@
 import {createApp, errorHandler, uuid} from './mu-helper';
 import bodyparser from 'body-parser';
-import {CONCEPT_SNAPSHOT_LDES_GRAPH, FORM_ID_TO_TYPE_MAPPING, LOG_INCOMING_DELTA} from './config';
+import {
+    CONCEPT_SNAPSHOT_LDES_GRAPH,
+    FORM_ID_TO_TYPE_MAPPING,
+    INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN,
+    LOG_INCOMING_DELTA
+} from './config';
 import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
 import {getContactPointOptions} from "./lib/getContactPointOptions";
@@ -37,6 +42,14 @@ import {LinkConceptToInstanceDomainService} from "./src/core/domain/link-concept
 import {ConfirmBijgewerktTotDomainService} from "./src/core/domain/confirm-bijgewerkt-tot-domain-service";
 import {UpdateInstanceApplicationService} from "./src/core/application/update-instance-application-service";
 import {SemanticFormsMapperImpl} from "./src/driven/persistence/semantic-forms-mapper-impl";
+import {
+    InstanceSnapshotProcessorApplicationService
+} from "./src/core/application/instance-snapshot-processor-application-service";
+import {InstanceSnapshotSparqlRepository} from "./src/driven/persistence/instance-snapshot-sparql-repository";
+import {
+    InstanceSnapshotToInstanceMergerDomainService
+} from "./src/core/domain/instance-snapshot-to-instance-merger-domain-service";
+import {CronJob} from 'cron';
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -59,6 +72,7 @@ const instanceRepository = new InstanceSparqlRepository();
 const formDefinitionRepository = new FormDefinitionFileRepository();
 const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository();
 const semanticFormsMapper = new SemanticFormsMapperImpl();
+const instanceSnapshotRepository = new InstanceSnapshotSparqlRepository();
 
 const conceptSnapshotToConceptMergerDomainService =
     new ConceptSnapshotToConceptMergerDomainService(
@@ -111,6 +125,18 @@ const confirmBijgewerktTotDomainService = new ConfirmBijgewerktTotDomainService(
 const updateInstanceApplicationService = new UpdateInstanceApplicationService(
     instanceRepository,
     semanticFormsMapper
+);
+
+const instanceSnapshotToInstanceMergerDomainService = new InstanceSnapshotToInstanceMergerDomainService(
+    instanceSnapshotRepository,
+    instanceRepository,
+    conceptRepository
+);
+
+const instanceSnapshotProcessorApplicationService = new InstanceSnapshotProcessorApplicationService(
+    instanceSnapshotRepository,
+    instanceSnapshotToInstanceMergerDomainService,
+    bestuurseenheidRepository,
 );
 
 app.get('/', function (_req, res): void {
@@ -594,3 +620,16 @@ app.get('/concept-snapshot-compare', async (req, res): Promise<any> => {
 });
 
 app.use(errorHandler);
+
+new CronJob(
+    INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN, // cronTime
+    () => {
+        instanceSnapshotProcessorApplicationService.process()
+            .then(() => console.log(`instance-snapshot-processing done`));
+    }, // onTick
+    null, // onComplete
+    true, // start
+    'Europe/Brussels' // timeZone
+);
+
+
