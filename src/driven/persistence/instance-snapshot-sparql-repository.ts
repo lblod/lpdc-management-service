@@ -70,6 +70,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
                 GRAPH ?graph {
                      ?instanceSnapshotIri a <http://purl.org/vocab/cpsv#PublicService> .
                      ?instanceSnapshotIri <http://purl.org/pav/createdBy> ?createdBy .
+                     ?instanceSnapshotIri <http://www.w3.org/ns/prov#generatedAtTime> ?generatedAtTime .
                 }
                 FILTER(STRSTARTS(STR(?graph), "http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/"))
                 FILTER NOT EXISTS {
@@ -77,9 +78,8 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
                         <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ?instanceSnapshotIri .
                     }
                 }
-            }
+            } ORDER BY ?generatedAtTime
         `;
-        // TODO sort on generatedAt date
 
         const result = await this.querying.list(query);
 

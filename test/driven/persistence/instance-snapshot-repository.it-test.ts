@@ -22,6 +22,7 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
+import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 
 describe('InstanceSnapshotRepository', () => {
 
@@ -128,6 +129,24 @@ describe('InstanceSnapshotRepository', () => {
                {bestuurseenheidId: otherBestuurseenheid.id, instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id},
            ]);
        });
+
+        test('should return findNonProcessedInstanceSnapshots sorted by generatedAt date', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const otherBestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshot1 = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-05T00:00:00.657Z')).withCreatedBy(bestuurseenheid.id).build();
+            const instanceSnapshot2 = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-07T00:00:00.657Z')).withCreatedBy(bestuurseenheid.id).build();
+            const instanceSnapshotOtherBestuurseenheid = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-06T00:00:00.657Z')).withCreatedBy(otherBestuurseenheid.id).build();
+            await repository.save(bestuurseenheid, instanceSnapshot1);
+            await repository.save(bestuurseenheid, instanceSnapshot2);
+            await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
+
+            const actual = await repository.findNonProcessedInstanceSnapshots();
+            expect(actual).toEqual([
+                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
+                {bestuurseenheidId: otherBestuurseenheid.id, instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id},
+                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot2.id},
+            ]);
+        });
 
     });
 
