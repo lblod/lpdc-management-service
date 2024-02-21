@@ -13,6 +13,10 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {aFullConcept} from "./concept-test-builder";
 import {aFullInstance} from "./instance-test-builder";
+import {sparqlEscapeUri} from "../../../mu-helper";
+import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
+import {literal, namedNode, quad} from "rdflib";
+import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -22,6 +26,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const mapper = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository);
+    const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
     beforeAll(() => setFixedTime());
 
@@ -653,7 +658,26 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
 
+            const query = `
+            SELECT ?s ?p ?o WHERE {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    VALUES ?s {
+                        <${instance.id.value}>
+                    }
+                    ?s ?p ?o
+                }
+            }
+        `;
+            const queryResult = await directDatabaseAccess.list(query);
+            const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
 
+            expect(quads).toHaveLength(4);
+            expect(quads).toEqual(expect.arrayContaining([
+                quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
+            ]));
         });
         test('Given a full instanceSnapshot with isArchived, then remove instance', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
@@ -672,7 +696,26 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
 
+            const query = `
+            SELECT ?s ?p ?o WHERE {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    VALUES ?s {
+                        <${instance.id.value}>
+                    }
+                    ?s ?p ?o
+                }
+            }
+        `;
+            const queryResult = await directDatabaseAccess.list(query);
+            const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
 
+            expect(quads).toHaveLength(4);
+            expect(quads).toEqual(expect.arrayContaining([
+                quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
+            ]));
         });
 
     });
