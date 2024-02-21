@@ -28,7 +28,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     afterAll(() => restoreRealTime());
 
     describe('Instance does not exists', () => {
-        test('When mapping a minimalistic instanceSnapshot, then instance is created', async () => {
+        test('Given a minimalistic instanceSnapshot, then instance is created', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
@@ -81,7 +81,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
             expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
         });
-        test('When no instance exists for full instanceSnapshot, then instance is created', async () => {
+        test('Given a full instanceSnapshot, then instance is created', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
@@ -328,7 +328,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     });
 
     describe('Instance already exists', () => {
-        test('When mapping a minimalistic instanceSnapshot, then existing instance is updated', async () => {
+        test('Given a minimalistic instanceSnapshot, then existing instance is updated', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
@@ -387,7 +387,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
 
         });
-        test('When no instance exists for full instanceSnapshot, then existing instance is updated', async () => {
+        test('Given a full instanceSnapshot, then existing instance is updated', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
@@ -634,6 +634,45 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
             expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
+        });
+
+        test('Given a minimal instanceSnapshot with isArchived, then remove instance', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot().withIsVersionOfInstance(instance.id).withIsArchived(true).build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceExists).toEqual(true);
+
+            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+
+            expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
+
+
+        });
+        test('Given a full instanceSnapshot with isArchived, then remove instance', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+
+            const instanceSnapshot = aFullInstanceSnapshot().withIsVersionOfInstance(instance.id).withIsArchived(true).build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceExists).toEqual(true);
+
+            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+
+            expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
+
+
         });
 
     });

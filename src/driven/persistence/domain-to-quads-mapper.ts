@@ -182,7 +182,7 @@ export class DomainToQuadsMapper {
             this.instanceDateCreated(instanceSnapshot.id, instanceSnapshot.dateCreated),
             this.instanceDateModified(instanceSnapshot.id, instanceSnapshot.dateModified),
             this.generatedAtTime(instanceSnapshot.id, instanceSnapshot.generatedAtTime),
-            this.buildQuad(namedNode(instanceSnapshot.id.value), NS.lpdcExt('isArchived'), literal(instanceSnapshot.isArchived.toString(), 'boolean')),
+            this.buildQuad(namedNode(instanceSnapshot.id.value), NS.lpdcExt('isArchived'), literal(instanceSnapshot.isArchived.toString(), NS.xsd('boolean'))),
             ...this.requirements(instanceSnapshot.id, instanceSnapshot.requirements),
             ...this.websites(instanceSnapshot.id, NS.rdfs('seeAlso'), instanceSnapshot.websites),
             ...this.procedures(instanceSnapshot.id, instanceSnapshot.procedures),

@@ -36,8 +36,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
     async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri) {
         const instanceSnapshot = await this._instanceSnapshotRepository.findById(bestuurseenheid, instanceSnapshotId);
-        const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-
+        const instanceId = instanceSnapshot.isVersionOfInstance;
+        const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceId);
         const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
 
         this._logger.log(`New versioned resource found: ${instanceSnapshotId} of service ${instanceSnapshot.isVersionOfInstance}`);
@@ -45,13 +45,24 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         //TODO LPDC-910: we moeten nog controleren of de instanceSnapshotId die binnen komt niet een oudere versie is dan deze die al verwerkt werd
 
         if (!isExistingInstance) {
-            const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
-            await this._instanceRepository.save(bestuurseenheid, instance);
-        } else {
+            await this.createNewInstance(bestuurseenheid, instanceSnapshot, concept);
+        } else if (isExistingInstance && !instanceSnapshot.isArchived) {
             const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-            const newInstance = this.asMergedInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
-            await this._instanceRepository.update(bestuurseenheid, newInstance, oldInstance);
+            await this.updateInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
+
+        } else {
+            await this._instanceRepository.delete(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
         }
+    }
+
+    private async updateInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, oldInstance: Instance, concept: Concept) {
+        const newInstance = this.asMergedInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
+        await this._instanceRepository.update(bestuurseenheid, newInstance, oldInstance);
+    }
+
+    private async createNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept) {
+        const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
+        await this._instanceRepository.save(bestuurseenheid, instance);
     }
 
     private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
