@@ -142,7 +142,7 @@ export class NewInstanceDomainService {
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);
-        await this._conceptDisplayConfigurationRepository.removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid, concept.id);
+        await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
 
         return newInstance;
     }

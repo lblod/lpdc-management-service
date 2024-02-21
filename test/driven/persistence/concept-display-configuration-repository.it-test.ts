@@ -13,6 +13,8 @@ import {DirectDatabaseAccess} from "./direct-database-access";
 import {PREFIX} from "../../../config";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {aFullConcept} from "../../core/domain/concept-test-builder";
+import {aFullInstance} from "../../core/domain/instance-test-builder";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {ConceptDisplayConfigurationBuilder} from "../../../src/core/domain/concept-display-configuration";
 
 describe('ConceptDisplayConfigurationRepository', () => {
@@ -21,6 +23,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
     const repository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
 
     describe('findById', () => {
 
@@ -215,111 +218,6 @@ describe('ConceptDisplayConfigurationRepository', () => {
 
     });
 
-    describe('removeInstantiatedFlag', () => {
-
-        test('if exists, conceptIsInstantiated is false ', async () => {
-            const bestuurseenheid =
-                aBestuurseenheid()
-                    .withId(buildBestuurseenheidIri(uuid()))
-                    .build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const conceptDisplayConfiguration =
-                aFullConceptDisplayConfiguration()
-                    .withBestuurseenheidId(bestuurseenheid.id)
-                    .withConceptIsNew(false)
-                    .withConceptIsInstantiated(true)
-                    .build();
-
-            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
-            await repository.removeInstantiatedFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-
-            expect(actualConceptDisplayConfiguration.conceptIsInstantiated).toBeFalsy();
-        });
-
-        test('if not-exists, throws error', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const conceptId = buildConceptIri(uuid());
-
-            await expect(repository.removeInstantiatedFlag(bestuurseenheid, conceptId))
-                .rejects.toThrow(new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`));
-        });
-    });
-
-    describe('removeConceptIsNewFlagAndSetInstantiatedFlag', () => {
-
-        test('When conceptIsNew is true and conceptIsInstantiated is false ', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const conceptDisplayConfiguration =
-                aFullConceptDisplayConfiguration()
-                    .withBestuurseenheidId(bestuurseenheid.id)
-                    .withConceptIsNew(true)
-                    .withConceptIsInstantiated(false)
-                    .build();
-            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
-
-            await repository.removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-
-            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-            const expectedConceptDisplayConfiguration = new ConceptDisplayConfigurationBuilder()
-                .withId(conceptDisplayConfiguration.id)
-                .withBestuurseenheidId(conceptDisplayConfiguration.bestuurseenheidId)
-                .withConceptId(conceptDisplayConfiguration.conceptId)
-                .withUuid(conceptDisplayConfiguration.uuid)
-                .withConceptIsNew(false)
-                .withConceptIsInstantiated(true)
-                .build();
-
-            expect(actualConceptDisplayConfiguration).toEqual(expectedConceptDisplayConfiguration);
-        });
-
-        test('When conceptIsNew is false and conceptIsInstantiated false', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const conceptDisplayConfiguration = aFullConceptDisplayConfiguration()
-                .withBestuurseenheidId(bestuurseenheid.id)
-                .withConceptIsNew(false)
-                .withConceptIsInstantiated(false)
-                .build();
-
-            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
-            await repository.removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-
-            const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
-                .withConceptIsNew(false)
-                .withConceptIsInstantiated(true)
-                .build();
-
-            expect(actualConceptDisplayConfiguration).toEqual(expectedConceptDisplayConfiguration);
-        });
-
-        test('When conceptIsNew is false and conceptIsInstantiated true', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-
-            const conceptDisplayConfiguration =
-                aFullConceptDisplayConfiguration()
-                    .withBestuurseenheidId(bestuurseenheid.id)
-                    .withConceptIsNew(false)
-                    .withConceptIsInstantiated(true)
-                    .build();
-
-            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
-            await repository.removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
-
-            expect(actualConceptDisplayConfiguration).toEqual(conceptDisplayConfiguration);
-        });
-
-        test('if concept-displayConfig does not exists, throws error', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const conceptId = buildConceptIri(uuid());
-
-            await expect(repository.removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid, conceptId))
-                .rejects.toThrow(new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`));
-        });
-    });
-
     describe('removeConceptIsNewFlag', () => {
 
         test('When conceptIsNew is true', async () => {
@@ -366,6 +264,78 @@ describe('ConceptDisplayConfigurationRepository', () => {
 
             await expect(repository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfigurationIri))
                 .rejects.toThrow(new Error(`No conceptDisplayConfiguration exists with id ${conceptDisplayConfigurationIri}`));
+        });
+    });
+
+    describe('syncInstantiatedFlag', () => {
+
+        test('When instance exists for concept, Then conceptIsInstantiated is true and conceptIsNew false', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+            const conceptId = buildConceptIri(uuid());
+            const instance = aFullInstance().withConceptId(conceptId).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+
+            const conceptDisplayConfiguration =
+                aFullConceptDisplayConfiguration()
+                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withConceptIsNew(true)
+                    .withConceptIsInstantiated(false)
+                    .withConceptId(conceptId)
+                    .build();
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            await repository.syncInstantiatedFlag(bestuurseenheid, conceptId);
+
+            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+            expect(actualConceptDisplayConfiguration.conceptIsInstantiated).toEqual(true);
+            expect(actualConceptDisplayConfiguration.conceptIsNew).toEqual(false);
+        });
+
+        test('When no instance exists for concept & conceptIsNew false & conceptIsInstantiated true, Then conceptIsInstantiated is false and conceptIsNew is false', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const conceptDisplayConfiguration =
+                aFullConceptDisplayConfiguration()
+                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withConceptIsNew(false)
+                    .withConceptIsInstantiated(true)
+                    .build();
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            await repository.syncInstantiatedFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+
+            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+            expect(actualConceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
+            expect(actualConceptDisplayConfiguration.conceptIsNew).toEqual(false);
+        });
+
+        test('When no instance exists for concept & conceptIsNew true & conceptIsInstantiated false, Then conceptIsInstantiated is false and conceptIsNew is true', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const conceptDisplayConfiguration =
+                aFullConceptDisplayConfiguration()
+                    .withBestuurseenheidId(bestuurseenheid.id)
+                    .withConceptIsNew(true)
+                    .withConceptIsInstantiated(false)
+                    .build();
+            await repository.save(bestuurseenheid, conceptDisplayConfiguration);
+
+            await repository.syncInstantiatedFlag(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+
+            const actualConceptDisplayConfiguration = await repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId);
+            expect(actualConceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
+            expect(actualConceptDisplayConfiguration.conceptIsNew).toEqual(true);
+        });
+
+        test('if concept-display-configuration does not exists, throws error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const conceptId = buildConceptIri(uuid());
+
+            await expect(repository.syncInstantiatedFlag(bestuurseenheid, conceptId))
+                .rejects.toThrow(new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`));
         });
     });
 

@@ -23,10 +23,7 @@ export class DeleteInstanceDomainService {
         await this._instanceRepository.delete(bestuurseenheid, instance.id);
 
         if (instance.conceptId !== undefined) {
-            const conceptHasInstances = await this._conceptRepository.conceptHasInstancesInBestuurseenheid(instance.conceptId, bestuurseenheid.userGraph());
-            if (conceptHasInstances === false) {
-                await this._conceptDisplayConfigurationRepository.removeInstantiatedFlag(bestuurseenheid, instance.conceptId);
-            }
+            await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instance.conceptId);
         }
 
     }

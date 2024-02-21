@@ -36,7 +36,7 @@ export class LinkConceptToInstanceDomainService {
             .build();
 
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instance);
-        await this._conceptDisplayConfigurationRepository.removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid, concept.id);
+        await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
     }
 
     async unlink(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void> {
@@ -54,9 +54,6 @@ export class LinkConceptToInstanceDomainService {
 
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instance);
 
-        const conceptHasInstances = await this._conceptRepository.conceptHasInstancesInBestuurseenheid(instance.conceptId, bestuurseenheid.userGraph());
-        if (!conceptHasInstances) {
-            await this._conceptDisplayConfigurationRepository.removeInstantiatedFlag(bestuurseenheid, instance.conceptId);
-        }
+        await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instance.conceptId);
     }
 }

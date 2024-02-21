@@ -102,19 +102,4 @@ export class ConceptSparqlRepository implements ConceptRepository {
 
         await this.querying.deleteInsert(query);
     }
-
-    async conceptHasInstancesInBestuurseenheid(conceptId: Iri, bestuurseenheidsGraph:Iri): Promise<boolean> {
-        const query = `
-        ${PREFIX.cpsv}
-        ${PREFIX.dct}
-        ASK WHERE {
-            GRAPH ${sparqlEscapeUri(bestuurseenheidsGraph)} {
-               ?instance a cpsv:PublicService ;
-                    dct:source ${sparqlEscapeUri(conceptId)} .
-          }
-        }
-      `;
-
-        return this.querying.ask(query);
-    }
 }
