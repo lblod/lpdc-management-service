@@ -1,7 +1,7 @@
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
-import {aFullInstanceSnapshot} from "./instance-snapshot-test-builder";
+import {aFullInstanceSnapshot, aMinimalInstanceSnapshot} from "./instance-snapshot-test-builder";
 import {InstanceSnapshotSparqlTestRepository} from "../../driven/persistence/instance-snapshot-sparql-test-repository";
 import {
     InstanceSnapshotToInstanceMergerDomainService
@@ -26,17 +26,17 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
     afterAll(() => restoreRealTime());
 
-    test('When no instance exists for instanceSnapshot not linked to concept, then instance is created', async () => {
+    test('When no instance exists for a minimalistic instanceSnapshot not linked to concept, then instance is created', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         await bestuurseenheidRepository.save(bestuurseenheid);
 
-        const instanceSnapshot = aFullInstanceSnapshot().withConceptId(undefined).build();
+        const instanceSnapshot = aMinimalInstanceSnapshot().withConceptId(undefined).build();
         await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
         const instanceExists = await instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
         expect(instanceExists).toEqual(false);
 
-        await mapper.merge(bestuurseenheid.id, instanceSnapshot.id);
+        await mapper.merge(bestuurseenheid, instanceSnapshot.id);
 
         const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
         expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
@@ -60,202 +60,12 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         expect(instanceAfterMerge.publicationMedia).toEqual(instanceSnapshot.publicationMedia);
         expect(instanceAfterMerge.yourEuropeCategories).toEqual(instanceSnapshot.yourEuropeCategories);
         expect(instanceAfterMerge.keywords).toEqual(instanceSnapshot.keywords);
-        expect(instanceAfterMerge.requirements).toEqual(expect.arrayContaining([
-            expect.objectContaining({
-                //TODO LPDC-910: Fix expect.not.objectContaining to also be defined and correct format
-                _id: expect.not.objectContaining(instanceSnapshot.requirements[0].id),
-                _uuid: expect.stringMatching(uuidRegex),
-                _title: instanceSnapshot.requirements[0].title,
-                _description: instanceSnapshot.requirements[0].description,
-                _order: instanceSnapshot.requirements[0].order,
-                _evidence: expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.requirements[0].evidence.id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.requirements[0].evidence.title,
-                    _description: instanceSnapshot.requirements[0].evidence.description,
-                    _conceptEvidenceId: instanceSnapshot.requirements[0].evidence.conceptEvidenceId
-                }),
-                _conceptRequirementId: instanceSnapshot.requirements[0].conceptRequirementId
-            }),
-            expect.objectContaining({
-                _id: expect.not.objectContaining(instanceSnapshot.requirements[1].id),
-                _uuid: expect.stringMatching(uuidRegex),
-                _title: instanceSnapshot.requirements[1].title,
-                _description: instanceSnapshot.requirements[1].description,
-                _order: instanceSnapshot.requirements[1].order,
-                _evidence: expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.requirements[1].evidence.id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.requirements[1].evidence.title,
-                    _description: instanceSnapshot.requirements[1].evidence.description,
-                    _conceptEvidenceId: instanceSnapshot.requirements[0].evidence.conceptEvidenceId
-                }),
-                _conceptRequirementId: instanceSnapshot.requirements[1].conceptRequirementId
-            })
-        ]));
-        expect(instanceAfterMerge.procedures)
-            .toEqual(expect.arrayContaining([
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.procedures[0].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.procedures[0].title,
-                    _description: instanceSnapshot.procedures[0].description,
-                    _order: instanceSnapshot.procedures[0].order,
-                    _websites: expect.arrayContaining([
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.procedures[0].websites[0].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.procedures[0].websites[0].title,
-                            _description: instanceSnapshot.procedures[0].websites[0].description,
-                            _order: instanceSnapshot.procedures[0].websites[0].order,
-                            _url: instanceSnapshot.procedures[0].websites[0].url,
-                            _conceptWebsiteId: instanceSnapshot.procedures[0].websites[0].conceptWebsiteId
-                        }),
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.procedures[0].websites[1].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.procedures[0].websites[1].title,
-                            _description: instanceSnapshot.procedures[0].websites[1].description,
-                            _order: instanceSnapshot.procedures[0].websites[1].order,
-                            _url: instanceSnapshot.procedures[0].websites[1].url,
-                            _conceptWebsiteId: instanceSnapshot.procedures[0].websites[1].conceptWebsiteId
-                        })
-                    ]),
-                    _conceptProcedureId: instanceSnapshot.procedures[0].conceptProcedureId
-
-                }),
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.procedures[1].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.procedures[1].title,
-                    _description: instanceSnapshot.procedures[1].description,
-                    _order: instanceSnapshot.procedures[1].order,
-                    _websites: expect.arrayContaining([
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.procedures[1].websites[0].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.procedures[1].websites[0].title,
-                            _description: instanceSnapshot.procedures[1].websites[0].description,
-                            _order: instanceSnapshot.procedures[1].websites[0].order,
-                            _url: instanceSnapshot.procedures[1].websites[0].url,
-                            _conceptWebsiteId: instanceSnapshot.procedures[1].websites[0].conceptWebsiteId
-                        }),
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.procedures[1].websites[1].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.procedures[1].websites[1].title,
-                            _description: instanceSnapshot.procedures[1].websites[1].description,
-                            _order: instanceSnapshot.procedures[1].websites[1].order,
-                            _url: instanceSnapshot.procedures[1].websites[1].url,
-                            _conceptWebsiteId: instanceSnapshot.procedures[1].websites[0].conceptWebsiteId
-                        })
-                    ]),
-                    _conceptProcedureId: instanceSnapshot.procedures[1].conceptProcedureId
-                })
-            ]));
-
-        expect(instanceAfterMerge.websites)
-            .toEqual(expect.arrayContaining([
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.websites[0].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.websites[0].title,
-                    _description: instanceSnapshot.websites[0].description,
-                    _order: instanceSnapshot.websites[0].order,
-                    _url: instanceSnapshot.websites[0].url,
-                    _conceptWebsiteId: instanceSnapshot.websites[0].conceptWebsiteId
-                }),
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.websites[1].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.websites[1].title,
-                    _description: instanceSnapshot.websites[1].description,
-                    _order: instanceSnapshot.websites[1].order,
-                    _url: instanceSnapshot.websites[1].url,
-                    _conceptWebsiteId: instanceSnapshot.websites[1].conceptWebsiteId
-                })
-            ]));
-        expect(instanceAfterMerge.costs)
-            .toEqual(expect.arrayContaining([
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.costs[0].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.costs[0].title,
-                    _description: instanceSnapshot.costs[0].description,
-                    _order: instanceSnapshot.costs[0].order,
-                    _conceptCostId: instanceSnapshot.costs[0].conceptCostId
-                }),
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.costs[1].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.costs[1].title,
-                    _description: instanceSnapshot.costs[1].description,
-                    _order: instanceSnapshot.costs[1].order,
-                    _conceptCostId: instanceSnapshot.costs[1].conceptCostId
-                })
-            ]));
-        expect(instanceAfterMerge.financialAdvantages)
-            .toEqual(expect.arrayContaining([
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.financialAdvantages[0].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.financialAdvantages[0].title,
-                    _description: instanceSnapshot.financialAdvantages[0].description,
-                    _order: instanceSnapshot.financialAdvantages[0].order,
-                    _conceptFinancialAdvantageId: instanceSnapshot.financialAdvantages[0].conceptFinancialAdvantageId
-                }),
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.financialAdvantages[1].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.financialAdvantages[1].title,
-                    _description: instanceSnapshot.financialAdvantages[1].description,
-                    _order: instanceSnapshot.financialAdvantages[1].order,
-                    _conceptFinancialAdvantageId: instanceSnapshot.financialAdvantages[1].conceptFinancialAdvantageId
-                })
-            ]));
-        expect(instanceAfterMerge.contactPoints)
-            .toEqual(expect.arrayContaining([
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.contactPoints[0].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _url: instanceSnapshot.contactPoints[0].url,
-                    _email: instanceSnapshot.contactPoints[0].email,
-                    _telephone: instanceSnapshot.contactPoints[0].telephone,
-                    _openingHours: instanceSnapshot.contactPoints[0].openingHours,
-                    _order: instanceSnapshot.contactPoints[0].order,
-                    _address: expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.contactPoints[0].address.id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _gemeentenaam: instanceSnapshot.contactPoints[0].address.gemeentenaam,
-                        _land: instanceSnapshot.contactPoints[0].address.land,
-                        _huisnummer: instanceSnapshot.contactPoints[0].address.huisnummer,
-                        _busnummer: instanceSnapshot.contactPoints[0].address.busnummer,
-                        _postcode: instanceSnapshot.contactPoints[0].address.postcode,
-                        _straatnaam: instanceSnapshot.contactPoints[0].address.straatnaam,
-                        _verwijstNaar: instanceSnapshot.contactPoints[0].address.verwijstNaar,
-                    }),
-                }),
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.contactPoints[1].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _url: instanceSnapshot.contactPoints[1].url,
-                    _email: instanceSnapshot.contactPoints[1].email,
-                    _telephone: instanceSnapshot.contactPoints[1].telephone,
-                    _openingHours: instanceSnapshot.contactPoints[1].openingHours,
-                    _order: instanceSnapshot.contactPoints[1].order,
-                    _address: expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.contactPoints[1].address.id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _gemeentenaam: instanceSnapshot.contactPoints[1].address.gemeentenaam,
-                        _land: instanceSnapshot.contactPoints[1].address.land,
-                        _huisnummer: instanceSnapshot.contactPoints[1].address.huisnummer,
-                        _busnummer: instanceSnapshot.contactPoints[1].address.busnummer,
-                        _postcode: instanceSnapshot.contactPoints[1].address.postcode,
-                        _straatnaam: instanceSnapshot.contactPoints[1].address.straatnaam,
-                        _verwijstNaar: instanceSnapshot.contactPoints[1].address.verwijstNaar,
-                    }),
-                })
-            ]));
+        expect(instanceAfterMerge.requirements).toEqual([]);
+        expect(instanceAfterMerge.procedures).toEqual([]);
+        expect(instanceAfterMerge.websites).toEqual([]);
+        expect(instanceAfterMerge.costs).toEqual([]);
+        expect(instanceAfterMerge.financialAdvantages).toEqual([]);
+        expect(instanceAfterMerge.contactPoints).toEqual([]);
         expect(instanceAfterMerge.conceptId).toEqual(undefined);
         expect(instanceAfterMerge.conceptSnapshotId).toEqual(undefined);
         expect(instanceAfterMerge.productId).toEqual(undefined);
@@ -283,7 +93,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         const instanceExists = await instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
         expect(instanceExists).toEqual(false);
 
-        await mapper.merge(bestuurseenheid.id, instanceSnapshot.id);
+        await mapper.merge(bestuurseenheid, instanceSnapshot.id);
 
         const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
         expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);

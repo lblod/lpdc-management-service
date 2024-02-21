@@ -23,8 +23,8 @@ export class InstanceSnapshotProcessorApplicationService {
 
         for (const {bestuurseenheidId, instanceSnapshotId} of toProcessInstanceSnapshots) {
             try {
-                await this._instanceSnapshotToInstanceMerger.merge(bestuurseenheidId, instanceSnapshotId);
                 const bestuurseenheid = await this._bestuurseenheidRepository.findById(bestuurseenheidId);
+                await this._instanceSnapshotToInstanceMerger.merge(bestuurseenheid, instanceSnapshotId);
                 await this._instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, instanceSnapshotId);
             } catch (e) {
                 console.error(`instanceSnapshotProcessor: could not process ${instanceSnapshotId}`);

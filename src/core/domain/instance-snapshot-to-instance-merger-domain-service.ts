@@ -37,8 +37,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         this._conceptRepository = conceptRepository;
     }
 
-    async merge(bestuurseenheidId: Iri, instanceSnapshotId: Iri) {
-        const bestuurseenheid = await this._bestuurseenheidRepository.findById(bestuurseenheidId);
+    async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri) {
         const instanceSnapshot = await this._instanceSnapshotRepository.findById(bestuurseenheid, instanceSnapshotId);
         const existingInstance = await this._instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
 
