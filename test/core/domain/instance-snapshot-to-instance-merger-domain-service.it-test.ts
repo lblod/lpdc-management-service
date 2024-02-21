@@ -4,8 +4,8 @@ import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {aFullInstanceSnapshot} from "./instance-snapshot-test-builder";
 import {InstanceSnapshotSparqlTestRepository} from "../../driven/persistence/instance-snapshot-sparql-test-repository";
 import {
-    InstanceSnapshotToInstanceMapperDomainService
-} from "../../../src/core/domain/instance_snapshot_to_instance_mapper_domain_service";
+    InstanceSnapshotToInstanceMergerDomainService
+} from "../../../src/core/domain/instance-snapshot-to-instance-merger-domain-service";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {InstanceStatusType} from "../../../src/core/domain/types";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
@@ -20,7 +20,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const mapper = new InstanceSnapshotToInstanceMapperDomainService(instanceSnapshotRepository, instanceRepository, bestuurseenheidRepository, conceptRepository);
+    const mapper = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, bestuurseenheidRepository, conceptRepository);
 
     beforeAll(() => setFixedTime());
 

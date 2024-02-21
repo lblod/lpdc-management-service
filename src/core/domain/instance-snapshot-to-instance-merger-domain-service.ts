@@ -19,7 +19,7 @@ import {FormatPreservingDate} from "./format-preserving-date";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 import {Concept} from "./concept";
 
-export class InstanceSnapshotToInstanceMapperDomainService {
+export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
     private readonly _instanceRepository: InstanceRepository;
     private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
@@ -30,8 +30,7 @@ export class InstanceSnapshotToInstanceMapperDomainService {
         instanceSnapshotRepository: InstanceSnapshotRepository,
         instanceRepository: InstanceRepository,
         bestuurseenheidRepository: BestuurseenheidRepository,
-        conceptRepository: ConceptRepository
-    ) {
+        conceptRepository: ConceptRepository) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
         this._bestuurseenheidRepository = bestuurseenheidRepository;
@@ -46,14 +45,16 @@ export class InstanceSnapshotToInstanceMapperDomainService {
 
             const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
 
+            //TODO LPDC-910: if instance exists -> delete first using delete-instance-domain-service.ts
+
             if (!existingInstance) {
                 const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
 
                 await this._instanceRepository.save(bestuurseenheid, instance);
             }
 
-
         } catch (e) {
+            //TODO LPDC-910: error handling ok ?
             console.error(`Error processing: ${JSON.stringify(instanceSnapshotId)}`);
             console.error(e);
         }
@@ -107,16 +108,14 @@ export class InstanceSnapshotToInstanceMapperDomainService {
     private copyRequirements(requirements: Requirement[]) {
         return requirements.map(r => {
                 const newUuid = uuid();
-                return Requirement.forInstance(
-                    Requirement.reconstitute(
-                        new Iri(`http://data.lblod.info/id/requirement/${newUuid}`),
-                        newUuid,
-                        r.title,
-                        r.description,
-                        r.order,
-                        r.evidence ? this.copyEvidence(r.evidence) : undefined,
-                        r.conceptRequirementId
-                    )
+                return Requirement.reconstitute(
+                    new Iri(`http://data.lblod.info/id/requirement/${newUuid}`),
+                    newUuid,
+                    r.title,
+                    r.description,
+                    r.order,
+                    r.evidence ? this.copyEvidence(r.evidence) : undefined,
+                    undefined
                 );
             }
         );
@@ -124,25 +123,26 @@ export class InstanceSnapshotToInstanceMapperDomainService {
 
     private copyEvidence(evidence: Evidence): Evidence {
         const newUuid = uuid();
-        return Evidence.forInstance(
-            Evidence.reconstitute(new Iri(`http://data.lblod.info/id/evidence/${newUuid}`), newUuid, evidence.title, evidence.description, undefined)
+        return Evidence.reconstitute(
+            new Iri(`http://data.lblod.info/id/evidence/${newUuid}`),
+            newUuid,
+            evidence.title,
+            evidence.description,
+            undefined
         );
     }
 
     private copyProcedures(procedures: Procedure[]) {
         return procedures.map(p => {
                 const newUuid = uuid();
-                return Procedure.forInstance(
-                    Procedure.reconstitute(
-                        new Iri(`http://data.lblod.info/id/rule/${newUuid}`),
-                        newUuid,
-                        p.title,
-                        p.description,
-                        p.order,
-                        this.copyWebsites(p.websites),
-                        p.conceptProcedureId
-                    )
-                );
+                return Procedure.reconstitute(
+                    new Iri(`http://data.lblod.info/id/rule/${newUuid}`),
+                    newUuid,
+                    p.title,
+                    p.description,
+                    p.order,
+                    this.copyWebsites(p.websites),
+                    undefined);
             }
         );
     }
@@ -150,9 +150,14 @@ export class InstanceSnapshotToInstanceMapperDomainService {
     private copyWebsites(websites: Website[]) {
         return websites.map(w => {
                 const newUuid = uuid();
-                return Website.forInstance(
-                    Website.reconstitute(new Iri(`http://data.lblod.info/id/website/${newUuid}`), newUuid, w.title, w.description, w.order, w.url, w.conceptWebsiteId)
-                );
+                return Website.reconstitute(
+                    new Iri(`http://data.lblod.info/id/website/${newUuid}`),
+                    newUuid,
+                    w.title,
+                    w.description,
+                    w.order,
+                    w.url,
+                    undefined);
             }
         );
     }
@@ -160,16 +165,26 @@ export class InstanceSnapshotToInstanceMapperDomainService {
     private copyCosts(costs: Cost[]) {
         return costs.map(c => {
             const newUuid = uuid();
-            return Cost.forInstance(Cost.reconstitute(new Iri(`http://data.lblod.info/id/cost/${newUuid}`), newUuid, c.title, c.description, c.order, c.conceptCostId));
+            return Cost.reconstitute(
+                new Iri(`http://data.lblod.info/id/cost/${newUuid}`),
+                newUuid,
+                c.title,
+                c.description,
+                c.order,
+                c.conceptCostId);
         });
     }
 
     private copyFinancialAdvantage(financialAdvantages: FinancialAdvantage[]) {
         return financialAdvantages.map(fa => {
                 const newUuid = uuid();
-                return FinancialAdvantage.forConcept(
-                    FinancialAdvantage.reconstitute(new Iri(`http://data.lblod.info/id/financial-advantage/${newUuid}`), newUuid, fa.title, fa.description, fa.order, fa.conceptFinancialAdvantageId)
-                );
+                return FinancialAdvantage.reconstitute(
+                    new Iri(`http://data.lblod.info/id/financial-advantage/${newUuid}`),
+                    newUuid,
+                    fa.title,
+                    fa.description,
+                    fa.order,
+                    fa.conceptFinancialAdvantageId);
             }
         );
     }
@@ -177,22 +192,33 @@ export class InstanceSnapshotToInstanceMapperDomainService {
     private copyContactPoints(contactPoints: ContactPoint[]) {
         return contactPoints.map(cp => {
                 const newUuid = uuid();
-                return ContactPoint.forInstance(
-                    ContactPoint.reconstitute(new Iri(`http://data.lblod.info/id/contact-punten/${newUuid}`), newUuid, cp.url, cp.email, cp.telephone, cp.openingHours, cp.order, this.copyAddress(cp.address))
-                );
+                return ContactPoint.reconstitute(
+                    new Iri(`http://data.lblod.info/id/contact-punten/${newUuid}`),
+                    newUuid,
+                    cp.url,
+                    cp.email,
+                    cp.telephone,
+                    cp.openingHours,
+                    cp.order,
+                    this.copyAddress(cp.address));
             }
         );
     }
 
     private copyAddress(address: Address): Address {
         const newUuid = uuid();
-        return Address.forInstance(
-            Address.reconstitute(new Iri(`http://data.lblod.info/id/adressen/${newUuid}`), newUuid, address.gemeentenaam, address.land, address.huisnummer, address.busnummer, address.postcode, address.straatnaam, address.verwijstNaar)
-        );
+        return Address.reconstitute(
+            new Iri(`http://data.lblod.info/id/adressen/${newUuid}`),
+            newUuid, address.gemeentenaam,
+            address.land,
+            address.huisnummer,
+            address.busnummer,
+            address.postcode,
+            address.straatnaam,
+            address.verwijstNaar);
     }
 
     private async getConceptIfExists(conceptId: Iri | undefined): Promise<Concept | undefined> {
-        
         if (conceptId) {
             const existingConcept = await this._conceptRepository.exists(conceptId);
             if (existingConcept) {
