@@ -5,7 +5,7 @@ import {InstanceSnapshot} from "./instance-snapshot";
 import {Instance} from "./instance";
 import {uuid} from "../../../mu-helper";
 import {Bestuurseenheid} from "./bestuurseenheid";
-import {InstanceStatusType} from "./types";
+import {InstancePublicationStatusType, InstanceStatusType} from "./types";
 import {Requirement} from "./requirement";
 import {Evidence} from "./evidence";
 import {Procedure} from "./procedure";
@@ -39,17 +39,18 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
         const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
 
-        //TODO LPDC-910: if instance exists -> delete first using delete-instance-domain-service.ts
-
         if (!existingInstance) {
             const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
 
             await this._instanceRepository.save(bestuurseenheid, instance);
+        } else {
+            const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const newInstance = this.asMergedInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
+            await this._instanceRepository.update(bestuurseenheid, newInstance, oldInstance);
         }
     }
 
     private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
-
         return new Instance(
             instanceSnapshot.isVersionOfInstance,
             uuid(),
@@ -93,6 +94,49 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         );
     }
 
+    private asMergedInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, instance: Instance, concept: Concept | undefined) {
+        return new Instance(
+            instanceSnapshot.isVersionOfInstance,
+            instance.uuid,
+            bestuurseenheid.id,
+            instanceSnapshot.title,
+            instanceSnapshot.description,
+            instanceSnapshot.additionalDescription,
+            instanceSnapshot.exception,
+            instanceSnapshot.regulation,
+            instanceSnapshot.startDate,
+            instanceSnapshot.endDate,
+            instanceSnapshot.type,
+            instanceSnapshot.targetAudiences,
+            instanceSnapshot.themes,
+            instanceSnapshot.competentAuthorityLevels,
+            instanceSnapshot.competentAuthorities,
+            instanceSnapshot.executingAuthorityLevels,
+            instanceSnapshot.executingAuthorities,
+            instanceSnapshot.publicationMedia,
+            instanceSnapshot.yourEuropeCategories,
+            instanceSnapshot.keywords,
+            this.copyRequirements(instanceSnapshot.requirements),
+            this.copyProcedures(instanceSnapshot.procedures),
+            this.copyWebsites(instanceSnapshot.websites),
+            this.copyCosts(instanceSnapshot.costs),
+            this.copyFinancialAdvantage(instanceSnapshot.financialAdvantages),
+            this.copyContactPoints(instanceSnapshot.contactPoints),
+            concept ? concept.id : undefined,
+            concept ? concept.latestConceptSnapshot : undefined,
+            concept ? concept.productId : undefined,
+            instanceSnapshot.languages,
+            instanceSnapshot.dateCreated,
+            instanceSnapshot.dateModified,
+            FormatPreservingDate.now(),
+            instance.datePublished,
+            InstanceStatusType.VERSTUURD,
+            undefined,
+            instance.datePublished ? InstancePublicationStatusType.TE_HERPUBLICEREN : undefined,
+            instanceSnapshot.spatials,
+            instanceSnapshot.legalResources,
+        );
+    }
     private copyRequirements(requirements: Requirement[]) {
         return requirements.map(r => {
                 const newUuid = uuid();
