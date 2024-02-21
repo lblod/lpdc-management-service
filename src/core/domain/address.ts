@@ -129,7 +129,7 @@ export class AddressBuilder {
     private verwijstNaar: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://data.lblod.info/id/adressen/${uniqueId}`);
+        return new Iri(`http://data.lblod.info/id/address/${uniqueId}`);
     }
 
     public withId(id: Iri): AddressBuilder {

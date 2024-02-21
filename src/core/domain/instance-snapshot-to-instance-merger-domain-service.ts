@@ -6,14 +6,14 @@ import {Instance} from "./instance";
 import {uuid} from "../../../mu-helper";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {InstancePublicationStatusType, InstanceStatusType} from "./types";
-import {Requirement} from "./requirement";
-import {Evidence} from "./evidence";
-import {Procedure} from "./procedure";
-import {Website} from "./website";
-import {Cost} from "./cost";
-import {FinancialAdvantage} from "./financial-advantage";
-import {ContactPoint} from "./contact-point";
-import {Address} from "./address";
+import {Requirement, RequirementBuilder} from "./requirement";
+import {Evidence, EvidenceBuilder} from "./evidence";
+import {Procedure, ProcedureBuilder} from "./procedure";
+import {Website, WebsiteBuilder} from "./website";
+import {Cost, CostBuilder} from "./cost";
+import {FinancialAdvantage, FinancialAdvantageBuilder} from "./financial-advantage";
+import {ContactPoint, ContactPointBuilder} from "./contact-point";
+import {Address, AddressBuilder} from "./address";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 import {Concept} from "./concept";
@@ -146,7 +146,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         return requirements.map(r => {
                 const newUuid = uuid();
                 return Requirement.reconstitute(
-                    new Iri(`http://data.lblod.info/id/requirement/${newUuid}`),
+                    RequirementBuilder.buildIri(newUuid),
                     newUuid,
                     r.title,
                     r.description,
@@ -161,7 +161,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     private copyEvidence(evidence: Evidence): Evidence {
         const newUuid = uuid();
         return Evidence.reconstitute(
-            new Iri(`http://data.lblod.info/id/evidence/${newUuid}`),
+            EvidenceBuilder.buildIri(newUuid),
             newUuid,
             evidence.title,
             evidence.description,
@@ -173,7 +173,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         return procedures.map(p => {
                 const newUuid = uuid();
                 return Procedure.reconstitute(
-                    new Iri(`http://data.lblod.info/id/rule/${newUuid}`),
+                    ProcedureBuilder.buildIri(newUuid),
                     newUuid,
                     p.title,
                     p.description,
@@ -188,7 +188,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         return websites.map(w => {
                 const newUuid = uuid();
                 return Website.reconstitute(
-                    new Iri(`http://data.lblod.info/id/website/${newUuid}`),
+                    WebsiteBuilder.buildIri(newUuid),
                     newUuid,
                     w.title,
                     w.description,
@@ -203,7 +203,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         return costs.map(c => {
             const newUuid = uuid();
             return Cost.reconstitute(
-                new Iri(`http://data.lblod.info/id/cost/${newUuid}`),
+                CostBuilder.buildIri(newUuid),
                 newUuid,
                 c.title,
                 c.description,
@@ -216,7 +216,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         return financialAdvantages.map(fa => {
                 const newUuid = uuid();
                 return FinancialAdvantage.reconstitute(
-                    new Iri(`http://data.lblod.info/id/financial-advantage/${newUuid}`),
+                    FinancialAdvantageBuilder.buildIri(newUuid),
                     newUuid,
                     fa.title,
                     fa.description,
@@ -230,7 +230,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         return contactPoints.map(cp => {
                 const newUuid = uuid();
                 return ContactPoint.reconstitute(
-                    new Iri(`http://data.lblod.info/id/contact-punten/${newUuid}`),
+                    ContactPointBuilder.buildIri(newUuid),
                     newUuid,
                     cp.url,
                     cp.email,
@@ -245,7 +245,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     private copyAddress(address: Address): Address {
         const newUuid = uuid();
         return Address.reconstitute(
-            new Iri(`http://data.lblod.info/id/adressen/${newUuid}`),
+            AddressBuilder.buildIri(newUuid),
             newUuid, address.gemeentenaam,
             address.land,
             address.huisnummer,

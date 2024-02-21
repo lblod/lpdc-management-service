@@ -5,12 +5,12 @@ import {SnapshotType} from "./types";
 import {Iri} from "./shared/iri";
 import {Concept} from "./concept";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
-import {Requirement} from "./requirement";
-import {Evidence} from "./evidence";
-import {Procedure} from "./procedure";
-import {Website} from "./website";
-import {Cost} from "./cost";
-import {FinancialAdvantage} from "./financial-advantage";
+import {Requirement, RequirementBuilder} from "./requirement";
+import {Evidence, EvidenceBuilder} from "./evidence";
+import {Procedure, ProcedureBuilder} from "./procedure";
+import {Website, WebsiteBuilder} from "./website";
+import {Cost, CostBuilder} from "./cost";
+import {FinancialAdvantage, FinancialAdvantageBuilder} from "./financial-advantage";
 import {
     ConceptDisplayConfigurationRepository
 } from "../port/driven/persistence/concept-display-configuration-repository";
@@ -47,7 +47,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
         this._codeRepository = codeRepository;
         this._instanceRepository = instanceRepository;
 
-        if(logger) {
+        if (logger) {
             this._logger = logger;
         }
     }
@@ -225,16 +225,14 @@ export class ConceptSnapshotToConceptMergerDomainService {
     private copyRequirements(requirements: Requirement[]) {
         return requirements.map(r => {
                 const newUuid = uuid();
-                return Requirement.forConcept(
-                    Requirement.reconstitute(
-                        new Iri(`http://data.lblod.info/id/requirement/${newUuid}`),
-                        newUuid,
-                        r.title,
-                        r.description,
-                        r.order,
-                        r.evidence ? this.copyEvidence(r.evidence) : undefined,
-                        undefined
-                    )
+                return Requirement.reconstitute(
+                    RequirementBuilder.buildIri(newUuid),
+                    newUuid,
+                    r.title,
+                    r.description,
+                    r.order,
+                    r.evidence ? this.copyEvidence(r.evidence) : undefined,
+                    undefined
                 );
             }
         );
@@ -245,7 +243,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
                 const newUuid = uuid();
                 return Procedure.forConcept(
                     Procedure.reconstitute(
-                        new Iri(`http://data.lblod.info/id/rule/${newUuid}`),
+                        ProcedureBuilder.buildIri(newUuid),
                         newUuid,
                         p.title,
                         p.description,
@@ -261,9 +259,14 @@ export class ConceptSnapshotToConceptMergerDomainService {
     private copyWebsites(websites: Website[]) {
         return websites.map(w => {
                 const newUuid = uuid();
-                return Website.forConcept(
-                    Website.reconstitute(new Iri(`http://data.lblod.info/id/website/${newUuid}`), newUuid, w.title, w.description, w.order, w.url, undefined)
-                );
+                return Website.reconstitute(
+                    WebsiteBuilder.buildIri(newUuid),
+                    newUuid,
+                    w.title,
+                    w.description,
+                    w.order,
+                    w.url,
+                    undefined);
             }
         );
     }
@@ -271,25 +274,38 @@ export class ConceptSnapshotToConceptMergerDomainService {
     private copyCosts(costs: Cost[]) {
         return costs.map(c => {
             const newUuid = uuid();
-            return Cost.forConcept(Cost.reconstitute(new Iri(`http://data.lblod.info/id/cost/${newUuid}`), newUuid, c.title, c.description, c.order, undefined));
+            return Cost.reconstitute(
+                CostBuilder.buildIri(newUuid),
+                newUuid,
+                c.title,
+                c.description,
+                c.order,
+                undefined);
         });
     }
 
     private copyFinancialAdvantages(financialAdvantages: FinancialAdvantage[]) {
         return financialAdvantages.map(fa => {
                 const newUuid = uuid();
-                return FinancialAdvantage.forConcept(
-                    FinancialAdvantage.reconstitute(new Iri(`http://data.lblod.info/id/financial-advantage/${newUuid}`), newUuid, fa.title, fa.description, fa.order, undefined)
-                );
+                return FinancialAdvantage.reconstitute(
+                    FinancialAdvantageBuilder.buildIri(newUuid),
+                    newUuid,
+                    fa.title,
+                    fa.description,
+                    fa.order,
+                    undefined);
             }
         );
     }
 
     private copyEvidence(evidence: Evidence): Evidence {
         const newUuid = uuid();
-        return Evidence.forConcept(
-            Evidence.reconstitute(new Iri(`http://data.lblod.info/id/evidence/${newUuid}`), newUuid, evidence.title, evidence.description, undefined)
-        );
+        return Evidence.reconstitute(
+            EvidenceBuilder.buildIri(newUuid),
+            newUuid,
+            evidence.title,
+            evidence.description,
+            undefined);
     }
 
     private async ensureLinkedAuthoritiesExistAsCodeList(conceptSnapshot: ConceptSnapshot): Promise<void> {

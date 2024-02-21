@@ -114,7 +114,7 @@ export class ContactPointBuilder {
 
 
     static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://data.lblod.info/id/contact-punten/${uniqueId}`);
+        return new Iri(`http://data.lblod.info/id/contact-point/${uniqueId}`);
     }
 
     public withId(id: Iri): ContactPointBuilder {
