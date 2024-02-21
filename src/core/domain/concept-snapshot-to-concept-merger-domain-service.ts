@@ -21,7 +21,7 @@ import {CodeRepository, CodeSchema} from "../port/driven/persistence/code-reposi
 import {isEqual, uniqWith} from "lodash";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 
-export class NewConceptSnapshotToConceptMergerDomainService {
+export class ConceptSnapshotToConceptMergerDomainService {
 
     private readonly _conceptSnapshotRepository: ConceptSnapshotRepository;
     private readonly _conceptRepository: ConceptRepository;
@@ -45,9 +45,9 @@ export class NewConceptSnapshotToConceptMergerDomainService {
         this._instanceRepository = instanceRepository;
     }
 
-    async merge(newConceptSnapshotId: Iri) {
+    async merge(conceptSnapshotId: Iri) {
         try {
-            const newConceptSnapshot = await this._conceptSnapshotRepository.findById(newConceptSnapshotId);
+            const newConceptSnapshot = await this._conceptSnapshotRepository.findById(conceptSnapshotId);
             const conceptId = newConceptSnapshot.isVersionOfConcept;
             const conceptExists = await this._conceptRepository.exists(conceptId);
             const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
@@ -56,21 +56,21 @@ export class NewConceptSnapshotToConceptMergerDomainService {
 
             if (newConceptSnapshotAlreadyLinkedToConcept) {
                 //TODO LPDC-848: when doing idempotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
-                console.log(`The versioned resource <${newConceptSnapshotId}> is already processed on service <${conceptId}>`);
+                console.log(`The versioned resource <${conceptSnapshotId}> is already processed on service <${conceptId}>`);
 
                 return;
             }
 
             const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
             if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
-                console.log(`The versioned resource <${newConceptSnapshotId}> is an older version of service <${conceptId}>`);
+                console.log(`The versioned resource <${conceptSnapshotId}> is an older version of service <${conceptId}>`);
                 const updatedConcept = this.addAsPreviousConceptSnapshot(newConceptSnapshot, concept);
                 await this._conceptRepository.update(updatedConcept, concept);
 
                 return;
             }
 
-            console.log(`New versioned resource found: ${newConceptSnapshotId} of service ${conceptId}`);
+            console.log(`New versioned resource found: ${conceptSnapshotId} of service ${conceptId}`);
 
             const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
             const isConceptSnapshotFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
@@ -91,7 +91,7 @@ export class NewConceptSnapshotToConceptMergerDomainService {
             await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
 
         } catch (e) {
-            console.error(`Error processing: ${JSON.stringify(newConceptSnapshotId)}`);
+            console.error(`Error processing: ${JSON.stringify(conceptSnapshotId)}`);
             console.error(e);
         }
     }

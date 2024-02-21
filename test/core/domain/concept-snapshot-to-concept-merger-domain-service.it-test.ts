@@ -1,8 +1,8 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {ConceptSnapshotSparqlTestRepository} from "../../driven/persistence/concept-snapshot-sparql-test-repository";
 import {
-    NewConceptSnapshotToConceptMergerDomainService
-} from "../../../src/core/domain/new-concept-snapshot-to-concept-merger-domain-service";
+    ConceptSnapshotToConceptMergerDomainService
+} from "../../../src/core/domain/concept-snapshot-to-concept-merger-domain-service";
 import {
     aFullConceptSnapshot,
     aMinimalConceptSnapshot,
@@ -62,7 +62,7 @@ describe('merges a new concept snapshot into a concept', () => {
     const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
 
-    const merger = new NewConceptSnapshotToConceptMergerDomainService(
+    const merger = new ConceptSnapshotToConceptMergerDomainService(
         conceptSnapshotRepository,
         conceptRepository,
         conceptDisplayConfigurationRepository,
@@ -974,7 +974,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 prefLabel: `preferred label for: ${uriEntry}`
             }))
         };
-        const merger = new NewConceptSnapshotToConceptMergerDomainService(
+        const merger = new ConceptSnapshotToConceptMergerDomainService(
             conceptSnapshotRepository,
             conceptRepository,
             conceptDisplayConfigurationRepository,

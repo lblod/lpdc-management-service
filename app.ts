@@ -14,8 +14,8 @@ import {ConceptSparqlRepository} from "./src/driven/persistence/concept-sparql-r
 import {Iri} from "./src/core/domain/shared/iri";
 import {flatten} from "lodash";
 import {
-    NewConceptSnapshotToConceptMergerDomainService
-} from "./src/core/domain/new-concept-snapshot-to-concept-merger-domain-service";
+    ConceptSnapshotToConceptMergerDomainService
+} from "./src/core/domain/concept-snapshot-to-concept-merger-domain-service";
 import {
     ConceptDisplayConfigurationSparqlRepository
 } from "./src/driven/persistence/concept-display-configuration-sparql-repository";
@@ -60,8 +60,8 @@ const formDefinitionRepository = new FormDefinitionFileRepository();
 const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository();
 const semanticFormsMapper = new SemanticFormsMapperImpl();
 
-const newConceptSnapshotToConceptMergerDomainService =
-    new NewConceptSnapshotToConceptMergerDomainService(
+const conceptSnapshotToConceptMergerDomainService =
+    new ConceptSnapshotToConceptMergerDomainService(
         conceptSnapshotRepository,
         conceptRepository,
         conceptDisplayConfigurationRepository,
@@ -131,7 +131,7 @@ app.post('/delta', async function (req, res): Promise<void> {
                     .filter((t: any) => t?.graph.value === CONCEPT_SNAPSHOT_LDES_GRAPH && t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
                     .map((delta: any) => new Iri(delta.subject.value));
                 for (const newConceptSnapshotId of newConceptSnapshotIds) {
-                    await newConceptSnapshotToConceptMergerDomainService.merge(newConceptSnapshotId);
+                    await conceptSnapshotToConceptMergerDomainService.merge(newConceptSnapshotId);
                 }
             });
 
