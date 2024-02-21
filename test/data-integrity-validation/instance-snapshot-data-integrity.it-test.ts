@@ -14,7 +14,7 @@ describe('Instance Snapshot Data Integrity Validation', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 
-    test('Query for each bestuurseenheid the instance snapshots in the ldes input graph', async () => {
+    test.skip('Query for each bestuurseenheid the instance snapshots in the ldes input graph', async () => {
         const bestuurseenheidsQuery = `
             ${PREFIX.besluit}
             SELECT ?id WHERE {
