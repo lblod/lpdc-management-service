@@ -35,7 +35,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceSnapshot = aMinimalInstanceSnapshot().withConceptId(undefined).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(false);
 
             await mapper.merge(bestuurseenheid, instanceSnapshot.id);
@@ -91,7 +91,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceSnapshot = aFullInstanceSnapshot().withConceptId(concept.id).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(false);
 
             await mapper.merge(bestuurseenheid, instanceSnapshot.id);
@@ -338,7 +338,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceSnapshot = aMinimalInstanceSnapshot().withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
             await mapper.merge(bestuurseenheid, instanceSnapshot.id);
@@ -400,7 +400,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceSnapshot = aFullInstanceSnapshot().withIsVersionOfInstance(instance.id).withConceptId(concept.id).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
             await mapper.merge(bestuurseenheid, instanceSnapshot.id);

@@ -3,19 +3,25 @@ import {
     InstanceSnapshotToInstanceMergerDomainService
 } from "../domain/instance-snapshot-to-instance-merger-domain-service";
 import {BestuurseenheidRepository} from "../port/driven/persistence/bestuurseenheid-repository";
+import {Logger} from "../../../platform/logger";
 
 export class InstanceSnapshotProcessorApplicationService {
 
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
     private readonly _instanceSnapshotToInstanceMerger: InstanceSnapshotToInstanceMergerDomainService;
     private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
+    private readonly _logger: Logger = new Logger('InstanceSnapshotProcessor');
 
     constructor(instanceSnapshotRepository: InstanceSnapshotRepository,
                 instanceSnapshotToInstanceMerger: InstanceSnapshotToInstanceMergerDomainService,
-                bestuurseenheidRepository: BestuurseenheidRepository) {
+                bestuurseenheidRepository: BestuurseenheidRepository,
+                logger?: Logger) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceSnapshotToInstanceMerger = instanceSnapshotToInstanceMerger;
         this._bestuurseenheidRepository = bestuurseenheidRepository;
+        if(logger) {
+            this._logger = logger;
+        }
     }
 
     async process() {
@@ -27,7 +33,7 @@ export class InstanceSnapshotProcessorApplicationService {
                 await this._instanceSnapshotToInstanceMerger.merge(bestuurseenheid, instanceSnapshotId);
                 await this._instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, instanceSnapshotId);
             } catch (e) {
-                console.error(`instanceSnapshotProcessor: could not process ${instanceSnapshotId}, ${e}`);
+                this._logger.error(`Could not process ${instanceSnapshotId}`, e);
             }
         }
     }

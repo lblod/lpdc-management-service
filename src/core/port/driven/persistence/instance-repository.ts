@@ -14,6 +14,6 @@ export interface InstanceRepository {
 
     updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void>;
 
-    exits(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean>;
+    exists(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean>;
 
 }

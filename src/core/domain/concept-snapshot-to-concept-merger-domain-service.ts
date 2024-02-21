@@ -20,6 +20,7 @@ import {
 import {CodeRepository, CodeSchema} from "../port/driven/persistence/code-repository";
 import {isEqual, uniqWith} from "lodash";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
+import {Logger} from "../../../platform/logger";
 
 export class ConceptSnapshotToConceptMergerDomainService {
 
@@ -29,6 +30,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
     private readonly _bestuurseenheidRegistrationCodeFetcher: BestuurseenheidRegistrationCodeFetcher;
     private readonly _codeRepository: CodeRepository;
     private readonly _instanceRepository: InstanceRepository;
+    private readonly _logger: Logger = new Logger('ConceptSnapshotToConceptMergerDomainService');
 
     constructor(
         conceptSnapshotRepository: ConceptSnapshotRepository,
@@ -36,13 +38,18 @@ export class ConceptSnapshotToConceptMergerDomainService {
         conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository,
         bestuurseenheidRegistrationCodeFetcher: BestuurseenheidRegistrationCodeFetcher,
         codeRepository: CodeRepository,
-        instanceRepository: InstanceRepository) {
+        instanceRepository: InstanceRepository,
+        logger?: Logger) {
         this._conceptSnapshotRepository = conceptSnapshotRepository;
         this._conceptRepository = conceptRepository;
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
         this._bestuurseenheidRegistrationCodeFetcher = bestuurseenheidRegistrationCodeFetcher;
         this._codeRepository = codeRepository;
         this._instanceRepository = instanceRepository;
+
+        if(logger) {
+            this._logger = logger;
+        }
     }
 
     async merge(conceptSnapshotId: Iri) {
@@ -56,21 +63,21 @@ export class ConceptSnapshotToConceptMergerDomainService {
 
             if (newConceptSnapshotAlreadyLinkedToConcept) {
                 //TODO LPDC-848: when doing idempotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
-                console.log(`The versioned resource <${conceptSnapshotId}> is already processed on service <${conceptId}>`);
+                this._logger.log(`The versioned resource <${conceptSnapshotId}> is already processed on service <${conceptId}>`);
 
                 return;
             }
 
             const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
             if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
-                console.log(`The versioned resource <${conceptSnapshotId}> is an older version of service <${conceptId}>`);
+                this._logger.log(`The versioned resource <${conceptSnapshotId}> is an older version of service <${conceptId}>`);
                 const updatedConcept = this.addAsPreviousConceptSnapshot(newConceptSnapshot, concept);
                 await this._conceptRepository.update(updatedConcept, concept);
 
                 return;
             }
 
-            console.log(`New versioned resource found: ${conceptSnapshotId} of service ${conceptId}`);
+            this._logger.log(`New versioned resource found: ${conceptSnapshotId} of service ${conceptId}`);
 
             const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
             const isConceptSnapshotFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
@@ -91,8 +98,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
             await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
 
         } catch (e) {
-            console.error(`Error processing: ${JSON.stringify(conceptSnapshotId)}`);
-            console.error(e);
+            this._logger.error(`Error processing: ${JSON.stringify(conceptSnapshotId)}`, e);
         }
     }
 
@@ -292,7 +298,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
             if (!await this._codeRepository.exists(CodeSchema.IPDCOrganisaties, code)) {
                 const codeListData: any = await this._bestuurseenheidRegistrationCodeFetcher.fetchOrgRegistryCodelistEntry(code.value);
                 if (codeListData.prefLabel) {
-                    console.log(`Inserting new codeList ${code}`);
+                    this._logger.log(`Inserting new codeList ${code}`);
                     await this.insertCodeListData(codeListData);
                 }
             }

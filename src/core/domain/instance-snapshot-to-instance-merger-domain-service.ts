@@ -17,12 +17,13 @@ import {Address} from "./address";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 import {Concept} from "./concept";
+import {Logger} from "../../../platform/logger";
 
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
     private readonly _instanceRepository: InstanceRepository;
     private readonly _conceptRepository: ConceptRepository;
-
+    private readonly _logger: Logger = new Logger('InstanceSnapshotToInstanceMergerDomainService');
 
     constructor(
         instanceSnapshotRepository: InstanceSnapshotRepository,
@@ -35,13 +36,16 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
     async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri) {
         const instanceSnapshot = await this._instanceSnapshotRepository.findById(bestuurseenheid, instanceSnapshotId);
-        const existingInstance = await this._instanceRepository.exits(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+        const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
 
         const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
 
-        if (!existingInstance) {
-            const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
+        this._logger.log(`New versioned resource found: ${instanceSnapshotId} of service ${instanceSnapshot.isVersionOfInstance}`);
 
+        //TODO LPDC-910: we moeten nog controleren of de instanceSnapshotId die binnen komt niet een oudere versie is dan deze die al verwerkt werd
+
+        if (!isExistingInstance) {
+            const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
             await this._instanceRepository.save(bestuurseenheid, instance);
         } else {
             const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
@@ -137,6 +141,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.legalResources,
         );
     }
+
     private copyRequirements(requirements: Requirement[]) {
         return requirements.map(r => {
                 const newUuid = uuid();

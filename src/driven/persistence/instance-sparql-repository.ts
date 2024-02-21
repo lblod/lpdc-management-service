@@ -193,7 +193,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         }
     }
 
-    async exits(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean> {
+    async exists(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean> {
         const query = `
             ${PREFIX.cpsv}
             ASK WHERE {

@@ -10,4 +10,8 @@ export class Logger {
         console.log(`${this._prefix}|${msg}`);
     }
 
+    error(msg: string, ex: any) {
+        console.error(`${this._prefix}|${msg}`, ex);
+    }
+
 }

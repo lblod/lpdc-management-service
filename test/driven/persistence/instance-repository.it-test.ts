@@ -265,23 +265,23 @@ describe('InstanceRepository', () => {
         });
     });
 
-    describe('exits', () => {
+    describe('exists', () => {
 
-        test('When exits, then return true', async () => {
+        test('When exists, then return true', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance().build();
             await repository.save(bestuurseenheid, instance);
 
-            const actual = await repository.exits(bestuurseenheid, instance.id);
+            const actual = await repository.exists(bestuurseenheid, instance.id);
 
             expect(actual).toEqual(true);
         });
 
-        test('When not exits, then return false', async () => {
+        test('When not exists, then return false', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance().build();
 
-            const actual = await repository.exits(bestuurseenheid, instance.id);
+            const actual = await repository.exists(bestuurseenheid, instance.id);
 
             expect(actual).toEqual(false);
         });
