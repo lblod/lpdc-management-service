@@ -1,7 +1,6 @@
 import {InstanceSnapshotRepository} from "../port/driven/persistence/instance-snapshot-repository";
 import {Iri} from "./shared/iri";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
-import {BestuurseenheidRepository} from "../port/driven/persistence/bestuurseenheid-repository";
 import {InstanceSnapshot} from "./instance-snapshot";
 import {Instance} from "./instance";
 import {uuid} from "../../../mu-helper";
@@ -22,18 +21,15 @@ import {Concept} from "./concept";
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
     private readonly _instanceRepository: InstanceRepository;
-    private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
     private readonly _conceptRepository: ConceptRepository;
 
 
     constructor(
         instanceSnapshotRepository: InstanceSnapshotRepository,
         instanceRepository: InstanceRepository,
-        bestuurseenheidRepository: BestuurseenheidRepository,
         conceptRepository: ConceptRepository) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
-        this._bestuurseenheidRepository = bestuurseenheidRepository;
         this._conceptRepository = conceptRepository;
     }
 

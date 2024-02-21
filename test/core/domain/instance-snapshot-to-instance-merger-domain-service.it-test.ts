@@ -20,7 +20,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const mapper = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, bestuurseenheidRepository, conceptRepository);
+    const mapper = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository);
 
     beforeAll(() => setFixedTime());
 
