@@ -27,7 +27,7 @@ export class InstanceSnapshotProcessorApplicationService {
                 await this._instanceSnapshotToInstanceMerger.merge(bestuurseenheid, instanceSnapshotId);
                 await this._instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, instanceSnapshotId);
             } catch (e) {
-                console.error(`instanceSnapshotProcessor: could not process ${instanceSnapshotId}`);
+                console.error(`instanceSnapshotProcessor: could not process ${instanceSnapshotId}, ${e}`);
             }
         }
     }
