@@ -16,6 +16,9 @@ import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-acc
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {buildInstanceIri, buildInstanceSnapshotIri} from "../domain/iri-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {
+    ConceptDisplayConfigurationSparqlTestRepository
+} from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
 
 
 describe('InstanceSnapshotProcessorApplicationService', () => {
@@ -29,7 +32,8 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const instanceSnapshotMerger = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository);
+    const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceSnapshotMerger = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository, conceptDisplayConfigurationRepository);
     const instanceSnapshotProcessor = new InstanceSnapshotProcessorApplicationService(instanceSnapshotRepository, instanceSnapshotMerger, bestuurseenheidRepository);
 
     test('Should retry unsuccessful merges', async () => {
@@ -37,6 +41,7 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         await bestuurseenheidRepository.save(bestuurseenheid);
         const instanceSnapshot  = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z')).withCreatedBy(bestuurseenheid.id).build();
         await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot.conceptId);
 
         const invalidInstanceSnapshotId = buildInstanceSnapshotIri(uuid());
         await directDatabaseAccess.insertData(
@@ -81,6 +86,9 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot2);
         await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot1);
         await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot3);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot1.conceptId);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot2.conceptId);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot3.conceptId);
 
         await instanceSnapshotProcessor.process();
 

@@ -18,20 +18,26 @@ import {FormatPreservingDate} from "./format-preserving-date";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 import {Concept} from "./concept";
 import {Logger} from "../../../platform/logger";
+import {
+    ConceptDisplayConfigurationRepository
+} from "../port/driven/persistence/concept-display-configuration-repository";
 
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
     private readonly _instanceRepository: InstanceRepository;
     private readonly _conceptRepository: ConceptRepository;
     private readonly _logger: Logger = new Logger('InstanceSnapshotToInstanceMergerDomainService');
+    private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
 
     constructor(
         instanceSnapshotRepository: InstanceSnapshotRepository,
         instanceRepository: InstanceRepository,
-        conceptRepository: ConceptRepository) {
+        conceptRepository: ConceptRepository,
+        conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
         this._conceptRepository = conceptRepository;
+        this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
     }
 
     async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri) {
@@ -49,9 +55,15 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         } else if (isExistingInstance && !instanceSnapshot.isArchived) {
             const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             await this.updateInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
-
+            if (oldInstance.conceptId) {
+                await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, oldInstance.conceptId);
+            }
         } else {
             await this._instanceRepository.delete(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+        }
+
+        if (instanceSnapshot.conceptId) {
+            await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instanceSnapshot.conceptId);
         }
     }
 

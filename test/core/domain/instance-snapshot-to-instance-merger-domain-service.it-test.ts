@@ -17,6 +17,9 @@ import {sparqlEscapeUri} from "../../../mu-helper";
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
+import {
+    ConceptDisplayConfigurationSparqlRepository
+} from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -25,7 +28,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const mapper = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository);
+    const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const mapper = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository, conceptDisplayConfigurationRepository);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
     beforeAll(() => setFixedTime());
@@ -92,6 +96,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             const concept = aFullConcept().build();
             await conceptRepository.save(concept);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
             const instanceSnapshot = aFullInstanceSnapshot().withConceptId(concept.id).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
@@ -330,6 +335,28 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
             expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
         });
+        test('conceptDisplayConfiguration is updated', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const concept = aFullConcept().build();
+            await conceptRepository.save(concept);
+
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
+
+            const instanceSnapshot = aFullInstanceSnapshot().withConceptId(concept.id).build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceExists).toEqual(false);
+
+            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+
+            const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
+            expect(conceptDisplayConfiguration.conceptIsNew).toEqual(false);
+            expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(true);
+        });
+
     });
 
     describe('Instance already exists', () => {
@@ -339,6 +366,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
             await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
             const instanceSnapshot = aMinimalInstanceSnapshot().withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
@@ -398,9 +426,11 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
             await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
             const concept = aFullConcept().build();
             await conceptRepository.save(concept);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
             const instanceSnapshot = aFullInstanceSnapshot().withIsVersionOfInstance(instance.id).withConceptId(concept.id).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
@@ -685,9 +715,11 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
             await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
             const instanceSnapshot = aFullInstanceSnapshot().withIsVersionOfInstance(instance.id).withIsArchived(true).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot.conceptId);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
@@ -716,6 +748,62 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
             ]));
+        });
+        test('Given concept is removed in instance by new instanceSnapshot, then conceptDisplayConfiguration is updated', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const concept = aFullConcept().build();
+            await conceptRepository.save(concept);
+
+            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
+
+            const instanceSnapshot = aFullInstanceSnapshot().withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
+
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceExists).toEqual(true);
+
+            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+            const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
+            expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
+        });
+
+        test('Given instance is linked to different concept, then conceptDisplayConfiguration is updated', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const concept = aFullConcept().build();
+            await conceptRepository.save(concept);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
+
+            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+
+            const concept2 = aFullConcept().build();
+            await conceptRepository.save(concept2);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept2.id);
+
+            const instanceSnapshot = aFullInstanceSnapshot().withIsVersionOfInstance(instance.id).withConceptId(concept2.id).build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
+            await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept2.id);
+
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceExists).toEqual(true);
+
+            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+
+            const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
+            expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
+
+            const conceptDisplayConfiguration2 = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept2.id);
+            expect(conceptDisplayConfiguration2.conceptIsInstantiated).toEqual(true);
         });
 
     });
