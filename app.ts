@@ -625,11 +625,10 @@ new CronJob(
     INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN, // cronTime
     () => {
         instanceSnapshotProcessorApplicationService.process()
-            .then(() => console.log(`instance-snapshot-processing done`));
+            .then(() => console.log(`instance-snapshot-processing done`))
+            .catch((reason) => console.log(`instance-snapshot-processing failed ${reason}`));
     }, // onTick
     null, // onComplete
     true, // start
     'Europe/Brussels' // timeZone
 );
-
-
