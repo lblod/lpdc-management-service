@@ -17,7 +17,7 @@ import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
-import {buildInstanceIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildConceptIri, buildInstanceIri} from "./iri-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {
     ConceptDisplayConfigurationSparqlRepository
@@ -26,7 +26,6 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {NS} from "../../../src/driven/persistence/namespaces";
 import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
-import {buildBestuurseenheidIri, buildConceptIri} from "./iri-test-builder";
 import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
 import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
@@ -836,7 +835,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const conceptDisplayConfiguration2 = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept2.id);
             expect(conceptDisplayConfiguration2.conceptIsInstantiated).toEqual(true);
         });
-        test('Dont merge instanceSnapshots if newer one is already processed', async () => {
+        test('Dont merge instanceSnapshots if newer one is already processed for the same instance', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
@@ -844,8 +843,18 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const concept = aFullConcept().build();
             await conceptRepository.save(concept);
             await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
-
             const instanceId = buildInstanceIri(uuid());
+            const otherInstanceId = buildInstanceIri(uuid());
+
+            const instanceSnapshotForOtherInstance = aFullInstanceSnapshot()
+                .withTitle(LanguageString.of('other snapshot', undefined, undefined, 'other snapshot'))
+                .withGeneratedAtTime(FormatPreservingDate.of('2024-01-18T00:00:00.672Z'))
+                .withCreatedBy(bestuurseenheid.id)
+                .withIsVersionOfInstance(otherInstanceId)
+                .withConceptId(concept.id)
+                .build();
+
+
             const firstInstanceSnapshot = aFullInstanceSnapshot()
                 .withTitle(LanguageString.of('snapshot 1', undefined, undefined, 'snapshot 1'))
                 .withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
@@ -861,8 +870,12 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .withConceptId(concept.id)
                 .build();
 
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshotForOtherInstance);
             await instanceSnapshotRepository.save(bestuurseenheid, secondInstanceSnapshot);
             await instanceSnapshotRepository.save(bestuurseenheid, firstInstanceSnapshot);
+
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotForOtherInstance.id);
+            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, instanceSnapshotForOtherInstance.id);
 
             await mapperDomainService.merge(bestuurseenheid, secondInstanceSnapshot.id);
             await instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, secondInstanceSnapshot.id);
@@ -873,7 +886,9 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const actual = await instanceRepository.findById(bestuurseenheid, instanceId);
             expect(actual.title).toEqual(secondInstanceSnapshot.title);
         });
-        test('Given a deletedInstance, when receiving a new snapshot, recreate the instance and remove tombstone', async () => {
+    });
+
+    test('Given a deletedInstance, when receiving a new snapshot, recreate the instance and remove tombstone', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
@@ -909,7 +924,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             ]));
 
         });
-        test('Given a deletedInstance, when receiving a new archive snapshot, update tombstone', async () => {
+    test('Given a deletedInstance, when receiving a new archive snapshot, update tombstone', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
@@ -942,8 +957,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(quadsBeforeAfterArchivingAgain).toEqual(expect.arrayContaining([
                 quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),]));
         });
-    });
-
     test('Inserts Code Lists for competent and executing authorities if not existing', async () => {
         const bestuurseenheidRegistrationCodeFetcher = {
             fetchOrgRegistryCodelistEntry: jest.fn().mockImplementation((uriEntry: Iri) => Promise.resolve({
@@ -1018,6 +1031,5 @@ async function getQuadsForInstance(bestuurseenheid: Bestuurseenheid, instance: I
             }
         `;
     const queryResult = await directDatabaseAccess.list(query);
-    const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
-    return quads;
+    return new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
 }

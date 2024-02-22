@@ -1,7 +1,6 @@
 import {Bestuurseenheid} from "../../../domain/bestuurseenheid";
 import {Iri} from "../../../domain/shared/iri";
 import {InstanceSnapshot} from "../../../domain/instance-snapshot";
-import {FormatPreservingDate} from "../../../domain/format-preserving-date";
 
 export interface InstanceSnapshotRepository {
 
@@ -11,6 +10,6 @@ export interface InstanceSnapshotRepository {
 
     addToProcessedInstanceSnapshots(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri): Promise<void>;
 
-    hasNewerProcessedInstanceSnapshot(bestuurseenheid: Bestuurseenheid, instanceSnaphotId: Iri, generatedAtTime: FormatPreservingDate): Promise<boolean>;
+    hasNewerProcessedInstanceSnapshot(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot): Promise<boolean>;
 
 }
