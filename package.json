@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.ts",
   "scripts": {
-    "test": "jest",
+    "build": "tsc --noEmit",
+    "test": "npm run build && jest",
     "test-unit": "jest --testMatch **/test/**/*.unit-test.ts",
     "test-integration": "jest --testMatch **/test/**/*.it-test.ts",
     "release": "release-it",

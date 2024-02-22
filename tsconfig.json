@@ -4,6 +4,7 @@
     "strict": false,
     "esModuleInterop": true,
     "target": "ES2022",
-    "moduleResolution": "nodenext"
+    "moduleResolution": "nodenext",
+    "module": "NodeNext"
   }
 }
