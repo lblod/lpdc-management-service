@@ -13,13 +13,16 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {aFullConcept} from "./concept-test-builder";
 import {aFullInstance} from "./instance-test-builder";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
+import {buildInstanceIri} from "./iri-test-builder";
+import {LanguageString} from "../../../src/core/domain/language-string";
 import {
     ConceptDisplayConfigurationSparqlRepository
 } from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
+import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -29,7 +32,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const mapper = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository, conceptDisplayConfigurationRepository);
+    const deleteInstanceDomainService = new DeleteInstanceDomainService(instanceRepository, conceptDisplayConfigurationRepository);
+    const mapperDomainService = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository, conceptDisplayConfigurationRepository, deleteInstanceDomainService);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
     beforeAll(() => setFixedTime());
@@ -47,7 +51,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(false);
 
-            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
@@ -104,7 +108,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(false);
 
-            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
@@ -350,7 +354,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(false);
 
-            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
 
             const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             expect(conceptDisplayConfiguration.conceptIsNew).toEqual(false);
@@ -374,7 +378,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
-            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
 
@@ -438,7 +442,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
-            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
@@ -677,6 +681,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
             await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
             const instanceSnapshot = aMinimalInstanceSnapshot().withIsVersionOfInstance(instance.id).withIsArchived(true).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
@@ -684,7 +689,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
-            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
 
             expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
 
@@ -724,7 +729,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
-            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
 
             expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
 
@@ -768,7 +773,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
-            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
             const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
         });
@@ -797,7 +802,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
-            await mapper.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
 
             const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
@@ -805,6 +810,43 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const conceptDisplayConfiguration2 = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept2.id);
             expect(conceptDisplayConfiguration2.conceptIsInstantiated).toEqual(true);
         });
+        test('Dont merge instanceSnapshots if newer one is already processed', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+
+            const concept = aFullConcept().build();
+            await conceptRepository.save(concept);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
+
+            const instanceId = buildInstanceIri(uuid());
+            const firstInstanceSnapshot = aFullInstanceSnapshot()
+                .withTitle(LanguageString.of('snapshot 1', undefined, undefined, 'snapshot 1'))
+                .withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withCreatedBy(bestuurseenheid.id)
+                .withIsVersionOfInstance(instanceId)
+                .withConceptId(concept.id)
+                .build();
+            const secondInstanceSnapshot = aFullInstanceSnapshot()
+                .withTitle(LanguageString.of('snapshot 2', undefined, undefined, 'snapshot 2'))
+                .withGeneratedAtTime(FormatPreservingDate.of('2024-01-17T00:00:00.672Z'))
+                .withCreatedBy(bestuurseenheid.id)
+                .withIsVersionOfInstance(instanceId)
+                .withConceptId(concept.id)
+                .build();
+
+            await instanceSnapshotRepository.save(bestuurseenheid, secondInstanceSnapshot);
+            await instanceSnapshotRepository.save(bestuurseenheid, firstInstanceSnapshot);
+
+            await mapperDomainService.merge(bestuurseenheid, secondInstanceSnapshot.id);
+            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, secondInstanceSnapshot.id);
+
+            await mapperDomainService.merge(bestuurseenheid, firstInstanceSnapshot.id);
+            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, firstInstanceSnapshot.id);
+
+            const actual = await instanceRepository.findById(bestuurseenheid, instanceId);
+            expect(actual.title).toEqual(secondInstanceSnapshot.title);
+        }, 10000);
 
     });
 

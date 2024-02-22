@@ -19,6 +19,7 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {
     ConceptDisplayConfigurationSparqlTestRepository
 } from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
+import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";
 
 
 describe('InstanceSnapshotProcessorApplicationService', () => {
@@ -33,7 +34,8 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceSnapshotMerger = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository, conceptDisplayConfigurationRepository);
+    const deleteInstanceDomainService = new DeleteInstanceDomainService(instanceRepository, conceptDisplayConfigurationRepository);
+    const instanceSnapshotMerger = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository, conceptDisplayConfigurationRepository, deleteInstanceDomainService);
     const instanceSnapshotProcessor = new InstanceSnapshotProcessorApplicationService(instanceSnapshotRepository, instanceSnapshotMerger, bestuurseenheidRepository);
 
     test('Should retry unsuccessful merges', async () => {

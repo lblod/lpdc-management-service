@@ -21,12 +21,14 @@ import {Logger} from "../../../platform/logger";
 import {
     ConceptDisplayConfigurationRepository
 } from "../port/driven/persistence/concept-display-configuration-repository";
+import {DeleteInstanceDomainService} from "./delete-instance-domain-service";
 
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
     private readonly _instanceRepository: InstanceRepository;
     private readonly _conceptRepository: ConceptRepository;
     private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
+    private readonly _deleteInstanceDomainService: DeleteInstanceDomainService;
     private readonly _logger: Logger = new Logger('InstanceSnapshotToInstanceMergerDomainService');
 
     constructor(
@@ -34,11 +36,13 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         instanceRepository: InstanceRepository,
         conceptRepository: ConceptRepository,
         conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository,
+        deleteInstanceDomainService: DeleteInstanceDomainService,
         logger?: Logger) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
         this._conceptRepository = conceptRepository;
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
+        this._deleteInstanceDomainService = deleteInstanceDomainService;
         if (logger) {
             this._logger = logger;
         }
@@ -47,40 +51,46 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri) {
         const instanceSnapshot = await this._instanceSnapshotRepository.findById(bestuurseenheid, instanceSnapshotId);
 
-        //TODO LPDC-910: we moeten nog controleren of de instanceSnapshotId die binnen komt niet een oudere versie is dan deze die al verwerkt werd
-        //ask: de processed instance snapshots op die linken naar deze instantie, met een generated at time ouder dan degene van de instanceSnapshot die je meegeeft
+        const hasNewerProcessedInstanceSnapshot = await this._instanceSnapshotRepository.hasNewerProcessedInstanceSnapshot(bestuurseenheid, instanceSnapshotId, instanceSnapshot.generatedAtTime);
 
+        if (!hasNewerProcessedInstanceSnapshot) {
         const instanceId = instanceSnapshot.isVersionOfInstance;
         const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceId);
         const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
 
         this._logger.log(`New versioned resource found: ${instanceSnapshotId} of service ${instanceSnapshot.isVersionOfInstance}`);
 
-        if (!isExistingInstance) {
-            await this.createNewInstance(bestuurseenheid, instanceSnapshot, concept);
-        } else if (isExistingInstance && !instanceSnapshot.isArchived) {
-            const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-            await this.updateInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
-            if (oldInstance.conceptId) {
-                await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, oldInstance.conceptId);
-            }
-        } else {
-            await this._instanceRepository.delete(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-        }
+            if (!isExistingInstance) {
+                await this.createNewInstance(bestuurseenheid, instanceSnapshot, concept);
+            } else if (isExistingInstance && !instanceSnapshot.isArchived) {
+                const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+                await this.updateInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
 
-        if (instanceSnapshot.conceptId) {
-            await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instanceSnapshot.conceptId);
+            } else if (isExistingInstance && instanceSnapshot.isArchived) {
+                await this._deleteInstanceDomainService.delete(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            }
         }
     }
 
     private async updateInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, oldInstance: Instance, concept: Concept) {
         const newInstance = this.asMergedInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
         await this._instanceRepository.update(bestuurseenheid, newInstance, oldInstance);
+
+        if (oldInstance.conceptId) {
+            await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, oldInstance.conceptId);
+        }
+        if (instanceSnapshot.conceptId) {
+            await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instanceSnapshot.conceptId);
+        }
     }
 
     private async createNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept) {
         const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
         await this._instanceRepository.save(bestuurseenheid, instance);
+
+        if (instanceSnapshot.conceptId) {
+            await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instanceSnapshot.conceptId);
+        }
     }
 
     private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {

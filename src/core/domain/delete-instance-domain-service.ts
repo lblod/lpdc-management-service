@@ -4,17 +4,14 @@ import {
 } from "../port/driven/persistence/concept-display-configuration-repository";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {Iri} from "./shared/iri";
-import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 
 export class DeleteInstanceDomainService {
     private readonly _instanceRepository: InstanceRepository;
-    private readonly _conceptRepository: ConceptRepository;
     private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
 
 
-    constructor(instanceRepository: InstanceRepository, conceptRepository: ConceptRepository, conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository) {
+    constructor(instanceRepository: InstanceRepository, conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository) {
         this._instanceRepository = instanceRepository;
-        this._conceptRepository = conceptRepository;
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
     }
 

@@ -97,7 +97,6 @@ const selectFormLanguageDomainService = new SelectFormLanguageDomainService(
 
 const deleteInstanceDomainService = new DeleteInstanceDomainService(
     instanceRepository,
-    conceptRepository,
     conceptDisplayConfigurationRepository
 );
 
@@ -132,6 +131,7 @@ const instanceSnapshotToInstanceMergerDomainService = new InstanceSnapshotToInst
     instanceRepository,
     conceptRepository,
     conceptDisplayConfigurationRepository,
+    deleteInstanceDomainService
 );
 
 const instanceSnapshotProcessorApplicationService = new InstanceSnapshotProcessorApplicationService(
