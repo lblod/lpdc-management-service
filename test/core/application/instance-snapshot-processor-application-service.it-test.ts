@@ -19,6 +19,10 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {
     ConceptDisplayConfigurationSparqlTestRepository
 } from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
+import {
+    EnsureLinkedAuthoritiesExistAsCodeListDomainService
+} from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
+import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
 import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";
 
 
@@ -35,7 +39,12 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const deleteInstanceDomainService = new DeleteInstanceDomainService(instanceRepository, conceptDisplayConfigurationRepository);
-    const instanceSnapshotMerger = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository, conceptDisplayConfigurationRepository, deleteInstanceDomainService);
+    const bestuurseenheidRegistrationCodeFetcher = {
+        fetchOrgRegistryCodelistEntry: jest.fn().mockReturnValue(Promise.resolve({}))
+    };
+    const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const linkedAuthoritiesDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
+    const instanceSnapshotMerger = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository, conceptDisplayConfigurationRepository, deleteInstanceDomainService, linkedAuthoritiesDomainService);
     const instanceSnapshotProcessor = new InstanceSnapshotProcessorApplicationService(instanceSnapshotRepository, instanceSnapshotMerger, bestuurseenheidRepository);
 
     test('Should retry unsuccessful merges', async () => {

@@ -22,6 +22,15 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {
     ConceptDisplayConfigurationSparqlRepository
 } from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
+import {Iri} from "../../../src/core/domain/shared/iri";
+import {PREFIX, PUBLIC_GRAPH} from "../../../config";
+import {NS} from "../../../src/driven/persistence/namespaces";
+import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
+import {buildBestuurseenheidIri, buildConceptIri} from "./iri-test-builder";
+import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
+import {
+    EnsureLinkedAuthoritiesExistAsCodeListDomainService
+} from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
 import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
@@ -31,9 +40,21 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const bestuurseenheidRegistrationCodeFetcher = {
+        fetchOrgRegistryCodelistEntry: jest.fn().mockReturnValue(Promise.resolve({}))
+    };
+    const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const ensureLinkedAuthoritiesExistAsCodeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
     const deleteInstanceDomainService = new DeleteInstanceDomainService(instanceRepository, conceptDisplayConfigurationRepository);
-    const mapperDomainService = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository, conceptDisplayConfigurationRepository, deleteInstanceDomainService);
+    const mapperDomainService = new InstanceSnapshotToInstanceMergerDomainService(
+        instanceSnapshotRepository,
+        instanceRepository,
+        conceptRepository,
+        conceptDisplayConfigurationRepository,
+        deleteInstanceDomainService,
+        ensureLinkedAuthoritiesExistAsCodeListDomainService
+    );
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
     beforeAll(() => setFixedTime());
@@ -850,5 +871,64 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
     });
 
+    test('Inserts Code Lists for competent and executing authorities if not existing', async () => {
+        const bestuurseenheidRegistrationCodeFetcher = {
+            fetchOrgRegistryCodelistEntry: jest.fn().mockImplementation((uriEntry: Iri) => Promise.resolve({
+                uri: uriEntry,
+                prefLabel: `preferred label for: ${uriEntry}`
+            }))
+        };
+        const codeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(
+            bestuurseenheidRegistrationCodeFetcher,
+            codeRepository
+        );
+
+        const merger = new InstanceSnapshotToInstanceMergerDomainService(
+            instanceSnapshotRepository,
+            instanceRepository,
+            conceptRepository,
+            conceptDisplayConfigurationRepository,
+            deleteInstanceDomainService,
+            codeListDomainService
+        );
+
+        await directDatabaseAccess.insertData(
+            PUBLIC_GRAPH,
+            [
+                `${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)} a skos:ConceptScheme`,
+            ],
+            [
+                PREFIX.skos,
+            ],
+        );
+
+        const competentAuthorityWithoutCodeList = buildBestuurseenheidIri(uuid());
+        const executingAuthorityWithoutCodeList = buildBestuurseenheidIri(uuid());
+        const bestuurseenheid = aBestuurseenheid().build();
+
+        const isVersionOfInstanceId = buildConceptIri(uuid());
+        const instanceSnapshot =
+            aMinimalInstanceSnapshot()
+                .withCreatedBy(bestuurseenheid.id)
+                .withIsVersionOfInstance(isVersionOfInstanceId)
+                .withCompetentAuthorities([competentAuthorityWithoutCodeList])
+                .withExecutingAuthorities([executingAuthorityWithoutCodeList])
+                .build();
+
+        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+        await merger.merge(bestuurseenheid, instanceSnapshot.id);
+
+        const createdInstance = await instanceRepository.findById(bestuurseenheid, isVersionOfInstanceId);
+        expect(createdInstance.id).toEqual(isVersionOfInstanceId);
+        expect(createdInstance.uuid).toMatch(uuidRegex);
+
+        const createdCompetentAuthorityCode = await codeRepository.exists(CodeSchema.IPDCOrganisaties, competentAuthorityWithoutCodeList);
+        expect(createdCompetentAuthorityCode).toBeTruthy();
+
+        const createdExecutingAuthorityCode = await codeRepository.exists(CodeSchema.IPDCOrganisaties, executingAuthorityWithoutCodeList);
+        expect(createdExecutingAuthorityCode).toBeTruthy();
+
+    }, 10000);
 
 });

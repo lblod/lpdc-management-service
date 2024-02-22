@@ -50,6 +50,9 @@ import {
     InstanceSnapshotToInstanceMergerDomainService
 } from "./src/core/domain/instance-snapshot-to-instance-merger-domain-service";
 import {CronJob} from 'cron';
+import {
+    EnsureLinkedAuthoritiesExistAsCodeListDomainService
+} from "./src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -74,13 +77,17 @@ const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(
 const semanticFormsMapper = new SemanticFormsMapperImpl();
 const instanceSnapshotRepository = new InstanceSnapshotSparqlRepository();
 
+const linkedAuthorityCodeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(
+    bestuurseenheidRegistrationCodeFetcher,
+    codeRepository
+);
+
 const conceptSnapshotToConceptMergerDomainService =
     new ConceptSnapshotToConceptMergerDomainService(
         conceptSnapshotRepository,
         conceptRepository,
         conceptDisplayConfigurationRepository,
-        bestuurseenheidRegistrationCodeFetcher,
-        codeRepository,
+        linkedAuthorityCodeListDomainService,
         instanceRepository,
     );
 
@@ -131,7 +138,8 @@ const instanceSnapshotToInstanceMergerDomainService = new InstanceSnapshotToInst
     instanceRepository,
     conceptRepository,
     conceptDisplayConfigurationRepository,
-    deleteInstanceDomainService
+    deleteInstanceDomainService,
+    linkedAuthorityCodeListDomainService,
 );
 
 const instanceSnapshotProcessorApplicationService = new InstanceSnapshotProcessorApplicationService(

@@ -46,6 +46,9 @@ import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-
 import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+import {
+    EnsureLinkedAuthoritiesExistAsCodeListDomainService
+} from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
 
 describe('merges a new concept snapshot into a concept', () => {
 
@@ -62,12 +65,13 @@ describe('merges a new concept snapshot into a concept', () => {
     const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
 
+    const ensureLinkedAuthoritiesExistAsCodeListDomainService =  new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
+
     const merger = new ConceptSnapshotToConceptMergerDomainService(
         conceptSnapshotRepository,
         conceptRepository,
         conceptDisplayConfigurationRepository,
-        bestuurseenheidRegistrationCodeFetcher,
-        codeRepository,
+        ensureLinkedAuthoritiesExistAsCodeListDomainService,
         instanceRepository);
 
     describe('create a new concept', () => {
@@ -974,12 +978,12 @@ describe('merges a new concept snapshot into a concept', () => {
                 prefLabel: `preferred label for: ${uriEntry}`
             }))
         };
+        const ensureLinkedAuthoritiesExistAsCodeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
         const merger = new ConceptSnapshotToConceptMergerDomainService(
             conceptSnapshotRepository,
             conceptRepository,
             conceptDisplayConfigurationRepository,
-            bestuurseenheidRegistrationCodeFetcher,
-            codeRepository,
+            ensureLinkedAuthoritiesExistAsCodeListDomainService,
             instanceRepository);
 
         await directDatabaseAccess.insertData(

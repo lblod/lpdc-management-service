@@ -21,6 +21,9 @@ import {Logger} from "../../../platform/logger";
 import {
     ConceptDisplayConfigurationRepository
 } from "../port/driven/persistence/concept-display-configuration-repository";
+import {
+    EnsureLinkedAuthoritiesExistAsCodeListDomainService
+} from "./ensure-linked-authorities-exist-as-code-list-domain-service";
 import {DeleteInstanceDomainService} from "./delete-instance-domain-service";
 
 export class InstanceSnapshotToInstanceMergerDomainService {
@@ -29,6 +32,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _conceptRepository: ConceptRepository;
     private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
     private readonly _deleteInstanceDomainService: DeleteInstanceDomainService;
+    private readonly _ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService;
     private readonly _logger: Logger = new Logger('InstanceSnapshotToInstanceMergerDomainService');
 
     constructor(
@@ -37,15 +41,15 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         conceptRepository: ConceptRepository,
         conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository,
         deleteInstanceDomainService: DeleteInstanceDomainService,
+        ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService,
         logger?: Logger) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
         this._conceptRepository = conceptRepository;
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
         this._deleteInstanceDomainService = deleteInstanceDomainService;
-        if (logger) {
-            this._logger = logger;
-        }
+        this._ensureLinkedAuthoritiesExistAsCodeListDomainService = ensureLinkedAuthoritiesExistAsCodeListDomainService;
+        this._logger = logger ?? this._logger;
     }
 
     async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri) {
@@ -70,6 +74,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                 await this._deleteInstanceDomainService.delete(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             }
         }
+        await this._ensureLinkedAuthoritiesExistAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...instanceSnapshot.competentAuthorities, ...instanceSnapshot.executingAuthorities]);
     }
 
     private async updateInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, oldInstance: Instance, concept: Concept) {

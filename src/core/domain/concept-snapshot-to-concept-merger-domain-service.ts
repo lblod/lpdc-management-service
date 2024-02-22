@@ -14,21 +14,19 @@ import {FinancialAdvantage, FinancialAdvantageBuilder} from "./financial-advanta
 import {
     ConceptDisplayConfigurationRepository
 } from "../port/driven/persistence/concept-display-configuration-repository";
-import {
-    BestuurseenheidRegistrationCodeFetcher
-} from "../port/driven/external/bestuurseenheid-registration-code-fetcher";
-import {CodeRepository, CodeSchema} from "../port/driven/persistence/code-repository";
 import {isEqual, uniqWith} from "lodash";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {Logger} from "../../../platform/logger";
+import {
+    EnsureLinkedAuthoritiesExistAsCodeListDomainService
+} from "./ensure-linked-authorities-exist-as-code-list-domain-service";
 
 export class ConceptSnapshotToConceptMergerDomainService {
 
     private readonly _conceptSnapshotRepository: ConceptSnapshotRepository;
     private readonly _conceptRepository: ConceptRepository;
     private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
-    private readonly _bestuurseenheidRegistrationCodeFetcher: BestuurseenheidRegistrationCodeFetcher;
-    private readonly _codeRepository: CodeRepository;
+    private readonly _ensureLinkedAuthoritiesExistsAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService;
     private readonly _instanceRepository: InstanceRepository;
     private readonly _logger: Logger = new Logger('ConceptSnapshotToConceptMergerDomainService');
 
@@ -36,15 +34,13 @@ export class ConceptSnapshotToConceptMergerDomainService {
         conceptSnapshotRepository: ConceptSnapshotRepository,
         conceptRepository: ConceptRepository,
         conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository,
-        bestuurseenheidRegistrationCodeFetcher: BestuurseenheidRegistrationCodeFetcher,
-        codeRepository: CodeRepository,
+        ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService,
         instanceRepository: InstanceRepository,
         logger?: Logger) {
         this._conceptSnapshotRepository = conceptSnapshotRepository;
         this._conceptRepository = conceptRepository;
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
-        this._bestuurseenheidRegistrationCodeFetcher = bestuurseenheidRegistrationCodeFetcher;
-        this._codeRepository = codeRepository;
+        this._ensureLinkedAuthoritiesExistsAsCodeListDomainService = ensureLinkedAuthoritiesExistAsCodeListDomainService;
         this._instanceRepository = instanceRepository;
 
         if (logger) {
@@ -91,7 +87,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
                 await this._conceptRepository.update(updatedConcept, concept);
             }
 
-            await this.ensureLinkedAuthoritiesExistAsCodeList(newConceptSnapshot);
+            await this._ensureLinkedAuthoritiesExistsAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...newConceptSnapshot.competentAuthorities, ...newConceptSnapshot.executingAuthorities]);
 
             await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptSnapshotFunctionallyChanged, shouldConceptBeArchived);
 
@@ -306,23 +302,6 @@ export class ConceptSnapshotToConceptMergerDomainService {
             evidence.title,
             evidence.description,
             undefined);
-    }
-
-    private async ensureLinkedAuthoritiesExistAsCodeList(conceptSnapshot: ConceptSnapshot): Promise<void> {
-        const linkedAuthorities = [...conceptSnapshot.competentAuthorities, ...conceptSnapshot.executingAuthorities];
-        for (const code of linkedAuthorities) {
-            if (!await this._codeRepository.exists(CodeSchema.IPDCOrganisaties, code)) {
-                const codeListData: any = await this._bestuurseenheidRegistrationCodeFetcher.fetchOrgRegistryCodelistEntry(code.value);
-                if (codeListData.prefLabel) {
-                    this._logger.log(`Inserting new codeList ${code}`);
-                    await this.insertCodeListData(codeListData);
-                }
-            }
-        }
-    }
-
-    private async insertCodeListData(codeListData: { uri?: Iri, prefLabel?: string }): Promise<void> {
-        return this._codeRepository.save(CodeSchema.IPDCOrganisaties, codeListData.uri, codeListData.prefLabel, new Iri('https://wegwijs.vlaanderen.be'));
     }
 
     private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: Iri): Promise<boolean> {
