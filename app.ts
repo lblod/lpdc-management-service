@@ -459,7 +459,7 @@ app.put('/public-services/:instanceId/publish', async function (req, res): Promi
         console.error(e);
         const response = {
             status: 500,
-            message: `Unexpected error during validation of service "${instanceIdRequestParam}".`
+            message: `Unexpected error during publishing of service "${instanceIdRequestParam}".`
         };
         return res.status(response.status).set('content-type', 'application/json').send(response.message);
     }

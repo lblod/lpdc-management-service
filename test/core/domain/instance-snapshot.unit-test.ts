@@ -33,6 +33,7 @@ import {Address, AddressBuilder} from "../../../src/core/domain/address";
 import {AddressTestBuilder} from "./address-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {aMinimalProcedureForInstanceSnapshot} from "./procedure-test-builder";
+import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 
 beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
@@ -76,6 +77,11 @@ describe('constructing', () => {
             .toThrow(new Error('competentAuthorities should not contain duplicates'));
     });
 
+    test('CompetentAuthorities with not at least one value throws error', () => {
+        expect(() => aFullInstanceSnapshot().withCompetentAuthorities([]).build())
+            .toThrow(new Error('competentAuthorities should contain at least one value'));
+    });
+
     test('ExecutingAuthorityLevels with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.LOKAAL]).build())
             .toThrow(new Error('executingAuthorityLevels should not contain duplicates'));
@@ -94,6 +100,13 @@ describe('constructing', () => {
     test('YourEuropeCategories with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF, YourEuropeCategoryType.BEDRIJF]).build())
             .toThrow(new Error('yourEuropeCategories should not contain duplicates'));
+    });
+
+    test('YourEuropeCategories with not at least one value throws error when publicationMedia includes yourEurope', () => {
+        expect(() => aFullInstanceSnapshot()
+            .withPublicationMedia([PublicationMediumType.YOUREUROPE])
+            .withYourEuropeCategories([]).build())
+            .toThrow(new Error('yourEuropeCategories should contain at least one value'));
     });
 
     test('keywords with duplicates throws error', () => {
@@ -155,12 +168,16 @@ describe('constructing', () => {
             .toThrow(new Error('spatials should not contain duplicates'));
     });
 
+    test('Spatials with not at least one value throws error', () => {
+        expect(() => aFullInstanceSnapshot().withSpatials([]).build())
+            .toThrow(new Error('spatials should contain at least one value'));
+    });
+
     test('legalResources with duplicates throws error', () => {
         const iri = uuid();
         expect(() => aFullInstanceSnapshot().withLegalResources([buildCodexVlaanderenIri(iri), buildCodexVlaanderenIri(iri)]).build())
             .toThrow(new Error('legalResources should not contain duplicates'));
     });
-
 
     describe('requirement', () => {
 
@@ -209,6 +226,87 @@ describe('constructing', () => {
                 aMinimalRequirementForInstanceSnapshot().withOrder(2).build();
 
             expect(() => aFullInstanceSnapshot().withRequirements([requirement1, requirement2]).build()).not.toThrow();
+        });
+
+        describe('evidence ', () => {
+
+            test('valid evidence does not throw error', () => {
+                const uuidValue = uuid();
+                const validEvidence = Evidence.reconstitute(
+                    EvidenceBuilder.buildIri(uuidValue),
+                    undefined,
+                    LanguageString.of('title', undefined, undefined, 'title'),
+                    LanguageString.of('description', undefined, undefined, 'omschrijving'),
+                    undefined
+                );
+                const validRequirement = aFullRequirementForInstanceSnapshot().withEvidence(validEvidence).build();
+
+                expect(() => aFullInstanceSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
+            });
+
+            test('invalid evidence does throw error', () => {
+                const uuidValue = uuid();
+                const invalidEvidence = Evidence.reconstitute(
+                    EvidenceBuilder.buildIri(uuidValue),
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined);
+                const invalidRequirement = aFullRequirementForInstanceSnapshot().withEvidence(invalidEvidence).build();
+
+                expect(() => aFullInstanceSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
+            });
+
+        });
+    });
+
+    describe('procedure', () => {
+
+        test('valid procedure does not throw error', () => {
+            const uuidValue = uuid();
+            const validProcedure = Procedure.reconstitute(
+                ProcedureBuilder.buildIri(uuidValue),
+                undefined,
+                LanguageString.of('title', undefined, undefined, 'title'),
+                LanguageString.of('description', undefined, undefined, 'omschrijving'),
+                1,
+                [],
+                undefined
+            );
+
+            expect(() => aFullInstanceSnapshot().withProcedures([validProcedure]).build()).not.toThrow();
+        });
+
+        test('invalid procedure does throw error', () => {
+            const invalidProcedure = Procedure.reconstitute(
+                RequirementBuilder.buildIri(uuid()),
+                undefined,
+                undefined,
+                undefined,
+                1,
+                [],
+                undefined
+            );
+
+            expect(() => aFullInstanceSnapshot().withProcedures([invalidProcedure]).build()).toThrow();
+        });
+
+        test('procedures that dont have unique order throws error', () => {
+            const procedure1 =
+                aMinimalProcedureForInstanceSnapshot().withOrder(1).build();
+            const procedure2 =
+                aMinimalProcedureForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullInstanceSnapshot().withProcedures([procedure1, procedure2]).build()).toThrow(new Error('procedures > order should not contain duplicates'));
+        });
+
+        test('procedures that have unique order does not throw error', () => {
+            const procedure1 =
+                aMinimalProcedureForInstanceSnapshot().withOrder(1).build();
+            const procedure2 =
+                aMinimalProcedureForInstanceSnapshot().withOrder(2).build();
+
+            expect(() => aFullInstanceSnapshot().withProcedures([procedure1, procedure2]).build()).not.toThrow();
         });
 
         describe('evidence ', () => {

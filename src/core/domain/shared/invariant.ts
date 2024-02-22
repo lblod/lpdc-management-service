@@ -71,8 +71,13 @@ export class Invariant<V> {
             ? `${this._name} should be present when ${presentName} equals ${expectedValue} `
             : null;
     }
+
     toMatchPattern(pattern: RegExp): InvariantType<V> {
         return () => this.matchesPattern(this._value, pattern) ? null : `${this._name} does not match pattern`;
+    }
+
+    atLeastOneValuePresentIfCondition(condition: () => boolean): InvariantType<V> {
+        return condition() ? this.haveAtLeastOneValuePresent() : () => null;
     }
 
     public to(...invariants: InvariantType<V>[]): V {
@@ -128,4 +133,9 @@ export const requiredCanOnlyBePresentIfOtherValuePresent = <T>(value: T, name: s
 export const requireShouldBePresentWhenOtherValueEquals = <T>(value: T, name: string = 'object', expectedValue: any, presentValue: any, presentName: string): T => {
     const invariant: Invariant<T> = Invariant.require(value, name);
     return invariant.to(invariant.shouldBePresentWhenOtherValueEquals(expectedValue, presentValue, presentName));
+};
+
+export const requireAtLeastOneValuePresentIfCondition = <T>(values: T[], name: string = 'list', condition: () => boolean): T => {
+    const invariant: Invariant<T> = Invariant.require(values, name);
+    return invariant.to(invariant.atLeastOneValuePresentIfCondition(condition));
 };

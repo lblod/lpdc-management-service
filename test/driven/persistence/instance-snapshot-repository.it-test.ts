@@ -31,7 +31,7 @@ describe('InstanceSnapshotRepository', () => {
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
     beforeEach(async () => {
-       await repository.clearAllInstanceSnapshotGraphs();
+        await repository.clearAllInstanceSnapshotGraphs();
     });
 
     describe('findById', () => {
@@ -88,47 +88,53 @@ describe('InstanceSnapshotRepository', () => {
 
     describe('findToProcessInstanceSnapshots', () => {
 
-       test('When no instanceSnapshots processed, then return all', async () => {
-           const bestuurseenheid = aBestuurseenheid().build();
-           const otherBestuurseenheid = aBestuurseenheid().build();
-           const instanceSnapshot1 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
-           const instanceSnapshot2 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
-           const instanceSnapshotOtherBestuurseenheid = aFullInstanceSnapshot().withCreatedBy(otherBestuurseenheid.id).build();
-           await repository.save(bestuurseenheid, instanceSnapshot1);
-           await repository.save(bestuurseenheid, instanceSnapshot2);
-           await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
+        test('When no instanceSnapshots processed, then return all', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const otherBestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshot1 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
+            const instanceSnapshot2 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
+            const instanceSnapshotOtherBestuurseenheid = aFullInstanceSnapshot().withCreatedBy(otherBestuurseenheid.id).build();
+            await repository.save(bestuurseenheid, instanceSnapshot1);
+            await repository.save(bestuurseenheid, instanceSnapshot2);
+            await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
 
-           const actual = await repository.findToProcessInstanceSnapshots();
-           expect(actual).toEqual([
-               {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
-               {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot2.id},
-               {bestuurseenheidId: otherBestuurseenheid.id, instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id},
-           ]);
-       });
+            const actual = await repository.findToProcessInstanceSnapshots();
+            expect(actual).toEqual([
+                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
+                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot2.id},
+                {
+                    bestuurseenheidId: otherBestuurseenheid.id,
+                    instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id
+                },
+            ]);
+        });
 
-       test('When some instanceSnapshots are already processed, then return only to process instanceSnapshots', async () => {
-           const bestuurseenheid = aBestuurseenheid().build();
-           const otherBestuurseenheid = aBestuurseenheid().build();
-           const instanceSnapshot1 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
-           const instanceSnapshot2 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
-           const instanceSnapshotOtherBestuurseenheid = aFullInstanceSnapshot().withCreatedBy(otherBestuurseenheid.id).build();
-           await repository.save(bestuurseenheid, instanceSnapshot1);
-           await repository.save(bestuurseenheid, instanceSnapshot2);
-           await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
+        test('When some instanceSnapshots are already processed, then return only to process instanceSnapshots', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const otherBestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshot1 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
+            const instanceSnapshot2 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
+            const instanceSnapshotOtherBestuurseenheid = aFullInstanceSnapshot().withCreatedBy(otherBestuurseenheid.id).build();
+            await repository.save(bestuurseenheid, instanceSnapshot1);
+            await repository.save(bestuurseenheid, instanceSnapshot2);
+            await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
 
-           await directDatabaseAccess.insertData(
-               bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
-               [
-                   `<http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> <${instanceSnapshot2.id}>`
-               ]
-           );
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                [
+                    `<http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> <${instanceSnapshot2.id}>`
+                ]
+            );
 
-           const actual = await repository.findToProcessInstanceSnapshots();
-           expect(actual).toEqual([
-               {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
-               {bestuurseenheidId: otherBestuurseenheid.id, instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id},
-           ]);
-       });
+            const actual = await repository.findToProcessInstanceSnapshots();
+            expect(actual).toEqual([
+                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
+                {
+                    bestuurseenheidId: otherBestuurseenheid.id,
+                    instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id
+                },
+            ]);
+        });
 
         test('should return findToProcessInstanceSnapshots sorted by generatedAt date', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
@@ -143,7 +149,10 @@ describe('InstanceSnapshotRepository', () => {
             const actual = await repository.findToProcessInstanceSnapshots();
             expect(actual).toEqual([
                 {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
-                {bestuurseenheidId: otherBestuurseenheid.id, instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id},
+                {
+                    bestuurseenheidId: otherBestuurseenheid.id,
+                    instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id
+                },
                 {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot2.id},
             ]);
         });
@@ -199,6 +208,8 @@ describe('InstanceSnapshotRepository', () => {
                     .withDateCreated(InstanceSnapshotTestBuilder.DATE_CREATED)
                     .withDateModified(InstanceSnapshotTestBuilder.DATE_MODIFIED)
                     .withGeneratedAtTime(InstanceSnapshotTestBuilder.GENERATED_AT_TIME)
+                    .withCompetentAuthorities([InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0]])
+                    .withSpatials([InstanceSnapshotTestBuilder.SPATIALS[0]])
                     .build();
 
             await directDatabaseAccess.insertData(
@@ -212,9 +223,10 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_EN}"""@EN`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> <${InstanceSnapshotTestBuilder.SPATIALS[0].value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0].value}>`,
                 ]);
 
             const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
@@ -596,7 +608,10 @@ describe('InstanceSnapshotRepository', () => {
         for (const publicationMedium of Object.values(PublicationMediumType)) {
             test(`PublicationMediumType ${publicationMedium} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
-                const instanceSnapshot = aMinimalInstanceSnapshot().withPublicationMedia([publicationMedium]).build();
+                const instanceSnapshot = aMinimalInstanceSnapshot()
+                    .withPublicationMedia([publicationMedium])
+                    .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF])
+                    .build();
                 await repository.save(bestuurseenheid, instanceSnapshot);
 
                 const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
@@ -689,6 +704,8 @@ describe('InstanceSnapshotRepository', () => {
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> <${InstanceSnapshotTestBuilder.SPATIALS[0].value}>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0].value}>`,
                     ]);
 
                 const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
@@ -715,6 +732,8 @@ describe('InstanceSnapshotRepository', () => {
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> <${InstanceSnapshotTestBuilder.SPATIALS[0].value}>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0].value}>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     ]);
 
@@ -742,6 +761,8 @@ describe('InstanceSnapshotRepository', () => {
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> <${InstanceSnapshotTestBuilder.SPATIALS[0].value}>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0].value}>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     ]);
 
@@ -751,7 +772,6 @@ describe('InstanceSnapshotRepository', () => {
             });
 
         });
-
 
 
     });

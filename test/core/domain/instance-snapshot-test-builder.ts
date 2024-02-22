@@ -66,6 +66,8 @@ export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
         .withDateCreated(InstanceSnapshotTestBuilder.DATE_CREATED)
         .withDateModified(InstanceSnapshotTestBuilder.DATE_MODIFIED)
         .withGeneratedAtTime(InstanceSnapshotTestBuilder.GENERATED_AT_TIME)
+        .withCompetentAuthorities([InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0]])
+        .withSpatials([InstanceSnapshotTestBuilder.SPATIALS[0]])
         .withIsArchived(false);
 }
 

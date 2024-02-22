@@ -1,4 +1,4 @@
-import {Invariant} from "../../../../src/core/domain/shared/invariant";
+import {Invariant, requireAtLeastOneValuePresentIfCondition} from "../../../../src/core/domain/shared/invariant";
 
 describe('notBeAbsent', () => {
 
@@ -201,12 +201,11 @@ describe('allPresentOrAllAbsent', () => {
     });
 });
 
-
 describe('canOnlyBePresentIfOtherValuePresent',()=>{
     const name ='field';
     const presentName = 'presentField';
 
-    test('Returns value when presentValue and new value are undefined',()=>{
+    test('Returns value when presentValue and new value are undefined',()=> {
         const invariant: Invariant<any> = Invariant.require(undefined, name);
         expect(invariant.to(invariant.canOnlyBePresentIfOtherValuePresent(undefined,presentName))).toEqual(undefined);
     });
@@ -229,6 +228,25 @@ describe('canOnlyBePresentIfOtherValuePresent',()=>{
         const newValue = 'newValue';
         const invariant: Invariant<any> = Invariant.require(newValue, name);
         expect(() => invariant.to(invariant.canOnlyBePresentIfOtherValuePresent(undefined,presentName))).toThrow(new Error(`${name} can only be present when ${presentName} is present`));
+    });
+});
+
+describe('atLeastOneValuePresentIfCondition', () => {
+    const name ='field';
+
+    test('returns value when condition is met and at least on value is present', () => {
+        const invariant: Invariant<any> = Invariant.require(['value'], name);
+        expect(invariant.to(invariant.atLeastOneValuePresentIfCondition(() => true ))).toEqual(['value']);
+    });
+
+    test('returns value when condition is not met', () => {
+        const invariant: Invariant<any> = Invariant.require(['value'], name);
+        expect(invariant.to(invariant.atLeastOneValuePresentIfCondition(() => false ))).toEqual(['value']);
+    });
+
+    test('returns value when condition is met and not at least one value present', () => {
+        const invariant: Invariant<any> = Invariant.require([], name);
+        expect(() => invariant.to(invariant.atLeastOneValuePresentIfCondition(() => true))).toThrow(new Error(`${name} should contain at least one value`));
     });
 });
 
