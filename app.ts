@@ -130,7 +130,8 @@ const updateInstanceApplicationService = new UpdateInstanceApplicationService(
 const instanceSnapshotToInstanceMergerDomainService = new InstanceSnapshotToInstanceMergerDomainService(
     instanceSnapshotRepository,
     instanceRepository,
-    conceptRepository
+    conceptRepository,
+    conceptDisplayConfigurationRepository,
 );
 
 const instanceSnapshotProcessorApplicationService = new InstanceSnapshotProcessorApplicationService(

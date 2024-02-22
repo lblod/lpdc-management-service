@@ -26,29 +26,35 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
     private readonly _instanceRepository: InstanceRepository;
     private readonly _conceptRepository: ConceptRepository;
-    private readonly _logger: Logger = new Logger('InstanceSnapshotToInstanceMergerDomainService');
     private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
+    private readonly _logger: Logger = new Logger('InstanceSnapshotToInstanceMergerDomainService');
 
     constructor(
         instanceSnapshotRepository: InstanceSnapshotRepository,
         instanceRepository: InstanceRepository,
         conceptRepository: ConceptRepository,
-        conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository) {
+        conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository,
+        logger?: Logger) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
         this._conceptRepository = conceptRepository;
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
+        if (logger) {
+            this._logger = logger;
+        }
     }
 
     async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri) {
         const instanceSnapshot = await this._instanceSnapshotRepository.findById(bestuurseenheid, instanceSnapshotId);
+
+        //TODO LPDC-910: we moeten nog controleren of de instanceSnapshotId die binnen komt niet een oudere versie is dan deze die al verwerkt werd
+        //ask: de processed instance snapshots op die linken naar deze instantie, met een generated at time ouder dan degene van de instanceSnapshot die je meegeeft
+
         const instanceId = instanceSnapshot.isVersionOfInstance;
         const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceId);
         const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
 
         this._logger.log(`New versioned resource found: ${instanceSnapshotId} of service ${instanceSnapshot.isVersionOfInstance}`);
-
-        //TODO LPDC-910: we moeten nog controleren of de instanceSnapshotId die binnen komt niet een oudere versie is dan deze die al verwerkt werd
 
         if (!isExistingInstance) {
             await this.createNewInstance(bestuurseenheid, instanceSnapshot, concept);
