@@ -124,12 +124,15 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
             if (publicationStatus === undefined) {
                 query = `
-                ${PREFIX.as}
-                ${PREFIX.cpsv}
+                    ${PREFIX.as}
+                    ${PREFIX.cpsv}
                 
-                DELETE DATA FROM ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                DELETE
+                    DATA FROM
+                    ${sparqlEscapeUri(bestuurseenheid.userGraph())}
+                    {
                     ${triples.join("\n")}
-                };
+                    };
                 `;
 
                 await this.querying.delete(query);
@@ -201,4 +204,41 @@ export class InstanceSparqlRepository implements InstanceRepository {
         return this.querying.ask(query);
     }
 
+    async isDeleted(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean> {
+        const query = `
+            ${PREFIX.as}
+            ASK WHERE {
+                GRAPH <${bestuurseenheid.userGraph()}> {
+                    ${sparqlEscapeUri(instanceId)} a as:Tombstone .
+                }
+            }
+        `;
+        return this.querying.ask(query);
+    }
+
+    async recreate(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void> {
+        const quads = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
+
+        const query = `
+        ${PREFIX.as}
+        ${PREFIX.cpsv}
+        ${PREFIX.rdf}
+        WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
+        DELETE {
+                ?instance a as:Tombstone.
+                ?instance as:formerType cpsv:PublicService.
+                ?instance as:deleted ?deleteTime.
+        }            
+        INSERT { 
+                ${quads.join("\n")}
+        
+        }     
+        WHERE {
+               BIND(${sparqlEscapeUri(instance.id)} AS ?instance)
+               ?instance as:deleted ?deleteTime
+        }
+            
+        `;
+        await this.querying.deleteInsert(query);
+    }
 }

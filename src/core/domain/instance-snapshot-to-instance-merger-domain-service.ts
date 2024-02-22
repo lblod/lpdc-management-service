@@ -66,7 +66,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
             this._logger.log(`New versioned resource found: ${instanceSnapshotId} of service ${instanceSnapshot.isVersionOfInstance}`);
 
-            if (!isExistingInstance) {
+            if (!isExistingInstance && !instanceSnapshot.isArchived) {
                 await this.createNewInstance(bestuurseenheid, instanceSnapshot, concept);
             } else if (isExistingInstance && !instanceSnapshot.isArchived) {
                 const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
@@ -94,6 +94,11 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     private async createNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept) {
         const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
         await this._instanceRepository.save(bestuurseenheid, instance);
+        const isDeleted = await this._instanceRepository.isDeleted(bestuurseenheid, instance.id);
+
+        if (isDeleted) {
+            await this._instanceRepository.recreate(bestuurseenheid, instance);
+        }
 
         if (instanceSnapshot.conceptId) {
             await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instanceSnapshot.conceptId);

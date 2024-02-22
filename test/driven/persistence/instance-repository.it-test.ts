@@ -278,6 +278,26 @@ describe('InstanceRepository', () => {
         });
     });
 
+    describe('isDeleted', () => {
+        test('When is deleted, then return true ', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance().build();
+            await repository.save(bestuurseenheid, instance);
+            await repository.delete(bestuurseenheid, instance.id);
+
+            const actual = await repository.isDeleted(bestuurseenheid, instance.id);
+            expect(actual).toEqual(true);
+        });
+        test('When is not deleted, then return false', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance().build();
+            await repository.save(bestuurseenheid, instance);
+
+            const actual = await repository.isDeleted(bestuurseenheid, instance.id);
+            expect(actual).toEqual(false);
+        });
+    });
+
     describe('Verify ontology and mapping', () => {
 
         test('Verify minimal mapping', async () => {

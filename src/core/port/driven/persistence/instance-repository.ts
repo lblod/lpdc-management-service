@@ -16,4 +16,7 @@ export interface InstanceRepository {
 
     exists(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean>;
 
+    isDeleted(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean>;
+
+    recreate(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void>;
 }
