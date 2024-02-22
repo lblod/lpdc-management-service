@@ -57,11 +57,13 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
             ]);
 
         const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.instanceSnapshotsLdesDataGraph(), this.doubleQuadReporter);
-        //TODO LPDC-910: validate that the created by is equal to the bestuurseenheid
+        const instanceSnapshot = mapper.instanceSnapshot(id);
 
-        // TODO LPDC-910 validate createdBy is same bestuurseenheid as graph
+        if(!instanceSnapshot.createdBy.equals(bestuurseenheid.id)) {
+            throw Error(`InstanceSnapshot createdBy of <${instanceSnapshot.id}> does not match bestuurseenheid graph`);
+        }
 
-        return mapper.instanceSnapshot(id);
+        return instanceSnapshot;
     }
 
     async findToProcessInstanceSnapshots(): Promise<{ bestuurseenheidId: Iri, instanceSnapshotId: Iri }[]> {

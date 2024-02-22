@@ -67,7 +67,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
-            const instanceSnapshot = aMinimalInstanceSnapshot().withConceptId(undefined).build();
+            const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(undefined).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
@@ -124,7 +124,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await conceptRepository.save(concept);
             await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
-            const instanceSnapshot = aFullInstanceSnapshot().withConceptId(concept.id).build();
+            const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
@@ -370,7 +370,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
-            const instanceSnapshot = aFullInstanceSnapshot().withConceptId(concept.id).build();
+            const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
@@ -395,7 +395,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await instanceRepository.save(bestuurseenheid, instance);
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
-                const instanceSnapshot = aMinimalInstanceSnapshot().withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
+                const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
                 await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
                 const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
@@ -459,7 +459,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await conceptRepository.save(concept);
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
-                const instanceSnapshot = aFullInstanceSnapshot().withIsVersionOfInstance(instance.id).withConceptId(concept.id).build();
+                const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(concept.id).build();
                 await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
                 const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
@@ -707,7 +707,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await instanceRepository.save(bestuurseenheid, instance);
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
-                const instanceSnapshot = aMinimalInstanceSnapshot().withIsVersionOfInstance(instance.id).withIsArchived(true).build();
+                const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
                 await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
                 const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
@@ -746,7 +746,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await instanceRepository.save(bestuurseenheid, instance);
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
-                const instanceSnapshot = aFullInstanceSnapshot().withIsVersionOfInstance(instance.id).withIsArchived(true).build();
+                const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
                 await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot.conceptId);
 
@@ -790,7 +790,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
-                const instanceSnapshot = aFullInstanceSnapshot().withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
+                const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
                 await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
                 await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
 
@@ -818,7 +818,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await conceptRepository.save(concept2);
             await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept2.id);
 
-            const instanceSnapshot = aFullInstanceSnapshot().withIsVersionOfInstance(instance.id).withConceptId(concept2.id).build();
+            const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(concept2.id).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
             await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
@@ -910,7 +910,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
             ]));
 
-            const instanceSnapshot = aMinimalInstanceSnapshot().withIsVersionOfInstance(instance.id).withIsArchived(false).build();
+            const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(false).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
 
@@ -946,7 +946,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
             ]));
 
-            const instanceSnapshot = aMinimalInstanceSnapshot().withIsVersionOfInstance(instance.id).withIsArchived(true).build();
+            const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
             await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);

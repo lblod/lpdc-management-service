@@ -84,6 +84,19 @@ describe('InstanceSnapshotRepository', () => {
 
         });
 
+        test('When instance snapshot bestuurseenheid graph is not same as bestuurseenheid createdBy, then throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+            const otherBestuurseenheid = aBestuurseenheid().build();
+
+            const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(otherBestuurseenheid.id).build();
+            await repository.save(bestuurseenheid, instanceSnapshot);
+
+            await expect(repository.findById(bestuurseenheid, instanceSnapshot.id)).rejects.toThrow(
+                new Error(`InstanceSnapshot createdBy of <${instanceSnapshot.id}> does not match bestuurseenheid graph`));
+
+        });
+
     });
 
     describe('findToProcessInstanceSnapshots', () => {
@@ -508,7 +521,9 @@ describe('InstanceSnapshotRepository', () => {
         for (const targetAudience of Object.values(TargetAudienceType)) {
             test(`TargetAudienceType ${targetAudience} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
-                const instanceSnapshot = aMinimalInstanceSnapshot().withTargetAudiences([targetAudience]).build();
+                const instanceSnapshot = aMinimalInstanceSnapshot()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withTargetAudiences([targetAudience]).build();
                 await repository.save(bestuurseenheid, instanceSnapshot);
 
                 const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
@@ -533,7 +548,10 @@ describe('InstanceSnapshotRepository', () => {
         for (const theme of Object.values(ThemeType)) {
             test(`ThemeType ${theme} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
-                const instanceSnapshot = aMinimalInstanceSnapshot().withThemes([theme]).build();
+                const instanceSnapshot = aMinimalInstanceSnapshot()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withThemes([theme])
+                    .build();
                 await repository.save(bestuurseenheid, instanceSnapshot);
 
                 const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
@@ -558,7 +576,10 @@ describe('InstanceSnapshotRepository', () => {
         for (const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
             test(`CompetentAuthorityLevelType ${competentAuthorityLevel} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
-                const instanceSnapshot = aMinimalInstanceSnapshot().withCompetentAuthorityLevels([competentAuthorityLevel]).build();
+                const instanceSnapshot = aMinimalInstanceSnapshot()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withCompetentAuthorityLevels([competentAuthorityLevel])
+                    .build();
                 await repository.save(bestuurseenheid, instanceSnapshot);
 
                 const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
@@ -583,7 +604,10 @@ describe('InstanceSnapshotRepository', () => {
         for (const executingAuthorityLevel of Object.values(ExecutingAuthorityLevelType)) {
             test(`ExecutingAuthorityLevelType ${executingAuthorityLevel} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
-                const instanceSnapshot = aMinimalInstanceSnapshot().withExecutingAuthorityLevels([executingAuthorityLevel]).build();
+                const instanceSnapshot = aMinimalInstanceSnapshot()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withExecutingAuthorityLevels([executingAuthorityLevel])
+                    .build();
                 await repository.save(bestuurseenheid, instanceSnapshot);
 
                 const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
@@ -609,6 +633,7 @@ describe('InstanceSnapshotRepository', () => {
             test(`PublicationMediumType ${publicationMedium} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
                 const instanceSnapshot = aMinimalInstanceSnapshot()
+                    .withCreatedBy(bestuurseenheid.id)
                     .withPublicationMedia([publicationMedium])
                     .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF])
                     .build();
@@ -636,7 +661,10 @@ describe('InstanceSnapshotRepository', () => {
         for (const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
             test(`YourEuropeCategoryType ${yourEuropeCategory} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
-                const instanceSnapshot = aMinimalInstanceSnapshot().withYourEuropeCategories([yourEuropeCategory]).build();
+                const instanceSnapshot = aMinimalInstanceSnapshot()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withYourEuropeCategories([yourEuropeCategory])
+                    .build();
                 await repository.save(bestuurseenheid, instanceSnapshot);
 
                 const actualInstance = await repository.findById(bestuurseenheid, instanceSnapshot.id);
@@ -661,7 +689,10 @@ describe('InstanceSnapshotRepository', () => {
         for (const languageType of Object.values(LanguageType)) {
             test(`LanguageType ${languageType} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
-                const instanceSnapshot = aMinimalInstanceSnapshot().withLanguages([languageType]).build();
+                const instanceSnapshot = aMinimalInstanceSnapshot()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withLanguages([languageType])
+                    .build();
                 await repository.save(bestuurseenheid, instanceSnapshot);
 
                 const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
