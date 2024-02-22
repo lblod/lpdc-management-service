@@ -210,15 +210,6 @@ describe('InstanceRepository', () => {
             expect(quads).toEqual([]);
         });
 
-        test('if exists with publicationStatus gepubliceerd, throws error', async () => {
-
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance().withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD).build();
-
-            await repository.save(bestuurseenheid, instance);
-            await expect(() => repository.delete(bestuurseenheid, instance.id)).rejects.toThrow(new Error('Cannot delete a published instance'));
-        });
-
         test('Only the requested instance is deleted', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()

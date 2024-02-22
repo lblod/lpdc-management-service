@@ -117,10 +117,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
         if (instance != undefined) {
             const publicationStatus = instance.publicationStatus;
 
-            if (!instance.isInDeletableState()) {
-                throw new Error(`Cannot delete a published instance`);
-            }
-
             const triples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
             const now = new Date();
