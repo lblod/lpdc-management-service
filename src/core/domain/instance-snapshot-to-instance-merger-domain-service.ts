@@ -57,12 +57,14 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
         const hasNewerProcessedInstanceSnapshot = await this._instanceSnapshotRepository.hasNewerProcessedInstanceSnapshot(bestuurseenheid, instanceSnapshotId, instanceSnapshot.generatedAtTime);
 
-        if (!hasNewerProcessedInstanceSnapshot) {
-        const instanceId = instanceSnapshot.isVersionOfInstance;
-        const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceId);
-        const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
+        if(hasNewerProcessedInstanceSnapshot) {
+            this._logger.log(`The versioned resource <${instanceSnapshotId}> is an older version, or already processed, of service <${instanceSnapshot.isVersionOfInstance}>`);
+        } else {
+            const instanceId = instanceSnapshot.isVersionOfInstance;
+            const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceId);
+            const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
 
-        this._logger.log(`New versioned resource found: ${instanceSnapshotId} of service ${instanceSnapshot.isVersionOfInstance}`);
+            this._logger.log(`New versioned resource found: ${instanceSnapshotId} of service ${instanceSnapshot.isVersionOfInstance}`);
 
             if (!isExistingInstance) {
                 await this.createNewInstance(bestuurseenheid, instanceSnapshot, concept);
