@@ -23,7 +23,7 @@ describe('Deleting a new Instance domain service', () => {
     const conceptDisplayConfigurationSparqlRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationSparqlTestRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
 
-    const deleteInstanceDomainService = new DeleteInstanceDomainService(instanceRepository,conceptRepository,conceptDisplayConfigurationSparqlRepository);
+    const deleteInstanceDomainService = new DeleteInstanceDomainService(instanceRepository, conceptDisplayConfigurationSparqlRepository);
 
     beforeAll(() => setFixedTime());
 
@@ -58,43 +58,43 @@ describe('Deleting a new Instance domain service', () => {
             .withBestuurseenheidId(bestuurseenheid.id)
             .withConceptIsNew(false)
             .withConceptIsInstantiated(true).build();
-        await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
+        await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid, conceptualDisplayConfiguration);
 
 
         await deleteInstanceDomainService.delete(bestuurseenheid, instanceId);
 
-        await expect(instanceRepository.findById(bestuurseenheid,instance.id)).rejects.toThrow();
-        expect(await instanceRepository.findById(bestuurseenheid,anotherInstance.id)).toEqual(anotherInstance);
+        await expect(instanceRepository.findById(bestuurseenheid, instance.id)).rejects.toThrow();
+        expect(await instanceRepository.findById(bestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
     });
 
-    test('if instance does not exists, throw error',async()=>{
+    test('if instance does not exists, throw error', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         const nonExistingInstanceId = buildInstanceIri(uuid());
         const instanceId = buildInstanceIri(uuid());
         const instance = aFullInstance().withId(instanceId).withCreatedBy(bestuurseenheid.id).build();
-        await instanceRepository.save(bestuurseenheid,instance);
+        await instanceRepository.save(bestuurseenheid, instance);
 
 
-        await expect( deleteInstanceDomainService.delete(bestuurseenheid,nonExistingInstanceId)).rejects.toThrow();
+        await expect(deleteInstanceDomainService.delete(bestuurseenheid, nonExistingInstanceId)).rejects.toThrow();
     });
 
-    test('if instance exists, but for other bestuurseenheid, then does not remove and throws error',async()=>{
+    test('if instance exists, but for other bestuurseenheid, then does not remove and throws error', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         const anotherBestuurseenheid = aBestuurseenheid().build();
         const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
         const anotherInstance = aFullInstance().withCreatedBy(anotherBestuurseenheid.id).build();
 
-        await instanceRepository.save(bestuurseenheid,instance);
-        await instanceRepository.save(anotherBestuurseenheid,anotherInstance);
+        await instanceRepository.save(bestuurseenheid, instance);
+        await instanceRepository.save(anotherBestuurseenheid, anotherInstance);
 
-        await expect( deleteInstanceDomainService.delete(bestuurseenheid,anotherInstance.id)).rejects.toThrow();
+        await expect(deleteInstanceDomainService.delete(bestuurseenheid, anotherInstance.id)).rejects.toThrow();
 
         expect(await instanceRepository.findById(anotherBestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
 
 
     });
 
-    test('if instance exists, and no other instance is based on the same concept, isInstantiated flag is updated to false,',async()=>{
+    test('if instance exists, and no other instance is based on the same concept, isInstantiated flag is updated to false,', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
 
         const concept = aFullConcept().build();
@@ -109,15 +109,15 @@ describe('Deleting a new Instance domain service', () => {
             .withConceptIsNew(false)
             .withConceptIsInstantiated(true).build();
 
-        await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
+        await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid, conceptualDisplayConfiguration);
 
         await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
-        const actualConceptualDisplayConfiguration = await conceptDisplayConfigurationSparqlRepository.findByConceptId(bestuurseenheid,instance.conceptId);
+        const actualConceptualDisplayConfiguration = await conceptDisplayConfigurationSparqlRepository.findByConceptId(bestuurseenheid, instance.conceptId);
 
         expect(actualConceptualDisplayConfiguration.conceptIsInstantiated).toBeFalsy();
     });
 
-    test('if instance exists, and other instance are based on the same concept, isInstantiated flag is not updated and stays on true,',async()=>{
+    test('if instance exists, and other instance are based on the same concept, isInstantiated flag is not updated and stays on true,', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
 
         const concept = aFullConcept().build();
@@ -134,10 +134,10 @@ describe('Deleting a new Instance domain service', () => {
             .withBestuurseenheidId(bestuurseenheid.id)
             .withConceptIsNew(false)
             .withConceptIsInstantiated(true).build();
-        await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid,conceptualDisplayConfiguration);
+        await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid, conceptualDisplayConfiguration);
 
         await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
-        const actualConceptualDisplayConfiguration = await conceptDisplayConfigurationSparqlRepository.findByConceptId(bestuurseenheid,instance.conceptId);
+        const actualConceptualDisplayConfiguration = await conceptDisplayConfigurationSparqlRepository.findByConceptId(bestuurseenheid, instance.conceptId);
 
         expect(actualConceptualDisplayConfiguration.conceptIsInstantiated).toBeTruthy();
     });
