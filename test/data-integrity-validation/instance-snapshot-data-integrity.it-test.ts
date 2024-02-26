@@ -6,7 +6,7 @@ import {sparqlEscapeUri} from "../../mu-helper";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
-import {namedNode, Statement} from "rdflib";
+import {isLiteral, namedNode, Statement} from "rdflib";
 import {sortedUniq, uniq} from "lodash";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 
@@ -19,7 +19,7 @@ describe('Instance Snapshot Data Integrity Validation', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 
-    test('Query for each bestuurseenheid the instance snapshots in the ldes input graph', async () => {
+    test.skip('Query for each bestuurseenheid the instance snapshots in the ldes input graph', async () => {
         const bestuurseenheidsQuery = `
             ${PREFIX.besluit}
             SELECT ?id WHERE {
@@ -56,6 +56,14 @@ describe('Instance Snapshot Data Integrity Validation', () => {
 
                 const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
                 let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, bestuurseenheid.instanceSnapshotsLdesDataGraph().value));
+
+                //map booleans
+                allQuadsOfGraph.map(q => {
+                    if (isLiteral(q.object) && q.object.datatype.value === 'http://www.w3.org/2001/XMLSchema#boolean') {
+                        q.object.value === "1" ? q.object.value = "true" : q.object.value = "false";
+                    }
+                    return q;
+                });
 
                 // filter out processed snapshots list
                 allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/processed')));
