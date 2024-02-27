@@ -78,3 +78,36 @@ describe('forInstance', () => {
     });
 
 });
+
+describe('forInstanceSnapshot', () => {
+
+    test('valid instanceSnapshot does not throw error', () => {
+        const legalResource = aLegalResource().withUuid(undefined);
+        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).not.toThrow();
+    });
+
+    test('undefined id throws error', () => {
+        const legalResource = aLegalResource().withId(undefined);
+        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrow(new Error('id should not be absent'));
+    });
+
+    test('invalid iri throws error', () => {
+        expect(() => LegalResource.forInstanceSnapshot(aLegalResource().withId(new Iri('  ')).build())).toThrow(new Error('iri should not be blank'));
+    });
+
+    test('undefined url throws error', () => {
+        const legalResource = aLegalResource().withUrl(undefined);
+        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrow(new Error('url should not be absent'));
+    });
+
+    test('blank url throws error', () => {
+        const legalResource = aLegalResource().withUrl('    ');
+        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrow(new Error('url should not be blank'));
+    });
+
+    test('undefined order throws error', () => {
+        const legalResource = aLegalResource().withOrder(undefined);
+        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrow(new Error('order should not be absent'));
+    });
+
+});

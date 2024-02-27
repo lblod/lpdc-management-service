@@ -359,7 +359,20 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
             expect(instanceAfterMerge.publicationStatus).toEqual(undefined);
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
-            expect(instanceAfterMerge.legalResources).toEqual([]); //TODO LPDC-1026 fix me!
+            expect(instanceAfterMerge.legalResources).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    _id: expect.not.objectContaining(instanceSnapshot.legalResources[0].id),
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _url: instanceSnapshot.legalResources[0].url,
+                    _order: instanceSnapshot.legalResources[0].order,
+                }),
+                expect.objectContaining({
+                    _id: expect.not.objectContaining(instanceSnapshot.legalResources[1].id),
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _url: instanceSnapshot.legalResources[1].url,
+                    _order: instanceSnapshot.legalResources[1].order,
+                })
+            ]));
         });
         test('conceptDisplayConfiguration is updated', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
@@ -695,7 +708,20 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
                 expect(instanceAfterMerge.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
                 expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
-                expect(instanceAfterMerge.legalResources).toEqual([]); //TODO LPDC-1026 fix me!
+                expect(instanceAfterMerge.legalResources).toEqual(expect.arrayContaining([
+                    expect.objectContaining({
+                        _id: expect.not.objectContaining(instanceSnapshot.legalResources[0].id),
+                        _uuid: expect.stringMatching(uuidRegex),
+                        _url: instanceSnapshot.legalResources[0].url,
+                        _order: instanceSnapshot.legalResources[0].order,
+                    }),
+                    expect.objectContaining({
+                        _id: expect.not.objectContaining(instanceSnapshot.legalResources[1].id),
+                        _uuid: expect.stringMatching(uuidRegex),
+                        _url: instanceSnapshot.legalResources[1].url,
+                        _order: instanceSnapshot.legalResources[1].order,
+                    })
+                ]));
             });
         });
         describe('Delete', () => {
@@ -913,6 +939,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(false).build();
         await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
+
         await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
 
         expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeTruthy();
@@ -922,10 +949,9 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
         ]));
 
-        const instanceRecreated = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+    const instanceRecreated = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
         expect(instanceRecreated.id).toEqual(instanceSnapshot.isVersionOfInstance);
     });
-
 
     test('Given a deletedInstance, when receiving a new archive snapshot, update tombstone', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
@@ -960,7 +986,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         expect(quadsBeforeAfterArchivingAgain).toEqual(expect.arrayContaining([
             quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),]));
     });
-
     test('Inserts Code Lists for competent and executing authorities if not existing', async () => {
         const bestuurseenheidRegistrationCodeFetcher = {
             fetchOrgRegistryCodelistEntry: jest.fn().mockImplementation((uriEntry: Iri) => Promise.resolve({

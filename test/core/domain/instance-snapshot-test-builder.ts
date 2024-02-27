@@ -21,7 +21,6 @@ import {InstanceSnapshot} from "../../../src/core/domain/instance-snapshot";
 import {uuid} from "../../../mu-helper";
 import {
     buildBestuurseenheidIri,
-    buildCodexVlaanderenIri,
     buildConceptIri,
     buildInstanceIri,
     buildInstanceSnapshotIri,
@@ -44,6 +43,8 @@ import {
     aFullContactPointForInstanceSnapshot,
     anotherFullContactPointForInstanceSnapshot
 } from "./contact-point-test-builder";
+import {LegalResource} from "../../../src/core/domain/legal-resource";
+import {aLegalResource} from "./legal-resource-test-builder";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
     const uniqueId = uuid();
@@ -175,7 +176,7 @@ export class InstanceSnapshotTestBuilder {
 
     public static readonly SPATIALS = [buildSpatialRefNis2019Iri(45700), buildSpatialRefNis2019Iri(52000), buildSpatialRefNis2019Iri(98786)];
 
-    public static readonly LEGAL_RESOURCES = [buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())];
+    public static readonly LEGAL_RESOURCES = [aLegalResource().withOrder(1).build(), aLegalResource().withOrder(2).build()];
 
     public static readonly REQUIREMENTS = [
         aFullRequirementForInstanceSnapshot().withEvidence(aFullEvidenceForInstanceSnapshot().build()).build(),
@@ -233,7 +234,7 @@ export class InstanceSnapshotTestBuilder {
     private generatedAtTime: FormatPreservingDate;
     private isArchived: boolean;
     private spatials: Iri[] = [];
-    private legalResources: Iri[] = [];
+    private legalResources: LegalResource[] = [];
 
     public withId(id: Iri): InstanceSnapshotTestBuilder {
         this.id = id;
@@ -400,7 +401,7 @@ export class InstanceSnapshotTestBuilder {
         return this;
     }
 
-    public withLegalResources(legalResources: Iri[]): InstanceSnapshotTestBuilder {
+    public withLegalResources(legalResources: LegalResource[]): InstanceSnapshotTestBuilder {
         this.legalResources = legalResources;
         return this;
     }

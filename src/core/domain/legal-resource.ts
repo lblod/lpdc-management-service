@@ -38,6 +38,15 @@ export class LegalResource {
         );
     }
 
+    static forInstanceSnapshot(legalResource: LegalResource): LegalResource {
+        return new LegalResource(
+            legalResource.id,
+            undefined,
+            legalResource.url,
+            legalResource.order,
+        );
+    }
+
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         url: string,

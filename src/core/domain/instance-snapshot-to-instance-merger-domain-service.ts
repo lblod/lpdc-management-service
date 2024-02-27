@@ -25,6 +25,7 @@ import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
 } from "./ensure-linked-authorities-exist-as-code-list-domain-service";
 import {DeleteInstanceDomainService} from "./delete-instance-domain-service";
+import {LegalResource, LegalResourceBuilder} from "./legal-resource";
 
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
@@ -57,7 +58,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
         const hasNewerProcessedInstanceSnapshot = await this._instanceSnapshotRepository.hasNewerProcessedInstanceSnapshot(bestuurseenheid, instanceSnapshot);
 
-        if(hasNewerProcessedInstanceSnapshot) {
+        if (hasNewerProcessedInstanceSnapshot) {
             this._logger.log(`The versioned resource <${instanceSnapshotId}> is an older version, or already processed, of service <${instanceSnapshot.isVersionOfInstance}>`);
         } else {
             const instanceId = instanceSnapshot.isVersionOfInstance;
@@ -142,7 +143,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             undefined,
             undefined,
             instanceSnapshot.spatials,
-            [], //TODO LPDC-1026 fix me!
+            this.copyLegalResources(instanceSnapshot.legalResources)
         );
     }
 
@@ -186,7 +187,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             undefined,
             instance.datePublished ? InstancePublicationStatusType.TE_HERPUBLICEREN : undefined,
             instanceSnapshot.spatials,
-            [], //TODO LPDC-1026 fix me!
+            this.copyLegalResources(instanceSnapshot.legalResources),
         );
     }
 
@@ -301,6 +302,19 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             address.postcode,
             address.straatnaam,
             address.verwijstNaar);
+    }
+
+    private copyLegalResources(legalResources: LegalResource[]): LegalResource[] {
+        return legalResources.map(cp => {
+                const newUuid = uuid();
+                return LegalResource.reconstitute(
+                    LegalResourceBuilder.buildIri(newUuid),
+                    newUuid,
+                    cp.url,
+                    cp.order
+                );
+            }
+        );
     }
 
     private async getConceptIfExists(conceptId: Iri | undefined): Promise<Concept | undefined> {

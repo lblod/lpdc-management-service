@@ -25,6 +25,7 @@ import {
     requireNoDuplicates
 } from "./shared/invariant";
 import {instanceLanguages} from "./language";
+import {LegalResource} from "./legal-resource";
 
 export class InstanceSnapshot {
 
@@ -61,7 +62,7 @@ export class InstanceSnapshot {
     private readonly _generatedAtTime: FormatPreservingDate;
     private readonly _isArchived: boolean;
     private readonly _spatials: Iri[];
-    private readonly _legalResources: Iri[];
+    private readonly _legalResources: LegalResource[];
 
     constructor(id: Iri,
                 createdBy: Iri,
@@ -96,7 +97,7 @@ export class InstanceSnapshot {
                 generatedAtTime: FormatPreservingDate,
                 isArchived: boolean,
                 spatials: Iri[],
-                legalResources: Iri[]
+                legalResources: LegalResource[]
     ) {
         this._id = requiredValue(id, 'id');
         this._createdBy = requiredValue(createdBy, 'createdBy');
@@ -140,7 +141,8 @@ export class InstanceSnapshot {
         this._isArchived = requiredValue(isArchived, 'isArchived');
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
         requiredAtLeastOneValuePresent(this._spatials, 'spatials');
-        this._legalResources = requireNoDuplicates(asSortedArray(legalResources), 'legalResources');
+        this._legalResources = [...legalResources].map(LegalResource.forInstanceSnapshot);
+        requireNoDuplicates(this._legalResources.map(lr => lr.order), 'legal resources > order');
         this.validateLanguages();
     }
 
@@ -303,7 +305,7 @@ export class InstanceSnapshot {
         return [...this._spatials];
     }
 
-    get legalResources(): Iri[] {
+    get legalResources(): LegalResource[] {
         return [...this._legalResources];
     }
 

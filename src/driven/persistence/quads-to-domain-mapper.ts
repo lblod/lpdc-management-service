@@ -244,7 +244,7 @@ export class QuadsToDomainMapper {
             this.generatedAtTime(id),
             this.isArchived(id),
             this.spatials(id),
-            this.legalResourcesUrls(id),
+            this.legalResources(id),
         );
     }
 

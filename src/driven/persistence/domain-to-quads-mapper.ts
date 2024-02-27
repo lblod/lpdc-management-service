@@ -179,7 +179,7 @@ export class DomainToQuadsMapper {
             ...this.keywords(instanceSnapshot.id, instanceSnapshot.keywords),
             ...this.languages(instanceSnapshot.id, instanceSnapshot.languages),
             ...this.spatials(instanceSnapshot.id, instanceSnapshot.spatials),
-            ...this.legalResourceUrls(instanceSnapshot.id, instanceSnapshot.legalResources),
+            ...this.legalResources(instanceSnapshot.id, instanceSnapshot.legalResources),
             this.instanceDateCreated(instanceSnapshot.id, instanceSnapshot.dateCreated),
             this.instanceDateModified(instanceSnapshot.id, instanceSnapshot.dateModified),
             this.generatedAtTime(instanceSnapshot.id, instanceSnapshot.generatedAtTime),
