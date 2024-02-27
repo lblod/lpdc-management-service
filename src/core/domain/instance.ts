@@ -157,7 +157,6 @@ export class Instance {
         this._status = requiredValue(status, 'status');
         this._reviewStatus = requiredCanOnlyBePresentIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId, 'concept');
         this._publicationStatus = publicationStatus;
-        requireAllPresentOrAllAbsent([datePublished, publicationStatus], 'datePublished and publicationStatus');
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
         this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
         this.validateLanguages();
