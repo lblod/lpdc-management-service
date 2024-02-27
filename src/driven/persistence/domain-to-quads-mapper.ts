@@ -408,7 +408,7 @@ export class DomainToQuadsMapper {
             this.buildQuad(namedNode(id.value), NS.m8g('hasLegalResource'), namedNode(legalResource.id.value)),
             legalResource.uuid ? this.buildQuad(namedNode(legalResource.id.value), NS.mu('uuid'), literal(legalResource.uuid)) : undefined,
             this.buildQuad(namedNode(legalResource.id.value), NS.rdf('type'), NS.eli('LegalResource')),
-            this.buildQuad(namedNode(legalResource.id.value), NS.rdfs('seeAlso'), namedNode(legalResource.url)),
+            this.buildQuad(namedNode(legalResource.id.value), NS.schema('url'), literal(legalResource.url)),
             this.buildQuad(namedNode(legalResource.id.value), NS.sh('order'), literal(legalResource.order.toString(), NS.xsd('integer'))),
         ]);
     }

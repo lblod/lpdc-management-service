@@ -659,7 +659,7 @@ export class QuadsToDomainMapper {
                 LegalResource.reconstitute(
                     legalResourceId,
                     this.uuid(legalResourceId),
-                    this.seeAlso(legalResourceId),
+                    this.url(legalResourceId),
                     this.order(legalResourceId),
                 ));
 
@@ -672,10 +672,6 @@ export class QuadsToDomainMapper {
 
     private order(id: Iri): number | undefined {
         return this.asNumber(this.storeAccess.uniqueValue(namedNode(id.value), NS.sh('order')));
-    }
-
-    private seeAlso(id: Iri): string | undefined {
-        return this.storeAccess.uniqueValue(namedNode(id.value), NS.rdfs('seeAlso'));
     }
 
     private conceptSnapshotId(id: Iri): Iri | undefined {
