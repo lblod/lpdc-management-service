@@ -151,6 +151,114 @@ describe('InstanceRepository', () => {
         });
     });
 
+    describe('recreate', () => {
+
+        test('if exists as tombstone (but no publication info), deletes tombstone, and inserts new instance data', async () => {
+            const instanceUUID = uuid();
+            const instanceId = buildInstanceIri(instanceUUID);
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
+            const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
+
+            const instance =
+                aMinimalInstance()
+                    .withId(instanceId)
+                    .withUuid(instanceUUID)
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withDateCreated(instanceDateCreated)
+                    .withDateModified(instanceDateModified)
+                    .withStatus(InstanceStatusType.VERSTUURD)
+                    .withDateSent(FormatPreservingDate.now())
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                `${bestuurseenheid.userGraph()}`,
+                [
+                    `<${instanceId}> a <https://www.w3.org/ns/activitystreams#Tombstone>`,
+                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#deleted> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <http://purl.org/vocab/cpsv#PublicService>`,
+                ]);
+
+            await repository.recreate(bestuurseenheid, instance);
+
+            const actualInstance = await repository.findById(bestuurseenheid, instanceId);
+
+            expect(actualInstance).toEqual(instance);
+        });
+
+        test('if exists as tombstone (but te herpubliceren), deletes tombstone, and inserts new instance data', async () => {
+            const instanceUUID = uuid();
+            const instanceId = buildInstanceIri(instanceUUID);
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
+            const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
+
+            const instance =
+                aMinimalInstance()
+                    .withId(instanceId)
+                    .withUuid(instanceUUID)
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withDateCreated(instanceDateCreated)
+                    .withDateModified(instanceDateModified)
+                    .withStatus(InstanceStatusType.VERSTUURD)
+                    .withDateSent(FormatPreservingDate.now())
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                `${bestuurseenheid.userGraph()}`,
+                [
+                    `<${instanceId}> a <https://www.w3.org/ns/activitystreams#Tombstone>`,
+                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#deleted> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>`,
+                ]);
+
+            await repository.recreate(bestuurseenheid, instance);
+
+            const actualInstance = await repository.findById(bestuurseenheid, instanceId);
+
+            expect(actualInstance).toEqual(instance);
+
+        });
+
+        test('if exists as tombstone (but gepubliceerd), deletes tombstone, and inserts new instance data', async () => {
+            const instanceUUID = uuid();
+            const instanceId = buildInstanceIri(instanceUUID);
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
+            const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
+
+            const instance =
+                aMinimalInstance()
+                    .withId(instanceId)
+                    .withUuid(instanceUUID)
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withDateCreated(instanceDateCreated)
+                    .withDateModified(instanceDateModified)
+                    .withStatus(InstanceStatusType.VERSTUURD)
+                    .withDateSent(FormatPreservingDate.now())
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                `${bestuurseenheid.userGraph()}`,
+                [
+                    `<${instanceId}> a <https://www.w3.org/ns/activitystreams#Tombstone>`,
+                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#deleted> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/gepubliceerd>`,
+                    `<${instanceId}> <http://schema.org/datePublished> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                ]);
+
+            await repository.recreate(bestuurseenheid, instance);
+
+            const actualInstance = await repository.findById(bestuurseenheid, instanceId);
+
+            expect(actualInstance).toEqual(instance);
+
+        });
+
+    });
+
     describe('delete', () => {
 
         test('if exists with publicationStatus te-herpubliceren, Removes all triples related to the instance and create tombstone triples and publicationStatus te-herpubliceren ', async () => {

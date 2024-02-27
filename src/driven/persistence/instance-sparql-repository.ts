@@ -224,18 +224,20 @@ export class InstanceSparqlRepository implements InstanceRepository {
         ${PREFIX.schema}
         WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
         DELETE {
-                ?instance a as:Tombstone.
-                ?instance as:formerType cpsv:PublicService.
-                ?instance as:deleted ?deleteTime.
-                ?instance schema:publication ?publication.
+                ${sparqlEscapeUri(instance.id)} a as:Tombstone.
+                ${sparqlEscapeUri(instance.id)} as:formerType cpsv:PublicService.
+                ${sparqlEscapeUri(instance.id)} as:deleted ?deleteTime.
+                ${sparqlEscapeUri(instance.id)} schema:publication ?publicationStatus.
+                ${sparqlEscapeUri(instance.id)} schema:datePublished ?datePublished.
         }            
         INSERT { 
                 ${quads.join("\n")}        
         }     
         WHERE {
-               BIND(${sparqlEscapeUri(instance.id)} AS ?instance)
-               ?instance as:deleted ?deleteTime.
-               OPTIONAL {?instance schema:publication ?publication.}
+               ${sparqlEscapeUri(instance.id)} a as:Tombstone.
+               ${sparqlEscapeUri(instance.id)} as:deleted ?deleteTime.
+               OPTIONAL { ${sparqlEscapeUri(instance.id)} schema:publication ?publicationStatus. }.
+               OPTIONAL { ${sparqlEscapeUri(instance.id)} schema:datePublished ?datePublished. }.
         }
             
         `;
