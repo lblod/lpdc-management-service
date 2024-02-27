@@ -223,11 +223,13 @@ export class InstanceSparqlRepository implements InstanceRepository {
         ${PREFIX.as}
         ${PREFIX.cpsv}
         ${PREFIX.rdf}
+        ${PREFIX.schema}
         WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
         DELETE {
                 ?instance a as:Tombstone.
                 ?instance as:formerType cpsv:PublicService.
                 ?instance as:deleted ?deleteTime.
+                ?instance schema:publication ?publication.
         }            
         INSERT { 
                 ${quads.join("\n")}
@@ -235,7 +237,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
         }     
         WHERE {
                BIND(${sparqlEscapeUri(instance.id)} AS ?instance)
-               ?instance as:deleted ?deleteTime
+               ?instance as:deleted ?deleteTime.
+               OPTIONAL {?instance schema:publication ?publication.}
         }
             
         `;

@@ -93,12 +93,9 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
     private async createNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept) {
         const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
-        await this._instanceRepository.save(bestuurseenheid, instance);
         const isDeleted = await this._instanceRepository.isDeleted(bestuurseenheid, instance.id);
 
-        if (isDeleted) {
-            await this._instanceRepository.recreate(bestuurseenheid, instance);
-        }
+        isDeleted ? await this._instanceRepository.recreate(bestuurseenheid, instance) : await this._instanceRepository.save(bestuurseenheid, instance);
 
         if (instanceSnapshot.conceptId) {
             await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instanceSnapshot.conceptId);
