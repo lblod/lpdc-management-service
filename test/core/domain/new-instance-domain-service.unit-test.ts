@@ -30,6 +30,7 @@ import {
 } from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
+import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('Creating a new Instance domain service', () => {
 
@@ -282,7 +283,7 @@ describe('Creating a new Instance domain service', () => {
                 .withLanguages([])
                 .withReviewStatus(undefined)
                 .withPublicationStatus(undefined)
-                .withLegalResources(concept.legalResources)
+                .withLegalResources(concept.legalResources.map(lr => new Iri(lr.url))) //TODO LPDC-1026 fix me!
                 .build();
 
         expect(createdInstance).toEqual(expectedInstance);
@@ -534,7 +535,7 @@ describe('Creating a new Instance domain service', () => {
                 .withLanguages([])
                 .withReviewStatus(undefined)
                 .withPublicationStatus(undefined)
-                .withLegalResources(concept.legalResources)
+                .withLegalResources(concept.legalResources.map(lr => new Iri(lr.url))) //TODO LPDC-1026 fix me!
                 .build();
 
         expect(createdInstance).toEqual(expectedInstance);
@@ -754,7 +755,7 @@ describe('Creating a new Instance domain service', () => {
                 .withLanguages([])
                 .withReviewStatus(undefined)
                 .withPublicationStatus(undefined)
-                .withLegalResources(concept.legalResources)
+                .withLegalResources(concept.legalResources.map(lr => new Iri(lr.url))) //TODO LPDC-1026 fix me!
                 .build();
 
         expect(createdInstance).toEqual(expectedInstance);

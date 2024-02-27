@@ -251,7 +251,26 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.latestFunctionallyChangedConceptSnapshot).toEqual(conceptSnapshot.id);
             expect(createdConcept.conceptTags).toEqual(conceptSnapshot.conceptTags);
             expect(createdConcept.isArchived).toBeFalsy();
-            expect(createdConcept.legalResources).toEqual(conceptSnapshot.legalResources);
+            expect(createdConcept.legalResources).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    _id: expect.not.objectContaining(conceptSnapshot.legalResources[0]),
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _url: conceptSnapshot.legalResources[0].value,
+                    _order: 1
+                }),
+                expect.objectContaining({
+                    _id: expect.not.objectContaining(conceptSnapshot.legalResources[1]),
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _url: conceptSnapshot.legalResources[1].value,
+                    _order: 2
+                }),
+                expect.objectContaining({
+                    _id: expect.not.objectContaining(conceptSnapshot.legalResources[2]),
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _url: conceptSnapshot.legalResources[2].value,
+                    _order: 3
+                })
+            ]));
         }, 10000);
 
         test('Creates a new concept from a concept snapshot with minimal data', async () => {
@@ -612,7 +631,26 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.previousConceptSnapshots.sort()).toEqual([conceptSnapshot.id].sort());
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
             expect(updatedConcept.conceptTags).toEqual(updatedConceptSnapshot.conceptTags);
-            expect(updatedConcept.legalResources).toEqual(updatedConceptSnapshot.legalResources);
+            expect(updatedConcept.legalResources).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    _id: expect.not.objectContaining(updatedConceptSnapshot.legalResources[0]),
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _url: updatedConceptSnapshot.legalResources[0].value,
+                    _order: 1
+                }),
+                expect.objectContaining({
+                    _id: expect.not.objectContaining(updatedConceptSnapshot.legalResources[1]),
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _url: updatedConceptSnapshot.legalResources[1].value,
+                    _order: 2
+                }),
+                expect.objectContaining({
+                    _id: expect.not.objectContaining(updatedConceptSnapshot.legalResources[2]),
+                    _uuid: expect.stringMatching(uuidRegex),
+                    _url: updatedConceptSnapshot.legalResources[2].value,
+                    _order: 3
+                })
+            ]));
         }, 20000);
 
         test('Updates a concept with minimal new data of a new version of a concept snapshot', async () => {

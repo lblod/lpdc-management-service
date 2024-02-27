@@ -1,7 +1,7 @@
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {aFullConcept, ConceptTestBuilder} from "./concept-test-builder";
 import {Language} from "../../../src/core/domain/language";
-import {buildCodexVlaanderenIri, buildConceptSnapshotIri} from "./iri-test-builder";
+import {buildConceptSnapshotIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {aMinimalCostForConcept, CostTestBuilder} from "./cost-test-builder";
 import {Cost, CostBuilder} from "../../../src/core/domain/cost";
@@ -27,6 +27,8 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
+import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
+import {aLegalResourceForConcept, LegalResourceTestBuilder} from "./legal-resource-test-builder";
 
 describe('constructing', () => {
 
@@ -194,12 +196,6 @@ describe('constructing', () => {
     test('conceptTags with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT, ConceptTagType.YOUREUROPEVERPLICHT]);
         expect(() => conceptTestBuilder.build()).toThrow(new Error('conceptTags should not contain duplicates'));
-    });
-
-    test('legalResources with duplicates throws error', () => {
-        const iri = uuid();
-        const conceptTestBuilder = aFullConcept().withLegalResources([buildCodexVlaanderenIri(iri), buildCodexVlaanderenIri(iri)]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('legalResources should not contain duplicates'));
     });
 
     describe('cost ', () => {
@@ -397,6 +393,49 @@ describe('constructing', () => {
                 expect(() => aFullConcept().withRequirements([invalidRequirement]).build()).toThrow();
             });
 
+        });
+    });
+
+    describe('legalResources', () => {
+
+        test('valid legalResource does not throw error', () => {
+            const uuidValue = uuid();
+            const validLegalResource = LegalResource.reconstitute(
+                LegalResourceBuilder.buildIri(uuidValue),
+                uuidValue,
+                LegalResourceTestBuilder.URL,
+                1
+            );
+            expect(() => aFullConcept().withLegalResources([validLegalResource]).build()).not.toThrow();
+        });
+
+        test('invalid legalResource does throw error', () => {
+            const invalidLegalResource = LegalResource.reconstitute(
+                LegalResourceBuilder.buildIri(uuid()),
+                undefined,
+                LegalResourceTestBuilder.URL,
+                1
+            );
+
+            expect(() => aFullConcept().withLegalResources([invalidLegalResource]).build()).toThrow();
+        });
+
+        test('legalResources that dont have unique order throws error', () => {
+            const legalResource1 =
+                aLegalResourceForConcept().withOrder(1).build();
+            const legalResource2 =
+                aLegalResourceForConcept().withOrder(1).build();
+
+            expect(() => aFullConcept().withLegalResources([legalResource1, legalResource2]).build()).toThrow(new Error('legal resources > order should not contain duplicates'));
+        });
+
+        test('legalResource that have unique order does not throw error', () => {
+            const legalResource1 =
+                aLegalResourceForConcept().withOrder(1).build();
+            const legalResource2 =
+                aLegalResourceForConcept().withOrder(2).build();
+
+            expect(() => aFullConcept().withLegalResources([legalResource1, legalResource2]).build()).not.toThrow();
         });
     });
 });

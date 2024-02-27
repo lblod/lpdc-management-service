@@ -138,7 +138,7 @@ export class NewInstanceDomainService {
                 undefined,
                 undefined,
                 bestuurseenheid.spatials,
-                concept.legalResources,
+                concept.legalResources.map(lr => new Iri(lr.url)), //TODO LPDC-1026 fix me!
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);

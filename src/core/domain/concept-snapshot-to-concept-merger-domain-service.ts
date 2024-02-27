@@ -20,6 +20,7 @@ import {Logger} from "../../../platform/logger";
 import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
 } from "./ensure-linked-authorities-exist-as-code-list-domain-service";
+import {LegalResource, LegalResourceBuilder} from "./legal-resource";
 
 export class ConceptSnapshotToConceptMergerDomainService {
 
@@ -142,7 +143,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.id,
             conceptSnapshot.conceptTags,
             shouldConceptBeArchived,
-            conceptSnapshot.legalResources,
+            this.copyLegalResources(conceptSnapshot.legalResources),
         );
     }
 
@@ -178,7 +179,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
             (isConceptSnapshotFunctionallyChanged || shouldConceptBeArchived) ? conceptSnapshot.id : concept.latestConceptSnapshot,
             conceptSnapshot.conceptTags,
             shouldConceptBeArchived,
-            conceptSnapshot.legalResources,
+            this.copyLegalResources(conceptSnapshot.legalResources),
         );
     }
 
@@ -302,6 +303,18 @@ export class ConceptSnapshotToConceptMergerDomainService {
             evidence.title,
             evidence.description,
             undefined);
+    }
+
+    private copyLegalResources(legalResourceUrls: Iri[]): LegalResource[] {
+        return legalResourceUrls.map((lr, index) => {
+            const newUuid = uuid();
+            return LegalResource.reconstitute(
+                LegalResourceBuilder.buildIri(newUuid),
+                newUuid,
+                lr.value,
+                index + 1
+            );
+        });
     }
 
     private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: Iri): Promise<boolean> {

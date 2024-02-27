@@ -20,6 +20,7 @@ import {
 import {Language} from "./language";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {isEqual, uniqWith} from "lodash";
+import {LegalResource} from "./legal-resource";
 
 export class Concept {
 
@@ -53,7 +54,7 @@ export class Concept {
     private readonly _latestFunctionallyChangedConceptSnapshot: Iri;
     private readonly _conceptTags: ConceptTagType[];
     private readonly _isArchived: boolean;
-    private readonly _legalResources: Iri[];
+    private readonly _legalResources: LegalResource[];
 
     constructor(id: Iri,
                 uuid: string,
@@ -85,7 +86,7 @@ export class Concept {
                 latestFunctionallyChangedConceptSnapshot: Iri,
                 conceptTags: ConceptTagType[],
                 isArchived: boolean,
-                legalResources: Iri[],
+                legalResources: LegalResource[],
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -127,7 +128,8 @@ export class Concept {
         this._latestFunctionallyChangedConceptSnapshot = requiredValue(latestFunctionallyChangedConceptSnapshot, 'latestFunctionallyChangedConceptSnapshot');
         this._conceptTags = requireNoDuplicates(asSortedArray(conceptTags), 'conceptTags');
         this._isArchived = requiredValue(isArchived, 'isArchived');
-        this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
+        this._legalResources = [...legalResources].map(LegalResource.forConcept);
+        requireNoDuplicates(this.legalResources.map(lr => lr.order), 'legal resources > order');
     }
 
     get conceptNlLanguages(): Language[] {
@@ -258,7 +260,7 @@ export class Concept {
         return this._isArchived;
     }
 
-    get legalResources(): Iri[] {
+    get legalResources(): LegalResource[] {
         return [...this._legalResources];
     }
 

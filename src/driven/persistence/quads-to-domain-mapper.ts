@@ -35,6 +35,7 @@ import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
 import {Logger} from "../../../platform/logger";
 import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
+import {LegalResource} from "../../core/domain/legal-resource";
 
 export interface DoubleQuadReporter {
 
@@ -162,7 +163,7 @@ export class QuadsToDomainMapper {
             this.productId(id),
             this.snapshotType(id),
             this.conceptTags(id),
-            this.legalResources(id),
+            this.legalResourcesUrls(id),
         );
     }
 
@@ -243,7 +244,7 @@ export class QuadsToDomainMapper {
             this.generatedAtTime(id),
             this.isArchived(id),
             this.spatials(id),
-            this.legalResources(id),
+            this.legalResourcesUrls(id),
         );
     }
 
@@ -290,7 +291,7 @@ export class QuadsToDomainMapper {
             this.instanceReviewStatusType(id),
             this.instancePublicationStatusType(id),
             this.spatials(id),
-            this.legalResources(id)
+            this.legalResourcesUrls(id)
         );
     }
 
@@ -486,7 +487,7 @@ export class QuadsToDomainMapper {
         return !!this.storeAccess.uniqueStatement(namedNode(id.value), NS.adms('status'), STATUS.concept.archived);
     }
 
-    private legalResources(id: Iri): Iri[] {
+    private legalResourcesUrls(id: Iri): Iri[] {
         return this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasLegalResource')));
     }
 
@@ -646,12 +647,35 @@ export class QuadsToDomainMapper {
         return Evidence.reconstitute(evidenceIds[0], this.uuid(evidenceIds[0]), this.title(evidenceIds[0]), this.description(evidenceIds[0]), this.conceptId(evidenceIds[0]));
     }
 
+    private legalResources(id: Iri): LegalResource[] {
+        const legalResourceIds =
+            this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasLegalResource')));
+
+        legalResourceIds.forEach(legalResourceId =>
+            this.errorIfMissingOrIncorrectType(legalResourceId, NS.eli('LegalResource')));
+
+        const legalResources =
+            legalResourceIds.map(legalResourceId =>
+                LegalResource.reconstitute(
+                    legalResourceId,
+                    this.uuid(legalResourceId),
+                    this.seeAlso(legalResourceId),
+                    this.order(legalResourceId),
+                ));
+
+        return this.sort(legalResources);
+    }
+
     private conceptId(id: Iri): Iri | undefined {
         return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.dct('source')));
     }
 
     private order(id: Iri): number | undefined {
         return this.asNumber(this.storeAccess.uniqueValue(namedNode(id.value), NS.sh('order')));
+    }
+
+    private seeAlso(id: Iri): string | undefined {
+        return this.storeAccess.uniqueValue(namedNode(id.value), NS.rdfs('seeAlso'));
     }
 
     private conceptSnapshotId(id: Iri): Iri | undefined {

@@ -28,6 +28,7 @@ import {Instance} from "../../core/domain/instance";
 import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
 import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
+import {LegalResource} from "../../core/domain/legal-resource";
 
 export class DomainToQuadsMapper {
     private readonly graphId;
@@ -105,7 +106,7 @@ export class DomainToQuadsMapper {
             this.productId(conceptSnapshot.id, conceptSnapshot.productId),
             conceptSnapshot.snapshotType ? this.buildQuad(namedNode(conceptSnapshot.id.value), NS.lpdcExt('snapshotType'), namedNode(this.enumToIri(conceptSnapshot.snapshotType, NS.dvc.snapshotType).value)) : undefined,
             ...this.conceptTags(conceptSnapshot.id, conceptSnapshot.conceptTags),
-            ...this.legalResources(conceptSnapshot.id, conceptSnapshot.legalResources),
+            ...this.legalResourceUrls(conceptSnapshot.id, conceptSnapshot.legalResources),
         ].filter(t => t !== undefined);
     }
 
@@ -149,7 +150,7 @@ export class DomainToQuadsMapper {
             instance.reviewStatus ? this.buildQuad(namedNode(instance.id.value), NS.ext('reviewStatus'), namedNode(this.enumToIri(instance.reviewStatus, NS.concepts.reviewStatus).value)) : undefined,
             instance.publicationStatus ? this.buildQuad(namedNode(instance.id.value), NS.schema('publication'), namedNode(this.enumToIri(instance.publicationStatus, NS.concepts.publicationStatus).value)) : undefined,
             ...this.spatials(instance.id, instance.spatials),
-            ...this.legalResources(instance.id, instance.legalResources)
+            ...this.legalResourceUrls(instance.id, instance.legalResources)
         ].filter(t => t !== undefined);
     }
 
@@ -178,7 +179,7 @@ export class DomainToQuadsMapper {
             ...this.keywords(instanceSnapshot.id, instanceSnapshot.keywords),
             ...this.languages(instanceSnapshot.id, instanceSnapshot.languages),
             ...this.spatials(instanceSnapshot.id, instanceSnapshot.spatials),
-            ...this.legalResources(instanceSnapshot.id, instanceSnapshot.legalResources),
+            ...this.legalResourceUrls(instanceSnapshot.id, instanceSnapshot.legalResources),
             this.instanceDateCreated(instanceSnapshot.id, instanceSnapshot.dateCreated),
             this.instanceDateModified(instanceSnapshot.id, instanceSnapshot.dateModified),
             this.generatedAtTime(instanceSnapshot.id, instanceSnapshot.generatedAtTime),
@@ -296,7 +297,7 @@ export class DomainToQuadsMapper {
         return isArchived ? this.buildQuad(namedNode(id.value), NS.adms('status'), STATUS.concept.archived) : undefined;
     }
 
-    private legalResources(id: Iri, values: Iri[]): Statement[] {
+    private legalResourceUrls(id: Iri, values: Iri[]): Statement[] {
         return this.irisToQuads(namedNode(id.value), NS.m8g('hasLegalResource'), values);
     }
 
@@ -400,6 +401,16 @@ export class DomainToQuadsMapper {
                 financialAdvantage.conceptFinancialAdvantageId ? this.conceptId(financialAdvantage.id, financialAdvantage.conceptFinancialAdvantageId) : undefined,
             ];
         });
+    }
+
+    private legalResources(id: Iri, values: LegalResource[]): Statement[] {
+        return values.flatMap( legalResource => [
+            this.buildQuad(namedNode(id.value), NS.m8g('hasLegalResource'), namedNode(legalResource.id.value)),
+            legalResource.uuid ? this.buildQuad(namedNode(legalResource.id.value), NS.mu('uuid'), literal(legalResource.uuid)) : undefined,
+            this.buildQuad(namedNode(legalResource.id.value), NS.rdf('type'), NS.eli('LegalResource')),
+            this.buildQuad(namedNode(legalResource.id.value), NS.rdfs('seeAlso'), namedNode(legalResource.url)),
+            this.buildQuad(namedNode(legalResource.id.value), NS.sh('order'), literal(legalResource.order.toString(), NS.xsd('integer'))),
+        ]);
     }
 
     private contactPoints(id: Iri, values: ContactPoint[]): Statement[] {

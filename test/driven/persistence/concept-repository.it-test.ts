@@ -66,32 +66,32 @@ describe('ConceptRepository', () => {
 
     describe('update', () => {
 
-                test('should update concept', async () => {
-                        const oldConcept = aFullConcept()
-                            .build();
+        test('should update concept', async () => {
+            const oldConcept = aFullConcept()
+                .build();
 
-                        await repository.save(oldConcept);
+            await repository.save(oldConcept);
 
-                        const newConcept = aFullConcept().withEndDate(FormatPreservingDate.now())
-                            .build();
+            const newConcept = aFullConcept().withEndDate(FormatPreservingDate.now())
+                .build();
 
-                        await repository.update(newConcept,oldConcept);
+            await repository.update(newConcept, oldConcept);
 
-                        const actualConcept = await repository.findById(newConcept.id);
+            const actualConcept = await repository.findById(newConcept.id);
 
-                        expect(actualConcept).toEqual(newConcept);
-                });
-
-                test('should throw error when old concept is equal to new concept', async () => {
-                        const oldConcept = aFullConcept().build();
-                        await repository.save(oldConcept);
-
-                        const newConcept = oldConcept;
-
-                        expect(oldConcept).toEqual(newConcept);
-                        await expect(() => repository.update(newConcept, oldConcept)).rejects.toThrow(new Error('no change'));
-                });
+            expect(actualConcept).toEqual(newConcept);
         });
+
+        test('should throw error when old concept is equal to new concept', async () => {
+            const oldConcept = aFullConcept().build();
+            await repository.save(oldConcept);
+
+            const newConcept = oldConcept;
+
+            expect(oldConcept).toEqual(newConcept);
+            await expect(() => repository.update(newConcept, oldConcept)).rejects.toThrow(new Error('no change'));
+        });
+    });
 
     describe('exists', () => {
         test('Concept with id exists', async () => {
@@ -547,9 +547,16 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(ConceptTestBuilder.CONCEPT_TAGS[0]).value}>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(ConceptTestBuilder.CONCEPT_TAGS[1]).value}>`,
                     `<${conceptId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/concept-status/gearchiveerd>`,
-                    `<${conceptId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptTestBuilder.LEGAL_RESOURCES[0]}>`,
-                    `<${conceptId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptTestBuilder.LEGAL_RESOURCES[1]}>`,
-                    `<${conceptId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptTestBuilder.LEGAL_RESOURCES[2]}>`,
+                    `<${conceptId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptTestBuilder.LEGAL_RESOURCES[0].id}>`,
+                    `<${ConceptTestBuilder.LEGAL_RESOURCES[0].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
+                    `<${ConceptTestBuilder.LEGAL_RESOURCES[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${ConceptTestBuilder.LEGAL_RESOURCES[0].uuid}"""`,
+                    `<${ConceptTestBuilder.LEGAL_RESOURCES[0].id}> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <${ConceptTestBuilder.LEGAL_RESOURCES[0].url}>`,
+                    `<${ConceptTestBuilder.LEGAL_RESOURCES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `<${conceptId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptTestBuilder.LEGAL_RESOURCES[1].id}>`,
+                    `<${ConceptTestBuilder.LEGAL_RESOURCES[1].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
+                    `<${ConceptTestBuilder.LEGAL_RESOURCES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${ConceptTestBuilder.LEGAL_RESOURCES[1].uuid}"""`,
+                    `<${ConceptTestBuilder.LEGAL_RESOURCES[1].id}> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <${ConceptTestBuilder.LEGAL_RESOURCES[1].url}>`,
+                    `<${ConceptTestBuilder.LEGAL_RESOURCES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                 ]);
 
             const actualConcept = await repository.findById(conceptId);

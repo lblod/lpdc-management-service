@@ -24,9 +24,11 @@ import {Website} from "../../../src/core/domain/website";
 import {Cost} from "../../../src/core/domain/cost";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {Concept} from "../../../src/core/domain/concept";
-import {buildCodexVlaanderenIri, buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
+import {buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
+import {LegalResource} from "../../../src/core/domain/legal-resource";
+import {aLegalResourceForConcept, anotherLegalResourceForConcept} from "./legal-resource-test-builder";
 
 export function aMinimalConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
@@ -192,7 +194,7 @@ export class ConceptTestBuilder {
 
     public static readonly CONCEPT_TAGS = [ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT];
 
-    public static readonly LEGAL_RESOURCES = [buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())];
+    public static readonly LEGAL_RESOURCES = [aLegalResourceForConcept().withOrder(1).build(), anotherLegalResourceForConcept().withOrder(2).build()];
 
     private id: Iri;
     private uuid: string | undefined;
@@ -224,7 +226,7 @@ export class ConceptTestBuilder {
     private latestFunctionallyChangedConceptSnapshot: Iri;
     private conceptTags: ConceptTagType[] = [];
     private isArchived: boolean = false;
-    private legalResources: Iri[] = [];
+    private legalResources: LegalResource[] = [];
 
     public withId(id: Iri): ConceptTestBuilder {
         this.id = id;
@@ -376,7 +378,7 @@ export class ConceptTestBuilder {
         return this;
     }
 
-    public withLegalResources(legalResources: Iri[]): ConceptTestBuilder {
+    public withLegalResources(legalResources: LegalResource[]): ConceptTestBuilder {
         this.legalResources = legalResources;
         return this;
     }
