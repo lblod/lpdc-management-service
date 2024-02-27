@@ -20,6 +20,7 @@ import {isEqual, uniqWith} from "lodash";
 import {
     ConceptDisplayConfigurationRepository
 } from "../port/driven/persistence/concept-display-configuration-repository";
+import {LegalResource, LegalResourceBuilder} from "./legal-resource";
 
 export class NewInstanceDomainService {
 
@@ -138,7 +139,7 @@ export class NewInstanceDomainService {
                 undefined,
                 undefined,
                 bestuurseenheid.spatials,
-                concept.legalResources.map(lr => new Iri(lr.url)), //TODO LPDC-1026 fix me!
+                this.toInstanceLegalResources(concept.legalResources),
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);
@@ -227,6 +228,18 @@ export class NewInstanceDomainService {
                 .withDescription(this.toInstanceLanguageString(conceptFinancialAdvantage.description, conceptLanguageVersion, chosenForm))
                 .withConceptFinancialAdvantageId(conceptFinancialAdvantage.id)
                 .withOrder(conceptFinancialAdvantage.order)
+                .buildForInstance();
+        });
+    }
+
+    private toInstanceLegalResources(conceptLegalResources: LegalResource[]): LegalResource[] {
+        return conceptLegalResources.map(conceptLegalResource => {
+            const uniqueId = uuid();
+            return new LegalResourceBuilder()
+                .withId(LegalResourceBuilder.buildIri(uniqueId))
+                .withUuid(uniqueId)
+                .withUrl(conceptLegalResource.url)
+                .withOrder(conceptLegalResource.order)
                 .buildForInstance();
         });
     }

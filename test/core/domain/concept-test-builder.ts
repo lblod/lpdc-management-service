@@ -28,7 +28,7 @@ import {buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {LegalResource} from "../../../src/core/domain/legal-resource";
-import {aLegalResourceForConcept, anotherLegalResourceForConcept} from "./legal-resource-test-builder";
+import {aLegalResource, anotherLegalResource} from "./legal-resource-test-builder";
 
 export function aMinimalConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
@@ -194,7 +194,7 @@ export class ConceptTestBuilder {
 
     public static readonly CONCEPT_TAGS = [ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT];
 
-    public static readonly LEGAL_RESOURCES = [aLegalResourceForConcept().withOrder(1).build(), anotherLegalResourceForConcept().withOrder(2).build()];
+    public static readonly LEGAL_RESOURCES = [aLegalResource().withOrder(1).build(), anotherLegalResource().withOrder(2).build()];
 
     private id: Iri;
     private uuid: string | undefined;

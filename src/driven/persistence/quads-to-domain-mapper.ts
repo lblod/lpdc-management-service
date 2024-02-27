@@ -291,7 +291,7 @@ export class QuadsToDomainMapper {
             this.instanceReviewStatusType(id),
             this.instancePublicationStatusType(id),
             this.spatials(id),
-            this.legalResourcesUrls(id)
+            this.legalResources(id)
         );
     }
 

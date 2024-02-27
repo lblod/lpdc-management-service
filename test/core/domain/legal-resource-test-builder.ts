@@ -2,7 +2,7 @@ import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {uuid} from "../../../mu-helper";
 
 
-export function aLegalResourceForConcept(): LegalResourceBuilder {
+export function aLegalResource(): LegalResourceBuilder {
     return new LegalResourceBuilder()
         .withId(LegalResourceBuilder.buildIri(uuid()))
         .withUuid(uuid())
@@ -10,7 +10,7 @@ export function aLegalResourceForConcept(): LegalResourceBuilder {
         .withOrder(1);
 }
 
-export function anotherLegalResourceForConcept(): LegalResourceBuilder {
+export function anotherLegalResource(): LegalResourceBuilder {
     return new LegalResourceBuilder()
         .withId(LegalResourceBuilder.buildIri(uuid()))
         .withUuid(uuid())

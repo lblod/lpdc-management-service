@@ -31,6 +31,7 @@ import {
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 
 describe('Creating a new Instance domain service', () => {
 
@@ -283,7 +284,20 @@ describe('Creating a new Instance domain service', () => {
                 .withLanguages([])
                 .withReviewStatus(undefined)
                 .withPublicationStatus(undefined)
-                .withLegalResources(concept.legalResources.map(lr => new Iri(lr.url))) //TODO LPDC-1026 fix me!
+                .withLegalResources([
+                    new LegalResourceBuilder()
+                        .withId(createdInstance.legalResources[0].id)
+                        .withUuid(createdInstance.legalResources[0].uuid)
+                        .withUrl(concept.legalResources[0].url)
+                        .withOrder(1)
+                        .buildForInstance(),
+                    new LegalResourceBuilder()
+                        .withId(createdInstance.legalResources[1].id)
+                        .withUuid(createdInstance.legalResources[1].uuid)
+                        .withUrl(concept.legalResources[1].url)
+                        .withOrder(2)
+                        .buildForInstance(),
+                ])
                 .build();
 
         expect(createdInstance).toEqual(expectedInstance);
@@ -535,7 +549,20 @@ describe('Creating a new Instance domain service', () => {
                 .withLanguages([])
                 .withReviewStatus(undefined)
                 .withPublicationStatus(undefined)
-                .withLegalResources(concept.legalResources.map(lr => new Iri(lr.url))) //TODO LPDC-1026 fix me!
+                .withLegalResources([
+                    new LegalResourceBuilder()
+                        .withId(createdInstance.legalResources[0].id)
+                        .withUuid(createdInstance.legalResources[0].uuid)
+                        .withUrl(concept.legalResources[0].url)
+                        .withOrder(1)
+                        .buildForInstance(),
+                    new LegalResourceBuilder()
+                        .withId(createdInstance.legalResources[1].id)
+                        .withUuid(createdInstance.legalResources[1].uuid)
+                        .withUrl(concept.legalResources[1].url)
+                        .withOrder(2)
+                        .buildForInstance(),
+                ])
                 .build();
 
         expect(createdInstance).toEqual(expectedInstance);
@@ -755,7 +782,20 @@ describe('Creating a new Instance domain service', () => {
                 .withLanguages([])
                 .withReviewStatus(undefined)
                 .withPublicationStatus(undefined)
-                .withLegalResources(concept.legalResources.map(lr => new Iri(lr.url))) //TODO LPDC-1026 fix me!
+                .withLegalResources([
+                    new LegalResourceBuilder()
+                        .withId(createdInstance.legalResources[0].id)
+                        .withUuid(createdInstance.legalResources[0].uuid)
+                        .withUrl(concept.legalResources[0].url)
+                        .withOrder(1)
+                        .buildForInstance(),
+                    new LegalResourceBuilder()
+                        .withId(createdInstance.legalResources[1].id)
+                        .withUuid(createdInstance.legalResources[1].uuid)
+                        .withUrl(concept.legalResources[1].url)
+                        .withOrder(2)
+                        .buildForInstance(),
+                ])
                 .build();
 
         expect(createdInstance).toEqual(expectedInstance);

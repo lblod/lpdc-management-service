@@ -45,7 +45,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 NS.dct("type").value,
                 NS.lpdcExt("conceptTag").value,
                 NS.adms('status').value,
-                NS.m8g('hasLegalResource').value,
                 NS.ext('hasVersionedSource').value,
                 NS.dct('source').value,
                 NS.dct('spatial').value,
@@ -56,7 +55,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
                 NS.besluit('Bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
-                NS.eli('LegalResource').value,
                 NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
 

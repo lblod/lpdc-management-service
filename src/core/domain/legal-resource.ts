@@ -29,6 +29,15 @@ export class LegalResource {
         );
     }
 
+    static forInstance(legalResource: LegalResource): LegalResource {
+        return new LegalResource(
+            legalResource.id,
+            requiredValue(legalResource.uuid, 'uuid'),
+            legalResource.url,
+            legalResource.order,
+        );
+    }
+
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         url: string,
@@ -86,6 +95,10 @@ export class LegalResourceBuilder {
 
     public buildForConcept(): LegalResource {
         return LegalResource.forConcept(this.build());
+    }
+
+    public buildForInstance(): LegalResource {
+        return LegalResource.forInstance(this.build());
     }
 
     public build(): LegalResource {

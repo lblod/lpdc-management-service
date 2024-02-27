@@ -29,6 +29,7 @@ import {Cost} from "./cost";
 import {FinancialAdvantage} from "./financial-advantage";
 import {ContactPoint} from "./contact-point";
 import {instanceLanguages, Language} from "./language";
+import {LegalResource} from "./legal-resource";
 
 export class Instance {
 
@@ -70,7 +71,7 @@ export class Instance {
     private readonly _reviewStatus: InstanceReviewStatusType | undefined;
     private readonly _publicationStatus: InstancePublicationStatusType | undefined;
     private readonly _spatials: Iri[];
-    private readonly _legalResources: Iri[];
+    private readonly _legalResources: LegalResource[];
 
 
     constructor(id: Iri,
@@ -111,7 +112,7 @@ export class Instance {
                 reviewStatus: InstanceReviewStatusType,
                 publicationStatus: InstancePublicationStatusType,
                 spatials: Iri[],
-                legalResources: Iri[]
+                legalResources: LegalResource[]
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -158,7 +159,8 @@ export class Instance {
         this._reviewStatus = requiredCanOnlyBePresentIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId, 'concept');
         this._publicationStatus = publicationStatus;
         this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
-        this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
+        this._legalResources = [...legalResources].map(LegalResource.forInstance);
+        requireNoDuplicates(this.legalResources.map(lr => lr.order), 'legal resources > order');
         this.validateLanguages();
     }
 
@@ -358,7 +360,7 @@ export class Instance {
         return [...this._spatials];
     }
 
-    get legalResources(): Iri[] {
+    get legalResources(): LegalResource[] {
         return [...this._legalResources];
     }
 
@@ -428,7 +430,7 @@ export class InstanceBuilder {
     private reviewStatus: InstanceReviewStatusType;
     private publicationStatus: InstancePublicationStatusType;
     private spatials: Iri[] = [];
-    private legalResources: Iri[] = [];
+    private legalResources: LegalResource[] = [];
 
     public static from(instance: Instance): InstanceBuilder {
         return new InstanceBuilder()
@@ -663,7 +665,7 @@ export class InstanceBuilder {
         return this;
     }
 
-    public withLegalResources(legalResources: Iri[]): InstanceBuilder {
+    public withLegalResources(legalResources: LegalResource[]): InstanceBuilder {
         this.legalResources = legalResources;
         return this;
     }

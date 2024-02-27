@@ -1,4 +1,4 @@
-import {aLegalResourceForConcept} from "./legal-resource-test-builder";
+import {aLegalResource} from "./legal-resource-test-builder";
 import {LegalResource} from "../../../src/core/domain/legal-resource";
 import {Iri} from "../../../src/core/domain/shared/iri";
 
@@ -6,38 +6,75 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 describe('forConcept', () => {
 
    test('undefined id throws error', () => {
-       const legalResource = aLegalResourceForConcept().withId(undefined);
+       const legalResource = aLegalResource().withId(undefined);
        expect(() => LegalResource.forConcept(legalResource.build())).toThrow(new Error('id should not be absent'));
    });
 
     test('invalid iri throws error', () => {
-        expect(() => LegalResource.forConcept(aLegalResourceForConcept().withId(new Iri('  ')).build())).toThrow(new Error('iri should not be blank'));
+        expect(() => LegalResource.forConcept(aLegalResource().withId(new Iri('  ')).build())).toThrow(new Error('iri should not be blank'));
     });
 
     test('undefined uuid throws error', () => {
-        const legalResource = aLegalResourceForConcept().withUuid(undefined);
+        const legalResource = aLegalResource().withUuid(undefined);
         expect(() => LegalResource.forConcept(legalResource.build())).toThrow(new Error('uuid should not be absent'));
     });
 
     test('blank uuid throws error', () => {
-        const legalResource = aLegalResourceForConcept().withUuid(' ');
+        const legalResource = aLegalResource().withUuid(' ');
         expect(() => LegalResource.forConcept(legalResource.build())).toThrow(new Error('uuid should not be blank'));
     });
 
     test('undefined url throws error', () => {
-        const legalResource = aLegalResourceForConcept().withUrl(undefined);
+        const legalResource = aLegalResource().withUrl(undefined);
         expect(() => LegalResource.forConcept(legalResource.build())).toThrow(new Error('url should not be absent'));
     });
 
     test('blank url throws error', () => {
-        const legalResource = aLegalResourceForConcept().withUrl('    ');
+        const legalResource = aLegalResource().withUrl('    ');
         expect(() => LegalResource.forConcept(legalResource.build())).toThrow(new Error('url should not be blank'));
     });
 
     test('undefined order throws error', () => {
-        const legalResource = aLegalResourceForConcept().withOrder(undefined);
+        const legalResource = aLegalResource().withOrder(undefined);
         expect(() => LegalResource.forConcept(legalResource.build())).toThrow(new Error('order should not be absent'));
     });
 
+});
+
+describe('forInstance', () => {
+
+    test('undefined id throws error', () => {
+        const legalResource = aLegalResource().withId(undefined);
+        expect(() => LegalResource.forInstance(legalResource.build())).toThrow(new Error('id should not be absent'));
+    });
+
+    test('invalid iri throws error', () => {
+        expect(() => LegalResource.forInstance(aLegalResource().withId(new Iri('  ')).build())).toThrow(new Error('iri should not be blank'));
+    });
+
+    test('undefined uuid throws error', () => {
+        const legalResource = aLegalResource().withUuid(undefined);
+        expect(() => LegalResource.forInstance(legalResource.build())).toThrow(new Error('uuid should not be absent'));
+    });
+
+    test('blank uuid throws error', () => {
+        const legalResource = aLegalResource().withUuid(' ');
+        expect(() => LegalResource.forInstance(legalResource.build())).toThrow(new Error('uuid should not be blank'));
+    });
+
+    test('undefined url throws error', () => {
+        const legalResource = aLegalResource().withUrl(undefined);
+        expect(() => LegalResource.forInstance(legalResource.build())).toThrow(new Error('url should not be absent'));
+    });
+
+    test('blank url throws error', () => {
+        const legalResource = aLegalResource().withUrl('    ');
+        expect(() => LegalResource.forInstance(legalResource.build())).toThrow(new Error('url should not be blank'));
+    });
+
+    test('undefined order throws error', () => {
+        const legalResource = aLegalResource().withOrder(undefined);
+        expect(() => LegalResource.forInstance(legalResource.build())).toThrow(new Error('order should not be absent'));
+    });
 
 });

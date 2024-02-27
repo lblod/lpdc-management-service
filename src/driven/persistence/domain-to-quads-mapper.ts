@@ -150,7 +150,7 @@ export class DomainToQuadsMapper {
             instance.reviewStatus ? this.buildQuad(namedNode(instance.id.value), NS.ext('reviewStatus'), namedNode(this.enumToIri(instance.reviewStatus, NS.concepts.reviewStatus).value)) : undefined,
             instance.publicationStatus ? this.buildQuad(namedNode(instance.id.value), NS.schema('publication'), namedNode(this.enumToIri(instance.publicationStatus, NS.concepts.publicationStatus).value)) : undefined,
             ...this.spatials(instance.id, instance.spatials),
-            ...this.legalResourceUrls(instance.id, instance.legalResources)
+            ...this.legalResources(instance.id, instance.legalResources),
         ].filter(t => t !== undefined);
     }
 

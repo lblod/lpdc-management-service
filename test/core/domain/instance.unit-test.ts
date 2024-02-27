@@ -1,12 +1,7 @@
 import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "./instance-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {
-    buildCodexVlaanderenIri,
-    buildConceptIri,
-    buildConceptSnapshotIri,
-    buildSpatialRefNis2019Iri
-} from "./iri-test-builder";
+import {buildConceptIri, buildConceptSnapshotIri, buildSpatialRefNis2019Iri} from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
@@ -41,6 +36,8 @@ import {aMinimalContactPointForInstance, ContactPointTestBuilder} from "./contac
 import {ContactPoint, ContactPointBuilder} from "../../../src/core/domain/contact-point";
 import {Address, AddressBuilder} from "../../../src/core/domain/address";
 import {AddressTestBuilder} from "./address-test-builder";
+import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
+import {aLegalResource, LegalResourceTestBuilder} from "./legal-resource-test-builder";
 
 beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
@@ -483,7 +480,6 @@ describe('constructing', () => {
         expect(() => instanceTestBuilder.build()).toThrow(new Error('datePublished can only be present when dateSent is present'));
     });
 
-
     test('conceptId, conceptSnapshotId and productId not all defined or all undefined should throw error', () => {
         const instanceTestBuilderWithConcept = aFullInstance()
             .withConceptId(buildConceptIri(uuid()))
@@ -532,12 +528,6 @@ describe('constructing', () => {
         expect(() => aFullInstance().withSpatials([buildSpatialRefNis2019Iri(1), buildSpatialRefNis2019Iri(1)]).build()).toThrow(new Error('spatials should not contain duplicates'));
     });
 
-    test('legalResources with duplicates throws error', () => {
-        const iri = uuid();
-        const instanceTestBuilder = aFullInstance().withLegalResources([buildCodexVlaanderenIri(iri), buildCodexVlaanderenIri(iri)]);
-        expect(() => instanceTestBuilder.build()).toThrow(new Error('legalResources should not contain duplicates'));
-    });
-
     test('reviewStatus present and conceptId present should not throw error', () => {
         const instance = aFullInstance()
             .withConceptId(buildConceptIri(uuid()))
@@ -545,7 +535,6 @@ describe('constructing', () => {
 
         expect(() => instance.build()).not.toThrow();
     });
-
 
     test('reviewStatus and conceptId not present should not throw error', () => {
         const instance = aFullInstance()
@@ -564,6 +553,49 @@ describe('constructing', () => {
             .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD);
 
         expect(() => instance.build()).toThrow(new Error('reviewStatus can only be present when concept is present'));
+    });
+
+    describe('legalResources', () => {
+
+        test('valid legalResource does not throw error', () => {
+            const uuidValue = uuid();
+            const validLegalResource = LegalResource.reconstitute(
+                LegalResourceBuilder.buildIri(uuidValue),
+                uuidValue,
+                LegalResourceTestBuilder.URL,
+                1
+            );
+            expect(() => aFullInstance().withLegalResources([validLegalResource]).build()).not.toThrow();
+        });
+
+        test('invalid legalResource does throw error', () => {
+            const invalidLegalResource = LegalResource.reconstitute(
+                LegalResourceBuilder.buildIri(uuid()),
+                undefined,
+                LegalResourceTestBuilder.URL,
+                1
+            );
+
+            expect(() => aFullInstance().withLegalResources([invalidLegalResource]).build()).toThrow();
+        });
+
+        test('legalResources that dont have unique order throws error', () => {
+            const legalResource1 =
+                aLegalResource().withOrder(1).build();
+            const legalResource2 =
+                aLegalResource().withOrder(1).build();
+
+            expect(() => aFullInstance().withLegalResources([legalResource1, legalResource2]).build()).toThrow(new Error('legal resources > order should not contain duplicates'));
+        });
+
+        test('legalResource that have unique order does not throw error', () => {
+            const legalResource1 =
+                aLegalResource().withOrder(1).build();
+            const legalResource2 =
+                aLegalResource().withOrder(2).build();
+
+            expect(() => aFullInstance().withLegalResources([legalResource1, legalResource2]).build()).not.toThrow();
+        });
     });
 
 });

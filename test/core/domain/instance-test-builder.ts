@@ -2,7 +2,6 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {
     buildBestuurseenheidIri,
-    buildCodexVlaanderenIri,
     buildConceptIri,
     buildConceptSnapshotIri,
     buildInstanceIri,
@@ -35,6 +34,7 @@ import {
     anotherFullFinancialAdvantageForInstance
 } from "./financial-advantage-test-builder";
 import {aFullContactPointForInstance, anotherFullContactPointForInstance} from "./contact-point-test-builder";
+import {aLegalResource} from "./legal-resource-test-builder";
 
 export function aMinimalInstance(): InstanceBuilder {
     const uniqueId = uuid();
@@ -185,7 +185,7 @@ export class InstanceTestBuilder {
     public static readonly REVIEW_STATUS = InstanceReviewStatusType.CONCEPT_GEWIJZIGD;
     public static readonly PUBLICATION_STATUS = InstancePublicationStatusType.TE_HERPUBLICEREN;
 
-    public static readonly LEGAL_RESOURCES = [buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())];
+    public static readonly LEGAL_RESOURCES = [aLegalResource().withOrder(1).build(), aLegalResource().withOrder(2).build()];
 
 }
 

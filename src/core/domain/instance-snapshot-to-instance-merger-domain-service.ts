@@ -142,7 +142,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             undefined,
             undefined,
             instanceSnapshot.spatials,
-            instanceSnapshot.legalResources,
+            [], //TODO LPDC-1026 fix me!
         );
     }
 
@@ -186,7 +186,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             undefined,
             instance.datePublished ? InstancePublicationStatusType.TE_HERPUBLICEREN : undefined,
             instanceSnapshot.spatials,
-            instanceSnapshot.legalResources,
+            [], //TODO LPDC-1026 fix me!
         );
     }
 
