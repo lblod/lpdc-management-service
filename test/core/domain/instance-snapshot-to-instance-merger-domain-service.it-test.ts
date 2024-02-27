@@ -888,75 +888,79 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         });
     });
 
-    test('Given a deletedInstance, when receiving a new snapshot, recreate the instance and remove tombstone', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
+    test('Given a deleted Instance, when receiving a new snapshot, recreate the instance and remove tombstone', async () => {
+        const bestuurseenheid = aBestuurseenheid().build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
 
-            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
-            await instanceRepository.save(bestuurseenheid, instance);
-            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
-            await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
+        const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+        await instanceRepository.save(bestuurseenheid, instance);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
+        await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instance.id);
-            expect(instanceExists).toEqual(false);
+        const instanceExists = await instanceRepository.exists(bestuurseenheid, instance.id);
+        expect(instanceExists).toEqual(false);
 
-            const quadsBeforeRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
+        const quadsBeforeRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
 
-            expect(quadsBeforeRecreate).toHaveLength(4);
-            expect(quadsBeforeRecreate).toEqual(expect.arrayContaining([
-                quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
-            ]));
+        expect(quadsBeforeRecreate).toHaveLength(4);
+        expect(quadsBeforeRecreate).toEqual(expect.arrayContaining([
+            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
+        ]));
 
-            const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(false).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+        const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(false).build();
+        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+        await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+
+        expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeTruthy();
+        const quadsBeforeAfterRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
+
+        expect(quadsBeforeAfterRecreate).toEqual(expect.not.arrayContaining([
+            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+        ]));
+
+        const instanceRecreated = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+        expect(instanceRecreated.id).toEqual(instanceSnapshot.isVersionOfInstance);
+    });
 
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
-
-            expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeTruthy();
-            const quadsBeforeAfterRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
-
-            expect(quadsBeforeAfterRecreate).toEqual(expect.not.arrayContaining([
-                quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-            ]));
-
-        });
     test('Given a deletedInstance, when receiving a new archive snapshot, update tombstone', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
+        const bestuurseenheid = aBestuurseenheid().build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
 
-            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
-            await instanceRepository.save(bestuurseenheid, instance);
-            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
-            await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
+        const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+        await instanceRepository.save(bestuurseenheid, instance);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
+        await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instance.id);
-            expect(instanceExists).toEqual(false);
+        const instanceExists = await instanceRepository.exists(bestuurseenheid, instance.id);
+        expect(instanceExists).toEqual(false);
 
-            const quadsBeforeRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
+        const quadsBeforeRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
 
-            expect(quadsBeforeRecreate).toHaveLength(4);
-            expect(quadsBeforeRecreate).toEqual(expect.arrayContaining([
-                quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
-            ]));
+        expect(quadsBeforeRecreate).toHaveLength(4);
+        expect(quadsBeforeRecreate).toEqual(expect.arrayContaining([
+            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
+        ]));
 
-            const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+        const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
+        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+        await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
 
-            expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
-            const quadsBeforeAfterArchivingAgain = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
+        expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
+        const quadsBeforeAfterArchivingAgain = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
 
-            expect(quadsBeforeAfterArchivingAgain).toEqual(expect.arrayContaining([
-                quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),]));
-        });
+        expect(quadsBeforeAfterArchivingAgain).toEqual(expect.arrayContaining([
+            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),]));
+    });
+
     test('Inserts Code Lists for competent and executing authorities if not existing', async () => {
         const bestuurseenheidRegistrationCodeFetcher = {
             fetchOrgRegistryCodelistEntry: jest.fn().mockImplementation((uriEntry: Iri) => Promise.resolve({

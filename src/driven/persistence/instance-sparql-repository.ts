@@ -230,8 +230,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 ?instance schema:publication ?publication.
         }            
         INSERT { 
-                ${quads.join("\n")}
-        
+                ${quads.join("\n")}        
         }     
         WHERE {
                BIND(${sparqlEscapeUri(instance.id)} AS ?instance)
