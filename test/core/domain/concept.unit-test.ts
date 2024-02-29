@@ -28,7 +28,7 @@ import {
 } from "../../../src/core/domain/types";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
-import {aLegalResource, LegalResourceTestBuilder} from "./legal-resource-test-builder";
+import {aFullLegalResource, LegalResourceTestBuilder} from "./legal-resource-test-builder";
 
 describe('constructing', () => {
 
@@ -422,18 +422,18 @@ describe('constructing', () => {
 
         test('legalResources that dont have unique order throws error', () => {
             const legalResource1 =
-                aLegalResource().withOrder(1).build();
+                aFullLegalResource().withOrder(1).build();
             const legalResource2 =
-                aLegalResource().withOrder(1).build();
+                aFullLegalResource().withOrder(1).build();
 
             expect(() => aFullConcept().withLegalResources([legalResource1, legalResource2]).build()).toThrow(new Error('legal resources > order should not contain duplicates'));
         });
 
         test('legalResource that have unique order does not throw error', () => {
             const legalResource1 =
-                aLegalResource().withOrder(1).build();
+                aFullLegalResource().withOrder(1).build();
             const legalResource2 =
-                aLegalResource().withOrder(2).build();
+                aFullLegalResource().withOrder(2).build();
 
             expect(() => aFullConcept().withLegalResources([legalResource1, legalResource2]).build()).not.toThrow();
         });

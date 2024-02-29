@@ -17,7 +17,7 @@ export class LegalResource {
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
-        this._url = requiredValue(url, 'url');
+        this._url = url;
         this._order = requiredValue(order, 'order');
     }
 
@@ -25,7 +25,7 @@ export class LegalResource {
         return new LegalResource(
             legalResource.id,
             requiredValue(legalResource.uuid, 'uuid'),
-            legalResource.url,
+            requiredValue(legalResource.url, 'url'),
             legalResource.order,
         );
     }
@@ -43,7 +43,7 @@ export class LegalResource {
         return new LegalResource(
             legalResource.id,
             undefined,
-            legalResource.url,
+            requiredValue(legalResource.url, 'url'),
             legalResource.order,
         );
     }
@@ -86,7 +86,6 @@ export class LegalResourceBuilder {
     private order: number;
 
     static buildIri(uniqueId: string): Iri {
-        // TODO LPDC-1026 is this ok?
         return new Iri(`http://data.lblod.info/id/legal-resource/${uniqueId}`);
     }
 

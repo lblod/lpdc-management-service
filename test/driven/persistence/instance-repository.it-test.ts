@@ -31,6 +31,7 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import LPDCError from "../../../platform/lpdc-error";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
+import {aFullLegalResource, aMinimalLegalResource} from "../../core/domain/legal-resource-test-builder";
 
 describe('InstanceRepository', () => {
 
@@ -441,7 +442,6 @@ describe('InstanceRepository', () => {
 
             expect(actualInstance).toEqual(instance);
         });
-
 
         test('Verify full mapping', async () => {
             const instanceUUID = uuid();
@@ -1072,6 +1072,16 @@ describe('InstanceRepository', () => {
                 ]);
 
             await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrow(new Error(`could not map <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType> for iri: <${instanceId}>`));
+        });
+
+        test('minimal legal resource', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const legalResource = aMinimalLegalResource().build();
+            const instance = aFullInstance().withLegalResources([legalResource]).build();
+            await repository.save(bestuurseenheid, instance);
+
+            const savedInstance = await repository.findById(bestuurseenheid, instance.id);
+            expect(savedInstance).toEqual(instance);
         });
 
     });

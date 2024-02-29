@@ -35,7 +35,7 @@ import {Language} from "../../../src/core/domain/language";
 import {aMinimalProcedureForInstanceSnapshot} from "./procedure-test-builder";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
-import {aLegalResource, LegalResourceTestBuilder} from "./legal-resource-test-builder";
+import {aFullLegalResource, LegalResourceTestBuilder} from "./legal-resource-test-builder";
 
 beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
@@ -560,18 +560,18 @@ describe('constructing', () => {
 
         test('legalResources that dont have unique order throws error', () => {
             const legalResource1 =
-                aLegalResource().withOrder(1).build();
+                aFullLegalResource().withOrder(1).build();
             const legalResource2 =
-                aLegalResource().withOrder(1).build();
+                aFullLegalResource().withOrder(1).build();
 
             expect(() => aFullInstanceSnapshot().withLegalResources([legalResource1, legalResource2]).build()).toThrow(new Error('legal resources > order should not contain duplicates'));
         });
 
         test('legalResource that have unique order does not throw error', () => {
             const legalResource1 =
-                aLegalResource().withOrder(1).build();
+                aFullLegalResource().withOrder(1).build();
             const legalResource2 =
-                aLegalResource().withOrder(2).build();
+                aFullLegalResource().withOrder(2).build();
 
             expect(() => aFullInstanceSnapshot().withLegalResources([legalResource1, legalResource2]).build()).not.toThrow();
         });

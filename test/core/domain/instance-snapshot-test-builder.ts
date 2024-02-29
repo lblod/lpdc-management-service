@@ -44,7 +44,7 @@ import {
     anotherFullContactPointForInstanceSnapshot
 } from "./contact-point-test-builder";
 import {LegalResource} from "../../../src/core/domain/legal-resource";
-import {aLegalResource} from "./legal-resource-test-builder";
+import {aFullLegalResource} from "./legal-resource-test-builder";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
     const uniqueId = uuid();
@@ -176,7 +176,7 @@ export class InstanceSnapshotTestBuilder {
 
     public static readonly SPATIALS = [buildSpatialRefNis2019Iri(45700), buildSpatialRefNis2019Iri(52000), buildSpatialRefNis2019Iri(98786)];
 
-    public static readonly LEGAL_RESOURCES = [aLegalResource().withOrder(1).build(), aLegalResource().withOrder(2).build()];
+    public static readonly LEGAL_RESOURCES = [aFullLegalResource().withOrder(1).build(), aFullLegalResource().withOrder(2).build()];
 
     public static readonly REQUIREMENTS = [
         aFullRequirementForInstanceSnapshot().withEvidence(aFullEvidenceForInstanceSnapshot().build()).build(),
