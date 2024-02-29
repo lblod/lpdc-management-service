@@ -1041,6 +1041,60 @@ describe('reopen', () => {
             .withDateModified(FormatPreservingDate.now())
             .build());
     });
+
+    test('when publication status was verstuurd but never published', () => {
+        const instance = aFullInstance()
+            .withStatus(InstanceStatusType.VERSTUURD)
+            .withPublicationStatus(undefined)
+            .withDatePublished(undefined)
+            .build();
+
+        const updatedInstance = instance.reopen();
+
+        expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
+            .withStatus(InstanceStatusType.ONTWERP)
+            .withDateModified(FormatPreservingDate.now())
+            .withPublicationStatus(undefined)
+            .withDatePublished(undefined)
+            .build());
+    });
+
+
+    test('when publication status te-herpubliceren, and previously published', () => {
+        const datePublished = FormatPreservingDate.now();
+        const instance = aFullInstance()
+            .withStatus(InstanceStatusType.VERSTUURD)
+            .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
+            .withDatePublished(datePublished)
+            .build();
+
+        const updatedInstance = instance.reopen();
+
+        expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
+            .withStatus(InstanceStatusType.ONTWERP)
+            .withDateModified(FormatPreservingDate.now())
+            .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
+            .withDatePublished(datePublished)
+            .build());
+    });
+
+    test('when publication status gepubliceerd', () => {
+        const datePublished = FormatPreservingDate.now();
+        const instance = aFullInstance()
+            .withStatus(InstanceStatusType.VERSTUURD)
+            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+            .withDatePublished(datePublished)
+            .build();
+
+        const updatedInstance = instance.reopen();
+
+        expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
+            .withStatus(InstanceStatusType.ONTWERP)
+            .withDateModified(FormatPreservingDate.now())
+            .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
+            .withDatePublished(datePublished)
+            .build());
+    });
 });
 
 describe('publish', () => {

@@ -371,8 +371,8 @@ export class Instance {
         }
         const newPublicationStatus = this.publicationStatus === InstancePublicationStatusType.GEPUBLICEERD ?
             InstancePublicationStatusType.TE_HERPUBLICEREN
-            : undefined;
-        this.publicationStatus;
+            : this.publicationStatus;
+
         return InstanceBuilder.from(this)
             .withStatus(InstanceStatusType.ONTWERP)
             .withDateModified(FormatPreservingDate.now())
