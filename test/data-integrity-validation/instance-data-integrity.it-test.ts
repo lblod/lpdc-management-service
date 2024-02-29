@@ -106,10 +106,10 @@ describe('Instance Data Integrity Validation', () => {
             const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
             let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, bestuurseenheid.userGraph().value));
 
-            const thombStonesSubjects = new Set([...allQuadsOfGraph.filter(q => q.object.equals(namedNode('https://www.w3.org/ns/activitystreams#Tombstone'))).map(q => q.subject.value)]);
+            const tombStonesSubjects = new Set([...allQuadsOfGraph.filter(q => q.object.equals(namedNode('https://www.w3.org/ns/activitystreams#Tombstone'))).map(q => q.subject.value)]);
 
             //filter out thombstones triples
-            allQuadsOfGraph = allQuadsOfGraph.filter(q => !thombStonesSubjects.has(q.subject.value));
+            allQuadsOfGraph = allQuadsOfGraph.filter(q => !tombStonesSubjects.has(q.subject.value));
 
             //filter out conceptual display configurations and formal informal choices
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.lblod.info/id/conceptual-display-configuration/'));

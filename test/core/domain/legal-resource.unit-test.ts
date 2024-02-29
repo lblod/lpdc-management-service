@@ -111,3 +111,29 @@ describe('forInstanceSnapshot', () => {
     });
 
 });
+
+describe('isFunctionallyChanged', () => {
+
+    test('when different amount of legalResources , then return true', () => {
+        const legalResource1 = aLegalResource().withUrl('https://url1.com').build();
+        const legalResource2 = aLegalResource().withUrl('https://url2.com').build();
+
+        expect(LegalResource.isFunctionallyChanged([legalResource1, legalResource2], [legalResource2])).toBeTruthy();
+
+    });
+
+    test('when url is different, then return true', () => {
+        const legalResource1 = aLegalResource().withUrl('https://url1.com').build();
+        const legalResource2 = aLegalResource().withUrl('https://url2.com').build();
+
+        expect(LegalResource.isFunctionallyChanged([legalResource1], [legalResource2])).toBeTruthy();
+
+    });
+    test('when url is the same, then return true', () => {
+        const legalResource1 = aLegalResource().withUrl('https://url1.com').build();
+        const legalResource2 = aLegalResource().withUrl('https://url1.com').build();
+
+        expect(LegalResource.isFunctionallyChanged([legalResource1], [legalResource2])).toBeFalsy();
+    });
+
+});

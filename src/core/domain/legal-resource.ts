@@ -1,5 +1,6 @@
 import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
+import {zip} from "lodash";
 
 
 export class LegalResource {
@@ -68,6 +69,13 @@ export class LegalResource {
 
     get order(): number {
         return this._order;
+    }
+
+    static isFunctionallyChanged(value: LegalResource[], other: LegalResource[]): boolean {
+        return value.length !== other.length
+            || zip(value, other).some((legalResources: [LegalResource, LegalResource]) => {
+                return legalResources[0].url !== legalResources[1].url;
+            });
     }
 }
 

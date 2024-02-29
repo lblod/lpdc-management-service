@@ -1076,7 +1076,27 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 en')).withOrder(1).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 en')).withOrder(2).build()])
                 .build()],
-
+        ['legal resource added',
+            aFullConceptSnapshot()
+                .withLegalResources([])
+                .build(),
+            aFullConceptSnapshot()
+                .withLegalResources([buildCodexVlaanderenIri('1234')])
+                .build()],
+        ['legal resource removed',
+            aFullConceptSnapshot()
+                .withLegalResources([buildCodexVlaanderenIri('1234')])
+                .build(),
+            aFullConceptSnapshot()
+                .withLegalResources([])
+                .build()],
+        ['legal resource url updated',
+            aFullConceptSnapshot()
+                .withLegalResources([buildCodexVlaanderenIri('1234')])
+                .build(),
+            aFullConceptSnapshot()
+                .withLegalResources([buildCodexVlaanderenIri('12345')])
+                .build()]
     ];
 
     for (const testCase of functionallyChangedTestCases) {

@@ -279,7 +279,9 @@ export class ConceptSnapshot {
             || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
             || Website.isFunctionallyChanged(value.websites, other.websites)
             || Cost.isFunctionallyChanged(value.costs, other.costs)
-            || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages);
+            || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages)
+            || !isEqual(value.legalResources, other.legalResources);
+
     }
 
 }

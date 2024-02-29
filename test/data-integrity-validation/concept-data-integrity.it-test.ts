@@ -23,6 +23,8 @@ import {Procedure} from "../../src/core/domain/procedure";
 import {Website} from "../../src/core/domain/website";
 import {Cost} from "../../src/core/domain/cost";
 import {FinancialAdvantage} from "../../src/core/domain/financial-advantage";
+import {LegalResource} from "../../src/core/domain/legal-resource";
+import {aLegalResource} from "../core/domain/legal-resource-test-builder";
 
 describe('Concept Data Integrity Validation', () => {
 
@@ -35,7 +37,7 @@ describe('Concept Data Integrity Validation', () => {
     const conceptGraph = new Iri(CONCEPT_GRAPH);
     const domainToQuadsMapper = new DomainToQuadsMapper(conceptGraph);
 
-    test.skip('Load all concepts; print errors to console.log', async () => {
+    test('Load all concepts; print errors to console.log', async () => {
 
         const conceptIdsQuery = `
             ${PREFIX.lpdcExt}
@@ -267,7 +269,8 @@ describe('Concept Data Integrity Validation', () => {
             || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
             || Website.isFunctionallyChanged(value.websites, other.websites)
             || Cost.isFunctionallyChanged(value.costs, other.costs)
-            || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages);
+            || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages)
+            || LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources.map(lr => aLegalResource().withUrl(lr.value).build()));
     }
 
     function wait(milliseconds: number) {
