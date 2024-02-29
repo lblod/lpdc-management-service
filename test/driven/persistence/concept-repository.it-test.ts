@@ -550,12 +550,12 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptTestBuilder.LEGAL_RESOURCES[0].id}>`,
                     `<${ConceptTestBuilder.LEGAL_RESOURCES[0].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
                     `<${ConceptTestBuilder.LEGAL_RESOURCES[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${ConceptTestBuilder.LEGAL_RESOURCES[0].uuid}"""`,
-                    `<${ConceptTestBuilder.LEGAL_RESOURCES[0].id}> <http://schema.org/url> <${ConceptTestBuilder.LEGAL_RESOURCES[0].url}>`,
+                    `<${ConceptTestBuilder.LEGAL_RESOURCES[0].id}> <http://schema.org/url> """${ConceptTestBuilder.LEGAL_RESOURCES[0].url}"""`,
                     `<${ConceptTestBuilder.LEGAL_RESOURCES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${conceptId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptTestBuilder.LEGAL_RESOURCES[1].id}>`,
                     `<${ConceptTestBuilder.LEGAL_RESOURCES[1].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
                     `<${ConceptTestBuilder.LEGAL_RESOURCES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${ConceptTestBuilder.LEGAL_RESOURCES[1].uuid}"""`,
-                    `<${ConceptTestBuilder.LEGAL_RESOURCES[1].id}> <http://schema.org/url> <${ConceptTestBuilder.LEGAL_RESOURCES[1].url}>`,
+                    `<${ConceptTestBuilder.LEGAL_RESOURCES[1].id}> <http://schema.org/url> """${ConceptTestBuilder.LEGAL_RESOURCES[1].url}"""`,
                     `<${ConceptTestBuilder.LEGAL_RESOURCES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                 ]);
 

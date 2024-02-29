@@ -701,12 +701,12 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://data.europa.eu/m8g/hasLegalResource> <${InstanceTestBuilder.LEGAL_RESOURCES[0].id}>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.LEGAL_RESOURCES[0].uuid}"""`,
-                    `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://schema.org/url> <${InstanceTestBuilder.LEGAL_RESOURCES[0].url}>`,
+                    `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://schema.org/url> """${InstanceTestBuilder.LEGAL_RESOURCES[0].url}"""`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${instanceId}> <http://data.europa.eu/m8g/hasLegalResource> <${InstanceTestBuilder.LEGAL_RESOURCES[1].id}>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.LEGAL_RESOURCES[1].uuid}"""`,
-                    `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://schema.org/url> <${InstanceTestBuilder.LEGAL_RESOURCES[1].url}>`,
+                    `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://schema.org/url> """${InstanceTestBuilder.LEGAL_RESOURCES[1].url}"""`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                 ]);
 
