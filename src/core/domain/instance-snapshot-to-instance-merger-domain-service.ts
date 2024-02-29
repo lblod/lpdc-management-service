@@ -257,7 +257,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                 c.title,
                 c.description,
                 c.order,
-                c.conceptCostId);
+                undefined);
         });
     }
 
@@ -270,7 +270,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                     fa.title,
                     fa.description,
                     fa.order,
-                    fa.conceptFinancialAdvantageId);
+                    undefined);
             }
         );
     }

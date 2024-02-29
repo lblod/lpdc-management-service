@@ -92,7 +92,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
     async addToProcessedInstanceSnapshots(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri): Promise<void> {
         const query = `
             INSERT DATA {
-                GRAPH <${bestuurseenheid.instanceSnapshotsLdesDataGraph()}> {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.instanceSnapshotsLdesDataGraph())} {
                     <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ${sparqlEscapeUri(instanceSnapshotId)} .
                 }
             }
@@ -103,16 +103,16 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
     async hasNewerProcessedInstanceSnapshot(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot): Promise<boolean> {
         const query = `
             ASK WHERE {
-                GRAPH <${bestuurseenheid.instanceSnapshotsLdesDataGraph()}> {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.instanceSnapshotsLdesDataGraph())} {
                        ?instanceSnapshotIri a <http://purl.org/vocab/cpsv#PublicService> .
                        ?instanceSnapshotIri <http://www.w3.org/ns/prov#generatedAtTime> ?generatedAtTime .
                        ?instanceSnapshotIri <http://purl.org/dc/terms/isVersionOf> ?instance.
 
                FILTER (?generatedAtTime > "${instanceSnapshot.generatedAtTime.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime>)
-               FILTER (?instanceSnapshotIri != <${instanceSnapshot.id}>)
-               FILTER (?instance = <${instanceSnapshot.isVersionOfInstance}>)
+               FILTER (?instanceSnapshotIri != ${sparqlEscapeUri(instanceSnapshot.id)})
+               FILTER (?instance = ${sparqlEscapeUri(instanceSnapshot.isVersionOfInstance)})
                FILTER EXISTS {
-                    GRAPH <${bestuurseenheid.instanceSnapshotsLdesDataGraph()}> {
+                    GRAPH ${sparqlEscapeUri(bestuurseenheid.instanceSnapshotsLdesDataGraph())} {
                             <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ?instanceSnapshotIri .
                     }
                }

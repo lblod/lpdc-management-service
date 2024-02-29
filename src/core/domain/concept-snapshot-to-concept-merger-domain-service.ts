@@ -59,7 +59,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
             const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedConceptSnapshots.map(iri => iri.value).includes(newConceptSnapshot.id.value);
 
             if (newConceptSnapshotAlreadyLinkedToConcept) {
-                //TODO LPDC-848: when doing idempotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
+                //TODO LPDC-1002: when doing idempotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
                 this._logger.log(`The versioned resource <${conceptSnapshotId}> is already processed on service <${conceptId}>`);
 
                 return;

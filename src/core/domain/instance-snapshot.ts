@@ -66,8 +66,8 @@ export class InstanceSnapshot {
 
     constructor(id: Iri,
                 createdBy: Iri,
-                title: LanguageString | undefined,
-                description: LanguageString | undefined,
+                title: LanguageString,
+                description: LanguageString,
                 additionalDescription: LanguageString | undefined,
                 exception: LanguageString | undefined,
                 regulation: LanguageString | undefined,
@@ -181,11 +181,11 @@ export class InstanceSnapshot {
         return this._createdBy;
     }
 
-    get title(): LanguageString | undefined {
+    get title(): LanguageString {
         return this._title;
     }
 
-    get description(): LanguageString | undefined {
+    get description(): LanguageString {
         return this._description;
     }
 
