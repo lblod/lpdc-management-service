@@ -128,11 +128,30 @@ describe('isFunctionallyChanged', () => {
         expect(LegalResource.isFunctionallyChanged([legalResource1], [legalResource2])).toBeTruthy();
 
     });
+
     test('when url is the same, then return true', () => {
         const legalResource1 = aFullLegalResource().withUrl('https://url1.com').build();
         const legalResource2 = aFullLegalResource().withUrl('https://url1.com').build();
 
         expect(LegalResource.isFunctionallyChanged([legalResource1], [legalResource2])).toBeFalsy();
+    });
+
+    test('when urls are the same in same order, then return true', () => {
+        const legalResource1 = aFullLegalResource().withUrl('https://url1.com').build();
+        const legalResource2 = aFullLegalResource().withUrl('https://url1.com').build();
+        const legalResource3 = aFullLegalResource().withUrl('https://url2.com').build();
+        const legalResource4 = aFullLegalResource().withUrl('https://url2.com').build();
+
+        expect(LegalResource.isFunctionallyChanged([legalResource1, legalResource3], [legalResource2, legalResource4])).toBeFalsy();
+    });
+
+    test('when urls are the same but in different order, then return true', () => {
+        const legalResource1 = aFullLegalResource().withUrl('https://url1.com').build();
+        const legalResource2 = aFullLegalResource().withUrl('https://url1.com').build();
+        const legalResource3 = aFullLegalResource().withUrl('https://url2.com').build();
+        const legalResource4 = aFullLegalResource().withUrl('https://url2.com').build();
+
+        expect(LegalResource.isFunctionallyChanged([legalResource1, legalResource3], [legalResource4, legalResource2])).toBeTruthy();
     });
 
 });
