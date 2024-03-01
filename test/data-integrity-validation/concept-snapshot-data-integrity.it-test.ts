@@ -61,9 +61,6 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         //filter out legal resources data (iri reference still exists)
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith("https://codex.vlaanderen.be/"));
 
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith("https://ipdc.be/regelgeving"));
-
-
         const delayTime = 0;
         const numberOfLoops = 1;
         const averageTimes = [];
