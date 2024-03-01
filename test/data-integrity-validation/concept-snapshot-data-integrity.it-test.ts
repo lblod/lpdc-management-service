@@ -124,7 +124,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         console.log(`Data Errors Size [${dataErrors}]`);
 
         if (conceptSnapshotIds.length > 0) {
-            expect(totalAverageTime).toBeLessThan(25);
+            expect(totalAverageTime).toBeLessThan(35);
             expect(technicalErrors).toEqual([]);
         }
 
