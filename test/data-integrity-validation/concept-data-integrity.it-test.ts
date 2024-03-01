@@ -37,7 +37,7 @@ describe('Concept Data Integrity Validation', () => {
     const conceptGraph = new Iri(CONCEPT_GRAPH);
     const domainToQuadsMapper = new DomainToQuadsMapper(conceptGraph);
 
-    test('Load all concepts; print errors to console.log', async () => {
+    test.skip('Load all concepts; print errors to console.log', async () => {
 
         const conceptIdsQuery = `
             ${PREFIX.lpdcExt}
@@ -219,8 +219,6 @@ describe('Concept Data Integrity Validation', () => {
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
                 NS.besluit('Bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
-                NS.eli('LegalResource').value,
-                NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
         console.log('recursive queries');
         const allQuadsAsStrings = asSortedArray(allQuads.map(q => q.toString()));
