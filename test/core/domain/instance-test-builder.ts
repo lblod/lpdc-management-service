@@ -34,7 +34,7 @@ import {
     anotherFullFinancialAdvantageForInstance
 } from "./financial-advantage-test-builder";
 import {aFullContactPointForInstance, anotherFullContactPointForInstance} from "./contact-point-test-builder";
-import {aFullLegalResource} from "./legal-resource-test-builder";
+import {aFullLegalResource, anotherFullLegalResource} from "./legal-resource-test-builder";
 
 export function aMinimalInstance(): InstanceBuilder {
     const uniqueId = uuid();
@@ -185,7 +185,7 @@ export class InstanceTestBuilder {
     public static readonly REVIEW_STATUS = InstanceReviewStatusType.CONCEPT_GEWIJZIGD;
     public static readonly PUBLICATION_STATUS = InstancePublicationStatusType.TE_HERPUBLICEREN;
 
-    public static readonly LEGAL_RESOURCES = [aFullLegalResource().withOrder(1).build(), aFullLegalResource().withOrder(2).build()];
+    public static readonly LEGAL_RESOURCES = [aFullLegalResource().withOrder(1).build(), anotherFullLegalResource().withOrder(2).build()];
 
 }
 

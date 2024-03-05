@@ -108,7 +108,7 @@ describe('Instance Data Integrity Validation', () => {
 
             const tombStonesSubjects = new Set([...allQuadsOfGraph.filter(q => q.object.equals(namedNode('https://www.w3.org/ns/activitystreams#Tombstone'))).map(q => q.subject.value)]);
 
-            //filter out thombstones triples
+            //filter out tombstones triples
             allQuadsOfGraph = allQuadsOfGraph.filter(q => !tombStonesSubjects.has(q.subject.value));
 
             //filter out conceptual display configurations and formal informal choices
