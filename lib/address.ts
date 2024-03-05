@@ -12,7 +12,7 @@ export async function fetchMunicipalities(searchString: string): Promise<string[
         const result = await response.json();
         return result?.LocationResult?.map(result => result.Municipality) ?? [];
     } else {
-        console.error(await response.json());
+        console.error(await response.text());
         throw Error(`An error occurred when querying the geopunt vlaanderen api, status code: ${response.status}`);
     }
 }
@@ -33,7 +33,7 @@ export async function fetchStreets(municipality: string, searchString: string): 
             .map(match => match?.straatnaam?.straatnaam?.geografischeNaam?.spelling)
             .filter(match => !!match);
     } else {
-        console.error(await response.json());
+        console.error(await response.text());
         throw Error(`An error occurred when querying the address register, status code: ${response.status}`);
     }
 }
@@ -43,7 +43,17 @@ export async function findAddressMatch(municipality: string, street: string, hou
         throw new Error('Invalid request: municipality, street and houseNumber are required');
     }
 
-    const postcode = await findPostcode(municipality);
+    const postcodes = await findPostcodesForMunicipalityAndSubMunicipalities(municipality);
+    for (const postcode of postcodes) {
+        const addressMatch = await tryAddressMatch(municipality, postcode, street, houseNumber, busNumber);
+        if (addressMatch) {
+            return addressMatch;
+        }
+    }
+    return {};
+}
+
+export async function tryAddressMatch(municipality: string, postcode: string, street: string, houseNumber: string, busNumber?: string) {
     const queryParams = new URLSearchParams({
         gemeentenaam: municipality,
         postcode: postcode,
@@ -70,15 +80,15 @@ export async function findAddressMatch(municipality: string, street: string, hou
                 adressenRegisterId: result.adresMatches[0].identificator.id
             };
         } else {
-            return {};
+            return undefined;
         }
     } else {
-        console.error(await response.json());
+        console.error(await response.text());
         throw Error(`An error occurred when querying the address register, status code: ${response.status}`);
     }
 }
 
-export async function findPostcode(municipality: string): Promise<string> {
+export async function findPostcodesForMunicipalityAndSubMunicipalities(municipality: string): Promise<string[]> {
     const response = await fetch(
         `https://api.basisregisters.vlaanderen.be/v2/postinfo?gemeentenaam=${municipality}`,
         {headers: {'x-api-key': ADRESSEN_REGISTER_API_KEY}}
@@ -86,12 +96,12 @@ export async function findPostcode(municipality: string): Promise<string> {
     if (response.ok) {
         const result = await response.json();
         if (result.postInfoObjecten.length) {
-            return result.postInfoObjecten[0].identificator.objectId;
+            return result.postInfoObjecten.map(postInfo => postInfo.identificator.objectId);
         } else {
             throw Error(`Can not find postcode for municipality ${municipality}`);
         }
     } else {
-        console.error(await response.json());
+        console.error(await response.text());
         throw Error(`An error occurred when querying the address register, status code: ${response.status}`);
     }
 
