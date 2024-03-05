@@ -462,7 +462,7 @@ export class DomainToQuadsMapper {
     }
 
     private languages(id: Iri, values: LanguageType[]): Statement[] {
-        return this.irisToQuads(namedNode(id.value), NS.pera.language(''), this.enumsToIris(values, NS.pera.languageType));
+        return this.irisToQuads(namedNode(id.value), NS.dct('language'), this.enumsToIris(values, NS.pera.languageType));
     }
 
     private verwijstNaar(id: Iri, verwijstNaar: Iri | undefined): Statement | undefined {

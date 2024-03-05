@@ -692,8 +692,8 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://purl.org/dc/terms/source> <${instance.conceptId.value}>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${instance.conceptSnapshotId.value}>`,
                     `<${instanceId}> <http://schema.org/productID> """${instance.productId}"""`,
-                    `<${instanceId}> <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/NLD>`,
-                    `<${instanceId}> <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/ENG>`,
+                    `<${instanceId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NLD>`,
+                    `<${instanceId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/ENG>`,
                     `<${instanceId}> <http://purl.org/dc/terms/created> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://purl.org/dc/terms/modified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/dateSent> """${InstanceTestBuilder.DATE_SENT.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -1074,7 +1074,7 @@ describe('InstanceRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [`<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
-                    `<${instanceId}> <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType>`,
+                    `<${instanceId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType>`,
                 ]);
 
             await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `could not map <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType> for iri: <${instanceId}>`);

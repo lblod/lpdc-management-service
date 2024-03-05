@@ -57,6 +57,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
 
         //filter out language on conceptSnapshot
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://publications.europa.eu/resource/authority/language')));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://publications.europa.eu/resource/authority/language')));
 
         //filter out legal resources data (iri reference still exists)
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith("https://codex.vlaanderen.be/"));

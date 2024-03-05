@@ -74,7 +74,6 @@ export class Instance {
     private readonly _spatials: Iri[];
     private readonly _legalResources: LegalResource[];
 
-
     constructor(id: Iri,
                 uuid: string,
                 createdBy: Iri,

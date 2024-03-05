@@ -28,7 +28,6 @@ export const NS = {
     locn: Namespace('http://www.w3.org/ns/locn#'),
     adres: Namespace('https://data.vlaanderen.be/ns/adres#'),
     pera: {
-        language: Namespace('http://publications.europa.eu/resource/authority/language'),
         languageType: Namespace('http://publications.europa.eu/resource/authority/language/')
     },
     dvc: {

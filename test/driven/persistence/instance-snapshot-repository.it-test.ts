@@ -313,9 +313,9 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[1].nl}"""@nl`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[2].nl}"""@nl`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[3].en}"""@en`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/NLD>`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/FRA>`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/ENG>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NLD>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/FRA>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/ENG>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/created> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/modified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -715,7 +715,7 @@ describe('InstanceSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
                 [`<${instanceSnapshotId}> a <http://purl.org/vocab/cpsv#PublicService>`,
-                    `<${instanceSnapshotId}> <http://publications.europa.eu/resource/authority/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType>`,
+                    `<${instanceSnapshotId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType>`,
                 ]);
 
             await expect(repository.findById(bestuurseenheid, instanceSnapshotId)).rejects.toThrowWithMessage(SystemError, `could not map <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType> for iri: <${instanceSnapshotId}>`);

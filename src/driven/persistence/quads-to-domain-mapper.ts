@@ -680,7 +680,7 @@ export class QuadsToDomainMapper {
     }
 
     private languages(id: Iri): LanguageType[] {
-        return this.asEnums(LanguageType, NS.pera.languageType, this.storeAccess.statements(namedNode(id.value), NS.pera.language('')));
+        return this.asEnums(LanguageType, NS.pera.languageType, this.storeAccess.statements(namedNode(id.value), NS.dct('language')));
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {
