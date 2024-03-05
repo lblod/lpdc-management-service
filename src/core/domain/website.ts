@@ -11,7 +11,7 @@ export class Website {
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _order: number;
-    private readonly _url: string;
+    private readonly _url: string | undefined;
     private readonly _conceptWebsiteId: Iri | undefined;
 
     private constructor(id: Iri,
@@ -19,7 +19,7 @@ export class Website {
                         title: LanguageString,
                         description: LanguageString | undefined,
                         order: number,
-                        url: string,
+                        url: string | undefined,
                         conceptWebsiteId: Iri | undefined) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;

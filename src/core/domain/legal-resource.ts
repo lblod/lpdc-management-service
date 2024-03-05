@@ -7,14 +7,13 @@ export class LegalResource {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined;
-    private readonly _url: string;
+    private readonly _url: string | undefined;
     private readonly _order: number;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
-                        url: string,
-                        order: number
-    ) {
+                        url: string | undefined,
+                        order: number) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._url = url;
@@ -82,7 +81,7 @@ export class LegalResource {
 export class LegalResourceBuilder {
     private id: Iri;
     private uuid: string | undefined;
-    private url: string;
+    private url: string | undefined;
     private order: number;
 
     static buildIri(uniqueId: string): Iri {

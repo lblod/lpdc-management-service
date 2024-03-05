@@ -30,8 +30,7 @@ import {
 } from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
-import {Iri} from "../../../src/core/domain/shared/iri";
-import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
+import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 
 describe('Creating a new Instance domain service', () => {
 
@@ -334,6 +333,10 @@ describe('Creating a new Instance domain service', () => {
         expect(createdInstance.financialAdvantages[0].uuid).not.toEqual(concept.financialAdvantages[0].uuid);
         expect(createdInstance.financialAdvantages[1].id).not.toEqual(concept.financialAdvantages[1].id);
         expect(createdInstance.financialAdvantages[1].uuid).not.toEqual(concept.financialAdvantages[1].uuid);
+        expect(createdInstance.legalResources[0].id).not.toEqual(concept.legalResources[0].id);
+        expect(createdInstance.legalResources[0].uuid).not.toEqual(concept.legalResources[0].uuid);
+        expect(createdInstance.legalResources[1].id).not.toEqual(concept.legalResources[1].id);
+        expect(createdInstance.legalResources[1].uuid).not.toEqual(concept.legalResources[1].uuid);
     });
 
     test('Create new from concept when chosen form is formal', async () => {
