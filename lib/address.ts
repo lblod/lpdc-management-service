@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import {ADRESSEN_REGISTER_API_KEY} from "../config";
+import {BadRequest, InternalServerError} from "../src/driving/http-error";
 
 export async function fetchMunicipalities(searchString: string): Promise<string[]> {
     const queryParams = new URLSearchParams({
@@ -13,7 +14,7 @@ export async function fetchMunicipalities(searchString: string): Promise<string[
         return result?.LocationResult?.map(result => result.Municipality) ?? [];
     } else {
         console.error(await response.text());
-        throw Error(`An error occurred when querying the geopunt vlaanderen api, status code: ${response.status}`);
+        throw new InternalServerError(`An error occurred when querying the geopunt vlaanderen api`);
     }
 }
 
@@ -34,13 +35,13 @@ export async function fetchStreets(municipality: string, searchString: string): 
             .filter(match => !!match);
     } else {
         console.error(await response.text());
-        throw Error(`An error occurred when querying the address register, status code: ${response.status}`);
+        throw new InternalServerError('An error occurred when querying the address register');
     }
 }
 
 export async function findAddressMatch(municipality: string, street: string, houseNumber: string, busNumber: string): Promise<AddressDto | NonNullable<unknown>> {
     if (!municipality || !street || !houseNumber) {
-        throw new Error('Invalid request: municipality, street and houseNumber are required');
+        throw new BadRequest('municipality, street and houseNumber are required');
     }
 
     const postcodes = await findPostcodesForMunicipalityAndSubMunicipalities(municipality);
@@ -84,7 +85,7 @@ export async function tryAddressMatch(municipality: string, postcode: string, st
         }
     } else {
         console.error(await response.text());
-        throw Error(`An error occurred when querying the address register, status code: ${response.status}`);
+        throw new InternalServerError('An error occurred when querying the address register');
     }
 }
 
@@ -98,11 +99,11 @@ export async function findPostcodesForMunicipalityAndSubMunicipalities(municipal
         if (result.postInfoObjecten.length) {
             return result.postInfoObjecten.map(postInfo => postInfo.identificator.objectId);
         } else {
-            throw Error(`Can not find postcode for municipality ${municipality}`);
+            throw new InternalServerError(`Can not find postcode for municipality ${municipality}`);
         }
     } else {
         console.error(await response.text());
-        throw Error(`An error occurred when querying the address register, status code: ${response.status}`);
+        throw new InternalServerError(('An error occurred when querying the address register'));
     }
 
 }

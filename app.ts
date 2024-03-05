@@ -1,4 +1,4 @@
-import {createApp, errorHandler, uuid} from './mu-helper';
+import {createApp} from './mu-helper';
 import bodyparser from 'body-parser';
 import {
     CONCEPT_SNAPSHOT_LDES_GRAPH,
@@ -8,9 +8,8 @@ import {
 } from './config';
 import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
-import {getContactPointOptions} from "./lib/getContactPointOptions";
+import {contactPointOptions} from "./lib/contactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
-import LPDCError from "./platform/lpdc-error";
 import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "./src/driven/persistence/concept-snapshot-sparql-repository";
@@ -53,15 +52,17 @@ import {CronJob} from 'cron';
 import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
 } from "./src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
+import {Application, Request, Response} from "express";
+import errorHandler from './src/driving/error-handler';
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
 //      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
 //      send its data as such.
-const app = createApp();
-const bodySizeLimit = process.env.MAX_BODY_SIZE || '5Mb';
+const app: Application = createApp();
 
+const bodySizeLimit = process.env.MAX_BODY_SIZE || '5Mb';
 app.use(bodyparser.json({limit: bodySizeLimit}));
 
 const sessionRepository = new SessionSparqlRepository();
@@ -178,456 +179,346 @@ app.post('/delta', async function (req, res): Promise<void> {
     }
 });
 
-app.use('/public-services/', authenticateAndAuthorizeRequest(sessionRepository));
-
-app.post('/public-services/', async function (req, res): Promise<any> {
-    const body = req.body;
-    const conceptIdRequestParam = body.conceptId;
-
-    const session: Session = req['session'];
-
-    try {
-        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        if (conceptIdRequestParam) {
-            const conceptId = new Iri(conceptIdRequestParam);
-            const concept = await conceptRepository.findById(conceptId);
-            const newInstance = await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept);
-            return res.status(201).json({
-                data: {
-                    "type": "public-service",
-                    "id": newInstance.uuid,
-                    "uri": newInstance.id.value
-                }
-            });
-        } else {
-
-            const newInstance = await newInstanceDomainService.createNewEmpty(bestuurseenheid);
-            return res.status(201).json({
-                data: {
-                    "type": "public-service",
-                    "id": newInstance.uuid,
-                    "uri": newInstance.id.value
-                }
-            });
-        }
-    } catch (e) {
-        console.error(e);
-        if (e.status) {
-            return res.status(e.status).set('content-type', 'application/json').send(e);
-        }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while submitting semantic-form for "${uuid}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
+app.use('/public-services/', async (req, res, next) => {
+    await authenticateAndAuthorizeRequest(req, sessionRepository).catch(next);
+    next();
 });
 
-app.get('/public-services/:instanceId/form/:formId', async function (req, res): Promise<any> {
-    const instanceIdRequestParam = req.params.instanceId;
-    const formId = req.params.formId;
-    const formType = FORM_ID_TO_TYPE_MAPPING[formId];
-
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-
-        const bundle = await formApplicationService.loadInstanceForm(bestuurseenheid, instanceId, formType);
-        return res.status(200).json(bundle);
-    } catch (e) {
-        console.error(e);
-        if (e.status) {
-            return res.status(e.status).set('content-type', 'application/json').send(e);
-        }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while submitting semantic-form for "${instanceIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
+app.post('/public-services/', async (req, res, next) => {
+    await createInstance(req, res).catch(next);
 });
 
-app.put('/public-services/:instanceId', async function (req, res): Promise<any> {
-    const instanceIdRequestParam = req.params.instanceId;
-    const delta = req.body;
-
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        const instanceData = delta.graph;
-
-        await updateInstanceApplicationService.update(bestuurseenheid, instanceId, instanceData, delta.removals, delta.additions);
-
-        return res.sendStatus(200);
-    } catch (e) {
-        console.error(e);
-        if (e instanceof LPDCError) {
-            return res.status(e.status).set('content-type', 'application/json').json(e);
-        } else {
-            return res
-                .status(500)
-                .set('content-type', 'application/json')
-                .json(new LPDCError(
-                    500,
-                    `Er is een serverfout opgetreden. Probeer het later opnieuw of neem contact op indien het probleem aanhoudt. Onze excuses voor het ongemak.`
-                ));
-        }
-    }
+app.get('/public-services/:instanceId/form/:formId', async function (req, res, next): Promise<any> {
+    return await getInstanceForm(req, res).catch(next);
 });
 
-app.get('/public-services/:instanceId/dutch-language-version', async function (req, res): Promise<any> {
-    const instanceIdRequestParam = req.params.instanceId;
-
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
-
-        const languageVersion = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
-        return res.json({languageVersion: languageVersion});
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while getting dutch language version for concept with id "${instanceIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
+app.get('/public-services/:instanceId/dutch-language-version', async function (req, res, next): Promise<any> {
+    return await getDutchLanguageVersionForInstance(req, res).catch(next);
 });
 
-app.delete('/public-services/:instanceId', async function (req, res): Promise<any> {
-    const instanceIdRequestParam = req.params.instanceId;
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+app.delete('/public-services/:instanceId', async function (req, res, next): Promise<any> {
+    return await removeInstance(req, res).catch(next);
+});
 
-        await deleteInstanceDomainService.delete(bestuurseenheid, instanceId);
-        return res.sendStatus(204);
-    } catch (e) {
-        console.error(e);
-        if (e.status) {
-            return res.status(e.status).set('content-type', 'application/json').send(e);
-        }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while deleting the semantic-form for "${instanceIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
+app.put('/public-services/:instanceId', async function (req, res, next): Promise<any> {
+    return await updateInstance(req, res).catch(next);
+});
+
+app.put('/public-services/:instanceId/koppelen/:conceptId', async function (req, res, next): Promise<any> {
+    return await linkConceptToInstance(req, res).catch(next);
+});
+
+app.put('/public-services/:instanceId/ontkoppelen', async function (req, res, next): Promise<any> {
+    return await unlinkConceptFromInstance(req, res).catch(next);
+});
+
+app.put('/public-services/:instanceId/reopen', async function (req, res, next): Promise<any> {
+    return await reopenInstance(req, res).catch(next);
 
 });
 
-app.put('/public-services/:instanceId/koppelen/:conceptId', async function (req, res): Promise<any> {
-    const instanceIdRequestParam = req.params.instanceId;
-    const conceptIdRequestParam = req.params.conceptId;
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const conceptId = new Iri(conceptIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
-        const concept = await conceptRepository.findById(conceptId);
-
-        await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
-        return res.sendStatus(200);
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while koppelen of uuid "${instanceIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
-
-app.put('/public-services/:instanceId/ontkoppelen', async function (req, res): Promise<any> {
-    const instanceIdRequestParam = req.params.instanceId;
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
-
-        await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
-        return res.sendStatus(200);
-    } catch (e) {
-        console.error(e);
-        if (e.status) {
-            return res.status(e.status).set('content-type', 'application/json').send(e);
-        }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while ontkoppelen concept from  "${instanceIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
-
-app.put('/public-services/:instanceId/reopen', async function (req, res): Promise<any> {
-    const instanceIdRequestParam = req.params.instanceId;
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-
-        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
-        const updatedInstance = instance.reopen();
-        await instanceRepository.update(bestuurseenheid, updatedInstance, instance);
-
-        return res.sendStatus(200);
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while confirming bijgewerkt tot with uuid "${instanceIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
-
-app.post('/public-services/:instanceId/confirm-bijgewerkt-tot', async function (req, res): Promise<any> {
-    const instanceIdRequestParam = req.params.instanceId;
-    const conceptSnapshotIdRequestParam = req.body.bijgewerktTot;
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const conceptSnapshotId = new Iri(conceptSnapshotIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
-        const conceptSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
-        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, conceptSnapshot);
-        return res.sendStatus(200);
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while confirming bijgewerkt tot with uuid "${instanceIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
+app.post('/public-services/:instanceId/confirm-bijgewerkt-tot', async function (req, res, next): Promise<any> {
+    return await confirmBijgewerktTot(req, res).catch(next);
 });
 
 app.post('/public-services/:instanceId/validate-for-publish', async function (req, res): Promise<any> {
 
     const instanceIdRequestParam = req.params.instanceId;
 
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-        const response = await validateService(instanceId, bestuurseenheid, formApplicationService);
+    const response = await validateService(instanceId, bestuurseenheid, formApplicationService);
 
-        if (response.errors.length) {
-            return res.status(400).json({
-                data: response,
-            });
-        } else {
-            return res.status(200).json({
-                data: response,
-            });
-        }
-
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Unexpected error during validation of service "${instanceIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
+    if (response.errors.length) {
+        return res.status(400).json({
+            data: response,
+        });
+    } else {
+        return res.status(200).json({
+            data: response,
+        });
     }
 
 });
 
-app.put('/public-services/:instanceId/publish', async function (req, res): Promise<any> {
+app.put('/public-services/:instanceId/publish', async function (req, res, next): Promise<any> {
+    return await publishInstance(req, res).catch(next);
+});
+
+app.use('/conceptual-public-services/', async (req, res, next) => {
+    await authenticateAndAuthorizeRequest(req, sessionRepository).catch(next);
+    next();
+});
+
+app.get('/conceptual-public-services/:conceptId/dutch-language-version', async (req, res, next): Promise<any> => {
+    return await getDutchLanguageVersionForConcept(req, res).catch(next);
+});
+
+app.get('/conceptual-public-services/:conceptId/form/:formId', async function (req, res, next): Promise<any> {
+    return await getConceptForm(req, res).catch(next);
+});
+
+app.use('/concept-display-configuration/', async (req, res, next) => {
+    await authenticateAndAuthorizeRequest(req, sessionRepository).catch(next);
+    next();
+});
+
+app.put('/concept-display-configuration/:conceptDisplayConfigurationId/remove-is-new-flag', async function (req, res, next): Promise<any> {
+    return await removeIsNewFlag(req, res).catch(next);
+});
+
+app.use('/contact-info-options/', async (req, res, next) => {
+    await authenticateAndAuthorizeRequest(req, sessionRepository).catch(next);
+    next();
+});
+
+app.get('/contact-info-options/:fieldName', async (req, res, next): Promise<any> => {
+    return await getContactPointOptions(req, res).catch(next);
+});
+
+app.use('/address', async (req, res, next) => {
+    await authenticateAndAuthorizeRequest(req, sessionRepository).catch(next);
+    next();
+});
+
+app.get('/address/municipalities', async (req, res, next): Promise<any> => {
+    return await getMunicipalities(req, res).catch(next);
+});
+
+app.get('/address/streets', async (req, res, next): Promise<any> => {
+    return await getStreets(req, res).catch(next);
+});
+
+app.get('/address/validate', async (req, res, next): Promise<any> => {
+    return await validateAddress(req, res).catch(next);
+});
+
+app.get('/concept-snapshot-compare', async (req, res, next): Promise<any> => {
+    return await compareSnapshots(req, res).catch(next);
+});
+
+
+async function createInstance(req: Request, res: Response) {
+    const body = req.body;
+    const conceptIdRequestParam = body.conceptId;
+
+    const session: Session = req['session'];
+
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    if (conceptIdRequestParam) {
+        const conceptId = new Iri(conceptIdRequestParam);
+        const concept = await conceptRepository.findById(conceptId);
+        const newInstance = await newInstanceDomainService.createNewFromConcept(bestuurseenheid, concept);
+        return res.status(201).json({
+            data: {
+                "type": "public-service",
+                "id": newInstance.uuid,
+                "uri": newInstance.id.value
+            }
+        });
+    } else {
+        const newInstance = await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+        return res.status(201).json({
+            data: {
+                "type": "public-service",
+                "id": newInstance.uuid,
+                "uri": newInstance.id.value
+            }
+        });
+    }
+}
+
+async function getInstanceForm(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+    const formId = req.params.formId;
+    const formType = FORM_ID_TO_TYPE_MAPPING[formId];
+
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+    const bundle = await formApplicationService.loadInstanceForm(bestuurseenheid, instanceId, formType);
+    return res.status(200).json(bundle);
+}
+
+async function getDutchLanguageVersionForInstance(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+
+    const languageVersion = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
+    return res.json({languageVersion: languageVersion});
+}
+
+async function removeInstance(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
 
-    try {
-        const instanceId = new Iri(instanceIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
-        const updatedInstance = instance.publish();
-        await instanceRepository.update(bestuurseenheid, updatedInstance, instance);
-        return res.sendStatus(200);
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Unexpected error during publishing of service "${instanceIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
+    await deleteInstanceDomainService.delete(bestuurseenheid, instanceId);
+    return res.sendStatus(204);
+}
 
-app.use('/conceptual-public-services/', authenticateAndAuthorizeRequest(sessionRepository));
+async function updateInstance(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+    const delta = req.body;
 
-app.get('/conceptual-public-services/:conceptId/dutch-language-version', async (req, res): Promise<any> => {
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const instanceData = delta.graph;
+
+    await updateInstanceApplicationService.update(bestuurseenheid, instanceId, instanceData, delta.removals, delta.additions);
+
+    return res.sendStatus(200);
+}
+
+async function linkConceptToInstance(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
     const conceptIdRequestParam = req.params.conceptId;
 
-    try {
-        const conceptId = new Iri(conceptIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        const concept = await conceptRepository.findById(conceptId);
+    const instanceId = new Iri(instanceIdRequestParam);
+    const conceptId = new Iri(conceptIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+    const concept = await conceptRepository.findById(conceptId);
 
-        const languageVersion = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
-        return res.json({languageVersion: languageVersion});
-    } catch (e) {
-        console.error(e);
-        if (e.status) {
-            return res.status(e.status).set('content-type', 'application/json').send(e);
-        }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while getting dutch language version for concept with id "${conceptIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
+    await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
+    return res.sendStatus(200);
+}
 
-app.get('/conceptual-public-services/:conceptId/form/:formId', async function (req, res): Promise<any> {
+async function unlinkConceptFromInstance(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+
+    await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
+    return res.sendStatus(200);
+}
+
+async function reopenInstance(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+    const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+    const updatedInstance = instance.reopen();
+    await instanceRepository.update(bestuurseenheid, updatedInstance, instance);
+
+    return res.sendStatus(200);
+}
+
+async function confirmBijgewerktTot(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+    const conceptSnapshotIdRequestParam = req.body.bijgewerktTot;
+
+    const instanceId = new Iri(instanceIdRequestParam);
+    const conceptSnapshotId = new Iri(conceptSnapshotIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+    const conceptSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
+    await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, conceptSnapshot);
+    return res.sendStatus(200);
+}
+
+async function publishInstance(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+    const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+    const updatedInstance = instance.publish();
+    await instanceRepository.update(bestuurseenheid, updatedInstance, instance);
+    return res.sendStatus(200);
+}
+
+async function getDutchLanguageVersionForConcept(req: Request, res: Response) {
+    const conceptIdRequestParam = req.params.conceptId;
+
+    const conceptId = new Iri(conceptIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const concept = await conceptRepository.findById(conceptId);
+
+    const languageVersion = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+    return res.json({languageVersion: languageVersion});
+}
+
+async function getConceptForm(req: Request, res: Response) {
     const conceptIdRequestParam = req.params.conceptId;
     const formId = req.params["formId"];
     const formType = FORM_ID_TO_TYPE_MAPPING[formId];
 
-    try {
-        const conceptId = new Iri(conceptIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-        const bundle = await formApplicationService.loadConceptForm(bestuurseenheid, conceptId, formType);
 
-        return res.status(200).json(bundle);
-    } catch (e) {
-        console.error(e);
-        if (e.status) {
-            return res.status(e.status).set('content-type', 'application/json').send(e);
-        }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while submitting semantic-form for "${conceptIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
+    const conceptId = new Iri(conceptIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const bundle = await formApplicationService.loadConceptForm(bestuurseenheid, conceptId, formType);
 
-app.use('/concept-display-configuration/', authenticateAndAuthorizeRequest(sessionRepository));
+    return res.status(200).json(bundle);
 
-app.put('/concept-display-configuration/:conceptDisplayConfigurationId/remove-is-new-flag', async function (req, res): Promise<any> {
+}
+
+async function removeIsNewFlag(req: Request, res: Response) {
     const conceptDisplayConfigurationIdRequestParam = req.params.conceptDisplayConfigurationId;
 
-    try {
-        const conceptDisplayConfigurationId = new Iri(conceptDisplayConfigurationIdRequestParam);
-        const session: Session = req['session'];
-        const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const conceptDisplayConfigurationId = new Iri(conceptDisplayConfigurationIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-        await conceptDisplayConfigurationRepository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfigurationId);
-        return res.status(200).send();
-    } catch (e) {
-        console.error(e);
-        if (e.status) {
-            return res.status(e.status).set('content-type', 'application/json').send(e);
-        }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong for "${conceptDisplayConfigurationIdRequestParam}".`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
+    await conceptDisplayConfigurationRepository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfigurationId);
+    return res.status(200).send();
+}
 
-app.use('/contact-info-options/', authenticateAndAuthorizeRequest(sessionRepository));
+async function getContactPointOptions(req: Request, res: Response) {
+    const result = await contactPointOptions(req.params.fieldName);
+    return res.json(result);
+}
 
-app.get('/contact-info-options/:fieldName', async (req, res): Promise<any> => {
-    try {
-        const result = await getContactPointOptions(req.params.fieldName);
-        return res.json(result);
-    } catch (e) {
-        console.error(e);
-        if (e.message === 'Invalid request: not a valid field name') {
-            return res.status(400).set('content-type', 'application/json').send('Invalid request: not a valid field name');
-        } else {
-            console.error(e);
-            const response = {
-                status: 500,
-                message: `Something unexpected went wrong while getting contactInfo options".`
-            };
-            return res.status(response.status).set('content-type', 'application/json').send(response.message);
-        }
-    }
-});
+async function getMunicipalities(req: Request, res: Response) {
+    const municipalities = await fetchMunicipalities(req.query.search as string);
+    return res.json(municipalities);
+}
 
-app.use('/address', authenticateAndAuthorizeRequest(sessionRepository));
+async function getStreets(req: Request, res: Response) {
+    const streets = await fetchStreets(req.query.municipality as string, req.query.search as string);
+    return res.json(streets);
+}
 
-app.get('/address/municipalities', async (req, res): Promise<any> => {
-    try {
-        const municipalities = await fetchMunicipalities(req.query.search as string);
-        return res.json(municipalities);
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while getting municipalities.`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
+async function validateAddress(req: Request, res: Response) {
 
-app.get('/address/streets', async (req, res): Promise<any> => {
-    try {
-        const streets = await fetchStreets(req.query.municipality as string, req.query.search as string);
-        return res.json(streets);
-    } catch (e) {
-        console.error(e);
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while getting streets.`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
+    const address = await findAddressMatch(
+        req.query.municipality as string,
+        req.query.street as string,
+        req.query.houseNumber as string,
+        req.query.busNumber as string
+    );
+    return res.json(address);
+}
 
-app.get('/address/validate', async (req, res): Promise<any> => {
-    try {
-        const address = await findAddressMatch(
-            req.query.municipality as string,
-            req.query.street as string,
-            req.query.houseNumber as string,
-            req.query.busNumber as string
-        );
-        return res.json(address);
-    } catch (e) {
-        console.error(e);
-        if (e.message === 'Invalid request: municipality, street and houseNumber are required') {
-            return res.status(400).set('content-type', 'application/json').send({message: 'Invalid request: municipality, street and houseNumber are required'});
-        }
-        const response = {
-            status: 500,
-            message: `Something unexpected went wrong while getting streets.`
-        };
-        return res.status(response.status).set('content-type', 'application/json').send(response.message);
-    }
-});
+async function compareSnapshots(req: Request, res: Response) {
+    const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.currentSnapshotUri as string));
+    const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.newSnapshotUri as string));
 
-app.get('/concept-snapshot-compare', async (req, res): Promise<any> => {
-    try {
-        const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.currentSnapshotUri as string));
-        const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.newSnapshotUri as string));
+    const isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
 
-        const isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
+    return res.json({isChanged});
 
-        return res.json({isChanged});
-    } catch (e) {
-        console.error(e);
-        return res.status(500).set('content-type', 'application/json').send('Something unexpected went wrong');
-    }
-});
-
+}
 app.use(errorHandler);
 
 new CronJob(

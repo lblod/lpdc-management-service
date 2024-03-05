@@ -36,6 +36,7 @@ import {Address} from "../../core/domain/address";
 import {Logger} from "../../../platform/logger";
 import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
 import {LegalResource} from "../../core/domain/legal-resource";
+import {BadRequest} from "../../driving/http-error";
 
 export interface DoubleQuadReporter {
 
@@ -298,10 +299,10 @@ export class QuadsToDomainMapper {
     private errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
         const typeFoundForId: string = this.storeAccess.uniqueValue(namedNode(id.value), NS.rdf('type'));
         if (!typeFoundForId) {
-            throw new Error(`Could not find <${id}> for type ${type} in graph ${this.graphId}`);
+            throw new BadRequest(`Could not find <${id}> for type ${type} in graph ${this.graphId}`);
         }
         if (type.value !== typeFoundForId) {
-            throw new Error(`Could not find <${id}> for type ${type}, but found with type <${typeFoundForId}> in graph ${this.graphId}`);
+            throw new BadRequest(`Could not find <${id}> for type ${type}, but found with type <${typeFoundForId}> in graph ${this.graphId}`);
         }
     }
 
