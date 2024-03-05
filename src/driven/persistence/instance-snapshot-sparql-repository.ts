@@ -8,6 +8,7 @@ import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from
 import {Logger} from "../../../platform/logger";
 import {NS} from "./namespaces";
 import {sparqlEscapeUri} from "../../../mu-helper";
+import {SystemError} from "../../core/domain/shared/lpdc-error";
 
 export class InstanceSnapshotSparqlRepository implements InstanceSnapshotRepository {
 
@@ -58,7 +59,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
         const instanceSnapshot = mapper.instanceSnapshot(id);
 
         if(!instanceSnapshot.createdBy.equals(bestuurseenheid.id)) {
-            throw Error(`InstanceSnapshot createdBy of <${instanceSnapshot.id}> does not match bestuurseenheid graph`);
+            throw new SystemError(`InstanceSnapshot createdBy of <${instanceSnapshot.id}> does not match bestuurseenheid graph`);
         }
 
         return instanceSnapshot;

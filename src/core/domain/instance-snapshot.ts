@@ -26,6 +26,7 @@ import {
 } from "./shared/invariant";
 import {instanceLanguages} from "./language";
 import {LegalResource} from "./legal-resource";
+import {InvariantError} from "./shared/lpdc-error";
 
 export class InstanceSnapshot {
 
@@ -169,7 +170,7 @@ export class InstanceSnapshot {
         ].filter(ls => ls !== undefined));
 
         if (allNlLanguages.size > 1) {
-            throw new Error('There is more than one Nl language present');
+            throw new InvariantError('There is more than one Nl language present');
         }
     }
 

@@ -1,5 +1,6 @@
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Language} from "../../../src/core/domain/language";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('constructing', () => {
 
@@ -339,7 +340,7 @@ describe('validate unique nl language',()=>{
     });
 
     test('if multiple nl values are present, throw error',()=>{
-        expect(()=>LanguageString.validateUniqueNlLanguage([LanguageString.of('en','nl', 'nl-formal')])).toThrow(new Error("There is more than one Nl language present"));
+        expect(() => LanguageString.validateUniqueNlLanguage([LanguageString.of('en', 'nl', 'nl-formal')])).toThrowWithMessage(InvariantError, "There is more than one Nl language present");
     });
 
     test('if multiple nl values are present throughout multiple values , throw error',()=>{
@@ -347,7 +348,7 @@ describe('validate unique nl language',()=>{
         const langs2 = LanguageString.of(undefined,'nl','nl-formal');
         const strings = [langs1,langs2];
 
-        expect(()=>LanguageString.validateUniqueNlLanguage(strings)).toThrow(new Error("There is more than one Nl language present"));
+        expect(() => LanguageString.validateUniqueNlLanguage(strings)).toThrowWithMessage(InvariantError, "There is more than one Nl language present");
     });
 
 });

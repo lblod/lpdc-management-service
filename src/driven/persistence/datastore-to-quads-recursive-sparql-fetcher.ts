@@ -5,6 +5,7 @@ import {isNamedNode} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";
 import {NS} from "./namespaces";
 import {uniq} from "lodash";
+import {SystemError} from "../../core/domain/shared/lpdc-error";
 
 export class DatastoreToQuadsRecursiveSparqlFetcher {
 
@@ -43,7 +44,7 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
             .filter(q => q.predicate.equals(NS.rdf('type')))
             .forEach(q => {
                 if (illegalTypesToRecurseInto.includes(q.object.value)) {
-                    throw Error(`Recursing into <${q.object.value}> from <${q.subject.value}> is not allowed.`);
+                    throw new SystemError(`Recursing into <${q.object.value}> from <${q.subject.value}> is not allowed`);
                 }
             });
 

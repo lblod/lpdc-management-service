@@ -1,5 +1,6 @@
 import {Language} from "./language";
 import {uniq} from "lodash";
+import {InvariantError} from "./shared/lpdc-error";
 
 export class LanguageString {
 
@@ -103,7 +104,7 @@ export class LanguageString {
         const langs = new Set(this.extractNlLanguages(languages).filter(ls => ls !== undefined));
 
         if (langs.size > 1) {
-            throw new Error('There is more than one Nl language present');
+            throw new InvariantError('There is more than one Nl language present');
         }
     }
 
@@ -112,7 +113,7 @@ export class LanguageString {
 
         const nlLanguage = LanguageString.extractNlLanguages(values)[0];
         if (!acceptedLanguages.includes(nlLanguage) && nlLanguage !== undefined) {
-            throw new Error(`The nl language differs from ${acceptedLanguages.toString()}`);
+            throw new InvariantError(`The nl language differs from ${acceptedLanguages.toString()}`);
         }
     }
 

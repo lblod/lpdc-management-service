@@ -3,46 +3,47 @@ import {Website} from "../../../src/core/domain/website";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 
 describe('forConcept', () => {
 
     test('Undefined id throws error', () => {
         const website = aFullWebsite().withId(undefined);
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Website.forConcept(website.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => Website.forConcept(aFullWebsite().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
+        expect(() => Website.forConcept(aFullWebsite().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
     });
 
     test('Undefined uuid throws error', () => {
         const website = aFullWebsite().withUuid(undefined);
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('uuid should not be absent'));
+        expect(() => Website.forConcept(website.build())).toThrowWithMessage(InvariantError, 'uuid should not be absent');
     });
 
     test('Blank uuid throws error', () => {
         const website = aFullWebsite().withUuid('   ');
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('uuid should not be blank'));
+        expect(() => Website.forConcept(website.build())).toThrowWithMessage(InvariantError, 'uuid should not be blank');
     });
 
     test('Undefined title throws error', () => {
         const website = aFullWebsite().withTitle(undefined);
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('title should not be absent'));
+        expect(() => Website.forConcept(website.build())).toThrowWithMessage(InvariantError, 'title should not be absent');
     });
 
     test('Undefined url throws error', () => {
         const website = aFullWebsite().withUrl(undefined);
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('url should not be absent'));
+        expect(() => Website.forConcept(website.build())).toThrowWithMessage(InvariantError, 'url should not be absent');
     });
 
     test('Blank url throws error', () => {
         const website = aFullWebsite().withUrl('   ');
-        expect(() => Website.forConcept(website.build())).toThrow(new Error('url should not be blank'));
+        expect(() => Website.forConcept(website.build())).toThrowWithMessage(InvariantError, 'url should not be blank');
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Website.forConcept(aFullWebsite().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+        expect(() => Website.forConcept(aFullWebsite().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 
 });
@@ -51,11 +52,11 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined id throws error', () => {
         const website = aFullWebsite().withId(undefined);
-        expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Website.forConceptSnapshot(website.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => Website.forConceptSnapshot(aFullWebsite().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
+        expect(() => Website.forConceptSnapshot(aFullWebsite().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
     });
 
     test('Uuid is undefined ', () => {
@@ -65,21 +66,21 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined title throws error', () => {
         const website = aFullWebsite().withTitle(undefined).build();
-        expect(() => Website.forConceptSnapshot(website)).toThrow(new Error('title should not be absent'));
+        expect(() => Website.forConceptSnapshot(website)).toThrowWithMessage(InvariantError, 'title should not be absent');
     });
 
     test('Undefined url throws error', () => {
         const website = aFullWebsite().withUrl(undefined);
-        expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('url should not be absent'));
+        expect(() => Website.forConceptSnapshot(website.build())).toThrowWithMessage(InvariantError, 'url should not be absent');
     });
 
     test('Blank url throws error', () => {
         const website = aFullWebsite().withUrl('   ');
-        expect(() => Website.forConceptSnapshot(website.build())).toThrow(new Error('url should not be blank'));
+        expect(() => Website.forConceptSnapshot(website.build())).toThrowWithMessage(InvariantError, 'url should not be blank');
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Website.forConceptSnapshot(aFullWebsite().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+        expect(() => Website.forConceptSnapshot(aFullWebsite().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 });
 
@@ -90,12 +91,12 @@ describe('for instance', () => {
 
     test('Undefined id throws error', () => {
         const website = aFullWebsiteForInstance().withId(undefined);
-        expect(() => Website.forInstance(website.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Website.forInstance(website.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Undefined Uuid throws error', () => {
         const website = aFullWebsiteForInstance().withUuid(undefined).build();
-        expect(() => Website.forInstance(website).uuid).toThrow(new Error('uuid should not be absent'));
+        expect(() => Website.forInstance(website).uuid).toThrowWithMessage(InvariantError, 'uuid should not be absent');
     });
 
     test('If title and description have the same nl language website is created', () => {
@@ -114,21 +115,21 @@ describe('for instance', () => {
         const description = LanguageString.of('en', undefined, 'nl-formal');
         const website = aFullWebsiteForInstance().withTitle(title).withDescription(description).build();
 
-        expect(() => Website.forInstance(website)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Website.forInstance(website)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If title has different nl languages, throws error', () => {
         const title = LanguageString.of('en', 'nl', 'nl-formal');
         const website = aFullWebsiteForInstance().withTitle(title).withDescription(undefined).build();
 
-        expect(() => Website.forInstance(website)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Website.forInstance(website)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If description has different nl languages, throws error', () => {
         const description = LanguageString.of('en', 'nl', 'nl-formal');
         const website = aFullWebsiteForInstance().withDescription(description).withTitle(undefined).build();
 
-        expect(() => Website.forInstance(website)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Website.forInstance(website)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     for (const invalidLanguage of invalidLanguages) {
@@ -141,12 +142,12 @@ describe('for instance', () => {
 
         test('If title contains invalid language, throws error', () => {
             const website = aFullWebsiteForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
-            expect(() => Website.forInstance(website)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Website.forInstance(website)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
         test('If description contains invalid language, throws error', () => {
             const website = aFullWebsiteForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
-            expect(() => Website.forInstance(website)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Website.forInstance(website)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
     }
 
@@ -172,7 +173,7 @@ describe('for instance', () => {
     }
 
     test('Undefined order throws error', () => {
-        expect(() => Website.forInstance(aFullWebsiteForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+        expect(() => Website.forInstance(aFullWebsiteForInstance().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 });
 
@@ -183,7 +184,7 @@ describe('for instance snapshot', () => {
 
     test('Undefined id throws error', () => {
         const website = aFullWebsiteForInstanceSnapshot().withId(undefined);
-        expect(() => Website.forInstanceSnapshot(website.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Website.forInstanceSnapshot(website.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Undefined Uuid does not throw error', () => {
@@ -193,7 +194,7 @@ describe('for instance snapshot', () => {
 
     test('Undefined title throws error', () => {
         const website = aFullWebsiteForInstanceSnapshot().withTitle(undefined);
-        expect(() => Website.forInstanceSnapshot(website.build())).toThrow(new Error('title should not be absent'));
+        expect(() => Website.forInstanceSnapshot(website.build())).toThrowWithMessage(InvariantError, 'title should not be absent');
     });
 
     test('Undefined description does not throw error', () => {
@@ -203,7 +204,7 @@ describe('for instance snapshot', () => {
 
     test('Undefined url throws error', () => {
         const website = aFullWebsiteForInstanceSnapshot().withUrl(undefined);
-        expect(() => Website.forInstanceSnapshot(website.build())).toThrow(new Error('url should not be absent'));
+        expect(() => Website.forInstanceSnapshot(website.build())).toThrowWithMessage(InvariantError, 'url should not be absent');
     });
 
     test('If title and description have the same nl language website is created', () => {
@@ -217,7 +218,7 @@ describe('for instance snapshot', () => {
         const description = LanguageString.of('en', undefined, 'nl-formal');
         const website = aFullWebsiteForInstanceSnapshot().withTitle(title).withDescription(description).build();
 
-        expect(() => Website.forInstanceSnapshot(website)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Website.forInstanceSnapshot(website)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     for (const invalidLanguage of invalidLanguages) {
@@ -230,7 +231,7 @@ describe('for instance snapshot', () => {
 
         test(`If title or description contains invalid language ${invalidLanguage}, throws error`, () => {
             const website = aFullWebsiteForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(undefined).build();
-            expect(() => Website.forInstanceSnapshot(website)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Website.forInstanceSnapshot(website)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
     }
@@ -253,6 +254,6 @@ describe('for instance snapshot', () => {
     }
 
     test('Undefined order throws error', () => {
-        expect(() => Website.forInstanceSnapshot(aFullWebsiteForInstanceSnapshot().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+        expect(() => Website.forInstanceSnapshot(aFullWebsiteForInstanceSnapshot().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 });

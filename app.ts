@@ -180,8 +180,7 @@ app.post('/delta', async function (req, res): Promise<void> {
 });
 
 app.use('/public-services/', async (req, res, next) => {
-    await authenticateAndAuthorizeRequest(req, sessionRepository).catch(next);
-    next();
+    await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
 });
 
 app.post('/public-services/', async (req, res, next) => {
@@ -248,8 +247,7 @@ app.put('/public-services/:instanceId/publish', async function (req, res, next):
 });
 
 app.use('/conceptual-public-services/', async (req, res, next) => {
-    await authenticateAndAuthorizeRequest(req, sessionRepository).catch(next);
-    next();
+    await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
 });
 
 app.get('/conceptual-public-services/:conceptId/dutch-language-version', async (req, res, next): Promise<any> => {
@@ -261,8 +259,8 @@ app.get('/conceptual-public-services/:conceptId/form/:formId', async function (r
 });
 
 app.use('/concept-display-configuration/', async (req, res, next) => {
-    await authenticateAndAuthorizeRequest(req, sessionRepository).catch(next);
-    next();
+    await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
+
 });
 
 app.put('/concept-display-configuration/:conceptDisplayConfigurationId/remove-is-new-flag', async function (req, res, next): Promise<any> {
@@ -270,8 +268,8 @@ app.put('/concept-display-configuration/:conceptDisplayConfigurationId/remove-is
 });
 
 app.use('/contact-info-options/', async (req, res, next) => {
-    await authenticateAndAuthorizeRequest(req, sessionRepository).catch(next);
-    next();
+    await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
+
 });
 
 app.get('/contact-info-options/:fieldName', async (req, res, next): Promise<any> => {
@@ -279,8 +277,8 @@ app.get('/contact-info-options/:fieldName', async (req, res, next): Promise<any>
 });
 
 app.use('/address', async (req, res, next) => {
-    await authenticateAndAuthorizeRequest(req, sessionRepository).catch(next);
-    next();
+    await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
+
 });
 
 app.get('/address/municipalities', async (req, res, next): Promise<any> => {

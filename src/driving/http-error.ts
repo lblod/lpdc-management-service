@@ -60,6 +60,18 @@ export class Forbidden extends HttpError {
     }
 }
 
+export class NotFound extends HttpError {
+    constructor(message = 'Not found ') {
+        super(404, message, ErrorLevel.WARN);
+    }
+}
+
+export class Conflict extends HttpError {
+    constructor(message = 'Concurrent update ') {
+        super(409, message, ErrorLevel.WARN);
+    }
+}
+
 export class InternalServerError extends HttpError {
     constructor(message = 'Oeps, er ging iets mis') {
         super(500, message, ErrorLevel.ERROR);

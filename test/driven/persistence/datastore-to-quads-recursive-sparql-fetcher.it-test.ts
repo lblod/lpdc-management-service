@@ -9,6 +9,7 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {literal, namedNode, quad} from 'rdflib';
 import {Quad} from "rdflib/lib/tf-types";
 import {NS} from "../../../src/driven/persistence/namespaces";
+import {SystemError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('recursively fetches a part of a datastore into a array of quads using sparql endpoint', () => {
 
@@ -20,7 +21,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
 
         const startIri: Iri = new Iri(`http://example.com/ns#abc}`);
 
-        await expect(fetcherWithIncorrectEndpoint.fetch(new Iri('http://some-test-graph'), startIri, [], [], [])).rejects.toThrow('All retries failed. Last error: Error: Invalid URI "thiscanotbereached"');
+        await expect(fetcherWithIncorrectEndpoint.fetch(new Iri('http://some-test-graph'), startIri, [], [], [])).rejects.toThrowWithMessage(Error, 'All retries failed. Last error: Error: Invalid URI "thiscanotbereached"');
     });
 
     test('Can query non recursively all triples linked to an IRI', async () => {
@@ -353,7 +354,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
             ],
             [PREFIX.ex, PREFIX.skos]);
 
-        await expect(fetcher.fetch(graph, startIri, [], [], [NS.skos('Concept').value])).rejects.toThrow(`Recursing into <http://www.w3.org/2004/02/skos/core#Concept> from <${nestedIri.value}> is not allowed`);
+        await expect(fetcher.fetch(graph, startIri, [], [], [NS.skos('Concept').value])).rejects.toThrowWithMessage(SystemError, `Recursing into <http://www.w3.org/2004/02/skos/core#Concept> from <${nestedIri.value}> is not allowed`);
     });
 
 

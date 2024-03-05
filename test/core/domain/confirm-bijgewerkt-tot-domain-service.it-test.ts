@@ -13,6 +13,7 @@ import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {ConceptSnapshotSparqlTestRepository} from "../../driven/persistence/concept-snapshot-sparql-test-repository";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 
 describe('ConfirmBijgewerktTotDomainService', () => {
@@ -176,7 +177,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         await conceptSnapshotRepository.save(conceptSnapshot);
 
         await expect(() => confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, aFullConceptSnapshot().build()))
-            .rejects.toThrow(new Error('BijgewerktTot: conceptSnapshot does not belong to concept linked to instance'));
+            .rejects.toThrowWithMessage(InvariantError, 'BijgewerktTot: conceptSnapshot does not belong to concept linked to instance');
     });
 
     test('when conceptSnapshot already linked to instance nothing is changed', async () => {

@@ -5,6 +5,7 @@ import {sparqlEscapeUri} from "../../../mu-helper";
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {extractResultsFromAllSettled} from "../../../platform/promises";
+import {NotFoundError} from "../../core/domain/shared/lpdc-error";
 
 export class BestuurseenheidSparqlRepository implements BestuurseenheidRepository {
 
@@ -55,7 +56,7 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
                     this.querying.list(spatialsQuery)]);
 
         if (!bestuurseenheidQueryResult) {
-            throw new Error(`no Bestuurseenheid found for iri: ${id}`);
+            throw new NotFoundError(`no Bestuurseenheid found for iri: ${id}`);
         }
 
         return new Bestuurseenheid(
@@ -78,7 +79,7 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
         const classificatieCode = BestuurseenheidClassificatieCode[key];
 
         if (!classificatieCode) {
-            throw new Error(`No classification code found for: ${classificatieCodeUri}`);
+            throw new NotFoundError(`No classification code found for: ${classificatieCodeUri}`);
         }
         return classificatieCode;
     }

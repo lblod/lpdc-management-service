@@ -7,6 +7,7 @@ import {sparqlEscapeUri} from "../../../mu-helper";
 import {Iri} from "../../core/domain/shared/iri";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 import {ChosenFormType} from "../../core/domain/types";
+import {SystemError} from "../../core/domain/shared/lpdc-error";
 
 export class FormalInformalChoiceSparqlRepository implements FormalInformalChoiceRepository {
 
@@ -39,14 +40,14 @@ export class FormalInformalChoiceSparqlRepository implements FormalInformalChoic
             return undefined;
         }
 
-        const formalInformalChoiceId = new Iri(result['formalInformalChoiceId'].value)
+        const formalInformalChoiceId = new Iri(result['formalInformalChoiceId'].value);
 
         const rawChosenForm = result['chosenForm'].value;
 
         const chosenFormKey: string | undefined = Object.keys(ChosenFormType)
             .find(key => ChosenFormType[key] === rawChosenForm);
         if(!chosenFormKey) {
-            throw Error(`could not map '${rawChosenForm}' for iri: <${formalInformalChoiceId}>`);
+            throw new SystemError(`could not map '${rawChosenForm}' for iri: <${formalInformalChoiceId}>`);
         }
 
         const formalInformalChoice = new FormalInformalChoice(
@@ -58,7 +59,7 @@ export class FormalInformalChoiceSparqlRepository implements FormalInformalChoic
         );
 
         if(!formalInformalChoice.bestuurseenheidId.equals(bestuurseenheid.id)) {
-            throw Error(`formal informal choice found <${formalInformalChoice.id}> in incorrect user graph`);
+            throw new SystemError(`formal informal choice found <${formalInformalChoice.id}> in incorrect user graph`);
         }
 
         return formalInformalChoice;

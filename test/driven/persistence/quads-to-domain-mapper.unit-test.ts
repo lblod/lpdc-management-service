@@ -10,6 +10,7 @@ import {InstanceTestBuilder} from "../../core/domain/instance-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
+import {InvariantError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('quads to domain mapper', () => {
 
@@ -155,7 +156,7 @@ describe('quads to domain mapper', () => {
                 ];
 
             const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
-            expect(() => domainMapper.instance(instanceId)).toThrow(new Error('Not all orders are unique'));
+            expect(() => domainMapper.instance(instanceId)).toThrowWithMessage(SystemError, 'Not all orders are unique');
 
 
         });
@@ -228,7 +229,7 @@ describe('quads to domain mapper', () => {
                 ];
 
             const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
-            expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`order should not be absent`));
+            expect(() => domainMapper.instance(instanceId)).toThrowWithMessage(InvariantError, `order should not be absent`);
         });
 
         test('When 2 orders have same order, throw error', () => {
@@ -257,7 +258,7 @@ describe('quads to domain mapper', () => {
                 ];
 
             const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
-            expect(() => domainMapper.instance(instanceId)).toThrow(new Error(`Not all orders are unique`));
+            expect(() => domainMapper.instance(instanceId)).toThrowWithMessage(SystemError, `Not all orders are unique`);
         });
     });
 });

@@ -9,6 +9,7 @@ import {PREFIX} from "../../../config";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {ChosenFormType} from "../../../src/core/domain/types";
+import {SystemError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('FormalInformalChoiceRepository', () => {
 
@@ -140,7 +141,7 @@ describe('FormalInformalChoiceRepository', () => {
                     PREFIX.dct
                 ]);
 
-            await expect(repository.findByBestuurseenheid(bestuurseenheid)).rejects.toThrow(`formal informal choice found <${formalInformalChoice.id}> in incorrect user graph`);
+            await expect(repository.findByBestuurseenheid(bestuurseenheid)).rejects.toThrowWithMessage(SystemError, `formal informal choice found <${formalInformalChoice.id}> in incorrect user graph`);
         });
 
         for (const chosenForm of Object.values(ChosenFormType)) {
@@ -176,7 +177,7 @@ describe('FormalInformalChoiceRepository', () => {
                     PREFIX.dct
                 ]);
 
-            await expect(repository.findByBestuurseenheid(bestuurseenheid)).rejects.toThrow(new Error(`could not map 'non-existing-choice' for iri: <${formalInformalChoiceIri}>`));
+            await expect(repository.findByBestuurseenheid(bestuurseenheid)).rejects.toThrowWithMessage(SystemError, `could not map 'non-existing-choice' for iri: <${formalInformalChoiceIri}>`);
         });
 
     });

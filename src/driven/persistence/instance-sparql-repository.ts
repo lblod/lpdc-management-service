@@ -12,8 +12,8 @@ import {NS} from "./namespaces";
 import {InstancePublicationStatusType, InstanceReviewStatusType} from "../../core/domain/types";
 import {Logger} from "../../../platform/logger";
 import {literal} from "rdflib";
-import LPDCError from "../../../platform/lpdc-error";
 import {isEqual} from "lodash";
+import {ConcurrentUpdateError, SystemError} from "../../core/domain/shared/lpdc-error";
 
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
@@ -83,7 +83,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
         // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
         if (isEqual(oldTriples, newTriples)) {
-            throw new Error('no change');
+            throw new SystemError('no change');
         }
 
         const query = `
@@ -102,10 +102,10 @@ export class InstanceSparqlRepository implements InstanceRepository {
         await this.querying.deleteInsert(query, (deleteInsertResults: string[]) => {
 
             if (deleteInsertResults.length != 1) {
-                throw new Error('Updating for more than 1 graph');
+                throw new SystemError('Updating for more than 1 graph');
             }
             if (deleteInsertResults[0].includes("delete 0 (or less) and insert 0 (or less) triples")) {
-                throw new LPDCError(400, "De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in.");
+                throw new ConcurrentUpdateError("De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in");
             }
         });
     }

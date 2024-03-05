@@ -12,12 +12,15 @@ describe('authenticateAndAuthorizeRequest', () => {
 
     test('Missing mu-session-id header ,throws Unauthorized error', async () => {
         const req = { headers: {}};
-        await expect(() => authenticateAndAuthorizeRequest(req, sessionRepository)).rejects.toBeInstanceOf(Unauthorized);
+        const next = jest.fn();
+        await expect(() => authenticateAndAuthorizeRequest(req, next, sessionRepository)).rejects.toBeInstanceOf(Unauthorized);
     });
 
     test('When referenced session id in mu-session-id does not exist, throws Unauthorized error', async () => {
         const req = { headers: {'mu-session-id': buildSessionIri(uuid()).value}};
-        await expect(() => authenticateAndAuthorizeRequest(req, sessionRepository)).rejects.toBeInstanceOf(Unauthorized);
+        const next = jest.fn();
+
+        await expect(() => authenticateAndAuthorizeRequest(req, next, sessionRepository)).rejects.toBeInstanceOf(Unauthorized);
     });
 
     test('When referenced session mu-session-id has no lpdc rights, throws Forbidden error', async () => {
@@ -27,8 +30,10 @@ describe('authenticateAndAuthorizeRequest', () => {
         await sessionRepository.save(sessionWithNoLpdcRights);
 
         const req = { headers: {'mu-session-id': sessionWithNoLpdcRights.id.value}};
-        await expect(() => authenticateAndAuthorizeRequest(req, sessionRepository)).rejects.toBeInstanceOf(Forbidden);
+        const next = jest.fn();
 
+        await expect(() => authenticateAndAuthorizeRequest(req, next, sessionRepository)).rejects.toBeInstanceOf(Forbidden);
+        expect(next).not.toHaveBeenCalled();
     });
 
     test('When referenced session mu-session-id has lpdc rights, dont throw error', async () => {
@@ -37,8 +42,11 @@ describe('authenticateAndAuthorizeRequest', () => {
         await sessionRepository.save(session);
 
         const req = { headers: {'mu-session-id': session.id.value}};
+        const next = jest.fn();
 
-        expect(() => authenticateAndAuthorizeRequest(req, sessionRepository)).not.toThrow();
+        await authenticateAndAuthorizeRequest(req, next, sessionRepository);
+
+        expect(next).toHaveBeenCalled();
     });
 
 

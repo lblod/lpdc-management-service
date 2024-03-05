@@ -1,4 +1,5 @@
 import {extractResultsFromAllSettled} from "../../platform/promises";
+import {SystemError} from "../../src/core/domain/shared/lpdc-error";
 
 describe('promises tests', () => {
 
@@ -18,7 +19,7 @@ describe('promises tests', () => {
             Promise.reject('this specific promise was rejected!'),
             Promise.resolve('ghi'),
             Promise.resolve(12),
-        ])).rejects.toThrow(new Error('Some promises were rejected ["this specific promise was rejected!"]'));
+        ])).rejects.toThrowWithMessage(SystemError, 'Some promises were rejected ["this specific promise was rejected!"]');
     });
 
 });

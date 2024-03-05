@@ -1,5 +1,6 @@
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 
 describe('format preserving date', () => {
@@ -53,8 +54,8 @@ describe('format preserving date', () => {
     });
 
     test('throws exception on invalid format', () => {
-        expect(() => FormatPreservingDate.of('abc')).toThrow(new Error('value does not match pattern'));
-        expect(() => FormatPreservingDate.of('2027-09-16Z')).toThrow(new Error('value does not match pattern'));
+        expect(() => FormatPreservingDate.of('abc')).toThrowWithMessage(InvariantError, 'value does not match pattern');
+        expect(() => FormatPreservingDate.of('2027-09-16Z')).toThrowWithMessage(InvariantError, 'value does not match pattern');
 
     });
 

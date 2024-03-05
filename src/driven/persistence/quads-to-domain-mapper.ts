@@ -36,7 +36,7 @@ import {Address} from "../../core/domain/address";
 import {Logger} from "../../../platform/logger";
 import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
 import {LegalResource} from "../../core/domain/legal-resource";
-import {BadRequest} from "../../driving/http-error";
+import {NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
 
 export interface DoubleQuadReporter {
 
@@ -299,10 +299,10 @@ export class QuadsToDomainMapper {
     private errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
         const typeFoundForId: string = this.storeAccess.uniqueValue(namedNode(id.value), NS.rdf('type'));
         if (!typeFoundForId) {
-            throw new BadRequest(`Could not find <${id}> for type ${type} in graph ${this.graphId}`);
+            throw new NotFoundError(`Could not find <${id}> for type ${type} in graph ${this.graphId}`);
         }
         if (type.value !== typeFoundForId) {
-            throw new BadRequest(`Could not find <${id}> for type ${type}, but found with type <${typeFoundForId}> in graph ${this.graphId}`);
+            throw new NotFoundError(`Could not find <${id}> for type ${type}, but found with type <${typeFoundForId}> in graph ${this.graphId}`);
         }
     }
 
@@ -563,7 +563,7 @@ export class QuadsToDomainMapper {
             this.errorIfMissingOrIncorrectType(evidenceId, NS.locn('Address')));
 
         if (addressIds.length > 1) {
-            throw new Error(`Did not expect more than one address for ${id}`);
+            throw new SystemError(`Did not expect more than one address for ${id}`);
         }
         if (addressIds.length === 0) {
             return undefined;
@@ -640,7 +640,7 @@ export class QuadsToDomainMapper {
             this.errorIfMissingOrIncorrectType(evidenceId, NS.m8g('Evidence')));
 
         if (evidenceIds.length > 1) {
-            throw new Error(`Did not expect more than one evidence for ${id}`);
+            throw new SystemError(`Did not expect more than one evidence for ${id}`);
         }
         if (evidenceIds.length === 0) {
             return undefined;
@@ -702,7 +702,7 @@ export class QuadsToDomainMapper {
             }
         }
         if (statement?.object?.value) {
-            throw new Error(`could not map <${statement?.object?.value}> for iri: <${statement?.subject?.value}>`);
+            throw new SystemError(`could not map <${statement?.object?.value}> for iri: <${statement?.subject?.value}>`);
         }
         return undefined;
     }
@@ -741,14 +741,14 @@ export class QuadsToDomainMapper {
 
     private asLiteral(statement: Statement): Literal {
         if (!isLiteral(statement.object)) {
-            throw Error(`Expecting (${statement}) to have an object that is a literal.`);
+            throw new SystemError(`Expecting (${statement}) to have an object that is a literal.`);
         }
         return statement.object as Literal;
     }
 
     private asNamedNode(statement: Statement): NamedNode {
         if (!isNamedNode(statement.object)) {
-            throw Error(`Expecting (${statement}) to have an object that is a named node.`);
+            throw new SystemError(`Expecting (${statement}) to have an object that is a named node.`);
         }
         return statement.object as NamedNode;
     }
@@ -764,7 +764,7 @@ export class QuadsToDomainMapper {
             });
 
         if (uniqueOrders.size != orders.length) {
-            throw new Error('Not all orders are unique');
+            throw new SystemError('Not all orders are unique');
         }
 
         return asSortedArray(anArray, (a: any, b: any) => {
@@ -772,10 +772,10 @@ export class QuadsToDomainMapper {
             const orderB = orders.find((idAndOrder: any) => idAndOrder[0] === b.id);
 
             if (orderA[1] === undefined) {
-                throw new Error(`No order found for ${a.id}`);
+                throw new SystemError(`No order found for ${a.id}`);
             }
             if (orderB[1] === undefined) {
-                throw new Error(`No order found for ${b.id}`);
+                throw new SystemError(`No order found for ${b.id}`);
             }
             return orderA[1] - orderB[1];
         });

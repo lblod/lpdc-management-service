@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import {ADRESSEN_REGISTER_API_KEY} from "../config";
-import {BadRequest, InternalServerError} from "../src/driving/http-error";
+import {BadRequest} from "../src/driving/http-error";
+import {NotFoundError, SystemError} from "../src/core/domain/shared/lpdc-error";
 
 export async function fetchMunicipalities(searchString: string): Promise<string[]> {
     const queryParams = new URLSearchParams({
@@ -14,7 +15,7 @@ export async function fetchMunicipalities(searchString: string): Promise<string[
         return result?.LocationResult?.map(result => result.Municipality) ?? [];
     } else {
         console.error(await response.text());
-        throw new InternalServerError(`An error occurred when querying the geopunt vlaanderen api`);
+        throw new SystemError(`An error occurred when querying the geopunt vlaanderen api`);
     }
 }
 
@@ -35,7 +36,7 @@ export async function fetchStreets(municipality: string, searchString: string): 
             .filter(match => !!match);
     } else {
         console.error(await response.text());
-        throw new InternalServerError('An error occurred when querying the address register');
+        throw new SystemError('An error occurred when querying the address register');
     }
 }
 
@@ -85,7 +86,7 @@ export async function tryAddressMatch(municipality: string, postcode: string, st
         }
     } else {
         console.error(await response.text());
-        throw new InternalServerError('An error occurred when querying the address register');
+        throw new SystemError('An error occurred when querying the address register');
     }
 }
 
@@ -99,11 +100,11 @@ export async function findPostcodesForMunicipalityAndSubMunicipalities(municipal
         if (result.postInfoObjecten.length) {
             return result.postInfoObjecten.map(postInfo => postInfo.identificator.objectId);
         } else {
-            throw new InternalServerError(`Can not find postcode for municipality ${municipality}`);
+            throw new NotFoundError(`Can not find postcode for municipality ${municipality}`);
         }
     } else {
         console.error(await response.text());
-        throw new InternalServerError(('An error occurred when querying the address register'));
+        throw new SystemError(('An error occurred when querying the address register'));
     }
 
 }

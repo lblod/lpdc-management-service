@@ -20,36 +20,37 @@ import {
 } from "./website-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('forConcept', () => {
 
     test('Undefined id throws error', () => {
         const procedure = aFullProcedure().withId(undefined);
-        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Procedure.forConcept(procedure.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => Procedure.forConcept(aFullProcedure().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
+        expect(() => Procedure.forConcept(aFullProcedure().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
     });
 
     test('Undefined uuid throws error', () => {
         const procedure = aFullProcedure().withUuid(undefined);
-        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('uuid should not be absent'));
+        expect(() => Procedure.forConcept(procedure.build())).toThrowWithMessage(InvariantError, 'uuid should not be absent');
     });
 
     test('Blank uuid throws error', () => {
         const procedure = aFullProcedure().withUuid('   ');
-        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('uuid should not be blank'));
+        expect(() => Procedure.forConcept(procedure.build())).toThrowWithMessage(InvariantError, 'uuid should not be blank');
     });
 
     test('Undefined title throws error', () => {
         const procedure = aFullProcedure().withTitle(undefined);
-        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('title should not be absent'));
+        expect(() => Procedure.forConcept(procedure.build())).toThrowWithMessage(InvariantError, 'title should not be absent');
     });
 
     test('Undefined description throws error', () => {
         const procedure = aFullProcedure().withDescription(undefined);
-        expect(() => Procedure.forConcept(procedure.build())).toThrow(new Error('description should not be absent'));
+        expect(() => Procedure.forConcept(procedure.build())).toThrowWithMessage(InvariantError, 'description should not be absent');
     });
 
     describe('website ', () => {
@@ -76,7 +77,7 @@ describe('forConcept', () => {
             const website2 =
                 aMinimalWebsiteForConcept().withOrder(1).build();
 
-            expect(() => Procedure.forConcept(aFullProcedure().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
+            expect(() => Procedure.forConcept(aFullProcedure().withWebsites([website1, website2]).build())).toThrowWithMessage(InvariantError, 'websites > order should not contain duplicates');
         });
 
         test('websites that have unique order does not throw error', () => {
@@ -91,7 +92,7 @@ describe('forConcept', () => {
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Procedure.forConcept(aFullProcedure().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+        expect(() => Procedure.forConcept(aFullProcedure().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 });
 
@@ -99,11 +100,11 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined id throws error', () => {
         const procedure = aFullProcedure().withId(undefined);
-        expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => Procedure.forConceptSnapshot(aFullProcedure().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
+        expect(() => Procedure.forConceptSnapshot(aFullProcedure().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
     });
 
     test('Uuid is undefined ', () => {
@@ -113,12 +114,12 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined title throws error', () => {
         const procedure = aFullProcedure().withTitle(undefined).build();
-        expect(() => Procedure.forConceptSnapshot(procedure)).toThrow(new Error('title should not be absent'));
+        expect(() => Procedure.forConceptSnapshot(procedure)).toThrowWithMessage(InvariantError, 'title should not be absent');
     });
 
     test('Undefined description throws error', () => {
         const procedure = aFullProcedure().withDescription(undefined).build();
-        expect(() => Procedure.forConceptSnapshot(procedure)).toThrow(new Error('description should not be absent'));
+        expect(() => Procedure.forConceptSnapshot(procedure)).toThrowWithMessage(InvariantError, 'description should not be absent');
     });
 
     describe('website ', () => {
@@ -159,7 +160,7 @@ describe('forConceptSnapshot', () => {
             const website2 =
                 aMinimalWebsiteForConceptSnapshot().withOrder(1).build();
 
-            expect(() => Procedure.forConceptSnapshot(aFullProcedure().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
+            expect(() => Procedure.forConceptSnapshot(aFullProcedure().withWebsites([website1, website2]).build())).toThrowWithMessage(InvariantError, 'websites > order should not contain duplicates');
         });
 
         test('websites that have unique order does not throw error', () => {
@@ -173,7 +174,7 @@ describe('forConceptSnapshot', () => {
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Procedure.forConceptSnapshot(aFullProcedure().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+        expect(() => Procedure.forConceptSnapshot(aFullProcedure().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 
 });
@@ -185,12 +186,12 @@ describe('for instance', () => {
 
     test('Undefined id throws error', () => {
         const procedure = aFullProcedureForInstance().withId(undefined);
-        expect(() => Procedure.forInstance(procedure.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Procedure.forInstance(procedure.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Undefined Uuid throws error', () => {
         const procedure = aFullProcedureForInstance().withUuid(undefined).build();
-        expect(() => Procedure.forInstance(procedure).uuid).toThrow(new Error('uuid should not be absent'));
+        expect(() => Procedure.forInstance(procedure).uuid).toThrowWithMessage(InvariantError, 'uuid should not be absent');
     });
 
     test('If title and description have the same nl language procedure is created', () => {
@@ -209,21 +210,21 @@ describe('for instance', () => {
         const description = LanguageString.of('en', undefined, 'nl-formal');
         const procedure = aFullProcedureForInstance().withTitle(title).withDescription(description).build();
 
-        expect(() => Procedure.forInstance(procedure)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If title has different nl languages, throws error', () => {
         const title = LanguageString.of('en', 'nl', 'nl-formal');
         const procedure = aFullProcedureForInstance().withTitle(title).withDescription(undefined).build();
 
-        expect(() => Procedure.forInstance(procedure)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If description has different nl languages, throws error', () => {
         const description = LanguageString.of('en', 'nl', 'nl-formal');
         const procedure = aFullProcedureForInstance().withDescription(description).withTitle(undefined).build();
 
-        expect(() => Procedure.forInstance(procedure)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If title description and all websites have the same nl language procedure is created', () => {
@@ -239,7 +240,7 @@ describe('for instance', () => {
         const languageString = LanguageString.of('en', 'nl', undefined);
         const website = aFullWebsiteForInstance().withTitle(LanguageString.of('en', undefined, 'nl-formal')).build();
         const procedure = aFullProcedureForInstance().withDescription(languageString).withTitle(languageString).withWebsites([website]).build();
-        expect(() => Procedure.forInstance(procedure)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('websites that dont have unique order throws error', () => {
@@ -248,7 +249,7 @@ describe('for instance', () => {
         const website2 =
             aMinimalWebsiteForInstance().withOrder(1).build();
 
-        expect(() => Procedure.forInstance(aMinimalProcedureForInstance().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
+        expect(() => Procedure.forInstance(aMinimalProcedureForInstance().withWebsites([website1, website2]).build())).toThrowWithMessage(InvariantError, 'websites > order should not contain duplicates');
     });
 
     test('websites that have unique order does not throw error', () => {
@@ -270,26 +271,26 @@ describe('for instance', () => {
 
         test('If title contains invalid language, throws error', () => {
             const procedure = aFullProcedureForInstance().withTitle(valueInNlLanguage).withDescription(undefined).withWebsites([]).build();
-            expect(() => Procedure.forInstance(procedure)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
         test('If description contains invalid language, throws error', () => {
             const procedure = aFullProcedureForInstance().withDescription(valueInNlLanguage).withTitle(undefined).withWebsites([]).build();
-            expect(() => Procedure.forInstance(procedure)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
         test('if a nested website title contains invalid language, throws error', () => {
             const website = aFullWebsiteForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
             const procedure = aFullProcedureForInstance().withTitle(undefined).withDescription(undefined).withWebsites([website]).build();
 
-            expect(() => Procedure.forInstance(procedure)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
         test('if a nested website description contains invalid language, throws error', () => {
             const website = aFullWebsiteForInstance().withTitle(undefined).withDescription(valueInNlLanguage).build();
             const procedure = aFullProcedureForInstance().withTitle(undefined).withDescription(undefined).withWebsites([website]).build();
 
-            expect(() => Procedure.forInstance(procedure)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
     }
 
@@ -329,7 +330,7 @@ describe('for instance', () => {
     }
 
     test('Undefined order throws error', () => {
-        expect(() => Procedure.forInstance(aFullProcedureForInstance().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+        expect(() => Procedure.forInstance(aFullProcedureForInstance().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 
 });
@@ -341,7 +342,7 @@ describe('for instance snapshot', () => {
 
     test('Undefined id throws error', () => {
         const procedure = aFullProcedureForInstanceSnapshot().withId(undefined);
-        expect(() => Procedure.forInstanceSnapshot(procedure.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Procedure.forInstanceSnapshot(procedure.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Undefined Uuid does not throw error', () => {
@@ -351,12 +352,12 @@ describe('for instance snapshot', () => {
 
     test('Undefined title error', () => {
         const procedure = aFullProcedureForInstanceSnapshot().withTitle(undefined);
-        expect(() => Procedure.forInstanceSnapshot(procedure.build())).toThrow(new Error('title should not be absent'));
+        expect(() => Procedure.forInstanceSnapshot(procedure.build())).toThrowWithMessage(InvariantError, 'title should not be absent');
     });
 
     test('Undefined description throws error', () => {
         const procedure = aFullProcedureForInstanceSnapshot().withDescription(undefined);
-        expect(() => Procedure.forInstanceSnapshot(procedure.build())).toThrow(new Error('description should not be absent'));
+        expect(() => Procedure.forInstanceSnapshot(procedure.build())).toThrowWithMessage(InvariantError, 'description should not be absent');
     });
 
     test('If title and description have the same nl language procedure is created', () => {
@@ -370,7 +371,7 @@ describe('for instance snapshot', () => {
         const description = LanguageString.of('en', undefined, 'nl-formal');
         const procedure = aFullProcedureForInstanceSnapshot().withTitle(title).withDescription(description).withWebsites([]).build();
 
-        expect(() => Procedure.forInstanceSnapshot(procedure)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Procedure.forInstanceSnapshot(procedure)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If title description and all websites have the same nl language procedure is created', () => {
@@ -387,7 +388,7 @@ describe('for instance snapshot', () => {
         const anotherLanguageString = LanguageString.of('en', undefined, 'nl');
         const website = aFullWebsiteForInstance().withTitle(anotherLanguageString).withDescription(anotherLanguageString).build();
         const procedure = aFullProcedureForInstanceSnapshot().withDescription(languageString).withTitle(languageString).withWebsites([website]).build();
-        expect(() => Procedure.forInstanceSnapshot(procedure)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Procedure.forInstanceSnapshot(procedure)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('websites that dont have unique order throws error', () => {
@@ -396,7 +397,7 @@ describe('for instance snapshot', () => {
         const website2 =
             aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
 
-        expect(() => Procedure.forInstanceSnapshot(aMinimalProcedureForInstanceSnapshot().withWebsites([website1, website2]).build())).toThrow(new Error('websites > order should not contain duplicates'));
+        expect(() => Procedure.forInstanceSnapshot(aMinimalProcedureForInstanceSnapshot().withWebsites([website1, website2]).build())).toThrowWithMessage(InvariantError, 'websites > order should not contain duplicates');
     });
 
     test('websites that have unique orderorder does not throw error', () => {
@@ -418,14 +419,14 @@ describe('for instance snapshot', () => {
 
         test(`If title and description contains invalid language ${invalidLanguage}, throws error`, () => {
             const procedure = aFullProcedureForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).withWebsites([]).build();
-            expect(() => Procedure.forInstanceSnapshot(procedure)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Procedure.forInstanceSnapshot(procedure)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
         test(`if a nested website title contains invalid language ${invalidLanguage}, throws error`, () => {
             const website = aFullWebsiteForInstance().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).build();
             const procedure = aFullProcedureForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).withWebsites([website]).build();
 
-            expect(() => Procedure.forInstanceSnapshot(procedure)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Procedure.forInstanceSnapshot(procedure)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
     }
@@ -455,7 +456,7 @@ describe('for instance snapshot', () => {
 
     test('Undefined order throws error', () => {
         expect(() => Procedure.forInstanceSnapshot(aFullProcedureForInstanceSnapshot().withOrder(undefined).build()))
-            .toThrow(new Error('order should not be absent'));
+            .toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 
 });

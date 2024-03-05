@@ -1,3 +1,5 @@
+import {SystemError} from "../src/core/domain/shared/lpdc-error";
+
 export const extractResultsFromAllSettled = async <T>(promises: Promise<T>[]): Promise<T[]> => {
     const results = await Promise.allSettled(promises);
     const rejectedReasons = results
@@ -9,7 +11,7 @@ export const extractResultsFromAllSettled = async <T>(promises: Promise<T>[]): P
     } else {
         const msg = `Some promises were rejected [${rejectedReasons.map(o => JSON.stringify(o)).join('; ')}]`;
         console.log(msg);
-        throw new Error(msg);
+        throw new SystemError(msg);
     }
 
 };

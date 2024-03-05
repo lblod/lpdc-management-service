@@ -6,6 +6,7 @@ import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snapshot-repository";
 import {Concept} from "./concept";
 import {FormatPreservingDate} from "./format-preserving-date";
+import {InvariantError} from "./shared/lpdc-error";
 
 
 export class ConfirmBijgewerktTotDomainService {
@@ -45,7 +46,7 @@ export class ConfirmBijgewerktTotDomainService {
 
     private verifyConceptSnapshotBelongsToConcept(concept: Concept, conceptSnapshot: ConceptSnapshot): void {
         if (!conceptSnapshot.isVersionOfConcept.equals(concept.id)) {
-            throw new Error('BijgewerktTot: conceptSnapshot does not belong to concept linked to instance');
+            throw new InvariantError('BijgewerktTot: conceptSnapshot does not belong to concept linked to instance');
         }
     }
 

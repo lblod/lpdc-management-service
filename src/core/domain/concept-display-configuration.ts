@@ -1,5 +1,6 @@
 import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
+import {InvariantError} from "./shared/lpdc-error";
 
 export class ConceptDisplayConfiguration {
 
@@ -53,7 +54,7 @@ export class ConceptDisplayConfiguration {
 
     conceptIsNewAndInstantiatedCantBothBeTrue(){
         if(this.conceptIsNew===true && this.conceptIsInstantiated){
-            throw new Error('ConceptIsNew and conceptIsInstantiated cant both be true');
+            throw new InvariantError('ConceptIsNew and conceptIsInstantiated cant both be true');
         }
     }
 }

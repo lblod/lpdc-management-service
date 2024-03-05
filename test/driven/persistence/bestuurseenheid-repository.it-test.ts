@@ -13,6 +13,7 @@ import {
 } from "../../core/domain/iri-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {PUBLIC_GRAPH} from "../../../config";
+import {NotFoundError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('BestuurseenheidRepository', () => {
     const repository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -38,7 +39,7 @@ describe('BestuurseenheidRepository', () => {
 
             const nonExistentBestuurseenheidId = buildBestuurseenheidIri("thisiddoesnotexist");
 
-            await expect(repository.findById(nonExistentBestuurseenheidId)).rejects.toThrow(new Error(`no Bestuurseenheid found for iri: ${nonExistentBestuurseenheidId}`));
+            await expect(repository.findById(nonExistentBestuurseenheidId)).rejects.toThrowWithMessage(NotFoundError, `no Bestuurseenheid found for iri: ${nonExistentBestuurseenheidId}`);
 
         });
 
@@ -121,7 +122,7 @@ describe('BestuurseenheidRepository', () => {
                     `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheidId)).rejects.toThrow(new Error(`no Bestuurseenheid found for iri: ${bestuurseenheidId}`));
+            await expect(repository.findById(bestuurseenheidId)).rejects.toThrowWithMessage(NotFoundError, `no Bestuurseenheid found for iri: ${bestuurseenheidId}`);
 
         });
 
@@ -181,7 +182,7 @@ describe('BestuurseenheidRepository', () => {
 
         test('Non matched bestuurseenheid classification code throws error. ', () => {
             const nonExistingClassificationCode = 'non-existing' as BestuurseenheidClassificatieCode;
-            expect(() => repository.mapBestuurseenheidClassificatieCodeToUri(nonExistingClassificationCode)).toThrow(new Error(`No classification code uri found for: ${nonExistingClassificationCode}`));
+            expect(() => repository.mapBestuurseenheidClassificatieCodeToUri(nonExistingClassificationCode)).toThrowWithMessage(NotFoundError, `No classification code uri found for: ${nonExistingClassificationCode}`);
 
         });
 
@@ -211,7 +212,7 @@ describe('BestuurseenheidRepository', () => {
 
         test('Non matched bestuurseenheid classification uri throws error. ', () => {
             const nonExistingClassificationUri = 'non-existing' as BestuurseenheidClassificatieCodeUri;
-            expect(() => repository.mapBestuurseenheidClassificatieUriToCode(nonExistingClassificationUri)).toThrow(new Error(`No classification code found for: ${nonExistingClassificationUri}`));
+            expect(() => repository.mapBestuurseenheidClassificatieUriToCode(nonExistingClassificationUri)).toThrowWithMessage(NotFoundError, `No classification code found for: ${nonExistingClassificationUri}`);
 
         });
 

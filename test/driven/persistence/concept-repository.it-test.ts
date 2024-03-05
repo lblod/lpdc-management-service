@@ -11,6 +11,7 @@ import {aMinimalLanguageString} from "../../core/domain/language-string-test-bui
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
+import {NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('ConceptRepository', () => {
     const repository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -60,7 +61,7 @@ describe('ConceptRepository', () => {
 
             const nonExistentConceptId = buildConceptIri('thisiddoesnotexist');
 
-            await expect(repository.findById(nonExistentConceptId)).rejects.toThrow(new Error(`Could not find <https://ipdc.tni-vlaanderen.be/id/concept/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> in graph <http://mu.semte.ch/graphs/public>`));
+            await expect(repository.findById(nonExistentConceptId)).rejects.toThrowWithMessage(NotFoundError, `Could not find <https://ipdc.tni-vlaanderen.be/id/concept/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> in graph <http://mu.semte.ch/graphs/public>`);
         });
     });
 
@@ -89,7 +90,7 @@ describe('ConceptRepository', () => {
             const newConcept = oldConcept;
 
             expect(oldConcept).toEqual(newConcept);
-            await expect(() => repository.update(newConcept, oldConcept)).rejects.toThrow(new Error('no change'));
+            await expect(() => repository.update(newConcept, oldConcept)).rejects.toThrowWithMessage(SystemError, 'no change');
         });
     });
 
@@ -132,7 +133,7 @@ describe('ConceptRepository', () => {
                 CONCEPT_GRAPH,
                 [`<${idForIncorrectType}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType>`]);
 
-            await expect(repository.findById(idForIncorrectType)).rejects.toThrow(new Error(`Could not find <${idForIncorrectType}> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>, but found with type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType> in graph <http://mu.semte.ch/graphs/public>`));
+            await expect(repository.findById(idForIncorrectType)).rejects.toThrowWithMessage(NotFoundError, `Could not find <${idForIncorrectType}> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>, but found with type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType> in graph <http://mu.semte.ch/graphs/public>`);
         });
 
         test('Verify minimal mappings', async () => {

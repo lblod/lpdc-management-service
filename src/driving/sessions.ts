@@ -3,7 +3,7 @@ import {SessionRoleType} from "../core/domain/session";
 import {SessionRepository} from "../core/port/driven/persistence/session-repository";
 import {Forbidden, Unauthorized} from "./http-error";
 
-export async function authenticateAndAuthorizeRequest(req, sessionRepository: SessionRepository) {
+export async function authenticateAndAuthorizeRequest(req, next, sessionRepository: SessionRepository) {
     const sessionIri: string | undefined = req.headers['mu-session-id'] as string;
     if (!sessionIri) {
         throw new Unauthorized();
@@ -19,4 +19,5 @@ export async function authenticateAndAuthorizeRequest(req, sessionRepository: Se
     }
 
     req['session'] = session;
+    next();
 }

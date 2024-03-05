@@ -2,29 +2,30 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {aFullAddressForInstance, aFullAddressForInstanceSnapshot} from "./address-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {Address} from "../../../src/core/domain/address";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('constructing', () => {
 
     describe('forInstance', () => {
 
         test('Undefined id throws error', () => {
-            expect(() => Address.forInstance(aFullAddressForInstance().withId(undefined).build())).toThrow(new Error('id should not be absent'));
+            expect(() => Address.forInstance(aFullAddressForInstance().withId(undefined).build())).toThrowWithMessage(InvariantError, 'id should not be absent');
         });
 
         test('Invalid iri id throws error', () => {
-            expect(() => Address.forInstance(aFullAddressForInstance().withId(new Iri('  ')).build())).toThrow(new Error('iri should not be blank'));
+            expect(() => Address.forInstance(aFullAddressForInstance().withId(new Iri('  ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
         });
 
         test('Undefined uuid throws error', () => {
-            expect(() => Address.forInstance(aFullAddressForInstance().withUuid(undefined).build())).toThrow(new Error('uuid should not be absent'));
+            expect(() => Address.forInstance(aFullAddressForInstance().withUuid(undefined).build())).toThrowWithMessage(InvariantError, 'uuid should not be absent');
         });
 
         test('Blank uuid throws error', () => {
-            expect(() => Address.forInstance(aFullAddressForInstance().withUuid('   ').build())).toThrow(new Error('uuid should not be blank'));
+            expect(() => Address.forInstance(aFullAddressForInstance().withUuid('   ').build())).toThrowWithMessage(InvariantError, 'uuid should not be blank');
         });
 
         test('Invalid iri verwijst naar throws error', () => {
-            expect(() => Address.forInstance(aFullAddressForInstance().withVerwijstNaar(new Iri('bad iri')).build())).toThrow(new Error('iri does not start with one of [http://,https://]'));
+            expect(() => Address.forInstance(aFullAddressForInstance().withVerwijstNaar(new Iri('bad iri')).build())).toThrowWithMessage(InvariantError, 'iri does not start with one of [http://,https://]');
         });
 
         describe('Gemeentenaam, land en straatnaam', () => {
@@ -33,35 +34,35 @@ describe('constructing', () => {
                 expect(() => Address.forInstance(aFullAddressForInstance()
                     .withGemeentenaam(LanguageString.of('english', 'dutch'))
                     .build()))
-                    .toThrow(new Error('Address languagesStrings should only contain NL'));
+                    .toThrowWithMessage(InvariantError, 'Address languagesStrings should only contain NL');
             });
 
             test('invalid land throws error', () => {
                 expect(() => Address.forInstance(aFullAddressForInstance()
                     .withGemeentenaam(LanguageString.of('english', 'dutch'))
                     .build()))
-                    .toThrow(new Error('Address languagesStrings should only contain NL'));
+                    .toThrowWithMessage(InvariantError, 'Address languagesStrings should only contain NL');
             });
 
             test('invalid straatnaam throws error', () => {
                 expect(() => Address.forInstance(aFullAddressForInstance()
                     .withGemeentenaam(LanguageString.of('english', 'dutch'))
                     .build()))
-                    .toThrow(new Error('Address languagesStrings should only contain NL'));
+                    .toThrowWithMessage(InvariantError, 'Address languagesStrings should only contain NL');
             });
 
             test('language EN and NL throws error', () => {
                 expect(() => Address.forInstance(aFullAddressForInstance()
                     .withGemeentenaam(LanguageString.of('english', 'dutch'))
                     .build()))
-                    .toThrow(new Error('Address languagesStrings should only contain NL'));
+                    .toThrowWithMessage(InvariantError, 'Address languagesStrings should only contain NL');
             });
 
             test('language NL and NL-FORMAL throws error', () => {
                 expect(() => Address.forInstance(aFullAddressForInstance()
                     .withGemeentenaam(LanguageString.of(undefined, 'dutch', 'nl-formal'))
                     .build()))
-                    .toThrow(new Error('Address languagesStrings should only contain NL'));
+                    .toThrowWithMessage(InvariantError, 'Address languagesStrings should only contain NL');
             });
 
             test('valid languages does not throw error', () => {
@@ -88,7 +89,7 @@ describe('constructing', () => {
     describe('forInstanceSnapshot', () => {
 
         test('Undefined id throws error', () => {
-            expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot().withId(undefined).build())).toThrow(new Error('id should not be absent'));
+            expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot().withId(undefined).build())).toThrowWithMessage(InvariantError, 'id should not be absent');
         });
 
         test('Undefined uuid does not throw error', () => {
@@ -101,35 +102,35 @@ describe('constructing', () => {
                 expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
                     .withGemeentenaam(LanguageString.of('english', 'dutch'))
                     .build()))
-                    .toThrow(new Error('Address languagesStrings should only contain NL'));
+                    .toThrowWithMessage(InvariantError, 'Address languagesStrings should only contain NL');
             });
 
             test('invalid land throws error', () => {
                 expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
                     .withGemeentenaam(LanguageString.of('english', 'dutch'))
                     .build()))
-                    .toThrow(new Error('Address languagesStrings should only contain NL'));
+                    .toThrowWithMessage(InvariantError, 'Address languagesStrings should only contain NL');
             });
 
             test('invalid straatnaam throws error', () => {
                 expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
                     .withGemeentenaam(LanguageString.of('english', 'dutch'))
                     .build()))
-                    .toThrow(new Error('Address languagesStrings should only contain NL'));
+                    .toThrowWithMessage(InvariantError, 'Address languagesStrings should only contain NL');
             });
 
             test('language EN and NL throws error', () => {
                 expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
                     .withGemeentenaam(LanguageString.of('english', 'dutch'))
                     .build()))
-                    .toThrow(new Error('Address languagesStrings should only contain NL'));
+                    .toThrowWithMessage(InvariantError, 'Address languagesStrings should only contain NL');
             });
 
             test('language NL and NL-FORMAL throws error', () => {
                 expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
                     .withGemeentenaam(LanguageString.of(undefined, 'dutch', 'nl-formal'))
                     .build()))
-                    .toThrow(new Error('Address languagesStrings should only contain NL'));
+                    .toThrowWithMessage(InvariantError, 'Address languagesStrings should only contain NL');
             });
 
             test('valid languages does not throw error', () => {

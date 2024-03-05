@@ -10,6 +10,7 @@ import {sparqlEscapeUri} from "../../../mu-helper";
 import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {Logger} from "../../../platform/logger";
 import {isEqual} from "lodash";
+import {SystemError} from "../../core/domain/shared/lpdc-error";
 
 export class ConceptSparqlRepository implements ConceptRepository {
 
@@ -85,7 +86,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
 
         // Virtuoso bug: when triples/quads in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
         if (isEqual(oldTriples, newTriples)) {
-            throw new Error('no change');
+            throw new SystemError('no change');
         }
 
         const query = `

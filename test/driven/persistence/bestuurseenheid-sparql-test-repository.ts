@@ -6,6 +6,7 @@ import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/co
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {sparqlEscapeString, sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {buildWerkingsgebiedenIri} from "../../core/domain/iri-test-builder";
+import {NotFoundError} from "../../../src/core/domain/shared/lpdc-error";
 
 export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRepository {
 
@@ -52,7 +53,7 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
         const classificatieCodeUri = BestuurseenheidClassificatieCodeUri[key];
 
         if (!classificatieCodeUri) {
-            throw new Error(`No classification code uri found for: ${classificatieCode}`);
+            throw new NotFoundError(`No classification code uri found for: ${classificatieCode}`);
         }
         return classificatieCodeUri;
     }

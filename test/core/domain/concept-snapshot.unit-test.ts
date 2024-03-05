@@ -37,6 +37,7 @@ import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('constructing', () => {
 
@@ -67,98 +68,98 @@ describe('constructing', () => {
     });
 
     test('Undefined id throws error', () => {
-        expect(() => aFullConceptSnapshot().withId(undefined).build()).toThrow(new Error('id should not be absent'));
+        expect(() => aFullConceptSnapshot().withId(undefined).build()).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => aFullConceptSnapshot().withId(new Iri('   ')).build()).toThrow(new Error('iri should not be blank'));
+        expect(() => aFullConceptSnapshot().withId(new Iri('   ')).build()).toThrowWithMessage(InvariantError, 'iri should not be blank');
     });
 
     test('Undefined title throws error', () => {
-        expect(() => aFullConceptSnapshot().withTitle(undefined).build()).toThrow(new Error('title should not be absent'));
+        expect(() => aFullConceptSnapshot().withTitle(undefined).build()).toThrowWithMessage(InvariantError, 'title should not be absent');
     });
 
     test('NL not present in title throws error', () => {
-        expect(() => aFullConceptSnapshot().withTitle(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in title should not be absent'));
+        expect(() => aFullConceptSnapshot().withTitle(LanguageString.of('en', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in title should not be absent');
     });
 
     test('Undefined description throws error', () => {
-        expect(() => aFullConceptSnapshot().withDescription(undefined).build()).toThrow(new Error('description should not be absent'));
+        expect(() => aFullConceptSnapshot().withDescription(undefined).build()).toThrowWithMessage(InvariantError, 'description should not be absent');
     });
 
     test('NL not present in description throws error', () => {
-        expect(() => aFullConceptSnapshot().withDescription(LanguageString.of('en', undefined)).build()).toThrow(new Error('nl version in description should not be absent'));
+        expect(() => aFullConceptSnapshot().withDescription(LanguageString.of('en', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in description should not be absent');
     });
 
     test('Undefined productId throws error', () => {
-        expect(() => aFullConceptSnapshot().withProductId(undefined).build()).toThrow(new Error('productId should not be absent'));
+        expect(() => aFullConceptSnapshot().withProductId(undefined).build()).toThrowWithMessage(InvariantError, 'productId should not be absent');
     });
 
     test('Blank productId throws error', () => {
-        expect(() => aFullConceptSnapshot().withProductId('   ').build()).toThrow(new Error('productId should not be blank'));
+        expect(() => aFullConceptSnapshot().withProductId('   ').build()).toThrowWithMessage(InvariantError, 'productId should not be blank');
     });
 
     test('Undefined snapshotType throws error', () => {
-        expect(() => aFullConceptSnapshot().withSnapshotType(undefined).build()).toThrow(new Error('snapshotType should not be absent'));
+        expect(() => aFullConceptSnapshot().withSnapshotType(undefined).build()).toThrowWithMessage(InvariantError, 'snapshotType should not be absent');
     });
 
     test('TargetAudience with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withTargetAudiences([TargetAudienceType.BURGER, TargetAudienceType.BURGER]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('targetAudiences should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'targetAudiences should not contain duplicates');
     });
 
     test('Themes with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withThemes([ThemeType.BOUWENWONEN, ThemeType.BOUWENWONEN]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('themes should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'themes should not contain duplicates');
     });
 
     test('CompetentAuthorityLevels with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withCompetentAuthorityLevels([CompetentAuthorityLevelType.EUROPEES, CompetentAuthorityLevelType.EUROPEES]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('competentAuthorityLevels should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'competentAuthorityLevels should not contain duplicates');
     });
 
     test('CompetentAuthorities with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withCompetentAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('competentAuthorities should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'competentAuthorities should not contain duplicates');
     });
 
     test('ExecutingAuthorityLevels with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.LOKAAL]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('executingAuthorityLevels should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'executingAuthorityLevels should not contain duplicates');
     });
 
     test('ExecutingAuthorities with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('executingAuthorities should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'executingAuthorities should not contain duplicates');
     });
 
     test('PublicationMedia with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withPublicationMedia([PublicationMediumType.YOUREUROPE, PublicationMediumType.YOUREUROPE]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('publicationMedia should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'publicationMedia should not contain duplicates');
     });
 
     test('YourEuropeCategories with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF, YourEuropeCategoryType.BEDRIJF]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('yourEuropeCategories should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'yourEuropeCategories should not contain duplicates');
     });
 
     test('keywords with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('keywords should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords should not contain duplicates');
     });
 
     describe('dateCreated', () => {
 
         test('Invalid dateCreated throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateCreated should not be absent'));
+            expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of(undefined)).build()).toThrowWithMessage(InvariantError, 'dateCreated should not be absent');
         });
 
         test('Undefined dateCreated throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateCreated(undefined).build()).toThrow(new Error('dateCreated should not be absent'));
+            expect(() => aFullConceptSnapshot().withDateCreated(undefined).build()).toThrowWithMessage(InvariantError, 'dateCreated should not be absent');
         });
 
         test('Blank dateCreated throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of('')).build()).toThrow(new Error('dateCreated should not be absent'));
+            expect(() => aFullConceptSnapshot().withDateCreated(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateCreated should not be absent');
         });
 
     });
@@ -166,15 +167,15 @@ describe('constructing', () => {
     describe('dateModified', () => {
 
         test('Invalid dateModified throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('dateModified should not be absent'));
+            expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of(undefined)).build()).toThrowWithMessage(InvariantError, 'dateModified should not be absent');
         });
 
         test('Undefined dateModified throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateModified(undefined).build()).toThrow(new Error('dateModified should not be absent'));
+            expect(() => aFullConceptSnapshot().withDateModified(undefined).build()).toThrowWithMessage(InvariantError, 'dateModified should not be absent');
         });
 
         test('Blank dateModified throws error', () => {
-            expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of('')).build()).toThrow(new Error('dateModified should not be absent'));
+            expect(() => aFullConceptSnapshot().withDateModified(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateModified should not be absent');
         });
 
     });
@@ -182,28 +183,28 @@ describe('constructing', () => {
     describe('generatedAtTime', () => {
 
         test('Invalid generatedAtTime throws error', () => {
-            expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of(undefined)).build()).toThrow(new Error('generatedAtTime should not be absent'));
+            expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of(undefined)).build()).toThrowWithMessage(InvariantError, 'generatedAtTime should not be absent');
         });
 
         test('Undefined generatedAtTime throws error', () => {
-            expect(() => aFullConceptSnapshot().withGeneratedAtTime(undefined).build()).toThrow(new Error('generatedAtTime should not be absent'));
+            expect(() => aFullConceptSnapshot().withGeneratedAtTime(undefined).build()).toThrowWithMessage(InvariantError, 'generatedAtTime should not be absent');
         });
 
         test('Blank generatedAtTime throws error', () => {
-            expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of('')).build()).toThrow(new Error('generatedAtTime should not be absent'));
+            expect(() => aFullConceptSnapshot().withGeneratedAtTime(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'generatedAtTime should not be absent');
         });
 
     });
 
     test('conceptTags with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT, ConceptTagType.YOUREUROPEVERPLICHT]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('conceptTags should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'conceptTags should not contain duplicates');
     });
 
     test('legalResources with duplicates throws error', () => {
         const iri = uuid();
         const conceptTestBuilder = aFullConceptSnapshot().withLegalResources([buildCodexVlaanderenIri(iri), buildCodexVlaanderenIri(iri)]);
-        expect(() => conceptTestBuilder.build()).toThrow(new Error('legalResources should not contain duplicates'));
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'legalResources should not contain duplicates');
     });
 
     describe('cost ', () => {
@@ -227,7 +228,7 @@ describe('constructing', () => {
             const cost2 =
                 aMinimalCostForConceptSnapshot().withOrder(1).build();
 
-            expect(() => aFullConceptSnapshot().withCosts([cost1, cost2]).build()).toThrow(new Error('costs > order should not contain duplicates'));
+            expect(() => aFullConceptSnapshot().withCosts([cost1, cost2]).build()).toThrowWithMessage(InvariantError, 'costs > order should not contain duplicates');
         });
 
         test('costs that have unique order does not throw error', () => {
@@ -262,7 +263,7 @@ describe('constructing', () => {
             const financialAdvantage2 =
                 aMinimalFinancialAdvantageForConceptSnapshot().withOrder(1).build();
 
-            expect(() => aFullConceptSnapshot().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).toThrow(new Error('financial advantages > order should not contain duplicates'));
+            expect(() => aFullConceptSnapshot().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).toThrowWithMessage(InvariantError, 'financial advantages > order should not contain duplicates');
         });
 
         test('financial advantages that have unique order does not throw error', () => {
@@ -298,7 +299,7 @@ describe('constructing', () => {
             const procedure2 =
                 aMinimalProcedureForConceptSnapshot().withOrder(1).build();
 
-            expect(() => aFullConceptSnapshot().withProcedures([procedure1, procedure2]).build()).toThrow(new Error('procedures > order should not contain duplicates'));
+            expect(() => aFullConceptSnapshot().withProcedures([procedure1, procedure2]).build()).toThrowWithMessage(InvariantError, 'procedures > order should not contain duplicates');
         });
 
         test('procedures that have unique order does not throw error', () => {
@@ -334,7 +335,7 @@ describe('constructing', () => {
             const website2 =
                 aMinimalWebsiteForConceptSnapshot().withOrder(1).build();
 
-            expect(() => aFullConceptSnapshot().withWebsites([website1, website2]).build()).toThrow(new Error('websites > order should not contain duplicates'));
+            expect(() => aFullConceptSnapshot().withWebsites([website1, website2]).build()).toThrowWithMessage(InvariantError, 'websites > order should not contain duplicates');
         });
 
         test('websites that have unique order does not throw error', () => {
@@ -371,7 +372,7 @@ describe('constructing', () => {
             const requirement2 =
                 aMinimalRequirementForConceptSnapshot().withOrder(1).build();
 
-            expect(() => aFullConceptSnapshot().withRequirements([requirement1, requirement2]).build()).toThrow(new Error('requirements > order should not contain duplicates'));
+            expect(() => aFullConceptSnapshot().withRequirements([requirement1, requirement2]).build()).toThrowWithMessage(InvariantError, 'requirements > order should not contain duplicates');
         });
 
         test('requirements that have unique order does not throw error', () => {

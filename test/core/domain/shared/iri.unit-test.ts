@@ -1,4 +1,5 @@
 import {Iri} from "../../../../src/core/domain/shared/iri";
+import {InvariantError} from "../../../../src/core/domain/shared/lpdc-error";
 
 describe('constructing', () => {
 
@@ -7,15 +8,15 @@ describe('constructing', () => {
     });
 
     test('undefined throws error', () => {
-        expect(() => new Iri(undefined)).toThrow(new Error('iri should not be absent'));
+        expect(() => new Iri(undefined)).toThrowWithMessage(InvariantError, 'iri should not be absent');
     });
 
     test('Blank id throws error', () => {
-        expect(() => new Iri('')).toThrow(new Error('iri should not be blank'));
+        expect(() => new Iri('')).toThrowWithMessage(InvariantError, 'iri should not be blank');
     });
 
     test('Does not start with http or https throws error', () => {
-        expect(() => new Iri('/some-value')).toThrow(new Error('iri does not start with one of [http://,https://]'));
+        expect(() => new Iri('/some-value')).toThrowWithMessage(InvariantError, 'iri does not start with one of [http://,https://]');
     });
 
     test('get value', () => {

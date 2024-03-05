@@ -3,6 +3,8 @@ import {requiredValue} from "./shared/invariant";
 import {LanguageString} from "./language-string";
 import {Language} from "./language";
 import {isEqual} from "lodash";
+import {InvariantError} from "./shared/lpdc-error";
+
 
 export class Address {
 
@@ -45,7 +47,7 @@ export class Address {
         );
 
         if (!isValid) {
-            throw new Error('Address languagesStrings should only contain NL');
+            throw new InvariantError('Address languagesStrings should only contain NL');
         }
     }
 

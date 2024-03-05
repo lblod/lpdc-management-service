@@ -1,6 +1,7 @@
 import {querySudo, updateSudo} from '@lblod/mu-auth-sudo';
 import {retry} from 'ts-retry-promise';
 import {literal, Literal, NamedNode, namedNode, quad} from "rdflib";
+import {SystemError} from "../../core/domain/shared/lpdc-error";
 
 export class SparqlQuerying {
     private readonly endpoint: string;
@@ -34,7 +35,7 @@ export class SparqlQuerying {
             const bindings = result?.results?.bindings;
             if (bindings) {
                 if (bindings.length > 1) {
-                    throw new QueryError(`Expecting a single row from query (${query}), got ${bindings.length} results.`);
+                    throw new SystemError(`Expecting a single row from query (${query}), got ${bindings.length} results.`);
                 }
             }
             return bindings[0];
@@ -44,7 +45,7 @@ export class SparqlQuerying {
             backoff: "FIXED",
             logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`),
             retryIf: (error: any) => {
-                return !(error instanceof QueryError);
+                return !(error instanceof Error);
             },
         });
     }
@@ -91,13 +92,13 @@ export class SparqlQuerying {
             || term.type === 'typed-literal') {
             return this.asLiteral(term);
         }
-        throw new QueryError(`Could not parse ${JSON.stringify(term)} as Named Node Or Literal`);
+        throw new SystemError(`Could not parse ${JSON.stringify(term)} as Named Node Or Literal`);
     }
 
     private asLiteral(term: any): Literal {
         if (term.type !== 'literal'
             && term.type !== 'typed-literal') {
-            throw new QueryError(`Expecting a literal for ${term.value}`);
+            throw new SystemError(`Expecting a literal for ${term.value}`);
         }
 
         const lang: string | undefined = term['xml:lang'];
@@ -107,7 +108,7 @@ export class SparqlQuerying {
 
     private asNamedNode(term: any): NamedNode {
         if (term.type !== 'uri') {
-            throw new QueryError(`Expecting an IRI for ${term.value}`);
+            throw new SystemError(`Expecting an IRI for ${term.value}`);
         }
 
         return namedNode(term.value);
@@ -119,14 +120,8 @@ export class SparqlQuerying {
             .every(ir => expectedPattern.test(ir))) {
             const msg = `[${query}] gave incorrect result [${results.join(';')}]`;
             console.log(msg);
-            throw new QueryError(msg);
+            throw new SystemError(msg);
         }
     }
-}
-
-class QueryError {
-    constructor(public message: string) {
-    }
-
 }
 

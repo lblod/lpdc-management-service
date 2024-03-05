@@ -6,6 +6,7 @@ import {DirectDatabaseAccess} from "./direct-database-access";
 import {SessionRoleType} from "../../../src/core/domain/session";
 import {USER_SESSIONS_GRAPH} from "../../../config";
 import {buildBestuurseenheidIri, buildSessionIri} from "../../core/domain/iri-test-builder";
+import {NotFoundError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('SessionRepository', () => {
     const repository = new SessionSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -31,7 +32,7 @@ describe('SessionRepository', () => {
 
             const nonExistentSessionId = buildSessionIri("thisiddoesnotexist");
 
-            await expect(repository.findById(nonExistentSessionId)).rejects.toThrow(new Error(`No session found for iri: ${nonExistentSessionId}`));
+            await expect(repository.findById(nonExistentSessionId)).rejects.toThrowWithMessage(NotFoundError, `No session found for iri: ${nonExistentSessionId}`);
 
         });
 

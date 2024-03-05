@@ -1,4 +1,5 @@
 import {isEqual, uniqWith} from "lodash";
+import {InvariantError} from "./lpdc-error";
 
 type ValidationResult = string | null;
 type InvariantType<V> = (value: V) => ValidationResult;
@@ -85,7 +86,7 @@ export class Invariant<V> {
         const firstViolation = violations.find(violation => violation !== null);
 
         if (firstViolation !== undefined) {
-            throw new Error(firstViolation);
+            throw new InvariantError(firstViolation);
         }
 
         return this._value;

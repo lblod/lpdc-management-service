@@ -4,6 +4,7 @@ import {Session} from "../../core/domain/session";
 import {SparqlQuerying} from "./sparql-querying";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {PREFIX, USER_SESSIONS_GRAPH} from "../../../config";
+import {NotFoundError} from "../../core/domain/shared/lpdc-error";
 
 export class SessionSparqlRepository implements SessionRepository {
 
@@ -27,7 +28,7 @@ export class SessionSparqlRepository implements SessionRepository {
         const result = await this.querying.list(query);
 
         if (result.length === 0) {
-            throw new Error(`No session found for iri: ${id}`);
+            throw new NotFoundError(`No session found for iri: ${id}`);
         }
 
         return new Session(

@@ -7,6 +7,7 @@ import {SparqlQuerying} from "./sparql-querying";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {PREFIX} from "../../../config";
 import {sparqlEscapeUri} from "../../../mu-helper";
+import {NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
 
 export class ConceptDisplayConfigurationSparqlRepository implements ConceptDisplayConfigurationRepository {
 
@@ -40,7 +41,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         const result = await this.querying.singleRow(query);
 
         if (!result) {
-            throw new Error(`No conceptDisplayConfiguration exists with id ${conceptDisplayConfigurationId}`);
+            throw new NotFoundError(`No conceptDisplayConfiguration exists with id ${conceptDisplayConfigurationId}`);
         }
 
         const conceptDisplayConfiguration = new ConceptDisplayConfiguration(
@@ -53,7 +54,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         );
 
         if(!conceptDisplayConfiguration.bestuurseenheidId.equals(bestuurseenheid.id)) {
-            throw Error(`concept display configuration ${conceptDisplayConfigurationId} found in incorrect user graph`);
+            throw new SystemError(`concept display configuration ${conceptDisplayConfigurationId} found in incorrect user graph`);
         }
 
         return conceptDisplayConfiguration;
@@ -83,7 +84,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         const result = await this.querying.singleRow(query);
 
         if (!result) {
-            throw new Error(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`);
+            throw new NotFoundError(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`);
         }
 
         const conceptDisplayConfiguration = new ConceptDisplayConfiguration(
@@ -96,7 +97,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         );
 
         if(!conceptDisplayConfiguration.bestuurseenheidId.equals(bestuurseenheid.id)) {
-            throw Error(`concept display configuration found for concept id ${conceptId} in incorrect user graph`);
+            throw new SystemError(`concept display configuration found for concept id ${conceptId} in incorrect user graph`);
         }
 
         return conceptDisplayConfiguration;

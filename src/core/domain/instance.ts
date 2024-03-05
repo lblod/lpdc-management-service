@@ -30,6 +30,7 @@ import {FinancialAdvantage} from "./financial-advantage";
 import {ContactPoint} from "./contact-point";
 import {instanceLanguages, Language} from "./language";
 import {LegalResource} from "./legal-resource";
+import {InvariantError} from "./shared/lpdc-error";
 
 export class Instance {
 
@@ -165,29 +166,19 @@ export class Instance {
         this.validateLanguages();
     }
 
-    private validateLanguages(): void {
-        const values = [
-            this._title,
-            this._description,
-            this._additionalDescription,
-            this._exception,
-            this._regulation
-        ];
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...values);
-
-        const nlLanguages = LanguageString.extractNlLanguages(values);
-        const allNlLanguages = new Set([
-            ...nlLanguages,
-            ...this._requirements.map(r => r.nlLanguage),
-            ...this._procedures.map(p => p.nlLanguage),
-            ...this._websites.map(w => w.nlLanguage),
-            ...this._costs.map(c => c.nlLanguage),
-            ...this._financialAdvantages.map(fa => fa.nlLanguage),
-        ].filter(ls => ls !== undefined));
-
-        if (allNlLanguages.size > 1) {
-            throw new Error('There is more than one Nl language present');
+    reopen(): Instance {
+        if (this.status === InstanceStatusType.ONTWERP) {
+            throw new InvariantError('Instance status already in ontwerp');
         }
+        const newPublicationStatus = this.publicationStatus === InstancePublicationStatusType.GEPUBLICEERD ?
+            InstancePublicationStatusType.TE_HERPUBLICEREN
+            : this.publicationStatus;
+
+        return InstanceBuilder.from(this)
+            .withStatus(InstanceStatusType.ONTWERP)
+            .withDateModified(FormatPreservingDate.now())
+            .withPublicationStatus(newPublicationStatus)
+            .build();
     }
 
     get instanceNlLanguage(): Language | undefined {
@@ -365,30 +356,40 @@ export class Instance {
         return [...this._legalResources];
     }
 
-    reopen(): Instance {
-        if (this.status === InstanceStatusType.ONTWERP) {
-            throw new Error('Instance status already in ontwerp');
-        }
-        const newPublicationStatus = this.publicationStatus === InstancePublicationStatusType.GEPUBLICEERD ?
-            InstancePublicationStatusType.TE_HERPUBLICEREN
-            : this.publicationStatus;
-
-        return InstanceBuilder.from(this)
-            .withStatus(InstanceStatusType.ONTWERP)
-            .withDateModified(FormatPreservingDate.now())
-            .withPublicationStatus(newPublicationStatus)
-            .build();
-    }
-
     publish(): Instance {
         if (this.status === InstanceStatusType.VERSTUURD) {
-            throw new Error('Instance status already has status verstuurd');
+            throw new InvariantError('Instance status already has status verstuurd');
         }
         return InstanceBuilder.from(this)
             .withStatus(InstanceStatusType.VERSTUURD)
             .withDateSent(FormatPreservingDate.now())
             .withDateModified(FormatPreservingDate.now())
             .build();
+    }
+
+    private validateLanguages(): void {
+        const values = [
+            this._title,
+            this._description,
+            this._additionalDescription,
+            this._exception,
+            this._regulation
+        ];
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...values);
+
+        const nlLanguages = LanguageString.extractNlLanguages(values);
+        const allNlLanguages = new Set([
+            ...nlLanguages,
+            ...this._requirements.map(r => r.nlLanguage),
+            ...this._procedures.map(p => p.nlLanguage),
+            ...this._websites.map(w => w.nlLanguage),
+            ...this._costs.map(c => c.nlLanguage),
+            ...this._financialAdvantages.map(fa => fa.nlLanguage),
+        ].filter(ls => ls !== undefined));
+
+        if (allNlLanguages.size > 1) {
+            throw new InvariantError('There is more than one Nl language present');
+        }
     }
 }
 

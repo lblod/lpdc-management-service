@@ -17,37 +17,38 @@ import {aMinimalLanguageString} from "./language-string-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 
 describe('forConcept', () => {
 
     test('Undefined id throws error', () => {
         const requirement = aFullRequirement().withId(undefined);
-        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Requirement.forConcept(requirement.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => Requirement.forConcept(aFullRequirement().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
+        expect(() => Requirement.forConcept(aFullRequirement().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
     });
 
     test('Undefined uuid throws error', () => {
         const requirement = aFullRequirement().withUuid(undefined);
-        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('uuid should not be absent'));
+        expect(() => Requirement.forConcept(requirement.build())).toThrowWithMessage(InvariantError, 'uuid should not be absent');
     });
 
     test('Blank uuid throws error', () => {
         const requirement = aFullRequirement().withUuid('   ');
-        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('uuid should not be blank'));
+        expect(() => Requirement.forConcept(requirement.build())).toThrowWithMessage(InvariantError, 'uuid should not be blank');
     });
 
     test('Undefined title throws error', () => {
         const requirement = aFullRequirement().withTitle(undefined);
-        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('title should not be absent'));
+        expect(() => Requirement.forConcept(requirement.build())).toThrowWithMessage(InvariantError, 'title should not be absent');
     });
 
     test('Undefined description throws error', () => {
         const requirement = aFullRequirement().withDescription(undefined);
-        expect(() => Requirement.forConcept(requirement.build())).toThrow(new Error('description should not be absent'));
+        expect(() => Requirement.forConcept(requirement.build())).toThrowWithMessage(InvariantError, 'description should not be absent');
     });
 
     describe('evidence ', () => {
@@ -68,7 +69,7 @@ describe('forConcept', () => {
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Requirement.forConcept(aFullRequirement().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+        expect(() => Requirement.forConcept(aFullRequirement().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 
 });
@@ -77,11 +78,11 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined id throws error', () => {
         const requirement = aFullRequirement().withId(undefined);
-        expect(() => Requirement.forConceptSnapshot(requirement.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Requirement.forConceptSnapshot(requirement.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => Requirement.forConceptSnapshot(aFullRequirement().withId(new Iri('   ')).build())).toThrow(new Error('iri should not be blank'));
+        expect(() => Requirement.forConceptSnapshot(aFullRequirement().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
     });
 
     test('Uuid is undefined ', () => {
@@ -91,12 +92,12 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined title throws error', () => {
         const requirement = aFullRequirement().withTitle(undefined).build();
-        expect(() => Requirement.forConceptSnapshot(requirement)).toThrow(new Error('title should not be absent'));
+        expect(() => Requirement.forConceptSnapshot(requirement)).toThrowWithMessage(InvariantError, 'title should not be absent');
     });
 
     test('Undefined description throws error', () => {
         const requirement = aFullRequirement().withDescription(undefined).build();
-        expect(() => Requirement.forConceptSnapshot(requirement)).toThrow(new Error('description should not be absent'));
+        expect(() => Requirement.forConceptSnapshot(requirement)).toThrowWithMessage(InvariantError, 'description should not be absent');
     });
 
     describe('evidence ', () => {
@@ -117,7 +118,7 @@ describe('forConceptSnapshot', () => {
     });
 
     test('Undefined order throws error', () => {
-        expect(() => Requirement.forConceptSnapshot(aFullRequirement().withOrder(undefined).build())).toThrow(new Error('order should not be absent'));
+        expect(() => Requirement.forConceptSnapshot(aFullRequirement().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 
 });
@@ -129,12 +130,12 @@ describe('for instance', () => {
 
     test('Undefined id throws error', () => {
         const requirement = aFullRequirementForInstance().withId(undefined);
-        expect(() => Requirement.forInstance(requirement.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Requirement.forInstance(requirement.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Undefined Uuid throws error', () => {
         const requirement = aFullRequirementForInstance().withUuid(undefined).build();
-        expect(() => Requirement.forInstance(requirement).uuid).toThrow(new Error('uuid should not be absent'));
+        expect(() => Requirement.forInstance(requirement).uuid).toThrowWithMessage(InvariantError, 'uuid should not be absent');
     });
 
     test('If title and description have the same nl language requirement is created', () => {
@@ -153,21 +154,21 @@ describe('for instance', () => {
         const description = LanguageString.of('en', undefined, 'nl-formal');
         const requirement = aFullRequirementForInstance().withTitle(title).withDescription(description).build();
 
-        expect(() => Requirement.forInstance(requirement)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If title has different nl languages, throws error', () => {
         const title = LanguageString.of('en', 'nl', 'nl-formal');
         const requirement = aFullRequirementForInstance().withTitle(title).withDescription(undefined).build();
 
-        expect(() => Requirement.forInstance(requirement)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If description has different nl languages, throws error', () => {
         const description = LanguageString.of('en', 'nl', 'nl-formal');
         const requirement = aFullRequirementForInstance().withDescription(description).withTitle(undefined).build();
 
-        expect(() => Requirement.forInstance(requirement)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If title description and evidence have the same nl language requirement is created', () => {
@@ -182,7 +183,7 @@ describe('for instance', () => {
         const languageString = LanguageString.of('en', 'nl', undefined);
         const evidence = aFullEvidenceForInstance().withTitle(LanguageString.of('en', undefined, 'nl-formal')).build();
         const requirement = aFullRequirementForInstance().withDescription(languageString).withTitle(languageString).withEvidence(evidence).build();
-        expect(() => Requirement.forInstance(requirement)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
 
     });
 
@@ -196,26 +197,26 @@ describe('for instance', () => {
 
         test('If title contains invalid language, throws error', () => {
             const requirement = aFullRequirementForInstance().withTitle(valueInNlLanguage).withDescription(undefined).withEvidence(undefined).build();
-            expect(() => Requirement.forInstance(requirement)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
         test('If description contains invalid language, throws error', () => {
             const requirement = aFullRequirementForInstance().withDescription(valueInNlLanguage).withTitle(undefined).withEvidence(undefined).build();
-            expect(() => Requirement.forInstance(requirement)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
         test('if a nested evidence title contains invalid language, throws error', () => {
             const evidence = aFullEvidenceForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
             const requirement = aFullRequirementForInstance().withTitle(undefined).withDescription(undefined).withEvidence(evidence).build();
 
-            expect(() => Requirement.forInstance(requirement)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
         test('if a nested evidence description contains invalid language, throws error', () => {
             const evidence = aFullEvidenceForInstance().withTitle(undefined).withDescription(valueInNlLanguage).build();
             const requirement = aFullRequirementForInstance().withTitle(undefined).withDescription(undefined).withEvidence(evidence).build();
 
-            expect(() => Requirement.forInstance(requirement)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
     }
 
@@ -255,7 +256,7 @@ describe('for instance', () => {
     }
 
     test('Undefined order throws error', () => {
-        expect(() => Requirement.forInstance(aFullRequirementForInstance().withOrder(undefined).build()).uuid).toThrow(new Error('order should not be absent'));
+        expect(() => Requirement.forInstance(aFullRequirementForInstance().withOrder(undefined).build()).uuid).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 
 });
@@ -267,7 +268,7 @@ describe('for instance snapshot', () => {
 
     test('Undefined id throws error', () => {
         const requirement = aFullRequirementForInstanceSnapshot().withId(undefined);
-        expect(() => Requirement.forInstanceSnapshot(requirement.build())).toThrow(new Error('id should not be absent'));
+        expect(() => Requirement.forInstanceSnapshot(requirement.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
     });
 
     test('Undefined Uuid throws error', () => {
@@ -277,12 +278,12 @@ describe('for instance snapshot', () => {
 
     test('Undefined title throws error', () => {
         const requirement = aFullRequirementForInstanceSnapshot().withTitle(undefined);
-        expect(() => Requirement.forInstanceSnapshot(requirement.build())).toThrow(new Error('title should not be absent'));
+        expect(() => Requirement.forInstanceSnapshot(requirement.build())).toThrowWithMessage(InvariantError, 'title should not be absent');
     });
 
     test('Undefined description throws error', () => {
         const requirement = aFullRequirementForInstanceSnapshot().withDescription(undefined);
-        expect(() => Requirement.forInstanceSnapshot(requirement.build())).toThrow(new Error('description should not be absent'));
+        expect(() => Requirement.forInstanceSnapshot(requirement.build())).toThrowWithMessage(InvariantError, 'description should not be absent');
     });
 
     test('If title and description have the same nl language requirement is created', () => {
@@ -296,7 +297,7 @@ describe('for instance snapshot', () => {
         const description = LanguageString.of('en', undefined, 'nl-formal');
         const requirement = aFullRequirementForInstanceSnapshot().withTitle(title).withDescription(description).withEvidence(undefined).build();
 
-        expect(() => Requirement.forInstanceSnapshot(requirement)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Requirement.forInstanceSnapshot(requirement)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If title, description and evidence title description have the same nl language requirement is created', () => {
@@ -315,7 +316,7 @@ describe('for instance snapshot', () => {
         const evidence = aFullEvidenceForInstanceSnapshot().withTitle(otherLangString).withDescription(langString).build();
         const requirement = aFullRequirementForInstanceSnapshot().withDescription(langString).withTitle(langString).withEvidence(evidence).build();
 
-        expect(() => Requirement.forInstanceSnapshot(requirement)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Requirement.forInstanceSnapshot(requirement)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     test('If a evidence description has a different nl language than title or description, throws error', () => {
@@ -325,7 +326,7 @@ describe('for instance snapshot', () => {
         const evidence = aFullEvidenceForInstanceSnapshot().withTitle(langString).withDescription(otherLangString).build();
         const requirement = aFullRequirementForInstanceSnapshot().withDescription(langString).withTitle(langString).withEvidence(evidence).build();
 
-        expect(() => Requirement.forInstanceSnapshot(requirement)).toThrow(new Error('There is more than one Nl language present'));
+        expect(() => Requirement.forInstanceSnapshot(requirement)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
     });
 
     for (const invalidLanguage of invalidLanguages) {
@@ -338,14 +339,14 @@ describe('for instance snapshot', () => {
 
         test(`If title or description contains invalid language ${invalidLanguage}, throws error`, () => {
             const requirement = aFullRequirementForInstanceSnapshot().withTitle(invalidValueInNlLanguage).withDescription(invalidValueInNlLanguage).withEvidence(undefined).build();
-            expect(() => Requirement.forInstanceSnapshot(requirement)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Requirement.forInstanceSnapshot(requirement)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
 
         test(`if a nested evidence title and description contains invalid language ${invalidLanguage}, throws error`, () => {
             const evidence = aFullEvidenceForInstanceSnapshot().withTitle(invalidValueInNlLanguage).withDescription(invalidValueInNlLanguage).build();
             const requirement = aFullRequirementForInstanceSnapshot().withTitle(invalidValueInNlLanguage).withDescription(invalidValueInNlLanguage).withEvidence(evidence).build();
 
-            expect(() => Requirement.forInstanceSnapshot(requirement)).toThrow(new Error(`The nl language differs from ${validLanguages.toString()}`));
+            expect(() => Requirement.forInstanceSnapshot(requirement)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
         });
     }
 
@@ -373,7 +374,7 @@ describe('for instance snapshot', () => {
     }
 
     test('Undefined order throws error', () => {
-        expect(() => Requirement.forInstanceSnapshot(aFullRequirementForInstance().withOrder(undefined).build()).uuid).toThrow(new Error('order should not be absent'));
+        expect(() => Requirement.forInstanceSnapshot(aFullRequirementForInstance().withOrder(undefined).build()).uuid).toThrowWithMessage(InvariantError, 'order should not be absent');
     });
 
 });
