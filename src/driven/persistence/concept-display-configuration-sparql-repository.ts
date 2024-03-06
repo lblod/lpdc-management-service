@@ -41,7 +41,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         const result = await this.querying.singleRow(query);
 
         if (!result) {
-            throw new NotFoundError(`No conceptDisplayConfiguration exists with id ${conceptDisplayConfigurationId}`);
+            throw new NotFoundError(`Geen conceptDisplayConfiguratie gevonden voor id: ${conceptDisplayConfigurationId}`);
         }
 
         const conceptDisplayConfiguration = new ConceptDisplayConfiguration(
@@ -54,7 +54,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         );
 
         if(!conceptDisplayConfiguration.bestuurseenheidId.equals(bestuurseenheid.id)) {
-            throw new SystemError(`concept display configuration ${conceptDisplayConfigurationId} found in incorrect user graph`);
+            throw new SystemError(`Concept display configuration ${conceptDisplayConfigurationId} gevonden in de foute gebruikers graph`);
         }
 
         return conceptDisplayConfiguration;
@@ -84,7 +84,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         const result = await this.querying.singleRow(query);
 
         if (!result) {
-            throw new NotFoundError(`No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`);
+            throw new NotFoundError(`Geen conceptDisplayConfiguration gevonden voor bestuurseenheid: ${bestuurseenheid.id} en concept ${conceptId}`);
         }
 
         const conceptDisplayConfiguration = new ConceptDisplayConfiguration(
@@ -97,7 +97,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         );
 
         if(!conceptDisplayConfiguration.bestuurseenheidId.equals(bestuurseenheid.id)) {
-            throw new SystemError(`concept display configuration found for concept id ${conceptId} in incorrect user graph`);
+            throw new SystemError(`Concept display configuration gevonden voor concept met id ${conceptId} in de foute gebruikers graph`);
         }
 
         return conceptDisplayConfiguration;

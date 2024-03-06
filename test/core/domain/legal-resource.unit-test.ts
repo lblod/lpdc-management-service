@@ -8,36 +8,36 @@ describe('forConcept', () => {
 
    test('undefined id throws error', () => {
        const legalResource = aFullLegalResource().withId(undefined);
-       expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+       expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
    });
 
     test('invalid iri throws error', () => {
-        expect(() => LegalResource.forConcept(aFullLegalResource().withId(new Iri('  ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => LegalResource.forConcept(aFullLegalResource().withId(new Iri('  ')).build())).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('undefined uuid throws error', () => {
         const legalResource = aFullLegalResource().withUuid(undefined);
-        expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'uuid should not be absent');
+        expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'uuid mag niet ontbreken');
     });
 
     test('blank uuid throws error', () => {
         const legalResource = aFullLegalResource().withUuid(' ');
-        expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'uuid should not be blank');
+        expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'uuid mag niet leeg zijn');
     });
 
     test('undefined url throws error', () => {
         const legalResource = aFullLegalResource().withUrl(undefined);
-        expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'url should not be absent');
+        expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'url mag niet ontbreken');
     });
 
     test('blank url throws error', () => {
         const legalResource = aFullLegalResource().withUrl('    ');
-        expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'url should not be blank');
+        expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'url mag niet leeg zijn');
     });
 
     test('undefined order throws error', () => {
         const legalResource = aFullLegalResource().withOrder(undefined);
-        expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'order should not be absent');
+        expect(() => LegalResource.forConcept(legalResource.build())).toThrowWithMessage(InvariantError, 'order mag niet ontbreken');
     });
 
 });
@@ -46,21 +46,21 @@ describe('forInstance', () => {
 
     test('undefined id throws error', () => {
         const legalResource = aFullLegalResource().withId(undefined);
-        expect(() => LegalResource.forInstance(legalResource.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => LegalResource.forInstance(legalResource.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('invalid iri throws error', () => {
-        expect(() => LegalResource.forInstance(aFullLegalResource().withId(new Iri('  ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => LegalResource.forInstance(aFullLegalResource().withId(new Iri('  ')).build())).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('undefined uuid throws error', () => {
         const legalResource = aFullLegalResource().withUuid(undefined);
-        expect(() => LegalResource.forInstance(legalResource.build())).toThrowWithMessage(InvariantError, 'uuid should not be absent');
+        expect(() => LegalResource.forInstance(legalResource.build())).toThrowWithMessage(InvariantError, 'uuid mag niet ontbreken');
     });
 
     test('blank uuid throws error', () => {
         const legalResource = aFullLegalResource().withUuid(' ');
-        expect(() => LegalResource.forInstance(legalResource.build())).toThrowWithMessage(InvariantError, 'uuid should not be blank');
+        expect(() => LegalResource.forInstance(legalResource.build())).toThrowWithMessage(InvariantError, 'uuid mag niet leeg zijn');
     });
 
     test('undefined url does not error', () => {
@@ -75,7 +75,7 @@ describe('forInstance', () => {
 
     test('undefined order throws error', () => {
         const legalResource = aFullLegalResource().withOrder(undefined);
-        expect(() => LegalResource.forInstance(legalResource.build())).toThrowWithMessage(InvariantError, 'order should not be absent');
+        expect(() => LegalResource.forInstance(legalResource.build())).toThrowWithMessage(InvariantError, 'order mag niet ontbreken');
     });
 
 });
@@ -89,26 +89,26 @@ describe('forInstanceSnapshot', () => {
 
     test('undefined id throws error', () => {
         const legalResource = aFullLegalResource().withId(undefined);
-        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('invalid iri throws error', () => {
-        expect(() => LegalResource.forInstanceSnapshot(aFullLegalResource().withId(new Iri('  ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => LegalResource.forInstanceSnapshot(aFullLegalResource().withId(new Iri('  ')).build())).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('undefined url throws error', () => {
         const legalResource = aFullLegalResource().withUrl(undefined);
-        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrowWithMessage(InvariantError, 'url should not be absent');
+        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrowWithMessage(InvariantError, 'url mag niet ontbreken');
     });
 
     test('blank url throws error', () => {
         const legalResource = aFullLegalResource().withUrl('    ');
-        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrowWithMessage(InvariantError, 'url should not be blank');
+        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrowWithMessage(InvariantError, 'url mag niet leeg zijn');
     });
 
     test('undefined order throws error', () => {
         const legalResource = aFullLegalResource().withOrder(undefined);
-        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrowWithMessage(InvariantError, 'order should not be absent');
+        expect(() => LegalResource.forInstanceSnapshot(legalResource.build())).toThrowWithMessage(InvariantError, 'order mag niet ontbreken');
     });
 
 });

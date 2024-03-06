@@ -104,7 +104,7 @@ export class LanguageString {
         const langs = new Set(this.extractNlLanguages(languages).filter(ls => ls !== undefined));
 
         if (langs.size > 1) {
-            throw new InvariantError('There is more than one Nl language present');
+            throw new InvariantError('Er is meer dan een nl-taal aanwezig');
         }
     }
 
@@ -113,7 +113,7 @@ export class LanguageString {
 
         const nlLanguage = LanguageString.extractNlLanguages(values)[0];
         if (!acceptedLanguages.includes(nlLanguage) && nlLanguage !== undefined) {
-            throw new InvariantError(`The nl language differs from ${acceptedLanguages.toString()}`);
+            throw new InvariantError(`De nl-taal verschilt van ${acceptedLanguages.toString()}`);
         }
     }
 

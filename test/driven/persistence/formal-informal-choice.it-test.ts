@@ -141,7 +141,7 @@ describe('FormalInformalChoiceRepository', () => {
                     PREFIX.dct
                 ]);
 
-            await expect(repository.findByBestuurseenheid(bestuurseenheid)).rejects.toThrowWithMessage(SystemError, `formal informal choice found <${formalInformalChoice.id}> in incorrect user graph`);
+            await expect(repository.findByBestuurseenheid(bestuurseenheid)).rejects.toThrowWithMessage(SystemError, `Formele informele keuze met id: <${formalInformalChoice.id}> gevonden in de foute gebruikers graph`);
         });
 
         for (const chosenForm of Object.values(ChosenFormType)) {
@@ -177,7 +177,7 @@ describe('FormalInformalChoiceRepository', () => {
                     PREFIX.dct
                 ]);
 
-            await expect(repository.findByBestuurseenheid(bestuurseenheid)).rejects.toThrowWithMessage(SystemError, `could not map 'non-existing-choice' for iri: <${formalInformalChoiceIri}>`);
+            await expect(repository.findByBestuurseenheid(bestuurseenheid)).rejects.toThrowWithMessage(SystemError, `Kan 'non-existing-choice'niet mappen voor Iri: <${formalInformalChoiceIri}>`);
         });
 
     });

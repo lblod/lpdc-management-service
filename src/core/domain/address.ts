@@ -47,7 +47,7 @@ export class Address {
         );
 
         if (!isValid) {
-            throw new InvariantError('Address languagesStrings should only contain NL');
+            throw new InvariantError('Address mag alleen NL bevatten in de taalstring');
         }
     }
 

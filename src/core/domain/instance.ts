@@ -167,7 +167,7 @@ export class Instance {
 
     reopen(): Instance {
         if (this.status === InstanceStatusType.ONTWERP) {
-            throw new InvariantError('Instance status already in ontwerp');
+            throw new InvariantError('Instantie is al in status ontwerp');
         }
         const newPublicationStatus = this.publicationStatus === InstancePublicationStatusType.GEPUBLICEERD ?
             InstancePublicationStatusType.TE_HERPUBLICEREN
@@ -387,7 +387,7 @@ export class Instance {
         ].filter(ls => ls !== undefined));
 
         if (allNlLanguages.size > 1) {
-            throw new InvariantError('There is more than one Nl language present');
+            throw new InvariantError('Er is meer dan een nl-taal aanwezig');
         }
     }
 }

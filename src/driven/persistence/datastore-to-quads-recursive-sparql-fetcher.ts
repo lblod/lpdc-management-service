@@ -44,7 +44,7 @@ export class DatastoreToQuadsRecursiveSparqlFetcher {
             .filter(q => q.predicate.equals(NS.rdf('type')))
             .forEach(q => {
                 if (illegalTypesToRecurseInto.includes(q.object.value)) {
-                    throw new SystemError(`Recursing into <${q.object.value}> from <${q.subject.value}> is not allowed`);
+                    throw new SystemError(`Recursie in <${q.object.value}> vanuit <${q.subject.value}> is niet toegestaan`);
                 }
             });
 

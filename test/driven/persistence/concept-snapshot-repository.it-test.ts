@@ -85,7 +85,7 @@ describe('ConceptSnapshotRepository', () => {
 
             const nonExistentConceptSnapshotId = buildConceptSnapshotIri('thisiddoesnotexist');
 
-            await expect(repository.findById(nonExistentConceptSnapshotId)).rejects.toThrowWithMessage(NotFoundError, `Could not find <https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> in graph <http://mu.semte.ch/graphs/lpdc/conceptsnapshots-ldes-data/ipdc>`);
+            await expect(repository.findById(nonExistentConceptSnapshotId)).rejects.toThrowWithMessage(NotFoundError, `Kan <https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/thisiddoesnotexist> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> in graph <http://mu.semte.ch/graphs/lpdc/conceptsnapshots-ldes-data/ipdc>`);
         });
     });
 
@@ -98,7 +98,7 @@ describe('ConceptSnapshotRepository', () => {
                 CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${idForIncorrectType}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType>`]);
 
-            await expect(repository.findById(idForIncorrectType)).rejects.toThrowWithMessage(NotFoundError, `Could not find <${idForIncorrectType}> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>, but found with type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType> in graph <http://mu.semte.ch/graphs/lpdc/conceptsnapshots-ldes-data/ipdc>`);
+            await expect(repository.findById(idForIncorrectType)).rejects.toThrowWithMessage(NotFoundError, `Kan <${idForIncorrectType}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>, maar wel gevonden met type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType> in graph <http://mu.semte.ch/graphs/lpdc/conceptsnapshots-ldes-data/ipdc>`);
         });
 
         test('Verify minimal mappings', async () => {
@@ -805,7 +805,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType>`,
                 ]);
 
-            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> for iri: <${conceptSnapshotId}>`);
+            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> niet mappen voor Iri: <${conceptSnapshotId}>`);
         });
 
         for (const targetAudience of Object.values(TargetAudienceType)) {
@@ -828,7 +828,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
                 ]);
 
-            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience> for iri: <${conceptSnapshotId}>`);
+            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience> niet mappen voor Iri: <${conceptSnapshotId}>`);
         });
 
         for (const theme of Object.values(ThemeType)) {
@@ -851,7 +851,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://data.europa.eu/m8g/thematicArea> <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme>`,
                 ]);
 
-            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `could not map <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme> for iri: <${conceptSnapshotId}>`);
+            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme> niet mappen voor Iri: <${conceptSnapshotId}>`);
         });
 
         for (const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
@@ -874,7 +874,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel>`,
                 ]);
 
-            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `could not map <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel> for iri: <${conceptSnapshotId}>`);
+            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel> niet mappen voor Iri: <${conceptSnapshotId}>`);
         });
 
         for (const executingAuthorityLevel of Object.values(ExecutingAuthorityLevelType)) {
@@ -897,7 +897,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel>`,
                 ]);
 
-            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `could not map <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel> for iri: <${conceptSnapshotId}>`);
+            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel> niet mappen voor Iri: <${conceptSnapshotId}>`);
         });
 
         for (const publicationMedium of Object.values(PublicationMediumType)) {
@@ -920,7 +920,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium>`,
                 ]);
 
-            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `could not map <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> for iri: <${conceptSnapshotId}>`);
+            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> niet mappen voor Iri: <${conceptSnapshotId}>`);
         });
 
         for (const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
@@ -943,7 +943,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory>`,
                 ]);
 
-            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `could not map <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> for iri: <${conceptSnapshotId}>`);
+            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> niet mappen voor Iri: <${conceptSnapshotId}>`);
         });
 
         for (const type of Object.values(SnapshotType)) {
@@ -966,7 +966,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/NonExistingSnapshotType>`,
                 ]);
 
-            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `could not map <https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/NonExistingSnapshotType> for iri: <${conceptSnapshotId}>`);
+            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/NonExistingSnapshotType> niet mappen voor Iri: <${conceptSnapshotId}>`);
         });
 
         for (const type of Object.values(ConceptTagType)) {
@@ -989,7 +989,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <https://productencatalogus.data.vlaanderen.be/id/concept/ConceptTag/NonExistingConceptTag>`,
                 ]);
 
-            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `could not map <https://productencatalogus.data.vlaanderen.be/id/concept/ConceptTag/NonExistingConceptTag> for iri: <${conceptSnapshotId}>`);
+            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/ConceptTag/NonExistingConceptTag> niet mappen voor Iri: <${conceptSnapshotId}>`);
         });
     });
 });

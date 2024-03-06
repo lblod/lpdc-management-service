@@ -354,7 +354,7 @@ describe('recursively fetches a part of a datastore into a array of quads using 
             ],
             [PREFIX.ex, PREFIX.skos]);
 
-        await expect(fetcher.fetch(graph, startIri, [], [], [NS.skos('Concept').value])).rejects.toThrowWithMessage(SystemError, `Recursing into <http://www.w3.org/2004/02/skos/core#Concept> from <${nestedIri.value}> is not allowed`);
+        await expect(fetcher.fetch(graph, startIri, [], [], [NS.skos('Concept').value])).rejects.toThrowWithMessage(SystemError, `Recursie in <http://www.w3.org/2004/02/skos/core#Concept> vanuit <${nestedIri.value}> is niet toegestaan`);
     });
 
 

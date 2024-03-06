@@ -6,23 +6,23 @@ import {buildSpatialRefNis2019Iri} from "./iri-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 test('Undefined id throws error', () => {
-    expect(() => new Bestuurseenheid(undefined, uuid(), 'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrowWithMessage(InvariantError, 'id should not be absent');
+    expect(() => new Bestuurseenheid(undefined, uuid(), 'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
 });
 
 test('Invalid iri id throws error', () => {
-    expect(() => new Bestuurseenheid(new Iri('   '), uuid(), 'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrowWithMessage(InvariantError, 'iri should not be blank');
+    expect(() => new Bestuurseenheid(new Iri('   '), uuid(), 'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
 });
 
 test('Undefined uuid throws error', () => {
-    expect(() => new Bestuurseenheid(new Iri('http://anIri'), undefined, 'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrowWithMessage(InvariantError, 'uuid should not be absent');
+    expect(() => new Bestuurseenheid(new Iri('http://anIri'), undefined, 'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrowWithMessage(InvariantError, 'uuid mag niet ontbreken');
 });
 
 test('Undefined prefLabel throws error', () => {
-    expect(() => new Bestuurseenheid(new Iri('http://anIri'), uuid(), undefined, BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrowWithMessage(InvariantError, 'prefLabel should not be absent');
+    expect(() => new Bestuurseenheid(new Iri('http://anIri'), uuid(), undefined, BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrowWithMessage(InvariantError, 'prefLabel mag niet ontbreken');
 });
 
 test('Undefined classificatieCode throws error', () => {
-    expect(() => new Bestuurseenheid(new Iri('http://anIri'), uuid(), 'prefLabel', undefined, [])).toThrowWithMessage(InvariantError, 'classificatieCode should not be absent');
+    expect(() => new Bestuurseenheid(new Iri('http://anIri'), uuid(), 'prefLabel', undefined, [])).toThrowWithMessage(InvariantError, 'classificatieCode mag niet ontbreken');
 });
 
 test('Undefined classificatieCode does not throw error for ABB', () => {
@@ -30,7 +30,7 @@ test('Undefined classificatieCode does not throw error for ABB', () => {
 });
 
 test('spatials with duplicates throws error', () => {
-    expect(() => aBestuurseenheid().withSpatials([buildSpatialRefNis2019Iri(12312), buildSpatialRefNis2019Iri(12312)]).build()).toThrow('spatials should not contain duplicates');
+    expect(() => aBestuurseenheid().withSpatials([buildSpatialRefNis2019Iri(12312), buildSpatialRefNis2019Iri(12312)]).build()).toThrow('spatials mag geen duplicaten bevatten');
 });
 
 test('userGraph', () => {

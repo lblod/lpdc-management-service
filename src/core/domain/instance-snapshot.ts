@@ -170,7 +170,7 @@ export class InstanceSnapshot {
         ].filter(ls => ls !== undefined));
 
         if (allNlLanguages.size > 1) {
-            throw new InvariantError('There is more than one Nl language present');
+            throw new InvariantError('Er is meer dan een nl-taal aanwezig');
         }
     }
 

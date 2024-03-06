@@ -18,11 +18,11 @@ export class Invariant<V> {
     }
 
     notBeAbsent(): InvariantType<V> {
-        return () => !this.isUndefined(this._value) ? null : `${this._name} should not be absent`;
+        return () => !this.isUndefined(this._value) ? null : `${this._name} mag niet ontbreken`;
     }
 
     notBeBlank(): InvariantType<V> {
-        return () => !this.isBlank(this._value) ? null : `${this._name} should not be blank`;
+        return () => !this.isBlank(this._value) ? null : `${this._name} mag niet leeg zijn`;
     }
 
     haveAtLeastOneValuePresent(): InvariantType<V> {
@@ -30,7 +30,7 @@ export class Invariant<V> {
             if ((this._value as any[]).find(value => (!this.isUndefined(value) && !this.isBlank(value))) !== undefined) {
                 return null;
             }
-            return `${this._name} should contain at least one value`;
+            return `${this._name} moet minstens een waarde bevatten`;
         };
     }
 
@@ -39,42 +39,42 @@ export class Invariant<V> {
             if ((this._value as any[]).filter(value => (!this.isUndefined(value) && !this.isBlank(value))).length >= amountOfPresentValues) {
                 return null;
             }
-            return `${this._name} does not contain at least ${amountOfPresentValues} values`;
+            return `${this._name} bevat minder dan ${amountOfPresentValues} waarden`;
         };
     }
 
     startsWith(...startValues: any[]): InvariantType<V> {
         return () => startValues.some(startValue => typeof this._value === 'string' && this._value.startsWith(startValue))
             ? null
-            : `${this._name} does not start with one of [${startValues}]`;
+            : `${this._name} begint niet met een van volgende waarden: [${startValues}]`;
     }
 
     noDuplicates(): InvariantType<V> {
         return () => uniqWith(this._value as any[], (a, b) => isEqual(a, b)).length === (this._value as any[]).length
             ? null
-            : `${this._name} should not contain duplicates`;
+            : `${this._name} mag geen duplicaten bevatten`;
     }
 
     allPresentOrAllAbsent(): InvariantType<V> {
         return () => (this._value as any[]).every(a => a === undefined) || (this._value as any[]).every(a => a !== undefined)
             ? null
-            : `${this._name} should all be present or all be absent`;
+            : `${this._name} moeten allemaal aanwezig of afwezig zijn`;
     }
 
     canOnlyBePresentIfOtherValuePresent(presentValue: any, presentName: string) {
         return () => (presentValue != undefined) || (presentValue === undefined && this._value === undefined)
             ? null
-            : `${this._name} can only be present when ${presentName} is present`;
+            : `${this._name} kan alleen aanwezig zijn wanneer ${presentName} aanwezig is`;
     }
 
     shouldBePresentWhenOtherValueEquals(expectedValue: any, presentValue: any, presentName: string) {
         return () => ((this.isUndefined(this._value) || this.isBlank(this._value)) && presentValue === expectedValue)
-            ? `${this._name} should be present when ${presentName} equals ${expectedValue} `
+            ? `${this._name} moet aanwezig zijn wanneer ${presentName} gelijk is aan ${expectedValue} `
             : null;
     }
 
     toMatchPattern(pattern: RegExp): InvariantType<V> {
-        return () => this.matchesPattern(this._value, pattern) ? null : `${this._name} does not match pattern`;
+        return () => this.matchesPattern(this._value, pattern) ? null : `${this._name} komt niet overeen met het patroon`;
     }
 
     atLeastOneValuePresentIfCondition(condition: () => boolean): InvariantType<V> {

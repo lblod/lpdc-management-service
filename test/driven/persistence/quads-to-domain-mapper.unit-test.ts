@@ -229,7 +229,7 @@ describe('quads to domain mapper', () => {
                 ];
 
             const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
-            expect(() => domainMapper.instance(instanceId)).toThrowWithMessage(InvariantError, `order should not be absent`);
+            expect(() => domainMapper.instance(instanceId)).toThrowWithMessage(InvariantError, `order mag niet ontbreken`);
         });
 
         test('When 2 orders have same order, throw error', () => {

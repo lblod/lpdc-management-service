@@ -14,7 +14,7 @@ describe('notBeAbsent', () => {
         const name = 'undefined value';
         const invariant: Invariant<any> = Invariant.require(undefined, name);
 
-        expect(() => invariant.to(invariant.notBeAbsent())).toThrowWithMessage(InvariantError, `${name} should not be absent`);
+        expect(() => invariant.to(invariant.notBeAbsent())).toThrowWithMessage(InvariantError, `${name} mag niet ontbreken`);
     });
 
 });
@@ -32,27 +32,27 @@ describe('notBeBlank', () => {
         const name = 'blank value';
         const invariant: Invariant<any> = Invariant.require('', name);
 
-        expect(() => invariant.to(invariant.notBeBlank())).toThrowWithMessage(InvariantError, `${name} should not be blank`);
+        expect(() => invariant.to(invariant.notBeBlank())).toThrowWithMessage(InvariantError, `${name} mag niet leeg zijn`);
     });
 
     test('Returns error when value is blank  ', () => {
         const name = 'undefined value';
         const invariant: Invariant<any> = Invariant.require("", name);
 
-        expect(() => invariant.to(invariant.notBeBlank())).toThrowWithMessage(InvariantError, `${name} should not be blank`);
+        expect(() => invariant.to(invariant.notBeBlank())).toThrowWithMessage(InvariantError, `${name} mag niet leeg zijn`);
     });
     test('Returns error when trimmed value is blank  ', () => {
         const name = 'undefined value';
         const invariant: Invariant<any> = Invariant.require("  ", name);
 
-        expect(() => invariant.to(invariant.notBeBlank())).toThrowWithMessage(InvariantError, `${name} should not be blank`);
+        expect(() => invariant.to(invariant.notBeBlank())).toThrowWithMessage(InvariantError, `${name} mag niet leeg zijn`);
     });
 
     test('Throws error when trimmed value contains newline or tab and is considered blank', () => {
         const name = 'undefined value';
         const invariant: Invariant<any> = Invariant.require("  \n  \t  ", name);
 
-        expect(() => invariant.to(invariant.notBeBlank())).toThrowWithMessage(InvariantError, `${name} should not be blank`);
+        expect(() => invariant.to(invariant.notBeBlank())).toThrowWithMessage(InvariantError, `${name} mag niet leeg zijn`);
     });
 
 });
@@ -63,7 +63,7 @@ describe('haveAtLeastOneValuePresent', () => {
     test('Throws error when no value is present', () => {
 
         const invariant: Invariant<any> = Invariant.require([undefined, '', "  \n  \t  "], name);
-        expect(() => invariant.to(invariant.haveAtLeastOneValuePresent())).toThrowWithMessage(InvariantError, `${name} should contain at least one value`);
+        expect(() => invariant.to(invariant.haveAtLeastOneValuePresent())).toThrowWithMessage(InvariantError, `${name} moet minstens een waarde bevatten`);
     });
 
     test('Returns all values when one value is present', () => {
@@ -92,7 +92,7 @@ describe('haveAtLeastXAmountOfValuesPresent', () => {
     const expectedValues = 2;
     test('Throws error when no fewer values are present', () => {
         const invariant: Invariant<any> = Invariant.require([undefined, '', 'value 1', "  \n  \t  "], name);
-        expect(() => invariant.to(invariant.haveAtLeastXAmountOfValues(expectedValues))).toThrowWithMessage(InvariantError, `${name} does not contain at least ${expectedValues} values`);
+        expect(() => invariant.to(invariant.haveAtLeastXAmountOfValues(expectedValues))).toThrowWithMessage(InvariantError, `${name} bevat minder dan ${expectedValues} waarden`);
     });
 
     test('Returns all values when amount of expected values and present values are the same', () => {
@@ -124,12 +124,12 @@ describe('startsWith', () => {
 
     test('throws error when value is not of type string', () => {
         const invariant: Invariant<any> = Invariant.require([], name);
-        expect(() => invariant.to(invariant.startsWith('a'))).toThrowWithMessage(InvariantError, `${name} does not start with one of [a]`);
+        expect(() => invariant.to(invariant.startsWith('a'))).toThrowWithMessage(InvariantError, `${name} begint niet met een van volgende waarden: [a]`);
     });
 
     test('throws error when value does not start with', () => {
         const invariant: Invariant<any> = Invariant.require('abc', name);
-        expect(() => invariant.to(invariant.startsWith('b', 'c'))).toThrowWithMessage(InvariantError, `${name} does not start with one of [b,c]`);
+        expect(() => invariant.to(invariant.startsWith('b', 'c'))).toThrowWithMessage(InvariantError, `${name} begint niet met een van volgende waarden: [b,c]`);
     });
 });
 
@@ -144,12 +144,12 @@ describe('toMatchPattern', () => {
 
     test('throws error when value is not of type string', () => {
         const invariant: Invariant<any> = Invariant.require([], name);
-        expect(() => invariant.to(invariant.toMatchPattern(/\d{4}/))).toThrowWithMessage(InvariantError, `${name} does not match pattern`);
+        expect(() => invariant.to(invariant.toMatchPattern(/\d{4}/))).toThrowWithMessage(InvariantError, `${name} komt niet overeen met het patroon`);
     });
 
     test('throws error when value does not match pattern', () => {
         const invariant: Invariant<any> = Invariant.require('abc', name);
-        expect(() => invariant.to(invariant.toMatchPattern(/\d{4}/))).toThrowWithMessage(InvariantError, `${name} does not match pattern`);
+        expect(() => invariant.to(invariant.toMatchPattern(/\d{4}/))).toThrowWithMessage(InvariantError, `${name} komt niet overeen met het patroon`);
     });
 
 });
@@ -174,12 +174,12 @@ describe('noDuplicates', () => {
 
     test('throws error when string list contains duplicates', () => {
         const invariant: Invariant<any> = Invariant.require(['a', 'a'], name);
-        expect(() => invariant.to(invariant.noDuplicates())).toThrowWithMessage(InvariantError, `${name} should not contain duplicates`);
+        expect(() => invariant.to(invariant.noDuplicates())).toThrowWithMessage(InvariantError, `${name} mag geen duplicaten bevatten`);
     });
 
     test('throws error when object list contains duplicates', () => {
         const invariant: Invariant<any> = Invariant.require([{a: 0}, {a: 0}], name);
-        expect(() => invariant.to(invariant.noDuplicates())).toThrowWithMessage(InvariantError, `${name} should not contain duplicates`);
+        expect(() => invariant.to(invariant.noDuplicates())).toThrowWithMessage(InvariantError, `${name} mag geen duplicaten bevatten`);
     });
 });
 
@@ -198,7 +198,7 @@ describe('allPresentOrAllAbsent', () => {
 
     test('throws error when some elements are defined and others undefined', () => {
         const invariant: Invariant<any> = Invariant.require(['a', {a: 0}, {a: 1}, undefined], name);
-        expect(() => invariant.to(invariant.allPresentOrAllAbsent())).toThrowWithMessage(InvariantError, `${name} should all be present or all be absent`);
+        expect(() => invariant.to(invariant.allPresentOrAllAbsent())).toThrowWithMessage(InvariantError, `${name} moeten allemaal aanwezig of afwezig zijn`);
     });
 });
 
@@ -228,7 +228,7 @@ describe('canOnlyBePresentIfOtherValuePresent',()=>{
     test('throws error when new value is defined and presentValue undefined', () => {
         const newValue = 'newValue';
         const invariant: Invariant<any> = Invariant.require(newValue, name);
-        expect(() => invariant.to(invariant.canOnlyBePresentIfOtherValuePresent(undefined, presentName))).toThrowWithMessage(InvariantError, `${name} can only be present when ${presentName} is present`);
+        expect(() => invariant.to(invariant.canOnlyBePresentIfOtherValuePresent(undefined, presentName))).toThrowWithMessage(InvariantError, `${name} kan alleen aanwezig zijn wanneer ${presentName} aanwezig is`);
     });
 });
 
@@ -247,7 +247,7 @@ describe('atLeastOneValuePresentIfCondition', () => {
 
     test('returns value when condition is met and not at least one value present', () => {
         const invariant: Invariant<any> = Invariant.require([], name);
-        expect(() => invariant.to(invariant.atLeastOneValuePresentIfCondition(() => true))).toThrowWithMessage(InvariantError, `${name} should contain at least one value`);
+        expect(() => invariant.to(invariant.atLeastOneValuePresentIfCondition(() => true))).toThrowWithMessage(InvariantError, `${name} moet minstens een waarde bevatten`);
     });
 });
 
@@ -257,8 +257,8 @@ describe('to', () => {
         const name = 'name';
         const invariant: Invariant<any> = Invariant.require('', name);
 
-        expect(() => invariant.to(invariant.notBeBlank(), invariant.notBeAbsent())).toThrowWithMessage(InvariantError, `${name} should not be blank`);
-        expect(() => invariant.to(invariant.notBeAbsent(), invariant.notBeBlank())).toThrowWithMessage(InvariantError, `${name} should not be blank`);
+        expect(() => invariant.to(invariant.notBeBlank(), invariant.notBeAbsent())).toThrowWithMessage(InvariantError, `${name} mag niet leeg zijn`);
+        expect(() => invariant.to(invariant.notBeAbsent(), invariant.notBeBlank())).toThrowWithMessage(InvariantError, `${name} mag niet leeg zijn`);
     });
 
     test('returns the value when there are no violations', () => {

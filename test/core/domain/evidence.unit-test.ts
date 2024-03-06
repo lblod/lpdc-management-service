@@ -8,29 +8,29 @@ import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 describe('forConcept', () => {
     test('Undefined id throws error', () => {
         const evidence = aFullEvidence().withId(undefined);
-        expect(() => Evidence.forConcept(evidence.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => Evidence.forConcept(evidence.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
     test('Invalid iri id throws error', () => {
-        expect(() => Evidence.forConcept(aFullEvidence().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => Evidence.forConcept(aFullEvidence().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('Undefined uuid throws error', () => {
         const evidence = aFullEvidence().withUuid(undefined);
-        expect(() => Evidence.forConcept(evidence.build())).toThrowWithMessage(InvariantError, 'uuid should not be absent');
+        expect(() => Evidence.forConcept(evidence.build())).toThrowWithMessage(InvariantError, 'uuid mag niet ontbreken');
     });
     test('Blank uuid throws error', () => {
         const evidence = aFullEvidence().withUuid('   ');
-        expect(() => Evidence.forConcept(evidence.build())).toThrowWithMessage(InvariantError, 'uuid should not be blank');
+        expect(() => Evidence.forConcept(evidence.build())).toThrowWithMessage(InvariantError, 'uuid mag niet leeg zijn');
     });
 
     test('Undefined title throws error', () => {
         const evidence = aFullEvidence().withTitle(undefined);
-        expect(() => Evidence.forConcept(evidence.build())).toThrowWithMessage(InvariantError, 'title should not be absent');
+        expect(() => Evidence.forConcept(evidence.build())).toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
     });
 
     test('Undefined description throws error', () => {
         const evidence = aFullEvidence().withDescription(undefined);
-        expect(() => Evidence.forConcept(evidence.build())).toThrowWithMessage(InvariantError, 'description should not be absent');
+        expect(() => Evidence.forConcept(evidence.build())).toThrowWithMessage(InvariantError, 'description mag niet ontbreken');
     });
 
 });
@@ -39,10 +39,10 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined id throws error', () => {
         const evidence = aFullEvidence().withId(undefined);
-        expect(() => Evidence.forConceptSnapshot(evidence.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => Evidence.forConceptSnapshot(evidence.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
     test('Invalid iri id throws error', () => {
-        expect(() => Evidence.forConceptSnapshot(aFullEvidence().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => Evidence.forConceptSnapshot(aFullEvidence().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
     test('Uuid is undefined ', () => {
         const evidence = aFullEvidence().build();
@@ -50,11 +50,11 @@ describe('forConceptSnapshot', () => {
     });
     test('Undefined title throws error', () => {
         const evidence = aFullEvidence().withTitle(undefined).build();
-        expect(() => Evidence.forConceptSnapshot(evidence)).toThrowWithMessage(InvariantError, 'title should not be absent');
+        expect(() => Evidence.forConceptSnapshot(evidence)).toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
     });
     test('Undefined description throws error', () => {
         const evidence = aFullEvidence().withDescription(undefined).build();
-        expect(() => Evidence.forConceptSnapshot(evidence)).toThrowWithMessage(InvariantError, 'description should not be absent');
+        expect(() => Evidence.forConceptSnapshot(evidence)).toThrowWithMessage(InvariantError, 'description mag niet ontbreken');
     });
 
 });
@@ -66,12 +66,12 @@ describe('for instance', () => {
 
     test('Undefined id throws error', () => {
         const evidence = aFullEvidenceForInstance().withId(undefined);
-        expect(() => Evidence.forInstance(evidence.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => Evidence.forInstance(evidence.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('Undefined Uuid throws error', () => {
         const evidence = aFullEvidenceForInstance().withUuid(undefined).build();
-        expect(() => Evidence.forInstance(evidence).uuid).toThrowWithMessage(InvariantError, 'uuid should not be absent');
+        expect(() => Evidence.forInstance(evidence).uuid).toThrowWithMessage(InvariantError, 'uuid mag niet ontbreken');
     });
 
     test('If title and description have the same nl language evidence is created', () => {
@@ -90,20 +90,20 @@ describe('for instance', () => {
         const description = LanguageString.of('en', undefined, 'nl-formal');
         const evidence = aFullEvidenceForInstance().withTitle(title).withDescription(description).build();
 
-        expect(() => Evidence.forInstance(evidence)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => Evidence.forInstance(evidence)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If title has different nl languages, throws error', () => {
         const title = LanguageString.of('en', 'nl', 'nl-formal');
         const evidence = aFullEvidenceForInstance().withTitle(title).withDescription(undefined).build();
 
-        expect(() => Evidence.forInstance(evidence)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => Evidence.forInstance(evidence)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
     test('If description has different nl languages, throws error', () => {
         const description = LanguageString.of('en', 'nl', 'nl-formal');
         const evidence = aFullEvidenceForInstance().withDescription(description).withTitle(undefined).build();
 
-        expect(() => Evidence.forInstance(evidence)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => Evidence.forInstance(evidence)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     for (const invalidLanguage of invalidLanguages) {
@@ -116,12 +116,12 @@ describe('for instance', () => {
 
         test('If title contains invalid language, throws error', () => {
             const evidence = aFullEvidenceForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
-            expect(() => Evidence.forInstance(evidence)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => Evidence.forInstance(evidence)).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
 
         test('If description contains invalid language, throws error', () => {
             const evidence = aFullEvidenceForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
-            expect(() => Evidence.forInstance(evidence)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => Evidence.forInstance(evidence)).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
     }
 
@@ -155,7 +155,7 @@ describe('for instance snapshot', () => {
 
     test('Undefined id throws error', () => {
         const evidence = aFullEvidenceForInstanceSnapshot().withId(undefined);
-        expect(() => Evidence.forInstanceSnapshot(evidence.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => Evidence.forInstanceSnapshot(evidence.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('Undefined Uuid is allowed', () => {
@@ -165,12 +165,12 @@ describe('for instance snapshot', () => {
 
     test('Undefined title throws error', () => {
         expect(() => Evidence.forInstanceSnapshot(aFullEvidenceForInstanceSnapshot().withTitle(undefined).build()))
-            .toThrowWithMessage(InvariantError, 'title should not be absent');
+            .toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
     });
 
     test('Undefined description throws error', () => {
         expect(() => Evidence.forInstanceSnapshot(aFullEvidenceForInstanceSnapshot().withDescription(undefined).build()))
-            .toThrowWithMessage(InvariantError, 'description should not be absent');
+            .toThrowWithMessage(InvariantError, 'description mag niet ontbreken');
     });
 
     test('If title and description have the same nl language evidence is created', () => {
@@ -184,20 +184,20 @@ describe('for instance snapshot', () => {
         const description = LanguageString.of('en', undefined, 'nl-formal');
         const evidence = aFullEvidenceForInstanceSnapshot().withTitle(title).withDescription(description).build();
 
-        expect(() => Evidence.forInstanceSnapshot(evidence)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => Evidence.forInstanceSnapshot(evidence)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If title has different nl languages, throws error', () => {
         const title = LanguageString.of('en', 'nl', 'nl-formal');
         const evidence = aFullEvidenceForInstanceSnapshot().withTitle(title).withDescription(undefined).build();
 
-        expect(() => Evidence.forInstanceSnapshot(evidence)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => Evidence.forInstanceSnapshot(evidence)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
     test('If description has different nl languages, throws error', () => {
         const description = LanguageString.of('en', 'nl', 'nl-formal');
         const evidence = aFullEvidenceForInstanceSnapshot().withDescription(description).withTitle(undefined).build();
 
-        expect(() => Evidence.forInstanceSnapshot(evidence)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => Evidence.forInstanceSnapshot(evidence)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     for (const invalidLanguage of invalidLanguages) {
@@ -210,12 +210,12 @@ describe('for instance snapshot', () => {
 
         test('If title contains invalid language, throws error', () => {
             const evidence = aFullEvidenceForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(undefined).build();
-            expect(() => Evidence.forInstanceSnapshot(evidence)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => Evidence.forInstanceSnapshot(evidence)).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
 
         test('If description contains invalid language, throws error', () => {
             const evidence = aFullEvidenceForInstanceSnapshot().withDescription(valueInNlLanguage).withTitle(undefined).build();
-            expect(() => Evidence.forInstanceSnapshot(evidence)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => Evidence.forInstanceSnapshot(evidence)).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
     }
 

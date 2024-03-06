@@ -86,7 +86,7 @@ export class ConceptSparqlRepository implements ConceptRepository {
 
         // Virtuoso bug: when triples/quads in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
         if (isEqual(oldTriples, newTriples)) {
-            throw new SystemError('no change');
+            throw new SystemError('Geen wijzigingen');
         }
 
         const query = `

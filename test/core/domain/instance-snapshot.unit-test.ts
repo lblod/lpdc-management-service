@@ -45,95 +45,95 @@ afterAll(() => restoreRealTime());
 describe('constructing', () => {
 
     test('undefined id throws error', () => {
-        expect(() => aFullInstanceSnapshot().withId(undefined).build()).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => aFullInstanceSnapshot().withId(undefined).build()).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('Undefined createdBy throws error', () => {
-        expect(() => aFullInstanceSnapshot().withCreatedBy(undefined).build()).toThrowWithMessage(InvariantError, 'createdBy should not be absent');
+        expect(() => aFullInstanceSnapshot().withCreatedBy(undefined).build()).toThrowWithMessage(InvariantError, 'createdBy mag niet ontbreken');
     });
 
     test('Undefined title throws error', () => {
-        expect(() => aFullInstanceSnapshot().withTitle(undefined).build()).toThrowWithMessage(InvariantError, 'title should not be absent');
+        expect(() => aFullInstanceSnapshot().withTitle(undefined).build()).toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
     });
 
     test('Undefined description throws error', () => {
-        expect(() => aFullInstanceSnapshot().withDescription(undefined).build()).toThrowWithMessage(InvariantError, 'description should not be absent');
+        expect(() => aFullInstanceSnapshot().withDescription(undefined).build()).toThrowWithMessage(InvariantError, 'description mag niet ontbreken');
     });
 
     test('TargetAudience with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withTargetAudiences([TargetAudienceType.BURGER, TargetAudienceType.BURGER]).build())
-            .toThrowWithMessage(InvariantError, 'targetAudiences should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'targetAudiences mag geen duplicaten bevatten');
     });
 
     test('Themes with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withThemes([ThemeType.WELZIJNGEZONDHEID, ThemeType.WELZIJNGEZONDHEID]).build())
-            .toThrowWithMessage(InvariantError, 'themes should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'themes mag geen duplicaten bevatten');
     });
 
     test('CompetentAuthorityLevels with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.LOKAAL]).build())
-            .toThrowWithMessage(InvariantError, 'competentAuthorityLevels should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'competentAuthorityLevels mag geen duplicaten bevatten');
     });
 
     test('CompetentAuthorities with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]).build())
-            .toThrowWithMessage(InvariantError, 'competentAuthorities should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'competentAuthorities mag geen duplicaten bevatten');
     });
 
     test('CompetentAuthorities with not at least one value throws error', () => {
         expect(() => aFullInstanceSnapshot().withCompetentAuthorities([]).build())
-            .toThrowWithMessage(InvariantError, 'competentAuthorities should contain at least one value');
+            .toThrowWithMessage(InvariantError, 'competentAuthorities moet minstens een waarde bevatten');
     });
 
     test('ExecutingAuthorityLevels with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.LOKAAL]).build())
-            .toThrowWithMessage(InvariantError, 'executingAuthorityLevels should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'executingAuthorityLevels mag geen duplicaten bevatten');
     });
 
     test('ExecutingAuthorities with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]).build())
-            .toThrowWithMessage(InvariantError, 'executingAuthorities should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'executingAuthorities mag geen duplicaten bevatten');
     });
 
     test('PublicationMedia with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withPublicationMedia([PublicationMediumType.YOUREUROPE, PublicationMediumType.YOUREUROPE]).build())
-            .toThrowWithMessage(InvariantError, 'publicationMedia should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'publicationMedia mag geen duplicaten bevatten');
     });
 
     test('YourEuropeCategories with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF, YourEuropeCategoryType.BEDRIJF]).build())
-            .toThrowWithMessage(InvariantError, 'yourEuropeCategories should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'yourEuropeCategories mag geen duplicaten bevatten');
     });
 
     test('YourEuropeCategories with not at least one value throws error when publicationMedia includes yourEurope', () => {
         expect(() => aFullInstanceSnapshot()
             .withPublicationMedia([PublicationMediumType.YOUREUROPE])
             .withYourEuropeCategories([]).build())
-            .toThrowWithMessage(InvariantError, 'yourEuropeCategories should contain at least one value');
+            .toThrowWithMessage(InvariantError, 'yourEuropeCategories moet minstens een waarde bevatten');
     });
 
     test('keywords with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]).build())
-            .toThrowWithMessage(InvariantError, 'keywords should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
     });
 
     test('languages with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withLanguages([LanguageType.ENG, LanguageType.ENG]).build())
-            .toThrowWithMessage(InvariantError, 'languages should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'languages mag geen duplicaten bevatten');
     });
 
     test('Undefined isVersionOfInstance throws error', () => {
-        expect(() => aFullInstanceSnapshot().withIsVersionOfInstance(undefined).build()).toThrowWithMessage(InvariantError, 'isVersionOfInstance should not be absent');
+        expect(() => aFullInstanceSnapshot().withIsVersionOfInstance(undefined).build()).toThrowWithMessage(InvariantError, 'isVersionOfInstance mag niet ontbreken');
     });
 
     describe('dateCreated', () => {
 
         test('Undefined dateCreated throws error', () => {
-            expect(() => aFullInstanceSnapshot().withDateCreated(undefined).build()).toThrowWithMessage(InvariantError, 'dateCreated should not be absent');
+            expect(() => aFullInstanceSnapshot().withDateCreated(undefined).build()).toThrowWithMessage(InvariantError, 'dateCreated mag niet ontbreken');
         });
 
         test('Blank dateCreated throws error', () => {
-            expect(() => aFullInstanceSnapshot().withDateCreated(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateCreated should not be absent');
+            expect(() => aFullInstanceSnapshot().withDateCreated(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateCreated mag niet ontbreken');
         });
 
     });
@@ -141,11 +141,11 @@ describe('constructing', () => {
     describe('dateModified', () => {
 
         test('Undefined dateModified throws error', () => {
-            expect(() => aFullInstanceSnapshot().withDateModified(undefined).build()).toThrowWithMessage(InvariantError, 'dateModified should not be absent');
+            expect(() => aFullInstanceSnapshot().withDateModified(undefined).build()).toThrowWithMessage(InvariantError, 'dateModified mag niet ontbreken');
         });
 
         test('Blank dateModified throws error', () => {
-            expect(() => aFullInstanceSnapshot().withDateModified(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateModified should not be absent');
+            expect(() => aFullInstanceSnapshot().withDateModified(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateModified mag niet ontbreken');
         });
 
     });
@@ -153,27 +153,27 @@ describe('constructing', () => {
     describe('generatedAtTime', () => {
 
         test('Undefined generatedAtTime throws error', () => {
-            expect(() => aFullInstanceSnapshot().withGeneratedAtTime(undefined).build()).toThrowWithMessage(InvariantError, 'generatedAtTime should not be absent');
+            expect(() => aFullInstanceSnapshot().withGeneratedAtTime(undefined).build()).toThrowWithMessage(InvariantError, 'generatedAtTime mag niet ontbreken');
         });
 
         test('Blank generatedAtTime throws error', () => {
-            expect(() => aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'generatedAtTime should not be absent');
+            expect(() => aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'generatedAtTime mag niet ontbreken');
         });
 
     });
 
     test('Undefined isArchived throws error', () => {
-        expect(() => aFullInstanceSnapshot().withIsArchived(undefined).build()).toThrowWithMessage(InvariantError, 'isArchived should not be absent');
+        expect(() => aFullInstanceSnapshot().withIsArchived(undefined).build()).toThrowWithMessage(InvariantError, 'isArchived mag niet ontbreken');
     });
 
     test('Spatials with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withSpatials([buildSpatialRefNis2019Iri(1), buildSpatialRefNis2019Iri(1)]).build())
-            .toThrowWithMessage(InvariantError, 'spatials should not contain duplicates');
+            .toThrowWithMessage(InvariantError, 'spatials mag geen duplicaten bevatten');
     });
 
     test('Spatials with not at least one value throws error', () => {
         expect(() => aFullInstanceSnapshot().withSpatials([]).build())
-            .toThrowWithMessage(InvariantError, 'spatials should contain at least one value');
+            .toThrowWithMessage(InvariantError, 'spatials moet minstens een waarde bevatten');
     });
 
     describe('requirement', () => {
@@ -213,7 +213,7 @@ describe('constructing', () => {
             const requirement2 =
                 aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
 
-            expect(() => aFullInstanceSnapshot().withRequirements([requirement1, requirement2]).build()).toThrowWithMessage(InvariantError, 'requirements > order should not contain duplicates');
+            expect(() => aFullInstanceSnapshot().withRequirements([requirement1, requirement2]).build()).toThrowWithMessage(InvariantError, 'requirements > order mag geen duplicaten bevatten');
         });
 
         test('requirements that have unique order does not throw error', () => {
@@ -294,7 +294,7 @@ describe('constructing', () => {
             const procedure2 =
                 aMinimalProcedureForInstanceSnapshot().withOrder(1).build();
 
-            expect(() => aFullInstanceSnapshot().withProcedures([procedure1, procedure2]).build()).toThrowWithMessage(InvariantError, 'procedures > order should not contain duplicates');
+            expect(() => aFullInstanceSnapshot().withProcedures([procedure1, procedure2]).build()).toThrowWithMessage(InvariantError, 'procedures > order mag geen duplicaten bevatten');
         });
 
         test('procedures that have unique order does not throw error', () => {
@@ -367,7 +367,7 @@ describe('constructing', () => {
             const website2 =
                 aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
 
-            expect(() => aFullInstanceSnapshot().withWebsites([website1, website2]).build()).toThrowWithMessage(InvariantError, 'websites > order should not contain duplicates');
+            expect(() => aFullInstanceSnapshot().withWebsites([website1, website2]).build()).toThrowWithMessage(InvariantError, 'websites > order mag geen duplicaten bevatten');
         });
 
         test('websites that have unique order does not throw error', () => {
@@ -410,7 +410,7 @@ describe('constructing', () => {
             const cost2 =
                 aMinimalCostForInstanceSnapshot().withOrder(1).build();
 
-            expect(() => aFullInstanceSnapshot().withCosts([cost1, cost2]).build()).toThrowWithMessage(InvariantError, 'costs > order should not contain duplicates');
+            expect(() => aFullInstanceSnapshot().withCosts([cost1, cost2]).build()).toThrowWithMessage(InvariantError, 'costs > order mag geen duplicaten bevatten');
         });
 
         test('costs that have unique order does not throw error', () => {
@@ -452,7 +452,7 @@ describe('constructing', () => {
                 aMinimalFinancialAdvantageForInstanceSnapshot().withOrder(1).build();
 
             expect(() => aFullInstanceSnapshot().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build())
-                .toThrowWithMessage(InvariantError, 'financial advantages > order should not contain duplicates');
+                .toThrowWithMessage(InvariantError, 'financial advantages > order mag geen duplicaten bevatten');
         });
 
         test('financial advantages that have unique order does not throw error', () => {
@@ -485,7 +485,7 @@ describe('constructing', () => {
             const contactPoint2 =
                 aMinimalContactPointForInstanceSnapshot().withOrder(1).build();
 
-            expect(() => aFullInstanceSnapshot().withContactPoints([contactPoint1, contactPoint2]).build()).toThrowWithMessage(InvariantError, 'contact points > order should not contain duplicates');
+            expect(() => aFullInstanceSnapshot().withContactPoints([contactPoint1, contactPoint2]).build()).toThrowWithMessage(InvariantError, 'contact points > order mag geen duplicaten bevatten');
         });
 
         test('contact points that have unique order does not throw error', () => {
@@ -565,7 +565,7 @@ describe('constructing', () => {
             const legalResource2 =
                 aFullLegalResource().withOrder(1).build();
 
-            expect(() => aFullInstanceSnapshot().withLegalResources([legalResource1, legalResource2]).build()).toThrowWithMessage(InvariantError, 'legal resources > order should not contain duplicates');
+            expect(() => aFullInstanceSnapshot().withLegalResources([legalResource1, legalResource2]).build()).toThrowWithMessage(InvariantError, 'legal resources > order mag geen duplicaten bevatten');
         });
 
         test('legalResource that have unique order does not throw error', () => {
@@ -591,7 +591,7 @@ describe('validateLanguages', () => {
 
         const instanceSnapshot = aFullInstanceSnapshot().withTitle(title).withDescription(description);
 
-        expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('if 1 value has different nl language strings, then throws error', () => {
@@ -600,7 +600,7 @@ describe('validateLanguages', () => {
 
         const instanceSnapshot = aFullInstanceSnapshot().withTitle(title).withDescription(description);
 
-        expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('if values have no nl language strings, then throws error', () => {
@@ -609,7 +609,7 @@ describe('validateLanguages', () => {
 
         const instanceSnapshot = aMinimalInstanceSnapshot().withTitle(title).withDescription(description);
 
-        expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Fields in nl language should contain at least one value');
+        expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Fields in nl language moet minstens een waarde bevatten');
     });
 
     test('if only 1 value has 1 nl language string, then throws error', () => {
@@ -633,7 +633,7 @@ describe('validateLanguages', () => {
                 .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
                 .withRequirements([requirement]);
 
-            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a procedure contains a different nl version, then throws error', () => {
@@ -646,7 +646,7 @@ describe('validateLanguages', () => {
                 .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
                 .withProcedures([procedure]);
 
-            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a website contains a different nl version, then throws error', () => {
@@ -659,7 +659,7 @@ describe('validateLanguages', () => {
                 .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
                 .withWebsites([website]);
 
-            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a cost contains a different nl version, then throws error', () => {
@@ -672,7 +672,7 @@ describe('validateLanguages', () => {
                 .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
                 .withCosts([cost]);
 
-            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a financial advantage contains a different nl version, then throws error', () => {
@@ -685,7 +685,7 @@ describe('validateLanguages', () => {
                 .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
                 .withFinancialAdvantages([financialAdvantage]);
 
-            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
     });
@@ -704,22 +704,22 @@ describe('validateLanguages', () => {
 
         test(`If title and description contains invalid language ${invalidLanguage}, throws error`, () => {
             const instanceSnapshot = aMinimalInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage);
-            expect(() => (instanceSnapshot.build())).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => (instanceSnapshot.build())).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
 
         test(`If additionalDescription contains invalid language ${invalidLanguage}, throws error`, () => {
             const instanceSnapshot = aMinimalInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).withAdditionalDescription(valueInNlLanguage);
-            expect(() => (instanceSnapshot.build())).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => (instanceSnapshot.build())).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
 
         test(`If exception contains invalid language ${invalidLanguage}, throws error`, () => {
             const instanceSnapshot = aMinimalInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).withException(valueInNlLanguage);
-            expect(() => (instanceSnapshot.build())).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => (instanceSnapshot.build())).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
 
         test(`If regulation contains invalid language ${invalidLanguage}, throws error`, () => {
             const instanceSnapshot = aMinimalInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).withRegulation(valueInNlLanguage);
-            expect(() => (instanceSnapshot.build())).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => (instanceSnapshot.build())).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
 
     }

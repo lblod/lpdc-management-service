@@ -15,7 +15,7 @@ export async function fetchMunicipalities(searchString: string): Promise<string[
         return result?.LocationResult?.map(result => result.Municipality) ?? [];
     } else {
         console.error(await response.text());
-        throw new SystemError(`An error occurred when querying the geopunt vlaanderen api`);
+        throw new SystemError(`Er is een fout opgetreden bij het bevragen van de Geopunt Vlaanderen API`);
     }
 }
 
@@ -36,13 +36,13 @@ export async function fetchStreets(municipality: string, searchString: string): 
             .filter(match => !!match);
     } else {
         console.error(await response.text());
-        throw new SystemError('An error occurred when querying the address register');
+        throw new SystemError('Er is een fout opgetreden bij het bevragen van het adresregister');
     }
 }
 
 export async function findAddressMatch(municipality: string, street: string, houseNumber: string, busNumber: string): Promise<AddressDto | NonNullable<unknown>> {
     if (!municipality || !street || !houseNumber) {
-        throw new BadRequest('municipality, street and houseNumber are required');
+        throw new BadRequest('Gemeente, straat and huisnummer zijn verplicht');
     }
 
     const postcodes = await findPostcodesForMunicipalityAndSubMunicipalities(municipality);
@@ -86,7 +86,7 @@ export async function tryAddressMatch(municipality: string, postcode: string, st
         }
     } else {
         console.error(await response.text());
-        throw new SystemError('An error occurred when querying the address register');
+        throw new SystemError('Er is een fout opgetreden bij het bevragen van het adresregister');
     }
 }
 
@@ -100,11 +100,11 @@ export async function findPostcodesForMunicipalityAndSubMunicipalities(municipal
         if (result.postInfoObjecten.length) {
             return result.postInfoObjecten.map(postInfo => postInfo.identificator.objectId);
         } else {
-            throw new NotFoundError(`Can not find postcode for municipality ${municipality}`);
+            throw new NotFoundError(`Kan geen postcode vinden voor de gemeente ${municipality}`);
         }
     } else {
         console.error(await response.text());
-        throw new SystemError(('An error occurred when querying the address register'));
+        throw new SystemError(('Er is een fout opgetreden bij het bevragen van het adresregister'));
     }
 
 }

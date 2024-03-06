@@ -7,6 +7,6 @@ export async function contactPointOptions(fieldName: string): Promise<any> {
     if (fieldNames.includes(fieldName)) {
         return loadContactPointOption(fieldName);
     } else {
-        throw new BadRequest('Not a valid field name');
+        throw new BadRequest('Geen geldig veldnaam');
     }
 }

@@ -32,7 +32,7 @@ describe('SessionRepository', () => {
 
             const nonExistentSessionId = buildSessionIri("thisiddoesnotexist");
 
-            await expect(repository.findById(nonExistentSessionId)).rejects.toThrowWithMessage(NotFoundError, `No session found for iri: ${nonExistentSessionId}`);
+            await expect(repository.findById(nonExistentSessionId)).rejects.toThrowWithMessage(NotFoundError, `Geen sessie gevonden voor Iri: ${nonExistentSessionId}`);
 
         });
 

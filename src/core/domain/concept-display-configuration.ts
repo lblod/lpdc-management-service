@@ -54,7 +54,7 @@ export class ConceptDisplayConfiguration {
 
     conceptIsNewAndInstantiatedCantBothBeTrue(){
         if(this.conceptIsNew===true && this.conceptIsInstantiated){
-            throw new InvariantError('ConceptIsNew and conceptIsInstantiated cant both be true');
+            throw new InvariantError('Concept kan niet zowel nieuw als toegevoegd zijn');
         }
     }
 }

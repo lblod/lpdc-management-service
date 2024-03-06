@@ -177,7 +177,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         await conceptSnapshotRepository.save(conceptSnapshot);
 
         await expect(() => confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, aFullConceptSnapshot().build()))
-            .rejects.toThrowWithMessage(InvariantError, 'BijgewerktTot: conceptSnapshot does not belong to concept linked to instance');
+            .rejects.toThrowWithMessage(InvariantError, 'BijgewerktTot: concept snapshot hoort niet bij het concept gekoppeld aan de instantie');
     });
 
     test('when conceptSnapshot already linked to instance nothing is changed', async () => {

@@ -9,23 +9,23 @@ describe('constructing', () => {
     describe('forInstance', () => {
 
         test('Undefined id throws error', () => {
-            expect(() => ContactPoint.forInstance(aFullContactPointForInstance().withId(undefined).build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+            expect(() => ContactPoint.forInstance(aFullContactPointForInstance().withId(undefined).build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
         });
 
         test('Invalid iri id throws error', () => {
-            expect(() => ContactPoint.forInstance(aFullContactPointForInstance().withId(new Iri('  ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
+            expect(() => ContactPoint.forInstance(aFullContactPointForInstance().withId(new Iri('  ')).build())).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
         });
 
         test('Undefined uuid throws error', () => {
-            expect(() => ContactPoint.forInstance(aFullContactPointForInstance().withUuid(undefined).build())).toThrowWithMessage(InvariantError, 'uuid should not be absent');
+            expect(() => ContactPoint.forInstance(aFullContactPointForInstance().withUuid(undefined).build())).toThrowWithMessage(InvariantError, 'uuid mag niet ontbreken');
         });
 
         test('Blank uuid throws error', () => {
-            expect(() => ContactPoint.forInstance(aFullContactPointForInstance().withUuid('   ').build())).toThrowWithMessage(InvariantError, 'uuid should not be blank');
+            expect(() => ContactPoint.forInstance(aFullContactPointForInstance().withUuid('   ').build())).toThrowWithMessage(InvariantError, 'uuid mag niet leeg zijn');
         });
 
         test('Blank order throws error', () => {
-            expect(() => ContactPoint.forInstance(aFullContactPointForInstance().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
+            expect(() => ContactPoint.forInstance(aFullContactPointForInstance().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order mag niet ontbreken');
         });
 
         describe('address ', () => {
@@ -48,7 +48,7 @@ describe('constructing', () => {
     describe('forInstanceSnapshot', () => {
 
         test('Undefined id throws error', () => {
-            expect(() => ContactPoint.forInstanceSnapshot(aFullContactPointForInstance().withId(undefined).build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+            expect(() => ContactPoint.forInstanceSnapshot(aFullContactPointForInstance().withId(undefined).build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
         });
 
         test('Undefined uuid does not throw error', () => {
@@ -56,7 +56,7 @@ describe('constructing', () => {
         });
 
         test('Undefined order throws error', () => {
-            expect(() => ContactPoint.forInstanceSnapshot(aFullContactPointForInstance().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
+            expect(() => ContactPoint.forInstanceSnapshot(aFullContactPointForInstance().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order mag niet ontbreken');
         });
 
         describe('address ', () => {

@@ -61,7 +61,7 @@ describe('ConceptRepository', () => {
 
             const nonExistentConceptId = buildConceptIri('thisiddoesnotexist');
 
-            await expect(repository.findById(nonExistentConceptId)).rejects.toThrowWithMessage(NotFoundError, `Could not find <https://ipdc.tni-vlaanderen.be/id/concept/thisiddoesnotexist> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> in graph <http://mu.semte.ch/graphs/public>`);
+            await expect(repository.findById(nonExistentConceptId)).rejects.toThrowWithMessage(NotFoundError, `Kan <https://ipdc.tni-vlaanderen.be/id/concept/thisiddoesnotexist> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> in graph <http://mu.semte.ch/graphs/public>`);
         });
     });
 
@@ -90,7 +90,7 @@ describe('ConceptRepository', () => {
             const newConcept = oldConcept;
 
             expect(oldConcept).toEqual(newConcept);
-            await expect(() => repository.update(newConcept, oldConcept)).rejects.toThrowWithMessage(SystemError, 'no change');
+            await expect(() => repository.update(newConcept, oldConcept)).rejects.toThrowWithMessage(SystemError, 'Geen wijzigingen');
         });
     });
 
@@ -133,7 +133,7 @@ describe('ConceptRepository', () => {
                 CONCEPT_GRAPH,
                 [`<${idForIncorrectType}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType>`]);
 
-            await expect(repository.findById(idForIncorrectType)).rejects.toThrowWithMessage(NotFoundError, `Could not find <${idForIncorrectType}> for type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>, but found with type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType> in graph <http://mu.semte.ch/graphs/public>`);
+            await expect(repository.findById(idForIncorrectType)).rejects.toThrowWithMessage(NotFoundError, `Kan <${idForIncorrectType}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>, maar wel gevonden met type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType> in graph <http://mu.semte.ch/graphs/public>`);
         });
 
         test('Verify minimal mappings', async () => {

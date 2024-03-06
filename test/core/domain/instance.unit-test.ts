@@ -46,75 +46,75 @@ afterAll(() => restoreRealTime());
 describe('constructing', () => {
 
     test('Undefined id throws error', () => {
-        expect(() => aFullInstance().withId(undefined).build()).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => aFullInstance().withId(undefined).build()).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => aFullInstance().withId(new Iri('  ')).build()).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => aFullInstance().withId(new Iri('  ')).build()).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('Undefined createdBy throws error', () => {
-        expect(() => aFullInstance().withCreatedBy(undefined).build()).toThrowWithMessage(InvariantError, 'createdBy should not be absent');
+        expect(() => aFullInstance().withCreatedBy(undefined).build()).toThrowWithMessage(InvariantError, 'createdBy mag niet ontbreken');
     });
 
     test('Invalid iri createdBy throws error', () => {
-        expect(() => aFullInstance().withCreatedBy(new Iri('  ')).build()).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => aFullInstance().withCreatedBy(new Iri('  ')).build()).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('Undefined uuid throws error', () => {
-        expect(() => aFullInstance().withUuid(undefined).build()).toThrowWithMessage(InvariantError, 'uuid should not be absent');
+        expect(() => aFullInstance().withUuid(undefined).build()).toThrowWithMessage(InvariantError, 'uuid mag niet ontbreken');
     });
 
     test('Blank uuid throws error', () => {
-        expect(() => aFullInstance().withUuid('   ').build()).toThrowWithMessage(InvariantError, 'uuid should not be blank');
+        expect(() => aFullInstance().withUuid('   ').build()).toThrowWithMessage(InvariantError, 'uuid mag niet leeg zijn');
     });
 
     test('TargetAudience with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withTargetAudiences([TargetAudienceType.BURGER, TargetAudienceType.BURGER]);
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'targetAudiences should not contain duplicates');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'targetAudiences mag geen duplicaten bevatten');
     });
 
     test('Themes with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withThemes([ThemeType.WELZIJNGEZONDHEID, ThemeType.WELZIJNGEZONDHEID]);
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'themes should not contain duplicates');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'themes mag geen duplicaten bevatten');
     });
 
     test('CompetentAuthorityLevels with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.LOKAAL]);
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'competentAuthorityLevels should not contain duplicates');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'competentAuthorityLevels mag geen duplicaten bevatten');
     });
 
     test('CompetentAuthorities with duplicates throws error', () => {
-        expect(() => aFullInstance().withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]).build()).toThrowWithMessage(InvariantError, 'competentAuthorities should not contain duplicates');
+        expect(() => aFullInstance().withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]).build()).toThrowWithMessage(InvariantError, 'competentAuthorities mag geen duplicaten bevatten');
     });
 
     test('ExecutingAuthorityLevels with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.LOKAAL]);
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'executingAuthorityLevels should not contain duplicates');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'executingAuthorityLevels mag geen duplicaten bevatten');
     });
 
     test('ExecutingAuthorities with duplicates throws error', () => {
-        expect(() => aFullInstance().withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]).build()).toThrowWithMessage(InvariantError, 'executingAuthorities should not contain duplicates');
+        expect(() => aFullInstance().withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]).build()).toThrowWithMessage(InvariantError, 'executingAuthorities mag geen duplicaten bevatten');
     });
 
     test('PublicationMedia with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withPublicationMedia([PublicationMediumType.YOUREUROPE, PublicationMediumType.YOUREUROPE]);
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'publicationMedia should not contain duplicates');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'publicationMedia mag geen duplicaten bevatten');
     });
 
     test('YourEuropeCategories with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF, YourEuropeCategoryType.BEDRIJF]);
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'yourEuropeCategories should not contain duplicates');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'yourEuropeCategories mag geen duplicaten bevatten');
     });
 
     test('keywords with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]);
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords should not contain duplicates');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
     });
 
     test('languages with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withLanguages([LanguageType.ENG, LanguageType.ENG]);
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'languages should not contain duplicates');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'languages mag geen duplicaten bevatten');
     });
 
     describe('requirement', () => {
@@ -154,7 +154,7 @@ describe('constructing', () => {
             const requirement2 =
                 aMinimalRequirementForInstance().withOrder(1).build();
 
-            expect(() => aFullInstance().withRequirements([requirement1, requirement2]).build()).toThrowWithMessage(InvariantError, 'requirements > order should not contain duplicates');
+            expect(() => aFullInstance().withRequirements([requirement1, requirement2]).build()).toThrowWithMessage(InvariantError, 'requirements > order mag geen duplicaten bevatten');
         });
 
         test('requirements that have unique order does not throw error', () => {
@@ -227,7 +227,7 @@ describe('constructing', () => {
             const procedure2 =
                 aMinimalProcedureForInstance().withOrder(1).build();
 
-            expect(() => aFullInstance().withProcedures([procedure1, procedure2]).build()).toThrowWithMessage(InvariantError, 'procedures > order should not contain duplicates');
+            expect(() => aFullInstance().withProcedures([procedure1, procedure2]).build()).toThrowWithMessage(InvariantError, 'procedures > order mag geen duplicaten bevatten');
         });
 
         test('procedures that have unique order does not throw error', () => {
@@ -270,7 +270,7 @@ describe('constructing', () => {
             const website2 =
                 aMinimalWebsiteForInstance().withOrder(1).build();
 
-            expect(() => aFullInstance().withWebsites([website1, website2]).build()).toThrowWithMessage(InvariantError, 'websites > order should not contain duplicates');
+            expect(() => aFullInstance().withWebsites([website1, website2]).build()).toThrowWithMessage(InvariantError, 'websites > order mag geen duplicaten bevatten');
         });
 
         test('websites that have unique order does not throw error', () => {
@@ -313,7 +313,7 @@ describe('constructing', () => {
             const cost2 =
                 aMinimalCostForInstance().withOrder(1).build();
 
-            expect(() => aFullInstance().withCosts([cost1, cost2]).build()).toThrowWithMessage(InvariantError, 'costs > order should not contain duplicates');
+            expect(() => aFullInstance().withCosts([cost1, cost2]).build()).toThrowWithMessage(InvariantError, 'costs > order mag geen duplicaten bevatten');
         });
 
         test('costs that have unique order does not throw error', () => {
@@ -349,7 +349,7 @@ describe('constructing', () => {
             const financialAdvantage2 =
                 aMinimalFinancialAdvantageForInstance().withOrder(1).build();
 
-            expect(() => aFullInstance().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).toThrowWithMessage(InvariantError, 'financial advantages > order should not contain duplicates');
+            expect(() => aFullInstance().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).toThrowWithMessage(InvariantError, 'financial advantages > order mag geen duplicaten bevatten');
         });
 
         test('financial advantages that have unique order does not throw error', () => {
@@ -382,7 +382,7 @@ describe('constructing', () => {
             const contactPoint2 =
                 aMinimalContactPointForInstance().withOrder(1).build();
 
-            expect(() => aFullInstance().withContactPoints([contactPoint1, contactPoint2]).build()).toThrowWithMessage(InvariantError, 'contact points > order should not contain duplicates');
+            expect(() => aFullInstance().withContactPoints([contactPoint1, contactPoint2]).build()).toThrowWithMessage(InvariantError, 'contact points > order mag geen duplicaten bevatten');
         });
 
         test('contact points that have unique order does not throw error', () => {
@@ -436,11 +436,11 @@ describe('constructing', () => {
     describe('dateCreated', () => {
 
         test('Undefined dateCreated throws error', () => {
-            expect(() => aFullInstance().withDateCreated(undefined).build()).toThrowWithMessage(InvariantError, 'dateCreated should not be absent');
+            expect(() => aFullInstance().withDateCreated(undefined).build()).toThrowWithMessage(InvariantError, 'dateCreated mag niet ontbreken');
         });
 
         test('Blank dateCreated throws error', () => {
-            expect(() => aFullInstance().withDateCreated(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateCreated should not be absent');
+            expect(() => aFullInstance().withDateCreated(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateCreated mag niet ontbreken');
         });
 
     });
@@ -448,11 +448,11 @@ describe('constructing', () => {
     describe('dateModified', () => {
 
         test('Undefined dateModified throws error', () => {
-            expect(() => aFullInstance().withDateModified(undefined).build()).toThrowWithMessage(InvariantError, 'dateModified should not be absent');
+            expect(() => aFullInstance().withDateModified(undefined).build()).toThrowWithMessage(InvariantError, 'dateModified mag niet ontbreken');
         });
 
         test('Blank dateModified throws error', () => {
-            expect(() => aFullInstance().withDateModified(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateModified should not be absent');
+            expect(() => aFullInstance().withDateModified(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateModified mag niet ontbreken');
         });
 
     });
@@ -460,7 +460,7 @@ describe('constructing', () => {
     test('When status is verstuurd and dateSent is undefined should throw error', () => {
         const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.VERSTUURD).withDateSent(undefined);
 
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'dateSent should be present when status equals verstuurd ');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'dateSent moet aanwezig zijn wanneer status gelijk is aan verstuurd ');
 
     });
 
@@ -478,7 +478,7 @@ describe('constructing', () => {
     test('When datePublished is present and dateSent is undefined should throw error', () => {
         const instanceTestBuilder = aFullInstance().withDateSent(undefined).withDatePublished(InstanceTestBuilder.DATE_PUBLISHED);
 
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'datePublished can only be present when dateSent is present');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'datePublished kan alleen aanwezig zijn wanneer dateSent aanwezig is');
     });
 
     test('conceptId, conceptSnapshotId and productId not all defined or all undefined should throw error', () => {
@@ -487,21 +487,21 @@ describe('constructing', () => {
             .withConceptSnapshotId(undefined)
             .withProductId(undefined);
 
-        expect(() => instanceTestBuilderWithConcept.build()).toThrowWithMessage(InvariantError, 'conceptId, conceptSnapshotId and productId should all be present or all be absent');
+        expect(() => instanceTestBuilderWithConcept.build()).toThrowWithMessage(InvariantError, 'conceptId, conceptSnapshotId and productId moeten allemaal aanwezig of afwezig zijn');
 
         const instanceTestBuilderWithConceptSnapshotId = aFullInstance()
             .withConceptId(undefined)
             .withConceptSnapshotId(buildConceptSnapshotIri(uuid()))
             .withProductId(undefined);
 
-        expect(() => instanceTestBuilderWithConceptSnapshotId.build()).toThrowWithMessage(InvariantError, 'conceptId, conceptSnapshotId and productId should all be present or all be absent');
+        expect(() => instanceTestBuilderWithConceptSnapshotId.build()).toThrowWithMessage(InvariantError, 'conceptId, conceptSnapshotId and productId moeten allemaal aanwezig of afwezig zijn');
 
         const instanceTestBuilderWithProductId = aFullInstance()
             .withConceptId(undefined)
             .withConceptSnapshotId(undefined)
             .withProductId('1300');
 
-        expect(() => instanceTestBuilderWithProductId.build()).toThrowWithMessage(InvariantError, 'conceptId, conceptSnapshotId and productId should all be present or all be absent');
+        expect(() => instanceTestBuilderWithProductId.build()).toThrowWithMessage(InvariantError, 'conceptId, conceptSnapshotId and productId moeten allemaal aanwezig of afwezig zijn');
     });
 
     test('conceptId, conceptSnapshotId and productId  both defined or undefined should not throw error', () => {
@@ -522,11 +522,11 @@ describe('constructing', () => {
     });
 
     test('Absent status throws error', () => {
-        expect(() => aFullInstance().withStatus(undefined).build()).toThrowWithMessage(InvariantError, 'status should not be absent');
+        expect(() => aFullInstance().withStatus(undefined).build()).toThrowWithMessage(InvariantError, 'status mag niet ontbreken');
     });
 
     test('Spatials with duplicates throws error', () => {
-        expect(() => aFullInstance().withSpatials([buildSpatialRefNis2019Iri(1), buildSpatialRefNis2019Iri(1)]).build()).toThrowWithMessage(InvariantError, 'spatials should not contain duplicates');
+        expect(() => aFullInstance().withSpatials([buildSpatialRefNis2019Iri(1), buildSpatialRefNis2019Iri(1)]).build()).toThrowWithMessage(InvariantError, 'spatials mag geen duplicaten bevatten');
     });
 
     test('reviewStatus present and conceptId present should not throw error', () => {
@@ -553,7 +553,7 @@ describe('constructing', () => {
             .withProductId(undefined)
             .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD);
 
-        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'reviewStatus can only be present when concept is present');
+        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'reviewStatus kan alleen aanwezig zijn wanneer concept aanwezig is');
     });
 
     describe('legalResources', () => {
@@ -586,7 +586,7 @@ describe('constructing', () => {
             const legalResource2 =
                 aFullLegalResource().withOrder(1).build();
 
-            expect(() => aFullInstance().withLegalResources([legalResource1, legalResource2]).build()).toThrowWithMessage(InvariantError, 'legal resources > order should not contain duplicates');
+            expect(() => aFullInstance().withLegalResources([legalResource1, legalResource2]).build()).toThrowWithMessage(InvariantError, 'legal resources > order mag geen duplicaten bevatten');
         });
 
         test('legalResource that have unique order does not throw error', () => {
@@ -612,7 +612,7 @@ describe('validateLanguages', () => {
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
     test('if 1 value has different nl language strings, then throws error', () => {
         const title = LanguageString.of(undefined, 'nl', 'nl-formal');
@@ -620,7 +620,7 @@ describe('validateLanguages', () => {
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
-        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('if values have no nl language strings, then no error is thrown', () => {
@@ -659,7 +659,7 @@ describe('validateLanguages', () => {
                 .build();
             const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withRequirements([requirement]);
 
-            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a procedure contains a different nl version, then throws error', () => {
@@ -669,7 +669,7 @@ describe('validateLanguages', () => {
                 .build();
             const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withProcedures([procedure]);
 
-            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a website contains a different nl version, then throws error', () => {
@@ -679,7 +679,7 @@ describe('validateLanguages', () => {
                 .build();
             const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withWebsites([website]);
 
-            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a cost contains a different nl version, then throws error', () => {
@@ -689,7 +689,7 @@ describe('validateLanguages', () => {
                 .build();
             const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withCosts([cost]);
 
-            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a financial advantage contains a different nl version, then throws error', () => {
@@ -699,7 +699,7 @@ describe('validateLanguages', () => {
                 .build();
             const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withFinancialAdvantages([financialAdvantage]);
 
-            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
     });
@@ -719,23 +719,23 @@ describe('validateLanguages', () => {
 
         test('If title contains invalid language, throws error', () => {
             const instance = aMinimalInstance().withTitle(valueInNlLanguage);
-            expect(() => (instance.build())).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => (instance.build())).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
         test('If description contains invalid language, throws error', () => {
             const instance = aMinimalInstance().withDescription(valueInNlLanguage);
-            expect(() => (instance.build())).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => (instance.build())).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
         test('If additionalDescription contains invalid language, throws error', () => {
             const instance = aMinimalInstance().withAdditionalDescription(valueInNlLanguage);
-            expect(() => (instance.build())).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => (instance.build())).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
         test('If exception contains invalid language, throws error', () => {
             const instance = aMinimalInstance().withException(valueInNlLanguage);
-            expect(() => (instance.build())).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => (instance.build())).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
         test('If regulation contains invalid language, throws error', () => {
             const instance = aMinimalInstance().withRegulation(valueInNlLanguage);
-            expect(() => (instance.build())).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => (instance.build())).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
 
     }
@@ -1025,7 +1025,7 @@ describe('reopen', () => {
             .withDatePublished(undefined)
             .build();
 
-        expect(() => instance.reopen()).toThrowWithMessage(InvariantError, 'Instance status already in ontwerp');
+        expect(() => instance.reopen()).toThrowWithMessage(InvariantError, 'Instantie is al in status ontwerp');
     });
 
     test('When instance publication state is published then publication state should be set to Te herpubliceren', () => {

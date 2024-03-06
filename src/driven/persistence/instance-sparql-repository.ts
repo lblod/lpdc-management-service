@@ -83,7 +83,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
         // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
         if (isEqual(oldTriples, newTriples)) {
-            throw new SystemError('no change');
+            throw new SystemError('Geen wijzigingen');
         }
 
         const query = `
@@ -102,7 +102,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         await this.querying.deleteInsert(query, (deleteInsertResults: string[]) => {
 
             if (deleteInsertResults.length != 1) {
-                throw new SystemError('Updating for more than 1 graph');
+                throw new SystemError('Meer dan 1 graph wordt tegelijk aangepast');
             }
             if (deleteInsertResults[0].includes("delete 0 (or less) and insert 0 (or less) triples")) {
                 throw new ConcurrentUpdateError("De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in");

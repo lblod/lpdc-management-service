@@ -59,7 +59,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
         const instanceSnapshot = mapper.instanceSnapshot(id);
 
         if(!instanceSnapshot.createdBy.equals(bestuurseenheid.id)) {
-            throw new SystemError(`InstanceSnapshot createdBy of <${instanceSnapshot.id}> does not match bestuurseenheid graph`);
+            throw new SystemError(`De bestuurseenheid van instantiesnapshot met id: <${instanceSnapshot.id}> komt niet overeen met de bestuurseenheid graph`);
         }
 
         return instanceSnapshot;

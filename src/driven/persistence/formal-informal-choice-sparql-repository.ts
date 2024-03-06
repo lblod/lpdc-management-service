@@ -47,7 +47,7 @@ export class FormalInformalChoiceSparqlRepository implements FormalInformalChoic
         const chosenFormKey: string | undefined = Object.keys(ChosenFormType)
             .find(key => ChosenFormType[key] === rawChosenForm);
         if(!chosenFormKey) {
-            throw new SystemError(`could not map '${rawChosenForm}' for iri: <${formalInformalChoiceId}>`);
+            throw new SystemError(`Kan '${rawChosenForm}'niet mappen voor Iri: <${formalInformalChoiceId}>`);
         }
 
         const formalInformalChoice = new FormalInformalChoice(
@@ -59,7 +59,7 @@ export class FormalInformalChoiceSparqlRepository implements FormalInformalChoic
         );
 
         if(!formalInformalChoice.bestuurseenheidId.equals(bestuurseenheid.id)) {
-            throw new SystemError(`formal informal choice found <${formalInformalChoice.id}> in incorrect user graph`);
+            throw new SystemError(`Formele informele keuze met id: <${formalInformalChoice.id}> gevonden in de foute gebruikers graph`);
         }
 
         return formalInformalChoice;

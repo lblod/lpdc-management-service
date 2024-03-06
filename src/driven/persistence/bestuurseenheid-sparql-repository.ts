@@ -56,7 +56,7 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
                     this.querying.list(spatialsQuery)]);
 
         if (!bestuurseenheidQueryResult) {
-            throw new NotFoundError(`no Bestuurseenheid found for iri: ${id}`);
+            throw new NotFoundError(`Geen bestuurseenheid gevonden voor iri: ${id}`);
         }
 
         return new Bestuurseenheid(
@@ -79,7 +79,7 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
         const classificatieCode = BestuurseenheidClassificatieCode[key];
 
         if (!classificatieCode) {
-            throw new NotFoundError(`No classification code found for: ${classificatieCodeUri}`);
+            throw new NotFoundError(`Geen classificatiecode gevonden voor: ${classificatieCodeUri}`);
         }
         return classificatieCode;
     }

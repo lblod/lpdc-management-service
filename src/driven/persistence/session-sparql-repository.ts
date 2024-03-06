@@ -28,7 +28,7 @@ export class SessionSparqlRepository implements SessionRepository {
         const result = await this.querying.list(query);
 
         if (result.length === 0) {
-            throw new NotFoundError(`No session found for iri: ${id}`);
+            throw new NotFoundError(`Geen sessie gevonden voor Iri: ${id}`);
         }
 
         return new Session(

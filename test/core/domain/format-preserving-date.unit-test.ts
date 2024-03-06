@@ -54,8 +54,8 @@ describe('format preserving date', () => {
     });
 
     test('throws exception on invalid format', () => {
-        expect(() => FormatPreservingDate.of('abc')).toThrowWithMessage(InvariantError, 'value does not match pattern');
-        expect(() => FormatPreservingDate.of('2027-09-16Z')).toThrowWithMessage(InvariantError, 'value does not match pattern');
+        expect(() => FormatPreservingDate.of('abc')).toThrowWithMessage(InvariantError, 'value komt niet overeen met het patroon');
+        expect(() => FormatPreservingDate.of('2027-09-16Z')).toThrowWithMessage(InvariantError, 'value komt niet overeen met het patroon');
 
     });
 

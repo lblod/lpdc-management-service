@@ -58,8 +58,8 @@ describe('Concept Display Configuration Data Integrity Validation', () => {
                     const conceptId = new Iri(conceptResult['id'].value);
 
                     const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, conceptId);
-                    expect(`concept display configuration found for ${conceptDisplayConfiguration?.conceptId} - ${conceptDisplayConfiguration?.bestuurseenheidId}`)
-                        .toEqual(`concept display configuration found for ${conceptId} - ${bestuurseenheid.id}`);
+                    expect(`Concept display configuration found for ${conceptDisplayConfiguration?.conceptId} - ${conceptDisplayConfiguration?.bestuurseenheidId}`)
+                        .toEqual(`Concept display configuration found for ${conceptId} - ${bestuurseenheid.id}`);
                 }
             } catch (e) {
                 console.log(e);

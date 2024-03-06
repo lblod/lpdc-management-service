@@ -84,119 +84,119 @@ describe('constructing', () => {
     });
 
     test('Undefined id throws error', () => {
-        expect(() => aFullConcept().withId(undefined).build()).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => aFullConcept().withId(undefined).build()).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => aFullConcept().withId(new Iri('  ')).build()).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => aFullConcept().withId(new Iri('  ')).build()).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('Undefined uuid throws error', () => {
-        expect(() => aFullConcept().withUuid(undefined).build()).toThrowWithMessage(InvariantError, 'uuid should not be absent');
+        expect(() => aFullConcept().withUuid(undefined).build()).toThrowWithMessage(InvariantError, 'uuid mag niet ontbreken');
     });
 
     test('Blank uuid throws error', () => {
-        expect(() => aFullConcept().withUuid('   ').build()).toThrowWithMessage(InvariantError, 'uuid should not be blank');
+        expect(() => aFullConcept().withUuid('   ').build()).toThrowWithMessage(InvariantError, 'uuid mag niet leeg zijn');
     });
 
     test('Undefined title throws error', () => {
-        expect(() => aFullConcept().withTitle(undefined).build()).toThrowWithMessage(InvariantError, 'title should not be absent');
+        expect(() => aFullConcept().withTitle(undefined).build()).toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
     });
 
     test('NL not present in title throws error', () => {
-        expect(() => aFullConcept().withTitle(LanguageString.of('en', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in title should not be absent');
+        expect(() => aFullConcept().withTitle(LanguageString.of('en', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in title mag niet ontbreken');
     });
 
     test('NL not present in description throws error', () => {
-        expect(() => aFullConcept().withDescription(LanguageString.of('en', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in description should not be absent');
+        expect(() => aFullConcept().withDescription(LanguageString.of('en', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in description mag niet ontbreken');
     });
 
     test('Undefined description throws error', () => {
-        expect(() => aFullConcept().withDescription(undefined).build()).toThrowWithMessage(InvariantError, 'description should not be absent');
+        expect(() => aFullConcept().withDescription(undefined).build()).toThrowWithMessage(InvariantError, 'description mag niet ontbreken');
     });
 
     test('Undefined isArchived throws error', () => {
-        expect(() => aFullConcept().withIsArchived(undefined).build()).toThrowWithMessage(InvariantError, 'isArchived should not be absent');
+        expect(() => aFullConcept().withIsArchived(undefined).build()).toThrowWithMessage(InvariantError, 'isArchived mag niet ontbreken');
     });
 
     test('Undefined productId throws error', () => {
-        expect(() => aFullConcept().withProductId(undefined).build()).toThrowWithMessage(InvariantError, 'productId should not be absent');
+        expect(() => aFullConcept().withProductId(undefined).build()).toThrowWithMessage(InvariantError, 'productId mag niet ontbreken');
     });
 
     test('Blank productId throws error', () => {
-        expect(() => aFullConcept().withProductId('   ').build()).toThrowWithMessage(InvariantError, 'productId should not be blank');
+        expect(() => aFullConcept().withProductId('   ').build()).toThrowWithMessage(InvariantError, 'productId mag niet leeg zijn');
     });
 
     test('Undefined latestConceptSnapshot throws error', () => {
-        expect(() => aFullConcept().withLatestConceptSnapshot(undefined).build()).toThrowWithMessage(InvariantError, 'latestConceptSnapshot should not be absent');
+        expect(() => aFullConcept().withLatestConceptSnapshot(undefined).build()).toThrowWithMessage(InvariantError, 'latestConceptSnapshot mag niet ontbreken');
     });
 
     test('invalid Iri latestConceptSnapshot throws error', () => {
-        expect(() => aFullConcept().withLatestConceptSnapshot(new Iri('   ')).build()).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => aFullConcept().withLatestConceptSnapshot(new Iri('   ')).build()).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('Undefined LatestFunctionallyChangedConceptSnapshot throws error', () => {
-        expect(() => aFullConcept().withLatestFunctionallyChangedConceptSnapshot(undefined).build()).toThrowWithMessage(InvariantError, 'latestFunctionallyChangedConceptSnapshot should not be absent');
+        expect(() => aFullConcept().withLatestFunctionallyChangedConceptSnapshot(undefined).build()).toThrowWithMessage(InvariantError, 'latestFunctionallyChangedConceptSnapshot mag niet ontbreken');
     });
 
     test('invalid Iri LatestFunctionallyChangedConceptSnapshot throws error', () => {
-        expect(() => aFullConcept().withLatestFunctionallyChangedConceptSnapshot(new Iri('   ')).build()).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => aFullConcept().withLatestFunctionallyChangedConceptSnapshot(new Iri('   ')).build()).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('TargetAudience with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withTargetAudiences([TargetAudienceType.BURGER, TargetAudienceType.BURGER]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'targetAudiences should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'targetAudiences mag geen duplicaten bevatten');
     });
 
     test('Themes with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withThemes([ThemeType.BOUWENWONEN, ThemeType.BOUWENWONEN]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'themes should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'themes mag geen duplicaten bevatten');
     });
 
     test('CompetentAuthorityLevels with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withCompetentAuthorityLevels([CompetentAuthorityLevelType.EUROPEES, CompetentAuthorityLevelType.EUROPEES]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'competentAuthorityLevels should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'competentAuthorityLevels mag geen duplicaten bevatten');
     });
 
     test('CompetentAuthorities with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withCompetentAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'competentAuthorities should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'competentAuthorities mag geen duplicaten bevatten');
     });
 
     test('ExecutingAuthorityLevels with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.LOKAAL]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'executingAuthorityLevels should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'executingAuthorityLevels mag geen duplicaten bevatten');
     });
 
     test('ExecutingAuthorities with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'executingAuthorities should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'executingAuthorities mag geen duplicaten bevatten');
     });
 
     test('PublicationMedia with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withPublicationMedia([PublicationMediumType.YOUREUROPE, PublicationMediumType.YOUREUROPE]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'publicationMedia should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'publicationMedia mag geen duplicaten bevatten');
     });
 
     test('YourEuropeCategories with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF, YourEuropeCategoryType.BEDRIJF]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'yourEuropeCategories should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'yourEuropeCategories mag geen duplicaten bevatten');
     });
 
     test('keywords with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
     });
 
     test('previousConceptSnapshots with duplicates throws error', () => {
         const iri = uuid();
         const conceptTestBuilder = aFullConcept().withPreviousConceptSnapshots([buildConceptSnapshotIri(iri), buildConceptSnapshotIri(iri)]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'previousConceptSnapshots should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'previousConceptSnapshots mag geen duplicaten bevatten');
     });
 
     test('conceptTags with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT, ConceptTagType.YOUREUROPEVERPLICHT]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'conceptTags should not contain duplicates');
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'conceptTags mag geen duplicaten bevatten');
     });
 
     describe('cost ', () => {
@@ -221,7 +221,7 @@ describe('constructing', () => {
             const cost2 =
                 aMinimalCostForConcept().withOrder(1).build();
 
-            expect(() => aFullConcept().withCosts([cost1, cost2]).build()).toThrowWithMessage(InvariantError, 'costs > order should not contain duplicates');
+            expect(() => aFullConcept().withCosts([cost1, cost2]).build()).toThrowWithMessage(InvariantError, 'costs > order mag geen duplicaten bevatten');
         });
 
         test('costs that have unique order does not throw error', () => {
@@ -256,7 +256,7 @@ describe('constructing', () => {
             const financialAdvantage2 =
                 aMinimalFinancialAdvantageForConcept().withOrder(1).build();
 
-            expect(() => aFullConcept().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).toThrowWithMessage(InvariantError, 'financial advantages > order should not contain duplicates');
+            expect(() => aFullConcept().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).toThrowWithMessage(InvariantError, 'financial advantages > order mag geen duplicaten bevatten');
         });
 
         test('financial advantages that have unique order does not throw error', () => {
@@ -291,7 +291,7 @@ describe('constructing', () => {
             const procedure2 =
                 aMinimalProcedureForConcept().withOrder(1).build();
 
-            expect(() => aFullConcept().withProcedures([procedure1, procedure2]).build()).toThrowWithMessage(InvariantError, 'procedures > order should not contain duplicates');
+            expect(() => aFullConcept().withProcedures([procedure1, procedure2]).build()).toThrowWithMessage(InvariantError, 'procedures > order mag geen duplicaten bevatten');
         });
 
         test('procedures that have unique order does not throw error', () => {
@@ -326,7 +326,7 @@ describe('constructing', () => {
             const website2 =
                 aMinimalWebsiteForConcept().withOrder(1).build();
 
-            expect(() => aFullConcept().withWebsites([website1, website2]).build()).toThrowWithMessage(InvariantError, 'websites > order should not contain duplicates');
+            expect(() => aFullConcept().withWebsites([website1, website2]).build()).toThrowWithMessage(InvariantError, 'websites > order mag geen duplicaten bevatten');
         });
 
         test('websites that have unique order does not throw error', () => {
@@ -363,7 +363,7 @@ describe('constructing', () => {
             const requirement2 =
                 aMinimalRequirementForConcept().withOrder(1).build();
 
-            expect(() => aFullConcept().withRequirements([requirement1, requirement2]).build()).toThrowWithMessage(InvariantError, 'requirements > order should not contain duplicates');
+            expect(() => aFullConcept().withRequirements([requirement1, requirement2]).build()).toThrowWithMessage(InvariantError, 'requirements > order mag geen duplicaten bevatten');
         });
 
         test('requirements that have unique order does not throw error', () => {
@@ -427,7 +427,7 @@ describe('constructing', () => {
             const legalResource2 =
                 aFullLegalResource().withOrder(1).build();
 
-            expect(() => aFullConcept().withLegalResources([legalResource1, legalResource2]).build()).toThrowWithMessage(InvariantError, 'legal resources > order should not contain duplicates');
+            expect(() => aFullConcept().withLegalResources([legalResource1, legalResource2]).build()).toThrowWithMessage(InvariantError, 'legal resources > order mag geen duplicaten bevatten');
         });
 
         test('legalResource that have unique order does not throw error', () => {

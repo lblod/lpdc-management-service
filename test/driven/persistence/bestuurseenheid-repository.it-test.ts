@@ -39,7 +39,7 @@ describe('BestuurseenheidRepository', () => {
 
             const nonExistentBestuurseenheidId = buildBestuurseenheidIri("thisiddoesnotexist");
 
-            await expect(repository.findById(nonExistentBestuurseenheidId)).rejects.toThrowWithMessage(NotFoundError, `no Bestuurseenheid found for iri: ${nonExistentBestuurseenheidId}`);
+            await expect(repository.findById(nonExistentBestuurseenheidId)).rejects.toThrowWithMessage(NotFoundError, `Geen bestuurseenheid gevonden voor iri: ${nonExistentBestuurseenheidId}`);
 
         });
 
@@ -122,7 +122,7 @@ describe('BestuurseenheidRepository', () => {
                     `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheidId)).rejects.toThrowWithMessage(NotFoundError, `no Bestuurseenheid found for iri: ${bestuurseenheidId}`);
+            await expect(repository.findById(bestuurseenheidId)).rejects.toThrowWithMessage(NotFoundError, `Geen bestuurseenheid gevonden voor iri: ${bestuurseenheidId}`);
 
         });
 
@@ -212,7 +212,7 @@ describe('BestuurseenheidRepository', () => {
 
         test('Non matched bestuurseenheid classification uri throws error. ', () => {
             const nonExistingClassificationUri = 'non-existing' as BestuurseenheidClassificatieCodeUri;
-            expect(() => repository.mapBestuurseenheidClassificatieUriToCode(nonExistingClassificationUri)).toThrowWithMessage(NotFoundError, `No classification code found for: ${nonExistingClassificationUri}`);
+            expect(() => repository.mapBestuurseenheidClassificatieUriToCode(nonExistingClassificationUri)).toThrowWithMessage(NotFoundError, `Geen classificatiecode gevonden voor: ${nonExistingClassificationUri}`);
 
         });
 

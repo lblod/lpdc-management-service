@@ -299,10 +299,10 @@ export class QuadsToDomainMapper {
     private errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
         const typeFoundForId: string = this.storeAccess.uniqueValue(namedNode(id.value), NS.rdf('type'));
         if (!typeFoundForId) {
-            throw new NotFoundError(`Could not find <${id}> for type ${type} in graph ${this.graphId}`);
+            throw new NotFoundError(`Kan <${id}> niet vinden voor type ${type} in graph ${this.graphId}`);
         }
         if (type.value !== typeFoundForId) {
-            throw new NotFoundError(`Could not find <${id}> for type ${type}, but found with type <${typeFoundForId}> in graph ${this.graphId}`);
+            throw new NotFoundError(`Kan <${id}> niet vinden voor type ${type}, maar wel gevonden met type <${typeFoundForId}> in graph ${this.graphId}`);
         }
     }
 
@@ -563,7 +563,7 @@ export class QuadsToDomainMapper {
             this.errorIfMissingOrIncorrectType(evidenceId, NS.locn('Address')));
 
         if (addressIds.length > 1) {
-            throw new SystemError(`Did not expect more than one address for ${id}`);
+            throw new SystemError(`Verwachtte niet meer dan een adres voor ${id}`);
         }
         if (addressIds.length === 0) {
             return undefined;
@@ -702,7 +702,7 @@ export class QuadsToDomainMapper {
             }
         }
         if (statement?.object?.value) {
-            throw new SystemError(`could not map <${statement?.object?.value}> for iri: <${statement?.subject?.value}>`);
+            throw new SystemError(`Kan <${statement?.object?.value}> niet mappen voor Iri: <${statement?.subject?.value}>`);
         }
         return undefined;
     }

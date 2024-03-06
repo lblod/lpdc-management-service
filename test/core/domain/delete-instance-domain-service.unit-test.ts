@@ -65,7 +65,7 @@ describe('Deleting a new Instance domain service', () => {
         await deleteInstanceDomainService.delete(bestuurseenheid, instanceId);
 
         await expect(instanceRepository.findById(bestuurseenheid, instance.id)).rejects.toThrowWithMessage(NotFoundError,
-            `Could not find <${instanceId}> for type <http://purl.org/vocab/cpsv#PublicService>, but found with type <https://www.w3.org/ns/activitystreams#Tombstone> in graph <${bestuurseenheid.userGraph()}>`);
+            `Kan <${instanceId}> niet vinden voor type <http://purl.org/vocab/cpsv#PublicService>, maar wel gevonden met type <https://www.w3.org/ns/activitystreams#Tombstone> in graph <${bestuurseenheid.userGraph()}>`);
         expect(await instanceRepository.findById(bestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
     });
 
@@ -78,7 +78,7 @@ describe('Deleting a new Instance domain service', () => {
 
 
         await expect(deleteInstanceDomainService.delete(bestuurseenheid, nonExistingInstanceId)).rejects.toThrowWithMessage(NotFoundError,
-            `Could not find <${nonExistingInstanceId}> for type <http://purl.org/vocab/cpsv#PublicService> in graph <${bestuurseenheid.userGraph()}>`);
+            `Kan <${nonExistingInstanceId}> niet vinden voor type <http://purl.org/vocab/cpsv#PublicService> in graph <${bestuurseenheid.userGraph()}>`);
     });
 
     test('if instance exists, but for other bestuurseenheid, then does not remove and throws error', async () => {
@@ -91,7 +91,7 @@ describe('Deleting a new Instance domain service', () => {
         await instanceRepository.save(anotherBestuurseenheid, anotherInstance);
 
         await expect(deleteInstanceDomainService.delete(bestuurseenheid, anotherInstance.id)).rejects.toThrowWithMessage(NotFoundError,
-            `Could not find <${anotherInstance.id}> for type <http://purl.org/vocab/cpsv#PublicService> in graph <${bestuurseenheid.userGraph()}>`);
+            `Kan <${anotherInstance.id}> niet vinden voor type <http://purl.org/vocab/cpsv#PublicService> in graph <${bestuurseenheid.userGraph()}>`);
 
         expect(await instanceRepository.findById(anotherBestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
 

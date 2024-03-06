@@ -62,7 +62,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
 
             const anotherConceptDisplayConfigurationId = buildConceptDisplayConfigurationIri(uuid());
 
-            await expect(() => repository.findById(bestuurseenheid, anotherConceptDisplayConfigurationId)).rejects.toThrowWithMessage(NotFoundError, `No conceptDisplayConfiguration exists with id ${anotherConceptDisplayConfigurationId}`);
+            await expect(() => repository.findById(bestuurseenheid, anotherConceptDisplayConfigurationId)).rejects.toThrowWithMessage(NotFoundError, `Geen conceptDisplayConfiguratie gevonden voor id: ${anotherConceptDisplayConfigurationId}`);
         });
 
         test('only searches in configured bestuurseenheid graph of bestuurseenheid', async () => {
@@ -85,7 +85,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
                     .build();
             await repository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-            await expect(() => repository.findById(bestuurseenheid, conceptDisplayConfiguration.id)).rejects.toThrowWithMessage(SystemError, `concept display configuration ${conceptDisplayConfiguration.id} found in incorrect user graph`);
+            await expect(() => repository.findById(bestuurseenheid, conceptDisplayConfiguration.id)).rejects.toThrowWithMessage(SystemError, `Concept display configuration ${conceptDisplayConfiguration.id} gevonden in de foute gebruikers graph`);
         });
 
     });
@@ -126,7 +126,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
 
             const anotherConceptId = buildConceptIri(uuid());
 
-            await expect(() => repository.findByConceptId(bestuurseenheid, anotherConceptId)).rejects.toThrowWithMessage(NotFoundError, `No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${anotherConceptId}`);
+            await expect(() => repository.findByConceptId(bestuurseenheid, anotherConceptId)).rejects.toThrowWithMessage(NotFoundError, `Geen conceptDisplayConfiguration gevonden voor bestuurseenheid: ${bestuurseenheid.id} en concept ${anotherConceptId}`);
         });
 
         test('filters on concept id', async () => {
@@ -214,7 +214,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
                     .build();
             await repository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-            await expect(() => repository.findByConceptId(bestuurseenheid, conceptId)).rejects.toThrowWithMessage(SystemError, `concept display configuration found for concept id ${conceptId} in incorrect user graph`);
+            await expect(() => repository.findByConceptId(bestuurseenheid, conceptId)).rejects.toThrowWithMessage(SystemError, `Concept display configuration gevonden voor concept met id ${conceptId} in de foute gebruikers graph`);
         });
 
     });
@@ -264,7 +264,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
             const conceptDisplayConfigurationIri = buildConceptDisplayConfigurationIri(uuid());
 
             await expect(repository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfigurationIri))
-                .rejects.toThrowWithMessage(NotFoundError, `No conceptDisplayConfiguration exists with id ${conceptDisplayConfigurationIri}`);
+                .rejects.toThrowWithMessage(NotFoundError, `Geen conceptDisplayConfiguratie gevonden voor id: ${conceptDisplayConfigurationIri}`);
         });
     });
 
@@ -336,7 +336,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
             const conceptId = buildConceptIri(uuid());
 
             await expect(repository.syncInstantiatedFlag(bestuurseenheid, conceptId))
-                .rejects.toThrowWithMessage(NotFoundError, `No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptId}`);
+                .rejects.toThrowWithMessage(NotFoundError, `Geen conceptDisplayConfiguration gevonden voor bestuurseenheid: ${bestuurseenheid.id} en concept ${conceptId}`);
         });
     });
 
@@ -374,7 +374,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
                     PREFIX.dct
                 ]);
 
-            await expect(() => repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId)).rejects.toThrowWithMessage(NotFoundError, `No conceptDisplayConfiguration exists for bestuurseenheid: ${bestuurseenheid.id} and concept ${conceptDisplayConfiguration.conceptId}`);
+            await expect(() => repository.findByConceptId(bestuurseenheid, conceptDisplayConfiguration.conceptId)).rejects.toThrowWithMessage(NotFoundError, `Geen conceptDisplayConfiguration gevonden voor bestuurseenheid: ${bestuurseenheid.id} en concept ${conceptDisplayConfiguration.conceptId}`);
         });
 
         test('Verify mappings', async () => {

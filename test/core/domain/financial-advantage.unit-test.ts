@@ -15,35 +15,35 @@ describe('forConcept', () => {
 
     test('Undefined id throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withId(undefined);
-        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => FinancialAdvantage.forConcept(aFullFinancialAdvantage().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => FinancialAdvantage.forConcept(aFullFinancialAdvantage().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('Undefined uuid throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withUuid(undefined);
-        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'uuid should not be absent');
+        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'uuid mag niet ontbreken');
     });
 
     test('Blank uuid throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withUuid('   ');
-        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'uuid should not be blank');
+        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'uuid mag niet leeg zijn');
     });
 
     test('Undefined title throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withTitle(undefined);
-        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'title should not be absent');
+        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
     });
 
     test('Undefined description throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withDescription(undefined);
-        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'description should not be absent');
+        expect(() => FinancialAdvantage.forConcept(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'description mag niet ontbreken');
     });
 
     test('Undefined order throws error', () => {
-        expect(() => FinancialAdvantage.forConcept(aFullFinancialAdvantage().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
+        expect(() => FinancialAdvantage.forConcept(aFullFinancialAdvantage().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order mag niet ontbreken');
     });
 
 });
@@ -52,11 +52,11 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined id throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withId(undefined);
-        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('Invalid iri id throws error', () => {
-        expect(() => FinancialAdvantage.forConceptSnapshot(aFullFinancialAdvantage().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri should not be blank');
+        expect(() => FinancialAdvantage.forConceptSnapshot(aFullFinancialAdvantage().withId(new Iri('   ')).build())).toThrowWithMessage(InvariantError, 'iri mag niet leeg zijn');
     });
 
     test('Uuid is undefined ', () => {
@@ -66,16 +66,16 @@ describe('forConceptSnapshot', () => {
 
     test('Undefined title throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withTitle(undefined).build();
-        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage)).toThrowWithMessage(InvariantError, 'title should not be absent');
+        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage)).toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
     });
 
     test('Undefined description throws error', () => {
         const financialAdvantage = aFullFinancialAdvantage().withDescription(undefined).build();
-        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage)).toThrowWithMessage(InvariantError, 'description should not be absent');
+        expect(() => FinancialAdvantage.forConceptSnapshot(financialAdvantage)).toThrowWithMessage(InvariantError, 'description mag niet ontbreken');
     });
 
     test('Undefined order throws error', () => {
-        expect(() => FinancialAdvantage.forConceptSnapshot(aFullFinancialAdvantage().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
+        expect(() => FinancialAdvantage.forConceptSnapshot(aFullFinancialAdvantage().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order mag niet ontbreken');
     });
 
 });
@@ -87,12 +87,12 @@ describe('for instance', () => {
 
     test('Undefined id throws error', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstance().withId(undefined);
-        expect(() => FinancialAdvantage.forInstance(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('Undefined Uuid throws error', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstance().withUuid(undefined).build();
-        expect(() => FinancialAdvantage.forInstance(financialAdvantage).uuid).toThrowWithMessage(InvariantError, 'uuid should not be absent');
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage).uuid).toThrowWithMessage(InvariantError, 'uuid mag niet ontbreken');
     });
 
     test('If title and description have the same nl language financial advantage is created', () => {
@@ -111,21 +111,21 @@ describe('for instance', () => {
         const description = LanguageString.of('en', undefined, 'nl-formal');
         const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(title).withDescription(description).build();
 
-        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If title has different nl languages, throws error', () => {
         const title = LanguageString.of('en', 'nl', 'nl-formal');
         const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(title).withDescription(undefined).build();
 
-        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If description has different nl languages, throws error', () => {
         const description = LanguageString.of('en', 'nl', 'nl-formal');
         const financialAdvantage = aFullFinancialAdvantageForInstance().withDescription(description).withTitle(undefined).build();
 
-        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     for (const invalidLanguage of invalidLanguages) {
@@ -138,12 +138,12 @@ describe('for instance', () => {
 
         test('If title contains invalid language, throws error', () => {
             const financialAdvantage = aFullFinancialAdvantageForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
-            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
 
         test('If description contains invalid language, throws error', () => {
             const financialAdvantage = aFullFinancialAdvantageForInstance().withDescription(valueInNlLanguage).withTitle(undefined).build();
-            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => FinancialAdvantage.forInstance(financialAdvantage)).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
     }
 
@@ -169,7 +169,7 @@ describe('for instance', () => {
     }
 
     test('Undefined order throws error', () => {
-        expect(() => FinancialAdvantage.forInstance(aFullFinancialAdvantageForInstance().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order should not be absent');
+        expect(() => FinancialAdvantage.forInstance(aFullFinancialAdvantageForInstance().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order mag niet ontbreken');
     });
 
 });
@@ -181,7 +181,7 @@ describe('for instance snapshot', () => {
 
     test('Undefined id throws error', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstanceSnapshot().withId(undefined);
-        expect(() => FinancialAdvantage.forInstanceSnapshot(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'id should not be absent');
+        expect(() => FinancialAdvantage.forInstanceSnapshot(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
     test('Undefined Uuid does not throw error', () => {
@@ -191,12 +191,12 @@ describe('for instance snapshot', () => {
 
     test('Undefined title throws error', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstanceSnapshot().withTitle(undefined);
-        expect(() => FinancialAdvantage.forInstanceSnapshot(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'title should not be absent');
+        expect(() => FinancialAdvantage.forInstanceSnapshot(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
     });
 
     test('Undefined description throws error', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstanceSnapshot().withDescription(undefined);
-        expect(() => FinancialAdvantage.forInstanceSnapshot(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'description should not be absent');
+        expect(() => FinancialAdvantage.forInstanceSnapshot(financialAdvantage.build())).toThrowWithMessage(InvariantError, 'description mag niet ontbreken');
     });
 
     test('If title and description have the same nl language financial advantage is created', () => {
@@ -210,7 +210,7 @@ describe('for instance snapshot', () => {
         const description = LanguageString.of('en', undefined, 'nl-formal');
         const financialAdvantage = aFullFinancialAdvantageForInstanceSnapshot().withTitle(title).withDescription(description).build();
 
-        expect(() => FinancialAdvantage.forInstanceSnapshot(financialAdvantage)).toThrowWithMessage(InvariantError, 'There is more than one Nl language present');
+        expect(() => FinancialAdvantage.forInstanceSnapshot(financialAdvantage)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     for (const invalidLanguage of invalidLanguages) {
@@ -223,7 +223,7 @@ describe('for instance snapshot', () => {
 
         test(`If title or description contains invalid language ${invalidLanguage}, throws error`, () => {
             const financialAdvantage = aFullFinancialAdvantageForInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage).build();
-            expect(() => FinancialAdvantage.forInstanceSnapshot(financialAdvantage)).toThrowWithMessage(InvariantError, `The nl language differs from ${validLanguages.toString()}`);
+            expect(() => FinancialAdvantage.forInstanceSnapshot(financialAdvantage)).toThrowWithMessage(InvariantError, `De nl-taal verschilt van ${validLanguages.toString()}`);
         });
     }
 
@@ -247,7 +247,7 @@ describe('for instance snapshot', () => {
 
     test('Undefined order throws error', () => {
         expect(() => FinancialAdvantage.forInstanceSnapshot(aFullFinancialAdvantageForInstanceSnapshot().withOrder(undefined).build()))
-            .toThrowWithMessage(InvariantError, 'order should not be absent');
+            .toThrowWithMessage(InvariantError, 'order mag niet ontbreken');
     });
 
 });

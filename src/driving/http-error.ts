@@ -13,7 +13,7 @@ export class HttpError extends Error {
         this._stackTrace = this.stack;
 
     }
-    
+
     get stackTrace(): string {
         return this._stackTrace;
     }
@@ -49,31 +49,31 @@ export enum ErrorLevel {
     ERROR = "ERROR"
 }
 export class BadRequest extends HttpError {
-    constructor(message = 'Bad request for this request') {
+    constructor(message = 'Ongeldige aanvraag') {
         super(400, message, ErrorLevel.WARN);
     }
 }
 
 export class Unauthorized extends HttpError {
-    constructor(message = 'Not authenticated for this request') {
+    constructor(message = 'Niet geauthoriseerd') {
         super(401, message, ErrorLevel.WARN);
     }
 }
 
 export class Forbidden extends HttpError {
-    constructor(message = 'Je hebt niet voldoende rechten om deze actie uit te voeren') {
+    constructor(message = 'Verboden toegang') {
         super(403, message, ErrorLevel.WARN);
     }
 }
 
 export class NotFound extends HttpError {
-    constructor(message = 'Not found ') {
+    constructor(message = 'Niet gevonden') {
         super(404, message, ErrorLevel.WARN);
     }
 }
 
 export class Conflict extends HttpError {
-    constructor(message = 'Concurrent update ') {
+    constructor(message = 'Concurrent update gedetecteerd') {
         super(409, message, ErrorLevel.WARN);
     }
 }
