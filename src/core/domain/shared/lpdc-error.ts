@@ -1,4 +1,4 @@
-export class LpdcError {
+export abstract class LpdcError {
     constructor(readonly message: string) {
     }
 }

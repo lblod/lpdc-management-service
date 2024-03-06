@@ -1,28 +1,37 @@
 import {uuid} from "../../mu-helper";
 
-export enum ErrorLevel {
-    INFO = "INFO",
-    WARN = "WARN",
-    ERROR = "ERROR"
-}
-
-export class HttpError {
+export class HttpError extends Error {
+    private readonly _correlationId: string;
+    private readonly _stackTrace: string;
 
     constructor(private _status: number,
                 private _message: string,
                 private _level: ErrorLevel,
     ) {
+        super(_message);
         this._correlationId = uuid();
-    }
+        this._stackTrace = this.stack;
 
-    private _correlationId: string;
+    }
+    
+    get stackTrace(): string {
+        return this._stackTrace;
+    }
 
     get correlationId(): string {
         return this._correlationId;
     }
 
+    is4xx(): boolean {
+        return this._status >= 400 && this._status <= 499;
+    }
+
     get status(): number {
         return this._status;
+    }
+
+    is5xx(): boolean {
+        return this._status >= 500 && this._status <= 599;
     }
 
     get message(): string {
@@ -32,16 +41,13 @@ export class HttpError {
     get level(): ErrorLevel {
         return this._level;
     }
-
-    is4xx(): boolean {
-        return this._status >= 400 && this._status <= 499;
-    }
-
-    is5xx(): boolean {
-        return this._status >= 500 && this._status <= 599;
-    }
 }
 
+export enum ErrorLevel {
+    INFO = "INFO",
+    WARN = "WARN",
+    ERROR = "ERROR"
+}
 export class BadRequest extends HttpError {
     constructor(message = 'Bad request for this request') {
         super(400, message, ErrorLevel.WARN);
