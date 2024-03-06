@@ -41,7 +41,7 @@ export class SparqlQuerying {
             return bindings[0];
         }, {
             retries: 10,
-            delay: 100,
+            delay: 200,
             backoff: "FIXED",
             logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`),
             retryIf: (error: any) => {
@@ -56,7 +56,7 @@ export class SparqlQuerying {
             return result?.results?.bindings || [];
         }, {
             retries: 10,
-            delay: 100,
+            delay: 200,
             backoff: "FIXED",
             logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`),
         });
@@ -68,7 +68,7 @@ export class SparqlQuerying {
             return result?.boolean;
         }, {
             retries: 10,
-            delay: 100,
+            delay: 200,
             backoff: "FIXED",
             logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`),
         });
