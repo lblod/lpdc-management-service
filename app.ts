@@ -54,6 +54,7 @@ import {
 } from "./src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
 import {Application, Request, Response} from "express";
 import errorHandler from './src/driving/error-handler';
+import { NotFound } from './src/driving/http-error';
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -297,6 +298,13 @@ app.get('/concept-snapshot-compare', async (req, res, next): Promise<any> => {
     return await compareSnapshots(req, res).catch(next);
 });
 
+//  Catch-all route for invalid routes
+app.use((req, res, next) => {
+    throw new NotFound();
+});
+
+app.use(errorHandler);
+
 
 async function createInstance(req: Request, res: Response) {
     const body = req.body;
@@ -517,7 +525,6 @@ async function compareSnapshots(req: Request, res: Response) {
     return res.json({isChanged});
 
 }
-app.use(errorHandler);
 
 new CronJob(
     INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN, // cronTime
