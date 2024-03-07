@@ -12,8 +12,13 @@ import {FormApplicationService} from "../src/core/application/form-application-s
 const FORM = rdflib.Namespace('http://lblod.data.gift/vocabularies/forms/');
 const RDF = rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 
+export interface ValidationError {
+    formId: string,
+    formUri: string,
+    message: string,
+}
 
-export async function validateService(instanceId: Iri, bestuurseenheid: Bestuurseenheid, formApplicationService: FormApplicationService): Promise<{ errors: any[] }> {
+export async function validateService(instanceId: Iri, bestuurseenheid: Bestuurseenheid, formApplicationService: FormApplicationService): Promise<ValidationError[]> {
     const formIds = Object.keys(FORM_ID_TO_TYPE_MAPPING);
     const forms = [];
 
@@ -36,7 +41,7 @@ export async function validateService(instanceId: Iri, bestuurseenheid: Bestuurs
         sourceGraph: new rdflib.NamedNode(`http://data.lblod.info/sourcegraph`),
     };
 
-    const response = {errors: []};
+    const validationErrors: ValidationError[] = [];
     for (const form of forms) {
 
         const formStore = new ForkingStore();
@@ -63,7 +68,7 @@ export async function validateService(instanceId: Iri, bestuurseenheid: Bestuurs
         if (ENABLE_ADDRESS_VALIDATION && form.type === FormType.CONTENT) {
             const addressesAreValid = await validateAddresses(form.serviceUri);
             if (!addressesAreValid) {
-                response.errors.push({
+                validationErrors.push({
                     formId: form.id,
                     formUri: "http://data.lblod.info/id/forms/" + form.id,
                     message: `Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!`
@@ -73,14 +78,14 @@ export async function validateService(instanceId: Iri, bestuurseenheid: Bestuurs
 
         form.validation = validateForm(formUri, options);
         if (!form.validation) {
-            response.errors.push({
+            validationErrors.push({
                 formId: form.id,
                 formUri: "http://data.lblod.info/id/forms/" + form.id,
                 message: `Er zijn fouten opgetreden in de tab "${FORM_MAPPING_TRANSLATIONS[form.id]}". Gelieve deze te verbeteren!`
             });
         }
     }
-    return response;
+    return validationErrors;
 }
 
 //TODO LPDC-1014: use domain to validate ...

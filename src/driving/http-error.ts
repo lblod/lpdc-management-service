@@ -1,85 +1,69 @@
 import {uuid} from "../../mu-helper";
+import {ConcurrentUpdateError, InvariantError, NotFoundError, SystemError} from "../core/domain/shared/lpdc-error";
 
-export class HttpError extends Error {
-    private readonly _correlationId: string;
-    private readonly _stackTrace: string;
+export abstract class HttpError extends Error {
+    public readonly status: number;
+    public readonly correlationId: string;
+    private readonly stackTrace: string;
+    private readonly originalErrorType: string;
+    private readonly originalErrorStack: string;
 
-    constructor(private _status: number,
-                private _message: string,
-                private _level: ErrorLevel,
+    protected constructor(status: number,
+                          message: string,
+                          originalError: Error | undefined,
     ) {
-        super(_message);
-        this._correlationId = uuid();
-        this._stackTrace = this.stack;
-
-    }
-
-    get stackTrace(): string {
-        return this._stackTrace;
-    }
-
-    get correlationId(): string {
-        return this._correlationId;
+        super(message);
+        this.status = status;
+        this.correlationId = uuid();
+        this.stackTrace = this.stack;
+        if (originalError) {
+            this.originalErrorType = originalError.constructor.name;
+            this.originalErrorStack = originalError.stack;
+        }
     }
 
     is4xx(): boolean {
-        return this._status >= 400 && this._status <= 499;
-    }
-
-    get status(): number {
-        return this._status;
+        return this.status >= 400 && this.status <= 499;
     }
 
     is5xx(): boolean {
-        return this._status >= 500 && this._status <= 599;
+        return this.status >= 500 && this.status <= 599;
     }
 
-    get message(): string {
-        return this._message;
-    }
-
-    get level(): ErrorLevel {
-        return this._level;
-    }
 }
 
-export enum ErrorLevel {
-    INFO = "INFO",
-    WARN = "WARN",
-    ERROR = "ERROR"
-}
 export class BadRequest extends HttpError {
-    constructor(message = 'Ongeldige aanvraag') {
-        super(400, message, ErrorLevel.WARN);
+    constructor(message = 'Aanvraag ongeldig. Controleer en probeer opnieuw.', invariantError: InvariantError = undefined) {
+        super(400, invariantError?.message ? invariantError.message : message, invariantError);
     }
 }
 
 export class Unauthorized extends HttpError {
-    constructor(message = 'Niet geauthoriseerd') {
-        super(401, message, ErrorLevel.WARN);
+    constructor(message = 'Autorisatie vereist. Log alstublieft in om toegang te krijgen.') {
+        super(401, message, undefined);
     }
 }
 
 export class Forbidden extends HttpError {
-    constructor(message = 'Verboden toegang') {
-        super(403, message, ErrorLevel.WARN);
+    constructor(message = 'Toegang geweigerd. U heeft geen rechten voor deze actie.') {
+        super(403, message, undefined);
     }
 }
 
 export class NotFound extends HttpError {
-    constructor(message = 'Niet gevonden') {
-        super(404, message, ErrorLevel.WARN);
+    constructor(message = `Pagina niet gevonden. Controleer de URL en probeer opnieuw.`, notFoundError: NotFoundError = undefined) {
+        super(404, notFoundError?.message ? notFoundError.message : message, notFoundError);
     }
 }
 
 export class Conflict extends HttpError {
-    constructor(message = 'Concurrent update gedetecteerd') {
-        super(409, message, ErrorLevel.WARN);
+    constructor(concurrentUpdateError: ConcurrentUpdateError) {
+        super(409, concurrentUpdateError.message, concurrentUpdateError);
     }
 }
 
 export class InternalServerError extends HttpError {
-    constructor(message = 'Oeps, er ging iets mis') {
-        super(500, message, ErrorLevel.ERROR);
+    constructor(systemError: SystemError | Error = undefined) {
+        super(500, 'Er is een serverfout opgetreden. Probeer het later opnieuw of neem contact op indien het probleem aanhoudt. Onze excuses voor het ongemak.', systemError);
     }
 }

@@ -1119,7 +1119,7 @@ describe('publish', () => {
             .withStatus(InstanceStatusType.VERSTUURD)
             .build();
 
-        expect(() => instance.publish()).toThrowWithMessage(InvariantError, 'Instance status already has status verstuurd');
+        expect(() => instance.publish()).toThrowWithMessage(InvariantError, 'Instantie heeft reeds status verstuurd');
     });
 
 });

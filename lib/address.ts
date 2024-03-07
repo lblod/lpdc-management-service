@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import {ADRESSEN_REGISTER_API_KEY} from "../config";
-import {BadRequest} from "../src/driving/http-error";
-import {NotFoundError, SystemError} from "../src/core/domain/shared/lpdc-error";
+import {InvariantError, NotFoundError, SystemError} from "../src/core/domain/shared/lpdc-error";
 
 export async function fetchMunicipalities(searchString: string): Promise<string[]> {
     const queryParams = new URLSearchParams({
@@ -42,7 +41,7 @@ export async function fetchStreets(municipality: string, searchString: string): 
 
 export async function findAddressMatch(municipality: string, street: string, houseNumber: string, busNumber: string): Promise<AddressDto | NonNullable<unknown>> {
     if (!municipality || !street || !houseNumber) {
-        throw new BadRequest('Gemeente, straat and huisnummer zijn verplicht');
+        throw new InvariantError('Gemeente, straat and huisnummer zijn verplicht');
     }
 
     const postcodes = await findPostcodesForMunicipalityAndSubMunicipalities(municipality);

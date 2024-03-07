@@ -357,7 +357,7 @@ export class Instance {
 
     publish(): Instance {
         if (this.status === InstanceStatusType.VERSTUURD) {
-            throw new InvariantError('Instance status already has status verstuurd');
+            throw new InvariantError('Instantie heeft reeds status verstuurd');
         }
         return InstanceBuilder.from(this)
             .withStatus(InstanceStatusType.VERSTUURD)

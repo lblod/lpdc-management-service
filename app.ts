@@ -54,7 +54,8 @@ import {
 } from "./src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
 import {Application, Request, Response} from "express";
 import errorHandler from './src/driving/error-handler';
-import { NotFound } from './src/driving/http-error';
+import {NotFound} from './src/driving/http-error';
+import {InvariantError} from "./src/core/domain/shared/lpdc-error";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -214,33 +215,14 @@ app.put('/public-services/:instanceId/ontkoppelen', async function (req, res, ne
 
 app.put('/public-services/:instanceId/reopen', async function (req, res, next): Promise<any> {
     return await reopenInstance(req, res).catch(next);
-
 });
 
 app.post('/public-services/:instanceId/confirm-bijgewerkt-tot', async function (req, res, next): Promise<any> {
     return await confirmBijgewerktTot(req, res).catch(next);
 });
 
-app.post('/public-services/:instanceId/validate-for-publish', async function (req, res): Promise<any> {
-
-    const instanceIdRequestParam = req.params.instanceId;
-
-    const instanceId = new Iri(instanceIdRequestParam);
-    const session: Session = req['session'];
-    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-
-    const response = await validateService(instanceId, bestuurseenheid, formApplicationService);
-
-    if (response.errors.length) {
-        return res.status(400).json({
-            data: response,
-        });
-    } else {
-        return res.status(200).json({
-            data: response,
-        });
-    }
-
+app.put('/public-services/:instanceId/validate-for-publish', async function (req, res, next): Promise<any> {
+    return await validateForPublish(req, res).catch(next);
 });
 
 app.put('/public-services/:instanceId/publish', async function (req, res, next): Promise<any> {
@@ -261,7 +243,6 @@ app.get('/conceptual-public-services/:conceptId/form/:formId', async function (r
 
 app.use('/concept-display-configuration/', async (req, res, next) => {
     await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
-
 });
 
 app.put('/concept-display-configuration/:conceptDisplayConfigurationId/remove-is-new-flag', async function (req, res, next): Promise<any> {
@@ -299,6 +280,7 @@ app.get('/concept-snapshot-compare', async (req, res, next): Promise<any> => {
 });
 
 //  Catch-all route for invalid routes
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((req, res, next) => {
     throw new NotFound();
 });
@@ -439,12 +421,30 @@ async function confirmBijgewerktTot(req: Request, res: Response) {
     return res.sendStatus(200);
 }
 
+
+async function validateForPublish(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+    const errors = await validateService(instanceId, bestuurseenheid, formApplicationService);
+
+    return res.status(200).json(errors);
+}
+
 async function publishInstance(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
 
     const instanceId = new Iri(instanceIdRequestParam);
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+    const errors = await validateService(instanceId, bestuurseenheid, formApplicationService);
+    if(errors.length > 0) {
+        throw new InvariantError('Instantie niet geldig om te publiceren');
+    }
 
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
     const updatedInstance = instance.publish();
@@ -530,7 +530,7 @@ new CronJob(
     INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN, // cronTime
     () => {
         instanceSnapshotProcessorApplicationService.process()
-            .catch((reason) => console.log(`instance-snapshot-processing failed ${reason}`));
+            .catch((reason) => console.error(`instance-snapshot-processing failed ${reason}`));
     }, // onTick
     null, // onComplete
     true, // start
