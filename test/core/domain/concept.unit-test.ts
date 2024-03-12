@@ -28,7 +28,7 @@ import {
 } from "../../../src/core/domain/types";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
-import {aFullLegalResource, LegalResourceTestBuilder} from "./legal-resource-test-builder";
+import {aFullLegalResourceForConcept, LegalResourceTestBuilder} from "./legal-resource-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('constructing', () => {
@@ -404,6 +404,8 @@ describe('constructing', () => {
             const validLegalResource = LegalResource.reconstitute(
                 LegalResourceBuilder.buildIri(uuidValue),
                 uuidValue,
+                undefined,
+                undefined,
                 LegalResourceTestBuilder.URL,
                 1
             );
@@ -414,6 +416,8 @@ describe('constructing', () => {
             const invalidLegalResource = LegalResource.reconstitute(
                 LegalResourceBuilder.buildIri(uuid()),
                 undefined,
+                undefined,
+                undefined,
                 LegalResourceTestBuilder.URL,
                 1
             );
@@ -423,18 +427,18 @@ describe('constructing', () => {
 
         test('legalResources that dont have unique order throws error', () => {
             const legalResource1 =
-                aFullLegalResource().withOrder(1).build();
+                aFullLegalResourceForConcept().withOrder(1).build();
             const legalResource2 =
-                aFullLegalResource().withOrder(1).build();
+                aFullLegalResourceForConcept().withOrder(1).build();
 
             expect(() => aFullConcept().withLegalResources([legalResource1, legalResource2]).build()).toThrowWithMessage(InvariantError, 'legal resources > order mag geen duplicaten bevatten');
         });
 
         test('legalResource that have unique order does not throw error', () => {
             const legalResource1 =
-                aFullLegalResource().withOrder(1).build();
+                aFullLegalResourceForConcept().withOrder(1).build();
             const legalResource2 =
-                aFullLegalResource().withOrder(2).build();
+                aFullLegalResourceForConcept().withOrder(2).build();
 
             expect(() => aFullConcept().withLegalResources([legalResource1, legalResource2]).build()).not.toThrow();
         });

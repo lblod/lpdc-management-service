@@ -20,6 +20,7 @@ import {
     YourEuropeCategoryType
 } from "./types";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
+import {LegalResource} from "./legal-resource";
 
 export class ConceptSnapshot {
 
@@ -53,7 +54,7 @@ export class ConceptSnapshot {
     private readonly _productId: string;
     private readonly _snapshotType: SnapshotType | undefined;
     private readonly _conceptTags: ConceptTagType[];
-    private readonly _legalResources: Iri[];
+    private readonly _legalResources: LegalResource[];
 
     constructor(id: Iri,
                 title: LanguageString,
@@ -85,7 +86,7 @@ export class ConceptSnapshot {
                 productId: string,
                 snapshotType: SnapshotType,
                 conceptTags: ConceptTagType[],
-                legalResources: Iri[],
+                legalResources: LegalResource[],
     ) {
         this._id = requiredValue(id, 'id');
         requiredValue(title, 'title');
@@ -126,7 +127,8 @@ export class ConceptSnapshot {
         this._productId = requiredValue(productId, 'productId');
         this._snapshotType = requiredValue(snapshotType, 'snapshotType');
         this._conceptTags = requireNoDuplicates(asSortedArray(conceptTags), 'conceptTags');
-        this._legalResources = requireNoDuplicates(asSortedArray(legalResources, Iri.compare), 'legalResources');
+        this._legalResources = [...legalResources].map(LegalResource.forConceptSnapshot);
+        requireNoDuplicates(this._legalResources.map(lr => lr.order), 'legalResources > order');
     }
 
     get id(): Iri {
@@ -253,7 +255,7 @@ export class ConceptSnapshot {
         return [...this._conceptTags];
     }
 
-    get legalResources(): Iri[] {
+    get legalResources(): LegalResource[] {
         return [...this._legalResources];
     }
 
@@ -280,6 +282,7 @@ export class ConceptSnapshot {
             || Website.isFunctionallyChanged(value.websites, other.websites)
             || Cost.isFunctionallyChanged(value.costs, other.costs)
             || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages)
+            //TODO LPDC-1035: fix , use the helper methocd on LegalResource
             || !isEqual(value.legalResources, other.legalResources);
 
     }

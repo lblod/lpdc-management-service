@@ -24,7 +24,6 @@ export const NS = {
     mu: Namespace('http://mu.semte.ch/vocabularies/core/'),
     ext: Namespace('http://mu.semte.ch/vocabularies/ext/'),
     eli: Namespace('http://data.europa.eu/eli/ontology#'),
-    eliIncorrectlyInDatabase: Namespace('http://data.europa.eu/eli/ontology/#'), //we need a clean up in ipdc and in our database to be able remove this hack ...
     locn: Namespace('http://www.w3.org/ns/locn#'),
     adres: Namespace('https://data.vlaanderen.be/ns/adres#'),
     pera: {

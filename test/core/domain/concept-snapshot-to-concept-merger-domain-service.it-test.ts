@@ -8,7 +8,7 @@ import {
     aMinimalConceptSnapshot,
     ConceptSnapshotTestBuilder
 } from "./concept-snapshot-test-builder";
-import {buildBestuurseenheidIri, buildCodexVlaanderenIri, buildConceptIri, buildInstanceIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildConceptIri, buildInstanceIri} from "./iri-test-builder";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
@@ -49,6 +49,7 @@ import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance
 import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
 } from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
+import {anotherFullLegalResourceForConceptSnapshot} from "./legal-resource-test-builder";
 
 describe('merges a new concept snapshot into a concept', () => {
 
@@ -65,7 +66,7 @@ describe('merges a new concept snapshot into a concept', () => {
     const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
 
-    const ensureLinkedAuthoritiesExistAsCodeListDomainService =  new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
+    const ensureLinkedAuthoritiesExistAsCodeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
 
     const merger = new ConceptSnapshotToConceptMergerDomainService(
         conceptSnapshotRepository,
@@ -255,21 +256,19 @@ describe('merges a new concept snapshot into a concept', () => {
                 expect.objectContaining({
                     _id: expect.not.objectContaining(conceptSnapshot.legalResources[0]),
                     _uuid: expect.stringMatching(uuidRegex),
-                    _url: conceptSnapshot.legalResources[0].value,
+                    _title: conceptSnapshot.legalResources[0].title,
+                    _description: conceptSnapshot.legalResources[0].description,
+                    _url: conceptSnapshot.legalResources[0].url,
                     _order: 1
                 }),
                 expect.objectContaining({
                     _id: expect.not.objectContaining(conceptSnapshot.legalResources[1]),
                     _uuid: expect.stringMatching(uuidRegex),
-                    _url: conceptSnapshot.legalResources[1].value,
+                    _title: conceptSnapshot.legalResources[1].title,
+                    _description: conceptSnapshot.legalResources[1].description,
+                    _url: conceptSnapshot.legalResources[1].url,
                     _order: 2
                 }),
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(conceptSnapshot.legalResources[2]),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _url: conceptSnapshot.legalResources[2].value,
-                    _order: 3
-                })
             ]));
         }, 10000);
 
@@ -361,7 +360,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withKeywords([LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')])
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
                     .withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT])
-                    .withLegalResources([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())])
+                    .withLegalResources([anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).buildForConceptSnapshot(), anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).buildForConceptSnapshot()])
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -451,7 +450,11 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withProductId(conceptSnapshot.productId + uuid())
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .withConceptTags([ConceptTagType.YOUREUROPEAANBEVOLEN])
-                    .withLegalResources([buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())])
+                    .withLegalResources(
+                        [
+                            anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).buildForConceptSnapshot(),
+                            anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).buildForConceptSnapshot(),
+                            anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(3).buildForConceptSnapshot()])
                     .build();
 
             insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
@@ -635,19 +638,25 @@ describe('merges a new concept snapshot into a concept', () => {
                 expect.objectContaining({
                     _id: expect.not.objectContaining(updatedConceptSnapshot.legalResources[0]),
                     _uuid: expect.stringMatching(uuidRegex),
-                    _url: updatedConceptSnapshot.legalResources[0].value,
+                    _title: updatedConceptSnapshot.legalResources[0].title,
+                    _description: updatedConceptSnapshot.legalResources[0].description,
+                    _url: updatedConceptSnapshot.legalResources[0].url,
                     _order: 1
                 }),
                 expect.objectContaining({
                     _id: expect.not.objectContaining(updatedConceptSnapshot.legalResources[1]),
                     _uuid: expect.stringMatching(uuidRegex),
-                    _url: updatedConceptSnapshot.legalResources[1].value,
+                    _title: updatedConceptSnapshot.legalResources[1].title,
+                    _description: updatedConceptSnapshot.legalResources[1].description,
+                    _url: updatedConceptSnapshot.legalResources[1].url,
                     _order: 2
                 }),
                 expect.objectContaining({
                     _id: expect.not.objectContaining(updatedConceptSnapshot.legalResources[2]),
                     _uuid: expect.stringMatching(uuidRegex),
-                    _url: updatedConceptSnapshot.legalResources[2].value,
+                    _title: updatedConceptSnapshot.legalResources[2].title,
+                    _description: updatedConceptSnapshot.legalResources[2].description,
+                    _url: updatedConceptSnapshot.legalResources[2].url,
                     _order: 3
                 })
             ]));

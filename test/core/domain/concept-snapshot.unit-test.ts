@@ -38,6 +38,11 @@ import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {
+    aFullLegalResourceForConceptSnapshot,
+    aMinimalLegalResourceForConceptSnapshot
+} from "./legal-resource-test-builder";
+import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 
 describe('constructing', () => {
 
@@ -201,10 +206,40 @@ describe('constructing', () => {
         expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'conceptTags mag geen duplicaten bevatten');
     });
 
-    test('legalResources with duplicates throws error', () => {
-        const iri = uuid();
-        const conceptTestBuilder = aFullConceptSnapshot().withLegalResources([buildCodexVlaanderenIri(iri), buildCodexVlaanderenIri(iri)]);
-        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'legalResources mag geen duplicaten bevatten');
+    describe('Legal Resource', () => {
+
+        test('valid legal resource does not throw error', () => {
+           const validLegalResource = LegalResource.reconstitute(LegalResourceBuilder.buildIri(uuid()), undefined, undefined, undefined,
+               buildCodexVlaanderenIri('123').value, 1);
+
+           expect(() => aFullConceptSnapshot().withLegalResources([validLegalResource]).build()).not.toThrow();
+        });
+
+        test('invalid legal resource does throw error', () => {
+            const validLegalResource = LegalResource.reconstitute(LegalResourceBuilder.buildIri(uuid()), undefined, undefined, undefined,
+                undefined, 1);
+
+            expect(() => aFullConceptSnapshot().withLegalResources([validLegalResource]).build()).toThrow();
+        });
+
+        test('legal resources that dont have unique order throws error', () => {
+            const legalResource1 =
+                aMinimalLegalResourceForConceptSnapshot().withOrder(1).build();
+            const legalResource2 =
+                aMinimalLegalResourceForConceptSnapshot().withOrder(1).build();
+
+            expect(() => aFullConceptSnapshot().withLegalResources([legalResource1, legalResource2]).build()).toThrowWithMessage(InvariantError, 'legalResources > order mag geen duplicaten bevatten');
+        });
+
+        test('legal resources that have unique order does not throw error', () => {
+            const legalResource1 =
+                aMinimalLegalResourceForConceptSnapshot().withOrder(1).build();
+            const legalResource2 =
+                aMinimalLegalResourceForConceptSnapshot().withOrder(2).build();
+
+            expect(() => aFullConceptSnapshot().withLegalResources([legalResource1, legalResource2]).build()).not.toThrow();
+        });
+
     });
 
     describe('cost ', () => {
@@ -1082,22 +1117,25 @@ describe('is functionally changed', () => {
                 .withLegalResources([])
                 .build(),
             aFullConceptSnapshot()
-                .withLegalResources([buildCodexVlaanderenIri('1234')])
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().build()])
                 .build()],
         ['legal resource removed',
             aFullConceptSnapshot()
-                .withLegalResources([buildCodexVlaanderenIri('1234')])
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().build()])
                 .build(),
             aFullConceptSnapshot()
                 .withLegalResources([])
                 .build()],
         ['legal resource url updated',
             aFullConceptSnapshot()
-                .withLegalResources([buildCodexVlaanderenIri('1234')])
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withUrl(buildCodexVlaanderenIri('1234').value).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withLegalResources([buildCodexVlaanderenIri('12345')])
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withUrl(buildCodexVlaanderenIri('12345').value).build()])
                 .build()]
+        //TODO LPDC-1035: add tests for title
+        //TODO LPDC-1035: add tests for description
+        //TODO LPDC-1035: add tests for order
     ];
 
     for (const testCase of functionallyChangedTestCases) {

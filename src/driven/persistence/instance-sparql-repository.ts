@@ -55,7 +55,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
                 NS.besluit('Bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
-                NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
 
         const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), this.doubleQuadReporter);

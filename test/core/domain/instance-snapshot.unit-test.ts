@@ -35,7 +35,7 @@ import {Language} from "../../../src/core/domain/language";
 import {aMinimalProcedureForInstanceSnapshot} from "./procedure-test-builder";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
-import {aFullLegalResource, LegalResourceTestBuilder} from "./legal-resource-test-builder";
+import {aFullLegalResourceForInstanceSnapshot, LegalResourceTestBuilder} from "./legal-resource-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 beforeAll(() => setFixedTime());
@@ -544,6 +544,8 @@ describe('constructing', () => {
             const validLegalResource = LegalResource.reconstitute(
                 LegalResourceBuilder.buildIri(uuidValue),
                 undefined,
+                undefined,
+                undefined,
                 LegalResourceTestBuilder.URL,
                 1
             );
@@ -555,24 +557,26 @@ describe('constructing', () => {
                 LegalResourceBuilder.buildIri(uuid()),
                 undefined,
                 undefined,
+                undefined,
+                undefined,
                 0
             )]).build()).toThrow();
         });
 
         test('legalResources that dont have unique order throws error', () => {
             const legalResource1 =
-                aFullLegalResource().withOrder(1).build();
+                aFullLegalResourceForInstanceSnapshot().withOrder(1).build();
             const legalResource2 =
-                aFullLegalResource().withOrder(1).build();
+                aFullLegalResourceForInstanceSnapshot().withOrder(1).build();
 
             expect(() => aFullInstanceSnapshot().withLegalResources([legalResource1, legalResource2]).build()).toThrowWithMessage(InvariantError, 'legal resources > order mag geen duplicaten bevatten');
         });
 
         test('legalResource that have unique order does not throw error', () => {
             const legalResource1 =
-                aFullLegalResource().withOrder(1).build();
+                aFullLegalResourceForInstanceSnapshot().withOrder(1).build();
             const legalResource2 =
-                aFullLegalResource().withOrder(2).build();
+                aFullLegalResourceForInstanceSnapshot().withOrder(2).build();
 
             expect(() => aFullInstanceSnapshot().withLegalResources([legalResource1, legalResource2]).build()).not.toThrow();
         });

@@ -141,7 +141,6 @@ describe('Concept Snapshot Data Integrity Validation', () => {
                 NS.besluit('bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
                 NS.eli('LegalResource').value,
-                NS.eliIncorrectlyInDatabase('LegalResource').value,
             ]);
         console.log('recursive queries');
         const allQuadsAsStrings = asSortedArray(allQuads.map(q => q.toString()));

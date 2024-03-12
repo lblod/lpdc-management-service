@@ -305,15 +305,16 @@ export class ConceptSnapshotToConceptMergerDomainService {
             undefined);
     }
 
-    private copyLegalResources(legalResourceUrls: Iri[]): LegalResource[] {
-        return legalResourceUrls.map((lr, index) => {
+    private copyLegalResources(legalResourceUrls: LegalResource[]): LegalResource[] {
+        return legalResourceUrls.map((lr) => {
             const newUuid = uuid();
             return LegalResource.reconstitute(
                 LegalResourceBuilder.buildIri(newUuid),
                 newUuid,
-                lr.value,
-                index + 1
-            );
+                lr.title,
+                lr.description,
+                lr.url,
+                lr.order);
         });
     }
 

@@ -106,7 +106,7 @@ export class DomainToQuadsMapper {
             this.productId(conceptSnapshot.id, conceptSnapshot.productId),
             conceptSnapshot.snapshotType ? this.buildQuad(namedNode(conceptSnapshot.id.value), NS.lpdcExt('snapshotType'), namedNode(this.enumToIri(conceptSnapshot.snapshotType, NS.dvc.snapshotType).value)) : undefined,
             ...this.conceptTags(conceptSnapshot.id, conceptSnapshot.conceptTags),
-            ...this.legalResourceUrls(conceptSnapshot.id, conceptSnapshot.legalResources),
+            ...this.legalResources(conceptSnapshot.id, conceptSnapshot.legalResources),
         ].filter(t => t !== undefined);
     }
 
@@ -408,6 +408,8 @@ export class DomainToQuadsMapper {
             this.buildQuad(namedNode(id.value), NS.m8g('hasLegalResource'), namedNode(legalResource.id.value)),
             legalResource.uuid ? this.buildQuad(namedNode(legalResource.id.value), NS.mu('uuid'), literal(legalResource.uuid)) : undefined,
             this.buildQuad(namedNode(legalResource.id.value), NS.rdf('type'), NS.eli('LegalResource')),
+            ...this.languageStringToQuads(namedNode(legalResource.id.value), NS.dct('title'), legalResource.title),
+            ...this.languageStringToQuads(namedNode(legalResource.id.value), NS.dct('description'), legalResource.description),
             legalResource.url ? this.buildQuad(namedNode(legalResource.id.value), NS.schema('url'), literal(legalResource.url)) : undefined,
             this.buildQuad(namedNode(legalResource.id.value), NS.sh('order'), literal(legalResource.order.toString(), NS.xsd('integer'))),
         ]);

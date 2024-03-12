@@ -164,7 +164,7 @@ export class QuadsToDomainMapper {
             this.productId(id),
             this.snapshotType(id),
             this.conceptTags(id),
-            this.legalResourcesUrls(id),
+            this.legalResources(id),
         );
     }
 
@@ -488,10 +488,6 @@ export class QuadsToDomainMapper {
         return !!this.storeAccess.uniqueStatement(namedNode(id.value), NS.adms('status'), STATUS.concept.archived);
     }
 
-    private legalResourcesUrls(id: Iri): Iri[] {
-        return this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasLegalResource')));
-    }
-
     private instanceStatusType(id: Iri): InstanceStatusType | undefined {
         return this.asEnum(InstanceStatusType, NS.concepts.instanceStatus, this.storeAccess.uniqueStatement(namedNode(id.value), NS.adms('status')));
     }
@@ -660,6 +656,8 @@ export class QuadsToDomainMapper {
                 LegalResource.reconstitute(
                     legalResourceId,
                     this.uuid(legalResourceId),
+                    this.title(legalResourceId),
+                    this.description(legalResourceId),
                     this.url(legalResourceId),
                     this.order(legalResourceId),
                 ));

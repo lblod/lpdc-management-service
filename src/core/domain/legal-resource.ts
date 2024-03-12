@@ -1,21 +1,28 @@
 import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
 import {zip} from "lodash";
+import {LanguageString} from "./language-string";
 
 
 export class LegalResource {
 
     private readonly _id: Iri;
     private readonly _uuid: string | undefined;
+    private readonly _title: LanguageString | undefined;
+    private readonly _description: LanguageString | undefined;
     private readonly _url: string | undefined;
     private readonly _order: number;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined,
                         url: string | undefined,
                         order: number) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
+        this._title = title;
+        this._description = description;
         this._url = url;
         this._order = requiredValue(order, 'order');
     }
@@ -24,6 +31,19 @@ export class LegalResource {
         return new LegalResource(
             legalResource.id,
             requiredValue(legalResource.uuid, 'uuid'),
+            legalResource.title,
+            legalResource.description,
+            requiredValue(legalResource.url, 'url'),
+            legalResource.order,
+        );
+    }
+
+    static forConceptSnapshot(legalResource: LegalResource): LegalResource {
+        return new LegalResource(
+            legalResource.id,
+            undefined,
+            legalResource.title,
+            legalResource.description,
             requiredValue(legalResource.url, 'url'),
             legalResource.order,
         );
@@ -33,6 +53,8 @@ export class LegalResource {
         return new LegalResource(
             legalResource.id,
             requiredValue(legalResource.uuid, 'uuid'),
+            legalResource.title,
+            legalResource.description,
             legalResource.url,
             legalResource.order,
         );
@@ -42,6 +64,8 @@ export class LegalResource {
         return new LegalResource(
             legalResource.id,
             undefined,
+            legalResource.title,
+            legalResource.description,
             requiredValue(legalResource.url, 'url'),
             legalResource.order,
         );
@@ -49,9 +73,11 @@ export class LegalResource {
 
     static reconstitute(id: Iri,
                         uuid: string | undefined,
+                        title: LanguageString | undefined,
+                        description: LanguageString | undefined,
                         url: string,
                         order: number): LegalResource {
-        return new LegalResource(id, uuid, url, order);
+        return new LegalResource(id, uuid, title, description, url, order);
     }
 
     get id(): Iri {
@@ -60,6 +86,14 @@ export class LegalResource {
 
     get uuid(): string | undefined {
         return this._uuid;
+    }
+
+    get title(): LanguageString | undefined {
+        return this._title;
+    }
+
+    get description(): LanguageString | undefined {
+        return this._description;
     }
 
     get url(): string {
@@ -73,6 +107,7 @@ export class LegalResource {
     static isFunctionallyChanged(value: LegalResource[], other: LegalResource[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((legalResources: [LegalResource, LegalResource]) => {
+                //TODO LPDC-1035: update is functionally changed + its clients
                 return legalResources[0].url !== legalResources[1].url;
             });
     }
@@ -81,6 +116,8 @@ export class LegalResource {
 export class LegalResourceBuilder {
     private id: Iri;
     private uuid: string | undefined;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
     private url: string | undefined;
     private order: number;
 
@@ -98,6 +135,16 @@ export class LegalResourceBuilder {
         return this;
     }
 
+    public withTitle(title: LanguageString): LegalResourceBuilder {
+        this.title = title;
+        return this;
+    }
+
+    public withDescription(description: LanguageString): LegalResourceBuilder {
+        this.description = description;
+        return this;
+    }
+
     public withUrl(url: string): LegalResourceBuilder {
         this.url = url;
         return this;
@@ -106,6 +153,10 @@ export class LegalResourceBuilder {
     public withOrder(order: number): LegalResourceBuilder {
         this.order = order;
         return this;
+    }
+
+    public buildForConceptSnapshot(): LegalResource {
+        return LegalResource.forConceptSnapshot(this.build());
     }
 
     public buildForConcept(): LegalResource {
@@ -120,6 +171,8 @@ export class LegalResourceBuilder {
         return LegalResource.reconstitute(
             this.id,
             this.uuid,
+            this.title,
+            this.description,
             this.url,
             this.order,
         );

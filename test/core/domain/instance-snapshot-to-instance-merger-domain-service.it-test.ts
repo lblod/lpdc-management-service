@@ -63,6 +63,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     afterAll(() => restoreRealTime());
 
     describe('Instance does not exists', () => {
+
         test('Given a minimalistic instanceSnapshot, then instance is created', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
@@ -116,6 +117,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
             expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
         });
+
         test('Given a full instanceSnapshot, then instance is created', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
@@ -363,12 +365,16 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect.objectContaining({
                     _id: expect.not.objectContaining(instanceSnapshot.legalResources[0].id),
                     _uuid: expect.stringMatching(uuidRegex),
+                    _title: instanceSnapshot.legalResources[0].title,
+                    _description: instanceSnapshot.legalResources[0].description,
                     _url: instanceSnapshot.legalResources[0].url,
                     _order: instanceSnapshot.legalResources[0].order,
                 }),
                 expect.objectContaining({
                     _id: expect.not.objectContaining(instanceSnapshot.legalResources[1].id),
                     _uuid: expect.stringMatching(uuidRegex),
+                    _title: instanceSnapshot.legalResources[1].title,
+                    _description: instanceSnapshot.legalResources[1].description,
                     _url: instanceSnapshot.legalResources[1].url,
                     _order: instanceSnapshot.legalResources[1].order,
                 })
@@ -399,7 +405,9 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     });
 
     describe('Instance already exists', () => {
+
         describe('update', () => {
+
             test('Given a minimalistic instanceSnapshot, then existing instance is updated', async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
                 await bestuurseenheidRepository.save(bestuurseenheid);
@@ -712,12 +720,16 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                     expect.objectContaining({
                         _id: expect.not.objectContaining(instanceSnapshot.legalResources[0].id),
                         _uuid: expect.stringMatching(uuidRegex),
+                        _title: instanceSnapshot.legalResources[0].title,
+                        _description: instanceSnapshot.legalResources[0].description,
                         _url: instanceSnapshot.legalResources[0].url,
                         _order: instanceSnapshot.legalResources[0].order,
                     }),
                     expect.objectContaining({
                         _id: expect.not.objectContaining(instanceSnapshot.legalResources[1].id),
                         _uuid: expect.stringMatching(uuidRegex),
+                        _title: instanceSnapshot.legalResources[1].title,
+                        _description: instanceSnapshot.legalResources[1].description,
                         _url: instanceSnapshot.legalResources[1].url,
                         _order: instanceSnapshot.legalResources[1].order,
                     })
@@ -764,6 +776,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                     quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
                 ]));
             });
+
             test('Given a full instanceSnapshot with isArchived, then remove instance', async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
                 await bestuurseenheidRepository.save(bestuurseenheid);
@@ -804,6 +817,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                     quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
                 ]));
             });
+
             test('Given concept is removed in instance by new instanceSnapshot, then conceptDisplayConfiguration is updated', async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
                 await bestuurseenheidRepository.save(bestuurseenheid);
@@ -827,8 +841,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
                 expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
             });
-
         });
+
         test('Given instance is linked to different concept, then conceptDisplayConfiguration is updated', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
@@ -861,6 +875,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const conceptDisplayConfiguration2 = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept2.id);
             expect(conceptDisplayConfiguration2.conceptIsInstantiated).toEqual(true);
         });
+
         test('Dont merge instanceSnapshots if newer one is already processed for the same instance', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
@@ -879,7 +894,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .withIsVersionOfInstance(otherInstanceId)
                 .withConceptId(concept.id)
                 .build();
-
 
             const firstInstanceSnapshot = aFullInstanceSnapshot()
                 .withTitle(LanguageString.of('snapshot 1', undefined, undefined, 'snapshot 1'))
@@ -949,7 +963,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
         ]));
 
-    const instanceRecreated = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+        const instanceRecreated = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
         expect(instanceRecreated.id).toEqual(instanceSnapshot.isVersionOfInstance);
     });
 
@@ -986,6 +1000,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         expect(quadsBeforeAfterArchivingAgain).toEqual(expect.arrayContaining([
             quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),]));
     });
+
     test('Inserts Code Lists for competent and executing authorities if not existing', async () => {
         const bestuurseenheidRegistrationCodeFetcher = {
             fetchOrgRegistryCodelistEntry: jest.fn().mockImplementation((uriEntry: Iri) => Promise.resolve({

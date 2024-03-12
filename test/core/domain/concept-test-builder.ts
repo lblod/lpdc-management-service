@@ -28,7 +28,7 @@ import {buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {aFullEvidence, anotherFullEvidence} from "./evidence-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {LegalResource} from "../../../src/core/domain/legal-resource";
-import {aFullLegalResource, anotherFullLegalResource} from "./legal-resource-test-builder";
+import {aFullLegalResourceForConcept, anotherFullLegalResourceForConcept} from "./legal-resource-test-builder";
 
 export function aMinimalConcept(): ConceptTestBuilder {
     return new ConceptTestBuilder()
@@ -181,8 +181,8 @@ export class ConceptTestBuilder {
         anotherFullProcedure().withUuid(uuid()).withWebsites([anotherFullWebsite(uuid()).withUuid(uuid()).withOrder(1).build(), anotherFullWebsite(uuid()).withUuid(uuid()).withOrder(2).build()]).build()];
 
     public static readonly WEBSITES = [
-        anotherFullWebsite(uuid()).withUuid(uuid()).withOrder(1).build(),
-        anotherFullWebsite(uuid()).withUuid(uuid()).withOrder(2).build()];
+        anotherFullWebsite(uuid()).withOrder(1).build(),
+        anotherFullWebsite(uuid()).withOrder(2).build()];
 
     public static readonly COSTS = [aFullCost().withUuid(uuid()).build(), anotherFullCost().withUuid(uuid()).build()];
 
@@ -194,7 +194,7 @@ export class ConceptTestBuilder {
 
     public static readonly CONCEPT_TAGS = [ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT];
 
-    public static readonly LEGAL_RESOURCES = [aFullLegalResource().withOrder(1).build(), anotherFullLegalResource().withOrder(2).build()];
+    public static readonly LEGAL_RESOURCES = [aFullLegalResourceForConcept().withOrder(1).build(), anotherFullLegalResourceForConcept(uuid()).withOrder(2).build()];
 
     private id: Iri;
     private uuid: string | undefined;

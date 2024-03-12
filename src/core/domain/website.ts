@@ -16,7 +16,7 @@ export class Website {
 
     private constructor(id: Iri,
                         uuid: string | undefined,
-                        title: LanguageString,
+                        title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         order: number,
                         url: string | undefined,

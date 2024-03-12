@@ -24,7 +24,6 @@ import {Website} from "../../src/core/domain/website";
 import {Cost} from "../../src/core/domain/cost";
 import {FinancialAdvantage} from "../../src/core/domain/financial-advantage";
 import {LegalResource} from "../../src/core/domain/legal-resource";
-import {aFullLegalResource} from "../core/domain/legal-resource-test-builder";
 
 describe('Concept Data Integrity Validation', () => {
 
@@ -268,7 +267,7 @@ describe('Concept Data Integrity Validation', () => {
             || Website.isFunctionallyChanged(value.websites, other.websites)
             || Cost.isFunctionallyChanged(value.costs, other.costs)
             || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages)
-            || LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources.map(lr => aFullLegalResource().withUrl(lr.value).build()));
+            || LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources);
     }
 
     function wait(milliseconds: number) {

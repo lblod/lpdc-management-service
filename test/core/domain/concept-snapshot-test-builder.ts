@@ -25,8 +25,10 @@ import {
     ThemeType,
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
-import {buildCodexVlaanderenIri, buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
+import {buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
+import {anotherFullLegalResourceForConceptSnapshot} from "./legal-resource-test-builder";
+import {LegalResource} from "../../../src/core/domain/legal-resource";
 
 
 export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
@@ -196,7 +198,7 @@ export class ConceptSnapshotTestBuilder {
 
     public static readonly CONCEPT_TAGS = [ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT];
 
-    public static readonly LEGAL_RESOURCES = [buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid()), buildCodexVlaanderenIri(uuid())];
+    public static readonly LEGAL_RESOURCES = [anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).build(), anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).build()];
 
     private id: Iri;
     private title: LanguageString | undefined;
@@ -228,7 +230,7 @@ export class ConceptSnapshotTestBuilder {
     private productId: string | undefined;
     private snapshotType: SnapshotType | undefined;
     private conceptTags: ConceptTagType[] = [];
-    private legalResources: Iri[] = [];
+    private legalResources: LegalResource[] = [];
 
     public withId(id: Iri): ConceptSnapshotTestBuilder {
         this.id = id;
@@ -380,7 +382,7 @@ export class ConceptSnapshotTestBuilder {
         return this;
     }
 
-    public withLegalResources(legalResources: Iri[]): ConceptSnapshotTestBuilder {
+    public withLegalResources(legalResources: LegalResource[]): ConceptSnapshotTestBuilder {
         this.legalResources = legalResources;
         return this;
     }

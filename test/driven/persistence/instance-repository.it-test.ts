@@ -31,7 +31,7 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
-import {aMinimalLegalResource} from "../../core/domain/legal-resource-test-builder";
+import {aMinimalLegalResourceForInstance} from "../../core/domain/legal-resource-test-builder";
 import {ConcurrentUpdateError, NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('InstanceRepository', () => {
@@ -704,14 +704,23 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[0].value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[1].value}>`,
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[2].value}>`,
+
                     `<${instanceId}> <http://data.europa.eu/m8g/hasLegalResource> <${InstanceTestBuilder.LEGAL_RESOURCES[0].id}>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.LEGAL_RESOURCES[0].uuid}"""`,
+                    `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.LEGAL_RESOURCES[0].title.en}"""@EN`,
+                    `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.LEGAL_RESOURCES[0].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.LEGAL_RESOURCES[0].description.en}"""@EN`,
+                    `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.LEGAL_RESOURCES[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://schema.org/url> """${InstanceTestBuilder.LEGAL_RESOURCES[0].url}"""`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${instanceId}> <http://data.europa.eu/m8g/hasLegalResource> <${InstanceTestBuilder.LEGAL_RESOURCES[1].id}>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.LEGAL_RESOURCES[1].uuid}"""`,
+                    `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.LEGAL_RESOURCES[1].title.en}"""@EN`,
+                    `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.LEGAL_RESOURCES[1].title.nlFormal}"""@nl-BE-x-formal`,
+                    `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.LEGAL_RESOURCES[1].description.en}"""@EN`,
+                    `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.LEGAL_RESOURCES[1].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://schema.org/url> """${InstanceTestBuilder.LEGAL_RESOURCES[1].url}"""`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                 ]);
@@ -1082,7 +1091,7 @@ describe('InstanceRepository', () => {
 
         test('minimal legal resource', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const legalResource = aMinimalLegalResource().build();
+            const legalResource = aMinimalLegalResourceForInstance().build();
             const instance = aFullInstance().withLegalResources([legalResource]).build();
             await repository.save(bestuurseenheid, instance);
 

@@ -325,10 +325,18 @@ describe('InstanceSnapshotRepository', () => {
 
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasLegalResource> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id)}`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
+                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].title.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].description.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].description.nlInformal}"""@nl-BE-x-informal`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://schema.org/url> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].url}"""`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasLegalResource> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id)}`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
+                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].title.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].title.nlInformal}"""@nl-BE-x-informal`,
+                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].description.en}"""@EN`,
+                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].description.nlInformal}"""@nl-BE-x-informal`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://schema.org/url> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].url}"""`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
 

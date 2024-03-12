@@ -305,13 +305,15 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     }
 
     private copyLegalResources(legalResources: LegalResource[]): LegalResource[] {
-        return legalResources.map(cp => {
+        return legalResources.map(lr => {
                 const newUuid = uuid();
                 return LegalResource.reconstitute(
                     LegalResourceBuilder.buildIri(newUuid),
                     newUuid,
-                    cp.url,
-                    cp.order
+                    lr.title,
+                    lr.description,
+                    lr.url,
+                    lr.order
                 );
             }
         );
