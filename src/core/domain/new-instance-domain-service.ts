@@ -139,7 +139,7 @@ export class NewInstanceDomainService {
                 undefined,
                 undefined,
                 bestuurseenheid.spatials,
-                this.toInstanceLegalResources(concept.legalResources),
+                this.toInstanceLegalResources(concept.legalResources, conceptLanguageVersion, chosenForm),
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);
@@ -232,12 +232,14 @@ export class NewInstanceDomainService {
         });
     }
 
-    private toInstanceLegalResources(conceptLegalResources: LegalResource[]): LegalResource[] {
+    private toInstanceLegalResources(conceptLegalResources: LegalResource[], conceptLanguageVersion: Language, chosenForm: ChosenFormType | undefined): LegalResource[] {
         return conceptLegalResources.map(conceptLegalResource => {
             const uniqueId = uuid();
             return new LegalResourceBuilder()
                 .withId(LegalResourceBuilder.buildIri(uniqueId))
                 .withUuid(uniqueId)
+                .withTitle(this.toInstanceLanguageString(conceptLegalResource.title, conceptLanguageVersion, chosenForm))
+                .withDescription(this.toInstanceLanguageString(conceptLegalResource.description, conceptLanguageVersion, chosenForm))
                 .withUrl(conceptLegalResource.url)
                 .withOrder(conceptLegalResource.order)
                 .buildForInstance();
