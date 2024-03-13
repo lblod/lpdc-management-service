@@ -58,7 +58,7 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         await directDatabaseAccess.insertData(
             `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
             [
-                `${sparqlEscapeUri(invalidInstanceSnapshotId)} a <http://purl.org/vocab/cpsv#PublicService>`,
+                `${sparqlEscapeUri(invalidInstanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                 `${sparqlEscapeUri(invalidInstanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
                 `${sparqlEscapeUri(invalidInstanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${FormatPreservingDate.of('2024-01-15T00:00:00.672Z').value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
             ]);

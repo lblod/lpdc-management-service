@@ -68,7 +68,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
         const query = `
             SELECT ?instanceSnapshotIri ?createdBy WHERE {
                 GRAPH ?graph {
-                     ?instanceSnapshotIri a <http://purl.org/vocab/cpsv#PublicService> .
+                     ?instanceSnapshotIri a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> .
                      ?instanceSnapshotIri <http://purl.org/pav/createdBy> ?createdBy .
                      ?instanceSnapshotIri <http://www.w3.org/ns/prov#generatedAtTime> ?generatedAtTime .
                 }
@@ -104,7 +104,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
         const query = `
             ASK WHERE {
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.instanceSnapshotsLdesDataGraph())} {
-                       ?instanceSnapshotIri a <http://purl.org/vocab/cpsv#PublicService> .
+                       ?instanceSnapshotIri a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> .
                        ?instanceSnapshotIri <http://www.w3.org/ns/prov#generatedAtTime> ?generatedAtTime .
                        ?instanceSnapshotIri <http://purl.org/dc/terms/isVersionOf> ?instance.
 

@@ -81,7 +81,7 @@ describe('InstanceSnapshotRepository', () => {
 
             const nonExistentInstanceSnapshotId = buildInstanceSnapshotIri('thisiddoesnotexist');
 
-            await expect(repository.findById(bestuurseenheid, nonExistentInstanceSnapshotId)).rejects.toThrowWithMessage(NotFoundError, `Kan <http://data.lblod.info/id/public-service-snapshot/thisiddoesnotexist> niet vinden voor type <http://purl.org/vocab/cpsv#PublicService> in graph <http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/${bestuurseenheid.uuid}>`);
+            await expect(repository.findById(bestuurseenheid, nonExistentInstanceSnapshotId)).rejects.toThrowWithMessage(NotFoundError, `Kan <http://data.lblod.info/id/public-service-snapshot/thisiddoesnotexist> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> in graph <http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/${bestuurseenheid.uuid}>`);
 
         });
 
@@ -229,7 +229,7 @@ describe('InstanceSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
                 [
-                    `${sparqlEscapeUri(instanceSnapshotId)} a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_EN}"""@EN`,
@@ -270,7 +270,7 @@ describe('InstanceSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
                 [
-                    `${sparqlEscapeUri(instanceSnapshotId)} a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/source> ${sparqlEscapeUri(conceptId)}`,
@@ -526,7 +526,7 @@ describe('InstanceSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
                 [
-                    `<${instanceSnapshotIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType>`,
                 ]);
 
@@ -553,7 +553,7 @@ describe('InstanceSnapshotRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
-                [`<${instanceSnapshotIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
                 ]);
 
@@ -581,7 +581,7 @@ describe('InstanceSnapshotRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
-                [`<${instanceSnapshotIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <http://data.europa.eu/m8g/thematicArea> <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme>`,
                 ]);
 
@@ -609,7 +609,7 @@ describe('InstanceSnapshotRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
-                [`<${instanceSnapshotIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel>`,
                 ]);
 
@@ -637,7 +637,7 @@ describe('InstanceSnapshotRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
-                [`<${instanceSnapshotIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel>`,
                 ]);
 
@@ -666,7 +666,7 @@ describe('InstanceSnapshotRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
-                [`<${instanceSnapshotId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium>`,
                 ]);
 
@@ -694,7 +694,7 @@ describe('InstanceSnapshotRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
-                [`<${buildInstanceSnapshotIri1}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${buildInstanceSnapshotIri1}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${buildInstanceSnapshotIri1}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory>`,
                 ]);
 
@@ -722,7 +722,7 @@ describe('InstanceSnapshotRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
-                [`<${instanceSnapshotId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType>`,
                 ]);
 
@@ -741,7 +741,7 @@ describe('InstanceSnapshotRepository', () => {
                 await directDatabaseAccess.insertData(
                     `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
                     [
-                        `${sparqlEscapeUri(instanceSnapshotId)} a <http://purl.org/vocab/cpsv#PublicService>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
@@ -769,7 +769,7 @@ describe('InstanceSnapshotRepository', () => {
                 await directDatabaseAccess.insertData(
                     `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
                     [
-                        `${sparqlEscapeUri(instanceSnapshotId)} a <http://purl.org/vocab/cpsv#PublicService>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
@@ -798,7 +798,7 @@ describe('InstanceSnapshotRepository', () => {
                 await directDatabaseAccess.insertData(
                     `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
                     [
-                        `${sparqlEscapeUri(instanceSnapshotId)} a <http://purl.org/vocab/cpsv#PublicService>`,
+                        `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
