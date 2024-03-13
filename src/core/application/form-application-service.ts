@@ -7,6 +7,10 @@ import {Bestuurseenheid} from "../domain/bestuurseenheid";
 import {FormType, PublicationMediumType} from "../domain/types";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {SemanticFormsMapper} from "../port/driven/persistence/semantic-forms-mapper";
+import {validateForm} from '@lblod/submission-form-helpers';
+import ForkingStore from "forking-store";
+import {namedNode} from "rdflib";
+import {FORM_ID_TO_TYPE_MAPPING, FORM_MAPPING_TRANSLATIONS} from "../../../config";
 
 export class FormApplicationService {
 
@@ -24,7 +28,7 @@ export class FormApplicationService {
         codeRepository: CodeRepository,
         selectFormLanguageDomainService: SelectFormLanguageDomainService,
         semanticFormsMapper: SemanticFormsMapper,
-        ) {
+    ) {
         this._conceptRepository = conceptRepository;
         this._instanceRepository = instanceRepository;
         this._formDefinitionRepository = formDefinitionRepository;
@@ -46,7 +50,7 @@ export class FormApplicationService {
         const isEnglishRequired = concept.publicationMedia.includes(PublicationMediumType.YOUREUROPE);
         const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm, isEnglishRequired);
 
-        const tailoredSchemes =  formType === FormType.CHARACTERISTICS ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
+        const tailoredSchemes = formType === FormType.CHARACTERISTICS ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
 
         return {
             form: formDefinition,
@@ -79,5 +83,48 @@ export class FormApplicationService {
         };
     }
 
+    async validateForms(instanceId: Iri, bestuurseenheid: Bestuurseenheid): Promise<{
+        formId: string,
+        formUri: string,
+        message: string
+    }[]> {
+        const errors = [];
+        for (const formId of Object.keys(FORM_ID_TO_TYPE_MAPPING)) {
+            const form = await this.loadInstanceForm(bestuurseenheid, instanceId, FORM_ID_TO_TYPE_MAPPING[formId]);
 
+            const FORM_GRAPHS = {
+                formGraph: namedNode('http://data.lblod.info/form'),
+                metaGraph: namedNode('http://data.lblod.info/metagraph'),
+                sourceGraph: namedNode(`http://data.lblod.info/sourcegraph`),
+            };
+
+            const formStore = new ForkingStore();
+            formStore.parse(form.form, FORM_GRAPHS.formGraph, 'text/turtle');
+            formStore.parse(form.meta, FORM_GRAPHS.metaGraph, 'text/turtle');
+            formStore.parse(form.source, FORM_GRAPHS.sourceGraph, 'text/turtle');
+
+            const options = {
+                ...FORM_GRAPHS,
+                store: formStore,
+                sourceNode: namedNode(instanceId.value)
+            };
+
+            const formUri = formStore.any(
+                undefined,
+                namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
+                namedNode('http://lblod.data.gift/vocabularies/forms/Form'),
+                FORM_GRAPHS.formGraph
+            );
+
+            const isValid = validateForm(formUri, options);
+            if (!isValid) {
+                errors.push({
+                    formId: formId,
+                    formUri: "http://data.lblod.info/id/forms/" + formId,
+                    message: `Er zijn fouten opgetreden in de tab "${FORM_MAPPING_TRANSLATIONS[formId]}". Gelieve deze te verbeteren!`
+                });
+            }
+        }
+        return errors;
+    }
 }
