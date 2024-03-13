@@ -282,8 +282,7 @@ export class ConceptSnapshot {
             || Website.isFunctionallyChanged(value.websites, other.websites)
             || Cost.isFunctionallyChanged(value.costs, other.costs)
             || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages)
-            //TODO LPDC-1035: fix , use the helper methocd on LegalResource
-            || !isEqual(value.legalResources, other.legalResources);
+            || LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources);
 
     }
 

@@ -106,9 +106,10 @@ export class LegalResource {
 
     static isFunctionallyChanged(value: LegalResource[], other: LegalResource[]): boolean {
         return value.length !== other.length
-            || zip(value, other).some((legalResources: [LegalResource, LegalResource]) => {
-                //TODO LPDC-1035: update is functionally changed + its clients
-                return legalResources[0].url !== legalResources[1].url;
+            || zip(value, other).some((lr: [LegalResource, LegalResource]) => {
+                return LanguageString.isFunctionallyChanged(lr[0].title, lr[1].title)
+                    || LanguageString.isFunctionallyChanged(lr[0].description, lr[1].description)
+                    || lr[0].url !== lr[1].url;
             });
     }
 }

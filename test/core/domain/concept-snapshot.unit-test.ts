@@ -1126,16 +1126,34 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withLegalResources([])
                 .build()],
+        ['legal resource title updated',
+            aFullConceptSnapshot()
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title en')).build()])
+                .build(),
+            aFullConceptSnapshot()
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title en updated')).build()])
+                .build()],
+        ['legal resource description updated',
+            aFullConceptSnapshot()
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withDescription(LanguageString.of('legal resource description en')).build()])
+                .build(),
+            aFullConceptSnapshot()
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withDescription(LanguageString.of('legal resource description en updated')).build()])
+                .build()],
         ['legal resource url updated',
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().withUrl(buildCodexVlaanderenIri('1234').value).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().withUrl(buildCodexVlaanderenIri('12345').value).build()])
-                .build()]
-        //TODO LPDC-1035: add tests for title
-        //TODO LPDC-1035: add tests for description
-        //TODO LPDC-1035: add tests for order
+                .build()],
+        ['legal resource order changed',
+            aFullConceptSnapshot()
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title 1')).withOrder(1).build(), aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title 2')).withOrder(2).build()])
+                .build(),
+            aFullConceptSnapshot()
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title 2')).withOrder(1).build(), aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title 1')).withOrder(2).build()])
+                .build()],
     ];
 
     for (const testCase of functionallyChangedTestCases) {
