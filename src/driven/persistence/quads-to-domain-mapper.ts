@@ -131,7 +131,7 @@ export class QuadsToDomainMapper {
 
     conceptSnapshot(id: Iri): ConceptSnapshot {
 
-        this.errorIfMissingOrIncorrectType(id, NS.lpdcExt('ConceptualPublicService'));
+        this.errorIfMissingOrIncorrectType(id, NS.lpdcExt('ConceptualPublicServiceSnapshot'));
 
         return new ConceptSnapshot(
             id,

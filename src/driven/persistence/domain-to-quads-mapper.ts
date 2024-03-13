@@ -75,7 +75,7 @@ export class DomainToQuadsMapper {
 
     public conceptSnapshotToQuads(conceptSnapshot: ConceptSnapshot): Statement[] {
         return [
-            this.rdfType(conceptSnapshot.id, NS.lpdcExt('ConceptualPublicService')),
+            this.rdfType(conceptSnapshot.id, NS.lpdcExt('ConceptualPublicServiceSnapshot')),
             this.startDate(conceptSnapshot.id, conceptSnapshot.startDate),
             this.endDate(conceptSnapshot.id, conceptSnapshot.endDate),
             this.type(conceptSnapshot.id, conceptSnapshot.type),

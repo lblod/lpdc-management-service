@@ -31,7 +31,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
              ${PREFIX.lpdcExt}
             SELECT ?id WHERE {
                 GRAPH ${sparqlEscapeUri(graph)} {
-                    ?id a lpdcExt:ConceptualPublicService .
+                    ?id a lpdcExt:ConceptualPublicServiceSnapshot .
                 }
             }
         `;
