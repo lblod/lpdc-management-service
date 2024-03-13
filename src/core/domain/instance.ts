@@ -31,6 +31,7 @@ import {ContactPoint} from "./contact-point";
 import {instanceLanguages, Language} from "./language";
 import {LegalResource} from "./legal-resource";
 import {InvariantError} from "./shared/lpdc-error";
+import {isEqual} from "lodash";
 
 export class Instance {
 
@@ -353,6 +354,12 @@ export class Instance {
 
     get legalResources(): LegalResource[] {
         return [...this._legalResources];
+    }
+
+    validateForPublish(): void {
+        if (!isEqual(this.title.definedLanguages, this.description.definedLanguages)) {
+            throw new InvariantError('title and description should contain same languages');
+        }
     }
 
     publish(): Instance {

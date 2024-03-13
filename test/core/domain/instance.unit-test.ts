@@ -1102,6 +1102,34 @@ describe('reopen', () => {
     });
 });
 
+describe('validateForPublish', () => {
+
+    test('when valid instance', () => {
+        const instance = aFullInstance().build();
+
+        expect(() => instance.validateForPublish()).not.toThrow();
+    });
+
+    test('when english title is defined, then english description should also be defined', () => {
+        const instance = aMinimalInstance()
+            .withTitle(LanguageString.of('english title', undefined, 'nederlandse titel'))
+            .withDescription(LanguageString.of(undefined, undefined, 'nederlandse beschrijving'))
+            .build();
+
+        expect(() => instance.validateForPublish()).toThrowWithMessage(InvariantError, 'title and description should contain same languages');
+    });
+
+    test('when english description is defined, then english title should also be defined', () => {
+        const instance = aMinimalInstance()
+            .withTitle(LanguageString.of(undefined, undefined, 'nederlandse titel'))
+            .withDescription(LanguageString.of('english description', undefined, 'nederlandse beschrijving'))
+            .build();
+
+        expect(() => instance.validateForPublish()).toThrowWithMessage(InvariantError, 'title and description should contain same languages');
+    });
+
+});
+
 describe('publish', () => {
 
     test('should update status and modified date', () => {
