@@ -34,8 +34,8 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(buildBestuurseenheidIri(uuid()).value), graph),
-                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
-                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
                     quad(subject, NS.dct('title'), literal('title en', Language.EN), graph),
                     quad(subject, NS.dct('title'), literal('title nl', Language.NL), graph),
@@ -60,8 +60,8 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.mu('uuid'), literal(uuid1), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid2), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(buildBestuurseenheidIri(uuid()).value), graph),
-                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
-                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
                 ];
 
@@ -84,8 +84,8 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(createdByIri1), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(createdByIri2), graph),
-                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
-                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
                 ];
 
@@ -105,8 +105,8 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(buildBestuurseenheidIri(uuid()).value), graph),
-                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
-                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
                     quad(subject, NS.dct('title'), literal('title nl', Language.NL), graph),
                     quad(subject, NS.dct('title'), literal('title nl another triple', Language.NL), graph),
@@ -136,8 +136,8 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
-                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
-                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
 
                     quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
@@ -166,8 +166,8 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
-                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
-                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
 
                     quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
@@ -195,8 +195,8 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
-                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
-                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
                 ];
 
@@ -210,8 +210,8 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
-                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
-                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
 
                     quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
@@ -238,8 +238,8 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
-                    quad(subject, NS.dct('created'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
-                    quad(subject, NS.dct('modified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
+                    quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
+                    quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
 
                     quad(subject, NS.m8g('hasCost'), subjectCost1, graph),

@@ -36,6 +36,7 @@ describe('Update Instance Application Service tests', () => {
 @prefix pub: <http://data.lblod.info/id/public-service/>.
 @prefix bes: <http://data.lblod.info/id/bestuurseenheden/>.
 @prefix ref: <http://vocab.belgif.be/auth/refnis2019/>.
+@prefix schema: <http://schema.org/>.
 @prefix p: <http://purl.org/pav/>.
 @prefix n0: <http://www.w3.org/ns/adms#>.
 @prefix inst: <http://lblod.data.gift/concepts/instance-status/>.
@@ -67,8 +68,8 @@ pub:${instance.uuid}
     m8g:hasCompetentAuthority
       bes:${bestuurseenheid.uuid};
     mu:uuid "${instance.uuid}";
-    dct:created "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
-    dct:modified "${instance.dateModified.value}"^^xsd:dateTime;
+    schema:dateCreated "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
+    schema:dateModified "${instance.dateModified.value}"^^xsd:dateTime;
     dct:spatial ref:24038;
     p:createdBy
             bes:${bestuurseenheid.uuid};
@@ -104,8 +105,8 @@ pub:${instance.uuid}
     m8g:hasCompetentAuthority
       bes:${bestuurseenheid.uuid};
     mu:uuid "${instance.uuid}";
-    dct:created "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
-    dct:modified "${instance.dateModified.value}"^^xsd:dateTime;
+    schema:dateCreated "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
+    schema:dateModified "${instance.dateModified.value}"^^xsd:dateTime;
     dct:spatial ref:24038;
     dct:title "initial title"@nl-be-x-formal, "initial title en"@en;
     p:createdBy
@@ -157,8 +158,8 @@ pub:${instance.uuid}
     m8g:hasCompetentAuthority
       bes:${bestuurseenheid.uuid};
     mu:uuid "${instance.uuid}";
-    dct:created "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
-    dct:modified "${instance.dateModified.value}"^^xsd:dateTime;
+    schema:dateCreated "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
+    schema:dateModified "${instance.dateModified.value}"^^xsd:dateTime;
     dct:spatial ref:24038;
     p:createdBy
             bes:${bestuurseenheid.uuid};
@@ -230,8 +231,8 @@ pub:${instance.uuid}
     m8g:hasCompetentAuthority
       bes:${bestuurseenheid.uuid};
     mu:uuid "${instance.uuid}";
-    dct:created "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
-    dct:modified "${instance.dateModified.value}"^^xsd:dateTime;
+    schema:dateCreated "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
+    schema:dateModified "${instance.dateModified.value}"^^xsd:dateTime;
     dct:spatial ref:24038;
     p:createdBy
             bes:${bestuurseenheid.uuid};

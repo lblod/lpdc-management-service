@@ -240,8 +240,8 @@ export class QuadsToDomainMapper {
             this.conceptId(id),
             this.languages(id),
             this.isVersionOf(id),
-            this.instanceDateCreated(id),
-            this.instanceDateModified(id),
+            this.dateCreated(id),
+            this.dateModified(id),
             this.generatedAtTime(id),
             this.isArchived(id),
             this.spatials(id),
@@ -284,8 +284,8 @@ export class QuadsToDomainMapper {
             this.conceptSnapshotId(id),
             this.productId(id),
             this.languages(id),
-            this.instanceDateCreated(id),
-            this.instanceDateModified(id),
+            this.dateCreated(id),
+            this.dateModified(id),
             this.dateSent(id),
             this.datePublished(id),
             this.instanceStatusType(id),
@@ -438,14 +438,6 @@ export class QuadsToDomainMapper {
 
     private dateModified(id: Iri): FormatPreservingDate | undefined {
         return this.asFormatPreservingDate(this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('dateModified')));
-    }
-
-    private instanceDateCreated(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(namedNode(id.value), NS.dct('created')));
-    }
-
-    private instanceDateModified(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(namedNode(id.value), NS.dct('modified')));
     }
 
     private dateSent(id: Iri): FormatPreservingDate | undefined {

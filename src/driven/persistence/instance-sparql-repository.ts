@@ -94,7 +94,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 ${[...newTriples].join('\n')}
             }
             WHERE {
-                <${instance.id}> <${NS.dct('modified').value}> ${literal(old.dateModified.value, NS.xsd('dateTime')).toNT()} .
+                <${instance.id}> <${NS.schema('dateModified').value}> ${literal(old.dateModified.value, NS.xsd('dateTime')).toNT()} .
             }
         `;
 

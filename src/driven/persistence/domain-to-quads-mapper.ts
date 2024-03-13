@@ -99,8 +99,8 @@ export class DomainToQuadsMapper {
             ...this.costs(conceptSnapshot.id, conceptSnapshot.costs),
             ...this.financialAdvantages(conceptSnapshot.id, conceptSnapshot.financialAdvantages),
             this.isVersionOf(conceptSnapshot.id, conceptSnapshot.isVersionOfConcept),
-            conceptSnapshot.dateCreated ? this.buildQuad(namedNode(conceptSnapshot.id.value), NS.schema('dateCreated'), literal(conceptSnapshot.dateCreated.value, NS.xsd('dateTime'))) : undefined,
-            conceptSnapshot.dateModified ? this.buildQuad(namedNode(conceptSnapshot.id.value), NS.schema('dateModified'), literal(conceptSnapshot.dateModified.value, NS.xsd('dateTime'))) : undefined,
+            this.dateCreated(conceptSnapshot.id, conceptSnapshot.dateCreated),
+            this.dateModified(conceptSnapshot.id, conceptSnapshot.dateModified),
             this.generatedAtTime(conceptSnapshot.id, conceptSnapshot.generatedAtTime),
             this.buildQuad(namedNode(conceptSnapshot.id.value), NS.schema('identifier'), literal(conceptSnapshot.identifier)),
             this.productId(conceptSnapshot.id, conceptSnapshot.productId),
@@ -142,8 +142,8 @@ export class DomainToQuadsMapper {
             this.conceptSnapshotId(instance.id, instance.conceptSnapshotId),
             this.productId(instance.id, instance.productId),
             ...this.languages(instance.id, instance.languages),
-            this.instanceDateCreated(instance.id, instance.dateCreated),
-            this.instanceDateModified(instance.id, instance.dateModified),
+            this.dateCreated(instance.id, instance.dateCreated),
+            this.dateModified(instance.id, instance.dateModified),
             instance.dateSent ? this.buildQuad(namedNode(instance.id.value), NS.schema('dateSent'), literal(instance.dateSent.value, NS.xsd('dateTime'))) : undefined,
             instance.datePublished ? this.buildQuad(namedNode(instance.id.value), NS.schema('datePublished'), literal(instance.datePublished.value, NS.xsd('dateTime'))) : undefined,
             this.buildQuad(namedNode(instance.id.value), NS.adms('status'), namedNode(this.enumToIri(instance.status, NS.concepts.instanceStatus).value)),
@@ -180,8 +180,8 @@ export class DomainToQuadsMapper {
             ...this.languages(instanceSnapshot.id, instanceSnapshot.languages),
             ...this.spatials(instanceSnapshot.id, instanceSnapshot.spatials),
             ...this.legalResources(instanceSnapshot.id, instanceSnapshot.legalResources),
-            this.instanceDateCreated(instanceSnapshot.id, instanceSnapshot.dateCreated),
-            this.instanceDateModified(instanceSnapshot.id, instanceSnapshot.dateModified),
+            this.dateCreated(instanceSnapshot.id, instanceSnapshot.dateCreated),
+            this.dateModified(instanceSnapshot.id, instanceSnapshot.dateModified),
             this.generatedAtTime(instanceSnapshot.id, instanceSnapshot.generatedAtTime),
             this.buildQuad(namedNode(instanceSnapshot.id.value), NS.lpdcExt('isArchived'), literal(instanceSnapshot.isArchived.toString(), NS.xsd('boolean'))),
             ...this.requirements(instanceSnapshot.id, instanceSnapshot.requirements),
@@ -211,12 +211,12 @@ export class DomainToQuadsMapper {
         return value ? this.buildQuad(namedNode(id.value), NS.schema('endDate'), literal(value.value, NS.xsd('dateTime'))) : undefined;
     }
 
-    private instanceDateCreated(id: Iri, value: FormatPreservingDate | undefined) {
-        return value ? this.buildQuad(namedNode(id.value), NS.dct('created'), literal(value.value, NS.xsd('dateTime'))) : undefined;
+    private dateCreated(id: Iri, value: FormatPreservingDate | undefined) {
+        return value ? this.buildQuad(namedNode(id.value), NS.schema('dateCreated'), literal(value.value, NS.xsd('dateTime'))) : undefined;
     }
 
-    private instanceDateModified(id: Iri, value: FormatPreservingDate | undefined) {
-        return value ? this.buildQuad(namedNode(id.value), NS.dct('modified'), literal(value.value, NS.xsd('dateTime'))) : undefined;
+    private dateModified(id: Iri, value: FormatPreservingDate | undefined) {
+        return value ? this.buildQuad(namedNode(id.value), NS.schema('dateModified'), literal(value.value, NS.xsd('dateTime'))) : undefined;
     }
 
     private generatedAtTime(id: Iri, value: FormatPreservingDate | undefined): Statement | undefined {
@@ -295,10 +295,6 @@ export class DomainToQuadsMapper {
 
     private isArchived(id: Iri, isArchived: boolean): Statement | undefined {
         return isArchived ? this.buildQuad(namedNode(id.value), NS.adms('status'), STATUS.concept.archived) : undefined;
-    }
-
-    private legalResourceUrls(id: Iri, values: Iri[]): Statement[] {
-        return this.irisToQuads(namedNode(id.value), NS.m8g('hasLegalResource'), values);
     }
 
     private spatials(id: Iri, values: Iri[]): Statement[] {
