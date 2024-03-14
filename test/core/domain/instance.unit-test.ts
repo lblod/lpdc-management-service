@@ -1160,6 +1160,17 @@ describe('validateForPublish', () => {
         expect(() => instance.validateForPublish(true)).toThrowWithMessage(InvariantError, 'Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!');
     });
 
+    test('When address should be checked and one of contactPoints has no address and other address valid, instance is valid', () => {
+        const instance = aFullInstance()
+            .withContactPoints([
+                aMinimalContactPointForInstance().withOrder(1).withAddress(aFullAddressForInstance().withVerwijstNaar(buildVerwijstNaarIri('3357105')).build()).build(),
+                aMinimalContactPointForInstance().withOrder(2).withAddress(undefined).build()
+            ])
+            .build();
+
+        expect(() => instance.validateForPublish(true)).not.toThrow();
+    });
+
 });
 
 describe('publish', () => {

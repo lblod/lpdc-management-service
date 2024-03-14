@@ -104,7 +104,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     }
 
     private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
-        return new Instance(
+        const instance =  new Instance(
             instanceSnapshot.isVersionOfInstance,
             uuid(),
             bestuurseenheid.id,
@@ -145,10 +145,12 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.spatials,
             this.copyLegalResources(instanceSnapshot.legalResources)
         );
+        instance.validateForPublish(false);
+        return instance;
     }
 
     private asMergedInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, instance: Instance, concept: Concept | undefined) {
-        return new Instance(
+        const mergedInstance = new Instance(
             instanceSnapshot.isVersionOfInstance,
             instance.uuid,
             bestuurseenheid.id,
@@ -189,6 +191,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.spatials,
             this.copyLegalResources(instanceSnapshot.legalResources),
         );
+        mergedInstance.validateForPublish(false);
+        return mergedInstance;
     }
 
     private copyRequirements(requirements: Requirement[]) {

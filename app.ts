@@ -6,7 +6,6 @@ import {
     INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN,
     LOG_INCOMING_DELTA
 } from './config';
-import {validateService} from './lib/validateService';
 import {ProcessingQueue} from './lib/processing-queue';
 import {contactPointOptions} from "./lib/contactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
@@ -56,6 +55,9 @@ import {Application, Request, Response} from "express";
 import errorHandler from './src/driving/error-handler';
 import {NotFound} from './src/driving/http-error';
 import {InvariantError} from "./src/core/domain/shared/lpdc-error";
+import {
+    ValidateInstanceForPublishApplicationService
+} from "./src/core/application/validate-instance-for-publish-application-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -117,6 +119,11 @@ const formApplicationService = new FormApplicationService(
     codeRepository,
     selectFormLanguageDomainService,
     semanticFormsMapper,
+);
+
+const validateInstanceForPublishApplicationService = new ValidateInstanceForPublishApplicationService(
+    formApplicationService,
+    instanceRepository
 );
 
 const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainService(
@@ -429,7 +436,7 @@ async function validateForPublish(req: Request, res: Response) {
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    const errors = await validateService(instanceId, bestuurseenheid, formApplicationService);
+    const errors = await validateInstanceForPublishApplicationService.validate(instanceId, bestuurseenheid);
 
     return res.status(200).json(errors);
 }
@@ -441,7 +448,7 @@ async function publishInstance(req: Request, res: Response) {
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    const errors = await validateService(instanceId, bestuurseenheid, formApplicationService);
+    const errors = await validateInstanceForPublishApplicationService.validate(instanceId, bestuurseenheid);
     if(errors.length > 0) {
         throw new InvariantError('Instantie niet geldig om te publiceren');
     }

@@ -1,4 +1,4 @@
-import {FormApplicationService} from "./form-application-service";
+import {FormApplicationService, ValidationError} from "./form-application-service";
 import {Iri} from "../domain/shared/iri";
 import {Bestuurseenheid} from "../domain/bestuurseenheid";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
@@ -16,7 +16,7 @@ export class ValidateInstanceForPublishApplicationService {
         this._instanceRepository = instanceRepository;
     }
 
-    async validate(instanceId: Iri, bestuurseenheid: Bestuurseenheid) {
+    async validate(instanceId: Iri, bestuurseenheid: Bestuurseenheid): Promise<ValidationError[]> {
         const errorList = await this._formApplicationService.validateForms(instanceId, bestuurseenheid);
         if (errorList.length) {
             return errorList;
@@ -26,7 +26,7 @@ export class ValidateInstanceForPublishApplicationService {
         }
     }
 
-    private tryValidateForPublish(instance: Instance) {
+    private tryValidateForPublish(instance: Instance): ValidationError[] {
         try {
             instance.validateForPublish(true);
             return [];

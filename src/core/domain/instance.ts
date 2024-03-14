@@ -361,7 +361,10 @@ export class Instance {
             throw new InvariantError('titel en beschrijving moeten dezelfde talen bevatten');
         }
         if (checkAddress) {
-            const allAddressesValid = this.contactPoints.every(cp => cp.address.isValid());
+            const allAddressesValid = this.contactPoints
+                .flatMap(cp => cp.address)
+                .filter(address => !!address)
+                .every(address => address.isValid());
             if (!allAddressesValid) {
                 throw new InvariantError('Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!');
             }

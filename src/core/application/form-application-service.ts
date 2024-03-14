@@ -83,11 +83,7 @@ export class FormApplicationService {
         };
     }
 
-    async validateForms(instanceId: Iri, bestuurseenheid: Bestuurseenheid): Promise<{
-        formId: string,
-        formUri: string,
-        message: string
-    }[]> {
+    async validateForms(instanceId: Iri, bestuurseenheid: Bestuurseenheid): Promise<ValidationError[]> {
         const errors = [];
         for (const formId of Object.keys(FORM_ID_TO_TYPE_MAPPING)) {
             const form = await this.loadInstanceForm(bestuurseenheid, instanceId, FORM_ID_TO_TYPE_MAPPING[formId]);
@@ -127,4 +123,11 @@ export class FormApplicationService {
         }
         return errors;
     }
+}
+
+
+export interface ValidationError {
+    formId?: string,
+    formUri?: string,
+    message: string,
 }

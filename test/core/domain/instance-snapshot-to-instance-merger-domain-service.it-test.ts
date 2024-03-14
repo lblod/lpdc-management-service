@@ -33,6 +33,9 @@ import {
 import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 import {Instance} from "../../../src/core/domain/instance";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {aFullContactPointForInstance} from "./contact-point-test-builder";
+import {aFullAddressForInstance} from "./address-test-builder";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -380,6 +383,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 })
             ]));
         });
+
         test('conceptDisplayConfiguration is updated', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
@@ -400,6 +404,36 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             expect(conceptDisplayConfiguration.conceptIsNew).toEqual(false);
             expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(true);
+        });
+
+        test('instance is validated for publish', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withTitle(LanguageString.of('title', undefined, undefined, 'titel'))
+                .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+                .withCreatedBy(bestuurseenheid.id)
+                .withConceptId(undefined)
+                .build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            await expect(() => mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id))
+                .rejects.toThrowWithMessage(InvariantError, 'titel en beschrijving moeten dezelfde talen bevatten');
+        });
+
+        test('instance is validated for publish, adres can be invalid', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withCreatedBy(bestuurseenheid.id)
+                .withConceptId(undefined)
+                .withContactPoints([aFullContactPointForInstance().withAddress(aFullAddressForInstance().withVerwijstNaar(undefined).build()).build()])
+                .build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            await expect(mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id)).resolves.not.toThrow();
         });
 
     });
@@ -468,6 +502,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
 
             });
+
             test('Given a full instanceSnapshot, then existing instance is updated', async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
                 await bestuurseenheidRepository.save(bestuurseenheid);
@@ -736,6 +771,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 ]));
             });
         });
+
         describe('Delete', () => {
             test('Given a minimal instanceSnapshot with isArchived, then remove instance', async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
@@ -925,6 +961,46 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             const actual = await instanceRepository.findById(bestuurseenheid, instanceId);
             expect(actual.title).toEqual(secondInstanceSnapshot.title);
+        });
+
+        test('instance is validated for publish', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withTitle(LanguageString.of('title', undefined, undefined, 'titel'))
+                .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+                .withCreatedBy(bestuurseenheid.id)
+                .withConceptId(undefined)
+                .withIsVersionOfInstance(instance.id)
+                .build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            await expect(() => mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id))
+                .rejects.toThrowWithMessage(InvariantError, 'titel en beschrijving moeten dezelfde talen bevatten');
+        });
+
+        test('instance is validated for publish, adres can be invalid', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withCreatedBy(bestuurseenheid.id)
+                .withConceptId(undefined)
+                .withContactPoints([aFullContactPointForInstance().withAddress(aFullAddressForInstance().withVerwijstNaar(undefined).build()).build()])
+                .withIsVersionOfInstance(instance.id)
+                .build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            await expect(mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id)).resolves.not.toThrow();
         });
     });
 
