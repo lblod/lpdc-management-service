@@ -105,11 +105,11 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
 
     async syncInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void> {
         const query = `
-        ${PREFIX.cpsv}
+        ${PREFIX.lpdcExt}
         ${PREFIX.dct}
         ASK WHERE {
             GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-               ?instance a cpsv:PublicService ;
+               ?instance a lpdcExt:InstancePublicService ;
                     dct:source ${sparqlEscapeUri(conceptId)} .
           }
         }

@@ -213,7 +213,7 @@ describe('Form application service tests', () => {
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('');
             expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
-            expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/vocab/cpsv#PublicService> .`);
+            expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
             expect(serviceUri).toEqual(instance.id.value);
         });
 
@@ -254,7 +254,7 @@ describe('Form application service tests', () => {
             expect(form).toEqual('formdefinition with english requirements');
             expect(meta).toEqual('');
             expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
-            expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/vocab/cpsv#PublicService> .`);
+            expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
             expect(serviceUri).toEqual(instance.id.value);
 
         });
@@ -297,7 +297,7 @@ describe('Form application service tests', () => {
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('org1 a concept.\r\norg2 a concept.');
             expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
-            expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/vocab/cpsv#PublicService> .`);
+            expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
             expect(serviceUri).toEqual(instance.id.value);
 
         });

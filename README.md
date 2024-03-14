@@ -13,7 +13,7 @@ There are 3 forms: 'content, properties & translation' (represented as tabs in t
 
 ## Public Services
 
-Public service templates, also called Conceptual Public Services (after this called Template) exist in the database under the type `<http://lblod.data.gift/vocabularies/lpdc-ipdc/ConceptualPublicService>`. When a user creates a new public service in the frontend, this service will create a new public-service from a template only changing the type to `<http://purl.org/vocab/cpsv#PublicService>`.
+Public service templates, also called Conceptual Public Services (after this called Template) exist in the database under the type `<http://lblod.data.gift/vocabularies/lpdc-ipdc/ConceptualPublicService>`. When a user creates a new public service in the frontend, this service will create a new public-service from a template only changing the type to `<https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`.
 
 It is also in charge of post-processing the LDES feed coming from IPDC.
 
@@ -70,7 +70,7 @@ To find which templates are available and their id, execute the following query:
   }
   ```
 
-NewPublicServiceId: the ID of the newly created public service that is a duplicate of the template you used with the only difference being the type:`<http://purl.org/vocab/cpsv#PublicService>` instead of <http://lblod.data.gift/vocabularies/lpdc-ipdc/ConceptualPublicService>
+NewPublicServiceId: the ID of the newly created public service that is a duplicate of the template you used with the only difference being the type:`<https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>` instead of <http://lblod.data.gift/vocabularies/lpdc-ipdc/ConceptualPublicService>
 
 <br><br></details>
 

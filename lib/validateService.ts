@@ -90,7 +90,7 @@ export async function validateService(instanceId: Iri, bestuurseenheid: Bestuurs
 
 //TODO LPDC-1014: use domain to validate ...
 async function validateAddresses(serviceUri: string): Promise<boolean> {
-    const addresses = await loadContactPointsAddresses(serviceUri, {type: 'cpsv:PublicService', includeUuid: true});
+    const addresses = await loadContactPointsAddresses(serviceUri, {type: 'lpdcExt:InstancePublicService', includeUuid: true});
     if (addresses) {
         const addressUris = uniq(addresses.map(triple => triple.s.value));
         const addressValidation = await Promise.all(addressUris.map(async addressUri => {

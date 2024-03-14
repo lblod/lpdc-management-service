@@ -37,10 +37,10 @@ describe('Instance Snapshot Data Integrity Validation', () => {
                 const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
 
                 const query = `
-                    ${PREFIX.cpsv}
+                    ${PREFIX.lpdcExt}
                     SELECT ?id WHERE {
                         GRAPH ${sparqlEscapeUri(bestuurseenheid.instanceSnapshotsLdesDataGraph())} {
-                            ?id a cpsv:PublicService .
+                            ?id a lpdcExt:InstancePublicService .
                         }
                     }
                 `;

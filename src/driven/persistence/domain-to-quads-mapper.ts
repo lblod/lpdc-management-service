@@ -112,7 +112,7 @@ export class DomainToQuadsMapper {
 
     public instanceToQuads(instance: Instance): Statement[] {
         return [
-            this.rdfType(instance.id, NS.cpsv('PublicService')),
+            this.rdfType(instance.id, NS.lpdcExt('InstancePublicService')),
             instance.uuid ? this.buildQuad(namedNode(instance.id.value), NS.mu('uuid'), literal(instance.uuid)) : undefined,
             this.bestuurseenheidId(instance.id, instance.createdBy),
             ...this.title(instance.id, instance.title),

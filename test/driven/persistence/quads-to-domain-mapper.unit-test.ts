@@ -31,7 +31,7 @@ describe('quads to domain mapper', () => {
 
             const quads =
                 [
-                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(buildBestuurseenheidIri(uuid()).value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
@@ -56,7 +56,7 @@ describe('quads to domain mapper', () => {
 
             const quads =
                 [
-                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid1), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid2), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(buildBestuurseenheidIri(uuid()).value), graph),
@@ -80,7 +80,7 @@ describe('quads to domain mapper', () => {
 
             const quads =
                 [
-                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(createdByIri1), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(createdByIri2), graph),
@@ -102,7 +102,7 @@ describe('quads to domain mapper', () => {
 
             const quads =
                 [
-                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(buildBestuurseenheidIri(uuid()).value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
@@ -133,7 +133,7 @@ describe('quads to domain mapper', () => {
         test('When not all orders are unique, throw error', () => {
             const quads =
                 [
-                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
@@ -163,7 +163,7 @@ describe('quads to domain mapper', () => {
         test('When all orders are unique, dont throw error', () => {
             const quads =
                 [
-                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
@@ -192,7 +192,7 @@ describe('quads to domain mapper', () => {
         test('When correctly no orders are present, dont throw error', () => {
             const quads =
                 [
-                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
@@ -207,7 +207,7 @@ describe('quads to domain mapper', () => {
         test('When a order is missing, throw error', () => {
             const quads =
                 [
-                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
@@ -235,7 +235,7 @@ describe('quads to domain mapper', () => {
         test('When 2 orders have same order, throw error', () => {
             const quads =
                 [
-                    quad(subject, NS.rdf('type'), NS.cpsv('PublicService'), graph),
+                    quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid()), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),

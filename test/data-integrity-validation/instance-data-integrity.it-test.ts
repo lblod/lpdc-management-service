@@ -84,10 +84,10 @@ describe('Instance Data Integrity Validation', () => {
             const domainToQuadsMapper = new DomainToQuadsMapper(bestuurseenheid.userGraph());
 
             const instanceIdsQuery = `
-            ${PREFIX.cpsv}
+            ${PREFIX.lpdcExt}
             SELECT ?id WHERE {
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                    ?id a cpsv:PublicService .
+                    ?id a lpdcExt:InstancePublicService .
                 }
             }
             `;

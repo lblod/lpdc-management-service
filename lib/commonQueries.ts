@@ -53,7 +53,7 @@ export async function loadContactPointOption(option: string): Promise<any> {
     const unsortedContactPointOptions = (await query(`
         SELECT DISTINCT ?option
         WHERE {
-          ?s a <http://purl.org/vocab/cpsv#PublicService> .
+          ?s a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .
           ?s <http://data.europa.eu/m8g/hasContactPoint> ?o .
           ?o <http://schema.org/${option}> ?option .
           }

@@ -64,7 +64,7 @@ describe('Update Instance Application Service tests', () => {
         ${prefixes}
         
 pub:${instance.uuid}
-    a cpsv:PublicService;
+    a lpdcExt:InstancePublicService;
     m8g:hasCompetentAuthority
       bes:${bestuurseenheid.uuid};
     mu:uuid "${instance.uuid}";
@@ -101,7 +101,7 @@ pub:${instance.uuid}
         ${prefixes}
         
 pub:${instance.uuid}
-    a cpsv:PublicService;
+    a lpdcExt:InstancePublicService;
     m8g:hasCompetentAuthority
       bes:${bestuurseenheid.uuid};
     mu:uuid "${instance.uuid}";
@@ -154,7 +154,7 @@ pub:${instance.uuid} dct:title "initial title"@nl-be-x-formal, "initial title en
         ${prefixes}
         
 pub:${instance.uuid}
-    a cpsv:PublicService;
+    a lpdcExt:InstancePublicService;
     m8g:hasCompetentAuthority
       bes:${bestuurseenheid.uuid};
     mu:uuid "${instance.uuid}";
@@ -227,7 +227,7 @@ nodes:02c296ca-d194-4971-9325-e17809afe087\n
     sh:order 1 .\n\n
     
 pub:${instance.uuid}
-    a cpsv:PublicService;
+    a lpdcExt:InstancePublicService;
     m8g:hasCompetentAuthority
       bes:${bestuurseenheid.uuid};
     mu:uuid "${instance.uuid}";

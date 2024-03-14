@@ -94,7 +94,7 @@ describe('InstanceRepository', () => {
 
             const nonExistentInstanceId = buildInstanceIri('thisiddoesnotexist');
 
-            await expect(repository.findById(bestuurseenheid, nonExistentInstanceId)).rejects.toThrowWithMessage(NotFoundError, `Kan <http://data.lblod.info/id/public-service/thisiddoesnotexist> niet vinden voor type <http://purl.org/vocab/cpsv#PublicService> in graph <http://mu.semte.ch/graphs/organizations/${bestuurseenheid.uuid}/LoketLB-LPDCGebruiker>`);
+            await expect(repository.findById(bestuurseenheid, nonExistentInstanceId)).rejects.toThrowWithMessage(NotFoundError, `Kan <http://data.lblod.info/id/public-service/thisiddoesnotexist> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> in graph <http://mu.semte.ch/graphs/organizations/${bestuurseenheid.uuid}/LoketLB-LPDCGebruiker>`);
         });
     });
 
@@ -178,7 +178,7 @@ describe('InstanceRepository', () => {
                 [
                     `<${instanceId}> a <https://www.w3.org/ns/activitystreams#Tombstone>`,
                     `<${instanceId}> <https://www.w3.org/ns/activitystreams#deleted> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                 ]);
 
             await repository.recreate(bestuurseenheid, instance);
@@ -211,7 +211,7 @@ describe('InstanceRepository', () => {
                 [
                     `<${instanceId}> a <https://www.w3.org/ns/activitystreams#Tombstone>`,
                     `<${instanceId}> <https://www.w3.org/ns/activitystreams#deleted> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>`,
                 ]);
 
@@ -246,7 +246,7 @@ describe('InstanceRepository', () => {
                 [
                     `<${instanceId}> a <https://www.w3.org/ns/activitystreams#Tombstone>`,
                     `<${instanceId}> <https://www.w3.org/ns/activitystreams#deleted> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/gepubliceerd>`,
                     `<${instanceId}> <http://schema.org/datePublished> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                 ]);
@@ -288,7 +288,7 @@ describe('InstanceRepository', () => {
             expect(quads).toEqual(expect.arrayContaining([
                 quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('http://purl.org/vocab/cpsv#PublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
             ]));
         });
@@ -334,7 +334,7 @@ describe('InstanceRepository', () => {
             await repository.delete(bestuurseenheid, instance.id);
 
             await expect(repository.findById(bestuurseenheid, instance.id)).rejects.toThrowWithMessage(NotFoundError,
-                `Kan <${instance.id}> niet vinden voor type <http://purl.org/vocab/cpsv#PublicService> in graph <${bestuurseenheid.userGraph()}>`);
+                `Kan <${instance.id}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> in graph <${bestuurseenheid.userGraph()}>`);
             expect(await repository.findById(bestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
         });
 
@@ -348,7 +348,7 @@ describe('InstanceRepository', () => {
             const nonExistentInstanceId = buildInstanceIri('thisiddoesnotexist');
 
             await expect(repository.delete(bestuurseenheid, nonExistentInstanceId)).rejects.toThrowWithMessage(NotFoundError,
-                `Kan <${nonExistentInstanceId}> niet vinden voor type <http://purl.org/vocab/cpsv#PublicService> in graph <${bestuurseenheid.userGraph()}>`
+                `Kan <${nonExistentInstanceId}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> in graph <${bestuurseenheid.userGraph()}>`
             );
         });
 
@@ -362,7 +362,7 @@ describe('InstanceRepository', () => {
             await repository.save(anotherBestuurseenheid, anotherInstance);
 
             await expect(repository.delete(bestuurseenheid, anotherInstance.id)).rejects.toThrowWithMessage(NotFoundError,
-                `Kan <${anotherInstance.id}> niet vinden voor type <http://purl.org/vocab/cpsv#PublicService> in graph <${bestuurseenheid.userGraph()}>`
+                `Kan <${anotherInstance.id}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> in graph <${bestuurseenheid.userGraph()}>`
             );
 
             expect(await repository.findById(anotherBestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
@@ -435,7 +435,7 @@ describe('InstanceRepository', () => {
             await directDatabaseAccess.insertData(
                 `${bestuurseenheid.userGraph()}`,
                 [
-                    `<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${instanceUUID}"""`,
                     `<${instanceId}> <http://schema.org/dateCreated> """${instanceDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -472,7 +472,7 @@ describe('InstanceRepository', () => {
             await directDatabaseAccess.insertData(
                 `${bestuurseenheid.userGraph()}`,
                 [
-                    `<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${instanceUUID}"""`,
                     `<${instanceId}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.TITLE_EN}"""@EN`,
@@ -743,7 +743,7 @@ describe('InstanceRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${instance.id}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instance.id}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instance.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${instance.uuid}"""`,
                     `<${instance.id}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
                     `<${instance.id}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -774,7 +774,7 @@ describe('InstanceRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${instance.id}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instance.id}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instance.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${instance.uuid}"""`,
                     `<${instance.id}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
                     `<${instance.id}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -806,7 +806,7 @@ describe('InstanceRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${instance.id}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instance.id}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instance.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${instance.uuid}"""`,
                     `<${instance.id}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
                     `<${instance.id}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -836,7 +836,7 @@ describe('InstanceRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${instance.id}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instance.id}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instance.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${instance.uuid}"""`,
                     `<${instance.id}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
                     `<${instance.id}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -877,7 +877,7 @@ describe('InstanceRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/unknown-instance-status>`,
                 ]);
 
@@ -907,7 +907,7 @@ describe('InstanceRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${instanceIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                    `<${instanceIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceIri}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType>`,
                 ]);
 
@@ -932,7 +932,7 @@ describe('InstanceRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
-                [`<${instanceIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
                 ]);
 
@@ -957,7 +957,7 @@ describe('InstanceRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
-                [`<${instanceIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceIri}> <http://data.europa.eu/m8g/thematicArea> <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme>`,
                 ]);
 
@@ -982,7 +982,7 @@ describe('InstanceRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
-                [`<${instanceIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel>`,
                 ]);
 
@@ -1007,7 +1007,7 @@ describe('InstanceRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
-                [`<${instanceIri}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel>`,
                 ]);
 
@@ -1032,7 +1032,7 @@ describe('InstanceRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
-                [`<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium>`,
                 ]);
 
@@ -1057,7 +1057,7 @@ describe('InstanceRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
-                [`<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory>`,
                 ]);
 
@@ -1082,7 +1082,7 @@ describe('InstanceRepository', () => {
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
-                [`<${instanceId}> a <http://purl.org/vocab/cpsv#PublicService>`,
+                [`<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType>`,
                 ]);
 

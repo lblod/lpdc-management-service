@@ -1107,11 +1107,11 @@ describe('merges a new concept snapshot into a concept', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `${sparqlEscapeUri(instanceId)} a cpsv:PublicService`,
+                    `${sparqlEscapeUri(instanceId)} a lpdcExt:InstancePublicService`,
                     `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
                 ],
                 [
-                    PREFIX.cpsv,
+                    PREFIX.lpdcExt,
                     PREFIX.dct,
                 ],
             );
@@ -1120,11 +1120,11 @@ describe('merges a new concept snapshot into a concept', () => {
             await directDatabaseAccess.insertData(
                 anotherBestuurseenheid.userGraph().value,
                 [
-                    `${sparqlEscapeUri(anotherInstanceId)} a cpsv:PublicService`,
+                    `${sparqlEscapeUri(anotherInstanceId)} a lpdcExt:InstancePublicService`,
                     `${sparqlEscapeUri(anotherInstanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
                 ],
                 [
-                    PREFIX.cpsv,
+                    PREFIX.lpdcExt,
                     PREFIX.dct,
                 ],
             );
@@ -1147,12 +1147,12 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.id).toEqual(isVersionOfConceptId);
 
             const reviewStatusForConceptInGraph = (be: Bestuurseenheid) => `           
-                ${PREFIX.cpsv}
+                ${PREFIX.lpdcExt}
                 ${PREFIX.dct}
                 ${PREFIX.ext}
                 SELECT ?reviewStatus WHERE {
                     GRAPH ${sparqlEscapeUri(be.userGraph())} {
-                        ?instanceId a cpsv:PublicService ;
+                        ?instanceId a lpdcExt:InstancePublicService ;
                             dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
                             ext:reviewStatus ?reviewStatus .
                     }
@@ -1197,11 +1197,11 @@ describe('merges a new concept snapshot into a concept', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `${sparqlEscapeUri(instanceId)} a cpsv:PublicService`,
+                    `${sparqlEscapeUri(instanceId)} a lpdcExt:InstancePublicService`,
                     `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
                 ],
                 [
-                    PREFIX.cpsv,
+                    PREFIX.lpdcExt,
                     PREFIX.dct,
                 ],
             );
@@ -1220,12 +1220,12 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.id).toEqual(isVersionOfConceptId);
 
             const reviewStatusForConceptInGraph = (be: Bestuurseenheid) => `           
-                ${PREFIX.cpsv}
+                ${PREFIX.lpdcExt}
                 ${PREFIX.dct}
                 ${PREFIX.ext}
                 SELECT ?reviewStatus WHERE {
                     GRAPH ${sparqlEscapeUri(be.userGraph())} {
-                        ?instanceId a cpsv:PublicService ;
+                        ?instanceId a lpdcExt:InstancePublicService ;
                             dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
                             ext:reviewStatus ?reviewStatus .
                     }
@@ -1261,11 +1261,11 @@ describe('merges a new concept snapshot into a concept', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `${sparqlEscapeUri(instanceId)} a cpsv:PublicService`,
+                    `${sparqlEscapeUri(instanceId)} a lpdcExt:InstancePublicService`,
                     `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
                 ],
                 [
-                    PREFIX.cpsv,
+                    PREFIX.lpdcExt,
                     PREFIX.dct,
                 ],
             );
@@ -1285,12 +1285,12 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.id).toEqual(isVersionOfConceptId);
 
             const reviewStatusForConceptInGraph = (be: Bestuurseenheid) => `           
-                ${PREFIX.cpsv}
+                ${PREFIX.lpdcExt}
                 ${PREFIX.dct}
                 ${PREFIX.ext}
                 SELECT ?reviewStatus WHERE {
                     GRAPH ${sparqlEscapeUri(be.userGraph())} {
-                        ?instanceId a cpsv:PublicService ;
+                        ?instanceId a lpdcExt:InstancePublicService ;
                             dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
                             ext:reviewStatus ?reviewStatus .
                     }

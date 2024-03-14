@@ -121,14 +121,12 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
             if (publicationStatus === undefined) {
                 query = `
-                    ${PREFIX.as}
-                    ${PREFIX.cpsv}
-                
+
                 DELETE
                     DATA FROM
                     ${sparqlEscapeUri(bestuurseenheid.userGraph())}
                     {
-                    ${triples.join("\n")}
+                        ${triples.join("\n")}
                     };
                 `;
 
@@ -136,7 +134,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
             } else {
                 query = `
                 ${PREFIX.as}
-                ${PREFIX.cpsv}
+                ${PREFIX.lpdcExt}
                 ${PREFIX.schema}
                 
                 WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
@@ -145,7 +143,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 }
                 INSERT {
                     ${sparqlEscapeUri(instance.id)} a as:Tombstone;
-                    as:formerType cpsv:PublicService;
+                    as:formerType lpdcExt:InstancePublicService;
                     as:deleted ${sparqlEscapeDateTime(now)};
                     schema:publication ${NS.concepts.publicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)} .
                 }`;
@@ -168,7 +166,9 @@ export class InstanceSparqlRepository implements InstanceRepository {
         if (reviewStatus) {
             const updateReviewStatusesQuery = `
             ${PREFIX.ext}
-            ${PREFIX.cpsv}
+            ${PREFIX.lpdcExt}
+            ${PREFIX.dct}
+            
             DELETE {
                 GRAPH ?g {
                     ?service ext:reviewStatus ?status.
@@ -181,8 +181,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
             }
             WHERE {
                 GRAPH ?g {
-                    ?service a cpsv:PublicService;
-                        <http://purl.org/dc/terms/source> ${sparqlEscapeUri(conceptId)}.
+                    ?service a lpdcExt:InstancePublicService;
+                        dct:source ${sparqlEscapeUri(conceptId)}.
                 }
             }`;
             await this.querying.deleteInsert(updateReviewStatusesQuery);
@@ -191,10 +191,10 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
     async exists(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean> {
         const query = `
-            ${PREFIX.cpsv}
+            ${PREFIX.lpdcExt}
             ASK WHERE {
                 GRAPH <${bestuurseenheid.userGraph()}> {
-                    ${sparqlEscapeUri(instanceId)} a cpsv:PublicService .
+                    ${sparqlEscapeUri(instanceId)} a lpdcExt:InstancePublicService .
                 }
             }
         `;
@@ -218,13 +218,13 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
         const query = `
         ${PREFIX.as}
-        ${PREFIX.cpsv}
+        ${PREFIX.lpdcExt}
         ${PREFIX.rdf}
         ${PREFIX.schema}
         WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
         DELETE {
                 ${sparqlEscapeUri(instance.id)} a as:Tombstone.
-                ${sparqlEscapeUri(instance.id)} as:formerType cpsv:PublicService.
+                ${sparqlEscapeUri(instance.id)} as:formerType lpdcExt:InstancePublicService.
                 ${sparqlEscapeUri(instance.id)} as:deleted ?deleteTime.
                 ${sparqlEscapeUri(instance.id)} schema:publication ?publicationStatus.
                 ${sparqlEscapeUri(instance.id)} schema:datePublished ?datePublished.

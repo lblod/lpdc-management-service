@@ -251,7 +251,7 @@ export class QuadsToDomainMapper {
 
     instance(id: Iri): Instance {
 
-        this.errorIfMissingOrIncorrectType(id, NS.cpsv('PublicService'));
+        this.errorIfMissingOrIncorrectType(id, NS.lpdcExt('InstancePublicService'));
 
         return new Instance(
             id,
