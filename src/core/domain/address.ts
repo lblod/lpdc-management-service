@@ -117,6 +117,10 @@ export class Address {
         return this._verwijstNaar;
     }
 
+    isValid(): boolean {
+        return !!this.verwijstNaar;
+    }
+
 }
 
 export class AddressBuilder {

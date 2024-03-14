@@ -356,9 +356,15 @@ export class Instance {
         return [...this._legalResources];
     }
 
-    validateForPublish(): void {
+    validateForPublish(checkAddress: boolean): void {
         if (!isEqual(this.title.definedLanguages, this.description.definedLanguages)) {
-            throw new InvariantError('title and description should contain same languages');
+            throw new InvariantError('titel en beschrijving moeten dezelfde talen bevatten');
+        }
+        if (checkAddress) {
+            const allAddressesValid = this.contactPoints.every(cp => cp.address.isValid());
+            if (!allAddressesValid) {
+                throw new InvariantError('Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!');
+            }
         }
     }
 

@@ -1,7 +1,12 @@
 import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "./instance-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {buildConceptIri, buildConceptSnapshotIri, buildSpatialRefNis2019Iri} from "./iri-test-builder";
+import {
+    buildConceptIri,
+    buildConceptSnapshotIri,
+    buildSpatialRefNis2019Iri,
+    buildVerwijstNaarIri
+} from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
@@ -35,7 +40,7 @@ import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {aMinimalContactPointForInstance, ContactPointTestBuilder} from "./contact-point-test-builder";
 import {ContactPoint, ContactPointBuilder} from "../../../src/core/domain/contact-point";
 import {Address, AddressBuilder} from "../../../src/core/domain/address";
-import {AddressTestBuilder} from "./address-test-builder";
+import {AddressTestBuilder, aFullAddressForInstance} from "./address-test-builder";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {aFullLegalResourceForInstance, LegalResourceTestBuilder} from "./legal-resource-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
@@ -1107,7 +1112,7 @@ describe('validateForPublish', () => {
     test('when valid instance', () => {
         const instance = aFullInstance().build();
 
-        expect(() => instance.validateForPublish()).not.toThrow();
+        expect(() => instance.validateForPublish(false)).not.toThrow();
     });
 
     test('when english title is defined, then english description should also be defined', () => {
@@ -1116,7 +1121,7 @@ describe('validateForPublish', () => {
             .withDescription(LanguageString.of(undefined, undefined, 'nederlandse beschrijving'))
             .build();
 
-        expect(() => instance.validateForPublish()).toThrowWithMessage(InvariantError, 'title and description should contain same languages');
+        expect(() => instance.validateForPublish(false)).toThrowWithMessage(InvariantError, 'titel en beschrijving moeten dezelfde talen bevatten');
     });
 
     test('when english description is defined, then english title should also be defined', () => {
@@ -1125,7 +1130,34 @@ describe('validateForPublish', () => {
             .withDescription(LanguageString.of('english description', undefined, 'nederlandse beschrijving'))
             .build();
 
-        expect(() => instance.validateForPublish()).toThrowWithMessage(InvariantError, 'title and description should contain same languages');
+        expect(() => instance.validateForPublish(false)).toThrowWithMessage(InvariantError, 'titel en beschrijving moeten dezelfde talen bevatten');
+    });
+
+    test('When address should be checked and has addressId, instance is valid', () => {
+        const instance = aFullInstance()
+            .withContactPoints([aMinimalContactPointForInstance().withAddress(aFullAddressForInstance().withVerwijstNaar(buildVerwijstNaarIri('3357105')).build()).build()])
+            .build();
+
+        expect(() => instance.validateForPublish(true)).not.toThrow();
+    });
+
+    test('When address should be checked and has no addressId, instance is invalid', () => {
+        const instance = aFullInstance()
+            .withContactPoints([aMinimalContactPointForInstance().withAddress(aFullAddressForInstance().withVerwijstNaar(undefined).build()).build()])
+            .build();
+
+        expect(() => instance.validateForPublish(true)).toThrowWithMessage(InvariantError, 'Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!');
+    });
+
+    test('When address should be checked and one of the addresses is invalid, instance is invalid', () => {
+        const instance = aFullInstance()
+            .withContactPoints([
+                aMinimalContactPointForInstance().withOrder(1).withAddress(aFullAddressForInstance().withVerwijstNaar(buildVerwijstNaarIri('3357105')).build()).build(),
+                aMinimalContactPointForInstance().withOrder(2).withAddress(aFullAddressForInstance().withVerwijstNaar(undefined).build()).build()
+            ])
+            .build();
+
+        expect(() => instance.validateForPublish(true)).toThrowWithMessage(InvariantError, 'Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!');
     });
 
 });
