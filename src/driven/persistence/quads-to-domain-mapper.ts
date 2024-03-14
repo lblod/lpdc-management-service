@@ -465,7 +465,7 @@ export class QuadsToDomainMapper {
     }
 
     private latestFunctionallyChangedConceptSnapshot(id: Iri): Iri {
-        return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('hasLatestFunctionalChange')));
+        return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdc('hasLatestFunctionalChange')));
     }
 
     private snapshotType(id: Iri): SnapshotType | undefined {

@@ -163,7 +163,7 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> <http://purl.org/dc/terms/description> """${conceptDescription.nl}"""@nl`,
                     `<${conceptId}> <http://schema.org/productID> """${conceptProductId}"""`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/hasVersionedSource> <${concept.latestConceptSnapshot}>`,
-                    `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
+                    `<${conceptId}> <http://data.lblod.info/vocabularies/lpdc/hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
                 ]);
 
             const actualConcept = await repository.findById(conceptId);
@@ -544,7 +544,7 @@ describe('ConceptRepository', () => {
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${concept.previousConceptSnapshots[0]}>`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${concept.previousConceptSnapshots[1]}>`,
                     `<${conceptId}> <http://mu.semte.ch/vocabularies/ext/previousVersionedSource> <${concept.previousConceptSnapshots[2]}>`,
-                    `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
+                    `<${conceptId}> <http://data.lblod.info/vocabularies/lpdc/hasLatestFunctionalChange> <${concept.latestFunctionallyChangedConceptSnapshot}>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(ConceptTestBuilder.CONCEPT_TAGS[0]).value}>`,
                     `<${conceptId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(ConceptTestBuilder.CONCEPT_TAGS[1]).value}>`,
                     `<${conceptId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/concept-status/gearchiveerd>`,

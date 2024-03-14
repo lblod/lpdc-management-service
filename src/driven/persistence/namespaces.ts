@@ -8,6 +8,7 @@ export const NS = {
     dct: Namespace('http://purl.org/dc/terms/'),
     rdf: Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#'),
     lpdcExt: Namespace('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#'),
+    lpdc: Namespace('http://data.lblod.info/vocabularies/lpdc/'),
     m8g: Namespace('http://data.europa.eu/m8g/'),
     dcat: Namespace('http://www.w3.org/ns/dcat#'),
     pav: Namespace('http://purl.org/pav/'),

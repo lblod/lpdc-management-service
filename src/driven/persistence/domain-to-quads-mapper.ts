@@ -306,7 +306,7 @@ export class DomainToQuadsMapper {
     }
 
     private latestFunctionallyChangedConceptSnapshot(id: Iri, value: Iri): Statement {
-        return this.buildQuad(namedNode(id.value), NS.lpdcExt('hasLatestFunctionalChange'), namedNode(value.value));
+        return this.buildQuad(namedNode(id.value), NS.lpdc('hasLatestFunctionalChange'), namedNode(value.value));
     }
 
     private previousConceptSnapshots(id: Iri, values: Iri[]): Statement[] {
