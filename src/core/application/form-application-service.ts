@@ -10,7 +10,6 @@ import {SemanticFormsMapper} from "../port/driven/persistence/semantic-forms-map
 import {validateForm} from '@lblod/submission-form-helpers';
 import ForkingStore from "forking-store";
 import {namedNode} from "rdflib";
-import {FORM_ID_TO_TYPE_MAPPING, FORM_MAPPING_TRANSLATIONS} from "../../../config";
 
 export class FormApplicationService {
 
@@ -50,7 +49,7 @@ export class FormApplicationService {
         const isEnglishRequired = concept.publicationMedia.includes(PublicationMediumType.YOUREUROPE);
         const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm, isEnglishRequired);
 
-        const tailoredSchemes = formType === FormType.CHARACTERISTICS ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
+        const tailoredSchemes = formType === FormType.EIGENSCHAPPEN ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
 
         return {
             form: formDefinition,
@@ -73,7 +72,7 @@ export class FormApplicationService {
         const isEnglishRequired = instance.publicationMedia.includes(PublicationMediumType.YOUREUROPE);
         const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm, isEnglishRequired);
 
-        const tailoredSchemes = formType === FormType.CHARACTERISTICS ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
+        const tailoredSchemes = formType === FormType.EIGENSCHAPPEN ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
 
         return {
             form: formDefinition,
@@ -85,8 +84,8 @@ export class FormApplicationService {
 
     async validateForms(instanceId: Iri, bestuurseenheid: Bestuurseenheid): Promise<ValidationError[]> {
         const errors = [];
-        for (const formId of Object.keys(FORM_ID_TO_TYPE_MAPPING)) {
-            const form = await this.loadInstanceForm(bestuurseenheid, instanceId, FORM_ID_TO_TYPE_MAPPING[formId]);
+        for (const formType of Object.values(FormType)) {
+            const form = await this.loadInstanceForm(bestuurseenheid, instanceId, formType);
 
             const FORM_GRAPHS = {
                 formGraph: namedNode('http://data.lblod.info/form'),
@@ -115,9 +114,8 @@ export class FormApplicationService {
             const isValid = validateForm(formUri, options);
             if (!isValid) {
                 errors.push({
-                    formId: formId,
-                    formUri: "http://data.lblod.info/id/forms/" + formId,
-                    message: `Er zijn fouten opgetreden in de tab "${FORM_MAPPING_TRANSLATIONS[formId]}". Gelieve deze te verbeteren!`
+                    formId: formType,
+                    message: `Er zijn fouten opgetreden in de tab "${formType}". Gelieve deze te verbeteren!`
                 });
             }
         }
@@ -128,6 +126,5 @@ export class FormApplicationService {
 
 export interface ValidationError {
     formId?: string,
-    formUri?: string,
     message: string,
 }

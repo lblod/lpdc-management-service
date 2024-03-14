@@ -1,5 +1,3 @@
-import {FormType} from "./src/core/domain/types";
-
 const APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH;
 
 const PUBLIC_GRAPH = 'http://mu.semte.ch/graphs/public';
@@ -15,16 +13,6 @@ const ADRESSEN_REGISTER_API_KEY = process.env.ADRESSEN_REGISTER_API_KEY;
 const ENABLE_ADDRESS_VALIDATION = (process.env.ENABLE_ADDRESS_VALIDATION ?? 'true') == 'true';
 
 const INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN = process.env.INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN || "*/1 * * * *"; //or every minute
-
-const FORM_ID_TO_TYPE_MAPPING = {
-    "cd0b5eba-33c1-45d9-aed9-75194c3728d3": FormType.CONTENT,
-    "149a7247-0294-44a5-a281-0a4d3782b4fd": FormType.CHARACTERISTICS,
-};
-
-const FORM_MAPPING_TRANSLATIONS = {
-    "cd0b5eba-33c1-45d9-aed9-75194c3728d3": "inhoud",
-    "149a7247-0294-44a5-a281-0a4d3782b4fd": "eigenschappen",
-};
 
 //TODO LPDC-894: use PREFIX object, and generate this list from it (make sure to add all needed to PREFIX)
 const PREFIXES = `
@@ -105,8 +93,6 @@ export {
     CONCEPT_SNAPSHOT_LDES_GRAPH,
     APPLICATION_GRAPH,
     USER_SESSIONS_GRAPH,
-    FORM_ID_TO_TYPE_MAPPING,
-    FORM_MAPPING_TRANSLATIONS,
     PREFIXES,
     PREFIX,
     ADRESSEN_REGISTER_API_KEY,

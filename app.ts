@@ -2,7 +2,6 @@ import {createApp} from './mu-helper';
 import bodyparser from 'body-parser';
 import {
     CONCEPT_SNAPSHOT_LDES_GRAPH,
-    FORM_ID_TO_TYPE_MAPPING,
     INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN,
     LOG_INCOMING_DELTA
 } from './config';
@@ -58,6 +57,7 @@ import {InvariantError} from "./src/core/domain/shared/lpdc-error";
 import {
     ValidateInstanceForPublishApplicationService
 } from "./src/core/application/validate-instance-for-publish-application-service";
+import {FormType} from "./src/core/domain/types";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -327,14 +327,13 @@ async function createInstance(req: Request, res: Response) {
 
 async function getInstanceForm(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
-    const formId = req.params.formId;
-    const formType = FORM_ID_TO_TYPE_MAPPING[formId];
+    const formId = req.params.formId as FormType;
 
     const instanceId = new Iri(instanceIdRequestParam);
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    const bundle = await formApplicationService.loadInstanceForm(bestuurseenheid, instanceId, formType);
+    const bundle = await formApplicationService.loadInstanceForm(bestuurseenheid, instanceId, formId);
     return res.status(200).json(bundle);
 }
 
@@ -473,14 +472,12 @@ async function getDutchLanguageVersionForConcept(req: Request, res: Response) {
 
 async function getConceptForm(req: Request, res: Response) {
     const conceptIdRequestParam = req.params.conceptId;
-    const formId = req.params["formId"];
-    const formType = FORM_ID_TO_TYPE_MAPPING[formId];
-
+    const formId = req.params["formId"] as FormType;
 
     const conceptId = new Iri(conceptIdRequestParam);
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-    const bundle = await formApplicationService.loadConceptForm(bestuurseenheid, conceptId, formType);
+    const bundle = await formApplicationService.loadConceptForm(bestuurseenheid, conceptId, formId);
 
     return res.status(200).json(bundle);
 

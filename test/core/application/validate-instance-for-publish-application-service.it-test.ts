@@ -50,8 +50,7 @@ describe('ValidateInstanceForPublishApplicationService', () => {
 
             const errorList = await validateInstanceForPublishApplicationService.validate(instance.id, bestuurseenheid);
             expect(errorList).toEqual([{
-                "formId": "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                "formUri": "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                "formId": "inhoud",
                 "message": "Er zijn fouten opgetreden in de tab \"inhoud\". Gelieve deze te verbeteren!",
             }]);
         });
@@ -66,12 +65,10 @@ describe('ValidateInstanceForPublishApplicationService', () => {
 
             const errorList = await validateInstanceForPublishApplicationService.validate(instance.id, bestuurseenheid);
             expect(errorList).toEqual([{
-                "formId": "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                "formUri": "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                "formId": "inhoud",
                 "message": "Er zijn fouten opgetreden in de tab \"inhoud\". Gelieve deze te verbeteren!",
             }, {
-                "formId": "149a7247-0294-44a5-a281-0a4d3782b4fd",
-                "formUri": "http://data.lblod.info/id/forms/149a7247-0294-44a5-a281-0a4d3782b4fd",
+                "formId": "eigenschappen",
                 "message": "Er zijn fouten opgetreden in de tab \"eigenschappen\". Gelieve deze te verbeteren!",
             }]);
         });
@@ -86,8 +83,7 @@ describe('ValidateInstanceForPublishApplicationService', () => {
 
             const errorList = await validateInstanceForPublishApplicationService.validate(instance.id, bestuurseenheid);
             expect(errorList).toEqual([{
-                "formId": "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                "formUri": "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                "formId": "inhoud",
                 "message": "Er zijn fouten opgetreden in de tab \"inhoud\". Gelieve deze te verbeteren!",
             }]);
         });

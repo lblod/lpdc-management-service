@@ -218,8 +218,8 @@ export enum ChosenFormType {
 }
 
 export enum FormType {
-    CONTENT = 'content',
-    CHARACTERISTICS = 'characteristics',
+    INHOUD = 'inhoud',
+    EIGENSCHAPPEN = 'eigenschappen',
 }
 
 export enum LanguageType {

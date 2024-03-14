@@ -47,7 +47,7 @@ describe('Form application service tests', () => {
 
         const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);
 
-        test('can load a content form for a concept in correct language', async () => {
+        test('can load a inhoud form for a concept in correct language', async () => {
             const concept =
                 aFullConcept()
                     .withTitle(
@@ -68,14 +68,14 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CONTENT, Language.INFORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.INFORMAL, false).mockReturnValue('formdefinition');
 
             const {
                 form,
                 meta,
                 source,
                 serviceUri
-            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, FormType.CONTENT);
+            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, FormType.INHOUD);
 
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('');
@@ -84,7 +84,7 @@ describe('Form application service tests', () => {
             expect(serviceUri).toEqual(concept.id.value);
         });
 
-        test('can load a content form for a concept in correct language and add english requirements if publication medium is your europe', async () => {
+        test('can load a inhoud form for a concept in correct language and add english requirements if publication medium is your europe', async () => {
             const concept =
                 aFullConcept()
                     .withTitle(
@@ -105,14 +105,14 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CONTENT, Language.INFORMAL, true).mockReturnValue('formdefinition with english requirements');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.INFORMAL, true).mockReturnValue('formdefinition with english requirements');
 
             const {
                 form,
                 meta,
                 source,
                 serviceUri
-            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, FormType.CONTENT);
+            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, FormType.INHOUD);
 
             expect(form).toEqual('formdefinition with english requirements');
             expect(meta).toEqual('');
@@ -122,7 +122,7 @@ describe('Form application service tests', () => {
 
         });
 
-        test('can load a characteristics form for a concept in correct language', async () => {
+        test('can load a eigenschappen form for a concept in correct language', async () => {
             const concept =
                 aFullConcept()
                     .withTitle(
@@ -143,7 +143,7 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CHARACTERISTICS, Language.INFORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL, false).mockReturnValue('formdefinition');
             codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
 
             const {
@@ -151,7 +151,7 @@ describe('Form application service tests', () => {
                 meta,
                 source,
                 serviceUri
-            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, FormType.CHARACTERISTICS);
+            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, FormType.EIGENSCHAPPEN);
 
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('org1 a concept.\r\norg2 a concept.');
@@ -176,7 +176,7 @@ describe('Form application service tests', () => {
 
         const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);
 
-        test('can load a content form for an instance in correct language', async () => {
+        test('can load a inhoud form for an instance in correct language', async () => {
             const bestuurseenheid =
                 aBestuurseenheid()
                     .build();
@@ -201,14 +201,14 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CONTENT, Language.FORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL, false).mockReturnValue('formdefinition');
 
             const {
                 form,
                 meta,
                 source,
                 serviceUri
-            } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, FormType.CONTENT);
+            } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, FormType.INHOUD);
 
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('');
@@ -217,7 +217,7 @@ describe('Form application service tests', () => {
             expect(serviceUri).toEqual(instance.id.value);
         });
 
-        test('can load a content form for an instance in correct language and add english requirements if publication medium is your europe', async () => {
+        test('can load a inhoud form for an instance in correct language and add english requirements if publication medium is your europe', async () => {
             const bestuurseenheid =
                 aBestuurseenheid()
                     .build();
@@ -242,14 +242,14 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CONTENT, Language.FORMAL, true).mockReturnValue('formdefinition with english requirements');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL, true).mockReturnValue('formdefinition with english requirements');
 
             const {
                 form,
                 meta,
                 source,
                 serviceUri
-            } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, FormType.CONTENT);
+            } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, FormType.INHOUD);
 
             expect(form).toEqual('formdefinition with english requirements');
             expect(meta).toEqual('');
@@ -259,7 +259,7 @@ describe('Form application service tests', () => {
 
         });
 
-        test('can load a characteristics form for an instance in correct language', async () => {
+        test('can load a eigenschappen form for an instance in correct language', async () => {
             const bestuurseenheid =
                 aBestuurseenheid()
                     .build();
@@ -284,7 +284,7 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.CHARACTERISTICS, Language.INFORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL, false).mockReturnValue('formdefinition');
             codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
 
             const {
@@ -292,7 +292,7 @@ describe('Form application service tests', () => {
                 meta,
                 source,
                 serviceUri
-            } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, FormType.CHARACTERISTICS);
+            } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, FormType.EIGENSCHAPPEN);
 
             expect(form).toEqual('formdefinition');
             expect(meta).toEqual('org1 a concept.\r\norg2 a concept.');
@@ -325,7 +325,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no title, error in content form', async () => {
+        test('no title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withTitle(undefined)
@@ -334,13 +334,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english title when yourEurope, error in content form', async () => {
+        test('no english title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withTitle(LanguageString.of(undefined, undefined, 'titel'))
@@ -350,8 +349,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -368,7 +366,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no description, error in content form', async () => {
+        test('no description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withDescription(undefined)
@@ -377,13 +375,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english description when yourEurope, error in content form', async () => {
+        test('no english description when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
@@ -393,8 +390,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -411,7 +407,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no requirement title, error in content form', async () => {
+        test('no requirement title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withRequirements([aFullRequirementForInstance().withTitle(undefined).build()])
@@ -420,13 +416,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english requirement title when yourEurope, error in content form', async () => {
+        test('no english requirement title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withRequirements([aFullRequirementForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
@@ -436,8 +431,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -454,7 +448,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no requirement description, error in content form', async () => {
+        test('no requirement description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withRequirements([aFullRequirementForInstance().withDescription(undefined).build()])
@@ -463,13 +457,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english requirement description when yourEurope, error in content form', async () => {
+        test('no english requirement description when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withRequirements([aFullRequirementForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
@@ -479,8 +472,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -497,7 +489,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no evidence title, error in content form', async () => {
+        test('no evidence title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withTitle(undefined).buildForInstance()).build()])
@@ -506,13 +498,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english requirement evidence title when yourEurope, error in content form', async () => {
+        test('no english requirement evidence title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()).build()])
@@ -522,8 +513,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -540,7 +530,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no evidence description, error in content form', async () => {
+        test('no evidence description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withDescription(undefined).buildForInstance()).build()])
@@ -549,13 +539,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english requirement evidence description when yourEurope, error in content form', async () => {
+        test('no english requirement evidence description when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()).build()])
@@ -565,8 +554,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -583,7 +571,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no procedure title, error in content form', async () => {
+        test('no procedure title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withProcedures([aFullProcedureForInstance().withTitle(undefined).buildForInstance()])
@@ -592,13 +580,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english procedure title when yourEurope, error in content form', async () => {
+        test('no english procedure title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withProcedures([aFullProcedureForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
@@ -608,8 +595,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -626,7 +612,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no procedure description, error in content form', async () => {
+        test('no procedure description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withProcedures([aFullProcedureForInstance().withDescription(undefined).buildForInstance()])
@@ -635,13 +621,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english procedure description when yourEurope, error in content form', async () => {
+        test('no english procedure description when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withProcedures([aFullProcedureForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()])
@@ -651,8 +636,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -669,7 +653,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no procedure website title, error in content form', async () => {
+        test('no procedure website title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withTitle(undefined).buildForInstance()]).buildForInstance()])
@@ -678,13 +662,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english procedure website title when yourEurope, error in content form', async () => {
+        test('no english procedure website title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()]).buildForInstance()])
@@ -694,8 +677,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -712,7 +694,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no procedure website url, error in content form', async () => {
+        test('no procedure website url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withUrl(undefined).buildForInstance()]).buildForInstance()])
@@ -721,13 +703,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('invalid procedure website url, error in content form', async () => {
+        test('invalid procedure website url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withUrl('www.example.com').buildForInstance()]).buildForInstance()])
@@ -736,13 +717,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no cost title, error in content form', async () => {
+        test('no cost title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withCosts([aFullCostForInstance().withTitle(undefined).buildForInstance()])
@@ -751,13 +731,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english cost title when yourEurope, error in content form', async () => {
+        test('no english cost title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withCosts([aFullCostForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
@@ -767,8 +746,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -785,7 +763,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no cost description, error in content form', async () => {
+        test('no cost description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withCosts([aFullCostForInstance().withDescription(undefined).buildForInstance()])
@@ -794,13 +772,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english cost description when yourEurope, error in content form', async () => {
+        test('no english cost description when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withCosts([aFullCostForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()])
@@ -810,8 +787,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -828,7 +804,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no financialAdvantage title, error in content form', async () => {
+        test('no financialAdvantage title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withTitle(undefined).buildForInstance()])
@@ -837,13 +813,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english financialAdvantage title when yourEurope, error in content form', async () => {
+        test('no english financialAdvantage title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
@@ -853,8 +828,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -871,7 +845,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no financialAdvantage description, error in content form', async () => {
+        test('no financialAdvantage description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withDescription(undefined).buildForInstance()])
@@ -880,13 +854,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english financialAdvantage description when yourEurope, error in content form', async () => {
+        test('no english financialAdvantage description when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()])
@@ -896,8 +869,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -914,7 +886,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no legalResource url, error in content form', async () => {
+        test('no legalResource url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withLegalResources([aFullLegalResourceForInstance().withUrl(undefined).buildForInstance()])
@@ -923,13 +895,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('invalid legalResource url, error in content form', async () => {
+        test('invalid legalResource url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withLegalResources([aFullLegalResourceForInstance().withUrl('codex.vlaanderen.be').buildForInstance()])
@@ -938,13 +909,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('invalid contactPoint email, error in content form', async () => {
+        test('invalid contactPoint email, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withContactPoints([aFullContactPointForInstance().withEmail('notValidEmail').build()])
@@ -953,13 +923,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('invalid contactPoint phone number, error in content form', async () => {
+        test('invalid contactPoint phone number, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withContactPoints([aFullContactPointForInstance().withTelephone('123').build()])
@@ -968,13 +937,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('invalid contactPoint website url, error in content form', async () => {
+        test('invalid contactPoint website url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withContactPoints([aFullContactPointForInstance().withUrl('www.example.com').build()])
@@ -983,13 +951,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no website title, error in content form', async () => {
+        test('no website title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withWebsites([aFullWebsiteForInstance().withTitle(undefined).buildForInstance()])
@@ -998,13 +965,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no english website title when yourEurope, error in content form', async () => {
+        test('no english website title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
@@ -1014,8 +980,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
@@ -1032,7 +997,7 @@ describe('Form application service tests', () => {
             expect(errors).toEqual([]);
         });
 
-        test('no website url, error in content form', async () => {
+        test('no website url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withWebsites([aFullWebsiteForInstance().withUrl(undefined).buildForInstance()])
@@ -1041,13 +1006,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('invalid website url, error in content form', async () => {
+        test('invalid website url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withWebsites([aFullWebsiteForInstance().withUrl('www.example.com').buildForInstance()])
@@ -1056,13 +1020,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "cd0b5eba-33c1-45d9-aed9-75194c3728d3",
-                formUri: "http://data.lblod.info/id/forms/cd0b5eba-33c1-45d9-aed9-75194c3728d3",
+                formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no competentAuthority, error in characteristics form', async () => {
+        test('no competentAuthority, error in eigenschappen form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withCompetentAuthorities([])
@@ -1071,13 +1034,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "149a7247-0294-44a5-a281-0a4d3782b4fd",
-                formUri: "http://data.lblod.info/id/forms/149a7247-0294-44a5-a281-0a4d3782b4fd",
+                formId: "eigenschappen",
                 message: `Er zijn fouten opgetreden in de tab "eigenschappen". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no spatial, error in characteristics form', async () => {
+        test('no spatial, error in eigenschappen form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withSpatials([])
@@ -1086,13 +1048,12 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "149a7247-0294-44a5-a281-0a4d3782b4fd",
-                formUri: "http://data.lblod.info/id/forms/149a7247-0294-44a5-a281-0a4d3782b4fd",
+                formId: "eigenschappen",
                 message: `Er zijn fouten opgetreden in de tab "eigenschappen". Gelieve deze te verbeteren!`
             }]);
         });
 
-        test('no yourEuropeCategory when YourEurope publicationChannel, error in characteristics form', async () => {
+        test('no yourEuropeCategory when YourEurope publicationChannel, error in eigenschappen form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
@@ -1102,8 +1063,7 @@ describe('Form application service tests', () => {
 
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
             expect(errors).toEqual([{
-                formId: "149a7247-0294-44a5-a281-0a4d3782b4fd",
-                formUri: "http://data.lblod.info/id/forms/149a7247-0294-44a5-a281-0a4d3782b4fd",
+                formId: "eigenschappen",
                 message: `Er zijn fouten opgetreden in de tab "eigenschappen". Gelieve deze te verbeteren!`
             }]);
         });

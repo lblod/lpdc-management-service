@@ -10,7 +10,7 @@ import {
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
-    ExecutingAuthorityLevelType,
+    ExecutingAuthorityLevelType, FormType,
     InstancePublicationStatusType,
     InstanceReviewStatusType,
     InstanceStatusType,
