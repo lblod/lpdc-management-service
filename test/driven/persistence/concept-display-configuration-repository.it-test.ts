@@ -361,15 +361,15 @@ describe('ConceptDisplayConfigurationRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${conceptDisplayConfiguration.conceptId}> lpdcExt:hasConceptDisplayConfiguration <${idForIncorrectType}>`,
+                    `<${conceptDisplayConfiguration.conceptId}> lpdc:hasConceptDisplayConfiguration <${idForIncorrectType}>`,
                     `<${idForIncorrectType}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#SomeUnkownType>`,
                     `<${idForIncorrectType}> mu:uuid """${conceptDisplayConfiguration.uuid}"""`,
-                    `<${idForIncorrectType}> lpdcExt:conceptIsNew "true"^^<http://mu.semte—.ch/vocabularies/typed-literals/boolean>`,
-                    `<${idForIncorrectType}> lpdcExt:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>`,
+                    `<${idForIncorrectType}> lpdc:conceptIsNew "true"^^<http://mu.semte—.ch/vocabularies/typed-literals/boolean>`,
+                    `<${idForIncorrectType}> lpdc:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>`,
                     `<${idForIncorrectType}> dct:relation <${conceptDisplayConfiguration.bestuurseenheidId}>`,
                 ],
                 [
-                    PREFIX.lpdcExt,
+                    PREFIX.lpdc,
                     PREFIX.mu,
                     PREFIX.dct
                 ]);
@@ -394,15 +394,15 @@ describe('ConceptDisplayConfigurationRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${conceptDisplayConfiguration.conceptId}> lpdcExt:hasConceptDisplayConfiguration <${conceptDisplayConfiguration.id}>`,
-                    `<${conceptDisplayConfiguration.id}> a lpdcExt:ConceptDisplayConfiguration`,
+                    `<${conceptDisplayConfiguration.conceptId}> lpdc:hasConceptDisplayConfiguration <${conceptDisplayConfiguration.id}>`,
+                    `<${conceptDisplayConfiguration.id}> a lpdc:ConceptDisplayConfiguration`,
                     `<${conceptDisplayConfiguration.id}> mu:uuid """${conceptDisplayConfiguration.uuid}"""`,
-                    `<${conceptDisplayConfiguration.id}> lpdcExt:conceptIsNew "true"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>`,
-                    `<${conceptDisplayConfiguration.id}> lpdcExt:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>`,
+                    `<${conceptDisplayConfiguration.id}> lpdc:conceptIsNew "true"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>`,
+                    `<${conceptDisplayConfiguration.id}> lpdc:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean>`,
                     `<${conceptDisplayConfiguration.id}> dct:relation <${conceptDisplayConfiguration.bestuurseenheidId}>`,
                 ],
                 [
-                    PREFIX.lpdcExt,
+                    PREFIX.lpdc,
                     PREFIX.mu,
                     PREFIX.dct
                 ]);

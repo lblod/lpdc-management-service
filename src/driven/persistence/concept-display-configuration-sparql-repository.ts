@@ -19,7 +19,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
 
     async findById(bestuurseenheid: Bestuurseenheid, conceptDisplayConfigurationId: Iri): Promise<ConceptDisplayConfiguration> {
         const query = `
-            ${PREFIX.lpdcExt}
+            ${PREFIX.lpdc}
             ${PREFIX.mu}
             ${PREFIX.dct}
             
@@ -28,11 +28,11 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
                     VALUES ?conceptDisplayConfigurationId {
                         ${sparqlEscapeUri(conceptDisplayConfigurationId)}
                     }
-                    ?conceptId lpdcExt:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
-                    ?conceptDisplayConfigurationId a lpdcExt:ConceptDisplayConfiguration ;
+                    ?conceptId lpdc:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
+                    ?conceptDisplayConfigurationId a lpdc:ConceptDisplayConfiguration ;
                         mu:uuid ?uuid ;
-                        lpdcExt:conceptIsNew ?conceptIsNew ;
-                        lpdcExt:conceptInstantiated ?conceptInstantiated ;
+                        lpdc:conceptIsNew ?conceptIsNew ;
+                        lpdc:conceptInstantiated ?conceptInstantiated ;
                         dct:relation ?bestuurseenheidId .
                     
                 }
@@ -62,7 +62,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
 
     async findByConceptId(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<ConceptDisplayConfiguration> {
         const query = `
-            ${PREFIX.lpdcExt}
+            ${PREFIX.lpdc}
             ${PREFIX.mu}
             ${PREFIX.dct}
             
@@ -71,11 +71,11 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
                     VALUES ?conceptId {
                         ${sparqlEscapeUri(conceptId)}
                     }
-                    ?conceptId lpdcExt:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
-                    ?conceptDisplayConfigurationId a lpdcExt:ConceptDisplayConfiguration ;
+                    ?conceptId lpdc:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
+                    ?conceptDisplayConfigurationId a lpdc:ConceptDisplayConfiguration ;
                         mu:uuid ?uuid ;
-                        lpdcExt:conceptIsNew ?conceptIsNew ;
-                        lpdcExt:conceptInstantiated ?conceptInstantiated ;
+                        lpdc:conceptIsNew ?conceptIsNew ;
+                        lpdc:conceptInstantiated ?conceptInstantiated ;
                         dct:relation ?bestuurseenheidId .
                     
                 }
@@ -125,18 +125,18 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
 
     async ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void> {
         const query = `
-        ${PREFIX.lpdcExt}
+        ${PREFIX.lpdc}
         ${PREFIX.mu}
         ${PREFIX.dct}
         ${PREFIX.besluit}
         
         INSERT {
           GRAPH ?bestuurseenheidGraph {
-            ?conceptId lpdcExt:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
-            ?conceptDisplayConfigurationId a lpdcExt:ConceptDisplayConfiguration ;
+            ?conceptId lpdc:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
+            ?conceptDisplayConfigurationId a lpdc:ConceptDisplayConfiguration ;
               mu:uuid ?conceptDisplayConfigurationUuid ;
-              lpdcExt:conceptIsNew "true"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> ;
-              lpdcExt:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> ;
+              lpdc:conceptIsNew "true"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> ;
+              lpdc:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> ;
               dct:relation ?bestuurseenheidId .
           }
         }
@@ -149,7 +149,7 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         
           GRAPH ?bestuurseenheidGraph {
             FILTER NOT EXISTS {
-              ?conceptId lpdcExt:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
+              ?conceptId lpdc:hasConceptDisplayConfiguration ?conceptDisplayConfigurationId .
               ?conceptDisplayConfigurationId dct:relation ?bestuurseenheidId .
             }
           }
@@ -167,20 +167,20 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         const conceptDisplayConfiguration = await this.findById(bestuurseenheid, conceptDisplayConfigurationId);
 
         const query = `
-        ${PREFIX.lpdcExt}
+        ${PREFIX.lpdc}
         DELETE {
             GRAPH <${bestuurseenheid.userGraph()}> {
-                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew ?oldIsNew .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptIsNew ?oldIsNew .
             }
         }
         INSERT {
             GRAPH <${bestuurseenheid.userGraph()}> {
-                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptIsNew "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
             }
         } 
         WHERE {
             GRAPH <${bestuurseenheid.userGraph()}> {
-                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew ?oldIsNew .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptIsNew ?oldIsNew .
             }
         }`;
 
@@ -191,21 +191,21 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid,conceptId);
 
         const query = `
-        ${PREFIX.lpdcExt}
+        ${PREFIX.lpdc}
     
         DELETE {
           GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-            ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
+            ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptInstantiated ?oldIsInstantiated .
           }
         }
         INSERT {
           GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-           ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
+           ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptInstantiated "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
           }
         }
         WHERE {
           GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-            ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
+            ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptInstantiated ?oldIsInstantiated .
           }
         }
       `;
@@ -217,23 +217,23 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid, conceptId);
 
         const query = `
-        ${PREFIX.lpdcExt}
+        ${PREFIX.lpdc}
         DELETE {
             GRAPH <${bestuurseenheid.userGraph()}> {
-                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew ?oldIsNew .
-                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptIsNew ?oldIsNew .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptInstantiated ?oldIsInstantiated .
             }
         }
         INSERT {
             GRAPH <${bestuurseenheid.userGraph()}> {
-                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
-                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated "true"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptIsNew "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptInstantiated "true"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
             }
         } 
         WHERE {
             GRAPH <${bestuurseenheid.userGraph()}> {
-                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew ?oldIsNew .
-                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ?oldIsInstantiated .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptIsNew ?oldIsNew .
+                ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptInstantiated ?oldIsInstantiated .
             }
         }`;
 

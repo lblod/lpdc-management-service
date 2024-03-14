@@ -17,17 +17,17 @@ export class ConceptDisplayConfigurationSparqlTestRepository extends ConceptDisp
         const bestuurseenheidGraph: Iri = bestuurseenheid.userGraph();
 
         const query = `
-            ${PREFIX.lpdcExt}
+            ${PREFIX.lpdc}
             ${PREFIX.mu}
             ${PREFIX.dct}
             
             INSERT DATA { 
                 GRAPH ${sparqlEscapeUri(bestuurseenheidGraph)} {
-                    ${sparqlEscapeUri(conceptDisplayConfiguration.conceptId)} lpdcExt:hasConceptDisplayConfiguration ${sparqlEscapeUri(conceptDisplayConfiguration.id)} . 
-                    ${sparqlEscapeUri(conceptDisplayConfiguration.id)} a lpdcExt:ConceptDisplayConfiguration .
+                    ${sparqlEscapeUri(conceptDisplayConfiguration.conceptId)} lpdc:hasConceptDisplayConfiguration ${sparqlEscapeUri(conceptDisplayConfiguration.id)} . 
+                    ${sparqlEscapeUri(conceptDisplayConfiguration.id)} a lpdc:ConceptDisplayConfiguration .
                     ${sparqlEscapeUri(conceptDisplayConfiguration.id)} mu:uuid ${sparqlEscapeString(conceptDisplayConfiguration.uuid)} .
-                    ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptIsNew ${this.sparqlEscapeTypedBool(conceptDisplayConfiguration.conceptIsNew)} .
-                    ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdcExt:conceptInstantiated ${this.sparqlEscapeTypedBool(conceptDisplayConfiguration.conceptIsInstantiated)} .
+                    ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptIsNew ${this.sparqlEscapeTypedBool(conceptDisplayConfiguration.conceptIsNew)} .
+                    ${sparqlEscapeUri(conceptDisplayConfiguration.id)} lpdc:conceptInstantiated ${this.sparqlEscapeTypedBool(conceptDisplayConfiguration.conceptIsInstantiated)} .
                     ${sparqlEscapeUri(conceptDisplayConfiguration.id)} dct:relation ${sparqlEscapeUri(conceptDisplayConfiguration.bestuurseenheidId)} . 
                 }
             }
