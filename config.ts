@@ -29,7 +29,6 @@ const FORM_MAPPING_TRANSLATIONS = {
 //TODO LPDC-894: use PREFIX object, and generate this list from it (make sure to add all needed to PREFIX)
 const PREFIXES = `
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-  PREFIX ns1: <http://data.lblod.info/vocabularies/lpdc-ipdc/>
   PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
   PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
   PREFIX pera: <http://publications.europa.eu/resource/authority/>
@@ -60,17 +59,18 @@ const PREFIXES = `
   PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
   PREFIX as: <https://www.w3.org/ns/activitystreams#>
   PREFIX sh: <http://www.w3.org/ns/shacl#>
+  PREFIX lpdc: <http://data.lblod.info/vocabularies/lpdc/>
 `;
 
 const PREFIX = {
     rdf: 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>',
-    ns1: 'PREFIX ns1: <http://data.lblod.info/vocabularies/lpdc-ipdc/>',
     skos: 'PREFIX skos: <http://www.w3.org/2004/02/skos/core#>',
     mu: 'PREFIX mu: <http://mu.semte.ch/vocabularies/core/>',
     pera: 'PREFIX pera: <http://publications.europa.eu/resource/authority/>',
     cpsv: 'PREFIX cpsv: <http://purl.org/vocab/cpsv#>',
     dct: 'PREFIX dct: <http://purl.org/dc/terms/>',
     lpdcExt: 'PREFIX lpdcExt: <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#>',
+    lpdc: 'PREFIX lpdc: <http://data.lblod.info/vocabularies/lpdc/>',
     xkos: 'PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>',
     m8g: 'PREFIX m8g: <http://data.europa.eu/m8g/>',
     lblodLpdc: 'PREFIX lblodLpdc: <http://data.lblod.info/id/public-services/>',

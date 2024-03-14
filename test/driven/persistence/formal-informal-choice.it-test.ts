@@ -87,14 +87,14 @@ describe('FormalInformalChoiceRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${formalInformalChoice.id}> a lpdcExt:FormalInformalChoice`,
+                    `<${formalInformalChoice.id}> a lpdc:FormalInformalChoice`,
                     `<${formalInformalChoice.id}> mu:uuid """${formalInformalChoice.uuid}"""`,
                     `<${formalInformalChoice.id}> schema:dateCreated "2024-01-23T12:05:46.654Z"^^xsd:dateTime`,
-                    `<${formalInformalChoice.id}> lpdcExt:chosenForm "informal"`,
+                    `<${formalInformalChoice.id}> lpdc:chosenForm "informal"`,
                     `<${formalInformalChoice.id}> dct:relation <${formalInformalChoice.bestuurseenheidId}>`,
                 ],
                 [
-                    PREFIX.lpdcExt,
+                    PREFIX.lpdc,
                     PREFIX.mu,
                     PREFIX.schema,
                     PREFIX.dct
@@ -128,14 +128,14 @@ describe('FormalInformalChoiceRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${formalInformalChoice.id}> a lpdcExt:FormalInformalChoice`,
+                    `<${formalInformalChoice.id}> a lpdc:FormalInformalChoice`,
                     `<${formalInformalChoice.id}> mu:uuid """${formalInformalChoice.uuid}"""`,
                     `<${formalInformalChoice.id}> schema:dateCreated "2024-01-23T12:05:46.654Z"^^xsd:dateTime`,
-                    `<${formalInformalChoice.id}> lpdcExt:chosenForm "informal"`,
+                    `<${formalInformalChoice.id}> lpdc:chosenForm "informal"`,
                     `<${formalInformalChoice.id}> dct:relation <${anotherBestuurseenheid.id}>`,
                 ],
                 [
-                    PREFIX.lpdcExt,
+                    PREFIX.lpdc,
                     PREFIX.mu,
                     PREFIX.schema,
                     PREFIX.dct
@@ -164,14 +164,14 @@ describe('FormalInformalChoiceRepository', () => {
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
-                    `<${formalInformalChoiceIri}> a lpdcExt:FormalInformalChoice`,
+                    `<${formalInformalChoiceIri}> a lpdc:FormalInformalChoice`,
                     `<${formalInformalChoiceIri}> mu:uuid """${uuid()}"""`,
                     `<${formalInformalChoiceIri}> schema:dateCreated "2024-01-23T12:05:46.654Z"^^xsd:dateTime`,
-                    `<${formalInformalChoiceIri}> lpdcExt:chosenForm """non-existing-choice"""`,
+                    `<${formalInformalChoiceIri}> lpdc:chosenForm """non-existing-choice"""`,
                     `<${formalInformalChoiceIri}> dct:relation <${bestuurseenheid.id}>`,
                 ],
                 [
-                    PREFIX.lpdcExt,
+                    PREFIX.lpdc,
                     PREFIX.mu,
                     PREFIX.schema,
                     PREFIX.dct

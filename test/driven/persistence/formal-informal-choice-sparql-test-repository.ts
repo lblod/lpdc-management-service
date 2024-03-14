@@ -17,17 +17,17 @@ export class FormalInformalChoiceSparqlTestRepository extends FormalInformalChoi
         const bestuurseenheidGraph: Iri = bestuurseenheid.userGraph();
 
         const query = `
-            ${PREFIX.lpdcExt}
+            ${PREFIX.lpdc}
             ${PREFIX.mu}
             ${PREFIX.schema}
             ${PREFIX.dct}
             
             INSERT DATA { 
                 GRAPH ${sparqlEscapeUri(bestuurseenheidGraph)} {
-                    ${sparqlEscapeUri(formalInformalChoice.id)} a lpdcExt:FormalInformalChoice .
+                    ${sparqlEscapeUri(formalInformalChoice.id)} a lpdc:FormalInformalChoice .
                     ${sparqlEscapeUri(formalInformalChoice.id)} mu:uuid ${sparqlEscapeString(formalInformalChoice.uuid)} .
                     ${sparqlEscapeUri(formalInformalChoice.id)} schema:dateCreated ${sparqlEscapeDateTime(formalInformalChoice.dateCreated.value)} .
-                    ${sparqlEscapeUri(formalInformalChoice.id)} lpdcExt:chosenForm ${sparqlEscapeString(formalInformalChoice.chosenForm)} .
+                    ${sparqlEscapeUri(formalInformalChoice.id)} lpdc:chosenForm ${sparqlEscapeString(formalInformalChoice.chosenForm)} .
                     ${sparqlEscapeUri(formalInformalChoice.id)} dct:relation ${sparqlEscapeUri(bestuurseenheid.id)} .
                 }
             }

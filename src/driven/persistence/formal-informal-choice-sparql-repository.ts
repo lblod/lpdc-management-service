@@ -19,17 +19,17 @@ export class FormalInformalChoiceSparqlRepository implements FormalInformalChoic
 
     async findByBestuurseenheid(bestuurseenheid: Bestuurseenheid): Promise<FormalInformalChoice | undefined> {
         const query = `
-            ${PREFIX.lpdcExt}
+            ${PREFIX.lpdc}
             ${PREFIX.mu}
             ${PREFIX.schema}
             ${PREFIX.dct}
             
             SELECT ?formalInformalChoiceId ?uuid ?dateCreated ?chosenForm ?bestuurseenheidId WHERE {
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                    ?formalInformalChoiceId a lpdcExt:FormalInformalChoice ;
+                    ?formalInformalChoiceId a lpdc:FormalInformalChoice ;
                         mu:uuid ?uuid ;
                         schema:dateCreated ?dateCreated ;
-                        lpdcExt:chosenForm ?chosenForm ;
+                        lpdc:chosenForm ?chosenForm ;
                         dct:relation ?bestuurseenheidId .                    
                 }
             } ORDER BY ASC(?dateCreated) LIMIT 1
