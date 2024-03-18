@@ -4,7 +4,8 @@ import {Session} from "../../core/domain/session";
 import {SparqlQuerying} from "./sparql-querying";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {PREFIX, USER_SESSIONS_GRAPH} from "../../../config";
-import {NotFoundError} from "../../core/domain/shared/lpdc-error";
+import {NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
+import {uniq} from "lodash";
 
 export class SessionSparqlRepository implements SessionRepository {
 
@@ -29,6 +30,10 @@ export class SessionSparqlRepository implements SessionRepository {
 
         if (result.length === 0) {
             throw new NotFoundError(`Geen sessie gevonden voor Iri: ${id}`);
+        }
+
+        if (uniq(result.map(r => r['bestuurseenheid'].value)).length > 1) {
+            throw new SystemError(`Geen geldige sessie gevonden voor Iri: ${id}: bevat meerdere bestuurseenheden`);
         }
 
         return new Session(
