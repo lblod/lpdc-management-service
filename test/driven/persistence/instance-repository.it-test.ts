@@ -4,7 +4,12 @@ import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
-import {buildInstanceIri, buildSpatialRefNis2019Iri} from "../../core/domain/iri-test-builder";
+import {
+    buildConceptIri,
+    buildConceptSnapshotIri,
+    buildInstanceIri,
+    buildSpatialRefNis2019Iri
+} from "../../core/domain/iri-test-builder";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
@@ -22,8 +27,15 @@ import {aMinimalRequirementForInstance} from "../../core/domain/requirement-test
 import {aMinimalEvidenceForInstance} from "../../core/domain/evidence-test-builder";
 import {aMinimalProcedureForInstance} from "../../core/domain/procedure-test-builder";
 import {aMinimalWebsiteForInstance} from "../../core/domain/website-test-builder";
-import {aFullContactPointForInstance} from "../../core/domain/contact-point-test-builder";
-import {AddressTestBuilder, aFullAddressForInstance} from "../../core/domain/address-test-builder";
+import {
+    aFullContactPointForInstance,
+    aMinimalContactPointForInstance
+} from "../../core/domain/contact-point-test-builder";
+import {
+    AddressTestBuilder,
+    aFullAddressForInstance,
+    aMinimalAddressForInstance
+} from "../../core/domain/address-test-builder";
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
@@ -33,6 +45,9 @@ import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {aMinimalLegalResourceForInstance} from "../../core/domain/legal-resource-test-builder";
 import {ConcurrentUpdateError, NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
+import {LanguageString} from "../../../src/core/domain/language-string";
+import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
+import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial-advantage-test-builder";
 
 describe('InstanceRepository', () => {
 
@@ -1097,6 +1112,91 @@ describe('InstanceRepository', () => {
 
             const savedInstance = await repository.findById(bestuurseenheid, instance.id);
             expect(savedInstance).toEqual(instance);
+        });
+
+        test('empty string fields', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aMinimalInstance()
+                .withTitle(LanguageString.of("", ""))
+                .withDescription(LanguageString.of("", ""))
+                .withAdditionalDescription(LanguageString.of("", ""))
+                .withException(LanguageString.of("", ""))
+                .withRegulation(LanguageString.of("", ""))
+                .withStartDate(FormatPreservingDate.of(""))
+                .withEndDate(FormatPreservingDate.of(""))
+                .withKeywords([LanguageString.of(undefined, "")])
+                .withRequirements([
+                    aMinimalRequirementForInstance()
+                        .withTitle(LanguageString.of("", ""))
+                        .withDescription(LanguageString.of("", ""))
+                        .withEvidence(aMinimalEvidenceForInstance()
+                            .withTitle(LanguageString.of("", ""))
+                            .withDescription(LanguageString.of("", ""))
+                            .buildForInstance())
+                        .buildForInstance()
+                ])
+                .withProcedures([
+                    aMinimalProcedureForInstance()
+                        .withTitle(LanguageString.of("", ""))
+                        .withDescription(LanguageString.of("", ""))
+                        .withWebsites([aMinimalWebsiteForInstance()
+                            .withTitle(LanguageString.of("", ""))
+                            .withDescription(LanguageString.of("", ""))
+                            .withUrl("")
+                            .buildForInstance()
+                        ])
+                        .buildForInstance()
+                ])
+                .withWebsites([aMinimalWebsiteForInstance()
+                    .withTitle(LanguageString.of("", ""))
+                    .withDescription(LanguageString.of("", ""))
+                    .withUrl("")
+                    .buildForInstance()
+                ])
+                .withCosts([
+                    aMinimalCostForInstance()
+                        .withTitle(LanguageString.of("", ""))
+                        .withDescription(LanguageString.of("", ""))
+                        .buildForInstance()
+                ])
+                .withFinancialAdvantages([
+                    aMinimalFinancialAdvantageForInstance()
+                        .withTitle(LanguageString.of("", ""))
+                        .withDescription(LanguageString.of("", ""))
+                        .buildForInstance()
+                ])
+                .withContactPoints([
+                    aMinimalContactPointForInstance()
+                        .withUrl("")
+                        .withEmail("")
+                        .withTelephone("")
+                        .withOpeningHours("")
+                        .withAddress(aMinimalAddressForInstance()
+                            .withGemeentenaam(LanguageString.of(undefined, ""))
+                            .withStraatnaam(LanguageString.of(undefined, ""))
+                            .withHuisnummer("")
+                            .withBusnummer("")
+                            .withPostcode("")
+                            .withLand(LanguageString.of(undefined,""))
+                            .build()
+                        )
+                        .build()
+                ])
+                .withConceptId(buildConceptIri(uuid()))
+                .withConceptSnapshotId(buildConceptSnapshotIri(uuid()))
+                .withProductId("")
+                .withLegalResources([
+                    aMinimalLegalResourceForInstance()
+                        .withTitle(LanguageString.of("", ""))
+                        .withDescription(LanguageString.of("", ""))
+                        .withUrl("")
+                        .build()
+                ])
+                .build();
+
+            await repository.save(bestuurseenheid, instance);
+            const actualInstance = await repository.findById(bestuurseenheid, instance.id);
+            expect(actualInstance).toEqual(instance);
         });
 
     });

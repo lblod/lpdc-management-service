@@ -363,7 +363,7 @@ export class DomainToQuadsMapper {
                     this.buildQuad(namedNode(website.id.value), NS.rdf('type'), NS.schema('WebSite')),
                     ...this.languageStringToQuads(namedNode(website.id.value), NS.dct(`title`), website.title),
                     ...this.languageStringToQuads(namedNode(website.id.value), NS.dct(`description`), website.description),
-                    website.url ? this.buildQuad(namedNode(website.id.value), NS.schema('url'), literal(website.url)) : undefined,
+                    website.url !== undefined ? this.buildQuad(namedNode(website.id.value), NS.schema('url'), literal(website.url)) : undefined,
                     this.buildQuad(namedNode(website.id.value), NS.sh('order'), literal(website.order.toString(), NS.xsd('integer'))),
                     website.conceptWebsiteId ? this.conceptId(website.id, website.conceptWebsiteId) : undefined,
                 ];
@@ -406,7 +406,7 @@ export class DomainToQuadsMapper {
             this.buildQuad(namedNode(legalResource.id.value), NS.rdf('type'), NS.eli('LegalResource')),
             ...this.languageStringToQuads(namedNode(legalResource.id.value), NS.dct('title'), legalResource.title),
             ...this.languageStringToQuads(namedNode(legalResource.id.value), NS.dct('description'), legalResource.description),
-            legalResource.url ? this.buildQuad(namedNode(legalResource.id.value), NS.schema('url'), literal(legalResource.url)) : undefined,
+            legalResource.url !== undefined ? this.buildQuad(namedNode(legalResource.id.value), NS.schema('url'), literal(legalResource.url)) : undefined,
             this.buildQuad(namedNode(legalResource.id.value), NS.sh('order'), literal(legalResource.order.toString(), NS.xsd('integer'))),
         ]);
     }
@@ -417,10 +417,10 @@ export class DomainToQuadsMapper {
                 this.buildQuad(namedNode(id.value), NS.m8g('hasContactPoint'), namedNode(contactPoint.id.value)),
                 contactPoint.uuid ? this.buildQuad(namedNode(contactPoint.id.value), NS.mu('uuid'), literal(contactPoint.uuid)) : undefined,
                 this.buildQuad(namedNode(contactPoint.id.value), NS.rdf('type'), NS.schema('ContactPoint')),
-                contactPoint.url ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('url'), contactPoint.url) : undefined,
-                contactPoint.email ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('email'), contactPoint.email) : undefined,
-                contactPoint.telephone ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('telephone'), contactPoint.telephone) : undefined,
-                contactPoint.openingHours ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('openingHours'), contactPoint.openingHours) : undefined,
+                contactPoint.url !== undefined ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('url'), contactPoint.url) : undefined,
+                contactPoint.email !== undefined ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('email'), contactPoint.email) : undefined,
+                contactPoint.telephone !== undefined ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('telephone'), contactPoint.telephone) : undefined,
+                contactPoint.openingHours !== undefined ? this.buildQuad(namedNode(contactPoint.id.value), NS.schema('openingHours'), contactPoint.openingHours) : undefined,
                 this.buildQuad(namedNode(contactPoint.id.value), NS.sh('order'), literal(contactPoint.order.toString(), NS.xsd('integer'))),
                 ...this.addressToQuads(contactPoint.id, contactPoint.address),
             ];
@@ -434,9 +434,9 @@ export class DomainToQuadsMapper {
             this.buildQuad(namedNode(address.id.value), NS.rdf('type'), NS.locn('Address')),
             ...this.languageStringToQuads(namedNode(address.id.value), NS.adres(`gemeentenaam`), address.gemeentenaam),
             ...this.languageStringToQuads(namedNode(address.id.value), NS.adres(`land`), address.land),
-            address.huisnummer ? this.buildQuad(namedNode(address.id.value), NS.adres('Adresvoorstelling.huisnummer'), address.huisnummer) : undefined,
-            address.busnummer ? this.buildQuad(namedNode(address.id.value), NS.adres('Adresvoorstelling.busnummer'), address.busnummer) : undefined,
-            address.postcode ? this.buildQuad(namedNode(address.id.value), NS.adres('postcode'), address.postcode) : undefined,
+            address.huisnummer !== undefined ? this.buildQuad(namedNode(address.id.value), NS.adres('Adresvoorstelling.huisnummer'), address.huisnummer) : undefined,
+            address.busnummer !== undefined ? this.buildQuad(namedNode(address.id.value), NS.adres('Adresvoorstelling.busnummer'), address.busnummer) : undefined,
+            address.postcode !== undefined ? this.buildQuad(namedNode(address.id.value), NS.adres('postcode'), address.postcode) : undefined,
             ...this.languageStringToQuads(namedNode(address.id.value), NS.adres(`Straatnaam`), address.straatnaam),
             this.verwijstNaar(address.id, address.verwijstNaar),
             this.buildQuad(namedNode(address.id.value), NS.sh('order'), literal(`1`, NS.xsd('integer'))),
@@ -444,7 +444,7 @@ export class DomainToQuadsMapper {
     }
 
     private productId(id: Iri, productId: string | undefined): Statement | undefined {
-        return productId ? this.buildQuad(namedNode(id.value), NS.schema('productID'), literal(productId)) : undefined;
+        return productId !== undefined ? this.buildQuad(namedNode(id.value), NS.schema('productID'), literal(productId)) : undefined;
     }
 
     private conceptId(id: Iri, conceptId: Iri | undefined): Statement | undefined {
