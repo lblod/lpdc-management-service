@@ -357,7 +357,7 @@ export class Instance {
     }
 
     validateForPublish(checkAddress: boolean): void {
-        if (!isEqual(this.title.definedLanguages, this.description.definedLanguages)) {
+        if (!isEqual(this.title.notBlankLanguages, this.description.notBlankLanguages)) {
             throw new InvariantError('titel en beschrijving moeten dezelfde talen bevatten');
         }
         if (checkAddress) {

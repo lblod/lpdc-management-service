@@ -1,6 +1,7 @@
 import {Language} from "./language";
 import {uniq} from "lodash";
 import {InvariantError} from "./shared/lpdc-error";
+import {isNotBlank} from "./shared/string-helper";
 
 export class LanguageString {
 
@@ -62,6 +63,17 @@ export class LanguageString {
 
     get nlGeneratedInformal(): string | undefined {
         return this._nlGeneratedInformal;
+    }
+
+    get notBlankLanguages(): Language [] {
+        const definedLanguages = [];
+        if (isNotBlank(this._en)) definedLanguages.push(Language.EN);
+        if (isNotBlank(this._nl)) definedLanguages.push(Language.NL);
+        if (isNotBlank(this._nlFormal)) definedLanguages.push(Language.FORMAL);
+        if (isNotBlank(this._nlInformal)) definedLanguages.push(Language.INFORMAL);
+        if (isNotBlank(this._nlGeneratedFormal)) definedLanguages.push(Language.GENERATED_FORMAL);
+        if (isNotBlank(this._nlGeneratedInformal)) definedLanguages.push(Language.GENERATED_INFORMAL);
+        return uniq(definedLanguages);
     }
 
     get definedLanguages(): Language[] {
