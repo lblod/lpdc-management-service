@@ -14,7 +14,6 @@ import {
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
-    SnapshotType,
     TargetAudienceType,
     ThemeType,
     YourEuropeCategoryType
@@ -52,8 +51,8 @@ export class ConceptSnapshot {
     private readonly _dateModified: FormatPreservingDate;
     private readonly _generatedAtTime: FormatPreservingDate;
     private readonly _productId: string;
-    private readonly _snapshotType: SnapshotType | undefined;
     private readonly _conceptTags: ConceptTagType[];
+    private readonly _isArchived: boolean;
     private readonly _legalResources: LegalResource[];
 
     constructor(id: Iri,
@@ -84,8 +83,8 @@ export class ConceptSnapshot {
                 dateModified: FormatPreservingDate,
                 generatedAtTime: FormatPreservingDate,
                 productId: string,
-                snapshotType: SnapshotType,
                 conceptTags: ConceptTagType[],
+                isArchived: boolean,
                 legalResources: LegalResource[],
     ) {
         this._id = requiredValue(id, 'id');
@@ -125,8 +124,8 @@ export class ConceptSnapshot {
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._generatedAtTime = requiredValue(generatedAtTime, 'generatedAtTime');
         this._productId = requiredValue(productId, 'productId');
-        this._snapshotType = requiredValue(snapshotType, 'snapshotType');
         this._conceptTags = requireNoDuplicates(asSortedArray(conceptTags), 'conceptTags');
+        this._isArchived = requiredValue(isArchived, 'isArchived');
         this._legalResources = [...legalResources].map(LegalResource.forConceptSnapshot);
         requireNoDuplicates(this._legalResources.map(lr => lr.order), 'legalResources > order');
     }
@@ -247,12 +246,12 @@ export class ConceptSnapshot {
         return this._productId;
     }
 
-    get snapshotType(): SnapshotType | undefined {
-        return this._snapshotType;
-    }
-
     get conceptTags(): ConceptTagType[] {
         return [...this._conceptTags];
+    }
+
+    get isArchived(): boolean {
+        return this._isArchived;
     }
 
     get legalResources(): LegalResource[] {
@@ -282,8 +281,8 @@ export class ConceptSnapshot {
             || Website.isFunctionallyChanged(value.websites, other.websites)
             || Cost.isFunctionallyChanged(value.costs, other.costs)
             || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages)
-            || LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources);
-
+            || LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources)
+            || !isEqual(value.isArchived, other.isArchived);
     }
 
 }

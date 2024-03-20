@@ -104,10 +104,6 @@ describe('constructing', () => {
         expect(() => aFullConceptSnapshot().withProductId('   ').build()).toThrowWithMessage(InvariantError, 'productId mag niet leeg zijn');
     });
 
-    test('Undefined snapshotType throws error', () => {
-        expect(() => aFullConceptSnapshot().withSnapshotType(undefined).build()).toThrowWithMessage(InvariantError, 'snapshotType mag niet ontbreken');
-    });
-
     test('TargetAudience with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withTargetAudiences([TargetAudienceType.BURGER, TargetAudienceType.BURGER]);
         expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'targetAudiences mag geen duplicaten bevatten');
@@ -151,6 +147,11 @@ describe('constructing', () => {
     test('keywords with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]);
         expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
+    });
+
+    test('undefined isArchived duplicates throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withIsArchived(undefined);
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'isArchived mag niet ontbreken');
     });
 
     describe('dateCreated', () => {

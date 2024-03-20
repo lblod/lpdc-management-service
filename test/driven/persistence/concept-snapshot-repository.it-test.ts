@@ -2,28 +2,27 @@ import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
 import {
-    aFullConceptSnapshot,
-    aMinimalConceptSnapshot,
-    ConceptSnapshotTestBuilder
+        aFullConceptSnapshot,
+        aMinimalConceptSnapshot,
+        ConceptSnapshotTestBuilder
 } from "../../core/domain/concept-snapshot-test-builder";
 import {ConceptSnapshotSparqlTestRepository} from "./concept-snapshot-sparql-test-repository";
 import {
-    aMinimalRequirementForConceptSnapshot,
-    RequirementTestBuilder
+        aMinimalRequirementForConceptSnapshot,
+        RequirementTestBuilder
 } from "../../core/domain/requirement-test-builder";
 import {aMinimalEvidenceForConceptSnapshot, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
 import {aMinimalProcedureForConceptSnapshot, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
 import {aMinimalWebsiteForConceptSnapshot, WebsiteTestBuilder} from "../../core/domain/website-test-builder";
 import {
-    CompetentAuthorityLevelType,
-    ConceptTagType,
-    ExecutingAuthorityLevelType,
-    ProductType,
-    PublicationMediumType,
-    SnapshotType,
-    TargetAudienceType,
-    ThemeType,
-    YourEuropeCategoryType
+        CompetentAuthorityLevelType,
+        ConceptTagType,
+        ExecutingAuthorityLevelType,
+        ProductType,
+        PublicationMediumType,
+        TargetAudienceType,
+        ThemeType,
+        YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {buildConceptSnapshotIri} from "../../core/domain/iri-test-builder";
 import {NS} from "../../../src/driven/persistence/namespaces";
@@ -106,7 +105,6 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString('description').build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
-            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
@@ -118,7 +116,6 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
-                    .withSnapshotType(conceptSnapshotType)
                     .withDateCreated(conceptSnapshotDateCreated)
                     .withDateModified(conceptSnapshotDateModified)
                     .withGeneratedAtTime(conceptSnapshotGeneratedAtTime)
@@ -131,7 +128,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
+                        `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
@@ -147,7 +144,6 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString('description').build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
-            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
@@ -159,7 +155,6 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
-                    .withSnapshotType(conceptSnapshotType)
                     .withStartDate(ConceptSnapshotTestBuilder.START_DATE)
                     .withEndDate(undefined)
                     .withDateCreated(conceptSnapshotDateCreated)
@@ -169,14 +164,15 @@ describe('ConceptSnapshotRepository', () => {
 
             await directDatabaseAccess.insertData(
                 CONCEPT_SNAPSHOT_LDES_GRAPH,
-                [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                [
+                        `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
                     `<${conceptSnapshotId}> <http://schema.org/startDate> """${ConceptSnapshotTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                        `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
                 ]);
 
@@ -517,7 +513,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${ConceptSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/identifier> """${id}"""`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${ConceptSnapshotTestBuilder.PRODUCT_ID}"""`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(ConceptSnapshotTestBuilder.SNAPSHOT_TYPE).value}>`,
+                        `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(ConceptSnapshotTestBuilder.CONCEPT_TAGS[0]).value}>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#conceptTag> <${NS.dvc.conceptTag(ConceptSnapshotTestBuilder.CONCEPT_TAGS[1]).value}>`,
                     `<${conceptSnapshotId}> <http://data.europa.eu/m8g/hasLegalResource> <${ConceptSnapshotTestBuilder.LEGAL_RESOURCES[0].id}>`,
@@ -564,7 +560,6 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
-            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
@@ -580,7 +575,6 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
-                    .withSnapshotType(conceptSnapshotType)
                     .withDateCreated(conceptSnapshotDateCreated)
                     .withDateModified(conceptSnapshotDateModified)
                     .withGeneratedAtTime(conceptSnapshotGeneratedAtTime)
@@ -598,7 +592,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
+                        `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -619,7 +613,6 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
-            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
@@ -638,7 +631,6 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
-                    .withSnapshotType(conceptSnapshotType)
                     .withDateCreated(conceptSnapshotDateCreated)
                     .withDateModified(conceptSnapshotDateModified)
                     .withGeneratedAtTime(conceptSnapshotGeneratedAtTime)
@@ -662,7 +654,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
+                        `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -686,7 +678,6 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
-            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
@@ -702,7 +693,6 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
-                    .withSnapshotType(conceptSnapshotType)
                     .withDateCreated(conceptSnapshotDateCreated)
                     .withDateModified(conceptSnapshotDateModified)
                     .withGeneratedAtTime(conceptSnapshotGeneratedAtTime)
@@ -722,7 +712,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
                     `<${conceptSnapshotId}> <http://purl.org/vocab/cpsv#follows> <${procedureId}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
+                        `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -743,7 +733,6 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
             const conceptSnapshotDescription = aMinimalLanguageString(ConceptSnapshotTestBuilder.DESCRIPTION).build();
             const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
-            const conceptSnapshotType = ConceptSnapshotTestBuilder.SNAPSHOT_TYPE;
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
@@ -762,7 +751,6 @@ describe('ConceptSnapshotRepository', () => {
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
-                    .withSnapshotType(conceptSnapshotType)
                     .withDateCreated(conceptSnapshotDateCreated)
                     .withDateModified(conceptSnapshotDateModified)
                     .withGeneratedAtTime(conceptSnapshotGeneratedAtTime)
@@ -784,7 +772,7 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
                     `<${conceptSnapshotId}> <http://purl.org/vocab/cpsv#follows> <${procedureId}>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <${NS.dvc.snapshotType(conceptSnapshotType).value}>`,
+                        `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -965,29 +953,73 @@ describe('ConceptSnapshotRepository', () => {
 
             await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> niet mappen voor Iri: <${conceptSnapshotId}>`);
         });
+            describe('isArchived', () => {
 
-        for (const type of Object.values(SnapshotType)) {
-            test(`Snapshot type ${type} can be mapped`, async () => {
-                const conceptSnapshot = aMinimalConceptSnapshot().withSnapshotType(type).build();
-                await repository.save(conceptSnapshot);
+                    test('Absent isArchived maps to false', async () => {
+                            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
 
-                const actualConceptSnapshot = await repository.findById(conceptSnapshot.id);
+                            await directDatabaseAccess.insertData(
+                                CONCEPT_SNAPSHOT_LDES_GRAPH,
+                                [
+                                        `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                        `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_NL}"""@nl`,
+                                        `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${ConceptSnapshotTestBuilder.DESCRIPTION_NL}"""@nl`,
+                                        `<${conceptSnapshotId}> <http://schema.org/productID> """${ConceptSnapshotTestBuilder.PRODUCT_ID}"""`,
+                                        `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${ConceptSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                        `<${conceptSnapshotId}> <http://schema.org/dateModified> """${ConceptSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                        `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${ConceptSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
+                                ]);
 
-                expect(actualConceptSnapshot).toEqual(conceptSnapshot);
+                            const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
+
+                            expect(actualConceptSnapshot.isArchived).toBeFalse();
+
+
+                    });
+
+                    test('Present, but false isArchived maps to false', async () => {
+                            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+
+                            await directDatabaseAccess.insertData(
+                                CONCEPT_SNAPSHOT_LDES_GRAPH,
+                                [
+                                        `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                        `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_NL}"""@nl`,
+                                        `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${ConceptSnapshotTestBuilder.DESCRIPTION_NL}"""@nl`,
+                                        `<${conceptSnapshotId}> <http://schema.org/productID> """${ConceptSnapshotTestBuilder.PRODUCT_ID}"""`,
+                                        `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${ConceptSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                        `<${conceptSnapshotId}> <http://schema.org/dateModified> """${ConceptSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                        `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
+                                        `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${ConceptSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
+                                ]);
+
+                            const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
+
+                            expect(actualConceptSnapshot.isArchived).toBeFalse();
+                    });
+
+                    test('Present, and true, isArchived maps to true', async () => {
+                            const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+
+                            await directDatabaseAccess.insertData(
+                                CONCEPT_SNAPSHOT_LDES_GRAPH,
+                                [
+                                        `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                        `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_NL}"""@nl`,
+                                        `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${ConceptSnapshotTestBuilder.DESCRIPTION_NL}"""@nl`,
+                                        `<${conceptSnapshotId}> <http://schema.org/productID> """${ConceptSnapshotTestBuilder.PRODUCT_ID}"""`,
+                                        `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${ConceptSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                        `<${conceptSnapshotId}> <http://schema.org/dateModified> """${ConceptSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                        `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
+                                        `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${ConceptSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
+                                ]);
+
+                            const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
+
+                            expect(actualConceptSnapshot.isArchived).toBeTrue();
+                    });
+
             });
-        }
-
-        test('Unknown Snapshot Type can not be mapped', async () => {
-            const conceptSnapshotId = new Iri(`https://ipdc.tni-vlaanderen.be/id/conceptsnapshot/${uuid()}`);
-
-            await directDatabaseAccess.insertData(
-                CONCEPT_SNAPSHOT_LDES_GRAPH,
-                [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
-                    `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType> <https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/NonExistingSnapshotType>`,
-                ]);
-
-            await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/NonExistingSnapshotType> niet mappen voor Iri: <${conceptSnapshotId}>`);
-        });
 
         for (const type of Object.values(ConceptTagType)) {
             test(`Concept Tag type ${type} can be mapped`, async () => {

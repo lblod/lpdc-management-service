@@ -38,7 +38,6 @@ export const NS = {
         uitvoerendBestuursniveau: Namespace(dataVlaanderenConceptNS('UitvoerendBestuursniveau/').value),
         publicatieKanaal: Namespace(dataVlaanderenConceptNS('PublicatieKanaal/').value),
         yourEuropeCategorie: Namespace(dataVlaanderenConceptNS('YourEuropeCategorie/').value),
-        snapshotType: Namespace(dataVlaanderenConceptNS('SnapshotType/').value),
         conceptTag: Namespace(dataVlaanderenConceptNS('ConceptTag/').value),
     },
     dvcs: Namespace('https://productencatalogus.data.vlaanderen.be/id/conceptscheme/'),

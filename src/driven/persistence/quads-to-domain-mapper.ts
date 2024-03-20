@@ -22,7 +22,6 @@ import {
     LanguageType,
     ProductType,
     PublicationMediumType,
-    SnapshotType,
     TargetAudienceType,
     ThemeType,
     YourEuropeCategoryType
@@ -162,8 +161,8 @@ export class QuadsToDomainMapper {
             this.dateModified(id),
             this.generatedAtTime(id),
             this.productId(id),
-            this.snapshotType(id),
             this.conceptTags(id),
+            this.isArchived(id),
             this.legalResources(id),
         );
     }
@@ -466,10 +465,6 @@ export class QuadsToDomainMapper {
 
     private latestFunctionallyChangedConceptSnapshot(id: Iri): Iri {
         return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdc('hasLatestFunctionalChange')));
-    }
-
-    private snapshotType(id: Iri): SnapshotType | undefined {
-        return this.asEnum(SnapshotType, NS.dvc.snapshotType, this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('snapshotType')));
     }
 
     private conceptTags(id: Iri): ConceptTagType[] {

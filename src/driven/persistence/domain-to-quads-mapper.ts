@@ -104,8 +104,8 @@ export class DomainToQuadsMapper {
             this.generatedAtTime(conceptSnapshot.id, conceptSnapshot.generatedAtTime),
             this.buildQuad(namedNode(conceptSnapshot.id.value), NS.schema('identifier'), literal(conceptSnapshot.identifier)),
             this.productId(conceptSnapshot.id, conceptSnapshot.productId),
-            conceptSnapshot.snapshotType ? this.buildQuad(namedNode(conceptSnapshot.id.value), NS.lpdcExt('snapshotType'), namedNode(this.enumToIri(conceptSnapshot.snapshotType, NS.dvc.snapshotType).value)) : undefined,
             ...this.conceptTags(conceptSnapshot.id, conceptSnapshot.conceptTags),
+            this.buildQuad(namedNode(conceptSnapshot.id.value), NS.lpdcExt('isArchived'), literal(conceptSnapshot.isArchived.toString(), NS.xsd('boolean'))),
             ...this.legalResources(conceptSnapshot.id, conceptSnapshot.legalResources),
         ].filter(t => t !== undefined);
     }

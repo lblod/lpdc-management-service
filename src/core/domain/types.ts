@@ -186,12 +186,6 @@ export enum YourEuropeCategoryType {
     WERKNEMERSTEWERKSTELLING = 'WerknemersTewerkstelling',
 }
 
-export enum SnapshotType {
-    CREATE = 'Create',
-    UPDATE = 'Update',
-    DELETE = 'Delete',
-}
-
 export enum ConceptTagType {
     YOUREUROPEVERPLICHT = 'YourEuropeVerplicht',
     YOUREUROPEAANBEVOLEN = 'YourEuropeAanbevolen',

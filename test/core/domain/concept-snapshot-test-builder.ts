@@ -20,7 +20,6 @@ import {
     ExecutingAuthorityLevelType,
     ProductType,
     PublicationMediumType,
-    SnapshotType,
     TargetAudienceType,
     ThemeType,
     YourEuropeCategoryType
@@ -37,10 +36,10 @@ export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
         .withTitle(ConceptSnapshotTestBuilder.MINIMAL_TITLE)
         .withDescription(aMinimalLanguageString('Concept Snapshot Description').build())
         .withProductId(ConceptSnapshotTestBuilder.PRODUCT_ID)
-        .withSnapshotType(SnapshotType.CREATE)
         .withDateCreated(ConceptSnapshotTestBuilder.DATE_CREATED)
         .withDateModified(ConceptSnapshotTestBuilder.DATE_MODIFIED)
         .withGeneratedAtTime(ConceptSnapshotTestBuilder.GENERATED_AT_TIME)
+        .withIsArchived(false)
         ;
 }
 
@@ -110,8 +109,8 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
         .withDateModified(ConceptSnapshotTestBuilder.DATE_MODIFIED)
         .withGeneratedAtTime(ConceptSnapshotTestBuilder.GENERATED_AT_TIME)
         .withProductId(ConceptSnapshotTestBuilder.PRODUCT_ID)
-        .withSnapshotType(ConceptSnapshotTestBuilder.SNAPSHOT_TYPE)
         .withConceptTags(ConceptSnapshotTestBuilder.CONCEPT_TAGS)
+        .withIsArchived(false)
         .withLegalResources(ConceptSnapshotTestBuilder.LEGAL_RESOURCES);
 }
 
@@ -194,8 +193,6 @@ export class ConceptSnapshotTestBuilder {
 
     public static readonly PRODUCT_ID = "1502";
 
-    public static readonly SNAPSHOT_TYPE = SnapshotType.UPDATE;
-
     public static readonly CONCEPT_TAGS = [ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT];
 
     public static readonly LEGAL_RESOURCES = [anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).build(), anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).build()];
@@ -228,8 +225,8 @@ export class ConceptSnapshotTestBuilder {
     private dateModified: FormatPreservingDate | undefined;
     private generatedAtTime: FormatPreservingDate | undefined;
     private productId: string | undefined;
-    private snapshotType: SnapshotType | undefined;
     private conceptTags: ConceptTagType[] = [];
+    private isArchived: boolean;
     private legalResources: LegalResource[] = [];
 
     public withId(id: Iri): ConceptSnapshotTestBuilder {
@@ -372,13 +369,13 @@ export class ConceptSnapshotTestBuilder {
         return this;
     }
 
-    public withSnapshotType(snapshotType: SnapshotType): ConceptSnapshotTestBuilder {
-        this.snapshotType = snapshotType;
+    public withConceptTags(conceptTags: ConceptTagType[]): ConceptSnapshotTestBuilder {
+        this.conceptTags = conceptTags;
         return this;
     }
 
-    public withConceptTags(conceptTags: ConceptTagType[]): ConceptSnapshotTestBuilder {
-        this.conceptTags = conceptTags;
+    public withIsArchived(isArchived: boolean): ConceptSnapshotTestBuilder {
+        this.isArchived = isArchived;
         return this;
     }
 
@@ -417,8 +414,8 @@ export class ConceptSnapshotTestBuilder {
             this.dateModified,
             this.generatedAtTime,
             this.productId,
-            this.snapshotType,
             this.conceptTags,
+            this.isArchived,
             this.legalResources,
         );
     }

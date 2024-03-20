@@ -21,7 +21,6 @@ import {
     InstanceReviewStatusType,
     ProductType,
     PublicationMediumType,
-    SnapshotType,
     TargetAudienceType,
     ThemeType,
     YourEuropeCategoryType
@@ -323,7 +322,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withSnapshotType(SnapshotType.DELETE)
+                    .withIsArchived(true)
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -844,6 +843,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withIsArchived(true)
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
@@ -855,8 +855,9 @@ describe('merges a new concept snapshot into a concept', () => {
             const updatedConceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withIsArchived(true)
+                    .withCosts([aFullCost().build()])
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
-                    .withSnapshotType(SnapshotType.DELETE)
                     .build();
 
             insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
@@ -1273,7 +1274,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const updatedConceptSnapshot =
                 aFullConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withSnapshotType(SnapshotType.DELETE)
+                    .withIsArchived(true)
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .build();
 
