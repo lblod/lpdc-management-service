@@ -183,6 +183,9 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 GRAPH ?g {
                     ?service a lpdcExt:InstancePublicService;
                         dct:source ${sparqlEscapeUri(conceptId)}.
+                    OPTIONAL {
+                        ?service ext:reviewStatus ?status.
+                    }    
                 }
             }`;
             await this.querying.deleteInsert(updateReviewStatusesQuery);

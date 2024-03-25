@@ -872,6 +872,54 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(updatedConceptSnapshot.id);
         }, 20000);
 
+        test('Updates a concept from a concept snapshot that is archived and then unarchived', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withIsArchived(true)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const archivedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withIsArchived(true)
+                    .withCosts([aFullCost().build()])
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(archivedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(archivedConceptSnapshot);
+
+            await merger.merge(archivedConceptSnapshot.id);
+
+            const unarchivedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withIsArchived(false)
+                    .withCosts([aFullCost().build()])
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-12T00:00:00'))
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(unarchivedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(unarchivedConceptSnapshot);
+
+            await merger.merge(unarchivedConceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.isArchived).toBeFalse();
+            expect(updatedConcept.latestConceptSnapshot).toEqual(unarchivedConceptSnapshot.id);
+            expect(updatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(unarchivedConceptSnapshot.id);
+        }, 20000);
+
         test('Multiple consecutive updates to a concept', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
             const conceptSnapshot =
@@ -1302,6 +1350,100 @@ describe('merges a new concept snapshot into a concept', () => {
 
             const reviewStatusForInstance = reviewStatusResultForInstance[0]['reviewStatus'].value;
             expect(reviewStatusForInstance).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEARCHIVEERD).value);
+
+        }, 20000);
+
+        test('Updates instance review status to Concept gewijzigd for each linked instance if concept is archived and then unarchived', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const createdConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(createdConcept.id).toEqual(isVersionOfConceptId);
+
+            const bestuurseenheid =
+                aBestuurseenheid()
+                    .withId(buildBestuurseenheidIri(uuid()))
+                    .build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instanceId = buildInstanceIri(uuid());
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `${sparqlEscapeUri(instanceId)} a lpdcExt:InstancePublicService`,
+                    `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
+                ],
+                [
+                    PREFIX.lpdcExt,
+                    PREFIX.dct,
+                ],
+            );
+
+            const archivedConceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withIsArchived(true)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .build();
+
+            await conceptSnapshotRepository.save(archivedConceptSnapshot);
+
+            await merger.merge(archivedConceptSnapshot.id);
+            const reviewStatusForConceptInGraph = (be: Bestuurseenheid) => `           
+                ${PREFIX.lpdcExt}
+                ${PREFIX.dct}
+                ${PREFIX.ext}
+                SELECT ?reviewStatus WHERE {
+                    GRAPH ${sparqlEscapeUri(be.userGraph())} {
+                        ?instanceId a lpdcExt:InstancePublicService ;
+                            dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
+                            ext:reviewStatus ?reviewStatus .
+                    }
+                }
+            `;
+            const reviewStatusResultForInstance = await directDatabaseAccess.list(reviewStatusForConceptInGraph(bestuurseenheid));
+            expect(reviewStatusResultForInstance.length).toEqual(1);
+
+            const reviewStatusForInstance = reviewStatusResultForInstance[0]['reviewStatus'].value;
+            expect(reviewStatusForInstance).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEARCHIVEERD).value);
+
+            const unarchivedConceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withIsArchived(false)
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-12T00:00:00'))
+                    .build();
+
+            await conceptSnapshotRepository.save(unarchivedConceptSnapshot);
+
+            await merger.merge(unarchivedConceptSnapshot.id);
+
+            const reviewStatusForConceptInGraphAfterUnarchive = (be: Bestuurseenheid) => `           
+                ${PREFIX.lpdcExt}
+                ${PREFIX.dct}
+                ${PREFIX.ext}
+                SELECT ?reviewStatus WHERE {
+                    GRAPH ${sparqlEscapeUri(be.userGraph())} {
+                        ?instanceId a lpdcExt:InstancePublicService ;
+                            dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
+                            ext:reviewStatus ?reviewStatus .
+                    }
+                }
+            `;
+            const reviewStatusResultForInstanceAfterUnarchive = await directDatabaseAccess.list(reviewStatusForConceptInGraphAfterUnarchive(bestuurseenheid));
+            expect(reviewStatusResultForInstanceAfterUnarchive.length).toEqual(1);
+
+            const reviewStatusForInstanceAfterUnarchive = reviewStatusResultForInstanceAfterUnarchive[0]['reviewStatus'].value;
+            expect(reviewStatusForInstanceAfterUnarchive).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD).value);
 
         }, 20000);
 
