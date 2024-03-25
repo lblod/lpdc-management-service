@@ -24,6 +24,7 @@ import {
 } from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
 import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
 import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";
+import {aFullConcept} from "../domain/concept-test-builder";
 
 
 describe('InstanceSnapshotProcessorApplicationService', () => {
@@ -50,7 +51,12 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     test('Should retry unsuccessful merges', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         await bestuurseenheidRepository.save(bestuurseenheid);
-        const instanceSnapshot  = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z')).withCreatedBy(bestuurseenheid.id).build();
+
+        const concept = aFullConcept().build();
+        await conceptRepository.save(concept);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
+
+        const instanceSnapshot  = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z')).withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
         await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
         await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot.conceptId);
 
@@ -75,31 +81,36 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     test('merge instanceSnapshots with same instance in correct order', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const concept = aFullConcept().build();
+        await conceptRepository.save(concept);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
+
         const instanceId = buildInstanceIri(uuid());
         const instanceSnapshot1  = aFullInstanceSnapshot()
             .withTitle(LanguageString.of('snapshot 1', undefined, undefined, 'snapshot 1'))
             .withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
             .withCreatedBy(bestuurseenheid.id)
             .withIsVersionOfInstance(instanceId)
+            .withConceptId(concept.id)
             .build();
         const instanceSnapshot2  = aFullInstanceSnapshot()
             .withTitle(LanguageString.of('snapshot 2', undefined, undefined, 'snapshot 2'))
             .withGeneratedAtTime(FormatPreservingDate.of('2024-01-17T00:00:00.672Z'))
             .withCreatedBy(bestuurseenheid.id)
             .withIsVersionOfInstance(instanceId)
+            .withConceptId(concept.id)
             .build();
         const instanceSnapshot3  = aFullInstanceSnapshot()
             .withTitle(LanguageString.of('snapshot 3', undefined, undefined, 'snapshot 3'))
             .withGeneratedAtTime(FormatPreservingDate.of('2024-01-18T00:00:00.672Z'))
             .withCreatedBy(bestuurseenheid.id)
             .withIsVersionOfInstance(instanceId)
+            .withConceptId(concept.id)
             .build();
         await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot2);
         await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot1);
         await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot3);
-        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot1.conceptId);
-        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot2.conceptId);
-        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot3.conceptId);
 
         await instanceSnapshotProcessor.process();
 

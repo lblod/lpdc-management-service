@@ -817,13 +817,15 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 const bestuurseenheid = aBestuurseenheid().build();
                 await bestuurseenheidRepository.save(bestuurseenheid);
 
-                const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
-                await instanceRepository.save(bestuurseenheid, instance);
-                await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
+                const concept = aFullConcept().build();
+                await conceptRepository.save(concept);
+                await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
-                const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
+                const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
                 await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-                await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot.conceptId);
 
                 const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
                 expect(instanceExists).toEqual(true);

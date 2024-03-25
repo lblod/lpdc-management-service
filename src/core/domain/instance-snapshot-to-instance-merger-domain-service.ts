@@ -63,7 +63,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         } else {
             const instanceId = instanceSnapshot.isVersionOfInstance;
             const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceId);
-            const concept = await this.getConceptIfExists(instanceSnapshot.conceptId);
+            const concept: Concept | undefined = await this.getConceptIfSpecified(instanceSnapshot.conceptId);
 
             this._logger.log(`New versioned resource found: ${instanceSnapshotId} of service ${instanceSnapshot.isVersionOfInstance}`);
 
@@ -92,7 +92,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         }
     }
 
-    private async createNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept) {
+    private async createNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
         const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
         const isDeleted = await this._instanceRepository.isDeleted(bestuurseenheid, instance.id);
 
@@ -131,9 +131,9 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             this.copyCosts(instanceSnapshot.costs),
             this.copyFinancialAdvantage(instanceSnapshot.financialAdvantages),
             this.copyContactPoints(instanceSnapshot.contactPoints),
-            concept ? concept.id : undefined,
-            concept ? concept.latestConceptSnapshot : undefined,
-            concept ? concept.productId : undefined,
+            concept?.id,
+            concept?.latestConceptSnapshot,
+            concept?.productId,
             instanceSnapshot.languages,
             instanceSnapshot.dateCreated,
             instanceSnapshot.dateModified,
@@ -177,9 +177,9 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             this.copyCosts(instanceSnapshot.costs),
             this.copyFinancialAdvantage(instanceSnapshot.financialAdvantages),
             this.copyContactPoints(instanceSnapshot.contactPoints),
-            concept ? concept.id : undefined,
-            concept ? concept.latestConceptSnapshot : undefined,
-            concept ? concept.productId : undefined,
+            concept?.id,
+            concept?.latestConceptSnapshot,
+            concept?.productId,
             instanceSnapshot.languages,
             instanceSnapshot.dateCreated,
             instanceSnapshot.dateModified,
@@ -323,13 +323,9 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         );
     }
 
-    private async getConceptIfExists(conceptId: Iri | undefined): Promise<Concept | undefined> {
+    private async getConceptIfSpecified(conceptId: Iri | undefined): Promise<Concept | undefined> {
         if (conceptId) {
-            const existingConcept = await this._conceptRepository.exists(conceptId);
-            if (existingConcept) {
-                return await this._conceptRepository.findById(conceptId);
-            }
-
+            return await this._conceptRepository.findById(conceptId);
         }
         return undefined;
     }
