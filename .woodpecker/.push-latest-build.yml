@@ -1,0 +1,21 @@
+pipeline:
+  build:
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      platforms: linux/amd64,linux/arm64
+      repo: ${CI_REPO}
+      tags: latest
+    secrets: [docker_username, docker_password]
+  trigger-downstream:
+    image: woodpeckerci/plugin-trigger
+    settings:
+      repositories:
+        - lblod/app-lpdc-digitaal-loket@development
+      token:
+        from_secret: woodpecker_token
+when:
+  branch: development
+  event: push
+
+depends_on:
+  - test
