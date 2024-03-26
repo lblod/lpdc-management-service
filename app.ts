@@ -1,10 +1,6 @@
 import {createApp} from './mu-helper';
 import bodyparser from 'body-parser';
-import {
-    CONCEPT_SNAPSHOT_LDES_GRAPH,
-    INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN,
-    LOG_INCOMING_DELTA
-} from './config';
+import {CONCEPT_SNAPSHOT_LDES_GRAPH, INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN, LOG_INCOMING_DELTA} from './config';
 import {ProcessingQueue} from './lib/processing-queue';
 import {contactPointOptions} from "./lib/contactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
@@ -58,6 +54,7 @@ import {
     ValidateInstanceForPublishApplicationService
 } from "./src/core/application/validate-instance-for-publish-application-service";
 import {FormType} from "./src/core/domain/types";
+import {FormatPreservingDate} from "./src/core/domain/format-preserving-date";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -362,13 +359,13 @@ async function removeInstance(req: Request, res: Response) {
 async function updateInstance(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
     const delta = req.body;
+    const version: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers.version as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
-    const instanceData = delta.graph;
 
-    await updateInstanceApplicationService.update(bestuurseenheid, instanceId, instanceData, delta.removals, delta.additions);
+    await updateInstanceApplicationService.update(bestuurseenheid, instanceId, version, delta.removals, delta.additions);
 
     return res.sendStatus(200);
 }

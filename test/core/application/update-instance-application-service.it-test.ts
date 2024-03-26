@@ -26,29 +26,14 @@ describe('Update Instance Application Service tests', () => {
 
     //Note: the update instance application service is directly tied to semantic forms ... so the tests use low level turtle format ...
 
-    const prefixes = `@prefix : <#>.
-@prefix dct: <http://purl.org/dc/terms/>.
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix mu: <http://mu.semte.ch/vocabularies/core/>.
-@prefix cpsv: <http://purl.org/vocab/cpsv#>.
-@prefix lpdcExt: <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#>.
-@prefix m8g: <http://data.europa.eu/m8g/>.
-@prefix pub: <http://data.lblod.info/id/public-service/>.
-@prefix bes: <http://data.lblod.info/id/bestuurseenheden/>.
-@prefix ref: <http://vocab.belgif.be/auth/refnis2019/>.
-@prefix schema: <http://schema.org/>.
-@prefix p: <http://purl.org/pav/>.
-@prefix n0: <http://www.w3.org/ns/adms#>.
-@prefix inst: <http://lblod.data.gift/concepts/instance-status/>.
-@prefix nodes: <http://data.lblod.info/form-data/nodes/>.
-@prefix sh: <http://www.w3.org/ns/shacl#>.`;
-
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, conceptDisplayConfigurationRepository);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const semanticFormsMapper = new SemanticFormsMapperImpl();
+
+    //TODO LPDC-884: add a test which verifies that optimistic locking error throws ConcurrentUpdateError
 
     const updateInstanceApplicationService = new UpdateInstanceApplicationService(instanceRepository, semanticFormsMapper);
 
@@ -60,28 +45,10 @@ describe('Update Instance Application Service tests', () => {
 
         const instance = await newInstanceDomainService.createNewEmpty(bestuurseenheid);
 
-        let instanceAsTurtleFormat = `
-        ${prefixes}
-        
-pub:${instance.uuid}
-    a lpdcExt:InstancePublicService;
-    m8g:hasCompetentAuthority
-      bes:${bestuurseenheid.uuid};
-    mu:uuid "${instance.uuid}";
-    schema:dateCreated "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
-    schema:dateModified "${instance.dateModified.value}"^^xsd:dateTime;
-    dct:spatial ref:24038;
-    p:createdBy
-            bes:${bestuurseenheid.uuid};
-    n0:status inst:ontwerp;
-    lpdcExt:hasExecutingAuthority
-            bes:${bestuurseenheid.uuid} .
-        `;
-
         await updateInstanceApplicationService.update(
             bestuurseenheid,
             instance.id,
-            instanceAsTurtleFormat,
+            instance.dateModified,
             '@prefix : <#>.\n\n',
             `
             @prefix : <#>.\n@prefix dct: <http://purl.org/dc/terms/>.\n
@@ -97,30 +64,10 @@ pub:${instance.uuid}
                 .withDateModified(FormatPreservingDate.now())
                 .build());
 
-        instanceAsTurtleFormat = `
-        ${prefixes}
-        
-pub:${instance.uuid}
-    a lpdcExt:InstancePublicService;
-    m8g:hasCompetentAuthority
-      bes:${bestuurseenheid.uuid};
-    mu:uuid "${instance.uuid}";
-    schema:dateCreated "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
-    schema:dateModified "${instance.dateModified.value}"^^xsd:dateTime;
-    dct:spatial ref:24038;
-    dct:title "initial title"@nl-be-x-formal, "initial title en"@en;
-    p:createdBy
-            bes:${bestuurseenheid.uuid};
-    n0:status inst:ontwerp;
-    
-    lpdcExt:hasExecutingAuthority
-            bes:${bestuurseenheid.uuid} .
-        `;
-
         await updateInstanceApplicationService.update(
             bestuurseenheid,
             instance.id,
-            instanceAsTurtleFormat,
+            instance.dateModified,
             `        @prefix : <#>\n.
 @prefix dct: <http://purl.org/dc/terms/>\n.
 @prefix pub: <http://data.lblod.info/id/public-service/>\n\n.
@@ -150,29 +97,10 @@ pub:${instance.uuid} dct:title "initial title"@nl-be-x-formal, "initial title en
 
         const instance = await newInstanceDomainService.createNewEmpty(bestuurseenheid);
 
-        let instanceAsTurtleFormat = `
-        ${prefixes}
-        
-pub:${instance.uuid}
-    a lpdcExt:InstancePublicService;
-    m8g:hasCompetentAuthority
-      bes:${bestuurseenheid.uuid};
-    mu:uuid "${instance.uuid}";
-    schema:dateCreated "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
-    schema:dateModified "${instance.dateModified.value}"^^xsd:dateTime;
-    dct:spatial ref:24038;
-    p:createdBy
-            bes:${bestuurseenheid.uuid};
-    n0:status inst:ontwerp;
-    lpdcExt:hasExecutingAuthority
-            bes:${bestuurseenheid.uuid} .
-        `;
-
-
         await updateInstanceApplicationService.update(
             bestuurseenheid,
             instance.id,
-            instanceAsTurtleFormat,
+            instance.dateModified,
             '@prefix : <#>.\n\n',
             `
             @prefix : <#>.\n
@@ -214,38 +142,10 @@ pub:${instance.uuid}\n
 
         //semantic forms does not seem to delete all triples  when deleting a linked 'entity'; so this creates orphan triples in the database
 
-        instanceAsTurtleFormat = `
-        ${prefixes}
-
-nodes:02c296ca-d194-4971-9325-e17809afe087\n
-    a cpsv:Rule;\n
-    mu:uuid "dc4bd8fb-87a9-4257-9ab9-86f93a2f7ed8";\n
-    dct:description\n
-            """<p data-indentation-level="0">beschrijving procedure</p>"""@nl-be-x-formal,\n
-            """<p data-indentation-level="0">engelse beschrijving procedure</p>"""@en;\n
-    dct:title "engelse titel procedure"@en, "titel procedure"@nl-be-x-formal;\n
-    sh:order 1 .\n\n
-    
-pub:${instance.uuid}
-    a lpdcExt:InstancePublicService;
-    m8g:hasCompetentAuthority
-      bes:${bestuurseenheid.uuid};
-    mu:uuid "${instance.uuid}";
-    schema:dateCreated "2024-02-05T09:59:53.541Z"^^xsd:dateTime;
-    schema:dateModified "${instance.dateModified.value}"^^xsd:dateTime;
-    dct:spatial ref:24038;
-    p:createdBy
-            bes:${bestuurseenheid.uuid};
-    n0:status inst:ontwerp;
-    lpdcExt:hasExecutingAuthority
-            bes:${bestuurseenheid.uuid};
-    cpsv:follows nodes:02c296ca-d194-4971-9325-e17809afe087 .\n\n            
-        `;
-
         await updateInstanceApplicationService.update(
             bestuurseenheid,
             instance.id,
-            instanceAsTurtleFormat,
+            instance.dateModified,
             `
             @prefix : <#>.\n
 @prefix dct: <http://purl.org/dc/terms/>.\n

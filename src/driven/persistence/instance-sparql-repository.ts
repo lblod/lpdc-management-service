@@ -77,6 +77,12 @@ export class InstanceSparqlRepository implements InstanceRepository {
     }
 
     async update(bestuurseenheid: Bestuurseenheid, instance: Instance, old: Instance): Promise<void> {
+        //TODO LPDC-884: pass along a version instead of old (and replace in query old.dateModified.value by version.value)
+        //TODO LPDC-884: load old triples based on id of instance
+        //TODO LPDC-884: compare datemodified of oldtriples compared to given version -> if different, also throw a ConcurrentUpdateError (but leave the database check in place)
+        //TODO LPDC-884: fill in datemodified for newTriples (after using builder to copy all fields)
+        //TODO LPDC-884: validate version is present
+
         const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(old).map(s => s.toNT());
         const newTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
