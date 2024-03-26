@@ -358,7 +358,7 @@ export class Instance {
 
     validateForPublish(checkAddress: boolean): void {
         if (!isEqual(this.title.notBlankLanguages, this.description.notBlankLanguages)) {
-            throw new InvariantError('titel en beschrijving moeten dezelfde talen bevatten');
+            throw new InvariantError('Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
         }
         if (checkAddress) {
             const allAddressesValid = this.contactPoints
@@ -366,7 +366,7 @@ export class Instance {
                 .filter(address => !!address)
                 .every(address => address.isValid());
             if (!allAddressesValid) {
-                throw new InvariantError('Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!');
+                throw new InvariantError('Minstens één van de adresgegevens is niet geldig');
             }
         }
     }
