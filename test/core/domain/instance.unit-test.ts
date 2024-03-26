@@ -10,7 +10,7 @@ import {
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
-    ExecutingAuthorityLevelType, FormType,
+    ExecutingAuthorityLevelType,
     InstancePublicationStatusType,
     InstanceReviewStatusType,
     InstanceStatusType,
@@ -1121,7 +1121,7 @@ describe('validateForPublish', () => {
             .withDescription(LanguageString.of(undefined, undefined, 'nederlandse beschrijving'))
             .build();
 
-        expect(() => instance.validateForPublish(false)).toThrowWithMessage(InvariantError, 'titel en beschrijving moeten dezelfde talen bevatten');
+        expect(() => instance.validateForPublish(false)).toThrowWithMessage(InvariantError, 'Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
     });
 
     test('when english description is defined, then english title should also be defined', () => {
@@ -1130,7 +1130,7 @@ describe('validateForPublish', () => {
             .withDescription(LanguageString.of('english description', undefined, 'nederlandse beschrijving'))
             .build();
 
-        expect(() => instance.validateForPublish(false)).toThrowWithMessage(InvariantError, 'titel en beschrijving moeten dezelfde talen bevatten');
+        expect(() => instance.validateForPublish(false)).toThrowWithMessage(InvariantError, 'Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
     });
 
     test('When address should be checked and has addressId, instance is valid', () => {
@@ -1146,7 +1146,7 @@ describe('validateForPublish', () => {
             .withContactPoints([aMinimalContactPointForInstance().withAddress(aFullAddressForInstance().withVerwijstNaar(undefined).build()).build()])
             .build();
 
-        expect(() => instance.validateForPublish(true)).toThrowWithMessage(InvariantError, 'Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!');
+        expect(() => instance.validateForPublish(true)).toThrowWithMessage(InvariantError, 'Minstens één van de adresgegevens is niet geldig');
     });
 
     test('When address should be checked and one of the addresses is invalid, instance is invalid', () => {
@@ -1157,7 +1157,7 @@ describe('validateForPublish', () => {
             ])
             .build();
 
-        expect(() => instance.validateForPublish(true)).toThrowWithMessage(InvariantError, 'Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!');
+        expect(() => instance.validateForPublish(true)).toThrowWithMessage(InvariantError, 'Minstens één van de adresgegevens is niet geldig');
     });
 
     test('When address should be checked and one of contactPoints has no address and other address valid, instance is valid', () => {

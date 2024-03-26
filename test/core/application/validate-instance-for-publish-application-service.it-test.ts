@@ -97,7 +97,7 @@ describe('ValidateInstanceForPublishApplicationService', () => {
 
             const errorList = await validateInstanceForPublishApplicationService.validate(instance.id, bestuurseenheid);
             expect(errorList).toEqual([{
-                "message": "Minstens één van de adressen is niet geldig, Gelieve deze te verbeteren!",
+                "message": "Minstens één van de adresgegevens is niet geldig",
             }]);
         });
 
@@ -112,7 +112,7 @@ describe('ValidateInstanceForPublishApplicationService', () => {
 
             const errorList = await validateInstanceForPublishApplicationService.validate(instance.id, bestuurseenheid);
             expect(errorList).toEqual([{
-                "message": "titel en beschrijving moeten dezelfde talen bevatten",
+                "message": "Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn",
             }]);
         });
 
@@ -159,7 +159,7 @@ describe('ValidateInstanceForPublishApplicationService', () => {
 
             const errorList = await validateInstanceForPublishApplicationService.validate(instance.id, bestuurseenheid);
             expect(errorList).toEqual([{
-                "message": "titel en beschrijving moeten dezelfde talen bevatten",
+                "message": "Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn",
             }]);
         });
 
@@ -174,7 +174,7 @@ describe('ValidateInstanceForPublishApplicationService', () => {
 
             const errorList = await validateInstanceForPublishApplicationService.validate(instance.id, bestuurseenheid);
             expect(errorList).toEqual([{
-                "message": "titel en beschrijving moeten dezelfde talen bevatten",
+                "message": "Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn",
             }]);
         });
 
@@ -190,7 +190,7 @@ describe('ValidateInstanceForPublishApplicationService', () => {
 
             const errorList = await validateInstanceForPublishApplicationService.validate(instance.id, bestuurseenheid);
             expect(errorList).toEqual([{
-                "message": "titel en beschrijving moeten dezelfde talen bevatten",
+                "message": "Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn",
             }]);
         });
     });

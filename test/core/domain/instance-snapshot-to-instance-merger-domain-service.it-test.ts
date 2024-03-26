@@ -419,7 +419,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
             await expect(() => mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id))
-                .rejects.toThrowWithMessage(InvariantError, 'titel en beschrijving moeten dezelfde talen bevatten');
+                .rejects.toThrowWithMessage(InvariantError, 'Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
         });
 
         test('instance is validated for publish, adres can be invalid', async () => {
@@ -983,7 +983,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
 
             await expect(() => mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id))
-                .rejects.toThrowWithMessage(InvariantError, 'titel en beschrijving moeten dezelfde talen bevatten');
+                .rejects.toThrowWithMessage(InvariantError, 'Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
         });
 
         test('instance is validated for publish, adres can be invalid', async () => {
