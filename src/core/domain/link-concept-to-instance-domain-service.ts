@@ -7,6 +7,7 @@ import {Concept} from "./concept";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
+import {InvariantError} from "./shared/lpdc-error";
 
 export class LinkConceptToInstanceDomainService {
 
@@ -24,9 +25,7 @@ export class LinkConceptToInstanceDomainService {
 
     async link(bestuurseenheid: Bestuurseenheid, instance: Instance, version: FormatPreservingDate, concept: Concept): Promise<void> {
         if (instance.conceptId) {
-            await this.unlink(bestuurseenheid, instance, version);
-            instance = await this._instanceRepository.findById(bestuurseenheid, instance.id);
-            version = instance.dateModified;
+            throw new InvariantError('Instantie is reeds gekoppeld aan een concept');
         }
 
         const updatedInstance = InstanceBuilder.from(instance)

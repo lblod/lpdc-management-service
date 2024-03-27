@@ -14,6 +14,7 @@ import {ConceptDisplayConfigurationBuilder} from "../../../src/core/domain/conce
 import {InstanceReviewStatusType} from "../../../src/core/domain/types";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 
 describe('LinkConceptToInstanceDomainService', () => {
@@ -88,7 +89,7 @@ describe('LinkConceptToInstanceDomainService', () => {
             expect(updatedConceptDisplayConfiguration).toEqual(expectedConceptDisplayConfiguration);
         });
 
-        test('linking concept which is already linked should first unlink', async () => {
+        test('linking concept which is already linked should ,throws error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const alreadyLinkedConcept = aFullConcept().build();
             const instance = aFullInstance()
@@ -103,16 +104,8 @@ describe('LinkConceptToInstanceDomainService', () => {
             await conceptDisplayConfigurationRepository.save(bestuurseenheid, aFullConceptDisplayConfiguration().withConceptId(alreadyLinkedConcept.id).withBestuurseenheidId(bestuurseenheid.id).build());
             await conceptDisplayConfigurationRepository.save(bestuurseenheid, aFullConceptDisplayConfiguration().withConceptId(concept.id).withBestuurseenheidId(bestuurseenheid.id).build());
 
-            await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, instance.dateModified, concept);
+            expect(async () => await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, instance.dateModified, concept)).rejects.toThrowWithMessage(InvariantError, 'Instantie is reeds gekoppeld aan een concept');
 
-            const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
-            expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
-                .withConceptId(concept.id)
-                .withConceptSnapshotId(concept.latestConceptSnapshot)
-                .withProductId(concept.productId)
-                .withReviewStatus(undefined)
-                .withDateModified(FormatPreservingDate.now())
-                .build());
         });
     });
 
