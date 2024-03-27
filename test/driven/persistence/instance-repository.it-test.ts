@@ -44,7 +44,12 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {aMinimalLegalResourceForInstance} from "../../core/domain/legal-resource-test-builder";
-import {ConcurrentUpdateError, NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
+import {
+    ConcurrentUpdateError,
+    InvariantError,
+    NotFoundError,
+    SystemError
+} from "../../../src/core/domain/shared/lpdc-error";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
 import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial-advantage-test-builder";
@@ -165,6 +170,22 @@ describe('InstanceRepository', () => {
 
             const actualInstance = await repository.findById(bestuurseenheid, newInstance.id);
             expect(actualInstance).toEqual(dbInstance);
+        });
+
+        test('should throw error when version undefined', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const dbInstance = aFullInstance()
+                .withCreatedBy(bestuurseenheid.id)
+                .withDateModified(FormatPreservingDate.of('2023-10-30T00:00:00.657Z'))
+                .build();
+            await repository.save(bestuurseenheid, dbInstance);
+
+            const newInstance = InstanceBuilder.from(dbInstance)
+                .withDateModified(FormatPreservingDate.of('2023-10-31T00:00:00.657Z'))
+                .build();
+
+            await expect(() => repository.update(bestuurseenheid, newInstance, undefined)).rejects.toThrowWithMessage(InvariantError, 'Versie mag niet ontbreken');
+
         });
     });
 

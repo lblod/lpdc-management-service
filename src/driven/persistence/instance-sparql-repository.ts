@@ -15,6 +15,7 @@ import {literal} from "rdflib";
 import {isEqual} from "lodash";
 import {ConcurrentUpdateError, SystemError} from "../../core/domain/shared/lpdc-error";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
+import {requiredValue} from "../../core/domain/shared/invariant";
 
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
@@ -84,6 +85,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         //TODO LPDC-884: fill in datemodified for newTriples (after using builder to copy all fields)
         //TODO LPDC-884: validate version is present
 
+        requiredValue(version, "Versie");
         const oldInstance = await this.findById(bestuurseenheid, instance.id);
         const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(oldInstance).map(s => s.toNT());
 
