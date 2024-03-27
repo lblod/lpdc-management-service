@@ -31,7 +31,7 @@ export class UpdateInstanceApplicationService {
                 .withDateModified(FormatPreservingDate.now())
                 .build();
 
-        await this._instanceRepository.update(bestuurseenheid, mergedInstance, loadedInstance);
+        await this._instanceRepository.update(bestuurseenheid, mergedInstance, version);
     }
 
 }

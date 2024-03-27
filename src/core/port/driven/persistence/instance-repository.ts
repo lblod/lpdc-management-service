@@ -1,6 +1,7 @@
 import {Iri} from "../../../domain/shared/iri";
 import {Instance} from "../../../domain/instance";
 import {Bestuurseenheid} from "../../../domain/bestuurseenheid";
+import {FormatPreservingDate} from "../../../domain/format-preserving-date";
 
 export interface InstanceRepository {
 
@@ -8,7 +9,7 @@ export interface InstanceRepository {
 
     save(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void>;
 
-    update(bestuurseenheid: Bestuurseenheid, instance: Instance, old: Instance): Promise<void>;
+    update(bestuurseenheid: Bestuurseenheid, instance: Instance, version: FormatPreservingDate): Promise<void>;
 
     delete(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<void>;
 

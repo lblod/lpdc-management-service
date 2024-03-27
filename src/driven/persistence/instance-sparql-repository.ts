@@ -14,6 +14,7 @@ import {Logger} from "../../../platform/logger";
 import {literal} from "rdflib";
 import {isEqual} from "lodash";
 import {ConcurrentUpdateError, SystemError} from "../../core/domain/shared/lpdc-error";
+import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
@@ -76,14 +77,16 @@ export class InstanceSparqlRepository implements InstanceRepository {
         await this.querying.insert(query);
     }
 
-    async update(bestuurseenheid: Bestuurseenheid, instance: Instance, old: Instance): Promise<void> {
+    async update(bestuurseenheid: Bestuurseenheid, instance: Instance, version: FormatPreservingDate): Promise<void> {
         //TODO LPDC-884: pass along a version instead of old (and replace in query old.dateModified.value by version.value)
         //TODO LPDC-884: load old triples based on id of instance
         //TODO LPDC-884: compare datemodified of oldtriples compared to given version -> if different, also throw a ConcurrentUpdateError (but leave the database check in place)
         //TODO LPDC-884: fill in datemodified for newTriples (after using builder to copy all fields)
         //TODO LPDC-884: validate version is present
 
-        const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(old).map(s => s.toNT());
+        const oldInstance = await this.findById(bestuurseenheid, instance.id);
+        const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(oldInstance).map(s => s.toNT());
+
         const newTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
         // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
@@ -100,7 +103,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 ${[...newTriples].join('\n')}
             }
             WHERE {
-                <${instance.id}> <${NS.schema('dateModified').value}> ${literal(old.dateModified.value, NS.xsd('dateTime')).toNT()} .
+                <${instance.id}> <${NS.schema('dateModified').value}> ${literal(version.value, NS.xsd('dateTime')).toNT()} .
             }
         `;
 

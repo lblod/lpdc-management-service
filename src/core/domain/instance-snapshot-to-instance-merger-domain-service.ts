@@ -82,7 +82,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
     private async updateInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, oldInstance: Instance, concept: Concept) {
         const newInstance = this.asMergedInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
-        await this._instanceRepository.update(bestuurseenheid, newInstance, oldInstance);
+        await this._instanceRepository.update(bestuurseenheid, newInstance, oldInstance.dateModified);
 
         if (oldInstance.conceptId) {
             await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, oldInstance.conceptId);

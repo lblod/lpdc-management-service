@@ -22,10 +22,11 @@ export class LinkConceptToInstanceDomainService {
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
     }
 
-    async link(bestuurseenheid: Bestuurseenheid, instance: Instance, concept: Concept): Promise<void> {
+    async link(bestuurseenheid: Bestuurseenheid, instance: Instance, version: FormatPreservingDate, concept: Concept): Promise<void> {
         if (instance.conceptId) {
-            await this.unlink(bestuurseenheid, instance);
+            await this.unlink(bestuurseenheid, instance, version);
             instance = await this._instanceRepository.findById(bestuurseenheid, instance.id);
+            version = instance.dateModified;
         }
 
         const updatedInstance = InstanceBuilder.from(instance)
@@ -35,11 +36,11 @@ export class LinkConceptToInstanceDomainService {
             .withDateModified(FormatPreservingDate.now())
             .build();
 
-        await this._instanceRepository.update(bestuurseenheid, updatedInstance, instance);
+        await this._instanceRepository.update(bestuurseenheid, updatedInstance, version);
         await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
     }
 
-    async unlink(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void> {
+    async unlink(bestuurseenheid: Bestuurseenheid, instance: Instance, version: FormatPreservingDate): Promise<void> {
         if (!instance.conceptId) {
             return;
         }
@@ -52,7 +53,7 @@ export class LinkConceptToInstanceDomainService {
             .withDateModified(FormatPreservingDate.now())
             .build();
 
-        await this._instanceRepository.update(bestuurseenheid, updatedInstance, instance);
+        await this._instanceRepository.update(bestuurseenheid, updatedInstance, version);
 
         await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instance.conceptId);
     }

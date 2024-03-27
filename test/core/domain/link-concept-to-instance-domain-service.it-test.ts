@@ -46,7 +46,7 @@ describe('LinkConceptToInstanceDomainService', () => {
             await instanceRepository.save(bestuurseenheid, instance);
             await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-            await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
+            await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, instance.dateModified, concept);
 
             const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             const expectedInstance = InstanceBuilder.from(instance)
@@ -78,7 +78,7 @@ describe('LinkConceptToInstanceDomainService', () => {
             await instanceRepository.save(bestuurseenheid, instance);
             await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-            await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
+            await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, instance.dateModified, concept);
 
             const updatedConceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
@@ -103,7 +103,7 @@ describe('LinkConceptToInstanceDomainService', () => {
             await conceptDisplayConfigurationRepository.save(bestuurseenheid, aFullConceptDisplayConfiguration().withConceptId(alreadyLinkedConcept.id).withBestuurseenheidId(bestuurseenheid.id).build());
             await conceptDisplayConfigurationRepository.save(bestuurseenheid, aFullConceptDisplayConfiguration().withConceptId(concept.id).withBestuurseenheidId(bestuurseenheid.id).build());
 
-            await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, concept);
+            await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, instance.dateModified, concept);
 
             const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
@@ -135,7 +135,7 @@ describe('LinkConceptToInstanceDomainService', () => {
             await instanceRepository.save(bestuurseenheid, instance);
             await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
+            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance, instance.dateModified);
 
             const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             const expectedInstance = InstanceBuilder.from(instance)
@@ -167,7 +167,7 @@ describe('LinkConceptToInstanceDomainService', () => {
             await instanceRepository.save(bestuurseenheid, instance);
             await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
+            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance, instance.dateModified);
 
             const updatedConceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
@@ -204,7 +204,7 @@ describe('LinkConceptToInstanceDomainService', () => {
             await instanceRepository.save(bestuurseenheid, otherInstanceForConcept);
             await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
+            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance, instance.dateModified);
 
             const updatedConceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             const expectedConceptDisplayConfiguration = ConceptDisplayConfigurationBuilder.from(conceptDisplayConfiguration)
@@ -234,7 +234,7 @@ describe('LinkConceptToInstanceDomainService', () => {
             await instanceRepository.save(bestuurseenheid, instance);
             await conceptDisplayConfigurationRepository.save(bestuurseenheid, conceptDisplayConfiguration);
 
-            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance);
+            await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance, instance.dateModified);
 
             const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 

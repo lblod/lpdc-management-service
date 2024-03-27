@@ -24,7 +24,7 @@ export class ConfirmBijgewerktTotDomainService {
         this._conceptSnapshotRepository = conceptSnapshotRepository;
     }
 
-    async confirmBijgewerktTot(bestuurseenheid: Bestuurseenheid, instance: Instance, conceptSnapshot: ConceptSnapshot): Promise<void> {
+    async confirmBijgewerktTot(bestuurseenheid: Bestuurseenheid, instance: Instance, version: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
         if (instance.conceptSnapshotId.equals(conceptSnapshot.id)) {
             return;
         }
@@ -41,7 +41,7 @@ export class ConfirmBijgewerktTotDomainService {
             .withDateModified(FormatPreservingDate.now())
             .build();
 
-        await this._instanceRepository.update(bestuurseenheid, updatedInstance, instance);
+        await this._instanceRepository.update(bestuurseenheid, updatedInstance, version);
     }
 
     private verifyConceptSnapshotBelongsToConcept(concept: Concept, conceptSnapshot: ConceptSnapshot): void {

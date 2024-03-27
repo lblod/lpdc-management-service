@@ -127,7 +127,7 @@ describe('InstanceRepository', () => {
                 .withDateModified(FormatPreservingDate.now())
                 .build();
 
-            await repository.update(bestuurseenheid, newInstance, oldInstance);
+            await repository.update(bestuurseenheid, newInstance, oldInstance.dateModified);
 
             const actualInstance = await repository.findById(bestuurseenheid, newInstance.id);
 
@@ -142,7 +142,7 @@ describe('InstanceRepository', () => {
             const newInstance = InstanceBuilder.from(oldInstance).build();
 
             expect(oldInstance).toEqual(newInstance);
-            await expect(() => repository.update(bestuurseenheid, newInstance, oldInstance)).rejects.toThrowWithMessage(SystemError, 'Geen wijzigingen');
+            await expect(() => repository.update(bestuurseenheid, newInstance, oldInstance.dateModified)).rejects.toThrowWithMessage(SystemError, 'Geen wijzigingen');
         });
 
         test('should throw error when modified date of old instance is not the same as in db', async () => {
@@ -161,7 +161,7 @@ describe('InstanceRepository', () => {
                 .withDateModified(FormatPreservingDate.of('2023-10-31T00:00:00.657Z'))
                 .build();
 
-            await expect(() => repository.update(bestuurseenheid, newInstance, oldInstance)).rejects.toThrowWithMessage(ConcurrentUpdateError, 'De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in');
+            await expect(() => repository.update(bestuurseenheid, newInstance, oldInstance.dateModified)).rejects.toThrowWithMessage(ConcurrentUpdateError, 'De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in');
 
             const actualInstance = await repository.findById(bestuurseenheid, newInstance.id);
             expect(actualInstance).toEqual(dbInstance);

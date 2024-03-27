@@ -50,7 +50,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         await conceptRepository.save(concept);
         await conceptSnapshotRepository.save(conceptSnapshot);
 
-        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, newConceptSnapshot);
+        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
         const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
         const expectedInstance= InstanceBuilder.from(instance)
@@ -80,7 +80,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         await conceptRepository.save(concept);
         await conceptSnapshotRepository.save(latestFunctionalChangedSnapshot);
 
-        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, latestFunctionalChangedSnapshot);
+        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, latestFunctionalChangedSnapshot);
 
         const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
         const expectedInstance= InstanceBuilder.from(instance)
@@ -113,7 +113,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         await conceptRepository.save(concept);
         await conceptSnapshotRepository.save(conceptSnapshot3);
 
-        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, conceptSnapshot2);
+        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, conceptSnapshot2);
 
         const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
         const expectedInstance= InstanceBuilder.from(instance)
@@ -146,7 +146,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         await conceptRepository.save(concept);
         await conceptSnapshotRepository.save(conceptSnapshot2);
 
-        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, conceptSnapshot3);
+        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, conceptSnapshot3);
 
         const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
         const expectedInstance= InstanceBuilder.from(instance)
@@ -176,7 +176,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         await conceptRepository.save(concept);
         await conceptSnapshotRepository.save(conceptSnapshot);
 
-        await expect(() => confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, aFullConceptSnapshot().build()))
+        await expect(() => confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, aFullConceptSnapshot().build()))
             .rejects.toThrowWithMessage(InvariantError, 'BijgewerktTot: concept snapshot hoort niet bij het concept gekoppeld aan de instantie');
     });
 
@@ -198,7 +198,7 @@ describe('ConfirmBijgewerktTotDomainService', () => {
         await conceptRepository.save(concept);
         await conceptSnapshotRepository.save(conceptSnapshot);
 
-        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, conceptSnapshot);
+        await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, conceptSnapshot);
 
         const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
         expect(actualInstance).toEqual(instance);
