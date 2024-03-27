@@ -25,12 +25,6 @@ export class SemanticFormsMapperImpl implements SemanticFormsMapper {
         return new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
     }
 
-    instanceFromTurtleFormat(bestuurseenheid: Bestuurseenheid, instanceId: Iri, instanceInTurtleFormat: string): Instance {
-        const quads = this.parseStatements(bestuurseenheid.userGraph(), instanceInTurtleFormat);
-        const quadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), this.doubleQuadReporter);
-        return quadsToDomainMapper.instance(instanceId);
-    }
-
     mergeInstance(bestuurseenheid: Bestuurseenheid, instance: Instance, removalsInTurtleFormat: string, additionsInTurtleFormat: string): Instance {
         const instanceQuads = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance);
 

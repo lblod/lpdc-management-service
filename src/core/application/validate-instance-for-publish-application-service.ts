@@ -4,6 +4,7 @@ import {Bestuurseenheid} from "../domain/bestuurseenheid";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {InvariantError} from "../domain/shared/lpdc-error";
 import {Instance} from "../domain/instance";
+import {ENABLE_ADDRESS_VALIDATION} from "../../../config";
 
 export class ValidateInstanceForPublishApplicationService {
 
@@ -28,7 +29,7 @@ export class ValidateInstanceForPublishApplicationService {
 
     private tryValidateForPublish(instance: Instance): ValidationError[] {
         try {
-            instance.validateForPublish(true);
+            instance.validateForPublish(ENABLE_ADDRESS_VALIDATION);
             return [];
         } catch (e) {
             if (e instanceof InvariantError) {
