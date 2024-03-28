@@ -262,9 +262,12 @@ app.post('/formal-informal-choices/', async function (req, res, next): Promise<a
     return await createFormalInformalChoice(req, res).catch(next);
 });
 
+app.get('/formal-informal-choices/', async function (req, res, next): Promise<any> {
+    return await getFormalInformalChoice(req, res).catch(next);
+});
+
 app.use('/contact-info-options/', async (req, res, next) => {
     await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
-
 });
 
 app.get('/contact-info-options/:fieldName', async (req, res, next): Promise<any> => {
@@ -530,6 +533,32 @@ async function createFormalInformalChoice(req: Request, res: Response) {
             "uri": id
         }
     });
+}
+
+async function getFormalInformalChoice(req: Request, res: Response) {
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+    const formalInformalChoice: FormalInformalChoice | undefined = await formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
+    if(formalInformalChoice) {
+        return res.status(200).json({
+            data: [
+                {
+                    attributes: {
+                        'chosen-form': formalInformalChoice.chosenForm,
+                        'date-created': formalInformalChoice.dateCreated.value,
+                        'uri': formalInformalChoice.id.value,
+                    },
+                    id: formalInformalChoice.uuid,
+                    type: 'formal-informal-choices',
+                }
+            ]
+        });
+    } else {
+        return res.status(200).json({
+            data: []
+        });
+    }
 }
 
 async function getContactPointOptions(req: Request, res: Response) {
