@@ -2,9 +2,6 @@ import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {NewInstanceDomainService} from "../../../src/core/domain/new-instance-domain-service";
 import {
-    FormalInformalChoiceSparqlTestRepository
-} from "../../driven/persistence/formal-informal-choice-sparql-test-repository";
-import {
     ConceptDisplayConfigurationSparqlTestRepository
 } from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
@@ -17,6 +14,9 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import {ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {SemanticFormsMapperImpl} from "../../../src/driven/persistence/semantic-forms-mapper-impl";
+import {
+    FormalInformalChoiceSparqlRepository
+} from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 
 describe('Update Instance Application Service tests', () => {
 
@@ -27,7 +27,7 @@ describe('Update Instance Application Service tests', () => {
     //Note: the update instance application service is directly tied to semantic forms ... so the tests use low level turtle format ...
 
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, conceptDisplayConfigurationRepository);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);

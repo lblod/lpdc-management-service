@@ -3,7 +3,7 @@ import {FormalInformalChoice} from "../../core/domain/formal-informal-choice";
 import {FormalInformalChoiceRepository} from "../../core/port/driven/persistence/formal-informal-choice-repository";
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX} from "../../../config";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeDateTime, sparqlEscapeString, sparqlEscapeUri} from "../../../mu-helper";
 import {Iri} from "../../core/domain/shared/iri";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 import {ChosenFormType} from "../../core/domain/types";
@@ -63,6 +63,28 @@ export class FormalInformalChoiceSparqlRepository implements FormalInformalChoic
         }
 
         return formalInformalChoice;
+    }
+
+    async save(bestuurseenheid: Bestuurseenheid, formalInformalChoice: FormalInformalChoice): Promise<void> {
+        const bestuurseenheidGraph: Iri = bestuurseenheid.userGraph();
+
+        const query = `
+            ${PREFIX.lpdc}
+            ${PREFIX.mu}
+            ${PREFIX.schema}
+            ${PREFIX.dct}
+            
+            INSERT DATA { 
+                GRAPH ${sparqlEscapeUri(bestuurseenheidGraph)} {
+                    ${sparqlEscapeUri(formalInformalChoice.id)} a lpdc:FormalInformalChoice .
+                    ${sparqlEscapeUri(formalInformalChoice.id)} mu:uuid ${sparqlEscapeString(formalInformalChoice.uuid)} .
+                    ${sparqlEscapeUri(formalInformalChoice.id)} schema:dateCreated ${sparqlEscapeDateTime(formalInformalChoice.dateCreated.value)} .
+                    ${sparqlEscapeUri(formalInformalChoice.id)} lpdc:chosenForm ${sparqlEscapeString(formalInformalChoice.chosenForm)} .
+                    ${sparqlEscapeUri(formalInformalChoice.id)} dct:relation ${sparqlEscapeUri(bestuurseenheid.id)} .
+                }
+            }
+        `;
+        await this.querying.insert(query);
     }
 
 }

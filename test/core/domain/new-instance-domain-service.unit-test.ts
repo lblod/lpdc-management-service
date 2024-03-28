@@ -17,9 +17,6 @@ import {ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {WebsiteBuilder} from "../../../src/core/domain/website";
 import {CostBuilder} from "../../../src/core/domain/cost";
 import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
-import {
-    FormalInformalChoiceSparqlTestRepository
-} from "../../driven/persistence/formal-informal-choice-sparql-test-repository";
 import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
 import {aFullConceptDisplayConfiguration} from "./concept-display-configuration-test-builder";
 import {
@@ -36,7 +33,7 @@ describe('Creating a new Instance domain service', () => {
 
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const formalInformalChoiceTestRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const formalInformalChoiceTestRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationTestRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, conceptDisplayConfigurationRepository);

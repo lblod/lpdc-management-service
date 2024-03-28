@@ -6,9 +6,6 @@ import {mock} from 'jest-mock-extended';
 import {CodeRepository} from "../../../src/core/port/driven/persistence/code-repository";
 import {FormDefinitionRepository} from "../../../src/core/port/driven/persistence/form-definition-repository";
 import {SelectFormLanguageDomainService} from "../../../src/core/domain/select-form-language-domain-service";
-import {
-    FormalInformalChoiceSparqlTestRepository
-} from "../../driven/persistence/formal-informal-choice-sparql-test-repository";
 import {aFormalInformalChoice} from "../domain/formal-informal-choice-test-builder";
 import {ChosenFormType, FormType, PublicationMediumType} from "../../../src/core/domain/types";
 import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
@@ -40,7 +37,7 @@ describe('Form application service tests', () => {
         const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = mock<FormDefinitionRepository>();
         const codeRepository = mock<CodeRepository>();
-        const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+        const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
         const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
         const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const semanticFormsMapper = new SemanticFormsMapperImpl();
@@ -169,7 +166,7 @@ describe('Form application service tests', () => {
         const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = mock<FormDefinitionRepository>();
         const codeRepository = mock<CodeRepository>();
-        const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+        const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
         const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
         const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const semanticFormsMapper = new SemanticFormsMapperImpl();

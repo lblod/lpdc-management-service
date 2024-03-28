@@ -5,9 +5,6 @@ import {
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {
-    FormalInformalChoiceSparqlTestRepository
-} from "../../driven/persistence/formal-informal-choice-sparql-test-repository";
 import {SelectFormLanguageDomainService} from "../../../src/core/domain/select-form-language-domain-service";
 import {SemanticFormsMapperImpl} from "../../../src/driven/persistence/semantic-forms-mapper-impl";
 import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
@@ -17,6 +14,9 @@ import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-
 import {aFullContactPointForInstance} from "../domain/contact-point-test-builder";
 import {aFullAddressForInstance} from "../domain/address-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
+import {
+    FormalInformalChoiceSparqlRepository
+} from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 
 
 describe('ValidateInstanceForPublishApplicationService', () => {
@@ -27,7 +27,7 @@ describe('ValidateInstanceForPublishApplicationService', () => {
         const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = new FormDefinitionFileRepository();
         const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
-        const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+        const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
         const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
         const semanticFormsMapper = new SemanticFormsMapperImpl();
         const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);

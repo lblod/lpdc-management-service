@@ -6,15 +6,15 @@ import {SelectFormLanguageDomainService} from "../../../src/core/domain/select-f
 import {Language} from "../../../src/core/domain/language";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
-import {
-    FormalInformalChoiceSparqlTestRepository
-} from "../../driven/persistence/formal-informal-choice-sparql-test-repository";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {aMinimalInstance} from "./instance-test-builder";
+import {
+    FormalInformalChoiceSparqlRepository
+} from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 
 describe('select form language for concept', () => {
 
-    const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
 
@@ -348,7 +348,7 @@ describe('select form language for concept', () => {
 
 describe('select form language for instance', () => {
 
-    const formalInformalChoiceRepository = new FormalInformalChoiceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
 
