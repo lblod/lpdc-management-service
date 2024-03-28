@@ -11,7 +11,9 @@ const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 
 
 describe('Session data integrity test', () => {
+
     test.skip('verify all sessions can be fetched', async () => {
+
         const allSessionIds = await findSessionIds();
         console.log(`${allSessionIds.length} sessions found`);
         for (const sessionId of allSessionIds) {
@@ -24,7 +26,7 @@ describe('Session data integrity test', () => {
             }
         }
 
-    });
+    }, 60000);
 });
 
 async function findSessionIds(): Promise<Iri[]> {

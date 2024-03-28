@@ -35,9 +35,9 @@ describe('Formal Informal Choice Data Integrity Validation', () => {
         const before = new Date().valueOf();
         console.log(new Date().toISOString());
 
-        for (const bestuursEenheidResult of bestuurseenheidIdsResult) {
+        for (const bestuurseenheidResult of bestuurseenheidIdsResult) {
             try {
-                const bestuurseenheidId = new Iri(bestuursEenheidResult['id'].value);
+                const bestuurseenheidId = new Iri(bestuurseenheidResult['id'].value);
                 const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
 
                 const formalInformalChoice = await formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);

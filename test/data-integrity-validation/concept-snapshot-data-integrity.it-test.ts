@@ -55,64 +55,54 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         //filter out the saving state of the ldes stream read
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/state')));
 
-        //filter out language on conceptSnapshot
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://publications.europa.eu/resource/authority/language')));
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://publications.europa.eu/resource/authority/language')));
-
-        //filter out legal resources data (iri reference still exists)
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith("https://codex.vlaanderen.be/"));
-
         const delayTime = 0;
-        const numberOfLoops = 1;
         const averageTimes = [];
         const technicalErrors = [];
         const dataErrors = [];
 
-        for (let i = 0; i < numberOfLoops; i++) {
-            let quadsFromRequeriedConceptSnapshots: Statement[] = [];
+        let quadsFromRequeriedConceptSnapshots: Statement[] = [];
 
-            const before = new Date().valueOf();
+        const before = new Date().valueOf();
 
-            console.log(new Date().toISOString());
+        console.log(new Date().toISOString());
 
-            const randomizedConceptSnapshotIds = shuffle([...conceptSnapshotIds]);
+        const randomizedConceptSnapshotIds = shuffle([...conceptSnapshotIds]);
 
-            for (const result of randomizedConceptSnapshotIds) {
-                try {
-                    const id = new Iri(result['id'].value);
-                    const conceptSnapshotForId = await repository.findById(id);
-                    expect(conceptSnapshotForId.id).toEqual(id);
-                    const quadsForConceptSnapshotForId =
-                        new DomainToQuadsMapper(graph).conceptSnapshotToQuads(conceptSnapshotForId);
-                    quadsFromRequeriedConceptSnapshots =
-                        [...quadsForConceptSnapshotForId, ...quadsFromRequeriedConceptSnapshots];
-                } catch (e) {
+        for (const result of randomizedConceptSnapshotIds) {
+            try {
+                const id = new Iri(result['id'].value);
+                const conceptSnapshotForId = await repository.findById(id);
+                expect(conceptSnapshotForId.id).toEqual(id);
+                const quadsForConceptSnapshotForId =
+                    new DomainToQuadsMapper(graph).conceptSnapshotToQuads(conceptSnapshotForId);
+                quadsFromRequeriedConceptSnapshots =
+                    [...quadsForConceptSnapshotForId, ...quadsFromRequeriedConceptSnapshots];
+            } catch (e) {
+                console.error(e);
+                if (!e.message.startsWith('could not map')) {
                     console.error(e);
-                    if (!e.message.startsWith('could not map')) {
-                        console.error(e);
-                        technicalErrors.push(e);
-                    } else {
-                        dataErrors.push(e);
-                    }
+                    technicalErrors.push(e);
+                } else {
+                    dataErrors.push(e);
                 }
-                await wait(delayTime);
             }
-            const quadsFromRequeriedConceptSnapshotsAsStrings = quadsFromRequeriedConceptSnapshots.map(quad => quad.toString());
-
-            const allRemainingQuadsOfGraphAsTurtle = allQuadsOfGraph
-                .map(q => q.toString())
-                .filter(q => !quadsFromRequeriedConceptSnapshotsAsStrings.includes(q));
-
-            //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
-            //fs.writeFileSync(`/tmp/remaining-quads.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
-            expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
-
-            const averageTime = (new Date().valueOf() - before - delayTime * conceptSnapshotIds.length) / conceptSnapshotIds.length;
-            averageTimes.push(averageTime);
-
-            console.log(`Verifying in total ${conceptSnapshotIds.length} concept snapshots took on average ${averageTime} ms per concept`);
-            // eslint-disable-next-line no-constant-condition
+            await wait(delayTime);
         }
+        const quadsFromRequeriedConceptSnapshotsAsStrings = quadsFromRequeriedConceptSnapshots.map(quad => quad.toString());
+
+        const allRemainingQuadsOfGraphAsTurtle = allQuadsOfGraph
+            .map(q => q.toString())
+            .filter(q => !quadsFromRequeriedConceptSnapshotsAsStrings.includes(q));
+
+        //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
+        //fs.writeFileSync(`/tmp/remaining-quads.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
+        expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
+
+        const averageTime = (new Date().valueOf() - before - delayTime * conceptSnapshotIds.length) / conceptSnapshotIds.length;
+        averageTimes.push(averageTime);
+
+        console.log(`Verifying in total ${conceptSnapshotIds.length} concept snapshots took on average ${averageTime} ms per concept`);
+        // eslint-disable-next-line no-constant-condition
 
         const totalAverageTime = averageTimes.reduce((accumulator, currentValue) => {
             return accumulator + currentValue;
