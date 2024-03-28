@@ -17,6 +17,7 @@ import {SemanticFormsMapperImpl} from "../../../src/driven/persistence/semantic-
 import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
+import {ConcurrentUpdateError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('Update Instance Application Service tests', () => {
 
@@ -32,8 +33,6 @@ describe('Update Instance Application Service tests', () => {
     const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, conceptDisplayConfigurationRepository);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const semanticFormsMapper = new SemanticFormsMapperImpl();
-
-    //TODO LPDC-884: add a test which verifies that optimistic locking error throws ConcurrentUpdateError
 
     const updateInstanceApplicationService = new UpdateInstanceApplicationService(instanceRepository, semanticFormsMapper);
 
@@ -173,5 +172,42 @@ pub:${instance.uuid}\n
                 .build());
 
 
+    });
+
+    test('should throw ConcurrentUpdateError, when not updating the latest instance version', async () => {
+        const bestuurseenheid =
+            aBestuurseenheid()
+                .build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const emptyInstance = await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+        const instanceAfterCreate = await instanceRepository.findById(bestuurseenheid, emptyInstance.id);
+
+
+        await updateInstanceApplicationService.update(
+            bestuurseenheid,
+            instanceAfterCreate.id,
+            instanceAfterCreate.dateModified,
+            '@prefix : <#>.\n\n',
+            `
+            @prefix : <#>.\n@prefix dct: <http://purl.org/dc/terms/>.\n
+            @prefix pub: <http://data.lblod.info/id/public-service/>.\n\n
+            pub:${instanceAfterCreate.uuid} dct:title "initial title"@nl-be-x-formal, "initial title en"@en.\n\n`);
+
+
+        await expect(() => updateInstanceApplicationService.update(
+            bestuurseenheid,
+            instanceAfterCreate.id,
+            FormatPreservingDate.of('2024-01-15T00:00:00.672Z'),
+            `        @prefix : <#>\n.
+@prefix dct: <http://purl.org/dc/terms/>\n.
+@prefix pub: <http://data.lblod.info/id/public-service/>\n\n.
+
+pub:${instanceAfterCreate.uuid} dct:title "initial title"@nl-be-x-formal, "initial title en"@en.\n\n`,
+            `
+            @prefix : <#>.\n@prefix dct: <http://purl.org/dc/terms/>.\n
+            @prefix pub: <http://data.lblod.info/id/public-service/>.\n\n
+            pub:${instanceAfterCreate.uuid} dct:title "updated title"@nl-be-x-formal, "updated title en"@en.\n\n`)
+        ).rejects.toThrowWithMessage(ConcurrentUpdateError, 'De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in');
     });
 });

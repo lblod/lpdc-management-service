@@ -3,7 +3,7 @@ import {InstanceRepository} from "../../core/port/driven/persistence/instance-re
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX} from "../../../config";
 import {sparqlEscapeDateTime, sparqlEscapeUri} from "../../../mu-helper";
-import {Instance} from "../../core/domain/instance";
+import {Instance, InstanceBuilder} from "../../core/domain/instance";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
@@ -79,7 +79,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
     }
 
     async update(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
-        //TODO LPDC-884: fill in datemodified for newTriples (after using builder to copy all fields)
 
         requiredValue(instanceVersion, "Instantie versie");
         const oldInstance = await this.findById(bestuurseenheid, instance.id);
@@ -87,8 +86,11 @@ export class InstanceSparqlRepository implements InstanceRepository {
         if (instanceVersion.value != oldInstance.dateModified.value) {
             throw new ConcurrentUpdateError("De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in");
         }
+        const newInstance = InstanceBuilder.from(instance).withDateModified(FormatPreservingDate.now()).build();
+
+
         const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(oldInstance).map(s => s.toNT());
-        const newTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
+        const newTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(newInstance).map(s => s.toNT());
 
         // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
         if (isEqual(oldTriples, newTriples)) {

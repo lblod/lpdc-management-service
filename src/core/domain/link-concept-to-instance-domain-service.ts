@@ -32,7 +32,6 @@ export class LinkConceptToInstanceDomainService {
             .withConceptId(concept.id)
             .withConceptSnapshotId(concept.latestConceptSnapshot)
             .withProductId(concept.productId)
-            .withDateModified(FormatPreservingDate.now())
             .build();
 
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);
@@ -49,7 +48,6 @@ export class LinkConceptToInstanceDomainService {
             .withConceptSnapshotId(undefined)
             .withProductId(undefined)
             .withReviewStatus(undefined)
-            .withDateModified(FormatPreservingDate.now())
             .build();
 
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);

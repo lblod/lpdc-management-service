@@ -38,7 +38,6 @@ export class ConfirmBijgewerktTotDomainService {
         const updatedInstance = InstanceBuilder.from(instance)
             .withConceptSnapshotId(conceptSnapshot.id)
             .withReviewStatus(isBijgewerktTotLatestFunctionalChange ? undefined : instance.reviewStatus)
-            .withDateModified(FormatPreservingDate.now())
             .build();
 
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);

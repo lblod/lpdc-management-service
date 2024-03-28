@@ -124,24 +124,27 @@ describe('InstanceRepository', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const oldInstance = aFullInstance()
                 .withCreatedBy(bestuurseenheid.id)
+                .withProductId('80')
                 .withDateModified(FormatPreservingDate.of('2023-10-20T00:00:00.657Z'))
                 .build();
             await repository.save(bestuurseenheid, oldInstance);
 
             const newInstance = InstanceBuilder.from(oldInstance)
-                .withDateModified(FormatPreservingDate.now())
+                .withProductId('100')
                 .build();
 
             await repository.update(bestuurseenheid, newInstance, oldInstance.dateModified);
 
             const actualInstance = await repository.findById(bestuurseenheid, newInstance.id);
+            const expectedInstance = InstanceBuilder.from(newInstance).withDateModified(FormatPreservingDate.now()).build();
 
-            expect(actualInstance).toEqual(newInstance);
+
+            expect(actualInstance).toEqual(expectedInstance);
         });
 
         test('should throw error when old instance is equal to new instance', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const oldInstance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+            const oldInstance = aFullInstance().withCreatedBy(bestuurseenheid.id).withDateModified(FormatPreservingDate.now()).build();
             await repository.save(bestuurseenheid, oldInstance);
 
             const newInstance = InstanceBuilder.from(oldInstance).build();
@@ -163,7 +166,6 @@ describe('InstanceRepository', () => {
                 .build();
 
             const newInstance = InstanceBuilder.from(dbInstance)
-                .withDateModified(FormatPreservingDate.of('2023-10-31T00:00:00.657Z'))
                 .build();
 
             await expect(() => repository.update(bestuurseenheid, newInstance, oldInstance.dateModified)).rejects.toThrowWithMessage(ConcurrentUpdateError, 'De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in');
@@ -181,7 +183,6 @@ describe('InstanceRepository', () => {
             await repository.save(bestuurseenheid, dbInstance);
 
             const newInstance = InstanceBuilder.from(dbInstance)
-                .withDateModified(FormatPreservingDate.of('2023-10-31T00:00:00.657Z'))
                 .build();
 
             await expect(() => repository.update(bestuurseenheid, newInstance, undefined)).rejects.toThrowWithMessage(InvariantError, 'Instantie versie mag niet ontbreken');

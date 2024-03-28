@@ -176,7 +176,6 @@ export class Instance {
 
         return InstanceBuilder.from(this)
             .withStatus(InstanceStatusType.ONTWERP)
-            .withDateModified(FormatPreservingDate.now())
             .withPublicationStatus(newPublicationStatus)
             .build();
     }
@@ -378,7 +377,6 @@ export class Instance {
         return InstanceBuilder.from(this)
             .withStatus(InstanceStatusType.VERSTUURD)
             .withDateSent(FormatPreservingDate.now())
-            .withDateModified(FormatPreservingDate.now())
             .build();
     }
 
