@@ -184,7 +184,7 @@ describe('InstanceRepository', () => {
                 .withDateModified(FormatPreservingDate.of('2023-10-31T00:00:00.657Z'))
                 .build();
 
-            await expect(() => repository.update(bestuurseenheid, newInstance, undefined)).rejects.toThrowWithMessage(InvariantError, 'Versie mag niet ontbreken');
+            await expect(() => repository.update(bestuurseenheid, newInstance, undefined)).rejects.toThrowWithMessage(InvariantError, 'Instantie versie mag niet ontbreken');
 
         });
     });

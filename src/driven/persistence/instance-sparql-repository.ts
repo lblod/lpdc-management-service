@@ -78,17 +78,16 @@ export class InstanceSparqlRepository implements InstanceRepository {
         await this.querying.insert(query);
     }
 
-    async update(bestuurseenheid: Bestuurseenheid, instance: Instance, version: FormatPreservingDate): Promise<void> {
-        //TODO LPDC-884: pass along a version instead of old (and replace in query old.dateModified.value by version.value)
-        //TODO LPDC-884: load old triples based on id of instance
-        //TODO LPDC-884: compare datemodified of oldtriples compared to given version -> if different, also throw a ConcurrentUpdateError (but leave the database check in place)
+    async update(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
         //TODO LPDC-884: fill in datemodified for newTriples (after using builder to copy all fields)
-        //TODO LPDC-884: validate version is present
 
-        requiredValue(version, "Versie");
+        requiredValue(instanceVersion, "Instantie versie");
         const oldInstance = await this.findById(bestuurseenheid, instance.id);
-        const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(oldInstance).map(s => s.toNT());
 
+        if (instanceVersion.value != oldInstance.dateModified.value) {
+            throw new ConcurrentUpdateError("De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in");
+        }
+        const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(oldInstance).map(s => s.toNT());
         const newTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
         // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
@@ -105,7 +104,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 ${[...newTriples].join('\n')}
             }
             WHERE {
-                <${instance.id}> <${NS.schema('dateModified').value}> ${literal(version.value, NS.xsd('dateTime')).toNT()} .
+                <${instance.id}> <${NS.schema('dateModified').value}> ${literal(instanceVersion.value, NS.xsd('dateTime')).toNT()} .
             }
         `;
 
