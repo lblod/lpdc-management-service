@@ -359,13 +359,13 @@ async function removeInstance(req: Request, res: Response) {
 async function updateInstance(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
     const delta = req.body;
-    const version: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers.version as string);
+    const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    await updateInstanceApplicationService.update(bestuurseenheid, instanceId, version, delta.removals, delta.additions);
+    await updateInstanceApplicationService.update(bestuurseenheid, instanceId, instanceVersion, delta.removals, delta.additions);
 
     return res.sendStatus(200);
 }
@@ -373,7 +373,7 @@ async function updateInstance(req: Request, res: Response) {
 async function linkConceptToInstance(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
     const conceptIdRequestParam = req.params.conceptId;
-    const version: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers.version as string);
+    const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
     const conceptId = new Iri(conceptIdRequestParam);
@@ -382,26 +382,26 @@ async function linkConceptToInstance(req: Request, res: Response) {
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
     const concept = await conceptRepository.findById(conceptId);
 
-    await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, version, concept);
+    await linkConceptToInstanceDomainService.link(bestuurseenheid, instance, instanceVersion, concept);
     return res.sendStatus(200);
 }
 
 async function unlinkConceptFromInstance(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
-    const version: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers.version as string);
+    const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
     const session: Session = req['session'];
     const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
 
-    await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance, version);
+    await linkConceptToInstanceDomainService.unlink(bestuurseenheid, instance, instanceVersion);
     return res.sendStatus(200);
 }
 
 async function reopenInstance(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
-    const version: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers.version as string);
+    const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
     const session: Session = req['session'];
@@ -409,7 +409,7 @@ async function reopenInstance(req: Request, res: Response) {
 
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
 
-    await instanceRepository.update(bestuurseenheid, instance.reopen(), version);
+    await instanceRepository.update(bestuurseenheid, instance.reopen(), instanceVersion);
 
     return res.sendStatus(200);
 }
@@ -417,7 +417,7 @@ async function reopenInstance(req: Request, res: Response) {
 async function confirmBijgewerktTot(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
     const conceptSnapshotIdRequestParam = req.body.bijgewerktTot;
-    const version: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers.version as string);
+    const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
     const conceptSnapshotId = new Iri(conceptSnapshotIdRequestParam);
@@ -425,7 +425,7 @@ async function confirmBijgewerktTot(req: Request, res: Response) {
     const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
     const conceptSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
-    await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, version, conceptSnapshot);
+    await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instanceVersion, conceptSnapshot);
     return res.sendStatus(200);
 }
 
@@ -444,7 +444,7 @@ async function validateForPublish(req: Request, res: Response) {
 
 async function publishInstance(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
-    const version: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers.version as string);
+    const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
     const session: Session = req['session'];
@@ -457,7 +457,8 @@ async function publishInstance(req: Request, res: Response) {
 
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
 
-    await instanceRepository.update(bestuurseenheid, instance.reopen(), version);
+
+    await instanceRepository.update(bestuurseenheid, instance.publish(), instanceVersion);
     return res.sendStatus(200);
 }
 

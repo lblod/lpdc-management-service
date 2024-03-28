@@ -19,11 +19,11 @@ export class UpdateInstanceApplicationService {
     }
 
     //Note: the update instance application service is directly tied to semantic forms, hence that part of the input parameters are xxxAsTurtleFormat
-    async update(bestuurseenheid: Bestuurseenheid, instanceId: Iri, version: FormatPreservingDate | undefined, removalsAsTurtleFormat: string, additionsAsTurtleFormat: string): Promise<void> {
+    async update(bestuurseenheid: Bestuurseenheid, instanceId: Iri, instanceVersion: FormatPreservingDate | undefined, removalsAsTurtleFormat: string, additionsAsTurtleFormat: string): Promise<void> {
         const loadedInstance =
             InstanceBuilder.from(
                 await this._instanceRepository.findById(bestuurseenheid, instanceId))
-                .withDateModified(version)
+                .withDateModified(instanceVersion)
                 .build();
 
         const mergedInstance =
@@ -31,7 +31,7 @@ export class UpdateInstanceApplicationService {
                 .withDateModified(FormatPreservingDate.now())
                 .build();
 
-        await this._instanceRepository.update(bestuurseenheid, mergedInstance, version);
+        await this._instanceRepository.update(bestuurseenheid, mergedInstance, instanceVersion);
     }
 
 }
