@@ -1,4 +1,4 @@
-import {createApp} from './mu-helper';
+import {createApp, uuid} from './mu-helper';
 import bodyparser from 'body-parser';
 import {CONCEPT_SNAPSHOT_LDES_GRAPH, INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN, LOG_INCOMING_DELTA} from './config';
 import {ProcessingQueue} from './lib/processing-queue';
@@ -55,6 +55,7 @@ import {
 } from "./src/core/application/validate-instance-for-publish-application-service";
 import {FormType} from "./src/core/domain/types";
 import {FormatPreservingDate} from "./src/core/domain/format-preserving-date";
+import {buildFormalInformalChoiceIri, FormalInformalChoice} from "./src/core/domain/formal-informal-choice";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -253,6 +254,14 @@ app.put('/concept-display-configuration/:conceptDisplayConfigurationId/remove-is
     return await removeIsNewFlag(req, res).catch(next);
 });
 
+app.use('/formal-informal-choices/', async (req, res, next) => {
+    await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
+});
+
+app.post('/formal-informal-choices/', async function (req, res, next): Promise<any> {
+    return await createFormalInformalChoice(req, res).catch(next);
+});
+
 app.use('/contact-info-options/', async (req, res, next) => {
     await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
 
@@ -429,7 +438,6 @@ async function confirmBijgewerktTot(req: Request, res: Response) {
     return res.sendStatus(200);
 }
 
-
 async function validateForPublish(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
 
@@ -451,7 +459,7 @@ async function publishInstance(req: Request, res: Response) {
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
     const errors = await validateInstanceForPublishApplicationService.validate(instanceId, bestuurseenheid);
-    if(errors.length > 0) {
+    if (errors.length > 0) {
         throw new InvariantError('Instantie niet geldig om te publiceren');
     }
 
@@ -496,6 +504,32 @@ async function removeIsNewFlag(req: Request, res: Response) {
 
     await conceptDisplayConfigurationRepository.removeConceptIsNewFlag(bestuurseenheid, conceptDisplayConfigurationId);
     return res.status(200).send();
+}
+
+async function createFormalInformalChoice(req: Request, res: Response) {
+    const body = req.body;
+
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+    const newUuid = uuid();
+    const id = buildFormalInformalChoiceIri(newUuid);
+    await formalInformalChoiceRepository.save(
+        bestuurseenheid,
+        new FormalInformalChoice(
+            id,
+            newUuid,
+            FormatPreservingDate.now(),
+            body?.data?.attributes['chosen-form'],
+            bestuurseenheid.id));
+
+    return res.status(201).json({
+        data: {
+            "type": "formal-informal-choices",
+            "id": newUuid,
+            "uri": id
+        }
+    });
 }
 
 async function getContactPointOptions(req: Request, res: Response) {

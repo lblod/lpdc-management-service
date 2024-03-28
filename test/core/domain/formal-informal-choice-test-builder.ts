@@ -1,8 +1,8 @@
-import {FormalInformalChoice} from "../../../src/core/domain/formal-informal-choice";
+import {buildFormalInformalChoiceIri, FormalInformalChoice} from "../../../src/core/domain/formal-informal-choice";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {uuid} from "../../../mu-helper";
-import {buildBestuurseenheidIri, buildFormalInformalChoiceIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri} from "./iri-test-builder";
 import {ChosenFormType} from "../../../src/core/domain/types";
 
 export function aFormalInformalChoice(): FormalInformalChoiceTestBuilder {

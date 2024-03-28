@@ -2,7 +2,7 @@ import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {aFormalInformalChoice} from "../../core/domain/formal-informal-choice-test-builder";
-import {buildBestuurseenheidIri, buildFormalInformalChoiceIri} from "../../core/domain/iri-test-builder";
+import {buildBestuurseenheidIri} from "../../core/domain/iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {PREFIX} from "../../../config";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
@@ -12,6 +12,7 @@ import {SystemError} from "../../../src/core/domain/shared/lpdc-error";
 import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
+import {buildFormalInformalChoiceIri} from "../../../src/core/domain/formal-informal-choice";
 
 describe('FormalInformalChoiceRepository', () => {
 

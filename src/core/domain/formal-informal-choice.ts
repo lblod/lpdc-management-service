@@ -3,6 +3,10 @@ import {FormatPreservingDate} from "./format-preserving-date";
 import {requiredValue} from "./shared/invariant";
 import {ChosenFormType} from "./types";
 
+export function buildFormalInformalChoiceIri(uniqueId: string): Iri {
+    return new Iri(`http://data.lblod.info/id/formalInformalChoice/${uniqueId}`);
+}
+
 export class FormalInformalChoice {
 
     private readonly _id: Iri;
