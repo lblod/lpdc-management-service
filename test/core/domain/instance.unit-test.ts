@@ -1012,26 +1012,21 @@ describe('nl language version', () => {
 
 describe('reopen', () => {
 
-    test('should update status and modified date', () => {
+    test('should update status ', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.VERSTUURD)
-            .withPublicationStatus(undefined)
-            .withDatePublished(undefined)
             .build();
 
         const updatedInstance = instance.reopen();
 
         expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
             .withStatus(InstanceStatusType.ONTWERP)
-            .withDateModified(FormatPreservingDate.now())
             .build());
     });
 
     test('should throw error when instance status is ontwerp', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.ONTWERP)
-            .withPublicationStatus(undefined)
-            .withDatePublished(undefined)
             .build();
 
         expect(() => instance.reopen()).toThrowWithMessage(InvariantError, 'Instantie is al in status ontwerp');
@@ -1048,24 +1043,18 @@ describe('reopen', () => {
         expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
             .withStatus(InstanceStatusType.ONTWERP)
             .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
-            .withDateModified(FormatPreservingDate.now())
             .build());
     });
 
     test('when publication status was verstuurd but never published', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.VERSTUURD)
-            .withPublicationStatus(undefined)
-            .withDatePublished(undefined)
             .build();
 
         const updatedInstance = instance.reopen();
 
         expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
             .withStatus(InstanceStatusType.ONTWERP)
-            .withDateModified(FormatPreservingDate.now())
-            .withPublicationStatus(undefined)
-            .withDatePublished(undefined)
             .build());
     });
 
@@ -1082,7 +1071,6 @@ describe('reopen', () => {
 
         expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
             .withStatus(InstanceStatusType.ONTWERP)
-            .withDateModified(FormatPreservingDate.now())
             .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
             .withDatePublished(datePublished)
             .build());
@@ -1100,7 +1088,6 @@ describe('reopen', () => {
 
         expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
             .withStatus(InstanceStatusType.ONTWERP)
-            .withDateModified(FormatPreservingDate.now())
             .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
             .withDatePublished(datePublished)
             .build());
@@ -1175,7 +1162,7 @@ describe('validateForPublish', () => {
 
 describe('publish', () => {
 
-    test('should update status and modified date', () => {
+    test('should update status', () => {
         const instance = aMinimalInstance()
             .withStatus(InstanceStatusType.ONTWERP)
             .build();
@@ -1184,7 +1171,6 @@ describe('publish', () => {
 
         expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
             .withStatus(InstanceStatusType.VERSTUURD)
-            .withDateModified(FormatPreservingDate.now())
             .withDateSent(FormatPreservingDate.now())
             .build());
     });
