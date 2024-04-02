@@ -19,4 +19,4 @@ echo "Stopping containers"
 docker compose -p lpdc-management-service-tests down
 
 cd test
-exit exit_code
+exit $exit_code
