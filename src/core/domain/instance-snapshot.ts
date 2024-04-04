@@ -24,7 +24,7 @@ import {
     requiredValue,
     requireNoDuplicates
 } from "./shared/invariant";
-import {instanceLanguages} from "./language";
+import {instanceLanguages, Language} from "./language";
 import {LegalResource} from "./legal-resource";
 import {InvariantError} from "./shared/lpdc-error";
 
@@ -172,6 +172,26 @@ export class InstanceSnapshot {
         if (allNlLanguages.size > 1) {
             throw new InvariantError('Er is meer dan een nl-taal aanwezig');
         }
+    }
+
+    // TODO LPDC-1059: fix duplication with method above + write unit test
+    get dutchLanguageVariant(): Language | undefined {
+        const nlLanguage =
+            LanguageString.extractNlLanguages([
+                this._title,
+                this._description,
+                this._additionalDescription,
+                this._exception,
+                this._regulation,
+            ]);
+        return [nlLanguage[0],
+            ...this._requirements.map(r => r.nlLanguage),
+            ...this._procedures.map(p => p.nlLanguage),
+            ...this._websites.map(p => p.nlLanguage),
+            ...this._costs.map(p => p.nlLanguage),
+            ...this._financialAdvantages.map(p => p.nlLanguage),
+        ]
+            .filter(l => l !== undefined)[0];
     }
 
     get id(): Iri {

@@ -1,7 +1,11 @@
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
-import {aFullInstanceSnapshot, aMinimalInstanceSnapshot} from "./instance-snapshot-test-builder";
+import {
+    aFullInstanceSnapshot,
+    aMinimalInstanceSnapshot,
+    InstanceSnapshotTestBuilder
+} from "./instance-snapshot-test-builder";
 import {InstanceSnapshotSparqlTestRepository} from "../../driven/persistence/instance-snapshot-sparql-test-repository";
 import {
     InstanceSnapshotToInstanceMergerDomainService
@@ -12,7 +16,7 @@ import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {aFullConcept} from "./concept-test-builder";
-import {aFullInstance} from "./instance-test-builder";
+import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";
@@ -36,6 +40,7 @@ import {Instance} from "../../../src/core/domain/instance";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 import {aFullContactPointForInstance} from "./contact-point-test-builder";
 import {aFullAddressForInstance} from "./address-test-builder";
+import {Language} from "../../../src/core/domain/language";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -110,6 +115,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.conceptSnapshotId).toEqual(undefined);
             expect(instanceAfterMerge.productId).toEqual(undefined);
             expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
+            expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
             expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
             expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
             expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
@@ -356,6 +362,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.conceptSnapshotId).toEqual(concept.latestConceptSnapshot);
             expect(instanceAfterMerge.productId).toEqual(concept.productId);
             expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
+            expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
             expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
             expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
             expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
@@ -382,6 +389,76 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                     _order: instanceSnapshot.legalResources[1].order,
                 })
             ]));
+        });
+
+        test('Given a instanceSnapshot with informal languageStrings, then instance is created with informal dutchLanguageVersion', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const concept = aFullConcept().build();
+            await conceptRepository.save(concept);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withTitle(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL))
+                .withDescription(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
+                .withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceExists).toEqual(false);
+
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+            expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
+            expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
+        });
+
+        test('Given a instanceSnapshot with formal languageStrings, then instance is created with formal dutchLanguageVersion', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const concept = aFullConcept().build();
+            await conceptRepository.save(concept);
+            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withTitle(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.TITLE_NL_FORMAL,
+                        undefined))
+                .withDescription(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
+                        undefined))
+                .withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceExists).toEqual(false);
+
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+            expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
+            expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.FORMAL);
         });
 
         test('conceptDisplayConfiguration is updated', async () => {
@@ -500,7 +577,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
                 expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
                 expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
-
             });
 
             test('Given a full instanceSnapshot, then existing instance is updated', async () => {
@@ -1004,6 +1080,129 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await expect(mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id)).resolves.not.toThrow();
         });
+
+        test('Given a instanceSnapshot with formal languageStrings, then instance is merged with formal dutchLanguageVersion', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aMinimalInstance().withCreatedBy(bestuurseenheid.id).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withTitle(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.TITLE_NL_FORMAL,
+                        undefined))
+                .withDescription(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
+                        undefined))
+                .withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceExists).toEqual(true);
+
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+
+            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
+            expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+            expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
+            expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.FORMAL);
+        });
+
+        test('Given a instanceSnapshot with informal languageStrings, then instance is merged with informal dutchLanguageVersion', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aMinimalInstance().withCreatedBy(bestuurseenheid.id).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withTitle(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL))
+                .withDescription(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
+                .withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceExists).toEqual(true);
+
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+
+            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
+            expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+            expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
+            expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
+        });
+
+        test('Given a instanceSnapshot with informal languageStrings and instance was formal, then instance is merged with informal dutchLanguageVersion', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aMinimalInstance()
+                .withTitle(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.TITLE_NL_FORMAL,
+                        undefined))
+                .withDescription(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
+                        undefined,))
+                .withDutchLanguageVariant(Language.FORMAL)
+                .withCreatedBy(bestuurseenheid.id).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withTitle(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
+                .withDescription(
+                    LanguageString.of(
+                        undefined,
+                        undefined,
+                        undefined,
+                        InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
+                .withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
+            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            expect(instanceExists).toEqual(true);
+
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+
+            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
+            expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+            expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
+            expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
+        });
+
     });
 
     test('Given a deleted Instance, when receiving a new snapshot, recreate the instance and remove tombstone', async () => {
