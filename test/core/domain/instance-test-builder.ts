@@ -35,6 +35,8 @@ import {
 } from "./financial-advantage-test-builder";
 import {aFullContactPointForInstance, anotherFullContactPointForInstance} from "./contact-point-test-builder";
 import {aFullLegalResourceForInstance, anotherFullLegalResourceForInstance} from "./legal-resource-test-builder";
+import {Language} from "../../../src/core/domain/language";
+
 
 export function aMinimalInstance(): InstanceBuilder {
     const uniqueId = uuid();
@@ -44,6 +46,7 @@ export function aMinimalInstance(): InstanceBuilder {
         .withCreatedBy(buildBestuurseenheidIri(uuid()))
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
+        .withDutchLanguageVariant(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT)
         .withStatus(InstanceTestBuilder.STATUS);
 }
 
@@ -96,6 +99,7 @@ export function aFullInstance(): InstanceBuilder {
         .withConceptSnapshotId(buildConceptSnapshotIri(uuid()))
         .withProductId(InstanceTestBuilder.PRODUCT_ID)
         .withLanguages(InstanceTestBuilder.LANGUAGES)
+        .withDutchLanguageVariant(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT)
         .withDateSent(InstanceTestBuilder.DATE_SENT)
         .withDatePublished(InstanceTestBuilder.DATE_PUBLISHED)
         .withReviewStatus(InstanceTestBuilder.REVIEW_STATUS)
@@ -177,6 +181,7 @@ export class InstanceTestBuilder {
     public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantageForInstance().build(), anotherFullFinancialAdvantageForInstance().build()];
 
     public static readonly LANGUAGES = [LanguageType.NLD, LanguageType.ENG];
+    public static readonly DUTCH_LANGUAGE_VARIANT = Language.FORMAL;
 
     public static readonly CONTACT_POINTS = [aFullContactPointForInstance().build(), anotherFullContactPointForInstance().build()];
 

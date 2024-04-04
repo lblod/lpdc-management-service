@@ -28,6 +28,7 @@ import {
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
+import {Language} from "../../../src/core/domain/language";
 
 describe('Creating a new Instance domain service', () => {
 
@@ -66,6 +67,41 @@ describe('Creating a new Instance domain service', () => {
                 .withDateCreated(FormatPreservingDate.now())
                 .withDateModified(FormatPreservingDate.now())
                 .withStatus(InstanceStatusType.ONTWERP)
+                .withDutchLanguageVariant(Language.FORMAL)
+                .withSpatials([spatial1, spatial2])
+                .withCompetentAuthorities([bestuurseenheid.id])
+                .withExecutingAuthorities([bestuurseenheid.id])
+                .build();
+        expect(createdInstance).toEqual(expectedInstance);
+        expect(reloadedInstance).toEqual(expectedInstance);
+    });
+
+    test('Create new empty, when formalChoice is informal, instance dutchLanguageVersion is informal', async () => {
+        const spatial1 = buildSpatialRefNis2019Iri(12345);
+        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const bestuurseenheid = aBestuurseenheid()
+            .withId(buildBestuurseenheidIri(uuid()))
+            .withSpatials([spatial1, spatial2])
+            .build();
+
+        await formalInformalChoiceRepository.save(bestuurseenheid, aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build());
+        const createdInstance = await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+
+        const reloadedInstance = await instanceRepository.findById(bestuurseenheid, createdInstance.id);
+
+        expect(createdInstance).toEqual(reloadedInstance);
+        expect(createdInstance.id).not.toBeUndefined();
+        expect(createdInstance.uuid).not.toBeUndefined();
+
+        const expectedInstance =
+            new InstanceBuilder()
+                .withId(createdInstance.id)
+                .withUuid(createdInstance.uuid)
+                .withCreatedBy(bestuurseenheid.id)
+                .withDateCreated(FormatPreservingDate.now())
+                .withDateModified(FormatPreservingDate.now())
+                .withStatus(InstanceStatusType.ONTWERP)
+                .withDutchLanguageVariant(Language.INFORMAL)
                 .withSpatials([spatial1, spatial2])
                 .withCompetentAuthorities([bestuurseenheid.id])
                 .withExecutingAuthorities([bestuurseenheid.id])
@@ -106,6 +142,7 @@ describe('Creating a new Instance domain service', () => {
                 .withDateCreated(FormatPreservingDate.now())
                 .withDateModified(FormatPreservingDate.now())
                 .withStatus(InstanceStatusType.ONTWERP)
+                .withDutchLanguageVariant(Language.FORMAL)
                 .withSpatials([spatial1, spatial2])
                 .withTitle(LanguageString.of(concept.title.en, undefined, concept.title.nlFormal))
                 .withDescription(LanguageString.of(concept.description.en, undefined, concept.description.nlFormal))
@@ -379,6 +416,7 @@ describe('Creating a new Instance domain service', () => {
                 .withDateCreated(FormatPreservingDate.now())
                 .withDateModified(FormatPreservingDate.now())
                 .withStatus(InstanceStatusType.ONTWERP)
+                .withDutchLanguageVariant(Language.FORMAL)
                 .withSpatials([spatial1, spatial2])
                 .withTitle(LanguageString.of(concept.title.en, undefined, concept.title.nlFormal))
                 .withDescription(LanguageString.of(concept.description.en, undefined, concept.description.nlFormal))
@@ -616,6 +654,7 @@ describe('Creating a new Instance domain service', () => {
                 .withDateCreated(FormatPreservingDate.now())
                 .withDateModified(FormatPreservingDate.now())
                 .withStatus(InstanceStatusType.ONTWERP)
+                .withDutchLanguageVariant(Language.INFORMAL)
                 .withSpatials([spatial1, spatial2])
                 .withTitle(LanguageString.of(concept.title.en, undefined, undefined, concept.title.nlInformal))
                 .withDescription(LanguageString.of(concept.description.en, undefined, undefined, concept.description.nlInformal))

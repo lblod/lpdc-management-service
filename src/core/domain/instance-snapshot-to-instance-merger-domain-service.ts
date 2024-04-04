@@ -26,6 +26,7 @@ import {
 } from "./ensure-linked-authorities-exist-as-code-list-domain-service";
 import {DeleteInstanceDomainService} from "./delete-instance-domain-service";
 import {LegalResource, LegalResourceBuilder} from "./legal-resource";
+import {Language} from "./language";
 
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
@@ -103,6 +104,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         }
     }
 
+    //TODO LPDC-1059: calculate dutchLanguageVariant for snapshot
     private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
         const instance =  new Instance(
             instanceSnapshot.isVersionOfInstance,
@@ -135,6 +137,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             concept?.latestConceptSnapshot,
             concept?.productId,
             instanceSnapshot.languages,
+            Language.FORMAL,
             instanceSnapshot.dateCreated,
             instanceSnapshot.dateModified,
             FormatPreservingDate.now(),
@@ -149,6 +152,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         return instance;
     }
 
+    //TODO LPDC-1059: calculate dutchLanguageVariant for snapshot
     private asMergedInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, instance: Instance, concept: Concept | undefined) {
         const mergedInstance = new Instance(
             instanceSnapshot.isVersionOfInstance,
@@ -181,6 +185,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             concept?.latestConceptSnapshot,
             concept?.productId,
             instanceSnapshot.languages,
+            instance.dutchLanguageVariant,
             instanceSnapshot.dateCreated,
             instanceSnapshot.dateModified,
             FormatPreservingDate.now(),

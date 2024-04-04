@@ -36,6 +36,7 @@ import {Logger} from "../../../platform/logger";
 import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
 import {LegalResource} from "../../core/domain/legal-resource";
 import {NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
+import {Language} from "../../core/domain/language";
 
 export interface DoubleQuadReporter {
 
@@ -283,6 +284,7 @@ export class QuadsToDomainMapper {
             this.conceptSnapshotId(id),
             this.productId(id),
             this.languages(id),
+            this.dutchLanguageVariant(id),
             this.dateCreated(id),
             this.dateModified(id),
             this.dateSent(id),
@@ -666,6 +668,24 @@ export class QuadsToDomainMapper {
 
     private languages(id: Iri): LanguageType[] {
         return this.asEnums(LanguageType, NS.pera.languageType, this.storeAccess.statements(namedNode(id.value), NS.dct('language')));
+    }
+
+    private dutchLanguageVariant(id: Iri): Language | undefined {
+        const statement = this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('dutchLanguageVariant'));
+        if (statement === undefined) {
+            return undefined;
+        }
+        const literal = this.asLiteral(statement);
+        switch (literal.value) {
+            case 'nl':
+                return Language.NL;
+            case 'nl-be-x-formal':
+                return Language.FORMAL;
+            case 'nl-be-x-informal':
+                return Language.INFORMAL;
+            default:
+                throw new SystemError(`Kan <${literal?.value}> niet mappen naar dutch language version`);
+        }
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {

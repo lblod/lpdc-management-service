@@ -37,6 +37,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+                    quad(subject, NS.lpdcExt('dutchLanguageVariant'), literal(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT), graph),
                     quad(subject, NS.dct('title'), literal('title en', Language.EN), graph),
                     quad(subject, NS.dct('title'), literal('title nl', Language.NL), graph),
                 ];
@@ -63,6 +64,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+                    quad(subject, NS.lpdcExt('dutchLanguageVariant'), literal(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT), graph),
                 ];
 
             new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleQuadReporter(logger))
@@ -87,6 +89,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+                    quad(subject, NS.lpdcExt('dutchLanguageVariant'), literal(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT), graph),
                 ];
 
             new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleQuadReporter(logger))
@@ -108,6 +111,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+                    quad(subject, NS.lpdcExt('dutchLanguageVariant'), literal(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT), graph),
                     quad(subject, NS.dct('title'), literal('title nl', Language.NL), graph),
                     quad(subject, NS.dct('title'), literal('title nl another triple', Language.NL), graph),
                     quad(subject, NS.dct('title'), literal('title nl yet another triple', Language.NL), graph),
@@ -139,6 +143,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+                    quad(subject, NS.lpdcExt('dutchLanguageVariant'), literal(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT), graph),
 
                     quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
                     quad(subjectCost1, NS.rdf('type'), NS.m8g('Cost'), graph),
@@ -169,6 +174,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+                    quad(subject, NS.lpdcExt('dutchLanguageVariant'), literal(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT), graph),
 
                     quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
                     quad(subjectCost1, NS.rdf('type'), NS.m8g('Cost'), graph),
@@ -198,6 +204,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+                    quad(subject, NS.lpdcExt('dutchLanguageVariant'), literal(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT), graph),
                 ];
 
             const domainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), new LoggingDoubleQuadReporter(logger));
@@ -213,6 +220,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+                    quad(subject, NS.lpdcExt('dutchLanguageVariant'), literal(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT), graph),
 
                     quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
                     quad(subjectCost1, NS.rdf('type'), NS.m8g('Cost'), graph),
@@ -241,6 +249,7 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
+                    quad(subject, NS.lpdcExt('dutchLanguageVariant'), literal(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT), graph),
 
                     quad(subject, NS.m8g('hasCost'), subjectCost1, graph),
                     quad(subjectCost1, NS.rdf('type'), NS.m8g('Cost'), graph),

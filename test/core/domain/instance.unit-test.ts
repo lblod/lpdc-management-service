@@ -34,7 +34,7 @@ import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {aMinimalCostForInstance, CostTestBuilder} from "./cost-test-builder";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {aMinimalFinancialAdvantageForInstance, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
-import {Language} from "../../../src/core/domain/language";
+import {instanceLanguages, Language} from "../../../src/core/domain/language";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {aMinimalContactPointForInstance, ContactPointTestBuilder} from "./contact-point-test-builder";
@@ -120,6 +120,31 @@ describe('constructing', () => {
     test('languages with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withLanguages([LanguageType.ENG, LanguageType.ENG]);
         expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'languages mag geen duplicaten bevatten');
+    });
+
+    describe('dutchLanguageVariant', () => {
+        const invalidLanguages = [Language.EN, Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
+        const validLanguages = instanceLanguages;
+
+        test('Undefined dutchLanguageVariant throws error', () => {
+            const instanceTestBuilder = aFullInstance().withDutchLanguageVariant(undefined);
+            expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, `dutchLanguageVariant moet gelijk zijn aan een van de volgende waardes: ${instanceLanguages}`);
+        });
+
+        for (const invalidLanguage of invalidLanguages) {
+            test(`If instance language is ${invalidLanguage} then throws error`, () => {
+                const instance = aFullInstance().withDutchLanguageVariant(invalidLanguage);
+                expect(() => instance.build()).toThrowWithMessage(InvariantError, `dutchLanguageVariant moet gelijk zijn aan een van de volgende waardes: ${validLanguages}`);
+            });
+        }
+
+        for (const validLanguage of validLanguages) {
+            test(`If dutchLanguageVariant is ${validLanguage} then not throws error`, () => {
+                const instance = aFullInstance().withDutchLanguageVariant(validLanguage);
+                expect(() => instance.build()).not.toThrowWithMessage(InvariantError, `dutchLanguageVariant moet gelijk zijn aan een van de volgende waardes: ${validLanguages}`);
+            });
+        }
+
     });
 
     describe('requirement', () => {
@@ -1012,7 +1037,7 @@ describe('nl language version', () => {
 
 describe('reopen', () => {
 
-    test('should update status ', () => {
+    test('should update status', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.VERSTUURD)
             .build();

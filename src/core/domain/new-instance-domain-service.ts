@@ -41,6 +41,8 @@ export class NewInstanceDomainService {
         const instanceId = new Iri(`http://data.lblod.info/id/public-service/${instanceUuid}`);
 
         const now = FormatPreservingDate.of(new Date().toISOString());
+        const formalInformalChoice = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
+        const chosenForm = formalInformalChoice?.chosenForm;
 
         const newInstance =
             new Instance(
@@ -74,6 +76,7 @@ export class NewInstanceDomainService {
                 undefined,
                 undefined,
                 [],
+                this.toDutchLanguageVariant(chosenForm),
                 now,
                 now,
                 undefined,
@@ -131,6 +134,7 @@ export class NewInstanceDomainService {
                 concept.latestConceptSnapshot,
                 concept.productId,
                 [],
+                this.toDutchLanguageVariant(chosenForm),
                 now,
                 now,
                 undefined,
@@ -277,5 +281,9 @@ export class NewInstanceDomainService {
                 return Language.NL;
             }
         }
+    }
+
+    private toDutchLanguageVariant(chosenForm: ChosenFormType | undefined): Language {
+        return chosenForm === ChosenFormType.INFORMAL ? Language.INFORMAL : Language.FORMAL;
     }
 }

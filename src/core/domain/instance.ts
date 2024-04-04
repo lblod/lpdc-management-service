@@ -5,7 +5,8 @@ import {
     requiredCanOnlyBePresentIfOtherValuePresent,
     requiredValue,
     requireNoDuplicates,
-    requireShouldBePresentWhenOtherValueEquals
+    requireShouldBePresentWhenOtherValueEquals,
+    requireShouldEqualAcceptedValue
 } from "./shared/invariant";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {
@@ -65,6 +66,7 @@ export class Instance {
     private readonly _conceptSnapshotId: Iri | undefined;
     private readonly _productId: string | undefined; //required for search on productId
     private readonly _languages: LanguageType[];
+    private readonly _dutchLanguageVariant: Language;
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _dateSent: FormatPreservingDate | undefined;
@@ -105,6 +107,7 @@ export class Instance {
                 conceptSnapshotId: Iri | undefined,
                 productId: string | undefined,
                 languages: LanguageType[],
+                dutchLanguageVariant: Language,
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 dateSent: FormatPreservingDate | undefined,
@@ -152,6 +155,7 @@ export class Instance {
         this._conceptSnapshotId = conceptSnapshotId;
         this._productId = productId;
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
+        this._dutchLanguageVariant = requireShouldEqualAcceptedValue(dutchLanguageVariant, 'dutchLanguageVariant', instanceLanguages);
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._dateSent = requireShouldBePresentWhenOtherValueEquals(dateSent, 'dateSent', InstanceStatusType.VERSTUURD, status, 'status');
@@ -180,6 +184,7 @@ export class Instance {
             .build();
     }
 
+    // TODO LPDC-1059: check if dutchLanguageVariant is same as instanceNLLanguage is present
     get instanceNlLanguage(): Language | undefined {
         const nlLanguage =
             LanguageString.extractNlLanguages([
@@ -319,6 +324,10 @@ export class Instance {
         return [...this._languages];
     }
 
+    get dutchLanguageVariant(): Language {
+        return this._dutchLanguageVariant;
+    }
+
     get dateCreated(): FormatPreservingDate {
         return this._dateCreated;
     }
@@ -437,6 +446,7 @@ export class InstanceBuilder {
     private conceptSnapshotId: Iri | undefined;
     private productId: string | undefined;
     private languages: LanguageType[] = [];
+    private dutchLanguageVariant: Language;
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private dateSent: FormatPreservingDate | undefined;
@@ -479,6 +489,7 @@ export class InstanceBuilder {
             .withConceptSnapshotId(instance.conceptSnapshotId)
             .withProductId(instance.productId)
             .withLanguages(instance.languages)
+            .withDutchLanguageVariant(instance.dutchLanguageVariant)
             .withDateCreated(instance.dateCreated)
             .withDateModified(instance.dateModified)
             .withDateSent(instance.dateSent)
@@ -640,6 +651,11 @@ export class InstanceBuilder {
         return this;
     }
 
+    withDutchLanguageVariant(dutchLanguageVariant: Language): InstanceBuilder {
+        this.dutchLanguageVariant = dutchLanguageVariant;
+        return this;
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -684,7 +700,6 @@ export class InstanceBuilder {
         this.legalResources = legalResources;
         return this;
     }
-
     public build(): Instance {
         return new Instance(
             this.id,
@@ -717,6 +732,7 @@ export class InstanceBuilder {
             this.conceptSnapshotId,
             this.productId,
             this.languages,
+            this.dutchLanguageVariant,
             this.dateCreated,
             this.dateModified,
             this.dateSent,

@@ -29,6 +29,7 @@ import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
 import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
 import {LegalResource} from "../../core/domain/legal-resource";
+import {Language} from "../../core/domain/language";
 
 export class DomainToQuadsMapper {
     private readonly graphId;
@@ -142,6 +143,7 @@ export class DomainToQuadsMapper {
             this.conceptSnapshotId(instance.id, instance.conceptSnapshotId),
             this.productId(instance.id, instance.productId),
             ...this.languages(instance.id, instance.languages),
+            this.dutchLanguageVariant(instance.id, instance.dutchLanguageVariant),
             this.dateCreated(instance.id, instance.dateCreated),
             this.dateModified(instance.id, instance.dateModified),
             instance.dateSent ? this.buildQuad(namedNode(instance.id.value), NS.schema('dateSent'), literal(instance.dateSent.value, NS.xsd('dateTime'))) : undefined,
@@ -461,6 +463,10 @@ export class DomainToQuadsMapper {
 
     private languages(id: Iri, values: LanguageType[]): Statement[] {
         return this.irisToQuads(namedNode(id.value), NS.dct('language'), this.enumsToIris(values, NS.pera.languageType));
+    }
+
+    private dutchLanguageVariant(id: Iri, value: Language): Statement {
+        return this.buildQuad(namedNode(id.value), NS.lpdcExt('dutchLanguageVariant'), value);
     }
 
     private verwijstNaar(id: Iri, verwijstNaar: Iri | undefined): Statement | undefined {
