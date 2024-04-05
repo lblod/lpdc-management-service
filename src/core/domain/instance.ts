@@ -184,9 +184,7 @@ export class Instance {
             .build();
     }
 
-    // TODO LPDC-1059: check if dutchLanguageVariant is same as instanceNLLanguage is present
-    // TODO LPDC-1059 make private/ remove if unused 
-    get instanceNlLanguage(): Language | undefined {
+    private calculatedInstanceNlLanguages(): Language[] {
         const nlLanguage =
             LanguageString.extractNlLanguages([
                 this._title,
@@ -195,15 +193,38 @@ export class Instance {
                 this._exception,
                 this._regulation,
             ]);
-        return [nlLanguage[0],
+        const uniquelanguages = new Set([
+            ...nlLanguage,
             ...this._requirements.map(r => r.nlLanguage),
             ...this._procedures.map(p => p.nlLanguage),
             ...this._websites.map(p => p.nlLanguage),
             ...this._costs.map(p => p.nlLanguage),
             ...this._financialAdvantages.map(p => p.nlLanguage),
-        ]
-            .filter(l => l !== undefined)[0];
+        ].filter(l => l !== undefined));
+
+
+        return [...uniquelanguages];
     }
+
+    private validateLanguages(): void {
+        const values = [
+            this._title,
+            this._description,
+            this._additionalDescription,
+            this._exception,
+            this._regulation
+        ];
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...values);
+
+
+        const calculatedInstanceNLLanguages = this.calculatedInstanceNlLanguages();
+
+        if (calculatedInstanceNLLanguages.length > 1) {
+            throw new InvariantError('Er is meer dan een nl-taal aanwezig');
+        }
+
+    }
+
 
     get id(): Iri {
         return this._id;
@@ -390,30 +411,6 @@ export class Instance {
             .build();
     }
 
-    private validateLanguages(): void {
-        const values = [
-            this._title,
-            this._description,
-            this._additionalDescription,
-            this._exception,
-            this._regulation
-        ];
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...values);
-
-        const nlLanguages = LanguageString.extractNlLanguages(values);
-        const allNlLanguages = new Set([
-            ...nlLanguages,
-            ...this._requirements.map(r => r.nlLanguage),
-            ...this._procedures.map(p => p.nlLanguage),
-            ...this._websites.map(w => w.nlLanguage),
-            ...this._costs.map(c => c.nlLanguage),
-            ...this._financialAdvantages.map(fa => fa.nlLanguage),
-        ].filter(ls => ls !== undefined));
-
-        if (allNlLanguages.size > 1) {
-            throw new InvariantError('Er is meer dan een nl-taal aanwezig');
-        }
-    }
 }
 
 export class InstanceBuilder {

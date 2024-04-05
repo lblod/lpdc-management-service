@@ -39,8 +39,8 @@ export class SelectFormLanguageDomainService {
     }
 
     public async selectForInstance(instance: Instance, bestuurseenheid: Bestuurseenheid): Promise<Language> {
-        if (instance.instanceNlLanguage) {
-            return instance.instanceNlLanguage;
+        if (instance.dutchLanguageVariant) {
+            return instance.dutchLanguageVariant;
         }
 
         const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);

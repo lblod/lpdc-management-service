@@ -271,6 +271,7 @@ describe('Form application service tests', () => {
                     .withAdditionalDescription(undefined)
                     .withException(undefined)
                     .withRegulation(undefined)
+                    .withDutchLanguageVariant(Language.INFORMAL)
                     .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
                     .build();
             await instanceRepository.save(bestuurseenheid, instance);

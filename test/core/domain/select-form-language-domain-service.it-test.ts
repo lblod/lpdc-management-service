@@ -368,6 +368,7 @@ describe('select form language for instance', () => {
         const instance =
             aMinimalInstance()
                 .withTitle(LanguageString.of('en', 'nl'))
+                .withDutchLanguageVariant(Language.NL)
                 .build();
 
         const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
@@ -390,6 +391,7 @@ describe('select form language for instance', () => {
         const instance =
             aMinimalInstance()
                 .withTitle(LanguageString.of('en', undefined, 'nl formal'))
+                .withDutchLanguageVariant(Language.FORMAL)
                 .build();
 
         const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
@@ -412,81 +414,10 @@ describe('select form language for instance', () => {
         const instance =
             aMinimalInstance()
                 .withTitle(LanguageString.of('en', undefined, undefined, 'nl informal'))
+                .withDutchLanguageVariant(Language.INFORMAL)
                 .build();
 
         const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
         expect(selectedLanguage).toEqual(Language.INFORMAL);
     });
-
-    test('Instance without nl language uses formal informal choice formal', async () => {
-        const bestuurseenheid =
-            aBestuurseenheid()
-                .build();
-        await bestuurseenheidRepository.save(bestuurseenheid);
-
-        const formalInformalChoice =
-            aFormalInformalChoice()
-                .withChosenForm(ChosenFormType.FORMAL)
-                .withBestuurseenheidId(bestuurseenheid.id)
-                .build();
-        await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
-
-        const instance =
-            aMinimalInstance()
-                .withTitle(undefined)
-                .withDescription(undefined)
-                .withAdditionalDescription(undefined)
-                .withException(undefined)
-                .withRegulation(undefined)
-                .build();
-
-        const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
-        expect(selectedLanguage).toEqual(Language.FORMAL);
-    });
-
-    test('Instance without nl language uses formal informal choice informal', async () => {
-        const bestuurseenheid =
-            aBestuurseenheid()
-                .build();
-        await bestuurseenheidRepository.save(bestuurseenheid);
-
-        const formalInformalChoice =
-            aFormalInformalChoice()
-                .withChosenForm(ChosenFormType.INFORMAL)
-                .withBestuurseenheidId(bestuurseenheid.id)
-                .build();
-        await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
-
-        const instance =
-            aMinimalInstance()
-                .withTitle(undefined)
-                .withDescription(undefined)
-                .withAdditionalDescription(undefined)
-                .withException(undefined)
-                .withRegulation(undefined)
-                .build();
-
-        const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
-        expect(selectedLanguage).toEqual(Language.INFORMAL);
-    });
-
-    test('Instance without nl language and no formal informal choice made yet returns formal', async () => {
-        const bestuurseenheid =
-            aBestuurseenheid()
-                .build();
-        await bestuurseenheidRepository.save(bestuurseenheid);
-
-        const instance =
-            aMinimalInstance()
-                .withTitle(undefined)
-                .withDescription(undefined)
-                .withAdditionalDescription(undefined)
-                .withException(undefined)
-                .withRegulation(undefined)
-                .build();
-
-        const selectedLanguage = await selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
-        expect(selectedLanguage).toEqual(Language.FORMAL);
-    });
-
 });
