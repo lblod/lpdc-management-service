@@ -147,51 +147,44 @@ export class InstanceSnapshot {
         this.validateLanguages();
     }
 
-    private validateLanguages(): void {
-        const values = [
-            this._title,
-            this._description,
-            this._additionalDescription,
-            this._exception,
-            this._regulation
-        ];
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...values);
-
-        requiredAtLeastOneValuePresent(LanguageString.extractNlLanguages(values), 'Fields in nl language');
-
-        const nlLanguages = LanguageString.extractNlLanguages(values);
-        const allNlLanguages = new Set([
-            ...nlLanguages,
-            ...this._requirements.map(r => r.nlLanguage),
-            ...this._procedures.map(p => p.nlLanguage),
-            ...this._websites.map(w => w.nlLanguage),
-            ...this._costs.map(c => c.nlLanguage),
-            ...this._financialAdvantages.map(fa => fa.nlLanguage),
-        ].filter(ls => ls !== undefined));
-
-        if (allNlLanguages.size > 1) {
-            throw new InvariantError('Er is meer dan een nl-taal aanwezig');
-        }
+    get dutchLanguageVariant(): Language | undefined {
+        return this.extractNlLanguages()[0];
     }
 
-    // TODO LPDC-1059: fix duplication with method above + write unit test
-    get dutchLanguageVariant(): Language | undefined {
-        const nlLanguage =
-            LanguageString.extractNlLanguages([
-                this._title,
-                this._description,
-                this._additionalDescription,
-                this._exception,
-                this._regulation,
-            ]);
-        return [nlLanguage[0],
+    private validateLanguages(): void {
+        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...this.languageStrings());
+
+        const uniqueNlLanguage = new Set([...this.extractNlLanguages()]);
+        if (uniqueNlLanguage.size > 1) {
+            throw new InvariantError('Er is meer dan een nl-taal aanwezig');
+        }
+        if (uniqueNlLanguage.size == 0) {
+            throw new InvariantError("Er is geen nl taal aanwezig");
+        }
+
+    }
+
+    private extractNlLanguages(): Language[] {
+        const nlLanguage = LanguageString.extractNlLanguages(this.languageStrings());
+
+        return [
+            ...nlLanguage,
             ...this._requirements.map(r => r.nlLanguage),
             ...this._procedures.map(p => p.nlLanguage),
             ...this._websites.map(p => p.nlLanguage),
             ...this._costs.map(p => p.nlLanguage),
             ...this._financialAdvantages.map(p => p.nlLanguage),
-        ]
-            .filter(l => l !== undefined)[0];
+        ].filter(l => l !== undefined);
+    }
+
+    private languageStrings(): LanguageString[] {
+        return [
+            this._title,
+            this._description,
+            this._additionalDescription,
+            this._exception,
+            this._regulation,
+        ];
     }
 
     get id(): Iri {

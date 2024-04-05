@@ -613,7 +613,7 @@ describe('validateLanguages', () => {
 
         const instanceSnapshot = aMinimalInstanceSnapshot().withTitle(title).withDescription(description);
 
-        expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Fields in nl language moet minstens een waarde bevatten');
+        expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is geen nl taal aanwezig');
     });
 
     test('if only 1 value has 1 nl language string, then throws error', () => {
@@ -757,6 +757,79 @@ describe('validateLanguages', () => {
             expect(() => (instanceSnapshot.build())).not.toThrow();
         });
 
+    }
+
+});
+
+describe('dutch language variant', () => {
+
+    for (const nlLanguage of [Language.NL, Language.FORMAL, Language.INFORMAL]) {
+
+        let valueInNlLanguage: LanguageString;
+        if (nlLanguage === Language.NL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
+        } else if (nlLanguage == Language.FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
+        } else if (nlLanguage == Language.INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
+        }
+
+
+        test(`title and description have nl language ${nlLanguage}`, () => {
+            const instanceSnapshot =
+                aMinimalInstanceSnapshot()
+                    .withTitle(valueInNlLanguage)
+                    .withDescription(valueInNlLanguage)
+                    .withAdditionalDescription(undefined)
+                    .withException(undefined)
+                    .withRegulation(undefined)
+                    .build();
+            expect(instanceSnapshot.dutchLanguageVariant).toEqual(nlLanguage);
+        });
+
+        test(`title, description, additional description, exception, regulation, requirement, procedure, website, cost, financial advantage all have nl Language ${nlLanguage}`, () => {
+            const instanceSnapshot =
+                aMinimalInstanceSnapshot()
+                    .withTitle(valueInNlLanguage)
+                    .withDescription(valueInNlLanguage)
+                    .withAdditionalDescription(valueInNlLanguage)
+                    .withException(valueInNlLanguage)
+                    .withRegulation(valueInNlLanguage)
+                    .withRequirements(
+                        [
+                            aMinimalRequirementForInstanceSnapshot()
+                                .withTitle(valueInNlLanguage)
+                                .withDescription(valueInNlLanguage)
+                                .build()])
+                    .withProcedures(
+                        [
+                            aMinimalProcedureForInstanceSnapshot()
+                                .withTitle(valueInNlLanguage)
+                                .withDescription(valueInNlLanguage)
+                                .build()])
+                    .withWebsites(
+                        [
+                            aMinimalWebsiteForInstanceSnapshot()
+                                .withTitle(valueInNlLanguage)
+                                .withDescription(valueInNlLanguage)
+                                .build()])
+                    .withCosts(
+                        [
+                            aMinimalCostForInstanceSnapshot()
+                                .withTitle(valueInNlLanguage)
+                                .withDescription(valueInNlLanguage)
+                                .build()
+                        ])
+                    .withFinancialAdvantages(
+                        [
+                            aMinimalFinancialAdvantageForInstanceSnapshot()
+                                .withTitle(valueInNlLanguage)
+                                .withDescription(valueInNlLanguage)
+                                .build()
+                        ])
+                    .build();
+            expect(instanceSnapshot.dutchLanguageVariant).toEqual(nlLanguage);
+        });
     }
 
 });

@@ -185,6 +185,7 @@ export class Instance {
     }
 
     // TODO LPDC-1059: check if dutchLanguageVariant is same as instanceNLLanguage is present
+    // TODO LPDC-1059 make private/ remove if unused 
     get instanceNlLanguage(): Language | undefined {
         const nlLanguage =
             LanguageString.extractNlLanguages([

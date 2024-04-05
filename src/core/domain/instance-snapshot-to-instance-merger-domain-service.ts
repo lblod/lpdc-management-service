@@ -27,6 +27,7 @@ import {
 import {DeleteInstanceDomainService} from "./delete-instance-domain-service";
 import {LegalResource, LegalResourceBuilder} from "./legal-resource";
 
+
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
     private readonly _instanceRepository: InstanceRepository;
@@ -103,7 +104,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         }
     }
 
-    //TODO LPDC-1059: calculate dutchLanguageVariant for snapshot
     private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
         const instance =  new Instance(
             instanceSnapshot.isVersionOfInstance,
@@ -151,7 +151,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         return instance;
     }
 
-    //TODO LPDC-1059: calculate dutchLanguageVariant for snapshot
+
     private asMergedInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, instance: Instance, concept: Concept | undefined) {
         const mergedInstance = new Instance(
             instanceSnapshot.isVersionOfInstance,
