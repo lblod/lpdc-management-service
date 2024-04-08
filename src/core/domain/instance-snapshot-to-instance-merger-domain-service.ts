@@ -26,7 +26,6 @@ import {
 } from "./ensure-linked-authorities-exist-as-code-list-domain-service";
 import {DeleteInstanceDomainService} from "./delete-instance-domain-service";
 import {LegalResource, LegalResourceBuilder} from "./legal-resource";
-import {Language} from "./language";
 
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
