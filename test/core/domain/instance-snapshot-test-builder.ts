@@ -24,7 +24,7 @@ import {
     buildConceptIri,
     buildInstanceIri,
     buildInstanceSnapshotIri,
-    buildSpatialRefNis2019Iri
+    buildNutsCodeIri,
 } from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
@@ -177,7 +177,7 @@ export class InstanceSnapshotTestBuilder {
 
     public static readonly LANGUAGES = [LanguageType.NLD, LanguageType.ENG, LanguageType.FRA];
 
-    public static readonly SPATIALS = [buildSpatialRefNis2019Iri(45700), buildSpatialRefNis2019Iri(52000), buildSpatialRefNis2019Iri(98786)];
+    public static readonly SPATIALS = [buildNutsCodeIri(45700), buildNutsCodeIri(52000), buildNutsCodeIri(98786)];
 
     public static readonly LEGAL_RESOURCES = [aFullLegalResourceForInstanceSnapshot().withOrder(1).build(), anotherFullLegalResourceForInstanceSnapshot(uuid()).withOrder(2).build()];
 

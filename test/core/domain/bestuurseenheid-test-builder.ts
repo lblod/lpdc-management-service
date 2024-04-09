@@ -1,7 +1,7 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
 import {uuid} from "../../../mu-helper";
-import {buildBestuurseenheidIri, buildSpatialRefNis2019Iri, randomNumber} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildNutsCodeIri, randomNumber} from "./iri-test-builder";
 
 export function aBestuurseenheid(): BestuurseenheidTestBuilder {
     const bestuurseenheidUuid = uuid();
@@ -20,8 +20,8 @@ export class BestuurseenheidTestBuilder {
     public static readonly OUD_HEVERLEE_IRI = buildBestuurseenheidIri('319db6e275f281d0280da90d6f6aba3462f4e47b6f53a34639feb91015a5822b');
     public static readonly ASSENEDE_IRI = buildBestuurseenheidIri('e971816acb021c37576835e6a96922442628956fd029d885fd849c9f07414469');
 
-    public static readonly SPATIAL_1_IRI = buildSpatialRefNis2019Iri(randomNumber(10000, 50000));
-    public static readonly SPATIAL_2_IRI = buildSpatialRefNis2019Iri(randomNumber(50001, 99999));
+    public static readonly SPATIAL_1_IRI = buildNutsCodeIri(randomNumber(10000, 50000));
+    public static readonly SPATIAL_2_IRI = buildNutsCodeIri(randomNumber(50001, 99999));
 
     private id: Iri;
     private uuid: string;

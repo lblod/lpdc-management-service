@@ -24,7 +24,7 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
             ${PREFIX.besluit}
             ${PREFIX.mu}
             ${PREFIX.skos}
-            ${PREFIX.lblodIpdcLpdc}
+            ${PREFIX.nutss}
             
             INSERT DATA { 
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
@@ -35,7 +35,7 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
                     ${werkingsgebiedenSpatials.flatMap(wgs => [
                         `${sparqlEscapeUri(bestuurseenheid.id)} besluit:werkingsgebied ${sparqlEscapeUri(wgs[1])}`,
                         `${sparqlEscapeUri(wgs[1])} skos:exactMatch ${sparqlEscapeUri(wgs[0])}`,
-                        `${sparqlEscapeUri(wgs[0])} skos:inScheme lblodIpdcLpdc:IPDCLocaties`,
+                        `${sparqlEscapeUri(wgs[0])} skos:inScheme nutss:2021`,
         ]).join(' .\n')} .
                 }
             }

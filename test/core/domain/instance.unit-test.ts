@@ -1,12 +1,7 @@
 import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "./instance-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {
-    buildConceptIri,
-    buildConceptSnapshotIri,
-    buildSpatialRefNis2019Iri,
-    buildVerwijstNaarIri
-} from "./iri-test-builder";
+import {buildConceptIri, buildConceptSnapshotIri, buildNutsCodeIri, buildVerwijstNaarIri} from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
@@ -556,7 +551,7 @@ describe('constructing', () => {
     });
 
     test('Spatials with duplicates throws error', () => {
-        expect(() => aFullInstance().withSpatials([buildSpatialRefNis2019Iri(1), buildSpatialRefNis2019Iri(1)]).build()).toThrowWithMessage(InvariantError, 'spatials mag geen duplicaten bevatten');
+        expect(() => aFullInstance().withSpatials([buildNutsCodeIri(1), buildNutsCodeIri(1)]).build()).toThrowWithMessage(InvariantError, 'spatials mag geen duplicaten bevatten');
     });
 
     test('reviewStatus present and conceptId present should not throw error', () => {

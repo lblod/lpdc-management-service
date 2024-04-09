@@ -99,8 +99,8 @@ describe('Concept Data Integrity Validation', () => {
         //filter out all triples linked to https://data.vlaanderen.be/id/organisatie/ subjects
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://data.vlaanderen.be/id/organisatie/'));
 
-        //filter out all triples linked to http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties'));
+        //filter out all triples linked to http://data.europa.eu/nuts/scheme/2021 subjects
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.europa.eu/nuts/scheme/2021'));
 
         //filter out all triples linked to http://publications.europa.eu/resource/authority/language/ subjects
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://publications.europa.eu/resource/authority/language/'));

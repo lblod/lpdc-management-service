@@ -2,8 +2,8 @@ import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
 import {uuid} from "../../../mu-helper";
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {buildSpatialRefNis2019Iri} from "./iri-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {buildNutsCodeIri} from "./iri-test-builder";
 
 test('Undefined id throws error', () => {
     expect(() => new Bestuurseenheid(undefined, uuid(), 'Pepingen', BestuurseenheidClassificatieCode.GEMEENTE, [])).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
@@ -30,7 +30,7 @@ test('Undefined classificatieCode does not throw error for ABB', () => {
 });
 
 test('spatials with duplicates throws error', () => {
-    expect(() => aBestuurseenheid().withSpatials([buildSpatialRefNis2019Iri(12312), buildSpatialRefNis2019Iri(12312)]).build()).toThrow('spatials mag geen duplicaten bevatten');
+    expect(() => aBestuurseenheid().withSpatials([buildNutsCodeIri(12312), buildNutsCodeIri(12312)]).build()).toThrow('spatials mag geen duplicaten bevatten');
 });
 
 test('userGraph', () => {

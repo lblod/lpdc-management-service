@@ -37,12 +37,12 @@ export class BestuurseenheidSparqlRepository implements BestuurseenheidRepositor
         const spatialsQuery = `
             ${PREFIX.besluit}
             ${PREFIX.skos}
-            ${PREFIX.lblodIpdcLpdc}
+            ${PREFIX.nutss}
             SELECT DISTINCT ?spatialId WHERE {
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                   ${sparqlEscapeUri(id)} besluit:werkingsgebied ?werkingsgebiedId.
                   ?werkingsgebiedId skos:exactMatch ?spatialId.
-                  ?spatialId skos:inScheme lblodIpdcLpdc:IPDCLocaties
+                  ?spatialId skos:inScheme nutss:2021
                 }
             }        
         `;

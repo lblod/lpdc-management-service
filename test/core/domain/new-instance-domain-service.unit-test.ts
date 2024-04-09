@@ -1,7 +1,7 @@
 import {NewInstanceDomainService} from "../../../src/core/domain/new-instance-domain-service";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
-import {buildBestuurseenheidIri, buildSpatialRefNis2019Iri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildNutsCodeIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {ChosenFormType, InstanceStatusType} from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
@@ -44,8 +44,8 @@ describe('Creating a new Instance domain service', () => {
     afterAll(() => restoreRealTime());
 
     test('Create new empty', async () => {
-        const spatial1 = buildSpatialRefNis2019Iri(12345);
-        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const spatial1 = buildNutsCodeIri(12345);
+        const spatial2 = buildNutsCodeIri(67890);
         const bestuurseenheid = aBestuurseenheid()
                 .withId(buildBestuurseenheidIri(uuid()))
                 .withSpatials([spatial1, spatial2])
@@ -77,8 +77,8 @@ describe('Creating a new Instance domain service', () => {
     });
 
     test('Create new empty, when formalChoice is informal, instance dutchLanguageVersion is informal', async () => {
-        const spatial1 = buildSpatialRefNis2019Iri(12345);
-        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const spatial1 = buildNutsCodeIri(12345);
+        const spatial2 = buildNutsCodeIri(67890);
         const bestuurseenheid = aBestuurseenheid()
             .withId(buildBestuurseenheidIri(uuid()))
             .withSpatials([spatial1, spatial2])
@@ -112,8 +112,8 @@ describe('Creating a new Instance domain service', () => {
 
     test('Create new from concept', async () => {
         const concept = aFullConcept().build();
-        const spatial1 = buildSpatialRefNis2019Iri(12345);
-        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const spatial1 = buildNutsCodeIri(12345);
+        const spatial2 = buildNutsCodeIri(67890);
         const bestuurseenheid = aBestuurseenheid()
             .withSpatials([spatial1, spatial2])
             .build();
@@ -379,8 +379,8 @@ describe('Creating a new Instance domain service', () => {
 
     test('Create new from concept when chosen form is formal', async () => {
         const concept = aFullConcept().build();
-        const spatial1 = buildSpatialRefNis2019Iri(12345);
-        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const spatial1 = buildNutsCodeIri(12345);
+        const spatial2 = buildNutsCodeIri(67890);
         const bestuurseenheid = aBestuurseenheid()
             .withSpatials([spatial1, spatial2])
             .build();
@@ -617,8 +617,8 @@ describe('Creating a new Instance domain service', () => {
 
     test('Create new from concept when chosen form is informal', async () => {
         const concept = aFullConcept().build();
-        const spatial1 = buildSpatialRefNis2019Iri(12345);
-        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const spatial1 = buildNutsCodeIri(12345);
+        const spatial2 = buildNutsCodeIri(67890);
         const bestuurseenheid = aBestuurseenheid()
             .withSpatials([spatial1, spatial2])
             .build();
@@ -855,8 +855,8 @@ describe('Creating a new Instance domain service', () => {
 
     test('Create new from minimal concept', async () => {
         const concept = aMinimalConcept().build();
-        const spatial1 = buildSpatialRefNis2019Iri(12345);
-        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const spatial1 = buildNutsCodeIri(12345);
+        const spatial2 = buildNutsCodeIri(67890);
         const bestuurseenheid = aBestuurseenheid()
             .withSpatials([spatial1, spatial2])
             .build();
@@ -879,8 +879,8 @@ describe('Creating a new Instance domain service', () => {
     });
 
     test('Create new from concept where concept already includes competent authority of bestuurseenheid', async () => {
-        const spatial1 = buildSpatialRefNis2019Iri(12345);
-        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const spatial1 = buildNutsCodeIri(12345);
+        const spatial2 = buildNutsCodeIri(67890);
         const bestuurseenheid = aBestuurseenheid()
             .withId(BestuurseenheidTestBuilder.BORGLOON_IRI)
             .withSpatials([spatial1, spatial2])
@@ -906,8 +906,8 @@ describe('Creating a new Instance domain service', () => {
     });
 
     test('Create new from concept should update displayConfiguration', async () => {
-        const spatial1 = buildSpatialRefNis2019Iri(12345);
-        const spatial2 = buildSpatialRefNis2019Iri(67890);
+        const spatial1 = buildNutsCodeIri(12345);
+        const spatial2 = buildNutsCodeIri(67890);
         const bestuurseenheid = aBestuurseenheid()
             .withSpatials([spatial1, spatial2])
             .build();

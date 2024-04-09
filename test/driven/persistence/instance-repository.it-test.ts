@@ -8,7 +8,7 @@ import {
     buildConceptIri,
     buildConceptSnapshotIri,
     buildInstanceIri,
-    buildSpatialRefNis2019Iri
+    buildNutsCodeIri,
 } from "../../core/domain/iri-test-builder";
 import {
     CompetentAuthorityLevelType,
@@ -504,9 +504,9 @@ describe('InstanceRepository', () => {
                     .withStatus(InstanceStatusType.VERSTUURD)
                     .withSpatials(
                         [
-                            buildSpatialRefNis2019Iri(45700),
-                            buildSpatialRefNis2019Iri(52000),
-                            buildSpatialRefNis2019Iri(98786)]
+                            buildNutsCodeIri(45700),
+                            buildNutsCodeIri(52000),
+                            buildNutsCodeIri(98786)]
                     )
                     .build();
 

@@ -12,7 +12,6 @@ import {
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {buildSpatialRefNis2019Iri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
 import {aFullRequirementForInstanceSnapshot, aMinimalRequirementForInstanceSnapshot} from "./requirement-test-builder";
@@ -37,6 +36,7 @@ import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {aFullLegalResourceForInstanceSnapshot, LegalResourceTestBuilder} from "./legal-resource-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {buildNutsCodeIri} from "./iri-test-builder";
 
 beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
@@ -167,7 +167,7 @@ describe('constructing', () => {
     });
 
     test('Spatials with duplicates throws error', () => {
-        expect(() => aFullInstanceSnapshot().withSpatials([buildSpatialRefNis2019Iri(1), buildSpatialRefNis2019Iri(1)]).build())
+        expect(() => aFullInstanceSnapshot().withSpatials([buildNutsCodeIri(1), buildNutsCodeIri(1)]).build())
             .toThrowWithMessage(InvariantError, 'spatials mag geen duplicaten bevatten');
     });
 

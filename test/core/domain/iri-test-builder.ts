@@ -28,8 +28,8 @@ export function buildSessionIri(uniqueId: string): Iri {
     return new Iri(`http://mu.semte.ch/sessions/${uniqueId}`);
 }
 
-export function buildSpatialRefNis2019Iri(aNumber: number): Iri {
-    return new Iri(`http://vocab.belgif.be/auth/refnis2019/${aNumber}`);
+export function buildNutsCodeIri(aNumber: number): Iri {
+    return new Iri(`http://data.europa.eu/nuts/code/BE${aNumber}`);
 }
 
 export function buildWerkingsgebiedenIri(uniqueId: string): Iri {

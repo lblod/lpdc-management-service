@@ -7,7 +7,7 @@ import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
 import {
     buildBestuurseenheidIri,
-    buildSpatialRefNis2019Iri,
+    buildNutsCodeIri,
     buildWerkingsgebiedenIri,
     randomNumber
 } from "../../core/domain/iri-test-builder";
@@ -70,10 +70,10 @@ describe('BestuurseenheidRepository', () => {
             const werkingsgebied1Id = buildWerkingsgebiedenIri(uuid());
             const werkingsgebied2Id = buildWerkingsgebiedenIri(uuid());
 
-            const spatial1Id = buildSpatialRefNis2019Iri(randomNumber(10000, 19999));
-            const spatial2Id = buildSpatialRefNis2019Iri(randomNumber(20000, 29999));
-            const spatial3Id = buildSpatialRefNis2019Iri(randomNumber(30000, 39999));
-            const spatial4Id = buildSpatialRefNis2019Iri(randomNumber(40000, 49999));
+            const spatial1Id = buildNutsCodeIri(randomNumber(10000, 19999));
+            const spatial2Id = buildNutsCodeIri(randomNumber(20000, 29999));
+            const spatial3Id = buildNutsCodeIri(randomNumber(30000, 39999));
+            const spatial4Id = buildNutsCodeIri(randomNumber(40000, 49999));
 
             const bestuurseenheid =
                 aBestuurseenheid()
@@ -101,10 +101,10 @@ describe('BestuurseenheidRepository', () => {
                     `<${werkingsgebied1Id}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial2Id}>`,
                     `<${werkingsgebied2Id}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial3Id}>`,
                     `<${werkingsgebied2Id}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial4Id}>`,
-                    `<${spatial1Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties>`,
-                    `<${spatial2Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties>`,
-                    `<${spatial3Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties>`,
-                    `<${spatial4Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties>`,
+                    `<${spatial1Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.europa.eu/nuts/scheme/2021>`,
+                    `<${spatial2Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.europa.eu/nuts/scheme/2021>`,
+                    `<${spatial3Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.europa.eu/nuts/scheme/2021>`,
+                    `<${spatial4Id}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.europa.eu/nuts/scheme/2021>`,
                 ]);
 
             const actualBestuurseenheid = await repository.findById(bestuurseenheidId);
@@ -143,13 +143,13 @@ describe('BestuurseenheidRepository', () => {
             expect(actualBestuurseenheid.id).toEqual(bestuurseenheidId);
         });
 
-        test('a spatial not linked to a ipdc locatie is not returned', async () => {
+        test('a spatial not linked to a nuts code is not returned', async () => {
             const bestuurseenheidUuid = uuid();
             const bestuurseenheidId = new Iri(`http://data.lblod.info/id/bestuurseenheden/${bestuurseenheidUuid}`);
 
             const werkingsgebied1Id = buildWerkingsgebiedenIri(uuid());
 
-            const spatial1Id = buildSpatialRefNis2019Iri(randomNumber(10000, 19999));
+            const spatial1Id = buildNutsCodeIri(randomNumber(10000, 19999));
 
             await directDatabaseAccess.insertData(
                 PUBLIC_GRAPH,

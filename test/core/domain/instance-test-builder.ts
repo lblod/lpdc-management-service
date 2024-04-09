@@ -5,7 +5,7 @@ import {
     buildConceptIri,
     buildConceptSnapshotIri,
     buildInstanceIri,
-    buildSpatialRefNis2019Iri,
+    buildNutsCodeIri,
     randomNumber
 } from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
@@ -128,7 +128,7 @@ export class InstanceTestBuilder {
 
     public static readonly STATUS = InstanceStatusType.ONTWERP;
 
-    public static readonly SPATIALS = [buildSpatialRefNis2019Iri(randomNumber(10000, 19999)), buildSpatialRefNis2019Iri(randomNumber(20000, 29999))];
+    public static readonly SPATIALS = [buildNutsCodeIri(randomNumber(10000, 19999)), buildNutsCodeIri(randomNumber(20000, 29999))];
 
     public static readonly COMPETENT_AUTHORITIES = [BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI];
 
