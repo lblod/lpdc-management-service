@@ -184,7 +184,7 @@ export class Instance {
             .build();
     }
 
-    private calculatedInstanceNlLanguages(): Language[] {
+    public calculatedInstanceNlLanguages(): Language[] {
         const nlLanguage =
             LanguageString.extractNlLanguages([
                 this._title,
