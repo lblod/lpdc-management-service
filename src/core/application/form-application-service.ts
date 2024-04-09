@@ -67,10 +67,9 @@ export class FormApplicationService {
     }> {
 
         const instance = await this._instanceRepository.findById(bestuurseenheid, instanceId);
-        const languageForForm = await this._selectFormLanguageDomainService.selectForInstance(instance, bestuurseenheid);
 
         const isEnglishRequired = instance.publicationMedia.includes(PublicationMediumType.YOUREUROPE);
-        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm, isEnglishRequired);
+        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, instance.dutchLanguageVariant, isEnglishRequired);
 
         const tailoredSchemes = formType === FormType.EIGENSCHAPPEN ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
 

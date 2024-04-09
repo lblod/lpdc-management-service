@@ -649,7 +649,7 @@ export class InstanceBuilder {
         return this;
     }
 
-    withDutchLanguageVariant(dutchLanguageVariant: Language): InstanceBuilder {
+    public withDutchLanguageVariant(dutchLanguageVariant: Language): InstanceBuilder {
         this.dutchLanguageVariant = dutchLanguageVariant;
         return this;
     }
