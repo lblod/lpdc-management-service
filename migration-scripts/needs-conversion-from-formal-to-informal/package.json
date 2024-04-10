@@ -1,19 +1,16 @@
 {
-  "name": "dutch-language-variant",
+  "name": "needs-conversion-from-formal-to-informal",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node -r dotenv/config dutch-language-variant.ts"
+    "start": "ts-node -r dotenv/config needs-conversion-from-formal-to-informal.ts"
   },
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "sparql-client-2": "https://github.com/erikap/node-sparql-client.git",
-    "uuid": "^9.0.1"
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "@types/node": "^20.6.5",
-    "@types/uuid": "^9.0.8",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
