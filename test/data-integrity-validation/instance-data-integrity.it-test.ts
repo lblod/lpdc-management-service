@@ -19,6 +19,11 @@ import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/conc
 import {DoubleQuadReporter} from "../../src/driven/persistence/quads-to-domain-mapper";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import {Instance} from "../../src/core/domain/instance";
+import {
+    FormalInformalChoiceSparqlRepository
+} from "../../src/driven/persistence/formal-informal-choice-sparql-repository";
+import {ChosenFormType} from "../../src/core/domain/types";
+import {Language} from "../../src/core/domain/language";
 
 class DoubleQuadReporterCapture implements DoubleQuadReporter {
 
@@ -49,6 +54,7 @@ describe('Instance Data Integrity Validation', () => {
 
     const conceptRepository = new ConceptSparqlRepository(endPoint);
     const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
+    const informalFormalChoiceRepository = new FormalInformalChoiceSparqlRepository(endPoint);
 
     test.skip('Load all instances; print errors to console.log', async () => {
 
@@ -138,8 +144,7 @@ describe('Instance Data Integrity Validation', () => {
                             const instance = await repository.findById(bestuurseenheid, id);
 
                             expect(instance.id).toEqual(id);
-                            const quadsForInstanceForId =
-                                domainToQuadsMapper.instanceToQuads(instance);
+                            const quadsForInstanceForId = domainToQuadsMapper.instanceToQuads(instance);
 
                             quadsFromRequeriedInstances.push(...quadsForInstanceForId);
 
@@ -160,6 +165,8 @@ describe('Instance Data Integrity Validation', () => {
                             }
 
                             expect(instance.createdBy).toEqual(bestuurseenheid.id);
+
+                            await validateNeedsConversionFromFormalToInformalFlag(instance, bestuurseenheid);
 
                             const doubleQuadsErrorsForInstance = doubleQuadReporterCapture.logs(instance);
                             totalDoubleQuads.push(...doubleQuadsErrorsForInstance);
@@ -261,6 +268,20 @@ describe('Instance Data Integrity Validation', () => {
 
         console.log(allQuadsAsStrings);
         return allQuadsAsStrings;
+    }
+
+
+    async function validateNeedsConversionFromFormalToInformalFlag(instance: Instance, bestuurseenheid: Bestuurseenheid) {
+        const formalInformalChoice = await informalFormalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
+        if (formalInformalChoice?.chosenForm === ChosenFormType.INFORMAL) {
+            if (instance.dutchLanguageVariant != Language.INFORMAL) {
+                expect(instance.needsConversionFromFormalToInformal).toBeTrue();
+            } else {
+                expect(instance.needsConversionFromFormalToInformal).toBeFalse();
+            }
+        } else {
+            expect(instance.needsConversionFromFormalToInformal).toBeFalse();
+        }
     }
 
 });
