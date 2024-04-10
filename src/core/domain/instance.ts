@@ -216,15 +216,15 @@ export class Instance {
         ];
         LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...values);
 
-
         const calculatedInstanceNLLanguages = this.calculatedInstanceNlLanguages();
 
         if (calculatedInstanceNLLanguages.length > 1) {
             throw new InvariantError('Er is meer dan een nl-taal aanwezig');
         }
 
-    }
+        //TODO LPDC-1059: validate that the one nl language is the same as the dutchLanguageVariant ?
 
+    }
 
     get id(): Iri {
         return this._id;
