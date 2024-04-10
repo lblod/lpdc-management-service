@@ -47,6 +47,7 @@ export function aMinimalInstance(): InstanceBuilder {
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withDutchLanguageVariant(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT)
+        .withNeedsConversionFromFormalToInformal(InstanceTestBuilder.NEEDS_CONVERSION_FROM_FORMAL_TO_INFORMAL)
         .withStatus(InstanceTestBuilder.STATUS);
 }
 
@@ -100,6 +101,7 @@ export function aFullInstance(): InstanceBuilder {
         .withProductId(InstanceTestBuilder.PRODUCT_ID)
         .withLanguages(InstanceTestBuilder.LANGUAGES)
         .withDutchLanguageVariant(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT)
+        .withNeedsConversionFromFormalToInformal(InstanceTestBuilder.NEEDS_CONVERSION_FROM_FORMAL_TO_INFORMAL)
         .withDateSent(InstanceTestBuilder.DATE_SENT)
         .withDatePublished(InstanceTestBuilder.DATE_PUBLISHED)
         .withReviewStatus(InstanceTestBuilder.REVIEW_STATUS)
@@ -181,7 +183,10 @@ export class InstanceTestBuilder {
     public static readonly FINANCIAL_ADVANTAGES = [aFullFinancialAdvantageForInstance().build(), anotherFullFinancialAdvantageForInstance().build()];
 
     public static readonly LANGUAGES = [LanguageType.NLD, LanguageType.ENG];
+
     public static readonly DUTCH_LANGUAGE_VARIANT = Language.FORMAL;
+
+    public static readonly NEEDS_CONVERSION_FROM_FORMAL_TO_INFORMAL = false;
 
     public static readonly CONTACT_POINTS = [aFullContactPointForInstance().build(), anotherFullContactPointForInstance().build()];
 

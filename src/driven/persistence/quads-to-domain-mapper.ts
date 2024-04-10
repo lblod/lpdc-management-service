@@ -285,6 +285,7 @@ export class QuadsToDomainMapper {
             this.productId(id),
             this.languages(id),
             this.dutchLanguageVariant(id),
+            this.needsConversionFromFormalToInformal(id),
             this.dateCreated(id),
             this.dateModified(id),
             this.dateSent(id),
@@ -686,6 +687,11 @@ export class QuadsToDomainMapper {
             default:
                 throw new SystemError(`Kan <${literal?.value}> niet mappen naar dutch language version`);
         }
+    }
+
+    //TODO LPDC-1077: implement
+    private needsConversionFromFormalToInformal(id: Iri) {
+        return false;
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {

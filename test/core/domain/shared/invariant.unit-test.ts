@@ -251,6 +251,41 @@ describe('atLeastOneValuePresentIfCondition', () => {
     });
 });
 
+describe('isBoolean', () => {
+    const name = "boolean";
+
+    test('if undefined, throws error', () => {
+        const invariant: Invariant<any> = Invariant.require(undefined, name);
+        expect(() => invariant.to(invariant.isBoolean())).toThrowWithMessage(InvariantError, `${name} moet type boolean zijn`);
+    });
+    test('if true, not throws error', () => {
+        const invariant: Invariant<any> = Invariant.require(true, name);
+        expect(invariant.to(invariant.isBoolean())).toBeTrue();
+    });
+
+    test('if false, not throws error', () => {
+        const invariant: Invariant<any> = Invariant.require(false, name);
+        expect(invariant.to(invariant.isBoolean())).toBeFalse();
+    });
+    test('if string true, throws error', () => {
+        const invariant: Invariant<any> = Invariant.require('true', name);
+        expect(() => invariant.to(invariant.isBoolean())).toThrowWithMessage(InvariantError, `${name} moet type boolean zijn`);
+    });
+
+    test('if string false, throws error', () => {
+        const invariant: Invariant<any> = Invariant.require('false', name);
+        expect(() => invariant.to(invariant.isBoolean())).toThrowWithMessage(InvariantError, `${name} moet type boolean zijn`);
+    });
+    test('if 0, throws error', () => {
+        const invariant: Invariant<any> = Invariant.require(0, name);
+        expect(() => invariant.to(invariant.isBoolean())).toThrowWithMessage(InvariantError, `${name} moet type boolean zijn`);
+    });
+    test('if 1, throws error', () => {
+        const invariant: Invariant<any> = Invariant.require(1, name);
+        expect(() => invariant.to(invariant.isBoolean())).toThrowWithMessage(InvariantError, `${name} moet type boolean zijn`);
+    });
+});
+
 describe('to', () => {
 
     test('returns first violation', () => {

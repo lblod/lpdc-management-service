@@ -4,6 +4,7 @@ import {
     requireAllPresentOrAllAbsent,
     requiredCanOnlyBePresentIfOtherValuePresent,
     requiredValue,
+    requireIsBoolean,
     requireNoDuplicates,
     requireShouldBePresentWhenOtherValueEquals,
     requireShouldEqualAcceptedValue
@@ -67,6 +68,7 @@ export class Instance {
     private readonly _productId: string | undefined; //required for search on productId
     private readonly _languages: LanguageType[];
     private readonly _dutchLanguageVariant: Language;
+    private readonly _needsConversionFromFormalToInformal: boolean;
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _dateSent: FormatPreservingDate | undefined;
@@ -108,6 +110,7 @@ export class Instance {
                 productId: string | undefined,
                 languages: LanguageType[],
                 dutchLanguageVariant: Language,
+                needsConversionFromFormalToInformal: boolean,
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 dateSent: FormatPreservingDate | undefined,
@@ -156,6 +159,7 @@ export class Instance {
         this._productId = productId;
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
         this._dutchLanguageVariant = requireShouldEqualAcceptedValue(dutchLanguageVariant, 'dutchLanguageVariant', instanceLanguages);
+        this._needsConversionFromFormalToInformal = requireIsBoolean(needsConversionFromFormalToInformal, 'needsConversionFromFormalToInformal');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._dateSent = requireShouldBePresentWhenOtherValueEquals(dateSent, 'dateSent', InstanceStatusType.VERSTUURD, status, 'status');
@@ -350,6 +354,10 @@ export class Instance {
         return this._dutchLanguageVariant;
     }
 
+    get needsConversionFromFormalToInformal(): boolean {
+        return this._needsConversionFromFormalToInformal;
+    }
+
     get dateCreated(): FormatPreservingDate {
         return this._dateCreated;
     }
@@ -445,6 +453,7 @@ export class InstanceBuilder {
     private productId: string | undefined;
     private languages: LanguageType[] = [];
     private dutchLanguageVariant: Language;
+    private needsConversionFromFormalToInformal: boolean;
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private dateSent: FormatPreservingDate | undefined;
@@ -488,6 +497,7 @@ export class InstanceBuilder {
             .withProductId(instance.productId)
             .withLanguages(instance.languages)
             .withDutchLanguageVariant(instance.dutchLanguageVariant)
+            .withNeedsConversionFromFormalToInformal(instance.needsConversionFromFormalToInformal)
             .withDateCreated(instance.dateCreated)
             .withDateModified(instance.dateModified)
             .withDateSent(instance.dateSent)
@@ -654,6 +664,12 @@ export class InstanceBuilder {
         return this;
     }
 
+    public withNeedsConversionFromFormalToInformal(needsConversionFromFormalToInformal: boolean) {
+        this.needsConversionFromFormalToInformal = needsConversionFromFormalToInformal;
+        return this;
+
+    }
+
     public withDateCreated(dateCreated: FormatPreservingDate): InstanceBuilder {
         this.dateCreated = dateCreated;
         return this;
@@ -693,11 +709,11 @@ export class InstanceBuilder {
         this.spatials = spatials;
         return this;
     }
-
     public withLegalResources(legalResources: LegalResource[]): InstanceBuilder {
         this.legalResources = legalResources;
         return this;
     }
+
     public build(): Instance {
         return new Instance(
             this.id,
@@ -731,6 +747,7 @@ export class InstanceBuilder {
             this.productId,
             this.languages,
             this.dutchLanguageVariant,
+            this.needsConversionFromFormalToInformal,
             this.dateCreated,
             this.dateModified,
             this.dateSent,
