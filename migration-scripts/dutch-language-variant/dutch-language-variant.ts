@@ -46,7 +46,7 @@ async function main() {
 
             insertQuads.push(dutchLanguageVersionQuads);
         }
-        console.log("instances done" + totalInstances);
+        console.log("instances done " + totalInstances);
     }
 
     fs.writeFileSync(`./migration-results/insertDutchLanguageVariant.ttl`, insertQuads.join('\n'));

@@ -87,9 +87,6 @@ describe('Concept Data Integrity Validation', () => {
         //filter out all triples linked to http://lblod.data.gift/concepts/ subjects
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://lblod.data.gift/concepts/'));
 
-        //filter out all triples linked to http://vocab.belgif.be/auth/refnis2019/ subjects
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://vocab.belgif.be/auth/refnis2019/'));
-
         //filter out all triples linked to https://productencatalogus.data.vlaanderen.be/id/concept/ subjects
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://productencatalogus.data.vlaanderen.be/id/concept/'));
 
@@ -99,7 +96,10 @@ describe('Concept Data Integrity Validation', () => {
         //filter out all triples linked to https://data.vlaanderen.be/id/organisatie/ subjects
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('https://data.vlaanderen.be/id/organisatie/'));
 
-        //filter out all triples linked to http://data.europa.eu/nuts/scheme/2021 subjects
+        //filter out all triples linked to http://data.europa.eu/nuts/code/ subjects
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.europa.eu/nuts/code/'));
+
+        //filter out all triples linked to http://data.europa.eu/nuts/scheme/2021 concept scheme
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://data.europa.eu/nuts/scheme/2021'));
 
         //filter out all triples linked to http://publications.europa.eu/resource/authority/language/ subjects
