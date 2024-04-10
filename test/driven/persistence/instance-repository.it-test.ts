@@ -470,6 +470,7 @@ describe('InstanceRepository', () => {
                     .withDateCreated(instanceDateCreated)
                     .withDateModified(instanceDateModified)
                     .withDutchLanguageVariant(Language.INFORMAL)
+                    .withNeedsConversionFromFormalToInformal(true)
                     .withStatus(InstanceStatusType.ONTWERP)
                     .build();
 
@@ -482,6 +483,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://schema.org/dateCreated> """${instanceDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/dateModified> """${instanceDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.INFORMAL}"""`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
                 ]);
 
@@ -737,6 +739,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NLD>`,
                     `<${instanceId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/ENG>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.FORMAL}"""`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${instanceId}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/dateSent> """${InstanceTestBuilder.DATE_SENT.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -788,7 +791,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.EN}"""`,
-
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                 ]);
 
             await expect(() => repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, 'Kan <en> niet mappen naar dutch language version');
@@ -809,6 +812,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """blabla"""`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
 
                 ]);
 
@@ -854,6 +858,7 @@ describe('InstanceRepository', () => {
                     `<${instance.id}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instance.id}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
                     `<${instance.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.FORMAL}"""`,
+                    `<${instance.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${instance.id}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirement.id}>`,
                     `<${requirement.id}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${requirement.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${requirement.uuid}"""`,
@@ -886,6 +891,7 @@ describe('InstanceRepository', () => {
                     `<${instance.id}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instance.id}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
                     `<${instance.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.FORMAL}"""`,
+                    `<${instance.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${instance.id}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirement.id}>`,
                     `<${requirement.id}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${requirement.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${requirement.uuid}"""`,
@@ -919,6 +925,7 @@ describe('InstanceRepository', () => {
                     `<${instance.id}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instance.id}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
                     `<${instance.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.FORMAL}"""`,
+                    `<${instance.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${instance.id}> <http://purl.org/vocab/cpsv#follows> <${procedure.id}>`,
                     `<${procedure.id}> a <http://purl.org/vocab/cpsv#Rule>`,
                     `<${procedure.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${procedure.uuid}"""`,
@@ -950,6 +957,7 @@ describe('InstanceRepository', () => {
                     `<${instance.id}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instance.id}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
                     `<${instance.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.FORMAL}"""`,
+                    `<${instance.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${instance.id}> <http://purl.org/vocab/cpsv#follows> <${procedure.id}>`,
                     `<${procedure.id}> a <http://purl.org/vocab/cpsv#Rule>`,
                     `<${procedure.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${procedure.uuid}"""`,
@@ -961,6 +969,43 @@ describe('InstanceRepository', () => {
                 ]);
 
             const actualInstance = await repository.findById(bestuurseenheid, instance.id);
+
+            expect(actualInstance).toEqual(instance);
+        });
+
+        test('absent needsConversionFromFormalToInformal, maps to false', async () => {
+            const instanceUUID = uuid();
+            const instanceId = buildInstanceIri(instanceUUID);
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
+            const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
+
+            const instance =
+                aMinimalInstance()
+                    .withId(instanceId)
+                    .withUuid(instanceUUID)
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withDateCreated(instanceDateCreated)
+                    .withDateModified(instanceDateModified)
+                    .withDutchLanguageVariant(Language.INFORMAL)
+                    .withNeedsConversionFromFormalToInformal(false)
+                    .withStatus(InstanceStatusType.ONTWERP)
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                `${bestuurseenheid.userGraph()}`,
+                [
+                    `<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
+                    `<${instanceId}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
+                    `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${instanceUUID}"""`,
+                    `<${instanceId}> <http://schema.org/dateCreated> """${instanceDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <http://schema.org/dateModified> """${instanceDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.INFORMAL}"""`,
+                    `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
+                ]);
+
+
+            const actualInstance = await repository.findById(bestuurseenheid, instanceId);
 
             expect(actualInstance).toEqual(instance);
         });
@@ -988,6 +1033,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/unknown-instance-status>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.FORMAL}"""`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                 ]);
 
             await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `Kan <http://lblod.data.gift/concepts/instance-status/unknown-instance-status> niet mappen voor Iri: <${instanceId}>`);

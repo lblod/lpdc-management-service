@@ -144,6 +144,7 @@ export class DomainToQuadsMapper {
             this.productId(instance.id, instance.productId),
             ...this.languages(instance.id, instance.languages),
             this.dutchLanguageVariant(instance.id, instance.dutchLanguageVariant),
+            this.needsConversionFromFormalToInformal(instance.id, instance.needsConversionFromFormalToInformal),
             this.dateCreated(instance.id, instance.dateCreated),
             this.dateModified(instance.id, instance.dateModified),
             instance.dateSent ? this.buildQuad(namedNode(instance.id.value), NS.schema('dateSent'), literal(instance.dateSent.value, NS.xsd('dateTime'))) : undefined,
@@ -467,6 +468,10 @@ export class DomainToQuadsMapper {
 
     private dutchLanguageVariant(id: Iri, value: Language): Statement {
         return this.buildQuad(namedNode(id.value), NS.lpdcExt('dutchLanguageVariant'), value);
+    }
+
+    private needsConversionFromFormalToInformal(id: Iri, needsConversionFromFormalToInformal: boolean): Statement | undefined {
+        return this.buildQuad(namedNode(id.value), NS.lpdcExt('needsConversionFromFormalToInformal'), literal(needsConversionFromFormalToInformal.toString(), NS.xsd('boolean')));
     }
 
     private verwijstNaar(id: Iri, verwijstNaar: Iri | undefined): Statement | undefined {

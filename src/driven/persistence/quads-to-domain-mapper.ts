@@ -689,9 +689,8 @@ export class QuadsToDomainMapper {
         }
     }
 
-    //TODO LPDC-1077: implement
-    private needsConversionFromFormalToInformal(id: Iri) {
-        return false;
+    private needsConversionFromFormalToInformal(id: Iri): boolean {
+        return this.parseBoolean(this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('needsConversionFromFormalToInformal'))?.object as Literal);
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {
