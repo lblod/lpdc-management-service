@@ -104,7 +104,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         }
     }
 
-    //TODO LPDC-1077: To determine
     private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
         const instance =  new Instance(
             instanceSnapshot.isVersionOfInstance,
@@ -152,8 +151,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         instance.validateForPublish(false);
         return instance;
     }
-
-    //TODO LPDC-1077: To determine
+    
     private asMergedInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, instance: Instance, concept: Concept | undefined) {
         const mergedInstance = new Instance(
             instanceSnapshot.isVersionOfInstance,

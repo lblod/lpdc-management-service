@@ -116,6 +116,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.productId).toEqual(undefined);
             expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
             expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
+            expect(instanceAfterMerge.needsConversionFromFormalToInformal).toBeFalse();
             expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
             expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
             expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
@@ -363,6 +364,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.productId).toEqual(concept.productId);
             expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
             expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
+            expect(instanceAfterMerge.needsConversionFromFormalToInformal).toBeFalse();
             expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
             expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
             expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
@@ -568,6 +570,9 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.conceptSnapshotId).toEqual(undefined);
                 expect(instanceAfterMerge.productId).toEqual(undefined);
                 expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
+                expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
+                expect(instanceAfterMerge.needsConversionFromFormalToInformal).toBeFalse();
+
                 expect(instanceAfterMerge.dateCreated).toEqual(instanceAfterMerge.dateCreated);
                 expect(instanceAfterMerge.dateModified).toEqual(FormatPreservingDate.now());
                 expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
@@ -819,6 +824,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.conceptSnapshotId).toEqual(concept.latestConceptSnapshot);
                 expect(instanceAfterMerge.productId).toEqual(concept.productId);
                 expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
+                expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
+                expect(instanceAfterMerge.needsConversionFromFormalToInformal).toBeFalse();
                 expect(instanceAfterMerge.dateCreated).toEqual(instanceAfterMerge.dateCreated);
                 expect(instanceAfterMerge.dateModified).toEqual(FormatPreservingDate.now());
                 expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());

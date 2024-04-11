@@ -44,7 +44,6 @@ export class NewInstanceDomainService {
         const formalInformalChoice = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
         const chosenForm = formalInformalChoice?.chosenForm;
 
-        //TODO: LPDC-1077: test
         const newInstance =
             new Instance(
                 instanceId,
@@ -95,7 +94,6 @@ export class NewInstanceDomainService {
         return newInstance;
     }
 
-    //TODO: LPDC-1077: test
     public async createNewFromConcept(bestuurseenheid: Bestuurseenheid, concept: Concept): Promise<Instance> {
         const instanceUuid = uuid();
         const instanceId = new Iri(`http://data.lblod.info/id/public-service/${instanceUuid}`);
