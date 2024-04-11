@@ -11,6 +11,7 @@ import {
     buildNutsCodeIri,
 } from "../../core/domain/iri-test-builder";
 import {
+    ChosenFormType,
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
     InstancePublicationStatusType,
@@ -453,6 +454,94 @@ describe('InstanceRepository', () => {
         });
     });
 
+    describe('syncNeedsConversionFromFormalToInformal', () => {
+        test('given formal, nl and informal instance, when choose informal, then set needsConversionFromFormalToInformal on true for formal and nl instance of that bestuurseenheid', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const anotherBestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const formalInstance = aMinimalInstance().withDutchLanguageVariant(Language.FORMAL).withCreatedBy(bestuurseenheid.id).build();
+            const informalInstance = aMinimalInstance().withDutchLanguageVariant(Language.INFORMAL).withCreatedBy(bestuurseenheid.id).build();
+            const nlInstance = aMinimalInstance().withDutchLanguageVariant(Language.NL).withCreatedBy(bestuurseenheid.id).build();
+
+
+            const formalInstanceForOtherBestuurseenheid = aMinimalInstance().withDutchLanguageVariant(Language.FORMAL).withCreatedBy(anotherBestuurseenheid.id).build();
+            const informalInstanceForOtherBestuurseenheid = aMinimalInstance().withDutchLanguageVariant(Language.INFORMAL).withCreatedBy(anotherBestuurseenheid.id).build();
+            const nlInstanceForOtherBestuurseenheid = aMinimalInstance().withDutchLanguageVariant(Language.NL).withCreatedBy(anotherBestuurseenheid.id).build();
+
+            await repository.save(bestuurseenheid, formalInstance);
+            await repository.save(bestuurseenheid, informalInstance);
+            await repository.save(bestuurseenheid, nlInstance);
+
+            await repository.save(anotherBestuurseenheid, formalInstanceForOtherBestuurseenheid);
+            await repository.save(anotherBestuurseenheid, informalInstanceForOtherBestuurseenheid);
+            await repository.save(anotherBestuurseenheid, nlInstanceForOtherBestuurseenheid);
+
+            await repository.syncNeedsConversionFromFormalToInformal(bestuurseenheid, ChosenFormType.INFORMAL);
+
+            const actualFormalInstance = await repository.findById(bestuurseenheid, formalInstance.id);
+            const actualInformalInstance = await repository.findById(bestuurseenheid, informalInstance.id);
+            const actualNlInstance = await repository.findById(bestuurseenheid, nlInstance.id);
+
+            const actualformalInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, formalInstanceForOtherBestuurseenheid.id);
+            const actualInformalInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, informalInstanceForOtherBestuurseenheid.id);
+            const actualNlInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, nlInstanceForOtherBestuurseenheid.id);
+
+
+            expect(actualInformalInstance.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualFormalInstance.needsConversionFromFormalToInformal).toBeTrue();
+            expect(actualNlInstance.needsConversionFromFormalToInformal).toBeTrue();
+
+            expect(actualformalInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualInformalInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualNlInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+        });
+
+        test('given formal, nl  and informal instance, when choose formal, then needsConversionFromFormalToInformal remains false', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const anotherBestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const formalInstance = aMinimalInstance().withDutchLanguageVariant(Language.FORMAL).withCreatedBy(bestuurseenheid.id).build();
+            const informalInstance = aMinimalInstance().withDutchLanguageVariant(Language.INFORMAL).withCreatedBy(bestuurseenheid.id).build();
+            const nlInstance = aMinimalInstance().withDutchLanguageVariant(Language.NL).withCreatedBy(bestuurseenheid.id).build();
+
+            const formalInstanceForOtherBestuurseenheid = aMinimalInstance().withDutchLanguageVariant(Language.FORMAL).withCreatedBy(anotherBestuurseenheid.id).build();
+            const informalInstanceForOtherBestuurseenheid = aMinimalInstance().withDutchLanguageVariant(Language.INFORMAL).withCreatedBy(anotherBestuurseenheid.id).build();
+            const nlInstanceForOtherBestuurseenheid = aMinimalInstance().withDutchLanguageVariant(Language.NL).withCreatedBy(anotherBestuurseenheid.id).build();
+
+            await repository.save(bestuurseenheid, formalInstance);
+            await repository.save(bestuurseenheid, informalInstance);
+            await repository.save(bestuurseenheid, nlInstance);
+            await repository.save(anotherBestuurseenheid, formalInstanceForOtherBestuurseenheid);
+            await repository.save(anotherBestuurseenheid, informalInstanceForOtherBestuurseenheid);
+            await repository.save(anotherBestuurseenheid, nlInstanceForOtherBestuurseenheid);
+
+            await repository.syncNeedsConversionFromFormalToInformal(bestuurseenheid, ChosenFormType.FORMAL);
+
+            const actualFormalInstance = await repository.findById(bestuurseenheid, formalInstance.id);
+            const actualInformalInstance = await repository.findById(bestuurseenheid, informalInstance.id);
+            const actualNlInstance = await repository.findById(bestuurseenheid, nlInstance.id);
+
+            const actualformalInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, formalInstanceForOtherBestuurseenheid.id);
+            const actualInformalInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, informalInstanceForOtherBestuurseenheid.id);
+            const actualNlInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, nlInstanceForOtherBestuurseenheid.id);
+
+
+            expect(actualInformalInstance.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualFormalInstance.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualNlInstance.needsConversionFromFormalToInformal).toBeFalse();
+
+            expect(actualformalInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualInformalInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualNlInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+        });
+
+    });
     describe('Verify ontology and mapping', () => {
 
         test('Verify minimal mapping', async () => {

@@ -1,4 +1,4 @@
-import {createApp, uuid} from './mu-helper';
+import {createApp} from './mu-helper';
 import bodyparser from 'body-parser';
 import {CONCEPT_SNAPSHOT_LDES_GRAPH, INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN, LOG_INCOMING_DELTA} from './config';
 import {ProcessingQueue} from './lib/processing-queue';
@@ -53,9 +53,10 @@ import {InvariantError} from "./src/core/domain/shared/lpdc-error";
 import {
     ValidateInstanceForPublishApplicationService
 } from "./src/core/application/validate-instance-for-publish-application-service";
-import {FormType} from "./src/core/domain/types";
+import {ChosenFormType, FormType} from "./src/core/domain/types";
 import {FormatPreservingDate} from "./src/core/domain/format-preserving-date";
-import {buildFormalInformalChoiceIri, FormalInformalChoice} from "./src/core/domain/formal-informal-choice";
+import {FormalInformalChoice} from "./src/core/domain/formal-informal-choice";
+import {NewFormalInformalChoiceDomainService} from "./src/core/domain/new-formal-informal-choice-domain-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -154,6 +155,11 @@ const instanceSnapshotProcessorApplicationService = new InstanceSnapshotProcesso
     instanceSnapshotRepository,
     instanceSnapshotToInstanceMergerDomainService,
     bestuurseenheidRepository,
+);
+
+const newFormalInformalChoiceAndSyncInstanceDomainService = new NewFormalInformalChoiceDomainService(
+    formalInformalChoiceRepository,
+    instanceRepository
 );
 
 app.get('/', function (_req, res): void {
@@ -500,22 +506,15 @@ async function createFormalInformalChoice(req: Request, res: Response) {
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    const newUuid = uuid();
-    const id = buildFormalInformalChoiceIri(newUuid);
-    await formalInformalChoiceRepository.save(
-        bestuurseenheid,
-        new FormalInformalChoice(
-            id,
-            newUuid,
-            FormatPreservingDate.now(),
-            body?.data?.attributes['chosen-form'],
-            bestuurseenheid.id));
+    const chosenFormType: ChosenFormType = body?.data?.attributes['chosen-form'];
+
+    const formalInformalChoice = await newFormalInformalChoiceAndSyncInstanceDomainService.saveFormalInformalChoiceAndSyncInstances(bestuurseenheid, chosenFormType);
 
     return res.status(201).json({
         data: {
             "type": "formal-informal-choices",
-            "id": newUuid,
-            "uri": id
+            "id": formalInformalChoice.uuid,
+            "uri": formalInformalChoice.id
         }
     });
 }

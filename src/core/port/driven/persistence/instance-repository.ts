@@ -2,6 +2,7 @@ import {Iri} from "../../../domain/shared/iri";
 import {Instance} from "../../../domain/instance";
 import {Bestuurseenheid} from "../../../domain/bestuurseenheid";
 import {FormatPreservingDate} from "../../../domain/format-preserving-date";
+import {ChosenFormType} from "../../../domain/types";
 
 export interface InstanceRepository {
 
@@ -20,4 +21,7 @@ export interface InstanceRepository {
     isDeleted(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean>;
 
     recreate(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void>;
+
+    syncNeedsConversionFromFormalToInformal(bestuurseenheid: Bestuurseenheid, choosenType: ChosenFormType): Promise<void>
+
 }

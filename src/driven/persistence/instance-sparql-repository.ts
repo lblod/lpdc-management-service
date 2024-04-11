@@ -9,7 +9,7 @@ import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
 import {NS} from "./namespaces";
-import {InstancePublicationStatusType, InstanceReviewStatusType} from "../../core/domain/types";
+import {ChosenFormType, InstancePublicationStatusType, InstanceReviewStatusType} from "../../core/domain/types";
 import {Logger} from "../../../platform/logger";
 import {literal} from "rdflib";
 import {isEqual} from "lodash";
@@ -256,5 +256,27 @@ export class InstanceSparqlRepository implements InstanceRepository {
             
         `;
         await this.querying.deleteInsert(query);
+    }
+
+    async syncNeedsConversionFromFormalToInformal(bestuurseenheid: Bestuurseenheid, chosenType: ChosenFormType) {
+        const query = `
+        ${PREFIX.lpdcExt}
+        WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
+        
+        DELETE {
+           ?instance lpdcExt:needsConversionFromFormalToInformal """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>.
+        }
+        INSERT { 
+            ?instance lpdcExt:needsConversionFromFormalToInformal """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>.     
+        }     
+        WHERE {
+            ?instance a lpdcExt:InstancePublicService.
+            ?instance lpdcExt:dutchLanguageVariant ?variant.
+            FILTER (?variant != "nl-be-x-informal" && CONCAT("nl-be-x-", "${chosenType}") = "nl-be-x-informal")
+        }
+           
+        `;
+        await this.querying.deleteInsert(query);
+
     }
 }
