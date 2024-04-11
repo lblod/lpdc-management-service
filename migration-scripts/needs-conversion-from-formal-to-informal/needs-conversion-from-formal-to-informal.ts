@@ -1,4 +1,3 @@
-import {END2END_TEST_SPARQL_ENDPOINT} from "../../test/test.config";
 import {
     BestuurseenheidSparqlTestRepository
 } from "../../test/driven/persistence/bestuurseenheid-sparql-test-repository";
@@ -16,7 +15,7 @@ import {
     FormalInformalChoiceSparqlRepository
 } from "../../src/driven/persistence/formal-informal-choice-sparql-repository";
 
-const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
+const endPoint = process.env.SPARQL_URL;
 
 const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
