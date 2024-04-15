@@ -132,7 +132,6 @@ pub:${instance.uuid}\n
                         .withTitle(LanguageString.of('engelse titel procedure', undefined, 'titel procedure'))
                         .withDescription(LanguageString.of(`<p data-indentation-level="0">engelse beschrijving procedure</p>`, undefined, `<p data-indentation-level="0">beschrijving procedure</p>`))
                         .withWebsites([])
-                        .withConceptProcedureId(undefined)
                         .withOrder(1)
                         .build()
                 ])

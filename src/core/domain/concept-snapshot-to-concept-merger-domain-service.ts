@@ -226,8 +226,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
                     r.title,
                     r.description,
                     r.order,
-                    r.evidence ? this.copyEvidence(r.evidence) : undefined,
-                    undefined
+                    r.evidence ? this.copyEvidence(r.evidence) : undefined
                 );
             }
         );
@@ -243,8 +242,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
                         p.title,
                         p.description,
                         p.order,
-                        this.copyWebsites(p.websites),
-                        undefined
+                        this.copyWebsites(p.websites)
                     )
                 );
             }
@@ -260,8 +258,8 @@ export class ConceptSnapshotToConceptMergerDomainService {
                     w.title,
                     w.description,
                     w.order,
-                    w.url,
-                    undefined);
+                    w.url
+                );
             }
         );
     }
@@ -274,8 +272,8 @@ export class ConceptSnapshotToConceptMergerDomainService {
                 newUuid,
                 c.title,
                 c.description,
-                c.order,
-                undefined);
+                c.order
+            );
         });
     }
 
@@ -287,8 +285,8 @@ export class ConceptSnapshotToConceptMergerDomainService {
                     newUuid,
                     fa.title,
                     fa.description,
-                    fa.order,
-                    undefined);
+                    fa.order
+                );
             }
         );
     }
@@ -299,8 +297,8 @@ export class ConceptSnapshotToConceptMergerDomainService {
             EvidenceBuilder.buildIri(newUuid),
             newUuid,
             evidence.title,
-            evidence.description,
-            undefined);
+            evidence.description
+        );
     }
 
     private copyLegalResources(legalResourceUrls: LegalResource[]): LegalResource[] {

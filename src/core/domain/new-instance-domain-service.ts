@@ -164,7 +164,6 @@ export class NewInstanceDomainService {
                 .withDescription(this.toInstanceLanguageString(conceptRequirement.description, conceptLanguageVersion, chosenForm))
                 .withOrder(conceptRequirement.order)
                 .withEvidence(conceptRequirement.evidence ? this.toInstanceEvidence(conceptRequirement.evidence, conceptLanguageVersion, chosenForm) : undefined)
-                .withConceptRequirementId(conceptRequirement.id)
                 .buildForInstance();
         });
     }
@@ -176,7 +175,6 @@ export class NewInstanceDomainService {
             .withUuid(uniqueId)
             .withTitle(this.toInstanceLanguageString(conceptEvidence.title, conceptLanguageVersion, chosenForm))
             .withDescription(this.toInstanceLanguageString(conceptEvidence.description, conceptLanguageVersion, chosenForm))
-            .withConceptEvidenceId(conceptEvidence.id)
             .buildForInstance();
     }
 
@@ -190,7 +188,6 @@ export class NewInstanceDomainService {
                 .withDescription(this.toInstanceLanguageString(conceptProcedure.description, conceptLanguageVersion, chosenForm))
                 .withOrder(conceptProcedure.order)
                 .withWebsites(this.toInstanceWebsites(conceptProcedure.websites, conceptLanguageVersion, chosenForm))
-                .withConceptProcedureId(conceptProcedure.id)
                 .buildForInstance();
         });
     }
@@ -205,7 +202,6 @@ export class NewInstanceDomainService {
                 .withDescription(this.toInstanceLanguageString(conceptWebsite.description, conceptLanguageVersion, chosenForm))
                 .withOrder(conceptWebsite.order)
                 .withUrl(conceptWebsite.url)
-                .withConceptWebsiteId(conceptWebsite.id)
                 .buildForInstance();
         });
     }
@@ -219,7 +215,6 @@ export class NewInstanceDomainService {
                 .withTitle(this.toInstanceLanguageString(conceptCost.title, conceptLanguageVersion, chosenForm))
                 .withDescription(this.toInstanceLanguageString(conceptCost.description, conceptLanguageVersion, chosenForm))
                 .withOrder(conceptCost.order)
-                .withConceptCostId(conceptCost.id)
                 .buildForInstance();
         });
     }
@@ -232,7 +227,6 @@ export class NewInstanceDomainService {
                 .withUuid(uniqueId)
                 .withTitle(this.toInstanceLanguageString(conceptFinancialAdvantage.title, conceptLanguageVersion, chosenForm))
                 .withDescription(this.toInstanceLanguageString(conceptFinancialAdvantage.description, conceptLanguageVersion, chosenForm))
-                .withConceptFinancialAdvantageId(conceptFinancialAdvantage.id)
                 .withOrder(conceptFinancialAdvantage.order)
                 .buildForInstance();
         });

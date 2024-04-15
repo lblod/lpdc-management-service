@@ -151,7 +151,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         instance.validateForPublish(false);
         return instance;
     }
-    
+
     private asMergedInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, instance: Instance, concept: Concept | undefined) {
         const mergedInstance = new Instance(
             instanceSnapshot.isVersionOfInstance,
@@ -209,8 +209,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                     r.title,
                     r.description,
                     r.order,
-                    r.evidence ? this.copyEvidence(r.evidence) : undefined,
-                    undefined
+                    r.evidence ? this.copyEvidence(r.evidence) : undefined
                 );
             }
         );
@@ -222,8 +221,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             EvidenceBuilder.buildIri(newUuid),
             newUuid,
             evidence.title,
-            evidence.description,
-            undefined
+            evidence.description
         );
     }
 
@@ -236,8 +234,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                     p.title,
                     p.description,
                     p.order,
-                    this.copyWebsites(p.websites),
-                    undefined);
+                    this.copyWebsites(p.websites)
+                );
             }
         );
     }
@@ -251,8 +249,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                     w.title,
                     w.description,
                     w.order,
-                    w.url,
-                    undefined);
+                    w.url
+                );
             }
         );
     }
@@ -265,8 +263,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                 newUuid,
                 c.title,
                 c.description,
-                c.order,
-                undefined);
+                c.order
+            );
         });
     }
 
@@ -278,8 +276,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                     newUuid,
                     fa.title,
                     fa.description,
-                    fa.order,
-                    undefined);
+                    fa.order
+                );
             }
         );
     }

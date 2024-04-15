@@ -11,21 +11,18 @@ export class Cost {
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
     private readonly _order: number;
-    private readonly _conceptCostId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         order: number,
-                        conceptCostId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
         this._order = requiredValue(order, 'order');
-        this._conceptCostId = conceptCostId;
     }
 
     static forConcept(cost: Cost): Cost {
@@ -35,7 +32,6 @@ export class Cost {
             requiredValue(cost.title, 'title'),
             requiredValue(cost.description, 'description'),
             cost.order,
-            undefined
         );
     }
 
@@ -46,7 +42,6 @@ export class Cost {
             requiredValue(cost.title, 'title'),
             requiredValue(cost.description, 'description'),
             cost.order,
-            undefined
         );
     }
 
@@ -59,7 +54,6 @@ export class Cost {
             cost.title,
             cost.description,
             cost.order,
-            cost.conceptCostId
         );
     }
 
@@ -72,7 +66,6 @@ export class Cost {
             requiredValue(cost.title, 'title'),
             requiredValue(cost.description, 'description'),
             cost.order,
-            undefined
         );
     }
 
@@ -80,10 +73,9 @@ export class Cost {
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
-                        order: number,
-                        conceptCostId: Iri | undefined): Cost {
+                        order: number): Cost {
 
-        return new Cost(id, uuid, title, description, order, conceptCostId);
+        return new Cost(id, uuid, title, description, order);
     }
 
     get id(): Iri {
@@ -106,10 +98,6 @@ export class Cost {
         return this._order;
     }
 
-    get conceptCostId(): Iri | undefined {
-        return this._conceptCostId;
-    }
-
     static isFunctionallyChanged(value: Cost[], other: Cost[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((costs: [Cost, Cost]) => {
@@ -130,7 +118,6 @@ export class CostBuilder {
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
     private order: number;
-    private conceptCostId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/cost/${uniqueId}`);
@@ -142,8 +129,7 @@ export class CostBuilder {
             .withUuid(cost.uuid)
             .withTitle(cost.title)
             .withDescription(cost.description)
-            .withOrder(cost.order)
-            .withConceptCostId(cost.conceptCostId);
+            .withOrder(cost.order);
     }
 
     public withId(id: Iri): CostBuilder {
@@ -171,11 +157,6 @@ export class CostBuilder {
         return this;
     }
 
-    public withConceptCostId(conceptCostId: Iri): CostBuilder {
-        this.conceptCostId = conceptCostId;
-        return this;
-    }
-
     public buildForInstance(): Cost {
         return Cost.forInstance(this.build());
     }
@@ -194,8 +175,7 @@ export class CostBuilder {
             this.uuid,
             this.title,
             this.description,
-            this.order,
-            this.conceptCostId
+            this.order
         );
     }
 }

@@ -9,19 +9,17 @@ export class Evidence {
     private readonly _uuid: string | undefined; //required for mu-cl-resources.
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
-    private readonly _conceptEvidenceId: Iri | undefined;
+
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
-                        description: LanguageString | undefined,
-                        conceptEvidenceId: Iri | undefined
+                        description: LanguageString | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
-        this._conceptEvidenceId = conceptEvidenceId;
     }
 
     static forConcept(evidence: Evidence): Evidence {
@@ -30,7 +28,6 @@ export class Evidence {
             requiredValue(evidence.uuid, 'uuid'),
             requiredValue(evidence.title, 'title'),
             requiredValue(evidence.description, 'description'),
-            undefined
         );
     }
 
@@ -40,7 +37,6 @@ export class Evidence {
             undefined,
             requiredValue(evidence.title, 'title'),
             requiredValue(evidence.description, 'description'),
-            undefined
         );
     }
 
@@ -52,7 +48,6 @@ export class Evidence {
             requiredValue(evidence.uuid, 'uuid'),
             evidence.title,
             evidence.description,
-            evidence.conceptEvidenceId
         );
     }
 
@@ -64,17 +59,15 @@ export class Evidence {
             undefined,
             requiredValue(evidence.title, 'title'),
             requiredValue(evidence.description, 'description'),
-            undefined
         );
     }
 
     static reconstitute(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
-                        description: LanguageString | undefined,
-                        conceptEvidenceId: Iri | undefined): Evidence {
+                        description: LanguageString | undefined): Evidence {
 
-        return new Evidence(id, uuid, title, description, conceptEvidenceId);
+        return new Evidence(id, uuid, title, description);
     }
 
     get nlLanguage(): Language | undefined {
@@ -97,10 +90,6 @@ export class Evidence {
         return this._description;
     }
 
-    get conceptEvidenceId(): Iri | undefined {
-        return this._conceptEvidenceId;
-    }
-
     static isFunctionallyChanged(value: Evidence | undefined, other: Evidence | undefined): boolean {
         return LanguageString.isFunctionallyChanged(value?.title, other?.title)
             || LanguageString.isFunctionallyChanged(value?.description, other?.description);
@@ -112,7 +101,6 @@ export class EvidenceBuilder {
     private uuid: string | undefined;
     private title: LanguageString | undefined;
     private description: LanguageString | undefined;
-    private conceptEvidenceId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/evidence/${uniqueId}`);
@@ -123,8 +111,7 @@ export class EvidenceBuilder {
             .withId(evidence.id)
             .withUuid(evidence.uuid)
             .withTitle(evidence.title)
-            .withDescription(evidence.description)
-            .withConceptEvidenceId(evidence.conceptEvidenceId);
+            .withDescription(evidence.description);
     }
 
     public withId(id: Iri): EvidenceBuilder {
@@ -147,11 +134,6 @@ export class EvidenceBuilder {
         return this;
     }
 
-    public withConceptEvidenceId(conceptEvidenceId: Iri): EvidenceBuilder {
-        this.conceptEvidenceId = conceptEvidenceId;
-        return this;
-    }
-
     public buildForInstance(): Evidence {
         return Evidence.forInstance(this.build());
     }
@@ -169,8 +151,7 @@ export class EvidenceBuilder {
             this.id,
             this.uuid,
             this.title,
-            this.description,
-            this.conceptEvidenceId
+            this.description
         );
     }
 }

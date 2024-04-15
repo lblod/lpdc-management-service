@@ -325,8 +325,7 @@ export class DomainToQuadsMapper {
                 ...this.languageStringToQuads(namedNode(requirement.id.value), NS.dct(`title`), requirement.title),
                 ...this.languageStringToQuads(namedNode(requirement.id.value), NS.dct(`description`), requirement.description),
                 this.buildQuad(namedNode(requirement.id.value), NS.sh('order'), literal(requirement.order.toString(), NS.xsd('integer'))),
-                ...this.evidenceToQuads(requirement.id, requirement.evidence),
-                requirement.conceptRequirementId ? this.conceptId(requirement.id, requirement.conceptRequirementId) : undefined,
+                ...this.evidenceToQuads(requirement.id, requirement.evidence)
             ]
         );
     }
@@ -338,7 +337,6 @@ export class DomainToQuadsMapper {
             this.buildQuad(namedNode(evidence.id.value), NS.rdf('type'), NS.m8g('Evidence')),
             ...this.languageStringToQuads(namedNode(evidence.id.value), NS.dct(`title`), evidence.title),
             ...this.languageStringToQuads(namedNode(evidence.id.value), NS.dct(`description`), evidence.description),
-            evidence.conceptEvidenceId ? this.conceptId(evidence.id, evidence.conceptEvidenceId) : undefined,
             this.buildQuad(namedNode(evidence.id.value), NS.sh('order'), literal(`1`, NS.xsd('integer'))),
         ] : [];
     }
@@ -352,8 +350,7 @@ export class DomainToQuadsMapper {
                 ...this.languageStringToQuads(namedNode(procedure.id.value), NS.dct(`title`), procedure.title),
                 ...this.languageStringToQuads(namedNode(procedure.id.value), NS.dct(`description`), procedure.description),
                 this.buildQuad(namedNode(procedure.id.value), NS.sh('order'), literal(procedure.order.toString(), NS.xsd('integer'))),
-                ...this.websites(procedure.id, NS.lpdcExt('hasWebsite'), procedure.websites),
-                procedure.conceptProcedureId ? this.conceptId(procedure.id, procedure.conceptProcedureId) : undefined,
+                ...this.websites(procedure.id, NS.lpdcExt('hasWebsite'), procedure.websites)
             ]
         );
     }
@@ -367,8 +364,7 @@ export class DomainToQuadsMapper {
                     ...this.languageStringToQuads(namedNode(website.id.value), NS.dct(`title`), website.title),
                     ...this.languageStringToQuads(namedNode(website.id.value), NS.dct(`description`), website.description),
                     website.url !== undefined ? this.buildQuad(namedNode(website.id.value), NS.schema('url'), literal(website.url)) : undefined,
-                    this.buildQuad(namedNode(website.id.value), NS.sh('order'), literal(website.order.toString(), NS.xsd('integer'))),
-                    website.conceptWebsiteId ? this.conceptId(website.id, website.conceptWebsiteId) : undefined,
+                    this.buildQuad(namedNode(website.id.value), NS.sh('order'), literal(website.order.toString(), NS.xsd('integer')))
                 ];
             }
         ).filter(t => t != undefined);
@@ -382,8 +378,7 @@ export class DomainToQuadsMapper {
                 this.buildQuad(namedNode(cost.id.value), NS.rdf('type'), NS.m8g('Cost')),
                 ...this.languageStringToQuads(namedNode(cost.id.value), NS.dct(`title`), cost.title),
                 ...this.languageStringToQuads(namedNode(cost.id.value), NS.dct(`description`), cost.description),
-                this.buildQuad(namedNode(cost.id.value), NS.sh('order'), literal(cost.order.toString(), NS.xsd('integer'))),
-                cost.conceptCostId ? this.conceptId(cost.id, cost.conceptCostId) : undefined,
+                this.buildQuad(namedNode(cost.id.value), NS.sh('order'), literal(cost.order.toString(), NS.xsd('integer')))
             ];
         });
     }
@@ -396,8 +391,7 @@ export class DomainToQuadsMapper {
                 this.buildQuad(namedNode(financialAdvantage.id.value), NS.rdf('type'), NS.lpdcExt('FinancialAdvantage')),
                 ...this.languageStringToQuads(namedNode(financialAdvantage.id.value), NS.dct(`title`), financialAdvantage.title),
                 ...this.languageStringToQuads(namedNode(financialAdvantage.id.value), NS.dct(`description`), financialAdvantage.description),
-                this.buildQuad(namedNode(financialAdvantage.id.value), NS.sh('order'), literal(financialAdvantage.order.toString(), NS.xsd('integer'))),
-                financialAdvantage.conceptFinancialAdvantageId ? this.conceptId(financialAdvantage.id, financialAdvantage.conceptFinancialAdvantageId) : undefined,
+                this.buildQuad(namedNode(financialAdvantage.id.value), NS.sh('order'), literal(financialAdvantage.order.toString(), NS.xsd('integer')))
             ];
         });
     }

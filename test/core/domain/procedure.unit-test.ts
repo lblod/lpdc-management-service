@@ -58,7 +58,7 @@ describe('forConcept', () => {
         test('valid website does not throw error', () => {
             const uuidValue = uuid();
             const validWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuidValue), uuid(), aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
-                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), 1, WebsiteTestBuilder.URL, undefined);
+                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), 1, WebsiteTestBuilder.URL);
             const procedure = aFullProcedure().withWebsites([validWebsite]);
             expect(() => Procedure.forConcept(procedure.build())).not.toThrow();
         });
@@ -66,7 +66,7 @@ describe('forConcept', () => {
         test('invalid evidence does throw error', () => {
             const uuidValue = uuid();
             const validWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuidValue), undefined, aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
-                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), 1, WebsiteTestBuilder.URL, undefined);
+                aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(), 1, WebsiteTestBuilder.URL);
             const procedure = aFullProcedure().withWebsites([validWebsite]);
             expect(() => Procedure.forConcept(procedure.build())).toThrow();
         });
@@ -132,8 +132,7 @@ describe('forConceptSnapshot', () => {
                 aMinimalLanguageString(WebsiteTestBuilder.TITLE).build(),
                 aMinimalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
                 1,
-                WebsiteTestBuilder.URL,
-                undefined
+                WebsiteTestBuilder.URL
             );
             const procedure = aFullProcedure().withWebsites([validWebsite]);
             expect(() => Procedure.forConceptSnapshot(procedure.build())).not.toThrow();
@@ -147,8 +146,7 @@ describe('forConceptSnapshot', () => {
                 undefined,
                 undefined,
                 1,
-                WebsiteTestBuilder.URL,
-                undefined
+                WebsiteTestBuilder.URL
             );
             const procedure = aFullProcedure().withWebsites([validWebsite]);
             expect(() => Procedure.forConceptSnapshot(procedure.build())).toThrow();

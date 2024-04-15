@@ -13,7 +13,6 @@ export class Requirement {
     private readonly _description: LanguageString | undefined;
     private readonly _order: number;
     private readonly _evidence: Evidence | undefined;
-    private readonly _conceptRequirementId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
@@ -21,7 +20,6 @@ export class Requirement {
                         description: LanguageString | undefined,
                         order: number,
                         evidence: Evidence | undefined,
-                        conceptRequirementId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
@@ -29,7 +27,6 @@ export class Requirement {
         this._description = description;
         this._order = requiredValue(order, 'order');
         this._evidence = evidence;
-        this._conceptRequirementId = conceptRequirementId;
     }
 
     static forConcept(requirement: Requirement): Requirement {
@@ -40,7 +37,6 @@ export class Requirement {
             requiredValue(requirement.description, 'description'),
             requirement.order,
             requirement.evidence ? Evidence.forConcept(requirement.evidence) : undefined,
-            undefined
         );
     }
 
@@ -52,7 +48,6 @@ export class Requirement {
             requiredValue(requirement.description, 'description'),
             requirement.order,
             requirement.evidence ? Evidence.forConceptSnapshot(requirement.evidence) : undefined,
-            undefined
         );
     }
 
@@ -70,7 +65,6 @@ export class Requirement {
             requirement.description,
             requirement.order,
             requirement.evidence ? Evidence.forInstance(requirement.evidence) : undefined,
-            requirement.conceptRequirementId
         );
     }
 
@@ -88,7 +82,6 @@ export class Requirement {
             requiredValue(requirement.description, 'description'),
             requirement.order,
             requirement.evidence ? Evidence.forInstanceSnapshot(requirement.evidence) : undefined,
-            undefined
         );
     }
 
@@ -97,10 +90,9 @@ export class Requirement {
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         order: number,
-                        evidence: Evidence | undefined,
-                        conceptRequirementId: Iri | undefined): Requirement {
+                        evidence: Evidence | undefined): Requirement {
 
-        return new Requirement(id, uuid, title, description, order, evidence, conceptRequirementId);
+        return new Requirement(id, uuid, title, description, order, evidence);
     }
 
     get nlLanguage(): Language | undefined {
@@ -131,10 +123,6 @@ export class Requirement {
         return this._evidence;
     }
 
-    get conceptRequirementId(): Iri | undefined {
-        return this._conceptRequirementId;
-    }
-
     static isFunctionallyChanged(value: Requirement[], other: Requirement[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((reqs: [Requirement, Requirement]) => {
@@ -153,7 +141,6 @@ export class RequirementBuilder {
     private _description: LanguageString | undefined;
     private _order: number;
     private _evidence: Evidence | undefined;
-    private _conceptRequirementId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/requirement/${uniqueId}`);
@@ -166,8 +153,7 @@ export class RequirementBuilder {
             .withTitle(requirement.title)
             .withDescription(requirement.description)
             .withOrder(requirement.order)
-            .withEvidence(requirement.evidence)
-            .withConceptRequirementId(requirement.conceptRequirementId);
+            .withEvidence(requirement.evidence);
     }
 
     public withId(id: Iri): RequirementBuilder {
@@ -200,11 +186,6 @@ export class RequirementBuilder {
         return this;
     }
 
-    public withConceptRequirementId(conceptRequirementId: Iri): RequirementBuilder {
-        this._conceptRequirementId = conceptRequirementId;
-        return this;
-    }
-
     public buildForInstance(): Requirement {
         return Requirement.forInstance(this.build());
     }
@@ -224,8 +205,7 @@ export class RequirementBuilder {
             this._title,
             this._description,
             this._order,
-            this._evidence,
-            this._conceptRequirementId,
+            this._evidence
         );
     }
 }

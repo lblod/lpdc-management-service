@@ -12,22 +12,19 @@ export class Website {
     private readonly _description: LanguageString | undefined;
     private readonly _order: number;
     private readonly _url: string | undefined;
-    private readonly _conceptWebsiteId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         order: number,
-                        url: string | undefined,
-                        conceptWebsiteId: Iri | undefined) {
+                        url: string | undefined) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
         this._title = title;
         this._description = description;
         this._order = requiredValue(order, 'order');
         this._url = url;
-        this._conceptWebsiteId = conceptWebsiteId;
     }
 
     static forConcept(website: Website): Website {
@@ -38,7 +35,6 @@ export class Website {
             website.description,
             website.order,
             requiredValue(website.url, 'url'),
-            undefined
         );
     }
 
@@ -50,7 +46,6 @@ export class Website {
             website.description,
             website.order,
             requiredValue(website.url, 'url'),
-            undefined
         );
     }
 
@@ -64,7 +59,6 @@ export class Website {
             website.description,
             website.order,
             website.url,
-            website.conceptWebsiteId
         );
     }
 
@@ -78,7 +72,6 @@ export class Website {
             website.description,
             website.order,
             requiredValue(website.url, 'url'),
-            undefined
         );
     }
 
@@ -87,10 +80,9 @@ export class Website {
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         order: number,
-                        url: string,
-                        conceptWebsiteId: Iri | undefined): Website {
+                        url: string): Website {
 
-        return new Website(id, uuid, title, description, order, url, conceptWebsiteId);
+        return new Website(id, uuid, title, description, order, url);
     }
 
     get nlLanguage(): Language | undefined {
@@ -121,10 +113,6 @@ export class Website {
         return this._url;
     }
 
-    get conceptWebsiteId(): Iri | undefined {
-        return this._conceptWebsiteId;
-    }
-
     static isFunctionallyChanged(value: Website[], other: Website[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((websites: [Website, Website]) => {
@@ -144,7 +132,6 @@ export class WebsiteBuilder {
     private description: LanguageString | undefined;
     private order: number;
     private url: string | undefined;
-    private conceptWebsiteId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/website/${uniqueId}`);
@@ -157,8 +144,7 @@ export class WebsiteBuilder {
             .withTitle(website.title)
             .withDescription(website.description)
             .withOrder(website.order)
-            .withUrl(website.url)
-            .withConceptWebsiteId(website.conceptWebsiteId);
+            .withUrl(website.url);
     }
 
     public withId(id: Iri): WebsiteBuilder {
@@ -191,11 +177,6 @@ export class WebsiteBuilder {
         return this;
     }
 
-    public withConceptWebsiteId(conceptWebsiteId: Iri): WebsiteBuilder {
-        this.conceptWebsiteId = conceptWebsiteId;
-        return this;
-    }
-
     public buildForInstance(): Website {
         return Website.forInstance(this.build());
     }
@@ -215,8 +196,7 @@ export class WebsiteBuilder {
             this.title,
             this.description,
             this.order,
-            this.url,
-            this.conceptWebsiteId
+            this.url
         );
     }
 }

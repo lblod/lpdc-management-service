@@ -55,14 +55,14 @@ describe('forConcept', () => {
         test('valid evidence does not throw error', () => {
             const uuidValue = uuid();
             const validEvidence = Evidence.reconstitute(EvidenceBuilder.buildIri(uuidValue), uuidValue, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
-                aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build(), undefined);
+                aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
             const requirement = aFullRequirement().withEvidence(validEvidence);
             expect(() => Requirement.forConcept(requirement.build())).not.toThrow();
         });
 
         test('invalid evidence does throw error', () => {
             const uuidValue = uuid();
-            const invalidEvidence = Evidence.reconstitute(EvidenceBuilder.buildIri(uuidValue), uuidValue, undefined, undefined, undefined);
+            const invalidEvidence = Evidence.reconstitute(EvidenceBuilder.buildIri(uuidValue), uuidValue, undefined, undefined);
             const requirement = aFullRequirement().withEvidence(invalidEvidence);
             expect(() => Requirement.forConcept(requirement.build())).toThrow();
         });
@@ -104,14 +104,14 @@ describe('forConceptSnapshot', () => {
         test('valid evidence does not throw error', () => {
             const uuidValue = uuid();
             const validEvidence = Evidence.reconstitute(EvidenceBuilder.buildIri(uuidValue), undefined, aMinimalLanguageString(EvidenceTestBuilder.TITLE).build(),
-                aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build(), undefined);
+                aMinimalLanguageString(EvidenceTestBuilder.DESCRIPTION).build());
             const requirement = aFullRequirement().withEvidence(validEvidence);
             expect(() => Requirement.forConceptSnapshot(requirement.build())).not.toThrow();
         });
 
         test('invalid evidence does throw error', () => {
             const uuidValue = uuid();
-            const invalidEvidence = Evidence.reconstitute(EvidenceBuilder.buildIri(uuidValue), undefined, undefined, undefined, undefined);
+            const invalidEvidence = Evidence.reconstitute(EvidenceBuilder.buildIri(uuidValue), undefined, undefined, undefined);
             const requirement = aFullRequirement().withEvidence(invalidEvidence);
             expect(() => Requirement.forConceptSnapshot(requirement.build())).toThrow();
         });

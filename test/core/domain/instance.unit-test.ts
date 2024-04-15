@@ -161,7 +161,6 @@ describe('constructing', () => {
                 undefined,
                 undefined,
                 1,
-                undefined,
                 undefined
             );
 
@@ -175,7 +174,6 @@ describe('constructing', () => {
                 undefined,
                 undefined,
                 1,
-                undefined,
                 undefined
             );
 
@@ -208,7 +206,6 @@ describe('constructing', () => {
                     EvidenceBuilder.buildIri(uuidValue),
                     uuidValue,
                     undefined,
-                    undefined,
                     undefined
                 );
                 const validRequirement = aFullRequirementForInstance().withEvidence(validEvidence).build();
@@ -222,8 +219,8 @@ describe('constructing', () => {
                     EvidenceBuilder.buildIri(uuidValue),
                     undefined,
                     undefined,
-                    undefined,
-                    undefined);
+                    undefined
+                );
                 const invalidRequirement = aFullRequirementForInstance().withEvidence(invalidEvidence).build();
 
                 expect(() => aFullInstance().withRequirements([invalidRequirement]).build()).toThrow();
@@ -242,15 +239,14 @@ describe('constructing', () => {
                 aMinimalFormalLanguageString(ProcedureTestBuilder.TITLE).build(),
                 aMinimalFormalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(),
                 1,
-                [],
-                undefined
+                []
             );
 
             expect(() => aFullInstance().withProcedures([validProcedure]).build()).not.toThrow();
         });
 
         test('invalid procedure does throw error', () => {
-            const invalidProcedure = Procedure.reconstitute(ProcedureBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, [], undefined);
+            const invalidProcedure = Procedure.reconstitute(ProcedureBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, []);
 
             expect(() => aFullInstance().withProcedures([invalidProcedure]).build()).toThrow();
         });
@@ -285,15 +281,14 @@ describe('constructing', () => {
                 aMinimalFormalLanguageString(WebsiteTestBuilder.TITLE).build(),
                 aMinimalFormalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
                 1,
-                WebsiteTestBuilder.URL,
-                undefined
+                WebsiteTestBuilder.URL
             );
 
             expect(() => aFullInstance().withWebsites([validWebsite]).build()).not.toThrow();
         });
 
         test('invalid website does throw error', () => {
-            const invalidWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined, undefined);
+            const invalidWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined);
 
             expect(() => aFullInstance().withWebsites([invalidWebsite]).build()).toThrow();
         });
@@ -328,15 +323,14 @@ describe('constructing', () => {
                 uuidValue,
                 aMinimalFormalLanguageString(CostTestBuilder.TITLE).build(),
                 aMinimalFormalLanguageString(CostTestBuilder.DESCRIPTION).build(),
-                1,
-                undefined
+                1
             );
 
             expect(() => aFullInstance().withCosts([validCost]).build()).not.toThrow();
         });
 
         test('invalid cost for instance does throw error', () => {
-            const invalidCost = Cost.reconstitute(CostBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined);
+            const invalidCost = Cost.reconstitute(CostBuilder.buildIri(uuid()), undefined, undefined, undefined, 1);
 
             expect(() => aFullInstance().withCosts([invalidCost]).build()).toThrow();
         });
@@ -366,13 +360,13 @@ describe('constructing', () => {
         test('valid financialAdvantage for instance does not throw error', () => {
             const uuidValue = uuid();
             const validFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuidValue), uuidValue, aMinimalFormalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
-                aMinimalFormalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build(), 1, undefined);
+                aMinimalFormalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build(), 1);
 
             expect(() => aFullInstance().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
         });
 
         test('invalid financialAdvantage for instance does throw error', () => {
-            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined);
+            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuid()), undefined, undefined, undefined, 1);
 
             expect(() => aFullInstance().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
         });

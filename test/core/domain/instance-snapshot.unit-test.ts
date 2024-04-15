@@ -186,7 +186,6 @@ describe('constructing', () => {
                 LanguageString.of('title', undefined, undefined, 'title'),
                 LanguageString.of('description', undefined, undefined, 'omschrijving'),
                 1,
-                undefined,
                 undefined
             );
 
@@ -200,7 +199,6 @@ describe('constructing', () => {
                 undefined,
                 undefined,
                 1,
-                undefined,
                 undefined
             );
 
@@ -233,8 +231,7 @@ describe('constructing', () => {
                     EvidenceBuilder.buildIri(uuidValue),
                     undefined,
                     LanguageString.of('title', undefined, undefined, 'title'),
-                    LanguageString.of('description', undefined, undefined, 'omschrijving'),
-                    undefined
+                    LanguageString.of('description', undefined, undefined, 'omschrijving')
                 );
                 const validRequirement = aFullRequirementForInstanceSnapshot().withEvidence(validEvidence).build();
 
@@ -247,8 +244,8 @@ describe('constructing', () => {
                     EvidenceBuilder.buildIri(uuidValue),
                     undefined,
                     undefined,
-                    undefined,
-                    undefined);
+                    undefined
+                );
                 const invalidRequirement = aFullRequirementForInstanceSnapshot().withEvidence(invalidEvidence).build();
 
                 expect(() => aFullInstanceSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
@@ -267,8 +264,7 @@ describe('constructing', () => {
                 LanguageString.of('title', undefined, undefined, 'title'),
                 LanguageString.of('description', undefined, undefined, 'omschrijving'),
                 1,
-                [],
-                undefined
+                []
             );
 
             expect(() => aFullInstanceSnapshot().withProcedures([validProcedure]).build()).not.toThrow();
@@ -281,8 +277,7 @@ describe('constructing', () => {
                 undefined,
                 undefined,
                 1,
-                [],
-                undefined
+                []
             );
 
             expect(() => aFullInstanceSnapshot().withProcedures([invalidProcedure]).build()).toThrow();
@@ -314,8 +309,7 @@ describe('constructing', () => {
                     EvidenceBuilder.buildIri(uuidValue),
                     undefined,
                     LanguageString.of('title', undefined, undefined, 'title'),
-                    LanguageString.of('description', undefined, undefined, 'omschrijving'),
-                    undefined
+                    LanguageString.of('description', undefined, undefined, 'omschrijving')
                 );
                 const validRequirement = aFullRequirementForInstanceSnapshot().withEvidence(validEvidence).build();
 
@@ -328,8 +322,8 @@ describe('constructing', () => {
                     EvidenceBuilder.buildIri(uuidValue),
                     undefined,
                     undefined,
-                    undefined,
-                    undefined);
+                    undefined
+                );
                 const invalidRequirement = aFullRequirementForInstanceSnapshot().withEvidence(invalidEvidence).build();
 
                 expect(() => aFullInstanceSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
@@ -348,15 +342,14 @@ describe('constructing', () => {
                 aMinimalInformalLanguageString(WebsiteTestBuilder.TITLE).build(),
                 aMinimalInformalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
                 1,
-                WebsiteTestBuilder.URL,
-                undefined
+                WebsiteTestBuilder.URL
             );
 
             expect(() => aFullInstanceSnapshot().withWebsites([validWebsite]).build()).not.toThrow();
         });
 
         test('invalid website does throw error', () => {
-            const invalidWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined, undefined);
+            const invalidWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined);
 
             expect(() => aFullInstanceSnapshot().withWebsites([invalidWebsite]).build()).toThrow();
         });
@@ -391,15 +384,14 @@ describe('constructing', () => {
                 undefined,
                 aMinimalInformalLanguageString(CostTestBuilder.TITLE).build(),
                 aMinimalInformalLanguageString(CostTestBuilder.DESCRIPTION).build(),
-                1,
-                undefined
+                1
             );
 
             expect(() => aFullInstanceSnapshot().withCosts([validCost]).build()).not.toThrow();
         });
 
         test('invalid cost does throw error', () => {
-            const invalidCost = Cost.reconstitute(CostBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined);
+            const invalidCost = Cost.reconstitute(CostBuilder.buildIri(uuid()), undefined, undefined, undefined, 1);
 
             expect(() => aFullInstanceSnapshot().withCosts([invalidCost]).build()).toThrow();
         });
@@ -433,14 +425,14 @@ describe('constructing', () => {
                 undefined,
                 aMinimalInformalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
                 aMinimalInformalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build(),
-                1,
-                undefined);
+                1
+            );
 
             expect(() => aFullInstanceSnapshot().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
         });
 
         test('invalid financialAdvantage does throw error', () => {
-            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined);
+            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuid()), undefined, undefined, undefined, 1);
 
             expect(() => aFullInstanceSnapshot().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
         });

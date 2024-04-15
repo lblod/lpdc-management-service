@@ -14,7 +14,6 @@ export class Procedure {
     private readonly _description: LanguageString | undefined;
     private readonly _order: number;
     private readonly _websites: Website[];
-    private readonly _conceptProcedureId: Iri | undefined;
 
     private constructor(id: Iri,
                         uuid: string | undefined,
@@ -22,7 +21,6 @@ export class Procedure {
                         description: LanguageString | undefined,
                         order: number,
                         websites: Website[],
-                        conceptProcedureId: Iri | undefined
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
@@ -31,7 +29,6 @@ export class Procedure {
         this._order = requiredValue(order, 'order');
         this._websites = [...websites];
         requireNoDuplicates(this._websites.map(r => r.order), 'websites > order');
-        this._conceptProcedureId = conceptProcedureId;
     }
 
     static forConcept(procedure: Procedure): Procedure {
@@ -42,7 +39,6 @@ export class Procedure {
             requiredValue(procedure.description, 'description'),
             procedure.order,
             procedure.websites.map(Website.forConcept),
-            undefined
         );
     }
 
@@ -54,7 +50,6 @@ export class Procedure {
             requiredValue(procedure.description, 'description'),
             procedure.order,
             procedure.websites.map(Website.forConceptSnapshot),
-            undefined
         );
     }
 
@@ -71,7 +66,6 @@ export class Procedure {
             procedure.description,
             procedure.order,
             procedure.websites.map(Website.forInstance),
-            procedure.conceptProcedureId
         );
     }
 
@@ -89,7 +83,6 @@ export class Procedure {
             requiredValue(procedure.description, 'description'),
             procedure.order,
             procedure.websites.map(Website.forInstanceSnapshot),
-            undefined
         );
     }
 
@@ -98,10 +91,9 @@ export class Procedure {
                         title: LanguageString | undefined,
                         description: LanguageString | undefined,
                         order: number,
-                        websites: Website[],
-                        conceptProcedureId: Iri | undefined): Procedure {
+                        websites: Website[]): Procedure {
 
-        return new Procedure(id, uuid, title, description, order, websites, conceptProcedureId);
+        return new Procedure(id, uuid, title, description, order, websites);
     }
 
     get nlLanguage(): Language | undefined {
@@ -136,10 +128,6 @@ export class Procedure {
         return [...this._websites];
     }
 
-    get conceptProcedureId(): Iri | undefined {
-        return this._conceptProcedureId;
-    }
-
     static isFunctionallyChanged(value: Procedure[], other: Procedure[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((procs: [Procedure, Procedure]) => {
@@ -158,7 +146,6 @@ export class ProcedureBuilder {
     private description: LanguageString | undefined;
     private order: number;
     private websites: Website[] = [];
-    private conceptProcedureId: Iri | undefined;
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/rule/${uniqueId}`);
@@ -171,8 +158,7 @@ export class ProcedureBuilder {
             .withTitle(procedure.title)
             .withDescription(procedure.description)
             .withOrder(procedure.order)
-            .withWebsites(procedure.websites)
-            .withConceptProcedureId(procedure.conceptProcedureId);
+            .withWebsites(procedure.websites);
     }
 
     public withId(id: Iri): ProcedureBuilder {
@@ -205,11 +191,6 @@ export class ProcedureBuilder {
         return this;
     }
 
-    public withConceptProcedureId(conceptProcedureId: Iri): ProcedureBuilder {
-        this.conceptProcedureId = conceptProcedureId;
-        return this;
-    }
-
     public buildForInstance(): Procedure {
         return Procedure.forInstance(this.build());
     }
@@ -230,7 +211,6 @@ export class ProcedureBuilder {
             this.description,
             this.order,
             this.websites,
-            this.conceptProcedureId
         );
     }
 }

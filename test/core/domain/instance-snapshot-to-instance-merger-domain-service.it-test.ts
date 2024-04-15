@@ -177,9 +177,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: instanceSnapshot.requirements[0].evidence.title,
                         _description: instanceSnapshot.requirements[0].evidence.description,
-                        _conceptEvidenceId: instanceSnapshot.requirements[0].evidence.conceptEvidenceId
                     }),
-                    _conceptRequirementId: instanceSnapshot.requirements[0].conceptRequirementId
                 }),
                 expect.objectContaining({
                     _id: expect.not.objectContaining(instanceSnapshot.requirements[1].id),
@@ -192,9 +190,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         _uuid: expect.stringMatching(uuidRegex),
                         _title: instanceSnapshot.requirements[1].evidence.title,
                         _description: instanceSnapshot.requirements[1].evidence.description,
-                        _conceptEvidenceId: instanceSnapshot.requirements[0].evidence.conceptEvidenceId
                     }),
-                    _conceptRequirementId: instanceSnapshot.requirements[1].conceptRequirementId
                 })
             ]));
             expect(instanceAfterMerge.procedures)
@@ -213,7 +209,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                                 _description: instanceSnapshot.procedures[0].websites[0].description,
                                 _order: instanceSnapshot.procedures[0].websites[0].order,
                                 _url: instanceSnapshot.procedures[0].websites[0].url,
-                                _conceptWebsiteId: instanceSnapshot.procedures[0].websites[0].conceptWebsiteId
                             }),
                             expect.objectContaining({
                                 _id: expect.not.objectContaining(instanceSnapshot.procedures[0].websites[1].id),
@@ -222,10 +217,10 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                                 _description: instanceSnapshot.procedures[0].websites[1].description,
                                 _order: instanceSnapshot.procedures[0].websites[1].order,
                                 _url: instanceSnapshot.procedures[0].websites[1].url,
-                                _conceptWebsiteId: instanceSnapshot.procedures[0].websites[1].conceptWebsiteId
+
                             })
                         ]),
-                        _conceptProcedureId: instanceSnapshot.procedures[0].conceptProcedureId
+
 
                     }),
                     expect.objectContaining({
@@ -242,7 +237,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                                 _description: instanceSnapshot.procedures[1].websites[0].description,
                                 _order: instanceSnapshot.procedures[1].websites[0].order,
                                 _url: instanceSnapshot.procedures[1].websites[0].url,
-                                _conceptWebsiteId: instanceSnapshot.procedures[1].websites[0].conceptWebsiteId
                             }),
                             expect.objectContaining({
                                 _id: expect.not.objectContaining(instanceSnapshot.procedures[1].websites[1].id),
@@ -251,10 +245,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                                 _description: instanceSnapshot.procedures[1].websites[1].description,
                                 _order: instanceSnapshot.procedures[1].websites[1].order,
                                 _url: instanceSnapshot.procedures[1].websites[1].url,
-                                _conceptWebsiteId: instanceSnapshot.procedures[1].websites[0].conceptWebsiteId
                             })
                         ]),
-                        _conceptProcedureId: instanceSnapshot.procedures[1].conceptProcedureId
                     })
                 ]));
             expect(instanceAfterMerge.websites)
@@ -266,7 +258,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         _description: instanceSnapshot.websites[0].description,
                         _order: instanceSnapshot.websites[0].order,
                         _url: instanceSnapshot.websites[0].url,
-                        _conceptWebsiteId: instanceSnapshot.websites[0].conceptWebsiteId
                     }),
                     expect.objectContaining({
                         _id: expect.not.objectContaining(instanceSnapshot.websites[1].id),
@@ -275,7 +266,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         _description: instanceSnapshot.websites[1].description,
                         _order: instanceSnapshot.websites[1].order,
                         _url: instanceSnapshot.websites[1].url,
-                        _conceptWebsiteId: instanceSnapshot.websites[1].conceptWebsiteId
                     })
                 ]));
             expect(instanceAfterMerge.costs)
@@ -286,7 +276,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         _title: instanceSnapshot.costs[0].title,
                         _description: instanceSnapshot.costs[0].description,
                         _order: instanceSnapshot.costs[0].order,
-                        _conceptCostId: instanceSnapshot.costs[0].conceptCostId
                     }),
                     expect.objectContaining({
                         _id: expect.not.objectContaining(instanceSnapshot.costs[1].id),
@@ -294,7 +283,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         _title: instanceSnapshot.costs[1].title,
                         _description: instanceSnapshot.costs[1].description,
                         _order: instanceSnapshot.costs[1].order,
-                        _conceptCostId: instanceSnapshot.costs[1].conceptCostId
                     })
                 ]));
             expect(instanceAfterMerge.financialAdvantages)
@@ -305,7 +293,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         _title: instanceSnapshot.financialAdvantages[0].title,
                         _description: instanceSnapshot.financialAdvantages[0].description,
                         _order: instanceSnapshot.financialAdvantages[0].order,
-                        _conceptFinancialAdvantageId: instanceSnapshot.financialAdvantages[0].conceptFinancialAdvantageId
                     }),
                     expect.objectContaining({
                         _id: expect.not.objectContaining(instanceSnapshot.financialAdvantages[1].id),
@@ -313,7 +300,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         _title: instanceSnapshot.financialAdvantages[1].title,
                         _description: instanceSnapshot.financialAdvantages[1].description,
                         _order: instanceSnapshot.financialAdvantages[1].order,
-                        _conceptFinancialAdvantageId: instanceSnapshot.financialAdvantages[1].conceptFinancialAdvantageId
                     })
                 ]));
             expect(instanceAfterMerge.contactPoints)
@@ -638,9 +624,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                             _uuid: expect.stringMatching(uuidRegex),
                             _title: instanceSnapshot.requirements[0].evidence.title,
                             _description: instanceSnapshot.requirements[0].evidence.description,
-                            _conceptEvidenceId: instanceSnapshot.requirements[0].evidence.conceptEvidenceId
                         }),
-                        _conceptRequirementId: instanceSnapshot.requirements[0].conceptRequirementId
                     }),
                     expect.objectContaining({
                         _id: expect.not.objectContaining(instanceSnapshot.requirements[1].id),
@@ -653,9 +637,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                             _uuid: expect.stringMatching(uuidRegex),
                             _title: instanceSnapshot.requirements[1].evidence.title,
                             _description: instanceSnapshot.requirements[1].evidence.description,
-                            _conceptEvidenceId: instanceSnapshot.requirements[0].evidence.conceptEvidenceId
                         }),
-                        _conceptRequirementId: instanceSnapshot.requirements[1].conceptRequirementId
                     })
                 ]));
                 expect(instanceAfterMerge.procedures)
@@ -674,7 +656,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                                     _description: instanceSnapshot.procedures[0].websites[0].description,
                                     _order: instanceSnapshot.procedures[0].websites[0].order,
                                     _url: instanceSnapshot.procedures[0].websites[0].url,
-                                    _conceptWebsiteId: instanceSnapshot.procedures[0].websites[0].conceptWebsiteId
                                 }),
                                 expect.objectContaining({
                                     _id: expect.not.objectContaining(instanceSnapshot.procedures[0].websites[1].id),
@@ -683,10 +664,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                                     _description: instanceSnapshot.procedures[0].websites[1].description,
                                     _order: instanceSnapshot.procedures[0].websites[1].order,
                                     _url: instanceSnapshot.procedures[0].websites[1].url,
-                                    _conceptWebsiteId: instanceSnapshot.procedures[0].websites[1].conceptWebsiteId
                                 })
                             ]),
-                            _conceptProcedureId: instanceSnapshot.procedures[0].conceptProcedureId
 
                         }),
                         expect.objectContaining({
@@ -703,7 +682,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                                     _description: instanceSnapshot.procedures[1].websites[0].description,
                                     _order: instanceSnapshot.procedures[1].websites[0].order,
                                     _url: instanceSnapshot.procedures[1].websites[0].url,
-                                    _conceptWebsiteId: instanceSnapshot.procedures[1].websites[0].conceptWebsiteId
                                 }),
                                 expect.objectContaining({
                                     _id: expect.not.objectContaining(instanceSnapshot.procedures[1].websites[1].id),
@@ -712,10 +690,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                                     _description: instanceSnapshot.procedures[1].websites[1].description,
                                     _order: instanceSnapshot.procedures[1].websites[1].order,
                                     _url: instanceSnapshot.procedures[1].websites[1].url,
-                                    _conceptWebsiteId: instanceSnapshot.procedures[1].websites[0].conceptWebsiteId
                                 })
                             ]),
-                            _conceptProcedureId: instanceSnapshot.procedures[1].conceptProcedureId
                         })
                     ]));
                 expect(instanceAfterMerge.websites)
@@ -727,7 +703,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                             _description: instanceSnapshot.websites[0].description,
                             _order: instanceSnapshot.websites[0].order,
                             _url: instanceSnapshot.websites[0].url,
-                            _conceptWebsiteId: instanceSnapshot.websites[0].conceptWebsiteId
                         }),
                         expect.objectContaining({
                             _id: expect.not.objectContaining(instanceSnapshot.websites[1].id),
@@ -736,7 +711,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                             _description: instanceSnapshot.websites[1].description,
                             _order: instanceSnapshot.websites[1].order,
                             _url: instanceSnapshot.websites[1].url,
-                            _conceptWebsiteId: instanceSnapshot.websites[1].conceptWebsiteId
                         })
                     ]));
                 expect(instanceAfterMerge.costs)
@@ -747,7 +721,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                             _title: instanceSnapshot.costs[0].title,
                             _description: instanceSnapshot.costs[0].description,
                             _order: instanceSnapshot.costs[0].order,
-                            _conceptCostId: instanceSnapshot.costs[0].conceptCostId
                         }),
                         expect.objectContaining({
                             _id: expect.not.objectContaining(instanceSnapshot.costs[1].id),
@@ -755,7 +728,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                             _title: instanceSnapshot.costs[1].title,
                             _description: instanceSnapshot.costs[1].description,
                             _order: instanceSnapshot.costs[1].order,
-                            _conceptCostId: instanceSnapshot.costs[1].conceptCostId
                         })
                     ]));
                 expect(instanceAfterMerge.financialAdvantages)
@@ -766,7 +738,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                             _title: instanceSnapshot.financialAdvantages[0].title,
                             _description: instanceSnapshot.financialAdvantages[0].description,
                             _order: instanceSnapshot.financialAdvantages[0].order,
-                            _conceptFinancialAdvantageId: instanceSnapshot.financialAdvantages[0].conceptFinancialAdvantageId
                         }),
                         expect.objectContaining({
                             _id: expect.not.objectContaining(instanceSnapshot.financialAdvantages[1].id),
@@ -774,7 +745,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                             _title: instanceSnapshot.financialAdvantages[1].title,
                             _description: instanceSnapshot.financialAdvantages[1].description,
                             _order: instanceSnapshot.financialAdvantages[1].order,
-                            _conceptFinancialAdvantageId: instanceSnapshot.financialAdvantages[1].conceptFinancialAdvantageId
                         })
                     ]));
                 expect(instanceAfterMerge.contactPoints)
