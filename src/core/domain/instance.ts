@@ -226,8 +226,9 @@ export class Instance {
             throw new InvariantError('Er is meer dan een nl-taal aanwezig');
         }
 
-        //TODO LPDC-1059: validate that the one nl language is the same as the dutchLanguageVariant ?
-
+        if (calculatedInstanceNLLanguages.length != 0 && calculatedInstanceNLLanguages[0] != this.dutchLanguageVariant) {
+            throw new InvariantError('DutchLanguageVariant verschilt van de calculatedInstanceNlLanguages');
+        }
     }
 
     get id(): Iri {

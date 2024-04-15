@@ -1346,6 +1346,7 @@ describe('InstanceRepository', () => {
         test('empty string fields', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aMinimalInstance()
+                .withDutchLanguageVariant(Language.NL)
                 .withTitle(LanguageString.of("", ""))
                 .withDescription(LanguageString.of("", ""))
                 .withAdditionalDescription(LanguageString.of("", ""))

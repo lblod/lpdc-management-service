@@ -683,9 +683,10 @@ describe('validateLanguages', () => {
         const title = LanguageString.of(undefined, undefined, undefined);
         const description = LanguageString.of('en', 'nl', undefined);
 
-        const instance = aMinimalInstance().withTitle(title).withDescription(description);
+        const instance = aMinimalInstance().withTitle(title).withDescription(description).withDutchLanguageVariant(Language.NL);
 
         expect(() => instance.build()).not.toThrow();
+
     });
 
     describe('nested objects', () => {
@@ -788,27 +789,33 @@ describe('validateLanguages', () => {
             valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
         }
         test('If title contains valid language, does not throws error', () => {
-            const instance = aMinimalInstance().withTitle(valueInNlLanguage);
+            const instance = aMinimalInstance().withTitle(valueInNlLanguage).withDutchLanguageVariant(validLanguage);
             expect(() => (instance.build())).not.toThrow();
         });
         test('If description contains valid language,does not throws error', () => {
-            const instance = aMinimalInstance().withDescription(valueInNlLanguage);
+            const instance = aMinimalInstance().withDescription(valueInNlLanguage).withDutchLanguageVariant(validLanguage);
             expect(() => (instance.build())).not.toThrow();
         });
         test('If additionalDescription contains valid language,does not throws error', () => {
-            const instance = aMinimalInstance().withAdditionalDescription(valueInNlLanguage);
+            const instance = aMinimalInstance().withAdditionalDescription(valueInNlLanguage).withDutchLanguageVariant(validLanguage);
             expect(() => (instance.build())).not.toThrow();
         });
         test('If exception contains valid language,does not throws error', () => {
-            const instance = aMinimalInstance().withException(valueInNlLanguage);
+            const instance = aMinimalInstance().withException(valueInNlLanguage).withDutchLanguageVariant(validLanguage);
             expect(() => (instance.build())).not.toThrow();
         });
         test('If regulation contains valid language,does not throws error', () => {
-            const instance = aMinimalInstance().withRegulation(valueInNlLanguage);
+            const instance = aMinimalInstance().withRegulation(valueInNlLanguage).withDutchLanguageVariant(validLanguage);
             expect(() => (instance.build())).not.toThrow();
         });
 
     }
+
+    test('if dutchLanguageVariant differs from calculatedInstanceNlLanguages, throws error', () => {
+        const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, InstanceTestBuilder.TITLE_NL_FORMAL)).withDutchLanguageVariant(Language.INFORMAL);
+
+        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'DutchLanguageVariant verschilt van de calculatedInstanceNlLanguages');
+    });
 
 });
 
