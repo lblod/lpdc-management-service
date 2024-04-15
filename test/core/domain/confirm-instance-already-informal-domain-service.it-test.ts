@@ -1,5 +1,5 @@
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
-import {aFullInstance} from "./instance-test-builder";
+import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {
     ConfirmInstanceIsAlreadyInformalDomainService
@@ -33,8 +33,10 @@ describe('Confirm instance already informal domain service', () => {
 
     test('When instance dutchLanguageVersion already is informal, then throw error', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
-        const instance = aFullInstance()
+        const instance = aMinimalInstance()
+            .withTitle(LanguageString.of('title', undefined, undefined, 'titel informal'))
             .withStatus(InstanceStatusType.VERSTUURD)
+            .withDateSent(FormatPreservingDate.now())
             .withDutchLanguageVariant(Language.INFORMAL)
             .build();
 
