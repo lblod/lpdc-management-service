@@ -118,6 +118,15 @@ export class EvidenceBuilder {
         return new Iri(`http://data.lblod.info/id/evidence/${uniqueId}`);
     }
 
+    static from(evidence: Evidence): EvidenceBuilder {
+        return new EvidenceBuilder()
+            .withId(evidence.id)
+            .withUuid(evidence.uuid)
+            .withTitle(evidence.title)
+            .withDescription(evidence.description)
+            .withConceptEvidenceId(evidence.conceptEvidenceId);
+    }
+
     public withId(id: Iri): EvidenceBuilder {
         this.id = id;
         return this;

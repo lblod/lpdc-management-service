@@ -136,6 +136,16 @@ export class CostBuilder {
         return new Iri(`http://data.lblod.info/id/cost/${uniqueId}`);
     }
 
+    static from(cost: Cost): CostBuilder {
+        return new CostBuilder()
+            .withId(cost.id)
+            .withUuid(cost.uuid)
+            .withTitle(cost.title)
+            .withDescription(cost.description)
+            .withOrder(cost.order)
+            .withConceptCostId(cost.conceptCostId);
+    }
+
     public withId(id: Iri): CostBuilder {
         this.id = id;
         return this;

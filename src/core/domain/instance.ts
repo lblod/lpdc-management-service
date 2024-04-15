@@ -24,16 +24,17 @@ import {
     YourEuropeCategoryType
 } from "./types";
 import {asSortedArray} from "./shared/collections-helper";
-import {Requirement} from "./requirement";
-import {Procedure} from "./procedure";
-import {Website} from "./website";
-import {Cost} from "./cost";
-import {FinancialAdvantage} from "./financial-advantage";
+import {Requirement, RequirementBuilder} from "./requirement";
+import {Procedure, ProcedureBuilder} from "./procedure";
+import {Website, WebsiteBuilder} from "./website";
+import {Cost, CostBuilder} from "./cost";
+import {FinancialAdvantage, FinancialAdvantageBuilder} from "./financial-advantage";
 import {ContactPoint} from "./contact-point";
 import {instanceLanguages, Language} from "./language";
 import {LegalResource} from "./legal-resource";
 import {InvariantError} from "./shared/lpdc-error";
 import {isEqual} from "lodash";
+import {EvidenceBuilder} from "./evidence";
 
 export class Instance {
 
@@ -393,6 +394,66 @@ export class Instance {
 
     get legalResources(): LegalResource[] {
         return [...this._legalResources];
+    }
+
+    transformToInformal() {
+        if (this.dutchLanguageVariant == Language.INFORMAL) {
+            throw new InvariantError('transformToInformal: dutchLanguageVersion of instance is already informal');
+        }
+        if (!this.publicationStatus) {
+            throw new InvariantError('transformToInformal: instance should be published');
+        }
+        if (!this.needsConversionFromFormalToInformal) {
+            throw new InvariantError('transformToInformal: needConversionFromUtoJe should be true');
+        }
+        return InstanceBuilder.from(this)
+            .withDutchLanguageVariant(Language.INFORMAL)
+            .withNeedsConversionFromFormalToInformal(false)
+            .withTitle(this.title?.transformToInformal())
+            .withDescription(this.description?.transformToInformal())
+            .withAdditionalDescription(this.additionalDescription?.transformToInformal())
+            .withException(this.exception?.transformToInformal())
+            .withRegulation(this.regulation?.transformToInformal())
+            .withRequirements(this.requirements.map(requirement =>
+                RequirementBuilder.from(requirement)
+                    .withTitle(requirement.title?.transformToInformal())
+                    .withDescription(requirement.description?.transformToInformal())
+                    .withEvidence(requirement.evidence ? EvidenceBuilder.from(requirement.evidence)
+                        .withTitle(requirement.evidence.title?.transformToInformal())
+                        .withDescription(requirement.evidence.description?.transformToInformal())
+                        .build() : undefined)
+                    .build())
+            )
+            .withProcedures(this.procedures.map(procedure =>
+                ProcedureBuilder.from(procedure)
+                    .withTitle(procedure.title?.transformToInformal())
+                    .withDescription(procedure.description?.transformToInformal())
+                    .withWebsites(procedure.websites.map(website =>
+                        WebsiteBuilder.from(website)
+                            .withTitle(website.title?.transformToInformal())
+                            .withDescription(website.description?.transformToInformal())
+                            .build()))
+                    .build())
+            )
+            .withWebsites(this.websites.map(website =>
+                WebsiteBuilder.from(website)
+                    .withTitle(website.title?.transformToInformal())
+                    .withDescription(website.description?.transformToInformal())
+                    .build())
+            )
+            .withCosts(this.costs.map(cost =>
+                CostBuilder.from(cost)
+                    .withTitle(cost.title?.transformToInformal())
+                    .withDescription(cost.description?.transformToInformal())
+                    .build())
+            )
+            .withFinancialAdvantages(this.financialAdvantages.map(financialAdvantage =>
+                FinancialAdvantageBuilder.from(financialAdvantage)
+                    .withTitle(financialAdvantage.title?.transformToInformal())
+                    .withDescription(financialAdvantage.description?.transformToInformal())
+                    .build())
+            )
+            .build();
     }
 
     validateForPublish(checkAddress: boolean): void {

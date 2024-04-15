@@ -164,6 +164,17 @@ export class ProcedureBuilder {
         return new Iri(`http://data.lblod.info/id/rule/${uniqueId}`);
     }
 
+    static from(procedure: Procedure): ProcedureBuilder {
+        return new ProcedureBuilder()
+            .withId(procedure.id)
+            .withUuid(procedure.uuid)
+            .withTitle(procedure.title)
+            .withDescription(procedure.description)
+            .withOrder(procedure.order)
+            .withWebsites(procedure.websites)
+            .withConceptProcedureId(procedure.conceptProcedureId);
+    }
+
     public withId(id: Iri): ProcedureBuilder {
         this.id = id;
         return this;

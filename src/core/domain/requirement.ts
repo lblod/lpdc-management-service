@@ -159,6 +159,17 @@ export class RequirementBuilder {
         return new Iri(`http://data.lblod.info/id/requirement/${uniqueId}`);
     }
 
+    static from(requirement: Requirement): RequirementBuilder {
+        return new RequirementBuilder()
+            .withId(requirement.id)
+            .withUuid(requirement.uuid)
+            .withTitle(requirement.title)
+            .withDescription(requirement.description)
+            .withOrder(requirement.order)
+            .withEvidence(requirement.evidence)
+            .withConceptRequirementId(requirement.conceptRequirementId);
+    }
+
     public withId(id: Iri): RequirementBuilder {
         this._id = id;
         return this;

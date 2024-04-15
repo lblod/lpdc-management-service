@@ -106,6 +106,15 @@ export class LanguageString {
         if (language === Language.GENERATED_INFORMAL) return this._nlGeneratedInformal;
     }
 
+    transformToInformal(): LanguageString {
+        if (this.definedNlLanguages.length > 1) {
+            throw new InvariantError('transformFormalToInformal: More than one definedNlLanguage');
+        }
+        const oldDutchLanguage = this.definedNlLanguages[0];
+        const languageValue = this.getLanguageValue(oldDutchLanguage);
+        return LanguageString.of(this.en, undefined, undefined, languageValue);
+    }
+
     static extractNlLanguages(languages: (LanguageString | undefined)[]): Language[] {
         return languages
             .filter(ls => ls !== undefined)

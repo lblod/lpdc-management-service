@@ -135,6 +135,16 @@ export class FinancialAdvantageBuilder {
         return new Iri(`http://data.lblod.info/id/financial-advantage/${uniqueId}`);
     }
 
+    static from(financialAdvantage: FinancialAdvantage): FinancialAdvantageBuilder {
+        return new FinancialAdvantageBuilder()
+            .withId(financialAdvantage.id)
+            .withUuid(financialAdvantage.uuid)
+            .withTitle(financialAdvantage.title)
+            .withDescription(financialAdvantage.description)
+            .withOrder(financialAdvantage.order)
+            .withConceptFinancialAdvantageId(financialAdvantage.conceptFinancialAdvantageId);
+    }
+
     public withId(id: Iri): FinancialAdvantageBuilder {
         this.id = id;
         return this;

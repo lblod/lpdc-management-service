@@ -150,6 +150,17 @@ export class WebsiteBuilder {
         return new Iri(`http://data.lblod.info/id/website/${uniqueId}`);
     }
 
+    static from(website: Website): WebsiteBuilder {
+        return new WebsiteBuilder()
+            .withId(website.id)
+            .withUuid(website.uuid)
+            .withTitle(website.title)
+            .withDescription(website.description)
+            .withOrder(website.order)
+            .withUrl(website.url)
+            .withConceptWebsiteId(website.conceptWebsiteId);
+    }
+
     public withId(id: Iri): WebsiteBuilder {
         this.id = id;
         return this;

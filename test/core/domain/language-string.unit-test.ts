@@ -422,6 +422,7 @@ describe('extract nl languages', () => {
     });
 
 });
+
 describe('validate unique nl language', () => {
 
     test('if no nl lang is present, do not throw', () => {
@@ -468,6 +469,35 @@ describe('validate unique nl language', () => {
         const strings = [langs1, langs2];
 
         expect(() => LanguageString.validateUniqueNlLanguage(strings)).toThrowWithMessage(InvariantError, "Er is meer dan een nl-taal aanwezig");
+    });
+
+});
+
+describe('transformToInformal', () => {
+
+    test('When more then one dutch language, throw error', () => {
+        const language = LanguageString.of('english', 'nl', 'formal');
+        expect(() => language.transformToInformal()).toThrowWithMessage(InvariantError, 'transformFormalToInformal: More than one definedNlLanguage');
+    });
+
+    test('When formal set, transform to informal', () => {
+        const language = LanguageString.of('english', undefined, 'formal');
+        expect(language.transformToInformal()).toEqual(LanguageString.of('english', undefined, undefined, 'formal'));
+    });
+
+    test('When already informal set, keep informal', () => {
+        const language = LanguageString.of(undefined, undefined, undefined, 'informal');
+        expect(language.transformToInformal()).toEqual(LanguageString.of(undefined, undefined, undefined, 'informal'));
+    });
+
+    test('When only english set, keep english', () => {
+        const language = LanguageString.of('english', undefined, undefined);
+        expect(language.transformToInformal()).toEqual(LanguageString.of('english', undefined, undefined, undefined));
+    });
+
+    test('When no language set, nothing changes', () => {
+        const language = LanguageString.of();
+        expect(language.transformToInformal()).toEqual(LanguageString.of());
     });
 
 });

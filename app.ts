@@ -57,6 +57,9 @@ import {ChosenFormType, FormType} from "./src/core/domain/types";
 import {FormatPreservingDate} from "./src/core/domain/format-preserving-date";
 import {FormalInformalChoice} from "./src/core/domain/formal-informal-choice";
 import {NewFormalInformalChoiceDomainService} from "./src/core/domain/new-formal-informal-choice-domain-service";
+import {
+    ConfirmInstanceIsAlreadyInformalDomainService
+} from "./src/core/domain/confirm-instance-is-already-informal-domain-service";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -162,6 +165,8 @@ const newFormalInformalChoiceAndSyncInstanceDomainService = new NewFormalInforma
     instanceRepository
 );
 
+const confirmInstanceIsAlreadyInformalDomainService = new ConfirmInstanceIsAlreadyInformalDomainService(instanceRepository, formalInformalChoiceRepository);
+
 app.get('/', function (_req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
     res.send(message);
@@ -226,6 +231,10 @@ app.put('/public-services/:instanceId/reopen', async function (req, res, next): 
 
 app.post('/public-services/:instanceId/confirm-bijgewerkt-tot', async function (req, res, next): Promise<any> {
     return await confirmBijgewerktTot(req, res).catch(next);
+});
+
+app.post('/public-services/:instanceId/confirm-instance-is-already-informal', async function (req, res, next): Promise<any> {
+    return await confirmInstanceIsAlreadyInformal(req, res).catch(next);
 });
 
 app.put('/public-services/:instanceId/validate-for-publish', async function (req, res, next): Promise<any> {
@@ -429,6 +438,18 @@ async function confirmBijgewerktTot(req: Request, res: Response) {
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
     const conceptSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
     await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instanceVersion, conceptSnapshot);
+    return res.sendStatus(200);
+}
+
+async function confirmInstanceIsAlreadyInformal(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+    const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
+
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+    await confirmInstanceIsAlreadyInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instanceVersion);
     return res.sendStatus(200);
 }
 
