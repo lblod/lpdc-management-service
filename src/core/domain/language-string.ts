@@ -108,7 +108,7 @@ export class LanguageString {
 
     transformToInformal(): LanguageString {
         if (this.definedNlLanguages.length > 1) {
-            throw new InvariantError('transformFormalToInformal: More than one definedNlLanguage');
+            throw new InvariantError('voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
         }
         const oldDutchLanguage = this.definedNlLanguages[0];
         const languageValue = this.getLanguageValue(oldDutchLanguage);

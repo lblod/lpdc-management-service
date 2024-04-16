@@ -477,7 +477,7 @@ describe('transformToInformal', () => {
 
     test('When more then one dutch language, throw error', () => {
         const language = LanguageString.of('english', 'nl', 'formal');
-        expect(() => language.transformToInformal()).toThrowWithMessage(InvariantError, 'transformFormalToInformal: More than one definedNlLanguage');
+        expect(() => language.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
     });
 
     test('When formal set, transform to informal', () => {

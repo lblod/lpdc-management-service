@@ -21,14 +21,18 @@ import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirem
 import {aFullRequirementForInstance, aMinimalRequirementForInstance} from "./requirement-test-builder";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
-import {aMinimalProcedureForInstance, ProcedureTestBuilder} from "./procedure-test-builder";
+import {aFullProcedureForInstance, aMinimalProcedureForInstance, ProcedureTestBuilder} from "./procedure-test-builder";
 import {aMinimalFormalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
-import {aMinimalWebsiteForInstance, WebsiteTestBuilder} from "./website-test-builder";
+import {aFullWebsiteForInstance, aMinimalWebsiteForInstance, WebsiteTestBuilder} from "./website-test-builder";
 import {Cost, CostBuilder} from "../../../src/core/domain/cost";
-import {aMinimalCostForInstance, CostTestBuilder} from "./cost-test-builder";
+import {aFullCostForInstance, aMinimalCostForInstance, CostTestBuilder} from "./cost-test-builder";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
-import {aMinimalFinancialAdvantageForInstance, FinancialAdvantageTestBuilder} from "./financial-advantage-test-builder";
+import {
+    aFullFinancialAdvantageForInstance,
+    aMinimalFinancialAdvantageForInstance,
+    FinancialAdvantageTestBuilder
+} from "./financial-advantage-test-builder";
 import {instanceLanguages, Language} from "../../../src/core/domain/language";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
@@ -984,6 +988,116 @@ describe('publish', () => {
             .build();
 
         expect(() => instance.publish()).toThrowWithMessage(InvariantError, 'Instantie heeft reeds status verstuurd');
+    });
+
+});
+
+describe('transformToInformal', () => {
+
+    test('should throw error when instance dutchLanguageVariant already Informal', () => {
+        const instance = aMinimalInstance()
+            .withDutchLanguageVariant(Language.INFORMAL)
+            .withNeedsConversionFromFormalToInformal(true)
+            .build();
+
+        expect(() => instance.transformToInformal()).toThrowWithMessage(InvariantError, 'Instantie moet in de je-vorm zijn');
+    });
+
+    test('should throw error when instance needConversionFromFormalToInformal', () => {
+        const instance = aMinimalInstance()
+            .withDateSent(FormatPreservingDate.now())
+            .withDatePublished(FormatPreservingDate.now())
+            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+            .withNeedsConversionFromFormalToInformal(false)
+            .build();
+
+        expect(() => instance.transformToInformal()).toThrowWithMessage(InvariantError, 'Instantie moet u naar je conversie nodig hebben');
+    });
+
+    test('should transform all languageStrings from nl or nl-be-x-formal to nl-be-x-informal', () => {
+        const instance = aFullInstance()
+            .withStatus(InstanceStatusType.VERSTUURD)
+            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+            .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+            .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+            .withDutchLanguageVariant(Language.FORMAL)
+            .withNeedsConversionFromFormalToInformal(true)
+            .withRequirements([
+                aFullRequirementForInstance().withOrder(0).build(),
+                aFullRequirementForInstance().withOrder(1).withEvidence(undefined).build()
+            ])
+            .withProcedures([
+                aFullProcedureForInstance().withOrder(0).build(),
+                aFullProcedureForInstance().withOrder(1).withWebsites([]).build(),
+            ])
+            .withWebsites([
+                aFullWebsiteForInstance().withOrder(0).build(),
+                aFullWebsiteForInstance().withOrder(1).build()
+            ])
+            .withCosts([
+                aFullCostForInstance().withOrder(0).build(),
+                aFullCostForInstance().withOrder(1).build(),
+            ])
+            .withFinancialAdvantages([
+                aFullFinancialAdvantageForInstance().withOrder(0).build(),
+                aFullFinancialAdvantageForInstance().withOrder(1).build(),
+            ])
+            .build();
+
+        const updatedInstance = instance.transformToInformal();
+
+        expect(updatedInstance.calculatedInstanceNlLanguages()).toEqual([Language.INFORMAL]);
+        expect(updatedInstance.title).toEqual(LanguageString.of('Instance Title - en', undefined, undefined, 'Instance Title - nl-formal'));
+        expect(updatedInstance.description).toEqual(LanguageString.of('Instance Description - en', undefined, undefined, 'Instance Description - nl-formal'));
+        expect(updatedInstance.additionalDescription).toEqual(LanguageString.of('Instance Additional Description - en', undefined, undefined, 'Instance Additional Description - nl-formal'));
+        expect(updatedInstance.exception).toEqual(LanguageString.of('Instance Exception - en', undefined, undefined, 'Instance Exception - nl-formal'));
+        expect(updatedInstance.regulation).toEqual(LanguageString.of('Instance Regulation - en', undefined, undefined, 'Instance Regulation - nl-formal'));
+        expect(updatedInstance.requirements[0].title).toEqual(LanguageString.of('Requirement Title - en', undefined, undefined, 'Requirement Title - nl-formal'));
+        expect(updatedInstance.requirements[0].description).toEqual(LanguageString.of('Requirement Description - en', undefined, undefined, 'Requirement Description - nl-formal'));
+        expect(updatedInstance.requirements[0].evidence.title).toEqual(LanguageString.of('Evidence Title - en', undefined, undefined, 'Evidence Title - nl-formal'));
+        expect(updatedInstance.requirements[0].evidence.description).toEqual(LanguageString.of('Evidence Description - en', undefined, undefined, 'Evidence Description - nl-formal'));
+        expect(updatedInstance.requirements[1].title).toEqual(LanguageString.of('Requirement Title - en', undefined, undefined, 'Requirement Title - nl-formal'));
+        expect(updatedInstance.requirements[1].description).toEqual(LanguageString.of('Requirement Description - en', undefined, undefined, 'Requirement Description - nl-formal'));
+        expect(updatedInstance.procedures[0].title).toEqual(LanguageString.of('Procedure Title - en', undefined, undefined, 'Procedure Title - nl-formal'));
+        expect(updatedInstance.procedures[0].description).toEqual(LanguageString.of('Procedure Description - en', undefined, undefined, 'Procedure Description - nl-formal'));
+        expect(updatedInstance.procedures[0].websites[0].title).toEqual(LanguageString.of('Website Title - en', undefined, undefined, 'Website Title - nl-formal'));
+        expect(updatedInstance.procedures[0].websites[0].description).toEqual(LanguageString.of('Website Description - en', undefined, undefined, 'Website Description - nl-formal'));
+        expect(updatedInstance.procedures[1].title).toEqual(LanguageString.of('Procedure Title - en', undefined, undefined, 'Procedure Title - nl-formal'));
+        expect(updatedInstance.procedures[1].description).toEqual(LanguageString.of('Procedure Description - en', undefined, undefined, 'Procedure Description - nl-formal'));
+        expect(updatedInstance.websites[0].title).toEqual(LanguageString.of('Website Title - en', undefined, undefined, 'Website Title - nl-formal'));
+        expect(updatedInstance.websites[0].description).toEqual(LanguageString.of('Website Description - en', undefined, undefined, 'Website Description - nl-formal'));
+        expect(updatedInstance.websites[1].title).toEqual(LanguageString.of('Website Title - en', undefined, undefined, 'Website Title - nl-formal'));
+        expect(updatedInstance.websites[1].description).toEqual(LanguageString.of('Website Description - en', undefined, undefined, 'Website Description - nl-formal'));
+        expect(updatedInstance.costs[0].title).toEqual(LanguageString.of('Cost Title - en', undefined, undefined, 'Cost Title - nl-formal'));
+        expect(updatedInstance.costs[0].description).toEqual(LanguageString.of('Cost Description - en', undefined, undefined, 'Cost Description - nl-formal'));
+        expect(updatedInstance.costs[1].title).toEqual(LanguageString.of('Cost Title - en', undefined, undefined, 'Cost Title - nl-formal'));
+        expect(updatedInstance.costs[1].description).toEqual(LanguageString.of('Cost Description - en', undefined, undefined, 'Cost Description - nl-formal'));
+        expect(updatedInstance.financialAdvantages[0].title).toEqual(LanguageString.of('Financial Advantage Title - en', undefined, undefined, 'Financial Advantage Title - nl-formal'));
+        expect(updatedInstance.financialAdvantages[0].description).toEqual(LanguageString.of('Financial Advantage Description - en', undefined, undefined, 'Financial Advantage Description - nl-formal'));
+        expect(updatedInstance.financialAdvantages[1].title).toEqual(LanguageString.of('Financial Advantage Title - en', undefined, undefined, 'Financial Advantage Title - nl-formal'));
+        expect(updatedInstance.financialAdvantages[1].description).toEqual(LanguageString.of('Financial Advantage Description - en', undefined, undefined, 'Financial Advantage Description - nl-formal'));
+    });
+
+    test('should set dutchLanguageVariant to nl-be-x-informal', () => {
+        const instance = aFullInstance()
+            .withDutchLanguageVariant(Language.FORMAL)
+            .withNeedsConversionFromFormalToInformal(true)
+            .build();
+
+        const updatedInstance = instance.transformToInformal();
+
+        expect(updatedInstance.dutchLanguageVariant).toEqual(Language.INFORMAL);
+    });
+
+    test('should set needsFormalToInformalConversion to false', () => {
+        const instance = aFullInstance()
+            .withDutchLanguageVariant(Language.FORMAL)
+            .withNeedsConversionFromFormalToInformal(true)
+            .build();
+
+        const updatedInstance = instance.transformToInformal();
+
+        expect(updatedInstance.needsConversionFromFormalToInformal).toEqual(false);
     });
 
 });

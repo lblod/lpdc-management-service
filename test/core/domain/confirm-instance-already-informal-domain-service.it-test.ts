@@ -37,6 +37,8 @@ describe('Confirm instance already informal domain service', () => {
             .withTitle(LanguageString.of('title', undefined, undefined, 'titel informal'))
             .withStatus(InstanceStatusType.VERSTUURD)
             .withDateSent(FormatPreservingDate.now())
+            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+            .withDatePublished(FormatPreservingDate.now())
             .withDutchLanguageVariant(Language.INFORMAL)
             .build();
 
@@ -44,7 +46,7 @@ describe('Confirm instance already informal domain service', () => {
         await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
         await expect(() => confirmInstanceIsAlreadyInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified))
-            .rejects.toThrowWithMessage(InvariantError, 'transformToInformal: dutchLanguageVersion of instance is already informal');
+            .rejects.toThrowWithMessage(InvariantError, 'Instantie moet in de je-vorm zijn');
     });
 
     test('When instance is is not published, then throw error', async () => {
@@ -53,13 +55,14 @@ describe('Confirm instance already informal domain service', () => {
             .withStatus(InstanceStatusType.VERSTUURD)
             .withPublicationStatus(undefined)
             .withDatePublished(undefined)
+            .withNeedsConversionFromFormalToInformal(true)
             .build();
 
         const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
         await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
         await expect(() => confirmInstanceIsAlreadyInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified))
-            .rejects.toThrowWithMessage(InvariantError, 'transformToInformal: instance should be published');
+            .rejects.toThrowWithMessage(InvariantError, 'Instantie moet gepubliceerd zijn');
     });
 
     test('When bestuurseenheid chose formal, then throw error', async () => {
@@ -76,7 +79,7 @@ describe('Confirm instance already informal domain service', () => {
         await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
         await expect(() => confirmInstanceIsAlreadyInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified))
-            .rejects.toThrowWithMessage(InvariantError, 'confirmInstanceIsAlreadyInformal: bestuurseenheid should have chosen for Informal');
+            .rejects.toThrowWithMessage(InvariantError, 'Je moet gekozen hebben voor de je-vorm');
     });
 
     test('When bestuurseenheid did not not make formalInformal choice yet, then throw error', async () => {
@@ -89,7 +92,7 @@ describe('Confirm instance already informal domain service', () => {
             .build();
 
         await expect(() => confirmInstanceIsAlreadyInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified))
-            .rejects.toThrowWithMessage(InvariantError, 'confirmInstanceIsAlreadyInformal: bestuurseenheid should have chosen for Informal');
+            .rejects.toThrowWithMessage(InvariantError, 'Je moet gekozen hebben voor de je-vorm');
     });
 
     test('When needConversionFromUtoJe is false, then throw error', async () => {
@@ -106,7 +109,7 @@ describe('Confirm instance already informal domain service', () => {
         await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
         await expect(() => confirmInstanceIsAlreadyInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified))
-            .rejects.toThrowWithMessage(InvariantError, 'transformToInformal: needConversionFromUtoJe should be true');
+            .rejects.toThrowWithMessage(InvariantError, 'Instantie moet u naar je conversie nodig hebben');
     });
 
     test('should transform all language fields nl or nl-be-x-formal languageStrings to nl-be-x-informal', async () => {

@@ -398,13 +398,10 @@ export class Instance {
 
     transformToInformal() {
         if (this.dutchLanguageVariant == Language.INFORMAL) {
-            throw new InvariantError('transformToInformal: dutchLanguageVersion of instance is already informal');
-        }
-        if (!this.publicationStatus) {
-            throw new InvariantError('transformToInformal: instance should be published');
+            throw new InvariantError('Instantie moet in de je-vorm zijn');
         }
         if (!this.needsConversionFromFormalToInformal) {
-            throw new InvariantError('transformToInformal: needConversionFromUtoJe should be true');
+            throw new InvariantError('Instantie moet u naar je conversie nodig hebben');
         }
         return InstanceBuilder.from(this)
             .withDutchLanguageVariant(Language.INFORMAL)
