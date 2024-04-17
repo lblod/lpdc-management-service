@@ -883,7 +883,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                 ]);
 
-            await expect(() => repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, 'Kan <en> niet mappen naar dutch language version');
+            await expect(() => repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(InvariantError, `dutchLanguageVariant moet gelijk zijn aan een van de volgende waardes: ${instanceLanguages}`);
         });
 
         test('Verify minimal mappings - non-existing language as dutch language should throw error', async () => {
@@ -905,7 +905,7 @@ describe('InstanceRepository', () => {
 
                 ]);
 
-            await expect(() => repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, 'Kan <blabla> niet mappen naar dutch language version');
+            await expect(() => repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `Kan <blabla> niet mappen voor waarde: <${instanceId}>`);
         });
 
         test('Verify minimal mappings - missing dutch language ', async () => {
@@ -1125,7 +1125,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `Kan <http://lblod.data.gift/concepts/instance-status/unknown-instance-status> niet mappen voor Iri: <${instanceId}>`);
+            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `Kan <http://lblod.data.gift/concepts/instance-status/unknown-instance-status> niet mappen voor waarde: <${instanceId}>`);
         });
 
         for (const type of Object.values(ProductType)) {
@@ -1155,7 +1155,7 @@ describe('InstanceRepository', () => {
                     `<${instanceIri}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> niet mappen voor Iri: <${instanceIri}>`);
+            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> niet mappen voor waarde: <${instanceIri}>`);
         });
 
         for (const targetAudience of Object.values(TargetAudienceType)) {
@@ -1180,7 +1180,7 @@ describe('InstanceRepository', () => {
                     `<${instanceIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience> niet mappen voor Iri: <${instanceIri}>`);
+            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience> niet mappen voor waarde: <${instanceIri}>`);
         });
 
         for (const theme of Object.values(ThemeType)) {
@@ -1205,7 +1205,7 @@ describe('InstanceRepository', () => {
                     `<${instanceIri}> <http://data.europa.eu/m8g/thematicArea> <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme> niet mappen voor Iri: <${instanceIri}>`);
+            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme> niet mappen voor waarde: <${instanceIri}>`);
         });
 
         for (const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
@@ -1230,7 +1230,7 @@ describe('InstanceRepository', () => {
                     `<${instanceIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel> niet mappen voor Iri: <${instanceIri}>`);
+            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel> niet mappen voor waarde: <${instanceIri}>`);
         });
 
         for (const executingAuthorityLevel of Object.values(ExecutingAuthorityLevelType)) {
@@ -1255,7 +1255,7 @@ describe('InstanceRepository', () => {
                     `<${instanceIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel> niet mappen voor Iri: <${instanceIri}>`);
+            await expect(repository.findById(bestuurseenheid, instanceIri)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel> niet mappen voor waarde: <${instanceIri}>`);
         });
 
         for (const publicationMedium of Object.values(PublicationMediumType)) {
@@ -1280,7 +1280,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> niet mappen voor Iri: <${instanceId}>`);
+            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> niet mappen voor waarde: <${instanceId}>`);
         });
 
         for (const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
@@ -1305,7 +1305,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> niet mappen voor Iri: <${instanceId}>`);
+            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `Kan <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> niet mappen voor waarde: <${instanceId}>`);
         });
 
         for (const languageType of Object.values(LanguageType)) {
@@ -1330,7 +1330,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `Kan <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType> niet mappen voor Iri: <${instanceId}>`);
+            await expect(repository.findById(bestuurseenheid, instanceId)).rejects.toThrowWithMessage(SystemError, `Kan <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType> niet mappen voor waarde: <${instanceId}>`);
         });
 
         test('minimal legal resource', async () => {

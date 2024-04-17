@@ -671,21 +671,7 @@ export class QuadsToDomainMapper {
     }
 
     private dutchLanguageVariant(id: Iri): Language | undefined {
-        const statement = this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('dutchLanguageVariant'));
-        if (statement === undefined) {
-            return undefined;
-        }
-        const literal = this.asLiteral(statement);
-        switch (literal.value) {
-            case 'nl':
-                return Language.NL;
-            case 'nl-be-x-formal':
-                return Language.FORMAL;
-            case 'nl-be-x-informal':
-                return Language.INFORMAL;
-            default:
-                throw new SystemError(`Kan <${literal?.value}> niet mappen naar dutch language version`);
-        }
+        return this.asEnum(Language, 'no-namespace', this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('dutchLanguageVariant')));
     }
 
     private needsConversionFromFormalToInformal(id: Iri): boolean {
@@ -700,18 +686,20 @@ export class QuadsToDomainMapper {
         return aValue ? Number.parseInt(aValue) : undefined;
     }
 
-    private asEnums<T>(enumObj: T, namespace: Namespace, statements: Statement[]): T[keyof T][] {
+    private asEnums<T>(enumObj: T, namespace: Namespace | 'no-namespace', statements: Statement[]): T[keyof T][] {
         return statements.map(statement => this.asEnum(enumObj, namespace, statement));
     }
 
-    private asEnum<T>(enumObj: T, namespace: Namespace, statement: Statement | undefined): T[keyof T] | undefined {
+    private asEnum<T>(enumObj: T, namespace: Namespace | 'no-namespace', statement: Statement | undefined): T[keyof T] | undefined {
         for (const key in enumObj) {
-            if (namespace(enumObj[key] as string).value === statement?.object?.value) {
+            if ((namespace instanceof Object) && (namespace as Namespace)(enumObj[key] as string).value === statement?.object?.value) {
+                return enumObj[key];
+            } else if ((enumObj[key] as string) === statement?.object?.value) {
                 return enumObj[key];
             }
         }
         if (statement?.object?.value) {
-            throw new SystemError(`Kan <${statement?.object?.value}> niet mappen voor Iri: <${statement?.subject?.value}>`);
+            throw new SystemError(`Kan <${statement?.object?.value}> niet mappen voor waarde: <${statement?.subject?.value}>`);
         }
         return undefined;
     }
