@@ -396,9 +396,9 @@ export class Instance {
         return [...this._legalResources];
     }
 
-    transformToInformal() {
+    transformToInformal(): Instance {
         if (this.dutchLanguageVariant == Language.INFORMAL) {
-            throw new InvariantError('Instantie moet in de je-vorm zijn');
+            throw new InvariantError('Instantie is reeds in de je-vorm');
         }
         if (!this.needsConversionFromFormalToInformal) {
             throw new InvariantError('Instantie moet u naar je conversie nodig hebben');
@@ -411,45 +411,11 @@ export class Instance {
             .withAdditionalDescription(this.additionalDescription?.transformToInformal())
             .withException(this.exception?.transformToInformal())
             .withRegulation(this.regulation?.transformToInformal())
-            .withRequirements(this.requirements.map(requirement =>
-                RequirementBuilder.from(requirement)
-                    .withTitle(requirement.title?.transformToInformal())
-                    .withDescription(requirement.description?.transformToInformal())
-                    .withEvidence(requirement.evidence ? EvidenceBuilder.from(requirement.evidence)
-                        .withTitle(requirement.evidence.title?.transformToInformal())
-                        .withDescription(requirement.evidence.description?.transformToInformal())
-                        .build() : undefined)
-                    .build())
-            )
-            .withProcedures(this.procedures.map(procedure =>
-                ProcedureBuilder.from(procedure)
-                    .withTitle(procedure.title?.transformToInformal())
-                    .withDescription(procedure.description?.transformToInformal())
-                    .withWebsites(procedure.websites.map(website =>
-                        WebsiteBuilder.from(website)
-                            .withTitle(website.title?.transformToInformal())
-                            .withDescription(website.description?.transformToInformal())
-                            .build()))
-                    .build())
-            )
-            .withWebsites(this.websites.map(website =>
-                WebsiteBuilder.from(website)
-                    .withTitle(website.title?.transformToInformal())
-                    .withDescription(website.description?.transformToInformal())
-                    .build())
-            )
-            .withCosts(this.costs.map(cost =>
-                CostBuilder.from(cost)
-                    .withTitle(cost.title?.transformToInformal())
-                    .withDescription(cost.description?.transformToInformal())
-                    .build())
-            )
-            .withFinancialAdvantages(this.financialAdvantages.map(financialAdvantage =>
-                FinancialAdvantageBuilder.from(financialAdvantage)
-                    .withTitle(financialAdvantage.title?.transformToInformal())
-                    .withDescription(financialAdvantage.description?.transformToInformal())
-                    .build())
-            )
+            .withRequirements(this.requirements.map(requirement => requirement.transformToInformal()))
+            .withProcedures(this.procedures.map(procedure => procedure.transformToInformal()))
+            .withWebsites(this.websites.map(website => website.transformToInformal()))
+            .withCosts(this.costs.map(cost => cost.transformToInformal()))
+            .withFinancialAdvantages(this.financialAdvantages.map(financialAdvantage => financialAdvantage.transformToInformal()))
             .build();
     }
 

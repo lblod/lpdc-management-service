@@ -113,6 +113,13 @@ export class Website {
         return this._url;
     }
 
+    transformToInformal(): Website {
+        return WebsiteBuilder.from(this)
+            .withTitle(this.title?.transformToInformal())
+            .withDescription(this.description?.transformToInformal())
+            .build();
+    }
+
     static isFunctionallyChanged(value: Website[], other: Website[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((websites: [Website, Website]) => {

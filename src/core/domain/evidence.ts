@@ -90,6 +90,13 @@ export class Evidence {
         return this._description;
     }
 
+    transformToInformal(): Evidence {
+        return EvidenceBuilder.from(this)
+            .withTitle(this.title?.transformToInformal())
+            .withDescription(this.description?.transformToInformal())
+            .build();
+    }
+
     static isFunctionallyChanged(value: Evidence | undefined, other: Evidence | undefined): boolean {
         return LanguageString.isFunctionallyChanged(value?.title, other?.title)
             || LanguageString.isFunctionallyChanged(value?.description, other?.description);

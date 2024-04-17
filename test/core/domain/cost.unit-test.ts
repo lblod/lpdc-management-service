@@ -4,7 +4,7 @@ import {
     aFullCostForInstanceSnapshot,
     aMinimalCostForInstance
 } from "./cost-test-builder";
-import {Cost} from "../../../src/core/domain/cost";
+import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
@@ -256,7 +256,6 @@ describe('for instance snapshot', () => {
 
 });
 
-
 describe('nl Language', () => {
 
     test('empty cost has no nl language', () => {
@@ -311,4 +310,46 @@ describe('nl Language', () => {
 
     }
 
+});
+
+describe('transformToInformal', () => {
+    test('should transform cost with title, description to informal', () => {
+        const cost = aFullCostForInstance()
+            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
+            .build();
+
+        expect(cost.transformToInformal()).toEqual(CostBuilder
+            .from(cost)
+            .withTitle(LanguageString.of(undefined, undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+            .build()
+        );
+    });
+
+    test('should transform cost without title, description to informal', () => {
+        const cost = aFullCostForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+
+        expect(cost.transformToInformal()).toEqual(cost);
+    });
+
+    test('concept cost can not be transformed', () => {
+        const cost = aFullCost().build();
+
+        expect(() => cost.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
+
+    });
+});
+
+describe('builder', () => {
+
+    test("from copies all fields", () => {
+        const cost = aFullCost().build();
+        const fromCost = CostBuilder.from(cost).build();
+
+        expect(fromCost).toEqual(cost);
+    });
 });

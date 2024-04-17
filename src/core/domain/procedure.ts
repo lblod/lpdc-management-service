@@ -128,6 +128,14 @@ export class Procedure {
         return [...this._websites];
     }
 
+    transformToInformal(): Procedure {
+        return ProcedureBuilder.from(this)
+            .withTitle(this.title?.transformToInformal())
+            .withDescription(this.description?.transformToInformal())
+            .withWebsites(this.websites.map(website => website.transformToInformal()))
+            .build();
+    }
+
     static isFunctionallyChanged(value: Procedure[], other: Procedure[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((procs: [Procedure, Procedure]) => {

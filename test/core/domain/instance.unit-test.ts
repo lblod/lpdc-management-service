@@ -1000,7 +1000,7 @@ describe('transformToInformal', () => {
             .withNeedsConversionFromFormalToInformal(true)
             .build();
 
-        expect(() => instance.transformToInformal()).toThrowWithMessage(InvariantError, 'Instantie moet in de je-vorm zijn');
+        expect(() => instance.transformToInformal()).toThrowWithMessage(InvariantError, 'Instantie is reeds in de je-vorm');
     });
 
     test('should throw error when instance needConversionFromFormalToInformal', () => {

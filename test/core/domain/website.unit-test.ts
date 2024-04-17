@@ -1,5 +1,5 @@
 import {aFullWebsite, aFullWebsiteForInstance, aFullWebsiteForInstanceSnapshot} from "./website-test-builder";
-import {Website} from "../../../src/core/domain/website";
+import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
@@ -255,5 +255,47 @@ describe('for instance snapshot', () => {
 
     test('Undefined order throws error', () => {
         expect(() => Website.forInstanceSnapshot(aFullWebsiteForInstanceSnapshot().withOrder(undefined).build())).toThrowWithMessage(InvariantError, 'order mag niet ontbreken');
+    });
+});
+
+describe('transformToInformal', () => {
+
+    test('should transform website with title, description to informal', () => {
+        const website = aFullWebsiteForInstance()
+            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
+            .build();
+
+        expect(website.transformToInformal()).toEqual(WebsiteBuilder
+            .from(website)
+            .withTitle(LanguageString.of(undefined, undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+            .build()
+        );
+    });
+
+    test('should transform website without title, description to informal', () => {
+        const website = aFullWebsiteForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+
+        expect(website.transformToInformal()).toEqual(website);
+    });
+
+    test('concept website can not be transformed', () => {
+        const website = aFullWebsite().build();
+
+        expect(() => website.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
+
+    });
+});
+
+describe('builder', () => {
+    test('from copies all fields', () => {
+        const website = aFullWebsite().build();
+        const fromWebsite = WebsiteBuilder.from(website).build();
+
+        expect(fromWebsite).toEqual(website);
     });
 });

@@ -4,7 +4,7 @@ import {
     aFullFinancialAdvantageForInstanceSnapshot,
     aMinimalFinancialAdvantageForInstance
 } from "./financial-advantage-test-builder";
-import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
+import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
@@ -306,4 +306,45 @@ describe('nl language', () => {
 
     }
 
+});
+
+describe('transformToInformal', () => {
+    test('should transform financialAdvantage with title, description to informal', () => {
+        const financialAdvantage = aFullFinancialAdvantageForInstance()
+            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
+            .build();
+
+        expect(financialAdvantage.transformToInformal()).toEqual(FinancialAdvantageBuilder
+            .from(financialAdvantage)
+            .withTitle(LanguageString.of(undefined, undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+            .build()
+        );
+    });
+
+    test('should transform financialAdvantage without title, description to informal', () => {
+        const financialAdvantage = aFullFinancialAdvantageForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+
+        expect(financialAdvantage.transformToInformal()).toEqual(financialAdvantage);
+    });
+
+    test('concept financialAdvantage can not be transformed', () => {
+        const financialAdvantage = aFullFinancialAdvantage().build();
+
+        expect(() => financialAdvantage.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
+
+    });
+});
+
+describe('builder', () => {
+    test('from copies all fields', () => {
+        const financialAdvantage = aFullFinancialAdvantage().build();
+        const fromFinancialAdvantage = FinancialAdvantageBuilder.from(financialAdvantage).build();
+
+        expect(fromFinancialAdvantage).toEqual(financialAdvantage);
+    });
 });

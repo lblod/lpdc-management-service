@@ -1,6 +1,6 @@
 import {aFullEvidence, aFullEvidenceForInstance, aFullEvidenceForInstanceSnapshot} from "./evidence-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {Evidence} from "../../../src/core/domain/evidence";
+import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
@@ -235,4 +235,44 @@ describe('for instance snapshot', () => {
         });
     }
 
+});
+
+describe('transformToInformal', () => {
+    test('should transform Evidence with title, description to informal', () => {
+        const evidence = aFullEvidenceForInstance()
+            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
+            .build();
+
+        expect(evidence.transformToInformal()).toEqual(EvidenceBuilder
+            .from(evidence)
+            .withTitle(LanguageString.of(undefined, undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+            .build()
+        );
+    });
+
+    test('should transform Evidence without title, description to informal', () => {
+        const evidence = aFullEvidenceForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+
+        expect(evidence.transformToInformal()).toEqual(evidence);
+    });
+
+    test('concept evidence can not be transformed', () => {
+        const evidence = aFullEvidence().build();
+
+        expect(() => evidence.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
+
+    });
+});
+
+describe('builder', () => {
+    test('from copies all fields', () => {
+        const evidence = aFullEvidence().build();
+        const fromEvidence = EvidenceBuilder.from(evidence).build();
+        expect(fromEvidence).toEqual(evidence);
+    });
 });

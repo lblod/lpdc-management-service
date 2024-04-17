@@ -102,6 +102,13 @@ export class FinancialAdvantage {
         return this._order;
     }
 
+    transformToInformal(): FinancialAdvantage {
+        return FinancialAdvantageBuilder.from(this)
+            .withTitle(this.title?.transformToInformal())
+            .withDescription(this.description?.transformToInformal())
+            .build();
+    }
+
     static isFunctionallyChanged(value: FinancialAdvantage[], other: FinancialAdvantage[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((financialAdvantages: [FinancialAdvantage, FinancialAdvantage]) => {

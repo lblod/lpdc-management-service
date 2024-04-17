@@ -4,7 +4,7 @@ import {
     aFullRequirementForInstanceSnapshot,
     aMinimalRequirementForInstance
 } from "./requirement-test-builder";
-import {Requirement} from "../../../src/core/domain/requirement";
+import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
 import {uuid} from "../../../mu-helper";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {
@@ -468,4 +468,50 @@ describe('nl language', () => {
 
     }
 
+});
+
+describe('transformToInformal', () => {
+    test('should transform requirement with title, description and evidence to informal', () => {
+       const requirement = aFullRequirementForInstance()
+           .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+           .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
+           .withEvidence(aFullEvidenceForInstance()
+               .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+               .build())
+           .build();
+
+       const transformedRequirement = requirement.transformToInformal();
+
+       expect(transformedRequirement.title).toEqual(LanguageString.of(undefined, undefined, undefined, 'titel'));
+       expect(transformedRequirement.description).toEqual(LanguageString.of(undefined, undefined, undefined, 'beschrijving'));
+       expect(transformedRequirement.evidence.title).toEqual(LanguageString.of(undefined, undefined, undefined, 'titel'));
+    });
+
+    test('should transform without title, description and evidence', () => {
+        const requirement = aFullRequirementForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .withEvidence(undefined)
+            .build();
+
+        expect(requirement.transformToInformal()).toEqual(requirement);
+
+    });
+
+    test('concept requirement can not be transformed', () => {
+        const requirement = aFullRequirement().build();
+
+        expect(() => requirement.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
+
+    });
+});
+
+describe('builder', () => {
+    test("from copies all fields", () => {
+        const requirement = aFullRequirement().build();
+        const fromRequirement = RequirementBuilder.from(requirement).build();
+
+        expect(fromRequirement).toEqual(requirement);
+
+    });
 });

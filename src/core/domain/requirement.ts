@@ -123,6 +123,14 @@ export class Requirement {
         return this._evidence;
     }
 
+    transformToInformal(): Requirement {
+        return RequirementBuilder.from(this)
+            .withTitle(this.title?.transformToInformal())
+            .withDescription(this.description?.transformToInformal())
+            .withEvidence(this.evidence?.transformToInformal())
+            .build();
+    }
+
     static isFunctionallyChanged(value: Requirement[], other: Requirement[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((reqs: [Requirement, Requirement]) => {

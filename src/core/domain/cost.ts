@@ -98,6 +98,13 @@ export class Cost {
         return this._order;
     }
 
+    transformToInformal(): Cost {
+        return CostBuilder.from(this)
+            .withTitle(this.title?.transformToInformal())
+            .withDescription(this.description?.transformToInformal())
+            .build();
+    }
+
     static isFunctionallyChanged(value: Cost[], other: Cost[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((costs: [Cost, Cost]) => {

@@ -46,7 +46,7 @@ describe('Confirm instance already informal domain service', () => {
         await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
         await expect(() => confirmInstanceIsAlreadyInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified))
-            .rejects.toThrowWithMessage(InvariantError, 'Instantie moet in de je-vorm zijn');
+            .rejects.toThrowWithMessage(InvariantError, 'Instantie is reeds in de je-vorm');
     });
 
     test('When instance is is not published, then throw error', async () => {

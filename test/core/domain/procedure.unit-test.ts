@@ -6,7 +6,7 @@ import {
     aMinimalProcedureForInstanceSnapshot
 } from "./procedure-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {Procedure} from "../../../src/core/domain/procedure";
+import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {uuid} from "../../../mu-helper";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
@@ -548,4 +548,50 @@ describe('nl Language', () => {
 
     }
 
+});
+
+describe('transformToInformal', () => {
+    test('should transform procedure with title, description and website to informal', () => {
+        const procedure = aFullProcedure()
+            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
+            .withWebsites([
+                aFullWebsiteForInstance()
+                    .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+                    .build()
+            ])
+            .build();
+
+        const transformedProcedure = procedure.transformToInformal();
+
+        expect(transformedProcedure.title).toEqual(LanguageString.of(undefined, undefined, undefined, 'titel'));
+        expect(transformedProcedure.description).toEqual(LanguageString.of(undefined, undefined, undefined, 'beschrijving'));
+        expect(transformedProcedure.websites[0].title).toEqual(LanguageString.of(undefined, undefined, undefined, 'titel'));
+    });
+
+    test('should transform procedure with title, description to informal', () => {
+        const procedure = aFullProcedure()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .withWebsites([])
+            .build();
+
+        expect(procedure.transformToInformal()).toEqual(procedure);
+    });
+
+    test('concept procedure can not be transformed', () => {
+        const procedure = aFullProcedure().build();
+
+        expect(() => procedure.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
+
+    });
+});
+
+describe('builder', () => {
+    test('from copies all fields', () => {
+        const procedure = aFullProcedure().build();
+        const fromProcedure = ProcedureBuilder.from(procedure).build();
+
+        expect(fromProcedure).toEqual(procedure);
+    });
 });
