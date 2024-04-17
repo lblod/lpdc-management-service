@@ -699,7 +699,7 @@ export class QuadsToDomainMapper {
             }
         }
         if (statement?.object?.value) {
-            throw new SystemError(`Kan <${statement?.object?.value}> niet mappen voor waarde: <${statement?.subject?.value}>`);
+            throw new SystemError(`Kan '${statement?.toString()}' niet mappen.`);
         }
         return undefined;
     }
