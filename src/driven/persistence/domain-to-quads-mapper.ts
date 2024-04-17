@@ -464,7 +464,7 @@ export class DomainToQuadsMapper {
         return this.buildQuad(namedNode(id.value), NS.lpdcExt('dutchLanguageVariant'), value);
     }
 
-    private needsConversionFromFormalToInformal(id: Iri, needsConversionFromFormalToInformal: boolean): Statement | undefined {
+    private needsConversionFromFormalToInformal(id: Iri, needsConversionFromFormalToInformal: boolean): Statement {
         return this.buildQuad(namedNode(id.value), NS.lpdcExt('needsConversionFromFormalToInformal'), literal(needsConversionFromFormalToInformal.toString(), NS.xsd('boolean')));
     }
 

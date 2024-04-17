@@ -455,6 +455,7 @@ describe('InstanceRepository', () => {
     });
 
     describe('syncNeedsConversionFromFormalToInformal', () => {
+
         test('given formal, nl and informal instance, when choose informal, then set needsConversionFromFormalToInformal on true for formal and nl instance of that bestuurseenheid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
@@ -541,7 +542,31 @@ describe('InstanceRepository', () => {
             expect(actualNlInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
         });
 
+        test('when no triple exists for NeedsConversionFromFormalToInformal sync still inserts true triple', async () => {
+            const instanceUUID = uuid();
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceId = buildInstanceIri(instanceUUID);
+
+            await directDatabaseAccess.insertData(
+                `${bestuurseenheid.userGraph()}`,
+                [
+                    `<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
+                    `<${instanceId}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
+                    `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${instanceUUID}"""`,
+                    `<${instanceId}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.FORMAL}"""`,
+                    `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`
+                ]
+            );
+
+            await repository.syncNeedsConversionFromFormalToInformal(bestuurseenheid, ChosenFormType.INFORMAL);
+            const actualInstance = await repository.findById(bestuurseenheid, instanceId);
+
+            expect(actualInstance.needsConversionFromFormalToInformal).toEqual(true);
+        });
     });
+
     describe('Verify ontology and mapping', () => {
 
         test('Verify minimal mapping', async () => {
@@ -1407,7 +1432,7 @@ describe('InstanceRepository', () => {
                             .withHuisnummer("")
                             .withBusnummer("")
                             .withPostcode("")
-                            .withLand(LanguageString.of(undefined,""))
+                            .withLand(LanguageString.of(undefined, ""))
                             .build()
                         )
                         .build()
