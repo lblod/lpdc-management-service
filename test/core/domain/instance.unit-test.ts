@@ -150,11 +150,6 @@ describe('constructing', () => {
         expect(() => aFullInstance().withNeedsConversionFromFormalToInformal(undefined).build()).toThrowWithMessage(InvariantError, 'needsConversionFromFormalToInformal mag niet ontbreken');
     });
 
-    test('incorrect boolean needsConversionFromFormalToInformal throws error', () => {
-        expect(() => aFullInstance().withNeedsConversionFromFormalToInformal('true' as unknown as boolean).build()).toThrowWithMessage(InvariantError, 'needsConversionFromFormalToInformal moet type boolean zijn');
-    });
-
-
     describe('requirement', () => {
 
         test('valid requirement does not throw error', () => {

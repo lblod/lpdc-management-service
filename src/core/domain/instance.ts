@@ -4,7 +4,6 @@ import {
     requireAllPresentOrAllAbsent,
     requiredCanOnlyBePresentIfOtherValuePresent,
     requiredValue,
-    requireIsBoolean,
     requireNoDuplicates,
     requireShouldBePresentWhenOtherValueEquals,
     requireShouldEqualAcceptedValue
@@ -24,17 +23,16 @@ import {
     YourEuropeCategoryType
 } from "./types";
 import {asSortedArray} from "./shared/collections-helper";
-import {Requirement, RequirementBuilder} from "./requirement";
-import {Procedure, ProcedureBuilder} from "./procedure";
-import {Website, WebsiteBuilder} from "./website";
-import {Cost, CostBuilder} from "./cost";
-import {FinancialAdvantage, FinancialAdvantageBuilder} from "./financial-advantage";
+import {Requirement} from "./requirement";
+import {Procedure} from "./procedure";
+import {Website} from "./website";
+import {Cost} from "./cost";
+import {FinancialAdvantage} from "./financial-advantage";
 import {ContactPoint} from "./contact-point";
 import {instanceLanguages, Language} from "./language";
 import {LegalResource} from "./legal-resource";
 import {InvariantError} from "./shared/lpdc-error";
 import {isEqual} from "lodash";
-import {EvidenceBuilder} from "./evidence";
 
 export class Instance {
 
@@ -160,7 +158,7 @@ export class Instance {
         this._productId = productId;
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
         this._dutchLanguageVariant = requireShouldEqualAcceptedValue(dutchLanguageVariant, 'dutchLanguageVariant', instanceLanguages);
-        this._needsConversionFromFormalToInformal = requireIsBoolean(needsConversionFromFormalToInformal, 'needsConversionFromFormalToInformal');
+        this._needsConversionFromFormalToInformal = requiredValue(needsConversionFromFormalToInformal, 'needsConversionFromFormalToInformal');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._dateSent = requireShouldBePresentWhenOtherValueEquals(dateSent, 'dateSent', InstanceStatusType.VERSTUURD, status, 'status');

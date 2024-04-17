@@ -87,10 +87,6 @@ export class Invariant<V> {
         return condition() ? this.haveAtLeastOneValuePresent() : () => null;
     }
 
-    isBoolean() {
-        return () => typeof this._value === 'boolean' ? null : `${this._name} moet type boolean zijn`;
-    }
-
     public to(...invariants: InvariantType<V>[]): V {
         const violations = invariants.map(invariant => invariant(this._value));
         const firstViolation = violations.find(violation => violation !== null);
@@ -151,8 +147,4 @@ export const requireShouldBePresentWhenOtherValueEquals = <T>(value: T, name: st
 export const requireAtLeastOneValuePresentIfCondition = <T>(values: T[], name: string = 'list', condition: () => boolean): T => {
     const invariant: Invariant<T> = Invariant.require(values, name);
     return invariant.to(invariant.atLeastOneValuePresentIfCondition(condition));
-};
-export const requireIsBoolean = <T>(value: T, name: string = 'object'): T => {
-    const invariant: Invariant<T> = Invariant.require(value, name);
-    return invariant.to(invariant.notBeAbsent(), invariant.isBoolean());
 };
