@@ -490,7 +490,7 @@ describe('Form application service tests', () => {
         test('no evidence title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withTitle(undefined).buildForInstance()).build()])
+                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withTitle(undefined).build()).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -504,7 +504,7 @@ describe('Form application service tests', () => {
         test('no english requirement evidence title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()).build()])
+                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()).build()])
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -519,7 +519,7 @@ describe('Form application service tests', () => {
         test('no english requirement evidence title when no yourEurope, is valid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()).build()])
+                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()).build()])
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -531,7 +531,7 @@ describe('Form application service tests', () => {
         test('no evidence description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withDescription(undefined).buildForInstance()).build()])
+                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withDescription(undefined).build()).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -545,7 +545,7 @@ describe('Form application service tests', () => {
         test('no english requirement evidence description when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()).build()])
+                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()).build()])
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -560,7 +560,7 @@ describe('Form application service tests', () => {
         test('no english requirement evidence description when no yourEurope, is valid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()).build()])
+                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()).build()])
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -572,7 +572,7 @@ describe('Form application service tests', () => {
         test('no procedure title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withTitle(undefined).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withTitle(undefined).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -586,7 +586,7 @@ describe('Form application service tests', () => {
         test('no english procedure title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -601,7 +601,7 @@ describe('Form application service tests', () => {
         test('no english procedure title when no yourEurope, is valid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -613,7 +613,7 @@ describe('Form application service tests', () => {
         test('no procedure description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withDescription(undefined).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withDescription(undefined).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -627,7 +627,7 @@ describe('Form application service tests', () => {
         test('no english procedure description when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -642,7 +642,7 @@ describe('Form application service tests', () => {
         test('no english procedure description when no yourEurope, is valid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -654,11 +654,11 @@ describe('Form application service tests', () => {
         test('no procedure website title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withTitle(undefined).buildForInstance()]).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withTitle(undefined).build()]).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
-
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
+
             expect(errors).toEqual([{
                 formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
@@ -668,12 +668,12 @@ describe('Form application service tests', () => {
         test('no english procedure website title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()]).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()]).build()])
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
-
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
+
             expect(errors).toEqual([{
                 formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
@@ -683,19 +683,19 @@ describe('Form application service tests', () => {
         test('no english procedure website title when no yourEurope, is valid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()]).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()]).build()])
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
-
             const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
+
             expect(errors).toEqual([]);
         });
 
         test('no procedure website url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withUrl(undefined).buildForInstance()]).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withUrl(undefined).build()]).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -709,7 +709,7 @@ describe('Form application service tests', () => {
         test('invalid procedure website url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withUrl('www.example.com').buildForInstance()]).buildForInstance()])
+                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withUrl('www.example.com').build()]).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -723,7 +723,7 @@ describe('Form application service tests', () => {
         test('no cost title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withCosts([aFullCostForInstance().withTitle(undefined).buildForInstance()])
+                .withCosts([aFullCostForInstance().withTitle(undefined).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -737,7 +737,7 @@ describe('Form application service tests', () => {
         test('no english cost title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withCosts([aFullCostForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
+                .withCosts([aFullCostForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -752,7 +752,7 @@ describe('Form application service tests', () => {
         test('no english cost title when no yourEurope, is valid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withCosts([aFullCostForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
+                .withCosts([aFullCostForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -764,7 +764,7 @@ describe('Form application service tests', () => {
         test('no cost description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withCosts([aFullCostForInstance().withDescription(undefined).buildForInstance()])
+                .withCosts([aFullCostForInstance().withDescription(undefined).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -778,7 +778,7 @@ describe('Form application service tests', () => {
         test('no english cost description when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withCosts([aFullCostForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()])
+                .withCosts([aFullCostForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -793,7 +793,7 @@ describe('Form application service tests', () => {
         test('no english cost description when no yourEurope, is valid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withCosts([aFullCostForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()])
+                .withCosts([aFullCostForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -805,7 +805,7 @@ describe('Form application service tests', () => {
         test('no financialAdvantage title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withTitle(undefined).buildForInstance()])
+                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withTitle(undefined).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -819,7 +819,7 @@ describe('Form application service tests', () => {
         test('no english financialAdvantage title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
+                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -834,7 +834,7 @@ describe('Form application service tests', () => {
         test('no english financialAdvantage title when no yourEurope, is valid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
+                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -846,7 +846,7 @@ describe('Form application service tests', () => {
         test('no financialAdvantage description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withDescription(undefined).buildForInstance()])
+                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withDescription(undefined).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -860,7 +860,7 @@ describe('Form application service tests', () => {
         test('no english financialAdvantage description when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()])
+                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -875,7 +875,7 @@ describe('Form application service tests', () => {
         test('no english financialAdvantage description when no yourEurope, is valid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).buildForInstance()])
+                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -887,7 +887,7 @@ describe('Form application service tests', () => {
         test('no legalResource url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withLegalResources([aFullLegalResourceForInstance().withUrl(undefined).buildForInstance()])
+                .withLegalResources([aFullLegalResourceForInstance().withUrl(undefined).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -901,7 +901,7 @@ describe('Form application service tests', () => {
         test('invalid legalResource url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withLegalResources([aFullLegalResourceForInstance().withUrl('codex.vlaanderen.be').buildForInstance()])
+                .withLegalResources([aFullLegalResourceForInstance().withUrl('codex.vlaanderen.be').build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -957,7 +957,7 @@ describe('Form application service tests', () => {
         test('no website title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withWebsites([aFullWebsiteForInstance().withTitle(undefined).buildForInstance()])
+                .withWebsites([aFullWebsiteForInstance().withTitle(undefined).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -971,7 +971,7 @@ describe('Form application service tests', () => {
         test('no english website title when yourEurope, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
+                .withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -986,7 +986,7 @@ describe('Form application service tests', () => {
         test('no english website title when no yourEurope, is valid', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).buildForInstance()])
+                .withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -998,7 +998,7 @@ describe('Form application service tests', () => {
         test('no website url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withWebsites([aFullWebsiteForInstance().withUrl(undefined).buildForInstance()])
+                .withWebsites([aFullWebsiteForInstance().withUrl(undefined).build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -1012,7 +1012,7 @@ describe('Form application service tests', () => {
         test('invalid website url, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withWebsites([aFullWebsiteForInstance().withUrl('www.example.com').buildForInstance()])
+                .withWebsites([aFullWebsiteForInstance().withUrl('www.example.com').build()])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 

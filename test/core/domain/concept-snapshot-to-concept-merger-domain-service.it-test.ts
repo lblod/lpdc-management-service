@@ -359,7 +359,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withKeywords([LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')])
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
                     .withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT])
-                    .withLegalResources([anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).buildForConceptSnapshot(), anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).buildForConceptSnapshot()])
+                    .withLegalResources([anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).build(), anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).build()])
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -451,9 +451,9 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withConceptTags([ConceptTagType.YOUREUROPEAANBEVOLEN])
                     .withLegalResources(
                         [
-                            anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).buildForConceptSnapshot(),
-                            anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).buildForConceptSnapshot(),
-                            anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(3).buildForConceptSnapshot()])
+                            anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).build(),
+                            anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).build(),
+                            anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(3).build()])
                     .build();
 
             insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);

@@ -155,19 +155,7 @@ export class LegalResourceBuilder {
         this.order = order;
         return this;
     }
-
-    public buildForConceptSnapshot(): LegalResource {
-        return LegalResource.forConceptSnapshot(this.build());
-    }
-
-    public buildForConcept(): LegalResource {
-        return LegalResource.forConcept(this.build());
-    }
-
-    public buildForInstance(): LegalResource {
-        return LegalResource.forInstance(this.build());
-    }
-
+    
     public build(): LegalResource {
         return LegalResource.reconstitute(
             this.id,

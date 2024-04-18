@@ -163,19 +163,7 @@ export class FinancialAdvantageBuilder {
         this.order = order;
         return this;
     }
-
-    public buildForInstance(): FinancialAdvantage {
-        return FinancialAdvantage.forInstance(this.build());
-    }
-
-    public buildForConcept(): FinancialAdvantage {
-        return FinancialAdvantage.forConcept(this.build());
-    }
-
-    public buildForConceptSnapshot(): FinancialAdvantage {
-        return FinancialAdvantage.forConceptSnapshot(this.build());
-    }
-
+    
     public build(): FinancialAdvantage {
         return FinancialAdvantage.reconstitute(
             this.id,

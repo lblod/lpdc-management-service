@@ -140,19 +140,7 @@ export class EvidenceBuilder {
         this.description = description;
         return this;
     }
-
-    public buildForInstance(): Evidence {
-        return Evidence.forInstance(this.build());
-    }
-
-    public buildForConcept(): Evidence {
-        return Evidence.forConcept(this.build());
-    }
-
-    public buildForConceptSnapshot(): Evidence {
-        return Evidence.forConceptSnapshot(this.build());
-    }
-
+    
     public build(): Evidence {
         return Evidence.reconstitute(
             this.id,

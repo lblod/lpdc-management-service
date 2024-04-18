@@ -194,18 +194,6 @@ export class RequirementBuilder {
         return this;
     }
 
-    public buildForInstance(): Requirement {
-        return Requirement.forInstance(this.build());
-    }
-
-    public buildForConcept(): Requirement {
-        return Requirement.forConcept(this.build());
-    }
-
-    public buildForConceptSnapshot(): Requirement {
-        return Requirement.forConceptSnapshot(this.build());
-    }
-
     public build(): Requirement {
         return Requirement.reconstitute(
             this._id,

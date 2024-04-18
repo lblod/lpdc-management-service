@@ -183,19 +183,7 @@ export class WebsiteBuilder {
         this.url = url;
         return this;
     }
-
-    public buildForInstance(): Website {
-        return Website.forInstance(this.build());
-    }
-
-    public buildForConcept(): Website {
-        return Website.forConcept(this.build());
-    }
-
-    public buildForConceptSnapshot(): Website {
-        return Website.forConceptSnapshot(this.build());
-    }
-
+    
     public build(): Website {
         return Website.reconstitute(
             this.id,

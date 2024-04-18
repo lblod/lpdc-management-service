@@ -199,18 +199,6 @@ export class ProcedureBuilder {
         return this;
     }
 
-    public buildForInstance(): Procedure {
-        return Procedure.forInstance(this.build());
-    }
-
-    public buildForConcept(): Procedure {
-        return Procedure.forConcept(this.build());
-    }
-
-    public buildForConceptSnapshot(): Procedure {
-        return Procedure.forConceptSnapshot(this.build());
-    }
-
     public build(): Procedure {
         return Procedure.reconstitute(
             this.id,

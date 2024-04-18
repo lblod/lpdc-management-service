@@ -163,19 +163,7 @@ export class CostBuilder {
         this.order = order;
         return this;
     }
-
-    public buildForInstance(): Cost {
-        return Cost.forInstance(this.build());
-    }
-
-    public buildForConcept(): Cost {
-        return Cost.forConcept(this.build());
-    }
-
-    public buildForConceptSnapshot(): Cost {
-        return Cost.forConceptSnapshot(this.build());
-    }
-
+    
     public build(): Cost {
         return Cost.reconstitute(
             this.id,
