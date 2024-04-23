@@ -25,7 +25,7 @@ describe('constructing', () => {
         });
 
         test('Invalid iri verwijst naar throws error', () => {
-            expect(() => Address.forInstance(aFullAddressForInstance().withVerwijstNaar(new Iri('bad iri')).build())).toThrowWithMessage(InvariantError, 'iri begint niet met een van volgende waarden: [http://,https://]');
+            expect(() => Address.forInstance(aFullAddressForInstance().withVerwijstNaar(new Iri('bad iri')).build())).toThrowWithMessage(InvariantError, 'iri begint niet met een van volgende waarden: [http://,https://,_:]');
         });
 
         describe('Gemeentenaam, land en straatnaam', () => {

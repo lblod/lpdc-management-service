@@ -1,6 +1,6 @@
-import {NamedNode, Quad} from 'rdflib/lib/tf-types';
+import {BlankNode, NamedNode, Quad} from 'rdflib/lib/tf-types';
 import {Iri} from '../../core/domain/shared/iri';
-import {graph, isLiteral, isNamedNode, Literal, namedNode, Statement} from 'rdflib';
+import {blankNode, graph, isBlankNode, isLiteral, isNamedNode, Literal, namedNode, Statement} from 'rdflib';
 import {ConceptSnapshot} from '../../core/domain/concept-snapshot';
 import {LanguageString} from '../../core/domain/language-string';
 import {Cost} from '../../core/domain/cost';
@@ -70,7 +70,7 @@ class StoreAccess {
         this.doubleQuadReporter = doubleQuadReporter;
     }
 
-    public statements(s: NamedNode,
+    public statements(s: NamedNode | BlankNode,
                       p: NamedNode,
                       options: {
                           validateUniqueLanguages?: boolean;
@@ -98,12 +98,12 @@ class StoreAccess {
         return result;
     }
 
-    public uniqueValue(s: NamedNode,
+    public uniqueValue(s: NamedNode | BlankNode,
                        p: NamedNode): string | void {
         return this.uniqueStatement(s, p)?.object?.value;
     }
 
-    public uniqueStatement(s: NamedNode,
+    public uniqueStatement(s: NamedNode | BlankNode,
                            p: NamedNode,
                            o: NamedNode = null): Statement | undefined {
         const allStatementsMatching = this.statements(s, p, {o: o});
@@ -299,7 +299,7 @@ export class QuadsToDomainMapper {
     }
 
     private errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
-        const typeFoundForId: string = this.storeAccess.uniqueValue(namedNode(id.value), NS.rdf('type'));
+        const typeFoundForId: string = this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.rdf('type'));
         if (!typeFoundForId) {
             throw new NotFoundError(`Kan <${id}> niet vinden voor type ${type} in graph ${this.graphId}`);
         }
@@ -309,181 +309,181 @@ export class QuadsToDomainMapper {
     }
 
     private startDate(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('startDate')));
+        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('startDate')));
     }
 
     private endDate(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('endDate')));
+        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('endDate')));
     }
 
     private productType(id: Iri): ProductType | undefined {
-        return this.asEnum(ProductType, NS.dvc.type, this.storeAccess.uniqueStatement(namedNode(id.value), NS.dct('type')));
+        return this.asEnum(ProductType, NS.dvc.type, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.dct('type')));
     }
 
     private title(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.storeAccess.statements(namedNode(id.value), NS.dct('title')));
+        return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dct('title')));
     }
 
     private description(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.storeAccess.statements(namedNode(id.value), NS.dct('description')));
+        return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dct('description')));
     }
 
     private additionalDescription(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('additionalDescription')));
+        return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('additionalDescription')));
     }
 
     private exception(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('exception')));
+        return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('exception')));
     }
 
     private regulation(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('regulation')));
+        return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('regulation')));
     }
 
     private uuid(id: Iri): string | undefined {
-        return this.storeAccess.uniqueValue(namedNode(id.value), NS.mu('uuid'));
+        return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.mu('uuid'));
     }
 
     private createdBy(id: Iri): Iri | undefined {
-        return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.pav('createdBy')));
+        return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.pav('createdBy')));
     }
 
     private targetAudiences(id: Iri): TargetAudienceType[] {
-        return this.asEnums(TargetAudienceType, NS.dvc.doelgroep, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('targetAudience')));
+        return this.asEnums(TargetAudienceType, NS.dvc.doelgroep, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('targetAudience')));
     }
 
     private themes(id: Iri): ThemeType[] {
-        return this.asEnums(ThemeType, NS.dvc.thema, this.storeAccess.statements(namedNode(id.value), NS.m8g('thematicArea')));
+        return this.asEnums(ThemeType, NS.dvc.thema, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('thematicArea')));
     }
 
     private competentAuthorityLevels(id: Iri): CompetentAuthorityLevelType[] {
-        return this.asEnums(CompetentAuthorityLevelType, NS.dvc.bevoegdBestuursniveau, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel')));
+        return this.asEnums(CompetentAuthorityLevelType, NS.dvc.bevoegdBestuursniveau, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('competentAuthorityLevel')));
     }
 
     private competentAuthorities(id: Iri): Iri[] {
-        return this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasCompetentAuthority')));
+        return this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('hasCompetentAuthority')));
     }
 
     private executingAuthorityLevels(id: Iri): ExecutingAuthorityLevelType[] {
-        return this.asEnums(ExecutingAuthorityLevelType, NS.dvc.uitvoerendBestuursniveau, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel')));
+        return this.asEnums(ExecutingAuthorityLevelType, NS.dvc.uitvoerendBestuursniveau, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('executingAuthorityLevel')));
     }
 
     private executingAuthorities(id: Iri): Iri[] {
-        return this.asIris(this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('hasExecutingAuthority')));
+        return this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('hasExecutingAuthority')));
     }
 
     private publicationMedia(id: Iri): PublicationMediumType[] {
-        return this.asEnums(PublicationMediumType, NS.dvc.publicatieKanaal, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('publicationMedium')));
+        return this.asEnums(PublicationMediumType, NS.dvc.publicatieKanaal, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('publicationMedium')));
     }
 
     private yourEuropeCategories(id: Iri): YourEuropeCategoryType[] {
-        return this.asEnums(YourEuropeCategoryType, NS.dvc.yourEuropeCategorie, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('yourEuropeCategory')));
+        return this.asEnums(YourEuropeCategoryType, NS.dvc.yourEuropeCategorie, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('yourEuropeCategory')));
     }
 
     private email(id: Iri): string | undefined {
-        return this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('email'));
+        return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('email'));
     }
 
     private telephone(id: Iri): string | undefined {
-        return this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('telephone'));
+        return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('telephone'));
     }
 
     private openingHours(id: Iri): string | undefined {
-        return this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('openingHours'));
+        return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('openingHours'));
     }
 
     private gemeentenaam(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.storeAccess.statements(namedNode(id.value), NS.adres('gemeentenaam')));
+        return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.adres('gemeentenaam')));
     }
 
     private land(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.storeAccess.statements(namedNode(id.value), NS.adres('land')));
+        return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.adres('land')));
     }
 
     private huisnummer(id: Iri): string | undefined {
-        return this.storeAccess.uniqueValue(namedNode(id.value), NS.adres('Adresvoorstelling.huisnummer'));
+        return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.adres('Adresvoorstelling.huisnummer'));
     }
 
     private busnummer(id: Iri): string | undefined {
-        return this.storeAccess.uniqueValue(namedNode(id.value), NS.adres('Adresvoorstelling.busnummer'));
+        return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.adres('Adresvoorstelling.busnummer'));
     }
 
     private postcode(id: Iri): string | undefined {
-        return this.storeAccess.uniqueValue(namedNode(id.value), NS.adres('postcode'));
+        return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.adres('postcode'));
     }
 
     private straatnaam(id: Iri): LanguageString | undefined {
-        return this.asLanguageString(this.storeAccess.statements(namedNode(id.value), NS.adres('Straatnaam')));
+        return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.adres('Straatnaam')));
     }
 
     private verwijstNaar(id: Iri): Iri | undefined {
-        return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.adres('verwijstNaar')));
+        return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.adres('verwijstNaar')));
     }
 
     private keywords(id: Iri): LanguageString[] {
-        return this.storeAccess.statements(namedNode(id.value), NS.dcat('keyword'), {validateUniqueLanguages: false})
+        return this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dcat('keyword'), {validateUniqueLanguages: false})
             .map(s => [s])
             .flatMap(statements => this.asLanguageString(statements));
     }
 
     private url(id: Iri): string | undefined {
-        return this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('url'));
+        return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('url'));
     }
 
     private isVersionOf(id: Iri): Iri | undefined {
-        return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.dct('isVersionOf')));
+        return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.dct('isVersionOf')));
     }
 
     private dateCreated(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('dateCreated')));
+        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('dateCreated')));
     }
 
     private dateModified(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('dateModified')));
+        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('dateModified')));
     }
 
     private dateSent(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('dateSent')));
+        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('dateSent')));
     }
 
     private datePublished(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('datePublished')));
+        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('datePublished')));
     }
 
     private generatedAtTime(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(namedNode(id.value), NS.prov('generatedAtTime')));
+        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.prov('generatedAtTime')));
     }
 
     private productId(id: Iri): string | undefined {
-        return this.storeAccess.uniqueValue(namedNode(id.value), NS.schema('productID'));
+        return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('productID'));
     }
 
     private latestConceptSnapshot(id: Iri): Iri {
-        return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.ext('hasVersionedSource')));
+        return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.ext('hasVersionedSource')));
     }
 
     private previousConceptSnapshots(id: Iri): Iri[] {
-        return this.asIris(this.storeAccess.statements(namedNode(id.value), NS.ext('previousVersionedSource')));
+        return this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.ext('previousVersionedSource')));
     }
 
     private latestFunctionallyChangedConceptSnapshot(id: Iri): Iri {
-        return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdc('hasLatestFunctionalChange')));
+        return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.lpdc('hasLatestFunctionalChange')));
     }
 
     private conceptTags(id: Iri): ConceptTagType[] {
-        return this.asEnums(ConceptTagType, NS.dvc.conceptTag, this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('conceptTag')));
+        return this.asEnums(ConceptTagType, NS.dvc.conceptTag, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('conceptTag')));
     }
 
     private isConceptArchived(id: Iri): boolean {
-        return !!this.storeAccess.uniqueStatement(namedNode(id.value), NS.adms('status'), STATUS.concept.archived);
+        return !!this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.adms('status'), STATUS.concept.archived);
     }
 
     private instanceStatusType(id: Iri): InstanceStatusType | undefined {
-        return this.asEnum(InstanceStatusType, NS.concepts.instanceStatus, this.storeAccess.uniqueStatement(namedNode(id.value), NS.adms('status')));
+        return this.asEnum(InstanceStatusType, NS.concepts.instanceStatus, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.adms('status')));
     }
 
     private isArchived(id: Iri): boolean {
-        return this.parseBoolean(this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('isArchived'))?.object as Literal);
+        return this.parseBoolean(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.lpdcExt('isArchived'))?.object as Literal);
     }
 
     private parseBoolean(literal: Literal | undefined): boolean {
@@ -493,20 +493,27 @@ export class QuadsToDomainMapper {
     }
 
     private instanceReviewStatusType(id: Iri): InstanceReviewStatusType | undefined {
-        return this.asEnum(InstanceReviewStatusType, NS.concepts.reviewStatus, this.storeAccess.uniqueStatement(namedNode(id.value), NS.ext('reviewStatus')));
+        return this.asEnum(InstanceReviewStatusType, NS.concepts.reviewStatus, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.ext('reviewStatus')));
     }
 
     private instancePublicationStatusType(id: Iri): InstancePublicationStatusType | undefined {
-        return this.asEnum(InstancePublicationStatusType, NS.concepts.publicationStatus, this.storeAccess.uniqueStatement(namedNode(id.value), NS.schema('publication')));
+        return this.asEnum(InstancePublicationStatusType, NS.concepts.publicationStatus, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.schema('publication')));
     }
 
     private spatials(id: Iri): Iri[] {
-        return this.asIris(this.storeAccess.statements(namedNode(id.value), NS.dct('spatial')));
+        return this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dct('spatial')));
+    }
+
+    private asNamedOrBlankNode(id: Iri): NamedNode | BlankNode {
+        if(id.value.startsWith('_:')) {
+            return blankNode(id.value.substring(2));
+        }
+        return namedNode(id.value);
     }
 
     private costs(id: Iri): Cost[] {
         const costIds =
-            this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasCost')));
+            this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('hasCost')));
         costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, NS.m8g('Cost')));
 
         const costs = costIds.map(costId => Cost.reconstitute(costId, this.uuid(costId), this.title(costId), this.description(costId), this.order(costId)));
@@ -516,7 +523,7 @@ export class QuadsToDomainMapper {
 
     private financialAdvantages(id: Iri): FinancialAdvantage[] {
         const financialAdvantageIds =
-            this.asIris(this.storeAccess.statements(namedNode(id.value), NS.cpsv('produces')));
+            this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.cpsv('produces')));
         financialAdvantageIds.forEach(financialAdvantageId =>
             this.errorIfMissingOrIncorrectType(financialAdvantageId, NS.lpdcExt('FinancialAdvantage')));
 
@@ -529,7 +536,7 @@ export class QuadsToDomainMapper {
 
     private contactPoints(id: Iri): ContactPoint[] {
         const contactPointIds =
-            this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasContactPoint')));
+            this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('hasContactPoint')));
 
         contactPointIds.forEach(contactPointId =>
             this.errorIfMissingOrIncorrectType(contactPointId, NS.schema('ContactPoint')));
@@ -543,7 +550,7 @@ export class QuadsToDomainMapper {
 
     private address(id: Iri): Address | undefined {
         const addressIds =
-            this.asIris(this.storeAccess.statements(namedNode(id.value), NS.lpdcExt('address')));
+            this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('address')));
 
         addressIds.forEach(evidenceId =>
             this.errorIfMissingOrIncorrectType(evidenceId, NS.locn('Address')));
@@ -570,7 +577,7 @@ export class QuadsToDomainMapper {
 
     private websites(id: Iri, predicate: NamedNode = NS.rdfs('seeAlso')): Website[] {
         const websiteIds =
-            this.asIris(this.storeAccess.statements(namedNode(id.value), predicate));
+            this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), predicate));
 
         websiteIds.forEach(websiteId =>
             this.errorIfMissingOrIncorrectType(websiteId, NS.schema('WebSite')));
@@ -584,7 +591,7 @@ export class QuadsToDomainMapper {
 
     private procedures(id: Iri): Procedure[] {
         const procedureIds =
-            this.asIris(this.storeAccess.statements(namedNode(id.value), NS.cpsv('follows')));
+            this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.cpsv('follows')));
 
         procedureIds.forEach(procedureId =>
             this.errorIfMissingOrIncorrectType(procedureId, NS.cpsv('Rule')));
@@ -598,7 +605,7 @@ export class QuadsToDomainMapper {
 
     private requirements(id: Iri): Requirement[] {
         const requirementIds =
-            this.asIris(this.storeAccess.statements(namedNode(id.value), NS.ps('hasRequirement')));
+            this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.ps('hasRequirement')));
 
         requirementIds.forEach(requirementId =>
             this.errorIfMissingOrIncorrectType(requirementId, NS.m8g('Requirement')));
@@ -619,7 +626,7 @@ export class QuadsToDomainMapper {
 
     private evidence(id: Iri): Evidence | undefined {
         const evidenceIds =
-            this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasSupportingEvidence')));
+            this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('hasSupportingEvidence')));
 
         evidenceIds.forEach(evidenceId =>
             this.errorIfMissingOrIncorrectType(evidenceId, NS.m8g('Evidence')));
@@ -635,7 +642,7 @@ export class QuadsToDomainMapper {
 
     private legalResources(id: Iri): LegalResource[] {
         const legalResourceIds =
-            this.asIris(this.storeAccess.statements(namedNode(id.value), NS.m8g('hasLegalResource')));
+            this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('hasLegalResource')));
 
         legalResourceIds.forEach(legalResourceId =>
             this.errorIfMissingOrIncorrectType(legalResourceId, NS.eli('LegalResource')));
@@ -655,27 +662,27 @@ export class QuadsToDomainMapper {
     }
 
     private conceptId(id: Iri): Iri | undefined {
-        return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.dct('source')));
+        return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.dct('source')));
     }
 
     private order(id: Iri): number | undefined {
-        return this.asNumber(this.storeAccess.uniqueValue(namedNode(id.value), NS.sh('order')));
+        return this.asNumber(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.sh('order')));
     }
 
     private conceptSnapshotId(id: Iri): Iri | undefined {
-        return this.asIri(this.storeAccess.uniqueStatement(namedNode(id.value), NS.ext('hasVersionedSource')));
+        return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.ext('hasVersionedSource')));
     }
 
     private languages(id: Iri): LanguageType[] {
-        return this.asEnums(LanguageType, NS.pera.languageType, this.storeAccess.statements(namedNode(id.value), NS.dct('language')));
+        return this.asEnums(LanguageType, NS.pera.languageType, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dct('language')));
     }
 
     private dutchLanguageVariant(id: Iri): Language | undefined {
-        return this.asEnum(Language, 'no-namespace', this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('dutchLanguageVariant')));
+        return this.asEnum(Language, 'no-namespace', this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.lpdcExt('dutchLanguageVariant')));
     }
 
     private needsConversionFromFormalToInformal(id: Iri): boolean {
-        return this.parseBoolean(this.storeAccess.uniqueStatement(namedNode(id.value), NS.lpdcExt('needsConversionFromFormalToInformal'))?.object as Literal);
+        return this.parseBoolean(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.lpdcExt('needsConversionFromFormalToInformal'))?.object as Literal);
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {
@@ -721,19 +728,19 @@ export class QuadsToDomainMapper {
     }
 
     private asIris(statements: Statement[]): Iri[] {
-        return this.asNamedNodes(statements).map(value => new Iri(value.value));
+        return statements.map(st => this.asIri(st));
     }
 
     private asIri(statement: Statement | undefined): Iri | undefined {
-        return statement ? new Iri(this.asNamedNode(statement).value) : undefined;
+        if(!statement) {
+            return undefined;
+        }
+        const obj = this.objectAsNamedNodeOrBlankNode(statement);
+        return new Iri(isBlankNode(obj) ? obj.toString() : obj.value);
     }
 
     private asLiterals(statements: Statement[]): Literal[] {
         return statements?.map(this.asLiteral);
-    }
-
-    private asNamedNodes(statements: Statement[]): NamedNode[] {
-        return statements?.map(this.asNamedNode);
     }
 
     private asLiteral(statement: Statement): Literal {
@@ -743,11 +750,18 @@ export class QuadsToDomainMapper {
         return statement.object as Literal;
     }
 
-    private asNamedNode(statement: Statement): NamedNode {
-        if (!isNamedNode(statement.object)) {
-            throw new SystemError(`Expecting (${statement}) to have an object that is a named node.`);
+    private objectAsNamedNodeOrBlankNode(statement: Statement| undefined): NamedNode | BlankNode {
+        if(!statement) {
+            return undefined;
         }
-        return statement.object as NamedNode;
+        if (!isNamedNode(statement.object)
+            && !isBlankNode(statement.object)) {
+            throw new SystemError(`Expecting (${statement}) to have an object that is a named node or a blank node.`);
+        }
+        if(isNamedNode(statement.object)) {
+            return statement.object as NamedNode;
+        }
+        return statement.object as BlankNode;
     }
 
     private sort(anArray: any) {

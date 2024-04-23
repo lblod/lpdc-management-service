@@ -5,6 +5,7 @@ describe('constructing', () => {
 
     test('creating success', () => {
         expect(() => new Iri('http://some-value')).not.toThrow();
+        expect(() => new Iri('_:b1')).not.toThrow();
     });
 
     test('undefined throws error', () => {
@@ -16,7 +17,7 @@ describe('constructing', () => {
     });
 
     test('Does not start with http or https throws error', () => {
-        expect(() => new Iri('/some-value')).toThrowWithMessage(InvariantError, 'iri begint niet met een van volgende waarden: [http://,https://]');
+        expect(() => new Iri('/some-value')).toThrowWithMessage(InvariantError, 'iri begint niet met een van volgende waarden: [http://,https://,_:]');
     });
 
     test('get value', () => {
