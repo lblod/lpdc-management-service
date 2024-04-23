@@ -16,7 +16,7 @@ import fs from "fs";
 import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
-import {DoubleQuadReporter} from "../../src/driven/persistence/quads-to-domain-mapper";
+import {DoubleQuadReporter} from "../../src/driven/external/quads-to-domain-mapper";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import {Instance} from "../../src/core/domain/instance";
 import {

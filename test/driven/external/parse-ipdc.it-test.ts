@@ -4,7 +4,7 @@ import {
     DoubleQuadReporter,
     LoggingDoubleQuadReporter,
     QuadsToDomainMapper
-} from "../../../src/driven/persistence/quads-to-domain-mapper";
+} from "../../../src/driven/external/quads-to-domain-mapper";
 import {Logger} from "../../../platform/logger";
 import {Iri} from "../../../src/core/domain/shared/iri";
 

@@ -5,7 +5,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {SemanticFormsMapper} from "../../core/port/driven/persistence/semantic-forms-mapper";
 import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {CONCEPT_GRAPH} from "../../../config";
-import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../external/quads-to-domain-mapper";
 import {Logger} from "../../../platform/logger";
 import {Quad} from "rdflib/lib/tf-types";
 import {graph, namedNode, parse, quad} from 'rdflib';

@@ -4,7 +4,7 @@ import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recur
 import {Iri} from "../../core/domain/shared/iri";
 import {Concept} from "../../core/domain/concept";
 import {CONCEPT_GRAPH, PREFIX} from "../../../config";
-import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../external/quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {DomainToQuadsMapper} from "./domain-to-quads-mapper";

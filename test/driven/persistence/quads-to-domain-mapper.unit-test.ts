@@ -1,4 +1,4 @@
-import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../../../src/driven/persistence/quads-to-domain-mapper";
+import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../../../src/driven/external/quads-to-domain-mapper";
 import {literal, namedNode, quad} from "rdflib";
 import {buildBestuurseenheidIri, buildConceptSnapshotIri, buildInstanceIri} from "../../core/domain/iri-test-builder";
 import {uuid} from "../../../mu-helper";

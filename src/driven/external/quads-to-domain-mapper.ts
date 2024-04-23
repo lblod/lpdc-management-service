@@ -10,7 +10,7 @@ import {Website} from '../../core/domain/website';
 import {Procedure} from '../../core/domain/procedure';
 import {Requirement} from '../../core/domain/requirement';
 import {Evidence} from '../../core/domain/evidence';
-import {NS} from './namespaces';
+import {NS} from '../persistence/namespaces';
 import {FormatPreservingDate} from '../../core/domain/format-preserving-date';
 import {
     CompetentAuthorityLevelType,
@@ -28,7 +28,7 @@ import {
 } from '../../core/domain/types';
 import {Concept} from '../../core/domain/concept';
 import {Namespace} from "rdflib/lib/factories/factory-types";
-import {STATUS} from "./status";
+import {STATUS} from "../persistence/status";
 import {Instance} from "../../core/domain/instance";
 import {ContactPoint} from "../../core/domain/contact-point";
 import {Address} from "../../core/domain/address";
