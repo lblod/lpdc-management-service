@@ -1,7 +1,7 @@
 import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../config";
-import {namedNode, Statement} from "rdflib";
+import {isLiteral, namedNode, Statement} from "rdflib";
 import {shuffle, sortedUniq, uniq} from "lodash";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {sparqlEscapeUri} from "../../mu-helper";
@@ -110,6 +110,13 @@ describe('Instance Data Integrity Validation', () => {
 
             const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
             let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, bestuurseenheid.userGraph().value));
+
+            allQuadsOfGraph.map(q => {
+                if (isLiteral(q.object) && q.object.datatype.value === 'http://www.w3.org/2001/XMLSchema#boolean') {
+                    q.object.value === "1" ? q.object.value = "true" : q.object.value = "false";
+                }
+                return q;
+            });
 
             const tombStonesSubjects = new Set([...allQuadsOfGraph.filter(q => q.object.equals(namedNode('https://www.w3.org/ns/activitystreams#Tombstone'))).map(q => q.subject.value)]);
 
