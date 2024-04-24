@@ -65,7 +65,7 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.INFORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.INFORMAL).mockReturnValue('formdefinition');
 
             const {
                 form,
@@ -103,7 +103,7 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
             codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
 
             const {
@@ -162,7 +162,7 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
             const {
                 form,
@@ -204,7 +204,7 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL, false).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
             codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
 
             const {

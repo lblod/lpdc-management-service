@@ -5,12 +5,8 @@ import {Language} from "../../core/domain/language";
 
 export class FormDefinitionFileRepository implements FormDefinitionRepository {
 
-    public loadFormDefinition(formType: FormType, language: Language, isEnglishRequired: boolean): string {
-        let form = fs.readFileSync(`./src/driven/persistence/forms/${formType}/form.ttl`, 'utf8');
-        if (formType === FormType.INHOUD && isEnglishRequired) {
-            const englishRequirementFormSnippets = fs.readFileSync(`./src/driven/persistence/forms/${formType}/add-english-requirement.ttl`, 'utf8');
-            form += englishRequirementFormSnippets;
-        }
+    public loadFormDefinition(formType: FormType, language: Language): string {
+        const form = fs.readFileSync(`./src/driven/persistence/forms/${formType}/form.ttl`, 'utf8');
         return this.adjustLanguageOfForm(form, language);
     }
 

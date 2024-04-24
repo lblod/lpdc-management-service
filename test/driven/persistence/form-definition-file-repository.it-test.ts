@@ -8,25 +8,15 @@ describe('form definition file repository it tests', () => {
 
     for(const language of Object.values(Language)){
         test(`loads inhoud form in language ${language}`, () => {
-            const result = repo.loadFormDefinition(FormType.INHOUD, language, false);
+            const result = repo.loadFormDefinition(FormType.INHOUD, language);
             expect(result).toContain('@prefix form: <http://lblod.data.gift/vocabularies/forms/> .');
             expect(result).toContain(`form:language "${language}";`);
             expect(result).toContain('form:includes ext:titleF;');
-            expect(result).not.toContain('<FORMAL_INFORMAL_LANGUAGE>');
-        });
-
-        test(`loads inhoud form in language ${language} with english requirement`, () => {
-            const result = repo.loadFormDefinition(FormType.INHOUD, language, true);
-            expect(result).toContain('@prefix form: <http://lblod.data.gift/vocabularies/forms/> .');
-            expect(result).toContain(`form:language "${language}";`);
-            expect(result).toContain('form:includes ext:titleF;');
-            expect(result).toContain('extEng:titleF \n' +
-                '    form:validations');
             expect(result).not.toContain('<FORMAL_INFORMAL_LANGUAGE>');
         });
 
         test(`loads eigenschappen form in language ${language}`, () => {
-            const result = repo.loadFormDefinition(FormType.EIGENSCHAPPEN, language, false);
+            const result = repo.loadFormDefinition(FormType.EIGENSCHAPPEN, language);
             expect(result).toContain('@prefix form: <http://lblod.data.gift/vocabularies/forms/> .');
             expect(result).toContain('form:includes ext:productTypeF');
             expect(result).not.toContain('<FORMAL_INFORMAL_LANGUAGE>');

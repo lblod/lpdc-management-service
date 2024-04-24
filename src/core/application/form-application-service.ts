@@ -46,8 +46,7 @@ export class FormApplicationService {
         const concept = await this._conceptRepository.findById(conceptId);
         const languageForForm = await this._selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
 
-        //TODO LPDC-1151 remove isEnglishRequired check
-        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm, false);
+        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm);
 
         const tailoredSchemes = formType === FormType.EIGENSCHAPPEN ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
 
@@ -68,8 +67,7 @@ export class FormApplicationService {
 
         const instance = await this._instanceRepository.findById(bestuurseenheid, instanceId);
 
-        //TODO LPDC-1151 remove isEnglishRequired check
-        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, instance.dutchLanguageVariant, false);
+        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, instance.dutchLanguageVariant);
 
         const tailoredSchemes = formType === FormType.EIGENSCHAPPEN ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
 
