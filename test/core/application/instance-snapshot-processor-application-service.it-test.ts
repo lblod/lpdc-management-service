@@ -88,21 +88,21 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
 
         const instanceId = buildInstanceIri(uuid());
         const instanceSnapshot1  = aFullInstanceSnapshot()
-            .withTitle(LanguageString.of('snapshot 1', undefined, undefined, 'snapshot 1'))
+            .withTitle(LanguageString.of(undefined, undefined, 'snapshot 1'))
             .withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
             .withCreatedBy(bestuurseenheid.id)
             .withIsVersionOfInstance(instanceId)
             .withConceptId(concept.id)
             .build();
         const instanceSnapshot2  = aFullInstanceSnapshot()
-            .withTitle(LanguageString.of('snapshot 2', undefined, undefined, 'snapshot 2'))
+            .withTitle(LanguageString.of(undefined, undefined, 'snapshot 2'))
             .withGeneratedAtTime(FormatPreservingDate.of('2024-01-17T00:00:00.672Z'))
             .withCreatedBy(bestuurseenheid.id)
             .withIsVersionOfInstance(instanceId)
             .withConceptId(concept.id)
             .build();
         const instanceSnapshot3  = aFullInstanceSnapshot()
-            .withTitle(LanguageString.of('snapshot 3', undefined, undefined, 'snapshot 3'))
+            .withTitle(LanguageString.of(undefined, undefined, 'snapshot 3'))
             .withGeneratedAtTime(FormatPreservingDate.of('2024-01-18T00:00:00.672Z'))
             .withCreatedBy(bestuurseenheid.id)
             .withIsVersionOfInstance(instanceId)

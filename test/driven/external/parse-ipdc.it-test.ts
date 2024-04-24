@@ -11,7 +11,7 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 describe('Parse ipdc', () => {
 
 
-   test('parse ipdc example', async (done) => {
+   test.skip('parse ipdc example', async (done) => {
         const bestuurseenheid = aBestuurseenheid().build();
         const res = await fetch('https://productencatalogus-v3.vlaanderen.be/doc/instantie/f7d287bf-7adb-434e-a33e-7fe28818fd99', {
             headers: {'Accept': 'application/ld+json'}

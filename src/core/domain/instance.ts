@@ -187,6 +187,7 @@ export class Instance {
             .build();
     }
 
+    //TODO LPDC-1151
     public calculatedInstanceNlLanguages(): Language[] {
         const nlLanguage =
             LanguageString.extractNlLanguages([
@@ -209,6 +210,7 @@ export class Instance {
         return [...uniquelanguages];
     }
 
+    //TODO LPDC-1151
     private validateLanguages(): void {
         const values = [
             this._title,

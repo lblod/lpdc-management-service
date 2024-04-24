@@ -633,15 +633,10 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${instanceUUID}"""`,
-                    `<${instanceId}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.TITLE_EN}"""@EN`,
                     `<${instanceId}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.TITLE_NL_FORMAL}"""@nl-BE-x-formal`,
-                    `<${instanceId}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.DESCRIPTION_EN}"""@EN`,
                     `<${instanceId}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.DESCRIPTION_NL_FORMAL}"""@nl-BE-x-formal`,
-                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${InstanceTestBuilder.ADDITIONAL_DESCRIPTION_EN}"""@en`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${InstanceTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL}"""@nl-BE-x-formal`,
-                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#exception> """${InstanceTestBuilder.EXCEPTION_EN}"""@en`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#exception> """${InstanceTestBuilder.EXCEPTION_NL_FORMAL}"""@nl-BE-x-formal`,
-                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """${InstanceTestBuilder.REGULATION_EN}"""@en`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """${InstanceTestBuilder.REGULATION_NL_FORMAL}"""@nl-BE-x-formal`,
                     `<${instanceId}> <http://schema.org/startDate> """${InstanceTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/endDate> """${InstanceTestBuilder.END_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -668,91 +663,69 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES[0]).value}>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES[1]).value}>`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <${NS.dvc.yourEuropeCategorie(InstanceTestBuilder.YOUR_EUROPE_CATEGORIES[2]).value}>`,
-                    `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[0].en}"""@en`,
+                    `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[0].nl}"""@nl`,
                     `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[1].nl}"""@nl`,
-                    `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[2].nl}"""@nl`,
-                    `<${instanceId}> <http://www.w3.org/ns/dcat#keyword> """${InstanceTestBuilder.KEYWORDS[3].en}"""@en`,
 
                     `<${instanceId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${InstanceTestBuilder.REQUIREMENTS[1].id}>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].id}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.REQUIREMENTS[1].uuid}"""`,
-                    `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[1].title.en}"""@EN`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[1].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[1].description.en}"""@EN`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[1].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].id}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> a <http://data.europa.eu/m8g/Evidence>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.REQUIREMENTS[1].evidence.uuid}"""`,
-                    `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[1].evidence.title.en}"""@EN`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[1].evidence.title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[1].evidence.description.en}"""@EN`,
                     `<${InstanceTestBuilder.REQUIREMENTS[1].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[1].evidence.description.nlFormal}"""@nl-BE-x-formal`,
                     `<${instanceId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${InstanceTestBuilder.REQUIREMENTS[0].id}>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].id}> a <http://data.europa.eu/m8g/Requirement>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.REQUIREMENTS[0].uuid}"""`,
-                    `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[0].title.en}"""@EN`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[0].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].id}> <http://data.europa.eu/m8g/hasSupportingEvidence> <${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> a <http://data.europa.eu/m8g/Evidence>`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.uuid}"""`,
-                    `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.title.en}"""@EN`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.description.en}"""@EN`,
                     `<${InstanceTestBuilder.REQUIREMENTS[0].evidence.id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.REQUIREMENTS[0].evidence.description.nlFormal}"""@nl-BE-x-formal`,
 
                     `<${instanceId}> <http://purl.org/vocab/cpsv#follows> <${InstanceTestBuilder.PROCEDURES[1].id}>`,
                     `<${InstanceTestBuilder.PROCEDURES[1].id}> a <http://purl.org/vocab/cpsv#Rule>`,
                     `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[1].uuid}"""`,
-                    `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].title.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].description.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.PROCEDURES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${InstanceTestBuilder.PROCEDURES[1].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${InstanceTestBuilder.PROCEDURES[1].websites[1].id}>`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> a <http://schema.org/WebSite>`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[1].websites[1].uuid}"""`,
-                    `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].websites[1].title.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].websites[1].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].websites[1].description.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].websites[1].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://schema.org/url> """${InstanceTestBuilder.PROCEDURES[1].websites[1].url}"""`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${InstanceTestBuilder.PROCEDURES[1].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${InstanceTestBuilder.PROCEDURES[1].websites[0].id}>`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> a <http://schema.org/WebSite>`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[1].websites[0].uuid}"""`,
-                    `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].websites[0].title.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[1].websites[0].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].websites[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[1].websites[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://schema.org/url> """${InstanceTestBuilder.PROCEDURES[1].websites[0].url}"""`,
                     `<${InstanceTestBuilder.PROCEDURES[1].websites[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${instanceId}> <http://purl.org/vocab/cpsv#follows> <${InstanceTestBuilder.PROCEDURES[0].id}>`,
                     `<${InstanceTestBuilder.PROCEDURES[0].id}> a <http://purl.org/vocab/cpsv#Rule>`,
                     `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[0].uuid}"""`,
-                    `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].title.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.PROCEDURES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${InstanceTestBuilder.PROCEDURES[0].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${InstanceTestBuilder.PROCEDURES[0].websites[1].id}>`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> a <http://schema.org/WebSite>`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[0].websites[1].uuid}"""`,
-                    `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].websites[1].title.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].websites[1].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].websites[1].description.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].websites[1].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://schema.org/url> """${InstanceTestBuilder.PROCEDURES[0].websites[1].url}"""`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${InstanceTestBuilder.PROCEDURES[0].id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${InstanceTestBuilder.PROCEDURES[0].websites[0].id}>`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> a <http://schema.org/WebSite>`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.PROCEDURES[0].websites[0].uuid}"""`,
-                    `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].websites[0].title.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.PROCEDURES[0].websites[0].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].websites[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.PROCEDURES[0].websites[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://schema.org/url> """${InstanceTestBuilder.PROCEDURES[0].websites[0].url}"""`,
                     `<${InstanceTestBuilder.PROCEDURES[0].websites[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
@@ -760,18 +733,14 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <${InstanceTestBuilder.WEBSITES[1].id}>`,
                     `<${InstanceTestBuilder.WEBSITES[1].id}> a <http://schema.org/WebSite>`,
                     `<${InstanceTestBuilder.WEBSITES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.WEBSITES[1].uuid}"""`,
-                    `<${InstanceTestBuilder.WEBSITES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.WEBSITES[1].title.en}"""@EN`,
                     `<${InstanceTestBuilder.WEBSITES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.WEBSITES[1].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.WEBSITES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.WEBSITES[1].description.en}"""@EN`,
                     `<${InstanceTestBuilder.WEBSITES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.WEBSITES[1].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.WEBSITES[1].id}> <http://schema.org/url> """${InstanceTestBuilder.WEBSITES[1].url}"""`,
                     `<${InstanceTestBuilder.WEBSITES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${instanceId}> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <${InstanceTestBuilder.WEBSITES[0].id}>`,
                     `<${InstanceTestBuilder.WEBSITES[0].id}> a <http://schema.org/WebSite>`,
                     `<${InstanceTestBuilder.WEBSITES[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.WEBSITES[0].uuid}"""`,
-                    `<${InstanceTestBuilder.WEBSITES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.WEBSITES[0].title.en}"""@EN`,
                     `<${InstanceTestBuilder.WEBSITES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.WEBSITES[0].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.WEBSITES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.WEBSITES[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.WEBSITES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.WEBSITES[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.WEBSITES[0].id}> <http://schema.org/url> """${InstanceTestBuilder.WEBSITES[0].url}"""`,
                     `<${InstanceTestBuilder.WEBSITES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
@@ -779,34 +748,26 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://data.europa.eu/m8g/hasCost> <${InstanceTestBuilder.COSTS[1].id}>`,
                     `<${InstanceTestBuilder.COSTS[1].id}> a <http://data.europa.eu/m8g/Cost>`,
                     `<${InstanceTestBuilder.COSTS[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.COSTS[1].uuid}"""`,
-                    `<${InstanceTestBuilder.COSTS[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.COSTS[1].title.en}"""@EN`,
                     `<${InstanceTestBuilder.COSTS[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.COSTS[1].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.COSTS[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.COSTS[1].description.en}"""@EN`,
                     `<${InstanceTestBuilder.COSTS[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.COSTS[1].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.COSTS[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${instanceId}> <http://data.europa.eu/m8g/hasCost> <${InstanceTestBuilder.COSTS[0].id}>`,
                     `<${InstanceTestBuilder.COSTS[0].id}> a <http://data.europa.eu/m8g/Cost>`,
                     `<${InstanceTestBuilder.COSTS[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.COSTS[0].uuid}"""`,
-                    `<${InstanceTestBuilder.COSTS[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.COSTS[0].title.en}"""@EN`,
                     `<${InstanceTestBuilder.COSTS[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.COSTS[0].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.COSTS[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.COSTS[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.COSTS[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.COSTS[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.COSTS[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
 
                     `<${instanceId}> <http://purl.org/vocab/cpsv#produces> <${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}>`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#FinancialAdvantage>`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].uuid}"""`,
-                    `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].title.en}"""@EN`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].description.en}"""@EN`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${instanceId}> <http://purl.org/vocab/cpsv#produces> <${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}>`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#FinancialAdvantage>`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].uuid}"""`,
-                    `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].title.en}"""@EN`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.FINANCIAL_ADVANTAGES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
 
@@ -868,18 +829,14 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://data.europa.eu/m8g/hasLegalResource> <${InstanceTestBuilder.LEGAL_RESOURCES[0].id}>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.LEGAL_RESOURCES[0].uuid}"""`,
-                    `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.LEGAL_RESOURCES[0].title.en}"""@EN`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.LEGAL_RESOURCES[0].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.LEGAL_RESOURCES[0].description.en}"""@EN`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.LEGAL_RESOURCES[0].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://schema.org/url> """${InstanceTestBuilder.LEGAL_RESOURCES[0].url}"""`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `<${instanceId}> <http://data.europa.eu/m8g/hasLegalResource> <${InstanceTestBuilder.LEGAL_RESOURCES[1].id}>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://mu.semte.ch/vocabularies/core/uuid> """${InstanceTestBuilder.LEGAL_RESOURCES[1].uuid}"""`,
-                    `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.LEGAL_RESOURCES[1].title.en}"""@EN`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/title> """${InstanceTestBuilder.LEGAL_RESOURCES[1].title.nlFormal}"""@nl-BE-x-formal`,
-                    `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.LEGAL_RESOURCES[1].description.en}"""@EN`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.LEGAL_RESOURCES[1].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://schema.org/url> """${InstanceTestBuilder.LEGAL_RESOURCES[1].url}"""`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
@@ -904,7 +861,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
-                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.EN}"""`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.GENERATED_FORMAL}"""`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                 ]);
 
@@ -1384,52 +1341,52 @@ describe('InstanceRepository', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aMinimalInstance()
                 .withDutchLanguageVariant(Language.NL)
-                .withTitle(LanguageString.of("", ""))
-                .withDescription(LanguageString.of("", ""))
-                .withAdditionalDescription(LanguageString.of("", ""))
-                .withException(LanguageString.of("", ""))
-                .withRegulation(LanguageString.of("", ""))
+                .withTitle(LanguageString.of(""))
+                .withDescription(LanguageString.of(""))
+                .withAdditionalDescription(LanguageString.of(""))
+                .withException(LanguageString.of(""))
+                .withRegulation(LanguageString.of(""))
                 .withStartDate(FormatPreservingDate.of(""))
                 .withEndDate(FormatPreservingDate.of(""))
-                .withKeywords([LanguageString.of(undefined, "")])
+                .withKeywords([LanguageString.of("")])
                 .withRequirements([
                     aMinimalRequirementForInstance()
-                        .withTitle(LanguageString.of("", ""))
-                        .withDescription(LanguageString.of("", ""))
+                        .withTitle(LanguageString.of(""))
+                        .withDescription(LanguageString.of(""))
                         .withEvidence(aMinimalEvidenceForInstance()
-                            .withTitle(LanguageString.of("", ""))
-                            .withDescription(LanguageString.of("", ""))
+                            .withTitle(LanguageString.of(""))
+                            .withDescription(LanguageString.of(""))
                             .build())
                         .build()
                 ])
                 .withProcedures([
                     aMinimalProcedureForInstance()
-                        .withTitle(LanguageString.of("", ""))
-                        .withDescription(LanguageString.of("", ""))
+                        .withTitle(LanguageString.of(""))
+                        .withDescription(LanguageString.of(""))
                         .withWebsites([aMinimalWebsiteForInstance()
-                            .withTitle(LanguageString.of("", ""))
-                            .withDescription(LanguageString.of("", ""))
+                            .withTitle(LanguageString.of(""))
+                            .withDescription(LanguageString.of(""))
                             .withUrl("")
                             .build()
                         ])
                         .build()
                 ])
                 .withWebsites([aMinimalWebsiteForInstance()
-                    .withTitle(LanguageString.of("", ""))
-                    .withDescription(LanguageString.of("", ""))
+                    .withTitle(LanguageString.of(""))
+                    .withDescription(LanguageString.of(""))
                     .withUrl("")
                     .build()
                 ])
                 .withCosts([
                     aMinimalCostForInstance()
-                        .withTitle(LanguageString.of("", ""))
-                        .withDescription(LanguageString.of("", ""))
+                        .withTitle(LanguageString.of(""))
+                        .withDescription(LanguageString.of(""))
                         .build()
                 ])
                 .withFinancialAdvantages([
                     aMinimalFinancialAdvantageForInstance()
-                        .withTitle(LanguageString.of("", ""))
-                        .withDescription(LanguageString.of("", ""))
+                        .withTitle(LanguageString.of(""))
+                        .withDescription(LanguageString.of(""))
                         .build()
                 ])
                 .withContactPoints([
@@ -1439,12 +1396,12 @@ describe('InstanceRepository', () => {
                         .withTelephone("")
                         .withOpeningHours("")
                         .withAddress(aMinimalAddressForInstance()
-                            .withGemeentenaam(LanguageString.of(undefined, ""))
-                            .withStraatnaam(LanguageString.of(undefined, ""))
+                            .withGemeentenaam(LanguageString.of(""))
+                            .withStraatnaam(LanguageString.of(""))
                             .withHuisnummer("")
                             .withBusnummer("")
                             .withPostcode("")
-                            .withLand(LanguageString.of(undefined, ""))
+                            .withLand(LanguageString.of(""))
                             .build()
                         )
                         .build()
@@ -1454,8 +1411,8 @@ describe('InstanceRepository', () => {
                 .withProductId("")
                 .withLegalResources([
                     aMinimalLegalResourceForInstance()
-                        .withTitle(LanguageString.of("", ""))
-                        .withDescription(LanguageString.of("", ""))
+                        .withTitle(LanguageString.of(""))
+                        .withDescription(LanguageString.of(""))
                         .withUrl("")
                         .build()
                 ])

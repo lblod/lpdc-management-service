@@ -41,6 +41,7 @@ export class Address {
         this._verwijstNaar = verwijstNaar;
     }
 
+    //TODO LPDC-1151
     private validateLanguages(...values: (LanguageString | undefined)[]): void {
         const isValid = values.every((value: LanguageString | undefined) =>
             isEqual(value, undefined) || isEqual(value.definedLanguages, [Language.NL])

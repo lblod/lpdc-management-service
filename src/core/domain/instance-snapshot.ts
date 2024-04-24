@@ -151,6 +151,7 @@ export class InstanceSnapshot {
         return this.extractNlLanguages()[0];
     }
 
+    //TODO LPDC-1151
     private validateLanguages(): void {
         LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...this.languageStrings());
 
@@ -164,6 +165,7 @@ export class InstanceSnapshot {
 
     }
 
+    //TODO LPDC-1151
     private extractNlLanguages(): Language[] {
         const nlLanguage = LanguageString.extractNlLanguages(this.languageStrings());
 
@@ -177,6 +179,7 @@ export class InstanceSnapshot {
         ].filter(l => l !== undefined);
     }
 
+    //TODO LPDC-1151
     private languageStrings(): LanguageString[] {
         return [
             this._title,

@@ -59,7 +59,7 @@ describe('Update Instance Application Service tests', () => {
 
         expect(updatedInstance).toEqual(
             InstanceBuilder.from(instance)
-                .withTitle(LanguageString.of('initial title en', undefined, 'initial title'))
+                .withTitle(LanguageString.of(undefined, 'initial title'))
                 .withDateModified(FormatPreservingDate.now())
                 .build());
 
@@ -81,7 +81,7 @@ pub:${instance.uuid} dct:title "initial title"@nl-be-x-formal, "initial title en
 
         expect(updatedInstance).toEqual(
             InstanceBuilder.from(instance)
-                .withTitle(LanguageString.of('updated title en', undefined, 'updated title'))
+                .withTitle(LanguageString.of(undefined, 'updated title'))
                 .withDateModified(FormatPreservingDate.now())
                 .build());
 
@@ -129,8 +129,8 @@ pub:${instance.uuid}\n
                     new ProcedureBuilder()
                         .withId(new Iri('http://data.lblod.info/form-data/nodes/02c296ca-d194-4971-9325-e17809afe087'))
                         .withUuid('dc4bd8fb-87a9-4257-9ab9-86f93a2f7ed8')
-                        .withTitle(LanguageString.of('engelse titel procedure', undefined, 'titel procedure'))
-                        .withDescription(LanguageString.of(`<p data-indentation-level="0">engelse beschrijving procedure</p>`, undefined, `<p data-indentation-level="0">beschrijving procedure</p>`))
+                        .withTitle(LanguageString.of(undefined, 'titel procedure'))
+                        .withDescription(LanguageString.of(undefined, `<p data-indentation-level="0">beschrijving procedure</p>`))
                         .withWebsites([])
                         .withOrder(1)
                         .build()
@@ -154,10 +154,9 @@ pub:${instance.uuid}\n
 nodes:02c296ca-d194-4971-9325-e17809afe087\n
     dct:description\n
             """<p data-indentation-level="0">beschrijving procedure</p>"""@nl-be-x-formal,\n
-            """<p data-indentation-level="0">engelse beschrijving procedure</p>"""@en,\n
             nodes:232c92c4-094a-4775-892d-0eb1c84d9b01;\n
     dct:title\n
-            "engelse titel procedure"@en, "titel procedure"@nl-be-x-formal,\n
+            "titel procedure"@nl-be-x-formal,\n
             nodes:f17a330b-2d2b-491b-a6ce-0afd95c42bfb.\n
 pub:${instance.uuid}\n
     cpsv:follows nodes:02c296ca-d194-4971-9325-e17809afe087 .\n\n`,
@@ -191,7 +190,7 @@ pub:${instance.uuid}\n
             `
             @prefix : <#>.\n@prefix dct: <http://purl.org/dc/terms/>.\n
             @prefix pub: <http://data.lblod.info/id/public-service/>.\n\n
-            pub:${instanceAfterCreate.uuid} dct:title "initial title"@nl-be-x-formal, "initial title en"@en.\n\n`);
+            pub:${instanceAfterCreate.uuid} dct:title "initial title"@nl-be-x-formal.\n\n`);
 
 
         await expect(() => updateInstanceApplicationService.update(
@@ -202,11 +201,11 @@ pub:${instance.uuid}\n
 @prefix dct: <http://purl.org/dc/terms/>\n.
 @prefix pub: <http://data.lblod.info/id/public-service/>\n\n.
 
-pub:${instanceAfterCreate.uuid} dct:title "initial title"@nl-be-x-formal, "initial title en"@en.\n\n`,
+pub:${instanceAfterCreate.uuid} dct:title "initial title"@nl-be-x-formal.\n\n`,
             `
             @prefix : <#>.\n@prefix dct: <http://purl.org/dc/terms/>.\n
             @prefix pub: <http://data.lblod.info/id/public-service/>.\n\n
-            pub:${instanceAfterCreate.uuid} dct:title "updated title"@nl-be-x-formal, "updated title en"@en.\n\n`)
+            pub:${instanceAfterCreate.uuid} dct:title "updated title"@nl-be-x-formal.\n\n`)
         ).rejects.toThrowWithMessage(ConcurrentUpdateError, 'De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in');
     });
 });

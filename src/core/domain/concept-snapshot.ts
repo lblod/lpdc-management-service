@@ -108,7 +108,7 @@ export class ConceptSnapshot {
         this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities, Iri.compare), 'executingAuthorities');
         this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
-        this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
+        this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords'); //TODO LPDC-1151 should only contain nl keywords
         this._requirements = [...requirements].map(Requirement.forConceptSnapshot);
         requireNoDuplicates(this._requirements.map(r => r.order), 'requirements > order');
         this._procedures = [...procedures].map(Procedure.forConceptSnapshot);

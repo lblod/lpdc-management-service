@@ -48,7 +48,7 @@ describe('Form application service tests', () => {
             const concept =
                 aFullConcept()
                     .withTitle(
-                        LanguageString.of(undefined, 'nl', undefined, 'title informal', 'title generated formal', undefined)
+                        LanguageString.of('nl', undefined, 'title informal', 'title generated formal', undefined)
                     )
                     .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
                     .build();
@@ -81,49 +81,12 @@ describe('Form application service tests', () => {
             expect(serviceUri).toEqual(concept.id.value);
         });
 
-        test('can load a inhoud form for a concept in correct language and add english requirements if publication medium is your europe', async () => {
-            const concept =
-                aFullConcept()
-                    .withTitle(
-                        LanguageString.of(undefined, 'nl', undefined, 'title informal', 'title generated formal', undefined)
-                    )
-                    .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                    .build();
-            await conceptRepository.save(concept);
-
-            const bestuurseenheid =
-                aBestuurseenheid()
-                    .build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const formalInformalChoice =
-                aFormalInformalChoice()
-                    .withChosenForm(ChosenFormType.INFORMAL)
-                    .build();
-            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
-
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.INFORMAL, true).mockReturnValue('formdefinition with english requirements');
-
-            const {
-                form,
-                meta,
-                source,
-                serviceUri
-            } = await formApplicationService.loadConceptForm(bestuurseenheid, concept.id, FormType.INHOUD);
-
-            expect(form).toEqual('formdefinition with english requirements');
-            expect(meta).toEqual('');
-            expect(source).toEqual(semanticFormsMapper.conceptAsTurtleFormat(concept).join("\r\n"));
-            expect(source).toContain(`<${concept.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService> .`);
-            expect(serviceUri).toEqual(concept.id.value);
-
-        });
-
         test('can load a eigenschappen form for a concept in correct language', async () => {
+
             const concept =
                 aFullConcept()
                     .withTitle(
-                        LanguageString.of(undefined, 'nl', undefined, 'title informal', 'title generated formal', undefined)
+                        LanguageString.of('nl', undefined, 'title informal', 'title generated formal', undefined)
                     )
                     .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
                     .build();
@@ -160,6 +123,7 @@ describe('Form application service tests', () => {
 
     });
 
+    // TODO LPDC-1151 adjust test so we use dutchLanguageVariant
     describe('loadInstanceForm', () => {
 
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -182,7 +146,7 @@ describe('Form application service tests', () => {
             const instance =
                 aFullInstance()
                     .withTitle(
-                        LanguageString.of(undefined, undefined, 'nl formal')
+                        LanguageString.of(undefined, 'nl formal')
                     )
                     .withDescription(undefined)
                     .withAdditionalDescription(undefined)
@@ -212,48 +176,6 @@ describe('Form application service tests', () => {
             expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
             expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
             expect(serviceUri).toEqual(instance.id.value);
-        });
-
-        test('can load a inhoud form for an instance in correct language and add english requirements if publication medium is your europe', async () => {
-            const bestuurseenheid =
-                aBestuurseenheid()
-                    .build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const instance =
-                aFullInstance()
-                    .withTitle(
-                        LanguageString.of(undefined, undefined, 'nl formal')
-                    )
-                    .withDescription(undefined)
-                    .withAdditionalDescription(undefined)
-                    .withException(undefined)
-                    .withRegulation(undefined)
-                    .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                    .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const formalInformalChoice =
-                aFormalInformalChoice()
-                    .withChosenForm(ChosenFormType.INFORMAL)
-                    .build();
-            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
-
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL, true).mockReturnValue('formdefinition with english requirements');
-
-            const {
-                form,
-                meta,
-                source,
-                serviceUri
-            } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, FormType.INHOUD);
-
-            expect(form).toEqual('formdefinition with english requirements');
-            expect(meta).toEqual('');
-            expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
-            expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
-            expect(serviceUri).toEqual(instance.id.value);
-
         });
 
         test('can load a eigenschappen form for an instance in correct language', async () => {
@@ -337,33 +259,6 @@ describe('Form application service tests', () => {
             }]);
         });
 
-        test('no english title when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english title when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
-        });
-
         test('no description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
@@ -376,33 +271,6 @@ describe('Form application service tests', () => {
                 formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
-        });
-
-        test('no english description when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english description when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
         });
 
         test('no requirement title, error in inhoud form', async () => {
@@ -419,33 +287,6 @@ describe('Form application service tests', () => {
             }]);
         });
 
-        test('no english requirement title when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english requirement title when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
-        });
-
         test('no requirement description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
@@ -458,33 +299,6 @@ describe('Form application service tests', () => {
                 formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
-        });
-
-        test('no english requirement description when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english requirement description when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
         });
 
         test('no evidence title, error in inhoud form', async () => {
@@ -501,33 +315,6 @@ describe('Form application service tests', () => {
             }]);
         });
 
-        test('no english requirement evidence title when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english requirement evidence title when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
-        });
-
         test('no evidence description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
@@ -540,33 +327,6 @@ describe('Form application service tests', () => {
                 formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
-        });
-
-        test('no english requirement evidence description when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english requirement evidence description when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withRequirements([aFullRequirementForInstance().withEvidence(aFullEvidenceForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
         });
 
         test('no procedure title, error in inhoud form', async () => {
@@ -583,33 +343,6 @@ describe('Form application service tests', () => {
             }]);
         });
 
-        test('no english procedure title when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english procedure title when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
-        });
-
         test('no procedure description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
@@ -624,33 +357,6 @@ describe('Form application service tests', () => {
             }]);
         });
 
-        test('no english procedure description when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english procedure description when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
-        });
-
         test('no procedure website title, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
@@ -663,33 +369,6 @@ describe('Form application service tests', () => {
                 formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
-        });
-
-        test('no english procedure website title when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()]).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english procedure website title when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withProcedures([aFullProcedureForInstance().withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()]).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-
-            expect(errors).toEqual([]);
         });
 
         test('no procedure website url, error in inhoud form', async () => {
@@ -734,33 +413,6 @@ describe('Form application service tests', () => {
             }]);
         });
 
-        test('no english cost title when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withCosts([aFullCostForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english cost title when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withCosts([aFullCostForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
-        });
-
         test('no cost description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
@@ -773,33 +425,6 @@ describe('Form application service tests', () => {
                 formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
-        });
-
-        test('no english cost description when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withCosts([aFullCostForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english cost description when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withCosts([aFullCostForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
         });
 
         test('no financialAdvantage title, error in inhoud form', async () => {
@@ -816,33 +441,6 @@ describe('Form application service tests', () => {
             }]);
         });
 
-        test('no english financialAdvantage title when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english financialAdvantage title when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
-        });
-
         test('no financialAdvantage description, error in inhoud form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
@@ -855,33 +453,6 @@ describe('Form application service tests', () => {
                 formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
-        });
-
-        test('no english financialAdvantage description when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english financialAdvantage description when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withFinancialAdvantages([aFullFinancialAdvantageForInstance().withDescription(LanguageString.of(undefined, undefined, 'beschrijving')).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
         });
 
         test('no legalResource url, error in inhoud form', async () => {
@@ -966,33 +537,6 @@ describe('Form application service tests', () => {
                 formId: "inhoud",
                 message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
             }]);
-        });
-
-        test('no english website title when yourEurope, error in inhoud form', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
-                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([{
-                formId: "inhoud",
-                message: `Er zijn fouten opgetreden in de tab "inhoud". Gelieve deze te verbeteren!`
-            }]);
-        });
-
-        test('no english website title when no yourEurope, is valid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withWebsites([aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, undefined, 'titel')).build()])
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errors = await formApplicationService.validateForms(instance.id, bestuurseenheid);
-            expect(errors).toEqual([]);
         });
 
         test('no website url, error in inhoud form', async () => {

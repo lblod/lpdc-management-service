@@ -53,7 +53,6 @@ describe('constructing', () => {
             aFullConcept()
                 .withTitle(
                     LanguageString.of(
-                        ConceptTestBuilder.TITLE_EN,
                         ConceptTestBuilder.TITLE_NL,
                         ConceptTestBuilder.TITLE_NL_FORMAL,
                         ConceptTestBuilder.TITLE_NL_INFORMAL,
@@ -101,14 +100,6 @@ describe('constructing', () => {
 
     test('Undefined title throws error', () => {
         expect(() => aFullConcept().withTitle(undefined).build()).toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
-    });
-
-    test('NL not present in title throws error', () => {
-        expect(() => aFullConcept().withTitle(LanguageString.of('en', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in title mag niet ontbreken');
-    });
-
-    test('NL not present in description throws error', () => {
-        expect(() => aFullConcept().withDescription(LanguageString.of('en', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in description mag niet ontbreken');
     });
 
     test('Undefined description throws error', () => {

@@ -6,7 +6,7 @@ describe('form definition file repository it tests', () => {
 
     const repo = new FormDefinitionFileRepository();
 
-    for(const language of Object.values(Language).filter(l => l !== Language.EN)){
+    for(const language of Object.values(Language)){
         test(`loads inhoud form in language ${language}`, () => {
             const result = repo.loadFormDefinition(FormType.INHOUD, language, false);
             expect(result).toContain('@prefix form: <http://lblod.data.gift/vocabularies/forms/> .');

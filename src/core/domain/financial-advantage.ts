@@ -78,6 +78,7 @@ export class FinancialAdvantage {
         return new FinancialAdvantage(id, uuid, title, description, order);
     }
 
+    //TODO LPDC-1151
     get nlLanguage(): Language | undefined {
         return LanguageString.extractNlLanguages([this._title, this._description])[0];
     }

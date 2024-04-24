@@ -253,7 +253,6 @@ export class NewInstanceDomainService {
         const selectedVersion = languageString.getLanguageValue(selectedLanguage);
 
         return LanguageString.of(
-            languageString.en,
             undefined,
             chosenForm === ChosenFormType.FORMAL || chosenForm === undefined ? selectedVersion : undefined,
             chosenForm === ChosenFormType.INFORMAL ? selectedVersion : undefined);

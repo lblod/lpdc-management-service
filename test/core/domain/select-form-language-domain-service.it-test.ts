@@ -33,7 +33,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', undefined, 'nl informal', 'nl generated formal', undefined)
+                    LanguageString.of('nl', undefined, 'nl informal', 'nl generated formal', undefined)
                 )
                 .build();
 
@@ -57,7 +57,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', 'nl formal', undefined, undefined, 'nl generated informal')
+                    LanguageString.of('nl', 'nl formal', undefined, undefined, 'nl generated informal')
                 )
                 .build();
 
@@ -81,7 +81,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', undefined, undefined, 'nl generated formal', 'nl generated informal')
+                    LanguageString.of('nl', undefined, undefined, 'nl generated formal', 'nl generated informal')
                 )
                 .build();
 
@@ -106,7 +106,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', 'nl formal', 'nl informal', undefined, undefined)
+                    LanguageString.of('nl', 'nl formal', 'nl informal', undefined, undefined)
                 )
                 .build();
 
@@ -130,7 +130,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', undefined, undefined, undefined, undefined)
+                    LanguageString.of('nl', undefined, undefined, undefined, undefined)
                 )
                 .build();
 
@@ -154,7 +154,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', 'nl formal', undefined, undefined, 'nl generated informal')
+                    LanguageString.of('nl', 'nl formal', undefined, undefined, 'nl generated informal')
                 )
                 .build();
 
@@ -178,7 +178,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', undefined, 'nl informal', 'nl generated formal', undefined)
+                    LanguageString.of( 'nl', undefined, 'nl informal', 'nl generated formal', undefined)
                 )
                 .build();
 
@@ -202,7 +202,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', undefined, undefined, 'nl generated formal', 'nl generated informal')
+                    LanguageString.of('nl', undefined, undefined, 'nl generated formal', 'nl generated informal')
                 )
                 .build();
 
@@ -226,7 +226,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', 'nl formal', 'nl informal', undefined, undefined)
+                    LanguageString.of('nl', 'nl formal', 'nl informal', undefined, undefined)
                 )
                 .build();
 
@@ -250,7 +250,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', undefined, undefined, undefined, undefined)
+                    LanguageString.of('nl', undefined, undefined, undefined, undefined)
                 )
                 .build();
 
@@ -267,7 +267,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', 'nl formal', undefined, undefined, 'nl generated informal')
+                    LanguageString.of('nl', 'nl formal', undefined, undefined, 'nl generated informal')
                 )
                 .build();
 
@@ -284,7 +284,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', undefined, 'nl informal', 'nl generated formal', undefined)
+                    LanguageString.of('nl', undefined, 'nl informal', 'nl generated formal', undefined)
                 )
                 .build();
 
@@ -301,7 +301,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', undefined, undefined, 'nl generated formal', 'nl generated informal')
+                    LanguageString.of('nl', undefined, undefined, 'nl generated formal', 'nl generated informal')
                 )
                 .build();
 
@@ -318,7 +318,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', 'nl formal', 'nl informal', undefined, undefined)
+                    LanguageString.of('nl', 'nl formal', 'nl informal', undefined, undefined)
                 )
                 .build();
 
@@ -335,7 +335,7 @@ describe('select form language for concept', () => {
         const concept =
             aMinimalConcept()
                 .withTitle(
-                    LanguageString.of(undefined, 'nl', undefined, undefined, undefined, undefined)
+                    LanguageString.of('nl', undefined, undefined, undefined, undefined)
                 )
                 .build();
 

@@ -392,11 +392,9 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                     LanguageString.of(
                         undefined,
                         undefined,
-                        undefined,
                         InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL))
                 .withDescription(
                     LanguageString.of(
-                        undefined,
                         undefined,
                         undefined,
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
@@ -426,12 +424,10 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .withTitle(
                     LanguageString.of(
                         undefined,
-                        undefined,
                         InstanceSnapshotTestBuilder.TITLE_NL_FORMAL,
                         undefined))
                 .withDescription(
                     LanguageString.of(
-                        undefined,
                         undefined,
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
                         undefined))
@@ -476,8 +472,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await bestuurseenheidRepository.save(bestuurseenheid);
 
             const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withTitle(LanguageString.of('title', undefined, undefined, 'titel'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+                .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+                .withDescription(LanguageString.of(undefined, undefined, ''))
                 .withCreatedBy(bestuurseenheid.id)
                 .withConceptId(undefined)
                 .build();
@@ -979,7 +975,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const otherInstanceId = buildInstanceIri(uuid());
 
             const instanceSnapshotForOtherInstance = aFullInstanceSnapshot()
-                .withTitle(LanguageString.of('other snapshot', undefined, undefined, 'other snapshot'))
+                .withTitle(LanguageString.of(undefined, undefined, 'other snapshot'))
                 .withGeneratedAtTime(FormatPreservingDate.of('2024-01-18T00:00:00.672Z'))
                 .withCreatedBy(bestuurseenheid.id)
                 .withIsVersionOfInstance(otherInstanceId)
@@ -987,14 +983,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .build();
 
             const firstInstanceSnapshot = aFullInstanceSnapshot()
-                .withTitle(LanguageString.of('snapshot 1', undefined, undefined, 'snapshot 1'))
+                .withTitle(LanguageString.of(undefined, undefined, 'snapshot 1'))
                 .withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
                 .withCreatedBy(bestuurseenheid.id)
                 .withIsVersionOfInstance(instanceId)
                 .withConceptId(concept.id)
                 .build();
             const secondInstanceSnapshot = aFullInstanceSnapshot()
-                .withTitle(LanguageString.of('snapshot 2', undefined, undefined, 'snapshot 2'))
+                .withTitle(LanguageString.of(undefined, undefined, 'snapshot 2'))
                 .withGeneratedAtTime(FormatPreservingDate.of('2024-01-17T00:00:00.672Z'))
                 .withCreatedBy(bestuurseenheid.id)
                 .withIsVersionOfInstance(instanceId)
@@ -1027,8 +1023,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
             const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withTitle(LanguageString.of('title', undefined, undefined, 'titel'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+                .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+                .withDescription(LanguageString.of( undefined, undefined, ''))
                 .withCreatedBy(bestuurseenheid.id)
                 .withConceptId(undefined)
                 .withIsVersionOfInstance(instance.id)
@@ -1069,12 +1065,10 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .withTitle(
                     LanguageString.of(
                         undefined,
-                        undefined,
                         InstanceSnapshotTestBuilder.TITLE_NL_FORMAL,
                         undefined))
                 .withDescription(
                     LanguageString.of(
-                        undefined,
                         undefined,
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
                         undefined))
@@ -1106,11 +1100,9 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                     LanguageString.of(
                         undefined,
                         undefined,
-                        undefined,
                         InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL))
                 .withDescription(
                     LanguageString.of(
-                        undefined,
                         undefined,
                         undefined,
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
@@ -1138,12 +1130,10 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .withTitle(
                     LanguageString.of(
                         undefined,
-                        undefined,
                         InstanceSnapshotTestBuilder.TITLE_NL_FORMAL,
                         undefined))
                 .withDescription(
                     LanguageString.of(
-                        undefined,
                         undefined,
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
                         undefined,))
@@ -1156,11 +1146,9 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                     LanguageString.of(
                         undefined,
                         undefined,
-                        undefined,
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
                 .withDescription(
                     LanguageString.of(
-                        undefined,
                         undefined,
                         undefined,
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))

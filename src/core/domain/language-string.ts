@@ -5,15 +5,13 @@ import {isNotBlank} from "./shared/string-helper";
 
 export class LanguageString {
 
-    private readonly _en: string | undefined;
     private readonly _nl: string | undefined;
     private readonly _nlFormal: string | undefined;
     private readonly _nlInformal: string | undefined;
     private readonly _nlGeneratedFormal: string | undefined;
     private readonly _nlGeneratedInformal: string | undefined;
 
-    private constructor(en: string | undefined,
-                        nl: string | undefined,
+    private constructor(nl: string | undefined,
                         nlFormal: string | undefined,
                         nlInformal: string | undefined,
                         nlGeneratedFormal: string | undefined,
@@ -22,8 +20,6 @@ export class LanguageString {
         //TODO LPDC-968: re-enable when empty triples are fixed in data
         // const invariant = Invariant.require([en, nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal], 'language list');
         // invariant.to(invariant.haveAtLeastOneValuePresent());
-
-        this._en = en;
         this._nl = nl;
         this._nlFormal = nlFormal;
         this._nlInformal = nlInformal;
@@ -32,17 +28,12 @@ export class LanguageString {
     }
 
     public static of(
-        en?: string | undefined,
         nl?: string | undefined,
         nlFormal?: string | undefined,
         nlInformal?: string | undefined,
         nlGeneratedFormal?: string | undefined,
         nlGeneratedInformal?: string | undefined): LanguageString {
-        return new LanguageString(en, nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal);
-    }
-
-    get en(): string | undefined {
-        return this._en;
+        return new LanguageString(nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal);
     }
 
     get nl(): string | undefined {
@@ -65,9 +56,8 @@ export class LanguageString {
         return this._nlGeneratedInformal;
     }
 
-    get notBlankLanguages(): Language [] {
+    get notBlankLanguages(): Language[] {
         const definedLanguages = [];
-        if (isNotBlank(this._en)) definedLanguages.push(Language.EN);
         if (isNotBlank(this._nl)) definedLanguages.push(Language.NL);
         if (isNotBlank(this._nlFormal)) definedLanguages.push(Language.FORMAL);
         if (isNotBlank(this._nlInformal)) definedLanguages.push(Language.INFORMAL);
@@ -78,7 +68,6 @@ export class LanguageString {
 
     get definedLanguages(): Language[] {
         const definedLanguages = [];
-        if (this._en !== undefined) definedLanguages.push(Language.EN);
         if (this._nl !== undefined) definedLanguages.push(Language.NL);
         if (this._nlFormal !== undefined) definedLanguages.push(Language.FORMAL);
         if (this._nlInformal !== undefined) definedLanguages.push(Language.INFORMAL);
@@ -87,6 +76,7 @@ export class LanguageString {
         return uniq(definedLanguages);
     }
 
+    // TODO LPDC-1151 this is now the same as defined languages
     get definedNlLanguages(): Language[] {
         const definedLanguages = [];
         if (this._nl !== undefined) definedLanguages.push(Language.NL);
@@ -98,7 +88,6 @@ export class LanguageString {
     }
 
     getLanguageValue(language: Language): string | undefined {
-        if (language === Language.EN) return this._en;
         if (language === Language.NL) return this._nl;
         if (language === Language.FORMAL) return this._nlFormal;
         if (language === Language.INFORMAL) return this._nlInformal;
@@ -112,15 +101,17 @@ export class LanguageString {
         }
         const oldDutchLanguage = this.definedNlLanguages[0];
         const languageValue = this.getLanguageValue(oldDutchLanguage);
-        return LanguageString.of(this.en, undefined, undefined, languageValue);
+        return LanguageString.of(undefined, undefined, languageValue);
     }
 
+    // TODO LPDC-1151 still necessary?
     static extractNlLanguages(languages: (LanguageString | undefined)[]): Language[] {
         return languages
             .filter(ls => ls !== undefined)
             .flatMap(ls => ls.definedNlLanguages);
     }
 
+    // TODO LPDC-1151 still necessary?
     static validateUniqueNlLanguage(languages: (LanguageString | undefined)[]): void {
         const langs = new Set(this.extractNlLanguages(languages).filter(ls => ls !== undefined));
 
@@ -129,6 +120,7 @@ export class LanguageString {
         }
     }
 
+    // TODO LPDC-1151 still necessary?
     static validateUniqueAndCorrectLanguages(acceptedLanguages: Language[], ...values: (LanguageString | undefined)[]): void {
         LanguageString.validateUniqueNlLanguage(values);
 
@@ -139,15 +131,11 @@ export class LanguageString {
     }
 
     static isFunctionallyChanged(value: LanguageString | undefined, other: LanguageString | undefined): boolean {
-        return value?.en !== other?.en
-            || value?.nl !== other?.nl;
+        return value?.nl !== other?.nl;
     }
 
     static compare(a: LanguageString, b: LanguageString): number {
-        let comparison = LanguageString.compareValues(a._en, b._en);
-        if (comparison !== 0) return comparison;
-
-        comparison = LanguageString.compareValues(a._nl, b._nl);
+        let comparison = LanguageString.compareValues(a._nl, b._nl);
         if (comparison !== 0) return comparison;
 
         comparison = LanguageString.compareValues(a._nlFormal, b._nlFormal);

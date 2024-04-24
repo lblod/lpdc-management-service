@@ -16,7 +16,6 @@ export function aMinimalInformalLanguageString(value: string = ''):LanguageStrin
 
 export function aFullLanguageString(value: string = ''): LanguageStringTestBuilder {
     return new LanguageStringTestBuilder()
-        .withEn(`${value}${LanguageStringTestBuilder.EN}`)
         .withNl(`${value}${LanguageStringTestBuilder.NL}`)
         .withNlFormal(`${value}${LanguageStringTestBuilder.NL_FORMAL}`)
         .withNlInformal(`${value}${LanguageStringTestBuilder.NL_INFORMAL}`)
@@ -26,24 +25,17 @@ export function aFullLanguageString(value: string = ''): LanguageStringTestBuild
 
 
 export class LanguageStringTestBuilder {
-    public static readonly EN = ' - en';
     public static readonly NL = ' - nl';
     public static readonly NL_FORMAL = ' - nl-formal';
     public static readonly NL_INFORMAL = ' - nl-informal';
     public static readonly NL_GENERATED_FORMAL = ' - nl-generated-formal';
     public static readonly NL_GENERATED_INFORMAL = ' - nl-generated-informal';
 
-    private en: string | undefined;
     private nl: string | undefined;
     private nlFormal: string | undefined;
     private nlInformal: string | undefined;
     private nlGeneratedFormal: string | undefined;
     private nlGeneratedInformal: string | undefined;
-
-    public withEn(en: string): LanguageStringTestBuilder {
-        this.en = en;
-        return this;
-    }
 
     public withNl(nl: string): LanguageStringTestBuilder {
         this.nl = nl;
@@ -73,7 +65,6 @@ export class LanguageStringTestBuilder {
 
     public build(): LanguageString {
         return LanguageString.of(
-            this.en,
             this.nl,
             this.nlFormal,
             this.nlInformal,

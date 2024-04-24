@@ -59,11 +59,9 @@ export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
             LanguageString.of(
                 undefined,
                 undefined,
-                undefined,
                 InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL))
         .withDescription(
             LanguageString.of(
-                undefined,
                 undefined,
                 undefined,
                 InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
@@ -79,31 +77,26 @@ export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
     return aMinimalInstanceSnapshot()
         .withTitle(
             LanguageString.of(
-                InstanceSnapshotTestBuilder.TITLE_EN,
                 undefined,
                 undefined,
                 InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL))
         .withDescription(
             LanguageString.of(
-                InstanceSnapshotTestBuilder.DESCRIPTION_EN,
                 undefined,
                 undefined,
                 InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
         .withAdditionalDescription(
             LanguageString.of(
-                InstanceSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_EN,
                 undefined,
                 undefined,
                 InstanceSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_INFORMAL))
         .withException(
             LanguageString.of(
-                InstanceSnapshotTestBuilder.EXCEPTION_EN,
                 undefined,
                 undefined,
                 InstanceSnapshotTestBuilder.EXCEPTION_NL_INFORMAL))
         .withRegulation(
             LanguageString.of(
-                InstanceSnapshotTestBuilder.REGULATION_EN,
                 undefined,
                 undefined,
                 InstanceSnapshotTestBuilder.REGULATION_NL_INFORMAL))
@@ -133,25 +126,20 @@ export function aFullInstanceSnapshot(): InstanceSnapshotTestBuilder {
 
 export class InstanceSnapshotTestBuilder {
 
-    public static readonly TITLE_EN = 'Instance Snapshot Title - en';
     public static readonly TITLE_NL = 'Instance Snapshot Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Instance Title Snapshot - nl-formal';
     public static readonly TITLE_NL_INFORMAL = 'Instance Title Snapshot - nl-informal';
 
-    public static readonly DESCRIPTION_EN = 'Instance Snapshot Description - en';
     public static readonly DESCRIPTION_NL = 'Instance Snapshot Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Instance Snapshot Description - nl-formal';
     public static readonly DESCRIPTION_NL_INFORMAL = 'Instance Snapshot Description - nl-informal';
 
-    public static readonly ADDITIONAL_DESCRIPTION_EN = 'Instance Snapshot Additional Description - en';
     public static readonly ADDITIONAL_DESCRIPTION_NL_FORMAL = 'Instance Snapshot Additional Description - nl-formal';
     public static readonly ADDITIONAL_DESCRIPTION_NL_INFORMAL = 'Instance Snapshot Additional Description - nl-informal';
 
-    public static readonly EXCEPTION_EN = 'Instance Snapshot Exception - en';
     public static readonly EXCEPTION_NL_FORMAL = 'Instance Snapshot Exception - nl-formal';
     public static readonly EXCEPTION_NL_INFORMAL = 'Instance Snapshot Exception - nl-informal';
 
-    public static readonly REGULATION_EN = 'Instance Snapshot Regulation - en';
     public static readonly REGULATION_NL_FORMAL = 'Instance Snapshot Regulation - nl-formal';
     public static readonly REGULATION_NL_INFORMAL = 'Instance Snapshot Regulation - nl-informal';
 
@@ -173,7 +161,7 @@ export class InstanceSnapshotTestBuilder {
 
     public static readonly YOUR_EUROPE_CATEGORIES = [YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFKENNISGEVING, YourEuropeCategoryType.BEDRIJFREGISTRATIEPROCEDURESRECHTSVORMEN, YourEuropeCategoryType.ONDERWIJSOFSTAGEONDERZOEK];
 
-    public static readonly KEYWORDS = [LanguageString.of('geboorte - en'), LanguageString.of(undefined, 'geboorte - nl'), LanguageString.of(undefined, 'feestartikelen'), LanguageString.of('administratie')];
+    public static readonly KEYWORDS = [LanguageString.of('geboorte'), LanguageString.of('administratie')];
 
     public static readonly LANGUAGES = [LanguageType.NLD, LanguageType.ENG, LanguageType.FRA];
 

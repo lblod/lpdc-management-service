@@ -356,7 +356,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI])
                     .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                     .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE])
-                    .withKeywords([LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')])
+                    .withKeywords([LanguageString.of('buitenland'), LanguageString.of('ambulante activiteit'), LanguageString.of('levensloos')])
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
                     .withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT])
                     .withLegalResources([anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).build(), anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).build()])
@@ -386,7 +386,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withExecutingAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
                     .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
                     .withYourEuropeCategories([YourEuropeCategoryType.CONSUMENTENRECHTEN, YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFKENNISGEVING, YourEuropeCategoryType.BURGERENFAMILIERECHTEN])
-                    .withKeywords([LanguageString.of('groenvoorziening'), LanguageString.of(undefined, 'green'), LanguageString.of(undefined, 'huis en tuin verwerking')])
+                    .withKeywords([LanguageString.of('groenvoorziening'), LanguageString.of('green'), LanguageString.of('huis en tuin verwerking')])
                     .withRequirements([
                         anotherFullRequirement()
                             .withTitle(suffixUnique(conceptSnapshot.requirements[1].title))
@@ -784,7 +784,6 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withTitle(
                         LanguageString.of(
-                            ConceptSnapshotTestBuilder.TITLE_EN,
                             ConceptSnapshotTestBuilder.TITLE_NL,
                             ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
                             ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL,
@@ -1451,7 +1450,6 @@ describe('merges a new concept snapshot into a concept', () => {
 
     function suffixUnique(aLangString: LanguageString): LanguageString {
         return LanguageString.of(
-            aLangString.en + '-' + uuid(),
             aLangString.nl + '-' + uuid(),
             aLangString.nlFormal + '-' + uuid(),
             aLangString.nlInformal + '-' + uuid(),

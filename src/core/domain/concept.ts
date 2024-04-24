@@ -132,6 +132,7 @@ export class Concept {
         requireNoDuplicates(this.legalResources.map(lr => lr.order), 'legal resources > order');
     }
 
+    //TODO LPDC-1151
     get conceptNlLanguages(): Language[] {
         return [...this._title.definedNlLanguages];
     }

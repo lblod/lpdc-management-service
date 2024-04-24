@@ -16,12 +16,12 @@ export function aFullAddressForInstance(): AddressBuilder {
     return new AddressBuilder()
         .withId(AddressBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
-        .withGemeentenaam(LanguageString.of(undefined, AddressTestBuilder.GEMEENTENAAM_NL))
-        .withLand(LanguageString.of(undefined, AddressTestBuilder.LAND_NL))
+        .withGemeentenaam(LanguageString.of(AddressTestBuilder.GEMEENTENAAM_NL))
+        .withLand(LanguageString.of(AddressTestBuilder.LAND_NL))
         .withHuisnummer(AddressTestBuilder.HUISNUMMER)
         .withBusnummer(AddressTestBuilder.BUSNUMMER)
         .withPostcode(AddressTestBuilder.POSTCODE)
-        .withStraatnaam(LanguageString.of(undefined, AddressTestBuilder.STRAATNAAM_NL))
+        .withStraatnaam(LanguageString.of(AddressTestBuilder.STRAATNAAM_NL))
         .withVerwijstNaar(AddressTestBuilder.VERWIJST_NAAR);
 }
 
@@ -30,11 +30,11 @@ export function anotherFullAddressForInstance(): AddressBuilder {
     return new AddressBuilder()
         .withId(AddressBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
-        .withGemeentenaam(LanguageString.of(undefined, AddressTestBuilder.ANOTHER_GEMEENTENAAM))
-        .withLand(LanguageString.of(undefined, AddressTestBuilder.LAND_NL))
+        .withGemeentenaam(LanguageString.of(AddressTestBuilder.ANOTHER_GEMEENTENAAM))
+        .withLand(LanguageString.of(AddressTestBuilder.LAND_NL))
         .withHuisnummer('10')
         .withPostcode('9000')
-        .withStraatnaam(LanguageString.of(undefined, AddressTestBuilder.ANOTHER_STRAATNAAM))
+        .withStraatnaam(LanguageString.of(AddressTestBuilder.ANOTHER_STRAATNAAM))
         .withVerwijstNaar(AddressTestBuilder.ANOTHER_VERWIJST_NAAR);
 }
 
@@ -54,7 +54,6 @@ export function anotherFullAddressForInstanceSnapshot(): AddressBuilder {
 }
 
 export class AddressTestBuilder {
-    public static readonly GEMEENTENAAM_EN = 'Louvain - en';
     public static readonly GEMEENTENAAM_NL = 'Leuven - nl';
     public static readonly GEMEENTENAAM_NL_FORMAL = 'Leuven - nl-formal';
     public static readonly GEMEENTENAAM_NL_INFORMAL = 'Leuven - nl-informal';
@@ -63,7 +62,6 @@ export class AddressTestBuilder {
 
     public static readonly ANOTHER_GEMEENTENAAM = 'Gent';
 
-    public static readonly LAND_EN = 'Belgium - en';
     public static readonly LAND_NL = 'België - nl';
     public static readonly LAND_NL_FORMAL = 'België - nl-formal';
     public static readonly LAND_NL_INFORMAL = 'België - nl-informal';
@@ -76,7 +74,6 @@ export class AddressTestBuilder {
     public static readonly POSTCODE = '3000';
     public static readonly ANOTHER_POSTCODE = '9000';
 
-    public static readonly STRAATNAAM_EN = 'Professor Roger Van Overstraetenplein - en';
     public static readonly STRAATNAAM_NL = 'Professor Roger Van Overstraetenplein - nl';
     public static readonly STRAATNAAM_NL_FORMAL = 'Professor Roger Van Overstraetenplein - nl-formal';
     public static readonly STRAATNAAM_NL_INFORMAL = 'Professor Roger Van Overstraetenplein - nl-informal';

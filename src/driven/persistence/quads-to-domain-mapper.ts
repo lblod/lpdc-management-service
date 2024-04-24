@@ -718,7 +718,6 @@ export class QuadsToDomainMapper {
         }
 
         return LanguageString.of(
-            literals?.find(l => l.language === 'en')?.value,
             literals?.find(l => l.language === 'nl')?.value,
             literals?.find(l => l.language === 'nl-be-x-formal')?.value,
             literals?.find(l => l.language === 'nl-be-x-informal')?.value,
