@@ -10,7 +10,6 @@ import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 import {ChosenFormType, InstancePublicationStatusType, InstanceStatusType} from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {aFullRequirementForInstance} from "./requirement-test-builder";
 import {aFullProcedureForInstance} from "./procedure-test-builder";
 import {aFullCostForInstance} from "./cost-test-builder";
@@ -22,6 +21,7 @@ import {
 import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
 import {IpdcMapper} from "../../../src/driven/external/ipdc-mapper";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {restoreRealTime, setFixedTime} from "../../fixed-time";
 
 describe('Convert Instance To Informal Domain Service', () => {
 
@@ -30,11 +30,9 @@ describe('Convert Instance To Informal Domain Service', () => {
     const instanceInformalLanguageStringsFetcher = new IpdcMapper();
     const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
 
-    beforeAll(() => setFixedTime());
-
-    afterAll(() => restoreRealTime());
-
     describe('Confirm instance already informal', () => {
+        beforeAll(() => setFixedTime());
+        afterAll(() => restoreRealTime());
 
         test('When instance dutchLanguageVersion already is informal, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
@@ -350,9 +348,6 @@ describe('Convert Instance To Informal Domain Service', () => {
 
         test.skip('convertInstanceToInformal should merge informal fields from ipdc into the instance, reopen instance , set needsFormalToInformalConversion to false and dutchLanguageVersion to nl-be-x-informal ', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            //TODO LPDC-1139: Add test that validates mapped fields.
-
-            //TODO LPDC-1139: take an uuid from a stub?
             const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
             const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
 
@@ -367,6 +362,7 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
+
             await instanceRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
@@ -379,8 +375,7 @@ describe('Convert Instance To Informal Domain Service', () => {
             expect(actualInstance.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
             expect(actualInstance.needsConversionFromFormalToInformal).toBeFalse();
             expect(actualInstance.dutchLanguageVariant).toEqual(Language.INFORMAL);
-        }, 2000000000);
-
+        });
     });
 
 

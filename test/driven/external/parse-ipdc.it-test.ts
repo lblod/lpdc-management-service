@@ -250,8 +250,8 @@ describe('Parse ipdc', () => {
             ])
             .withLegalResources([
                 new LegalResourceBuilder()
-                    .withId(new Iri("http://data.lblod.info/id/public-service/e8843fda-b3a8-4334-905c-8e49eb12203b"))
-                    .withUuid("e8843fda-b3a8-4334-905c-8e49eb12203b")
+                    .withId(new Iri("http://data.lblod.info/id/public-service/17f01e3a-3d4a-4492-8989-b0c9e17ff990"))
+                    .withUuid("17f01e3a-3d4a-4492-8989-b0c9e17ff990")
                     .withTitle(LanguageString.of(
                             undefined,
                             undefined,
@@ -269,8 +269,8 @@ describe('Parse ipdc', () => {
                     .build()
                 ,
                 new LegalResourceBuilder()
-                    .withId(new Iri("http://data.lblod.info/id/public-service/e8843fda-b3a8-4334-905c-8e49eb12203b"))
-                    .withUuid("e8843fda-b3a8-4334-905c-8e49eb12203b")
+                    .withId(new Iri("http://data.lblod.info/id/public-service/75d1ef7f-d31c-4432-8f64-7a5bd4756db3"))
+                    .withUuid("75d1ef7f-d31c-4432-8f64-7a5bd4756db3")
                     .withTitle(LanguageString.of(
                             undefined,
                             undefined,
@@ -522,8 +522,8 @@ describe('Parse ipdc', () => {
             ])
             .withLegalResources([
                 new LegalResourceBuilder()
-                    .withId(new Iri("http://data.lblod.info/id/public-service/e8843fda-b3a8-4334-905c-8e49eb12203b"))
-                    .withUuid("e8843fda-b3a8-4334-905c-8e49eb12203b")
+                    .withId(new Iri("http://data.lblod.info/id/public-service/17f01e3a-3d4a-4492-8989-b0c9e17ff990"))
+                    .withUuid("17f01e3a-3d4a-4492-8989-b0c9e17ff990")
                     .withTitle(LanguageString.of(
                             undefined,
                             undefined,
@@ -541,8 +541,8 @@ describe('Parse ipdc', () => {
                     .build()
                 ,
                 new LegalResourceBuilder()
-                    .withId(new Iri("http://data.lblod.info/id/public-service/e8843fda-b3a8-4334-905c-8e49eb12203b"))
-                    .withUuid("e8843fda-b3a8-4334-905c-8e49eb12203b")
+                    .withId(new Iri("http://data.lblod.info/id/public-service/75d1ef7f-d31c-4432-8f64-7a5bd4756db3"))
+                    .withUuid("75d1ef7f-d31c-4432-8f64-7a5bd4756db3")
                     .withTitle(LanguageString.of(
                             undefined,
                             undefined,
