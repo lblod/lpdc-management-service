@@ -21,24 +21,28 @@ import {
 export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
 
     async fetchIpdcInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
-        //TODO LPDC-1139: error handling ...
-        // Check connection problem ?
-        // Check response ok
-        // log if response NOK
-        // consistent with address
-        const jsonIpdcInstance = await this.fetchIpdcInstance(initialInstance);
-        //TODO LPDC-1139: error handling ...
-        // IDEM
-        const expandedContext = await this.fetchIpdcContext(jsonIpdcInstance['@context']);
-        jsonIpdcInstance['@context'] = (await expandedContext.json())['@context'];
+        try {
+            //TODO LPDC-1139: error handling ...
+            // Check connection problem ?
+            // Check response ok
+            // log if response NOK
+            // consistent with address
+            const jsonIpdcInstance = await this.fetchIpdcInstance(initialInstance);
+            //TODO LPDC-1139: error handling ...
+            // IDEM
+            const expandedContext = await this.fetchIpdcContext(jsonIpdcInstance['@context']);
+            jsonIpdcInstance['@context'] = (await expandedContext.json())['@context'];
 
-        const jsonLdDataAsString = JSON.stringify(jsonIpdcInstance);
-        return this.mapIpdcInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
+            const jsonLdDataAsString = JSON.stringify(jsonIpdcInstance);
+            return this.mapIpdcInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
+        } catch (e) {
+            console.error(e);
+        }
     }
 
 
     private mapIpdcInstance(jsonLdData: string, bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
-        return new Promise((resolve, reject) => {
+        return new Promise<QuadsToDomainMapper>((resolve, reject) => {
 
             const store = graph();
             parse(jsonLdData, store, bestuurseenheid.userGraph().value, 'application/ld+json', (error: any, kb: any) => {
@@ -52,14 +56,12 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
 
                 // TODO LPDC-1139: check that quads is larger then 0
 
-                const quadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), doubleQuadReporter);
+                const quadsToDomainMapper: QuadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), doubleQuadReporter);
 
-                const mappedInstance = this.mappedInstance(quadsToDomainMapper, initialInstance);
-
-                resolve(mappedInstance);
+                resolve(quadsToDomainMapper);
 
             });
-        });
+        }).then(quadsToDomainMapper => this.mappedInstance(quadsToDomainMapper, initialInstance));
     }
 
 
@@ -100,11 +102,12 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
     }
 
     private mapLanguageString(newValue: LanguageString | undefined, initialValue: LanguageString | undefined): LanguageString | undefined {
-        if (newValue && initialValue && newValue.nlGeneratedInformal) {
+        //TODO LPDC-1139: both defined or both undefined
+        if (newValue && initialValue) {
             const informalNewValue = newValue.nlGeneratedInformal;
 
             if (!informalNewValue || informalNewValue.trim() === "") {
-                throw new InvariantError('Geen informal waarde verkregen van ipdc');
+                throw new InvariantError('Geen informal waarde verkregen');
             }
 
             if (initialValue?.nl) {
@@ -112,9 +115,11 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
             } else {
                 return LanguageString.of(initialValue?.en, undefined, informalNewValue);
             }
-        }
+        } else if (!newValue && !initialValue) {
         return undefined;
-        //TODO LPDC-1139: both defined or both undefined
+        }
+
+        throw new InvariantError("De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn");
     }
 
     private mapRequirements(newRequirements: Requirement[], initialRequirements: Requirement[]): Requirement[] {
