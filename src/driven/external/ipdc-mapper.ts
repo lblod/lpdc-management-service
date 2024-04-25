@@ -10,8 +10,6 @@ import {InvariantError} from "../../core/domain/shared/lpdc-error";
 import {zip} from "lodash";
 import {Procedure, ProcedureBuilder} from "../../core/domain/procedure";
 import {Cost, CostBuilder} from "../../core/domain/cost";
-import {Language} from "../../core/domain/language";
-import {InstancePublicationStatusType, InstanceStatusType} from "../../core/domain/types";
 import {Website, WebsiteBuilder} from "../../core/domain/website";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../core/domain/financial-advantage";
 import {Evidence, EvidenceBuilder} from "../../core/domain/evidence";
@@ -93,15 +91,15 @@ export class IpdcMapper {
             initialInstance.conceptSnapshotId,
             initialInstance.productId,
             initialInstance.languages,
-            Language.INFORMAL,
-            false,
+            initialInstance.dutchLanguageVariant,
+            initialInstance.needsConversionFromFormalToInformal,
             initialInstance.dateCreated,
             initialInstance.dateModified,
             initialInstance.dateSent,
             initialInstance.datePublished,
-            InstanceStatusType.ONTWERP,
+            initialInstance.status,
             initialInstance.reviewStatus,
-            InstancePublicationStatusType.TE_HERPUBLICEREN,
+            initialInstance.publicationStatus,
             initialInstance.spatials,
             this.mapLegalResources(mapper.legalResources(id), initialInstance.legalResources),
         );
@@ -130,6 +128,7 @@ export class IpdcMapper {
                 throw new InvariantError('Geen informal waarde verkregen van ipdc');
             }
 
+            //TODO: map to initial dutch language variant
             return LanguageString.of(initialValue?.en, undefined, undefined, informalNewValue);
         }
         return undefined;
