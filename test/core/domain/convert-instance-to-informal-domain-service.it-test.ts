@@ -14,7 +14,7 @@ import {aFullRequirementForInstance} from "./requirement-test-builder";
 import {aFullProcedureForInstance} from "./procedure-test-builder";
 import {aFullCostForInstance} from "./cost-test-builder";
 import {aFullFinancialAdvantageForInstance} from "./financial-advantage-test-builder";
-import {aFullWebsiteForInstance} from "./website-test-builder";
+import {aFullWebsiteForInstance, anotherFullWebsiteForInstance} from "./website-test-builder";
 import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
@@ -22,6 +22,8 @@ import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
 import {IpdcMapper} from "../../../src/driven/external/ipdc-mapper";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
+import {uuid as uuidv4} from "../../../mu-helper";
+import {aFullEvidenceForInstance} from "./evidence-test-builder";
 
 describe('Convert Instance To Informal Domain Service', () => {
 
@@ -252,22 +254,29 @@ describe('Convert Instance To Informal Domain Service', () => {
 
     describe('Convert instance to informal', () => {
 
-        test.skip('When instance dutchLanguageVersion already is informal, then throw error', async () => {
+        test('When instance dutchLanguageVersion already is informal, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            //TODO LPDC-1139: take an uuid from a stub?
             const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
             const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
 
-            const instance = aMinimalInstance()
+            const instance = aFullInstance()
                 .withId(id)
                 .withUuid(uuid)
-                .withTitle(LanguageString.of('title', undefined, undefined, 'titel informal'))
+                .withCreatedBy(bestuurseenheid.id)
                 .withStatus(InstanceStatusType.VERSTUURD)
-                .withDateSent(FormatPreservingDate.now())
                 .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.now())
-                .withDutchLanguageVariant(Language.INFORMAL)
-                .build();
+                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDutchLanguageVariant(Language.FORMAL)
+                .withNeedsConversionFromFormalToInformal(true)
+                .withRequirements([
+                    aFullRequirementForInstance().withUuid(uuidv4()).withEvidence(aFullEvidenceForInstance().withUuid(uuidv4()).build()).build(),
+                ])
+                .withProcedures([
+                    aFullProcedureForInstance().withUuid(uuidv4()).withWebsites([aFullWebsiteForInstance().withUuid(uuidv4()).withOrder(1).build(), anotherFullWebsiteForInstance(uuidv4()).withOrder(2).build()]).build()
+                ])
+                .build()
+                .transformToInformal();
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
@@ -309,7 +318,7 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .rejects.toThrowWithMessage(InvariantError, 'Je moet gekozen hebben voor de je-vorm');
         });
 
-        test.skip('When bestuurseenheid did not not make formalInformal choice yet, then throw error', async () => {
+        test('When bestuurseenheid did not not make formalInformal choice yet, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
@@ -322,8 +331,7 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .rejects.toThrowWithMessage(InvariantError, 'Je moet gekozen hebben voor de je-vorm');
         });
 
-        test.skip('When needConversionFromFormalToInformal is false, then throw error', async () => {
-            //TODO LPDC-1139: take an uuid from a stub?
+        test('When needConversionFromFormalToInformal is false, then throw error', async () => {
             const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
             const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
 
@@ -337,6 +345,12 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withDatePublished(FormatPreservingDate.now())
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
+                .withRequirements([
+                    aFullRequirementForInstance().withUuid(uuidv4()).withEvidence(aFullEvidenceForInstance().withUuid(uuidv4()).build()).build(),
+                ])
+                .withProcedures([
+                    aFullProcedureForInstance().withUuid(uuidv4()).withWebsites([aFullWebsiteForInstance().withUuid(uuidv4()).withOrder(1).build(), anotherFullWebsiteForInstance(uuidv4()).withOrder(2).build()]).build()
+                ])
                 .build();
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
@@ -346,7 +360,7 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .rejects.toThrowWithMessage(InvariantError, 'Instantie moet u naar je conversie nodig hebben');
         });
 
-        test.skip('convertInstanceToInformal should merge informal fields from ipdc into the instance, reopen instance , set needsFormalToInformalConversion to false and dutchLanguageVersion to nl-be-x-informal ', async () => {
+        test('convertInstanceToInformal should merge informal fields from ipdc into the instance, reopen instance , set needsFormalToInformalConversion to false and dutchLanguageVersion to nl-be-x-informal ', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
             const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
@@ -361,6 +375,12 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
+                .withRequirements([
+                    aFullRequirementForInstance().withUuid(uuidv4()).withEvidence(aFullEvidenceForInstance().withUuid(uuidv4()).build()).build(),
+                ])
+                .withProcedures([
+                    aFullProcedureForInstance().withUuid(uuidv4()).withWebsites([aFullWebsiteForInstance().withUuid(uuidv4()).withOrder(1).build(), anotherFullWebsiteForInstance(uuidv4()).withOrder(2).build()]).build()
+                ])
                 .build();
 
             await instanceRepository.save(bestuurseenheid, instance);
@@ -379,4 +399,5 @@ describe('Convert Instance To Informal Domain Service', () => {
     });
 
 
-});
+})
+;

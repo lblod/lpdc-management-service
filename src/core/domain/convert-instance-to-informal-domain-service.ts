@@ -8,6 +8,7 @@ import {InvariantError} from "./shared/lpdc-error";
 import {
     InstanceInformalLanguageStringsFetcher
 } from "../port/driven/external/instance-informal-language-strings-fetcher";
+import {Language} from "./language";
 
 export class ConvertInstanceToInformalDomainService {
 
@@ -39,6 +40,8 @@ export class ConvertInstanceToInformalDomainService {
     async convertInstanceToInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
         await this.errorIfBestuurdDidNotChooseInformal(bestuurseenheid);
         this.errorIfInstanceNotGepubliceerd(instance);
+        this.errorInstanceReedsInformal(instance);
+
 
         const updatedInstance =
             (await this._instanceInformalLanguageStringsFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance.reopen()))
@@ -57,6 +60,12 @@ export class ConvertInstanceToInformalDomainService {
     private errorIfInstanceNotGepubliceerd(instance: Instance) {
         if (instance.publicationStatus !== InstancePublicationStatusType.GEPUBLICEERD) {
             throw new InvariantError('Instantie moet gepubliceerd zijn');
+        }
+    }
+
+    private errorInstanceReedsInformal(instance: Instance) {
+        if (instance.dutchLanguageVariant == Language.INFORMAL) {
+            throw new InvariantError('Instantie is reeds in de je-vorm');
         }
     }
 

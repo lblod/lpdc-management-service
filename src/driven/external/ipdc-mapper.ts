@@ -45,8 +45,6 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
                 const doubleQuadReporter: DoubleQuadReporter = new LoggingDoubleQuadReporter(new Logger('Instance-QuadsToDomainLogger'));
                 const quads = kb.statementsMatching();
 
-                console.log(`parsed ${quads.length}`);
-
                 const quadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), doubleQuadReporter);
 
                 const mappedInstance = this.mappedInstance(quadsToDomainMapper, initialInstance);
@@ -107,10 +105,7 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
             }
         }
         return undefined;
-
-
         //TODO LPDC-1139: both defined or both undefined
-
     }
 
     private mapRequirements(newRequirements: Requirement[], initialRequirements: Requirement[]): Requirement[] {
