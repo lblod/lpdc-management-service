@@ -190,10 +190,11 @@ export class IpdcMapper {
 
         zip(newWebsites, initialWebsites).some((reqs: [Website, Website]) => {
 
-            websites = [...websites, WebsiteBuilder.from(reqs[1])
+            const website = WebsiteBuilder.from(reqs[1])
                 .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title))
                 .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description))
-                .build()];
+                .build();
+            websites = [...websites, website];
         });
         return websites;
     }

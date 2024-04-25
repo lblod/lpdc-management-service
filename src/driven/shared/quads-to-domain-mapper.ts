@@ -106,7 +106,7 @@ class StoreAccess {
 
     public uniqueStatement(s: NamedNode | BlankNode,
                            p: NamedNode,
-                           o: NamedNode = null): Statement | undefined {
+                           o: NamedNode | BlankNode = null): Statement | undefined {
         const allStatementsMatching = this.statements(s, p, {o: o});
         if (!allStatementsMatching || allStatementsMatching.length === 0) {
             return undefined;
@@ -770,7 +770,7 @@ export class QuadsToDomainMapper {
         const orders = anArray
             .map((obj: { id: any; }) => {
                 const id = obj.id;
-                const order: number | undefined = this.asNumber(this.storeAccess.uniqueValue(namedNode(id), NS.sh('order')));
+                const order: number | undefined = this.asNumber(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.sh('order')));
                 uniqueOrders.add(order);
                 return [id, order];
             });

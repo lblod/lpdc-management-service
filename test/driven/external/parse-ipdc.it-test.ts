@@ -8,6 +8,8 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import {InstancePublicationStatusType, InstanceStatusType} from "../../../src/core/domain/types";
 import {RequirementBuilder} from "../../../src/core/domain/requirement";
 import {EvidenceBuilder} from "../../../src/core/domain/evidence";
+import {ProcedureBuilder} from "../../../src/core/domain/procedure";
+import {WebsiteBuilder} from "../../../src/core/domain/website";
 
 describe('Parse ipdc', () => {
     const ipdcFetcher = new IpdcMapper();
@@ -86,6 +88,55 @@ describe('Parse ipdc', () => {
                     .build()
 
             ])
+            .withProcedures([
+                new ProcedureBuilder()
+                    .withId(new Iri("http://data.lblod.info/id/rule/91e7e795-6d19-4cdd-b039-cc94fb1ccc8f"))
+                    .withUuid("91e7e795-6d19-4cdd-b039-cc94fb1ccc8f")
+                    .withTitle((LanguageString.of(
+                            undefined,
+                            undefined,
+                            "Procedure"
+                        ))
+                    )
+                    .withDescription((LanguageString.of(
+                            undefined,
+                            undefined,
+                            "<p data-indentation-level=\"0\">Dit is de procedure voor een volledig ingevulde test om zodat u het contract tussen ipdc en lpdc kan testen</p>"
+                        ))
+                    )
+                    .withOrder(0)
+                    .withWebsites([
+                        new WebsiteBuilder()
+                            .withId(new Iri("http://data.lblod.info/id/website/b99e8207-7af5-420e-9d46-d66d7f0a401c"))
+                            .withUuid("b99e8207-7af5-420e-9d46-d66d7f0a401c")
+                            .withTitle((LanguageString.of(
+                                    undefined,
+                                    undefined,
+                                    "Subsidiereglement Stad Gent voor de financiële ondersteuning van projecten in kunst, cultuur en cultureel erfgoed voor periode 2021-2025"
+                                ))
+                            )
+                            .withDescription(undefined)
+                            .withUrl("https://stad.gent/nl/reglementen/subsidiereglement-voor-de-financiele-ondersteuning-van-projecten-kunst-cultuur-en-cultureel-erfgoed")
+                            .withOrder(0)
+                            .build()
+                        ,
+                        new WebsiteBuilder()
+                            .withId(new Iri("http://data.lblod.info/id/website/a411b281-70b7-42ab-acf4-32e4f1341c53"))
+                            .withUuid("a411b281-70b7-42ab-acf4-32e4f1341c53")
+                            .withTitle((LanguageString.of(
+                                    undefined,
+                                    undefined,
+                                    "Subsidie verfraaing handelspanden"
+                                ))
+                            )
+                            .withDescription(undefined)
+                            .withUrl("https://stad.gent/nl/ondernemen/ondersteuning-en-premies-voor-ondernemers/sectoroverschrijdend/subsidie-verfraaiing-handelspand/subsidie-verfraaiing-handelspanden")
+                            .withOrder(1)
+                            .build()
+                    ])
+                    .build()
+            ])
+
             .withDutchLanguageVariant(Language.FORMAL)
             .withNeedsConversionFromFormalToInformal(true)
             .withDateCreated(FormatPreservingDate.of("2024-04-24T14:01:09.807Z"))
