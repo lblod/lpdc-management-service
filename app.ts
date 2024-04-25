@@ -480,7 +480,6 @@ async function publishInstance(req: Request, res: Response) {
 
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
 
-
     await instanceRepository.update(bestuurseenheid, instance.publish(), instanceVersion);
     return res.sendStatus(200);
 }

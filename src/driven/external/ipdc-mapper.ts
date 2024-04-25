@@ -1,5 +1,5 @@
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
-import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "./quads-to-domain-mapper";
+import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {Logger} from "../../../platform/logger";
 import {Instance} from "../../core/domain/instance";
 import {graph, parse} from "rdflib";

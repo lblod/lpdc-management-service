@@ -3,7 +3,7 @@ import {ConceptSnapshotRepository} from "../../core/port/driven/persistence/conc
 import {ConceptSnapshot} from "../../core/domain/concept-snapshot";
 import {Iri} from "../../core/domain/shared/iri";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
-import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../external/quads-to-domain-mapper";
+import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {CONCEPT_SNAPSHOT_LDES_GRAPH} from "../../../config";
 import {Logger} from "../../../platform/logger";

@@ -4,7 +4,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {InstanceSnapshotRepository} from "../../core/port/driven/persistence/instance-snapshot-repository";
 import {SparqlQuerying} from "./sparql-querying";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
-import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../external/quads-to-domain-mapper";
+import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {Logger} from "../../../platform/logger";
 import {NS} from "./namespaces";
 import {sparqlEscapeUri} from "../../../mu-helper";

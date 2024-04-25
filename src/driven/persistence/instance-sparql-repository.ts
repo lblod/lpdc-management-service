@@ -7,7 +7,7 @@ import {Instance, InstanceBuilder} from "../../core/domain/instance";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
-import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../external/quads-to-domain-mapper";
+import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {NS} from "./namespaces";
 import {ChosenFormType, InstancePublicationStatusType, InstanceReviewStatusType} from "../../core/domain/types";
 import {Logger} from "../../../platform/logger";
