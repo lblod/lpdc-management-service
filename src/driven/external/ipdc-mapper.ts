@@ -22,8 +22,13 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
 
     async fetchIpdcInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
         //TODO LPDC-1139: error handling ...
+        // Check connection problem ?
+        // Check response ok
+        // log if response NOK
+        // consistent with address
         const jsonIpdcInstance = await this.fetchIpdcInstance(initialInstance);
         //TODO LPDC-1139: error handling ...
+        // IDEM
         const expandedContext = await this.fetchIpdcContext(jsonIpdcInstance['@context']);
         jsonIpdcInstance['@context'] = (await expandedContext.json())['@context'];
 
@@ -45,6 +50,8 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
                 const doubleQuadReporter: DoubleQuadReporter = new LoggingDoubleQuadReporter(new Logger('Instance-QuadsToDomainLogger'));
                 const quads = kb.statementsMatching();
 
+                // TODO LPDC-1139: check that quads is larger then 0
+
                 const quadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), doubleQuadReporter);
 
                 const mappedInstance = this.mappedInstance(quadsToDomainMapper, initialInstance);
@@ -60,6 +67,7 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
         const id = initialInstance.id;
         mapper.errorIfMissingOrIncorrectType(id, NS.lpdcExt('InstancePublicService'));
 
+        //TODO LPDC-1139: verify dateModified with fetched =>  systemError
         return InstanceBuilder.from(initialInstance)
             .withTitle(this.mapLanguageString(mapper.title(id), initialInstance.title))
             .withDescription(this.mapLanguageString(mapper.description(id), initialInstance.description))
@@ -76,6 +84,7 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
     }
 
     private async fetchIpdcInstance(initialInstance: Instance) {
+        //TODO LPDC-1139: make dynamic
         const ipdcInstance = await fetch(`https://productcatalogus.ipdc.tni-vlaanderen.be/doc/instantie/${initialInstance.uuid}`, {
             headers: {'Accept': 'application/ld+json'}
         });
@@ -125,6 +134,7 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
     }
 
     private mapEvidence(newEvidence: Evidence | undefined, initialEvidence: Evidence | undefined): Evidence | undefined {
+        //TODO LPDC-1139: check both present or both absent
         if (newEvidence && initialEvidence) {
             return EvidenceBuilder.from(initialEvidence)
                 .withTitle(this.mapLanguageString(newEvidence.title, initialEvidence.title))
