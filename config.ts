@@ -14,6 +14,8 @@ const ENABLE_ADDRESS_VALIDATION = (process.env.ENABLE_ADDRESS_VALIDATION ?? 'tru
 
 const INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN = process.env.INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN || "*/1 * * * *"; //or every minute
 
+const IPDC_ENDPOINT = process.env.IPDC_ENDPOINT;
+
 //TODO LPDC-894: use PREFIX object, and generate this list from it (make sure to add all needed to PREFIX)
 const PREFIXES = `
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -98,5 +100,6 @@ export {
     PREFIX,
     ADRESSEN_REGISTER_API_KEY,
     ENABLE_ADDRESS_VALIDATION,
-    INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN
+    INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN,
+    IPDC_ENDPOINT
 };

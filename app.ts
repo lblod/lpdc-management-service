@@ -1,6 +1,11 @@
 import {createApp} from './mu-helper';
 import bodyparser from 'body-parser';
-import {CONCEPT_SNAPSHOT_LDES_GRAPH, INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN, LOG_INCOMING_DELTA} from './config';
+import {
+    CONCEPT_SNAPSHOT_LDES_GRAPH,
+    INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN,
+    IPDC_ENDPOINT,
+    LOG_INCOMING_DELTA
+} from './config';
 import {ProcessingQueue} from './lib/processing-queue';
 import {contactPointOptions} from "./lib/contactPointOptions";
 import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
@@ -166,7 +171,7 @@ const newFormalInformalChoiceAndSyncInstanceDomainService = new NewFormalInforma
     instanceRepository
 );
 
-const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc();
+const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc(IPDC_ENDPOINT);
 
 const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
 

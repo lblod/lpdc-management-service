@@ -20,6 +20,12 @@ import {
 
 export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInformalLanguageStringsFetcher {
 
+    private readonly endpoint: string;
+
+    constructor(endpoint: string) {
+        this.endpoint = endpoint;
+    }
+
     async fetchInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
 
         const jsonInstance = await this.fetchInstance(initialInstance);
@@ -84,8 +90,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     }
 
     private async fetchInstance(initialInstance: Instance) {
-        //TODO LPDC-1139: make dynamic
-        const response = await fetch(`https://productcatalogus.ipdc.tni-vlaanderen.be/doc/instantie/${initialInstance.uuid}`, {
+        const response = await fetch(`${this.endpoint}/doc/instantie/${initialInstance.uuid}`, {
             headers: {'Accept': 'application/ld+json'}
         });
 
