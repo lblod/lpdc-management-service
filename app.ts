@@ -58,6 +58,7 @@ import {FormatPreservingDate} from "./src/core/domain/format-preserving-date";
 import {FormalInformalChoice} from "./src/core/domain/formal-informal-choice";
 import {NewFormalInformalChoiceDomainService} from "./src/core/domain/new-formal-informal-choice-domain-service";
 import {ConvertInstanceToInformalDomainService} from "./src/core/domain/convert-instance-to-informal-domain-service";
+import {IpdcMapper} from "./src/driven/external/ipdc-mapper";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -163,7 +164,9 @@ const newFormalInformalChoiceAndSyncInstanceDomainService = new NewFormalInforma
     instanceRepository
 );
 
-const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository);
+const instanceInformalLanguageStringsFetcher = new IpdcMapper();
+
+const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
 
 app.get('/', function (_req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;

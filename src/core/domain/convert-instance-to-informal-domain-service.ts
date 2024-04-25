@@ -5,27 +5,28 @@ import {InstanceRepository} from "../port/driven/persistence/instance-repository
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
 import {ChosenFormType, InstancePublicationStatusType} from "./types";
 import {InvariantError} from "./shared/lpdc-error";
+import {
+    InstanceInformalLanguageStringsFetcher
+} from "../port/driven/external/instance-informal-language-strings-fetcher";
 
 export class ConvertInstanceToInformalDomainService {
 
     private readonly _instanceRepository: InstanceRepository;
     private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
+    private readonly _instanceInformalLanguageStringsFetcher: InstanceInformalLanguageStringsFetcher;
 
     constructor(
         instanceRepository: InstanceRepository,
-        formalInformalChoiceRepository: FormalInformalChoiceRepository) {
+        formalInformalChoiceRepository: FormalInformalChoiceRepository,
+        instanceInformalLanguageStringsFetcher: InstanceInformalLanguageStringsFetcher) {
         this._instanceRepository = instanceRepository;
         this._formalInformalChoiceRepository = formalInformalChoiceRepository;
+        this._instanceInformalLanguageStringsFetcher = instanceInformalLanguageStringsFetcher;
     }
 
     async confirmInstanceIsAlreadyInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
-        const formalInformalChoice = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
-        if (formalInformalChoice?.chosenForm !== ChosenFormType.INFORMAL) {
-            throw new InvariantError('Je moet gekozen hebben voor de je-vorm');
-        }
-        if (instance.publicationStatus !== InstancePublicationStatusType.GEPUBLICEERD) {
-            throw new InvariantError('Instantie moet gepubliceerd zijn');
-        }
+        await this.errorIfBestuurdDidNotChooseInformal(bestuurseenheid);
+        this.errorIfInstanceNotGepubliceerd(instance);
 
         const updatedInstance = instance
             .reopen()
@@ -33,27 +34,31 @@ export class ConvertInstanceToInformalDomainService {
             .publish();
 
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);
-
     }
 
-    //TODO LPDC-1039: remove current implementation ...
-    //TODO LPDC-1039: use ipdc-mapper (via a port ...)
     async convertInstanceToInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
+        await this.errorIfBestuurdDidNotChooseInformal(bestuurseenheid);
+        this.errorIfInstanceNotGepubliceerd(instance);
+
+        const updatedInstance =
+            (await this._instanceInformalLanguageStringsFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance.reopen()))
+                .transformToInformal();
+
+        await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);
+    }
+
+    private async errorIfBestuurdDidNotChooseInformal(bestuurseenheid: Bestuurseenheid) {
         const formalInformalChoice = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
         if (formalInformalChoice?.chosenForm !== ChosenFormType.INFORMAL) {
             throw new InvariantError('Je moet gekozen hebben voor de je-vorm');
         }
+    }
+
+    private errorIfInstanceNotGepubliceerd(instance: Instance) {
         if (instance.publicationStatus !== InstancePublicationStatusType.GEPUBLICEERD) {
             throw new InvariantError('Instantie moet gepubliceerd zijn');
         }
-
-        const updatedInstance = instance
-            .reopen()
-            .transformToInformal()
-            .publish();
-
-        await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);
-
     }
+
 
 }

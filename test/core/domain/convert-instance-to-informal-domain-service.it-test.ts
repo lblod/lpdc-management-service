@@ -20,18 +20,21 @@ import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
+import {IpdcMapper} from "../../../src/driven/external/ipdc-mapper";
+import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('Convert Instance To Informal Domain Service', () => {
 
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceInformalLanguageStringsFetcher = new IpdcMapper();
+    const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
+
+    beforeAll(() => setFixedTime());
+
+    afterAll(() => restoreRealTime());
+
     describe('Confirm instance already informal', () => {
-
-        const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
-        const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-        const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository);
-
-        beforeAll(() => setFixedTime());
-
-        afterAll(() => restoreRealTime());
 
         test('When instance dutchLanguageVersion already is informal, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
@@ -51,7 +54,7 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .rejects.toThrowWithMessage(InvariantError, 'Instantie is reeds in de je-vorm');
         });
 
-        test('When instance is is not published, then throw error', async () => {
+        test('When instance is not published, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERSTUURD)
@@ -97,7 +100,7 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .rejects.toThrowWithMessage(InvariantError, 'Je moet gekozen hebben voor de je-vorm');
         });
 
-        test('When needConversionFromUtoJe is false, then throw error', async () => {
+        test('When needConversionFromFormalToInformal is false, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERSTUURD)
@@ -247,6 +250,137 @@ describe('Convert Instance To Informal Domain Service', () => {
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             expect(actualInstance.dateSent).toEqual(FormatPreservingDate.now());
         });
+    });
+
+    describe('Convert instance to informal', () => {
+
+        test.skip('When instance dutchLanguageVersion already is informal, then throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            //TODO LPDC-1139: take an uuid from a stub?
+            const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
+            const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
+
+            const instance = aMinimalInstance()
+                .withId(id)
+                .withUuid(uuid)
+                .withTitle(LanguageString.of('title', undefined, undefined, 'titel informal'))
+                .withStatus(InstanceStatusType.VERSTUURD)
+                .withDateSent(FormatPreservingDate.now())
+                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+                .withDatePublished(FormatPreservingDate.now())
+                .withDutchLanguageVariant(Language.INFORMAL)
+                .build();
+
+            const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            await expect(() => convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified))
+                .rejects.toThrowWithMessage(InvariantError, 'Instantie is reeds in de je-vorm');
+        });
+
+        test('When instance is not published, then throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance()
+                .withStatus(InstanceStatusType.VERSTUURD)
+                .withPublicationStatus(undefined)
+                .withDatePublished(undefined)
+                .withNeedsConversionFromFormalToInformal(true)
+                .build();
+
+            const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            await expect(() => convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified))
+                .rejects.toThrowWithMessage(InvariantError, 'Instantie moet gepubliceerd zijn');
+        });
+
+        test('When bestuurseenheid chose formal, then throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance()
+                .withStatus(InstanceStatusType.VERSTUURD)
+                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+                .withDatePublished(FormatPreservingDate.now())
+                .withDutchLanguageVariant(Language.FORMAL)
+                .withNeedsConversionFromFormalToInformal(false)
+                .build();
+
+            const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.FORMAL).build();
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            await expect(() => convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified))
+                .rejects.toThrowWithMessage(InvariantError, 'Je moet gekozen hebben voor de je-vorm');
+        });
+
+        test.skip('When bestuurseenheid did not not make formalInformal choice yet, then throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance()
+                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+                .withDatePublished(FormatPreservingDate.now())
+                .withDutchLanguageVariant(Language.FORMAL)
+                .withNeedsConversionFromFormalToInformal(false)
+                .build();
+
+            await expect(() => convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified))
+                .rejects.toThrowWithMessage(InvariantError, 'Je moet gekozen hebben voor de je-vorm');
+        });
+
+        test.skip('When needConversionFromFormalToInformal is false, then throw error', async () => {
+            //TODO LPDC-1139: take an uuid from a stub?
+            const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
+            const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
+
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance()
+                .withId(id)
+                .withUuid(uuid)
+                .withCreatedBy(bestuurseenheid.id)
+                .withStatus(InstanceStatusType.VERSTUURD)
+                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+                .withDatePublished(FormatPreservingDate.now())
+                .withDutchLanguageVariant(Language.FORMAL)
+                .withNeedsConversionFromFormalToInformal(false)
+                .build();
+
+            const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            await expect(() => convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified))
+                .rejects.toThrowWithMessage(InvariantError, 'Instantie moet u naar je conversie nodig hebben');
+        });
+
+        test.skip('convertInstanceToInformal should merge informal fields from ipdc into the instance, reopen instance , set needsFormalToInformalConversion to false and dutchLanguageVersion to nl-be-x-informal ', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            //TODO LPDC-1139: Add test that validates mapped fields.
+
+            //TODO LPDC-1139: take an uuid from a stub?
+            const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
+            const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
+
+            const instance = aFullInstance()
+                .withId(id)
+                .withUuid(uuid)
+                .withCreatedBy(bestuurseenheid.id)
+                .withStatus(InstanceStatusType.VERSTUURD)
+                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDutchLanguageVariant(Language.FORMAL)
+                .withNeedsConversionFromFormalToInformal(true)
+                .build();
+            await instanceRepository.save(bestuurseenheid, instance);
+
+            const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            await convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified);
+
+            const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            expect(actualInstance.status).toEqual(InstanceStatusType.ONTWERP);
+            expect(actualInstance.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
+            expect(actualInstance.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualInstance.dutchLanguageVariant).toEqual(Language.INFORMAL);
+        }, 2000000000);
+
     });
 
 

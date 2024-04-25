@@ -14,19 +14,23 @@ import {Website, WebsiteBuilder} from "../../core/domain/website";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../core/domain/financial-advantage";
 import {Evidence, EvidenceBuilder} from "../../core/domain/evidence";
 import {LegalResource, LegalResourceBuilder} from "../../core/domain/legal-resource";
+import {
+    InstanceInformalLanguageStringsFetcher
+} from "../../core/port/driven/external/instance-informal-language-strings-fetcher";
 
-export class IpdcMapper {
+export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
 
     async fetchIpdcInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
+        //TODO LPDC-1139: error handling ...
         const jsonIpdcInstance = await this.fetchIpdcInstance(initialInstance);
+        //TODO LPDC-1139: error handling ...
         const expandedContext = await this.fetchIpdcContext(jsonIpdcInstance['@context']);
         jsonIpdcInstance['@context'] = (await expandedContext.json())['@context'];
 
-
         const jsonLdDataAsString = JSON.stringify(jsonIpdcInstance);
         return this.mapIpdcInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
-
     }
+
 
     private mapIpdcInstance(jsonLdData: string, bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
         return new Promise((resolve, reject) => {
@@ -39,11 +43,9 @@ export class IpdcMapper {
                 }
 
                 const doubleQuadReporter: DoubleQuadReporter = new LoggingDoubleQuadReporter(new Logger('Instance-QuadsToDomainLogger'));
-                const quads = kb.statementsMatching().filter(
-                    quad =>
-                        !quad.object.language ||
-                        quad.object.language === 'nl-be-x-generated-informal'
-                );
+                const quads = kb.statementsMatching();
+
+                console.log(`parsed ${quads.length}`);
 
                 const quadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), doubleQuadReporter);
 
