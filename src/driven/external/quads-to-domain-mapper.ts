@@ -38,6 +38,7 @@ import {LegalResource} from "../../core/domain/legal-resource";
 import {NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
 import {Language} from "../../core/domain/language";
 
+
 export interface DoubleQuadReporter {
 
     report(graph: string, subject: string, predicate: string, object: string | undefined, expectedCount: number, actualCount: number, triples: string[]): void;
@@ -298,7 +299,7 @@ export class QuadsToDomainMapper {
         );
     }
 
-    private errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
+    errorIfMissingOrIncorrectType(id: Iri, type: NamedNode) {
         const typeFoundForId: string = this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.rdf('type'));
         if (!typeFoundForId) {
             throw new NotFoundError(`Kan <${id}> niet vinden voor type ${type} in graph ${this.graphId}`);
@@ -320,23 +321,23 @@ export class QuadsToDomainMapper {
         return this.asEnum(ProductType, NS.dvc.type, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.dct('type')));
     }
 
-    private title(id: Iri): LanguageString | undefined {
+    title(id: Iri): LanguageString | undefined {
         return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dct('title')));
     }
 
-    private description(id: Iri): LanguageString | undefined {
+    description(id: Iri): LanguageString | undefined {
         return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dct('description')));
     }
 
-    private additionalDescription(id: Iri): LanguageString | undefined {
+    additionalDescription(id: Iri): LanguageString | undefined {
         return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('additionalDescription')));
     }
 
-    private exception(id: Iri): LanguageString | undefined {
+    exception(id: Iri): LanguageString | undefined {
         return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('exception')));
     }
 
-    private regulation(id: Iri): LanguageString | undefined {
+    regulation(id: Iri): LanguageString | undefined {
         return this.asLanguageString(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('regulation')));
     }
 
@@ -420,7 +421,7 @@ export class QuadsToDomainMapper {
         return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.adres('verwijstNaar')));
     }
 
-    private keywords(id: Iri): LanguageString[] {
+    keywords(id: Iri): LanguageString[] {
         return this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dcat('keyword'), {validateUniqueLanguages: false})
             .map(s => [s])
             .flatMap(statements => this.asLanguageString(statements));
@@ -478,7 +479,7 @@ export class QuadsToDomainMapper {
         return !!this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.adms('status'), STATUS.concept.archived);
     }
 
-    private instanceStatusType(id: Iri): InstanceStatusType | undefined {
+    instanceStatusType(id: Iri): InstanceStatusType | undefined {
         return this.asEnum(InstanceStatusType, NS.concepts.instanceStatus, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.adms('status')));
     }
 
@@ -496,7 +497,7 @@ export class QuadsToDomainMapper {
         return this.asEnum(InstanceReviewStatusType, NS.concepts.reviewStatus, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.ext('reviewStatus')));
     }
 
-    private instancePublicationStatusType(id: Iri): InstancePublicationStatusType | undefined {
+    instancePublicationStatusType(id: Iri): InstancePublicationStatusType | undefined {
         return this.asEnum(InstancePublicationStatusType, NS.concepts.publicationStatus, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.schema('publication')));
     }
 
@@ -511,7 +512,7 @@ export class QuadsToDomainMapper {
         return namedNode(id.value);
     }
 
-    private costs(id: Iri): Cost[] {
+    costs(id: Iri): Cost[] {
         const costIds =
             this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('hasCost')));
         costIds.forEach(costId => this.errorIfMissingOrIncorrectType(costId, NS.m8g('Cost')));
@@ -521,7 +522,7 @@ export class QuadsToDomainMapper {
         return this.sort(costs);
     }
 
-    private financialAdvantages(id: Iri): FinancialAdvantage[] {
+    financialAdvantages(id: Iri): FinancialAdvantage[] {
         const financialAdvantageIds =
             this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.cpsv('produces')));
         financialAdvantageIds.forEach(financialAdvantageId =>
@@ -534,7 +535,7 @@ export class QuadsToDomainMapper {
         return this.sort(financialAdvantages);
     }
 
-    private contactPoints(id: Iri): ContactPoint[] {
+    contactPoints(id: Iri): ContactPoint[] {
         const contactPointIds =
             this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('hasContactPoint')));
 
@@ -575,7 +576,7 @@ export class QuadsToDomainMapper {
         );
     }
 
-    private websites(id: Iri, predicate: NamedNode = NS.rdfs('seeAlso')): Website[] {
+    websites(id: Iri, predicate: NamedNode = NS.rdfs('seeAlso')): Website[] {
         const websiteIds =
             this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), predicate));
 
@@ -589,7 +590,7 @@ export class QuadsToDomainMapper {
         return this.sort(websites);
     }
 
-    private procedures(id: Iri): Procedure[] {
+    procedures(id: Iri): Procedure[] {
         const procedureIds =
             this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.cpsv('follows')));
 
@@ -603,7 +604,7 @@ export class QuadsToDomainMapper {
         return this.sort(procedures);
     }
 
-    private requirements(id: Iri): Requirement[] {
+    requirements(id: Iri): Requirement[] {
         const requirementIds =
             this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.ps('hasRequirement')));
 
@@ -640,7 +641,7 @@ export class QuadsToDomainMapper {
         return Evidence.reconstitute(evidenceIds[0], this.uuid(evidenceIds[0]), this.title(evidenceIds[0]), this.description(evidenceIds[0]));
     }
 
-    private legalResources(id: Iri): LegalResource[] {
+    legalResources(id: Iri): LegalResource[] {
         const legalResourceIds =
             this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('hasLegalResource')));
 
@@ -677,11 +678,11 @@ export class QuadsToDomainMapper {
         return this.asEnums(LanguageType, NS.pera.languageType, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dct('language')));
     }
 
-    private dutchLanguageVariant(id: Iri): Language | undefined {
+    dutchLanguageVariant(id: Iri): Language | undefined {
         return this.asEnum(Language, 'no-namespace', this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.lpdcExt('dutchLanguageVariant')));
     }
 
-    private needsConversionFromFormalToInformal(id: Iri): boolean {
+    needsConversionFromFormalToInformal(id: Iri): boolean {
         return this.parseBoolean(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.lpdcExt('needsConversionFromFormalToInformal'))?.object as Literal);
     }
 

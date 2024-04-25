@@ -126,6 +126,15 @@ export class LegalResourceBuilder {
         return new Iri(`http://data.lblod.info/id/legal-resource/${uniqueId}`);
     }
 
+    static from(legalResource: LegalResource): LegalResourceBuilder {
+        return new LegalResourceBuilder()
+            .withId(legalResource.id)
+            .withUuid(legalResource.uuid)
+            .withTitle(legalResource.title)
+            .withDescription(legalResource.description)
+            .withUrl(legalResource.url)
+            .withOrder(legalResource.order);
+    }
     public withId(id: Iri): LegalResourceBuilder {
         this.id = id;
         return this;
@@ -155,7 +164,7 @@ export class LegalResourceBuilder {
         this.order = order;
         return this;
     }
-    
+
     public build(): LegalResource {
         return LegalResource.reconstitute(
             this.id,
