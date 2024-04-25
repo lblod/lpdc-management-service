@@ -2,8 +2,6 @@ import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
 import {LanguageString} from "./language-string";
 import {Language} from "./language";
-import {isEqual} from "lodash";
-import {InvariantError} from "./shared/lpdc-error";
 
 
 export class Address {
@@ -28,7 +26,7 @@ export class Address {
                         straatnaam: LanguageString | undefined,
                         verwijstNaar: Iri | undefined) {
 
-        this.validateLanguages(gemeentenaam, land, straatnaam);
+        LanguageString.validateUniqueAndCorrectLanguages([Language.NL], gemeentenaam, land, straatnaam);
 
         this._id = requiredValue(id, 'id');
         this._uuid = uuid;
@@ -39,17 +37,6 @@ export class Address {
         this._postcode = postcode;
         this._straatnaam = straatnaam;
         this._verwijstNaar = verwijstNaar;
-    }
-
-    //TODO LPDC-1151
-    private validateLanguages(...values: (LanguageString | undefined)[]): void {
-        const isValid = values.every((value: LanguageString | undefined) =>
-            isEqual(value, undefined) || isEqual(value.definedLanguages, [Language.NL])
-        );
-
-        if (!isValid) {
-            throw new InvariantError('Address mag alleen NL bevatten in de taalstring');
-        }
     }
 
     static forInstance(address: Address) {

@@ -49,7 +49,6 @@ describe('constructing', () => {
         expect(() => LanguageString.of()).toThrow('language list does not contain one value');
     });
 
-
 });
 
 describe('get defined languages', () => {
@@ -308,15 +307,15 @@ describe('extract nl languages', () => {
     test('if no nl lang is present, return empty list', () => {
         const languages = LanguageString.of();
 
-        expect(LanguageString.extractNlLanguages([languages])).toEqual([]);
+        expect(LanguageString.extractLanguages([languages])).toEqual([]);
     });
 
     test('if only undefined is present, return empty list', () => {
-        expect(LanguageString.extractNlLanguages([undefined])).toEqual([]);
+        expect(LanguageString.extractLanguages([undefined])).toEqual([]);
     });
 
     test('if only undefined language string is present, return empty list', () => {
-        expect(LanguageString.extractNlLanguages([LanguageString.of(undefined, undefined)])).toEqual([]);
+        expect(LanguageString.extractLanguages([LanguageString.of(undefined, undefined)])).toEqual([]);
     });
 
     test('if language versions are present, correctly return values ', () => {
@@ -324,7 +323,7 @@ describe('extract nl languages', () => {
         const langs2 = LanguageString.of(undefined, 'nl-formal');
         const strings = [langs1, langs2];
 
-        expect(LanguageString.extractNlLanguages(strings)).toEqual(expect.arrayContaining(['nl-be-x-formal', 'nl']));
+        expect(LanguageString.extractLanguages(strings)).toEqual(['nl', 'nl-be-x-formal']);
     });
 
     test('if languages are filled in for multiple values return it only one time', () => {
@@ -332,7 +331,7 @@ describe('extract nl languages', () => {
         const langs2 = LanguageString.of(undefined, 'nl-formal');
         const strings = [langs1, langs2];
 
-        expect(LanguageString.extractNlLanguages(strings)).toEqual(expect.arrayContaining(['nl-be-x-formal']));
+        expect(LanguageString.extractLanguages(strings)).toEqual(['nl-be-x-formal']);
     });
 });
 
@@ -341,15 +340,15 @@ describe('validate unique nl language', () => {
     test('if no nl lang is present, do not throw', () => {
         const languages = LanguageString.of();
 
-        expect(() => LanguageString.validateUniqueNlLanguage([languages])).not.toThrow();
+        expect(() => LanguageString.validateUniqueLanguage([languages])).not.toThrow();
     });
 
     test('if only undefined is present, do not throw', () => {
-        expect(() => LanguageString.validateUniqueNlLanguage([undefined])).not.toThrow();
+        expect(() => LanguageString.validateUniqueLanguage([undefined])).not.toThrow();
     });
 
     test('if only undefined language string is present, do not throw', () => {
-        expect(() => LanguageString.validateUniqueNlLanguage([LanguageString.of(undefined, undefined)])).not.toThrow();
+        expect(() => LanguageString.validateUniqueLanguage([LanguageString.of(undefined, undefined)])).not.toThrow();
     });
 
     test('if a language versions is present, do not throw ', () => {
@@ -357,7 +356,7 @@ describe('validate unique nl language', () => {
         const langs2 = LanguageString.of(undefined);
         const strings = [langs1, langs2];
 
-        expect(() => LanguageString.validateUniqueNlLanguage(strings)).not.toThrow();
+        expect(() => LanguageString.validateUniqueLanguage(strings)).not.toThrow();
     });
 
     test('if languages are filled in for multiple values, do not throw', () => {
@@ -365,19 +364,20 @@ describe('validate unique nl language', () => {
         const langs2 = LanguageString.of(undefined, 'nl-formal');
         const strings = [langs1, langs2];
 
-        expect(() => LanguageString.validateUniqueNlLanguage(strings)).not.toThrow();
+        expect(() => LanguageString.validateUniqueLanguage(strings)).not.toThrow();
     });
 
     test('if multiple nl values are present, throw error', () => {
-        expect(() => LanguageString.validateUniqueNlLanguage([LanguageString.of('nl', 'nl-formal')])).toThrowWithMessage(InvariantError, "Er is meer dan een nl-taal aanwezig");
+        expect(() => LanguageString.validateUniqueLanguage([LanguageString.of('nl', 'nl-formal')]))
+            .toThrowWithMessage(InvariantError, "Er is meer dan een nl-taal aanwezig");
     });
 
     test('if multiple nl values are present throughout multiple values , throw error', () => {
         const langs1 = LanguageString.of(undefined, 'nl-formal');
-        const langs2 = LanguageString.of('nl', 'nl-formal');
+        const langs2 = LanguageString.of('nl', undefined);
         const strings = [langs1, langs2];
 
-        expect(() => LanguageString.validateUniqueNlLanguage(strings)).toThrowWithMessage(InvariantError, "Er is meer dan een nl-taal aanwezig");
+        expect(() => LanguageString.validateUniqueLanguage(strings)).toThrowWithMessage(InvariantError, "Er is meer dan een nl-taal aanwezig");
     });
 
 });

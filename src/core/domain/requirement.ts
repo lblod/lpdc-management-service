@@ -96,7 +96,7 @@ export class Requirement {
     }
 
     get nlLanguage(): Language | undefined {
-        return LanguageString.extractNlLanguages([this._title, this._description])[0] ?? this._evidence?.nlLanguage;
+        return LanguageString.extractLanguages([this._title, this._description])[0] ?? this._evidence?.nlLanguage;
     }
 
     get id(): Iri {

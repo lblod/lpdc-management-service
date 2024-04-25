@@ -18,7 +18,7 @@ export class SelectFormLanguageDomainService {
     public async selectForConcept(concept: Concept, bestuurseenheid: Bestuurseenheid): Promise<Language> {
         const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
 
-        const conceptLanguages = concept.conceptNlLanguages;
+        const conceptLanguages = concept.conceptLanguages;
         if (formalInformalChoice?.chosenForm === ChosenFormType.INFORMAL) {
             if (conceptLanguages.includes(Language.INFORMAL)) {
                 return Language.INFORMAL;

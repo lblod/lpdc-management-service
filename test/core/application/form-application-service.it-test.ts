@@ -123,7 +123,6 @@ describe('Form application service tests', () => {
 
     });
 
-    // TODO LPDC-1151 adjust test so we use dutchLanguageVariant
     describe('loadInstanceForm', () => {
 
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -138,22 +137,10 @@ describe('Form application service tests', () => {
         const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);
 
         test('can load a inhoud form for an instance in correct language', async () => {
-            const bestuurseenheid =
-                aBestuurseenheid()
-                    .build();
+            const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
-            const instance =
-                aFullInstance()
-                    .withTitle(
-                        LanguageString.of(undefined, 'nl formal')
-                    )
-                    .withDescription(undefined)
-                    .withAdditionalDescription(undefined)
-                    .withException(undefined)
-                    .withRegulation(undefined)
-                    .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
-                    .build();
+            const instance = aFullInstance().build();
             await instanceRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice =

@@ -97,7 +97,7 @@ export class Procedure {
     }
 
     get nlLanguage(): Language | undefined {
-        const languages = [LanguageString.extractNlLanguages([this._title, this._description])[0],
+        const languages = [LanguageString.extractLanguages([this._title, this._description])[0],
             ...this._websites.map(r => r.nlLanguage)]
             .filter(l => l !== undefined);
 

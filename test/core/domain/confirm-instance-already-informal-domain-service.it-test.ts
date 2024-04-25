@@ -151,7 +151,7 @@ describe('Confirm instance already informal domain service', () => {
 
         const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
-        expect(actualInstance.calculatedInstanceNlLanguages()).toEqual([Language.INFORMAL]);
+        expect(actualInstance.calculatedInstanceLanguages()).toEqual([Language.INFORMAL]);
         expect(actualInstance.title).toEqual(LanguageString.of(undefined, undefined, 'Instance Title - nl-formal'));
         expect(actualInstance.description).toEqual(LanguageString.of(undefined, undefined, 'Instance Description - nl-formal'));
         expect(actualInstance.additionalDescription).toEqual(LanguageString.of(undefined, undefined, 'Instance Additional Description - nl-formal'));

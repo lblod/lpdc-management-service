@@ -149,6 +149,11 @@ describe('constructing', () => {
         expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
     });
 
+    test('keywords with other language than nl throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withKeywords([LanguageString.of(undefined, 'overlijden'), LanguageString.of(undefined, 'geboorte')]);
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
+    });
+
     test('undefined isArchived duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withIsArchived(undefined);
         expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'isArchived mag niet ontbreken');

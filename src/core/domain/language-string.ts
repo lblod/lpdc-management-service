@@ -76,17 +76,6 @@ export class LanguageString {
         return uniq(definedLanguages);
     }
 
-    // TODO LPDC-1151 this is now the same as defined languages
-    get definedNlLanguages(): Language[] {
-        const definedLanguages = [];
-        if (this._nl !== undefined) definedLanguages.push(Language.NL);
-        if (this._nlFormal !== undefined) definedLanguages.push(Language.FORMAL);
-        if (this._nlInformal !== undefined) definedLanguages.push(Language.INFORMAL);
-        if (this._nlGeneratedFormal !== undefined) definedLanguages.push(Language.GENERATED_FORMAL);
-        if (this._nlGeneratedInformal !== undefined) definedLanguages.push(Language.GENERATED_INFORMAL);
-        return uniq(definedLanguages);
-    }
-
     getLanguageValue(language: Language): string | undefined {
         if (language === Language.NL) return this._nl;
         if (language === Language.FORMAL) return this._nlFormal;
@@ -96,35 +85,32 @@ export class LanguageString {
     }
 
     transformToInformal(): LanguageString {
-        if (this.definedNlLanguages.length > 1) {
+        if (this.definedLanguages.length > 1) {
             throw new InvariantError('voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
         }
-        const oldDutchLanguage = this.definedNlLanguages[0];
+        const oldDutchLanguage = this.definedLanguages[0];
         const languageValue = this.getLanguageValue(oldDutchLanguage);
         return LanguageString.of(undefined, undefined, languageValue);
     }
 
-    // TODO LPDC-1151 still necessary?
-    static extractNlLanguages(languages: (LanguageString | undefined)[]): Language[] {
-        return languages
+    static extractLanguages(languages: (LanguageString | undefined)[]): Language[] {
+        return uniq(languages
             .filter(ls => ls !== undefined)
-            .flatMap(ls => ls.definedNlLanguages);
+            .flatMap(ls => ls.definedLanguages));
     }
 
-    // TODO LPDC-1151 still necessary?
-    static validateUniqueNlLanguage(languages: (LanguageString | undefined)[]): void {
-        const langs = new Set(this.extractNlLanguages(languages).filter(ls => ls !== undefined));
+    static validateUniqueLanguage(values: (LanguageString | undefined)[]): void {
+        const languages = uniq(this.extractLanguages(values));
 
-        if (langs.size > 1) {
+        if (languages.length > 1) {
             throw new InvariantError('Er is meer dan een nl-taal aanwezig');
         }
     }
 
-    // TODO LPDC-1151 still necessary?
     static validateUniqueAndCorrectLanguages(acceptedLanguages: Language[], ...values: (LanguageString | undefined)[]): void {
-        LanguageString.validateUniqueNlLanguage(values);
+        LanguageString.validateUniqueLanguage(values);
 
-        const nlLanguage = LanguageString.extractNlLanguages(values)[0];
+        const nlLanguage = LanguageString.extractLanguages(values)[0];
         if (!acceptedLanguages.includes(nlLanguage) && nlLanguage !== undefined) {
             throw new InvariantError(`De nl-taal verschilt van ${acceptedLanguages.toString()}`);
         }

@@ -60,7 +60,7 @@ describe('constructing', () => {
                         ConceptTestBuilder.TITLE_NL_GENERATED_INFORMAL))
                 .build();
 
-        expect(aConcept.conceptNlLanguages).toEqual([
+        expect(aConcept.conceptLanguages).toEqual([
             Language.NL,
             Language.FORMAL,
             Language.INFORMAL,
@@ -177,6 +177,11 @@ describe('constructing', () => {
     test('keywords with duplicates throws error', () => {
         const conceptTestBuilder = aFullConcept().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]);
         expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
+    });
+
+    test('keywords with other language than nl throws error', () => {
+        const conceptTestBuilder = aFullConcept().withKeywords([LanguageString.of(undefined, 'overlijden'), LanguageString.of(undefined, 'geboorte')]);
+        expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
     });
 
     test('previousConceptSnapshots with duplicates throws error', () => {

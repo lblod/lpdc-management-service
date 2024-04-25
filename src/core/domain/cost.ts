@@ -113,9 +113,8 @@ export class Cost {
             });
     }
 
-    //TODO LPDC-1151
     get nlLanguage(): Language | undefined {
-        return LanguageString.extractNlLanguages([this._title, this._description])[0];
+        return LanguageString.extractLanguages([this._title, this._description])[0];
     }
 }
 

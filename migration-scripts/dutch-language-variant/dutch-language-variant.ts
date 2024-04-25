@@ -82,7 +82,7 @@ async function getAllInstanceIdsForBestuurseenheid(bestuurseenheid: Bestuurseenh
 
 
 async function calculateDutchLanguageVariant(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<Language> {
-    const dutchLanguageVariantFromFields = instance.calculatedInstanceNlLanguages();
+    const dutchLanguageVariantFromFields = instance.calculatedInstanceLanguages();
     if (dutchLanguageVariantFromFields.length != 0) {
         if (dutchLanguageVariantFromFields.length > 1) {
             throw new Error('Meer dan 1 dutchLanguageVariant berekend');

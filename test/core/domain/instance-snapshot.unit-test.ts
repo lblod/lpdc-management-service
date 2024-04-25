@@ -117,6 +117,11 @@ describe('constructing', () => {
             .toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
     });
 
+    test('keywords with other language than nl throws error', () => {
+        const instanceSnapshotTestBuilder = aFullInstanceSnapshot().withKeywords([LanguageString.of(undefined, 'overlijden'), LanguageString.of(undefined, 'geboorte')]);
+        expect(() => instanceSnapshotTestBuilder.build()).toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
+    });
+
     test('languages with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withLanguages([LanguageType.ENG, LanguageType.ENG]).build())
             .toThrowWithMessage(InvariantError, 'languages mag geen duplicaten bevatten');

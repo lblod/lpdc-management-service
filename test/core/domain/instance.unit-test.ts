@@ -116,6 +116,11 @@ describe('constructing', () => {
         expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
     });
 
+    test('keywords with other language than nl throws error', () => {
+        const instanceTestBuilder = aFullInstance().withKeywords([LanguageString.of(undefined, 'overlijden'), LanguageString.of(undefined, 'geboorte')]);
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
+    });
+
     test('languages with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withLanguages([LanguageType.ENG, LanguageType.ENG]);
         expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'languages mag geen duplicaten bevatten');
@@ -798,7 +803,7 @@ describe('validateLanguages', () => {
     test('if dutchLanguageVariant differs from calculatedInstanceNlLanguages, throws error', () => {
         const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, InstanceTestBuilder.TITLE_NL_FORMAL)).withDutchLanguageVariant(Language.INFORMAL);
 
-        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'DutchLanguageVariant verschilt van de calculatedInstanceNlLanguages');
+        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'DutchLanguageVariant verschilt van de calculatedInstanceLanguages');
     });
 
 });
@@ -1014,7 +1019,7 @@ describe('transformToInformal', () => {
 
         const updatedInstance = instance.transformToInformal();
 
-        expect(updatedInstance.calculatedInstanceNlLanguages()).toEqual([Language.INFORMAL]);
+        expect(updatedInstance.calculatedInstanceLanguages()).toEqual([Language.INFORMAL]);
         expect(updatedInstance.title).toEqual(LanguageString.of(undefined, undefined, 'Instance Title - nl-formal'));
         expect(updatedInstance.description).toEqual(LanguageString.of(undefined, undefined, 'Instance Description - nl-formal'));
         expect(updatedInstance.additionalDescription).toEqual(LanguageString.of(undefined, undefined, 'Instance Additional Description - nl-formal'));
