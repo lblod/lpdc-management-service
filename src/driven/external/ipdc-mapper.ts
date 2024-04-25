@@ -1,7 +1,7 @@
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {Logger} from "../../../platform/logger";
-import {Instance} from "../../core/domain/instance";
+import {Instance, InstanceBuilder} from "../../core/domain/instance";
 import {graph, parse} from "rdflib";
 import {NS} from "../persistence/namespaces";
 import {Requirement, RequirementBuilder} from "../../core/domain/requirement";
@@ -60,49 +60,19 @@ export class IpdcMapper {
         const id = initialInstance.id;
         mapper.errorIfMissingOrIncorrectType(id, NS.lpdcExt('InstancePublicService'));
 
-        return new Instance(
-            id,
-            initialInstance.uuid,
-            initialInstance.createdBy,
-            this.mapLanguageString(mapper.title(id), initialInstance.title),
-            this.mapLanguageString(mapper.description(id), initialInstance.description),
-            this.mapLanguageString(mapper.additionalDescription(id), initialInstance.additionalDescription),
-            this.mapLanguageString(mapper.exception(id), initialInstance.exception),
-            this.mapLanguageString(mapper.regulation(id), initialInstance.regulation),
-            initialInstance.startDate,
-            initialInstance.endDate,
-            initialInstance.type,
-            initialInstance.targetAudiences,
-            initialInstance.themes,
-            initialInstance.competentAuthorityLevels,
-            initialInstance.competentAuthorities,
-            initialInstance.executingAuthorityLevels,
-            initialInstance.executingAuthorities,
-            initialInstance.publicationMedia,
-            initialInstance.yourEuropeCategories,
-            initialInstance.keywords,
-            this.mapRequirements(mapper.requirements(id), initialInstance.requirements),
-            this.mapProcedure(mapper.procedures(id), initialInstance.procedures),
-            this.mapWebsites(mapper.websites(id), initialInstance.websites),
-            this.mapCosts(mapper.costs(id), initialInstance.costs),
-            this.mapFinancialAdvantages(mapper.financialAdvantages(id), initialInstance.financialAdvantages),
-            initialInstance.contactPoints,
-            initialInstance.conceptId,
-            initialInstance.conceptSnapshotId,
-            initialInstance.productId,
-            initialInstance.languages,
-            initialInstance.dutchLanguageVariant,
-            initialInstance.needsConversionFromFormalToInformal,
-            initialInstance.dateCreated,
-            initialInstance.dateModified,
-            initialInstance.dateSent,
-            initialInstance.datePublished,
-            initialInstance.status,
-            initialInstance.reviewStatus,
-            initialInstance.publicationStatus,
-            initialInstance.spatials,
-            this.mapLegalResources(mapper.legalResources(id), initialInstance.legalResources),
-        );
+        return InstanceBuilder.from(initialInstance)
+            .withTitle(this.mapLanguageString(mapper.title(id), initialInstance.title))
+            .withDescription(this.mapLanguageString(mapper.description(id), initialInstance.description))
+            .withAdditionalDescription(this.mapLanguageString(mapper.additionalDescription(id), initialInstance.additionalDescription))
+            .withException(this.mapLanguageString(mapper.exception(id), initialInstance.exception))
+            .withRegulation(this.mapLanguageString(mapper.regulation(id), initialInstance.regulation))
+            .withRequirements(this.mapRequirements(mapper.requirements(id), initialInstance.requirements))
+            .withProcedures(this.mapProcedure(mapper.procedures(id), initialInstance.procedures))
+            .withWebsites(this.mapWebsites(mapper.websites(id), initialInstance.websites))
+            .withCosts(this.mapCosts(mapper.costs(id), initialInstance.costs))
+            .withFinancialAdvantages(this.mapFinancialAdvantages(mapper.financialAdvantages(id), initialInstance.financialAdvantages))
+            .withLegalResources(this.mapLegalResources(mapper.legalResources(id), initialInstance.legalResources))
+            .build();
     }
 
     private async fetchIpdcInstance(initialInstance: Instance) {
@@ -128,8 +98,11 @@ export class IpdcMapper {
                 throw new InvariantError('Geen informal waarde verkregen van ipdc');
             }
 
-            //TODO: map to initial dutch language variant
-            return LanguageString.of(initialValue?.en, undefined, undefined, informalNewValue);
+            if (initialValue?.nl) {
+                return LanguageString.of(initialValue?.en, informalNewValue);
+            } else {
+                return LanguageString.of(initialValue?.en, undefined, informalNewValue);
+            }
         }
         return undefined;
 
