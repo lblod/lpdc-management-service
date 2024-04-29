@@ -135,7 +135,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
                 return LanguageString.of(initialValue?.en, undefined, informalNewValue);
             }
         } else if (!newValue && !initialValue) {
-        return undefined;
+             return undefined;
         }
 
         throw new InvariantError("De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn");

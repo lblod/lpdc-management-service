@@ -347,12 +347,18 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withDatePublished(FormatPreservingDate.now())
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
+                .withDateModified(FormatPreservingDate.of("2024-04-24T14:09:32.778Z"))
                 .withRequirements([
                     aFullRequirementForInstance().withUuid(uuidv4()).withEvidence(aFullEvidenceForInstance().withUuid(uuidv4()).build()).build(),
                 ])
                 .withProcedures([
-                    aFullProcedureForInstance().withUuid(uuidv4()).withWebsites([aFullWebsiteForInstance().withUuid(uuidv4()).withOrder(1).build(), anotherFullWebsiteForInstance(uuidv4()).withOrder(2).build()]).build()
+                    aFullProcedureForInstance().withUuid(uuidv4())
+                        .withWebsites([aFullWebsiteForInstance().withUuid(uuidv4()).withDescription(undefined).withOrder(0).build(),
+                            anotherFullWebsiteForInstance(uuidv4()).withOrder(1).withDescription(undefined).build()]).build()
                 ])
+                .withWebsites([
+                    aFullWebsiteForInstance().withUuid(uuidv4()).withOrder(0).build(),
+                    anotherFullWebsiteForInstance(uuidv4()).withOrder(1).withDescription(undefined).build()])
                 .build();
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
@@ -375,14 +381,20 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
                 .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDateModified(FormatPreservingDate.of("2024-04-24T14:09:32.778Z"))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .withRequirements([
                     aFullRequirementForInstance().withUuid(uuidv4()).withEvidence(aFullEvidenceForInstance().withUuid(uuidv4()).build()).build(),
                 ])
                 .withProcedures([
-                    aFullProcedureForInstance().withUuid(uuidv4()).withWebsites([aFullWebsiteForInstance().withUuid(uuidv4()).withOrder(1).build(), anotherFullWebsiteForInstance(uuidv4()).withOrder(2).build()]).build()
+                    aFullProcedureForInstance().withUuid(uuidv4())
+                        .withWebsites([aFullWebsiteForInstance().withUuid(uuidv4()).withDescription(undefined).withOrder(0).build(),
+                            anotherFullWebsiteForInstance(uuidv4()).withOrder(1).withDescription(undefined).build()]).build()
                 ])
+                .withWebsites([
+                    aFullWebsiteForInstance().withUuid(uuidv4()).withOrder(0).build(),
+                    anotherFullWebsiteForInstance(uuidv4()).withOrder(1).withDescription(undefined).build()])
                 .build();
 
             await instanceRepository.save(bestuurseenheid, instance);

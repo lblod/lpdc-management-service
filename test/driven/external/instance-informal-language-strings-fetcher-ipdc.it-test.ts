@@ -23,10 +23,12 @@ import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
 import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial-advantage-test-builder";
 import {aMinimalLegalResourceForConcept} from "../../core/domain/legal-resource-test-builder";
 import {aFullInstance} from "../../core/domain/instance-test-builder";
+import {TNI_IPDC_ENDPOINT} from "../../test.config";
 
 
 describe('Instance informal language strings fetcher ipdc', () => {
-    const ipdcFetcher = new InstanceInformalLanguageStringsFetcherIpdc();
+
+    const ipdcFetcher = new InstanceInformalLanguageStringsFetcherIpdc(TNI_IPDC_ENDPOINT);
     const bestuurseenheid = aBestuurseenheid().build();
     const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
     const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
