@@ -102,7 +102,6 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
     }
 
     private mapLanguageString(newValue: LanguageString | undefined, initialValue: LanguageString | undefined): LanguageString | undefined {
-        //TODO LPDC-1139: both defined or both undefined
         if (newValue && initialValue) {
             const informalNewValue = newValue.nlGeneratedInformal;
 
@@ -139,15 +138,17 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
     }
 
     private mapEvidence(newEvidence: Evidence | undefined, initialEvidence: Evidence | undefined): Evidence | undefined {
-        //TODO LPDC-1139: check both present or both absent
+        if (!newEvidence && !initialEvidence) {
+            return undefined;
+        }
+
         if (newEvidence && initialEvidence) {
             return EvidenceBuilder.from(initialEvidence)
                 .withTitle(this.mapLanguageString(newEvidence.title, initialEvidence.title))
                 .withDescription(this.mapLanguageString(newEvidence.description, initialEvidence.description))
                 .build();
         }
-        return undefined;
-
+        throw new InvariantError("Het bewijs van ipdc is niet gelijk aan het originele bewijs");
     }
 
     private mapProcedure(newProcedures: Procedure[], initialProcedures: Procedure[]): Procedure[] {
@@ -201,7 +202,7 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
 
     private mapFinancialAdvantages(newFinancialAdvantages: FinancialAdvantage[], initialFinancialAdvantages: FinancialAdvantage[]): FinancialAdvantage[] {
         if (newFinancialAdvantages.length != initialFinancialAdvantages.length) {
-            throw new InvariantError("Het aantal finaciele voordelen van ipdc is niet gelijk aan het aantal originele financiele voordelen");
+            throw new InvariantError("Het aantal financiele voordelen van ipdc is niet gelijk aan het aantal originele financiele voordelen");
         }
         let financialAdvantages: FinancialAdvantage[] = [];
 

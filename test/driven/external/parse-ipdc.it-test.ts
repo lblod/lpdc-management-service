@@ -14,13 +14,19 @@ import {CostBuilder} from "../../../src/core/domain/cost";
 import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {aMinimalWebsiteForInstance} from "../../core/domain/website-test-builder";
+import {aMinimalRequirementForInstance} from "../../core/domain/requirement-test-builder";
+import {aMinimalProcedureForInstance} from "../../core/domain/procedure-test-builder";
+import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
+import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial-advantage-test-builder";
+import {aMinimalLegalResourceForConcept} from "../../core/domain/legal-resource-test-builder";
 
 describe('Parse ipdc', () => {
     const ipdcFetcher = new IpdcMapper();
     const bestuurseenheid = aBestuurseenheid().build();
     const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
     const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
-    const actualInstanceBuilder = new InstanceBuilder()
+    const initialInstance = new InstanceBuilder()
         .withId(id)
         .withUuid(uuid)
         .withCreatedBy(bestuurseenheid.id)
@@ -293,9 +299,9 @@ describe('Parse ipdc', () => {
         .withDateSent(FormatPreservingDate.of("2024-04-24T14:09:45.773Z"))
         .withDatePublished(FormatPreservingDate.of("2024-04-24T14:10:00.72350311Z"))
         .withStatus(InstanceStatusType.VERSTUURD)
-        .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD);
+        .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD).build();
 
-    const expectedInstanceBuilder = InstanceBuilder.from(actualInstanceBuilder.build())
+    const expectedInstance = InstanceBuilder.from(initialInstance)
         .withTitle(LanguageString.of(
             "titel en",
             undefined,
@@ -556,22 +562,157 @@ describe('Parse ipdc', () => {
                 .withUrl("https://codex.vlaanderen.be/Zoeken/Document.aspx?DID=1039211&param=informatie&ref=search&AVIDS=")
                 .withOrder(1)
                 .build()
-        ]);
+        ]).build();
 
 
     test('informal values are parsed into the original dutchLanguage variant', async () => {
-        const expectedInstance = expectedInstanceBuilder.build();
-        const mappedInstance = await ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, expectedInstance);
+        const mappedInstance = await ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, initialInstance);
 
         expect(mappedInstance).toEqual(expectedInstance);
-        expect(mappedInstance.id).toEqual(id);
+    });
+
+    test('when receiving an instance with a missing value, throw error', async () => {
+        const instance = InstanceBuilder.from(initialInstance).withDescription(undefined).build();
+        await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn");
+    });
+
+
+    describe('Requirement', () => {
+        test('When receiving a missing requirement, throw error', async () => {
+            const instance = InstanceBuilder.from(initialInstance).withRequirements([]).build();
+
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal voorwaarden van ipdc is niet gelijk aan het aantal originele voorwaarden");
+        });
+
+        test('When receiving an additional requirement, throw error', async () => {
+            const additionalRequirement = aMinimalRequirementForInstance().withOrder(1).build();
+            const newRequirements = [...initialInstance.requirements, additionalRequirement];
+
+            const instance = InstanceBuilder.from(initialInstance).withRequirements(newRequirements).build();
+
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal voorwaarden van ipdc is niet gelijk aan het aantal originele voorwaarden");
+        });
+
+        test('when receiving a missing evidence in a requirement, throw error', async () => {
+            const requirements = initialInstance.requirements;
+            requirements[0] = RequirementBuilder.from(requirements[0]).withEvidence(undefined).build();
+
+            const instance = InstanceBuilder.from(initialInstance).withRequirements(requirements).build();
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het bewijs van ipdc is niet gelijk aan het originele bewijs");
+        });
 
     });
 
-    test('if received instance is missing a value, throw error', async () => {
-        const expectedInstance = expectedInstanceBuilder.withTitle(undefined).build();
+    describe('Procedure', () => {
+        test('When receiving a missing procedure, throw error', async () => {
+            const instance = InstanceBuilder.from(initialInstance).withProcedures([]).build();
 
-        await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, expectedInstance)).rejects.toThrowWithMessage(InvariantError, "De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn");
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal procedures van ipdc is niet gelijk aan het aantal originele procedures");
+        });
+
+        test('When receiving an additional procedure, throw error', async () => {
+            const additionalProcedure = aMinimalProcedureForInstance().withOrder(1).build();
+            const newProcedures = [...initialInstance.procedures, additionalProcedure];
+
+            const instance = InstanceBuilder.from(initialInstance).withProcedures(newProcedures).build();
+
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal procedures van ipdc is niet gelijk aan het aantal originele procedures");
+        });
+
+        test('when receiving a missing website in a procedure, throw error', async () => {
+            const procedures = initialInstance.procedures;
+            procedures[0] = ProcedureBuilder.from(procedures[0]).withWebsites([new WebsiteBuilder()
+                .withId(new Iri("http://data.lblod.info/id/website/b99e8207-7af5-420e-9d46-d66d7f0a401c"))
+                .withUuid("b99e8207-7af5-420e-9d46-d66d7f0a401c")
+                .withTitle(LanguageString.of(
+                        undefined,
+                        undefined,
+                        "Subsidiereglement Stad Gent voor de financiële ondersteuning van projecten in kunst, cultuur en cultureel erfgoed voor periode 2021-2025"
+                    )
+                )
+                .withDescription(undefined)
+                .withUrl("https://stad.gent/nl/reglementen/subsidiereglement-voor-de-financiele-ondersteuning-van-projecten-kunst-cultuur-en-cultureel-erfgoed")
+                .withOrder(0)
+                .build()]).build();
+
+            const instance = InstanceBuilder.from(initialInstance).withProcedures(procedures).build();
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal websites van ipdc is niet gelijk aan het aantal originele websites");
+        });
+
+        test('when receiving an additional website in a procedure, throw error', async () => {
+            const procedures = initialInstance.procedures;
+            const additionalWebsite = aMinimalWebsiteForInstance().withOrder(2).build();
+            procedures[0] = ProcedureBuilder.from(procedures[0]).withWebsites([...procedures[0].websites, additionalWebsite]).build();
+
+            const instance = InstanceBuilder.from(initialInstance).withProcedures(procedures).build();
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal websites van ipdc is niet gelijk aan het aantal originele websites");
+        });
     });
 
+    describe('Websites', () => {
+        test('When receiving a missing website, throw error', async () => {
+            const instance = InstanceBuilder.from(initialInstance).withWebsites([]).build();
+
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal websites van ipdc is niet gelijk aan het aantal originele websites");
+        });
+        test('when receiving an additional website, throw error', async () => {
+            const additionalWebsite = aMinimalWebsiteForInstance().withOrder(2).build();
+
+            const newWebsites = [...initialInstance.websites, additionalWebsite];
+
+            const instance = InstanceBuilder.from(initialInstance).withWebsites(newWebsites).build();
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal websites van ipdc is niet gelijk aan het aantal originele websites");
+        });
+    });
+
+    describe('Costs', () => {
+        test('When receiving a missing cost, throw error', async () => {
+            const instance = InstanceBuilder.from(initialInstance).withCosts([]).build();
+
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal kosten van ipdc is niet gelijk aan het aantal originele kosten");
+        });
+
+        test('when receiving an additional cost, throw error', async () => {
+            const additionalCost = aMinimalCostForInstance().withOrder(2).build();
+
+            const newCosts = [...initialInstance.costs, additionalCost];
+
+            const instance = InstanceBuilder.from(initialInstance).withCosts(newCosts).build();
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal kosten van ipdc is niet gelijk aan het aantal originele kosten");
+        });
+    });
+
+    describe('Financial advantages', () => {
+        test('When receiving a missing financial advantage, throw error', async () => {
+            const instance = InstanceBuilder.from(initialInstance).withFinancialAdvantages([]).build();
+
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal financiele voordelen van ipdc is niet gelijk aan het aantal originele financiele voordelen");
+        });
+
+        test('when receiving an additional financial advantage, throw error', async () => {
+            const additionalFinancialAdvantage = aMinimalFinancialAdvantageForInstance().withOrder(2).build();
+
+            const newFinancialAdvantages = [...initialInstance.financialAdvantages, additionalFinancialAdvantage];
+
+            const instance = InstanceBuilder.from(initialInstance).withFinancialAdvantages(newFinancialAdvantages).build();
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal financiele voordelen van ipdc is niet gelijk aan het aantal originele financiele voordelen");
+        });
+    });
+
+    describe('Legal resources', () => {
+        test('When receiving a missing legal resource, throw error', async () => {
+            const instance = InstanceBuilder.from(initialInstance).withLegalResources([]).build();
+
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal regelgevingen van ipdc is niet gelijk aan het aantal originele regelgevingen");
+        });
+
+        test('when receiving an additional legal resource, throw error', async () => {
+            const additionalLegalResource = aMinimalLegalResourceForConcept().withOrder(2).build();
+
+            const newLegalResources = [...initialInstance.legalResources, additionalLegalResource];
+
+            const instance = InstanceBuilder.from(initialInstance).withLegalResources(newLegalResources).build();
+            await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal regelgevingen van ipdc is niet gelijk aan het aantal originele regelgevingen");
+        });
+    });
 });
