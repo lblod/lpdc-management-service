@@ -58,7 +58,9 @@ import {FormatPreservingDate} from "./src/core/domain/format-preserving-date";
 import {FormalInformalChoice} from "./src/core/domain/formal-informal-choice";
 import {NewFormalInformalChoiceDomainService} from "./src/core/domain/new-formal-informal-choice-domain-service";
 import {ConvertInstanceToInformalDomainService} from "./src/core/domain/convert-instance-to-informal-domain-service";
-import {IpdcMapper} from "./src/driven/external/ipdc-mapper";
+import {
+    InstanceInformalLanguageStringsFetcherIpdc
+} from "./src/driven/external/instance-informal-language-strings-fetcher-ipdc";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -164,7 +166,7 @@ const newFormalInformalChoiceAndSyncInstanceDomainService = new NewFormalInforma
     instanceRepository
 );
 
-const instanceInformalLanguageStringsFetcher = new IpdcMapper();
+const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc();
 
 const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
 

@@ -2,7 +2,7 @@ import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {Logger} from "../../../platform/logger";
 import {Instance, InstanceBuilder} from "../../core/domain/instance";
-import {graph, parse} from "rdflib";
+import {graph, parse, Statement} from "rdflib";
 import {NS} from "../persistence/namespaces";
 import {Requirement, RequirementBuilder} from "../../core/domain/requirement";
 import {LanguageString} from "../../core/domain/language-string";
@@ -18,22 +18,22 @@ import {
     InstanceInformalLanguageStringsFetcher
 } from "../../core/port/driven/external/instance-informal-language-strings-fetcher";
 
-export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
+export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInformalLanguageStringsFetcher {
 
-    async fetchIpdcInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
+    async fetchInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
 
-        const jsonIpdcInstance = await this.fetchIpdcInstance(initialInstance);
+        const jsonInstance = await this.fetchInstance(initialInstance);
 
-        const expandedContext = await this.fetchIpdcContext(jsonIpdcInstance['@context']);
-        jsonIpdcInstance['@context'] = (await expandedContext.json())['@context'];
+        const expandedContext = await this.fetchContext(jsonInstance['@context']);
+        jsonInstance['@context'] = (await expandedContext.json())['@context'];
 
-        const jsonLdDataAsString = JSON.stringify(jsonIpdcInstance);
-        return this.mapIpdcInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
+        const jsonLdDataAsString = JSON.stringify(jsonInstance);
+        return this.mapInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
 
     }
 
 
-    private mapIpdcInstance(jsonLdData: string, bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
+    private mapInstance(jsonLdData: string, bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
         return new Promise<QuadsToDomainMapper>((resolve, reject) => {
 
             const store = graph();
@@ -44,9 +44,9 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
                 }
 
                 const doubleQuadReporter: DoubleQuadReporter = new LoggingDoubleQuadReporter(new Logger('Instance-QuadsToDomainLogger'));
-                const quads = kb.statementsMatching();
+                const quads: Statement[] = kb.statementsMatching();
 
-                if (quads.size === 0) {
+                if (quads.length === 0) {
                     throw new SystemError('Er is een fout opgetreden bij het bevragen van Ipdc');
                 }
                 const quadsToDomainMapper: QuadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), doubleQuadReporter);
@@ -83,27 +83,28 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
             .build();
     }
 
-    private async fetchIpdcInstance(initialInstance: Instance) {
+    private async fetchInstance(initialInstance: Instance) {
         //TODO LPDC-1139: make dynamic
-        const ipdcInstance = await fetch(`https://productcatalogus.ipdc.tni-vlaanderen.be/doc/instantie/${initialInstance.uuid}`, {
+        const response = await fetch(`https://productcatalogus.ipdc.tni-vlaanderen.be/doc/instantie/${initialInstance.uuid}`, {
             headers: {'Accept': 'application/ld+json'}
         });
 
-        if (ipdcInstance.ok) {
-        const ipdcInstanceJson = await ipdcInstance.json();
-        ipdcInstanceJson['@id'] = initialInstance.id.value;
-        return ipdcInstanceJson;
+        if (response.ok) {
+            const instanceJson = await response.json();
+            instanceJson['@id'] = initialInstance.id.value;
+            return instanceJson;
         }
-        if (ipdcInstance.status === 404) {
-            console.error(await ipdcInstance.text());
+
+        if (response.status === 404) {
+            console.error(await response.text());
             throw new NotFoundError('Instantie niet gevonden bij ipdc');
         } else {
-            console.error(await ipdcInstance.text());
+            console.error(await response.text());
             throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc`);
         }
     }
 
-    private async fetchIpdcContext(context: string) {
+    private async fetchContext(context: string) {
         const response = await fetch(context, {
             headers: {'Accept': 'application/ld+json'}
         });

@@ -44,7 +44,7 @@ export class ConvertInstanceToInformalDomainService {
 
 
         const updatedInstance =
-            (await this._instanceInformalLanguageStringsFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance.reopen()))
+            (await this._instanceInformalLanguageStringsFetcher.fetchInstanceAndMap(bestuurseenheid, instance.reopen()))
                 .transformToInformal();
 
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);

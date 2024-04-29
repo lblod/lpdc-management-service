@@ -19,7 +19,9 @@ import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
-import {IpdcMapper} from "../../../src/driven/external/ipdc-mapper";
+import {
+    InstanceInformalLanguageStringsFetcherIpdc
+} from "../../../src/driven/external/instance-informal-language-strings-fetcher-ipdc";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {uuid as uuidv4} from "../../../mu-helper";
@@ -29,7 +31,7 @@ describe('Convert Instance To Informal Domain Service', () => {
 
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const instanceInformalLanguageStringsFetcher = new IpdcMapper();
+    const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc();
     const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
 
     describe('Confirm instance already informal', () => {
