@@ -439,7 +439,7 @@ export class QuadsToDomainMapper {
         return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('dateCreated')));
     }
 
-    private dateModified(id: Iri): FormatPreservingDate | undefined {
+    dateModified(id: Iri): FormatPreservingDate | undefined {
         return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('dateModified')));
     }
 

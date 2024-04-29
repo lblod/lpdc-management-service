@@ -6,7 +6,7 @@ import {graph, parse} from "rdflib";
 import {NS} from "../persistence/namespaces";
 import {Requirement, RequirementBuilder} from "../../core/domain/requirement";
 import {LanguageString} from "../../core/domain/language-string";
-import {InvariantError, NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
+import {ConcurrentUpdateError, InvariantError, NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
 import {zip} from "lodash";
 import {Procedure, ProcedureBuilder} from "../../core/domain/procedure";
 import {Cost, CostBuilder} from "../../core/domain/cost";
@@ -22,20 +22,13 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
 
     async fetchIpdcInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
 
-            //TODO LPDC-1139: error handling ...
-            // Check connection problem ?
-            // Check response ok
-            // log if response NOK
-            // consistent with address
-            const jsonIpdcInstance = await this.fetchIpdcInstance(initialInstance);
+        const jsonIpdcInstance = await this.fetchIpdcInstance(initialInstance);
 
-            //TODO LPDC-1139: error handling ...
-            // IDEM
-            const expandedContext = await this.fetchIpdcContext(jsonIpdcInstance['@context']);
-            jsonIpdcInstance['@context'] = (await expandedContext.json())['@context'];
+        const expandedContext = await this.fetchIpdcContext(jsonIpdcInstance['@context']);
+        jsonIpdcInstance['@context'] = (await expandedContext.json())['@context'];
 
-            const jsonLdDataAsString = JSON.stringify(jsonIpdcInstance);
-            return this.mapIpdcInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
+        const jsonLdDataAsString = JSON.stringify(jsonIpdcInstance);
+        return this.mapIpdcInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
 
     }
 
@@ -53,8 +46,9 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
                 const doubleQuadReporter: DoubleQuadReporter = new LoggingDoubleQuadReporter(new Logger('Instance-QuadsToDomainLogger'));
                 const quads = kb.statementsMatching();
 
-                // TODO LPDC-1139: check that quads is larger then 0
-
+                if (quads.size === 0) {
+                    throw new SystemError('Er is een fout opgetreden bij het bevragen van Ipdc');
+                }
                 const quadsToDomainMapper: QuadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), doubleQuadReporter);
 
                 resolve(quadsToDomainMapper);
@@ -68,7 +62,12 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
         const id = initialInstance.id;
         mapper.errorIfMissingOrIncorrectType(id, NS.lpdcExt('InstancePublicService'));
 
-        //TODO LPDC-1139: verify dateModified with fetched =>  systemError
+        const fetchedDateModified = mapper.dateModified(id);
+        if (fetchedDateModified.value != initialInstance.dateModified.value) {
+            throw new ConcurrentUpdateError();
+        }
+
+
         return InstanceBuilder.from(initialInstance)
             .withTitle(this.mapLanguageString(mapper.title(id), initialInstance.title))
             .withDescription(this.mapLanguageString(mapper.description(id), initialInstance.description))
@@ -105,9 +104,15 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
     }
 
     private async fetchIpdcContext(context: string) {
-        return await fetch(context, {
+        const response = await fetch(context, {
             headers: {'Accept': 'application/ld+json'}
         });
+        if (response.ok) {
+            return response;
+        } else {
+            console.error(await response.text());
+            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc`);
+        }
     }
 
     private mapLanguageString(newValue: LanguageString | undefined, initialValue: LanguageString | undefined): LanguageString | undefined {
