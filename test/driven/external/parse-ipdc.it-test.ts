@@ -13,13 +13,15 @@ import {WebsiteBuilder} from "../../../src/core/domain/website";
 import {CostBuilder} from "../../../src/core/domain/cost";
 import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
-import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {InvariantError, NotFoundError} from "../../../src/core/domain/shared/lpdc-error";
 import {aMinimalWebsiteForInstance} from "../../core/domain/website-test-builder";
 import {aMinimalRequirementForInstance} from "../../core/domain/requirement-test-builder";
 import {aMinimalProcedureForInstance} from "../../core/domain/procedure-test-builder";
 import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
 import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial-advantage-test-builder";
 import {aMinimalLegalResourceForConcept} from "../../core/domain/legal-resource-test-builder";
+import {aFullInstance} from "../../core/domain/instance-test-builder";
+
 
 describe('Parse ipdc', () => {
     const ipdcFetcher = new IpdcMapper();
@@ -576,6 +578,12 @@ describe('Parse ipdc', () => {
         await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn");
     });
 
+    test('when instance is not found, throw error', async () => {
+        const unexistingInstance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+        await expect(ipdcFetcher.fetchIpdcInstanceAndMap(bestuurseenheid, unexistingInstance)).rejects.toThrowWithMessage(NotFoundError, "Instantie niet gevonden bij ipdc");
+
+
+    });
 
     describe('Requirement', () => {
         test('When receiving a missing requirement, throw error', async () => {

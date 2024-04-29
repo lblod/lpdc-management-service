@@ -6,7 +6,7 @@ import {graph, parse} from "rdflib";
 import {NS} from "../persistence/namespaces";
 import {Requirement, RequirementBuilder} from "../../core/domain/requirement";
 import {LanguageString} from "../../core/domain/language-string";
-import {InvariantError} from "../../core/domain/shared/lpdc-error";
+import {InvariantError, NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
 import {zip} from "lodash";
 import {Procedure, ProcedureBuilder} from "../../core/domain/procedure";
 import {Cost, CostBuilder} from "../../core/domain/cost";
@@ -21,13 +21,14 @@ import {
 export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
 
     async fetchIpdcInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
-        try {
+
             //TODO LPDC-1139: error handling ...
             // Check connection problem ?
             // Check response ok
             // log if response NOK
             // consistent with address
             const jsonIpdcInstance = await this.fetchIpdcInstance(initialInstance);
+
             //TODO LPDC-1139: error handling ...
             // IDEM
             const expandedContext = await this.fetchIpdcContext(jsonIpdcInstance['@context']);
@@ -35,9 +36,7 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
 
             const jsonLdDataAsString = JSON.stringify(jsonIpdcInstance);
             return this.mapIpdcInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
-        } catch (e) {
-            console.error(e);
-        }
+
     }
 
 
@@ -90,9 +89,19 @@ export class IpdcMapper implements InstanceInformalLanguageStringsFetcher {
         const ipdcInstance = await fetch(`https://productcatalogus.ipdc.tni-vlaanderen.be/doc/instantie/${initialInstance.uuid}`, {
             headers: {'Accept': 'application/ld+json'}
         });
+
+        if (ipdcInstance.ok) {
         const ipdcInstanceJson = await ipdcInstance.json();
         ipdcInstanceJson['@id'] = initialInstance.id.value;
         return ipdcInstanceJson;
+        }
+        if (ipdcInstance.status === 404) {
+            console.error(await ipdcInstance.text());
+            throw new NotFoundError('Instantie niet gevonden bij ipdc');
+        } else {
+            console.error(await ipdcInstance.text());
+            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc`);
+        }
     }
 
     private async fetchIpdcContext(context: string) {
