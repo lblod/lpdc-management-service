@@ -18,7 +18,7 @@ export class LanguageString {
                         nlGeneratedInformal: string | undefined) {
 
         //TODO LPDC-968: re-enable when empty triples are fixed in data
-        // const invariant = Invariant.require([en, nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal], 'language list');
+        // const invariant = Invariant.require([nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal], 'language list');
         // invariant.to(invariant.haveAtLeastOneValuePresent());
         this._nl = nl;
         this._nlFormal = nlFormal;

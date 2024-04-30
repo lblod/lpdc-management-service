@@ -712,6 +712,7 @@ export class QuadsToDomainMapper {
         return undefined;
     }
 
+    //TODO LPDC-968: handle differently when invariant check is added to languageString that checks if atLeastOneValue present is
     private asLanguageString(statements: Statement[]): LanguageString | undefined {
         const literals: Literal[] | undefined = this.asLiterals(statements);
         const languageString = LanguageString.of(

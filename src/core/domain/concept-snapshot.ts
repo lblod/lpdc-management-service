@@ -20,7 +20,6 @@ import {
 } from "./types";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {LegalResource} from "./legal-resource";
-import {Language} from "./language";
 
 export class ConceptSnapshot {
 
