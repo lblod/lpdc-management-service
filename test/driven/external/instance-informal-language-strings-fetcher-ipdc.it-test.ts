@@ -584,7 +584,7 @@ describe('Instance informal language strings fetcher ipdc', () => {
 
     test('when instance is not found, throw error', async () => {
         const unexistingInstance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
-        await expect(ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, unexistingInstance)).rejects.toThrowWithMessage(NotFoundError, "Instantie niet gevonden bij ipdc");
+        await expect(ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, unexistingInstance)).rejects.toThrowWithMessage(NotFoundError, `Instantie ${unexistingInstance.id} niet gevonden bij ipdc`);
 
 
     });

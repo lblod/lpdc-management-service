@@ -35,12 +35,10 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
         const jsonLdDataAsString = JSON.stringify(jsonInstance);
         return this.mapInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
-
     }
 
-
-    private mapInstance(jsonLdData: string, bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
-        return new Promise<QuadsToDomainMapper>((resolve, reject) => {
+    private async mapInstance(jsonLdData: string, bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
+        const quadsToDomainMapper = await new Promise<QuadsToDomainMapper>((resolve, reject) => {
 
             const store = graph();
             parse(jsonLdData, store, bestuurseenheid.userGraph().value, 'application/ld+json', (error: any, kb: any) => {
@@ -52,17 +50,16 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
                 const doubleQuadReporter: DoubleQuadReporter = new LoggingDoubleQuadReporter(new Logger('Instance-QuadsToDomainLogger'));
                 const quads: Statement[] = kb.statementsMatching();
 
-                if (quads.length === 0) {
-                    throw new SystemError('Er is een fout opgetreden bij het bevragen van Ipdc');
+                if (quads.length < 5) {
+                    reject(new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor instance ${initialInstance.id}`));
                 }
-                const quadsToDomainMapper: QuadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), doubleQuadReporter);
+                const mapper: QuadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), doubleQuadReporter);
 
-                resolve(quadsToDomainMapper);
-
+                resolve(mapper);
             });
-        }).then(quadsToDomainMapper => this.mappedInstance(quadsToDomainMapper, initialInstance));
+        });
+        return this.mappedInstance(quadsToDomainMapper, initialInstance);
     }
-
 
     private mappedInstance(mapper: QuadsToDomainMapper, initialInstance: Instance): Instance {
         const id = initialInstance.id;
@@ -72,7 +69,6 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         if (fetchedDateModified.value != initialInstance.dateModified.value) {
             throw new ConcurrentUpdateError();
         }
-
 
         return InstanceBuilder.from(initialInstance)
             .withTitle(this.mapLanguageString(mapper.title(id), initialInstance.title))
@@ -102,10 +98,10 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
         if (response.status === 404) {
             console.error(await response.text());
-            throw new NotFoundError('Instantie niet gevonden bij ipdc');
+            throw new NotFoundError(`Instantie ${initialInstance.id} niet gevonden bij ipdc`);
         } else {
             console.error(await response.text());
-            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc`);
+            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor instantie ${initialInstance.id}`);
         }
     }
 
@@ -117,7 +113,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             return response;
         } else {
             console.error(await response.text());
-            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc`);
+            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor context`);
         }
     }
 

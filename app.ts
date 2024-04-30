@@ -299,7 +299,6 @@ app.get('/contact-info-options/:fieldName', async (req, res, next): Promise<any>
 
 app.use('/address', async (req, res, next) => {
     await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
-
 });
 
 app.get('/address/municipalities', async (req, res, next): Promise<any> => {
