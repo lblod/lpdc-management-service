@@ -6,7 +6,7 @@ import {graph, parse, Statement} from "rdflib";
 import {NS} from "../persistence/namespaces";
 import {Requirement, RequirementBuilder} from "../../core/domain/requirement";
 import {LanguageString} from "../../core/domain/language-string";
-import {ConcurrentUpdateError, InvariantError, NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
+import {ConcurrentUpdateError, InvariantError, SystemError} from "../../core/domain/shared/lpdc-error";
 import {zip} from "lodash";
 import {Procedure, ProcedureBuilder} from "../../core/domain/procedure";
 import {Cost, CostBuilder} from "../../core/domain/cost";
@@ -96,7 +96,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
         if (response.status === 404) {
             console.error(await response.text());
-            throw new NotFoundError(`Instantie ${initialInstance.id} niet gevonden bij ipdc`);
+            throw new SystemError(`Instantie ${initialInstance.id} niet gevonden bij ipdc`);
         } else {
             console.error(await response.text());
             throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor instantie ${initialInstance.id}`);

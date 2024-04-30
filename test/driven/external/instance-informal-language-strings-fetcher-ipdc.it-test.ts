@@ -15,7 +15,7 @@ import {WebsiteBuilder} from "../../../src/core/domain/website";
 import {CostBuilder} from "../../../src/core/domain/cost";
 import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
-import {InvariantError, NotFoundError} from "../../../src/core/domain/shared/lpdc-error";
+import {InvariantError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
 import {aMinimalWebsiteForInstance} from "../../core/domain/website-test-builder";
 import {aMinimalRequirementForInstance} from "../../core/domain/requirement-test-builder";
 import {aMinimalProcedureForInstance} from "../../core/domain/procedure-test-builder";
@@ -584,7 +584,7 @@ describe('Instance informal language strings fetcher ipdc', () => {
 
     test('when instance is not found, throw error', async () => {
         const unexistingInstance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
-        await expect(ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, unexistingInstance)).rejects.toThrowWithMessage(NotFoundError, `Instantie ${unexistingInstance.id} niet gevonden bij ipdc`);
+        await expect(ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, unexistingInstance)).rejects.toThrowWithMessage(SystemError, `Instantie ${unexistingInstance.id} niet gevonden bij ipdc`);
 
 
     });
