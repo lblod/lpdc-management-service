@@ -26,6 +26,7 @@ import {Iri} from "../../../src/core/domain/shared/iri";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {uuid as uuidv4} from "../../../mu-helper";
 import {aFullEvidenceForInstance} from "./evidence-test-builder";
+import {aFullLegalResourceForInstance} from "./legal-resource-test-builder";
 
 describe('Convert Instance To Informal Domain Service', () => {
 
@@ -148,6 +149,10 @@ describe('Convert Instance To Informal Domain Service', () => {
                     aFullFinancialAdvantageForInstance().withOrder(0).build(),
                     aFullFinancialAdvantageForInstance().withOrder(1).build(),
                 ])
+                .withLegalResources([
+                    aFullLegalResourceForInstance().withOrder(0).build(),
+                    aFullLegalResourceForInstance().withOrder(1).build(),
+                ])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
 
@@ -188,6 +193,10 @@ describe('Convert Instance To Informal Domain Service', () => {
             expect(actualInstance.financialAdvantages[0].description).toEqual(LanguageString.of('Financial Advantage Description - en', undefined, undefined, 'Financial Advantage Description - nl-formal'));
             expect(actualInstance.financialAdvantages[1].title).toEqual(LanguageString.of('Financial Advantage Title - en', undefined, undefined, 'Financial Advantage Title - nl-formal'));
             expect(actualInstance.financialAdvantages[1].description).toEqual(LanguageString.of('Financial Advantage Description - en', undefined, undefined, 'Financial Advantage Description - nl-formal'));
+            expect(actualInstance.legalResources[0].title).toEqual(LanguageString.of('Legal Resource Title - en', undefined, undefined, 'Legal Resource Title - nl-formal'));
+            expect(actualInstance.legalResources[0].description).toEqual(LanguageString.of('Legal Resource Description - en', undefined, undefined, 'Legal Resource Description - nl-formal'));
+            expect(actualInstance.legalResources[1].title).toEqual(LanguageString.of('Legal Resource Title - en', undefined, undefined, 'Legal Resource Title - nl-formal'));
+            expect(actualInstance.legalResources[1].description).toEqual(LanguageString.of('Legal Resource Description - en', undefined, undefined, 'Legal Resource Description - nl-formal'));
         });
 
         test('confirmInstanceIsAlreadyInformal should set dutchLanguageVersion to nl-be-x-informal', async () => {
@@ -413,5 +422,4 @@ describe('Convert Instance To Informal Domain Service', () => {
     });
 
 
-})
-;
+});

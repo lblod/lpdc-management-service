@@ -2,10 +2,13 @@ import {
     aFullLegalResourceForConcept,
     aFullLegalResourceForConceptSnapshot,
     aFullLegalResourceForInstance,
-    aFullLegalResourceForInstanceSnapshot
+    aFullLegalResourceForInstanceSnapshot, aMinimalLegalResourceForInstance
 } from "./legal-resource-test-builder";
-import {LegalResource} from "../../../src/core/domain/legal-resource";
+import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {Language} from "../../../src/core/domain/language";
+import {LanguageString} from "../../../src/core/domain/language-string";
+import {uuid} from "../../../mu-helper";
 
 
 describe('forConceptSnapshot', () => {
@@ -171,4 +174,102 @@ describe('isFunctionallyChanged', () => {
         expect(LegalResource.isFunctionallyChanged([legalResource1, legalResource3], [legalResource4, legalResource2])).toBeTruthy();
     });
 
+});
+
+describe('nl language', () => {
+
+    test('empty legal resource has no nl language', () => {
+        const legalResource
+            = aMinimalLegalResourceForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+        expect(legalResource.nlLanguage).toBeUndefined();
+    });
+
+
+    for (const nlLanguage of [Language.NL, Language.FORMAL, Language.INFORMAL]) {
+
+        let valueInNlLanguage: LanguageString;
+        if (nlLanguage === Language.NL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
+        } else if (nlLanguage == Language.FORMAL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
+        } else if (nlLanguage == Language.INFORMAL) {
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
+        }
+
+        test(`title has nl language ${nlLanguage}`, () => {
+            const legalResource
+                = aMinimalLegalResourceForInstance()
+                .withTitle(valueInNlLanguage)
+                .withDescription(undefined)
+                .build();
+            expect(legalResource.nlLanguage).toEqual(nlLanguage);
+        });
+
+
+        test(`description has nl language ${nlLanguage}`, () => {
+            const legalResource
+                = aMinimalLegalResourceForInstance()
+                .withTitle(undefined)
+                .withDescription(valueInNlLanguage)
+                .build();
+            expect(legalResource.nlLanguage).toEqual(nlLanguage);
+        });
+
+
+        test(`title, description have nl language ${nlLanguage}`, () => {
+            const legalResource
+                = aMinimalLegalResourceForInstance()
+                .withTitle(valueInNlLanguage)
+                .withDescription(valueInNlLanguage)
+                .build();
+            expect(legalResource.nlLanguage).toEqual(nlLanguage);
+        });
+
+    }
+
+});
+
+describe('transformToInformal', () => {
+    test('should transform legalResource with title, description to informal', () => {
+        const legalResource = aFullLegalResourceForInstance()
+            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
+            .build();
+
+        expect(legalResource.transformToInformal()).toEqual(LegalResourceBuilder
+            .from(legalResource)
+            .withTitle(LanguageString.of(undefined, undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+            .build()
+        );
+    });
+
+    test('should transform legalResource without title, description to informal', () => {
+        const legalResource = aFullLegalResourceForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+
+        expect(legalResource.transformToInformal()).toEqual(legalResource);
+    });
+
+    test('concept legalResource can not be transformed', () => {
+        const legalResource = aFullLegalResourceForConcept().build();
+
+        expect(() => legalResource.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
+
+    });
+});
+
+
+describe('builder', () => {
+    test('from copies all fields', () => {
+        const legalResource = aFullLegalResourceForConcept().build();
+        const fromLegalResource = LegalResourceBuilder.from(legalResource).build();
+
+        expect(fromLegalResource).toEqual(legalResource);
+    });
 });

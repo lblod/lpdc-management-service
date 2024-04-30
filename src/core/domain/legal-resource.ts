@@ -2,6 +2,7 @@ import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
 import {zip} from "lodash";
 import {LanguageString} from "./language-string";
+import {Language} from "./language";
 
 
 export class LegalResource {
@@ -80,6 +81,10 @@ export class LegalResource {
         return new LegalResource(id, uuid, title, description, url, order);
     }
 
+    get nlLanguage(): Language | undefined {
+        return LanguageString.extractNlLanguages([this._title, this._description])[0];
+    }
+
     get id(): Iri {
         return this._id;
     }
@@ -111,6 +116,13 @@ export class LegalResource {
                     || LanguageString.isFunctionallyChanged(lr[0].description, lr[1].description)
                     || lr[0].url !== lr[1].url;
             });
+    }
+
+    transformToInformal(): LegalResource {
+        return LegalResourceBuilder.from(this)
+            .withTitle(this.title?.transformToInformal())
+            .withDescription(this.description?.transformToInformal())
+            .build();
     }
 }
 

@@ -200,9 +200,10 @@ export class Instance {
             ...nlLanguage,
             ...this._requirements.map(r => r.nlLanguage),
             ...this._procedures.map(p => p.nlLanguage),
-            ...this._websites.map(p => p.nlLanguage),
-            ...this._costs.map(p => p.nlLanguage),
-            ...this._financialAdvantages.map(p => p.nlLanguage),
+            ...this._websites.map(w => w.nlLanguage),
+            ...this._costs.map(c => c.nlLanguage),
+            ...this._financialAdvantages.map(f => f.nlLanguage),
+            ...this._legalResources.map(l => l.nlLanguage)
         ].filter(l => l !== undefined));
 
 
@@ -414,6 +415,7 @@ export class Instance {
             .withWebsites(this.websites.map(website => website.transformToInformal()))
             .withCosts(this.costs.map(cost => cost.transformToInformal()))
             .withFinancialAdvantages(this.financialAdvantages.map(financialAdvantage => financialAdvantage.transformToInformal()))
+            .withLegalResources(this.legalResources.map(legalResource => legalResource.transformToInformal()))
             .build();
     }
 

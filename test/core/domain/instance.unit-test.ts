@@ -41,7 +41,11 @@ import {ContactPoint, ContactPointBuilder} from "../../../src/core/domain/contac
 import {Address, AddressBuilder} from "../../../src/core/domain/address";
 import {AddressTestBuilder, aFullAddressForInstance} from "./address-test-builder";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
-import {aFullLegalResourceForInstance, LegalResourceTestBuilder} from "./legal-resource-test-builder";
+import {
+    aFullLegalResourceForInstance,
+    aMinimalLegalResourceForInstance,
+    LegalResourceTestBuilder
+} from "./legal-resource-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 beforeAll(() => setFixedTime());
@@ -645,6 +649,7 @@ describe('validateLanguages', () => {
 
         expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
+
     test('if 1 value has different nl language strings, then throws error', () => {
         const title = LanguageString.of(undefined, 'nl', 'nl-formal');
         const description = LanguageString.of(undefined, undefined, undefined);
@@ -730,6 +735,16 @@ describe('validateLanguages', () => {
                 .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
                 .build();
             const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withFinancialAdvantages([financialAdvantage]);
+
+            expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
+        });
+
+        test('if a legal resource contains a different nl version, then throws error', () => {
+            const legalResource = aMinimalLegalResourceForInstance()
+                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .build();
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withLegalResources([legalResource]);
 
             expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
@@ -1037,6 +1052,10 @@ describe('transformToInformal', () => {
                 aFullFinancialAdvantageForInstance().withOrder(0).build(),
                 aFullFinancialAdvantageForInstance().withOrder(1).build(),
             ])
+            .withLegalResources([
+                aFullLegalResourceForInstance().withOrder(0).build(),
+                aFullLegalResourceForInstance().withOrder(1).build(),
+            ])
             .build();
 
         const updatedInstance = instance.transformToInformal();
@@ -1071,6 +1090,10 @@ describe('transformToInformal', () => {
         expect(updatedInstance.financialAdvantages[0].description).toEqual(LanguageString.of('Financial Advantage Description - en', undefined, undefined, 'Financial Advantage Description - nl-formal'));
         expect(updatedInstance.financialAdvantages[1].title).toEqual(LanguageString.of('Financial Advantage Title - en', undefined, undefined, 'Financial Advantage Title - nl-formal'));
         expect(updatedInstance.financialAdvantages[1].description).toEqual(LanguageString.of('Financial Advantage Description - en', undefined, undefined, 'Financial Advantage Description - nl-formal'));
+        expect(updatedInstance.legalResources[0].title).toEqual(LanguageString.of('Legal Resource Title - en', undefined, undefined, 'Legal Resource Title - nl-formal'));
+        expect(updatedInstance.legalResources[0].description).toEqual(LanguageString.of('Legal Resource Description - en', undefined, undefined, 'Legal Resource Description - nl-formal'));
+        expect(updatedInstance.legalResources[1].title).toEqual(LanguageString.of('Legal Resource Title - en', undefined, undefined, 'Legal Resource Title - nl-formal'));
+        expect(updatedInstance.legalResources[1].description).toEqual(LanguageString.of('Legal Resource Description - en', undefined, undefined, 'Legal Resource Description - nl-formal'));
     });
 
     test('should set dutchLanguageVariant to nl-be-x-informal', () => {
