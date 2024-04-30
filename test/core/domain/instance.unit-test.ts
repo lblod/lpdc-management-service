@@ -116,7 +116,7 @@ describe('constructing', () => {
         expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
     });
 
-    test('keywords with other language than nl throws error', () => {
+    test('keywords with other nl language throws error', () => {
         const instanceTestBuilder = aFullInstance().withKeywords([LanguageString.of(undefined, 'overlijden'), LanguageString.of(undefined, 'geboorte')]);
         expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
     });

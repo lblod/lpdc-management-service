@@ -24,6 +24,7 @@ import {
 } from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
+import {aFullContactPointForInstanceSnapshot} from "../../core/domain/contact-point-test-builder";
 
 describe('InstanceSnapshotRepository', () => {
 
@@ -455,6 +456,73 @@ describe('InstanceSnapshotRepository', () => {
 
         });
 
+        test('Verify minimal mapping with unknown languages', async () => {
+            const instanceUUID = uuid();
+            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceSnapshotUUID = uuid();
+
+            const instanceSnapshotId = buildInstanceSnapshotIri(instanceSnapshotUUID);
+
+            const bestuurseenheid = aBestuurseenheid().build();
+
+            const instanceSnapshot =
+                aMinimalInstanceSnapshot()
+                    .withId(instanceSnapshotId)
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withIsVersionOfInstance(instanceId)
+                    .withKeywords([InstanceSnapshotTestBuilder.KEYWORDS[0], InstanceSnapshotTestBuilder.KEYWORDS[1]])
+                    .withContactPoints([InstanceSnapshotTestBuilder.CONTACT_POINTS[0]])
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                [
+                    `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """Instance Snapshot title english language is ignored"""@EN`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """Concept Snapshot French language is ignored"""@fr`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://schema.org/dateCreated> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://schema.org/dateModified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> <${InstanceSnapshotTestBuilder.SPATIALS[0].value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0].value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[0].nl}"""@nl`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[1].nl}"""@nl`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """english language keyword is ignored"""@en`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """german language keyword is ignored"""@de`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasContactPoint> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)}`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} a <http://schema.org/ContactPoint>`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <http://schema.org/url> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].url}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <http://schema.org/email> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].email}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <http://schema.org/telephone> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].telephone}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <http://schema.org/openingHours> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].openingHours}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#address> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)}`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} a <http://www.w3.org/ns/locn#Address>`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#gemeentenaam> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.gemeentenaam.nl}"""@NL`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#gemeentenaam> """english language gemeentenaam is ignored"""@EN`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#gemeentenaam> """german language gemeentenaam is ignored"""@DE`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#land> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.land.nl}"""@NL`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#land> """english language land is ignored"""@EN`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#land> """german language land is ignored"""@DE`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#Adresvoorstelling.huisnummer> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.huisnummer}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#Adresvoorstelling.busnummer> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.busnummer}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#postcode> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.postcode}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#Straatnaam> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.straatnaam.nl}"""@NL`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#Straatnaam> """english language straatnaam is ignored"""@EN`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#Straatnaam> """german language straatnaam is ignored"""@DE`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#verwijstNaar> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.verwijstNaar)}`,
+                ]);
+
+            const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+
+            expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
+
+        });
+
         for (const type of Object.values(ProductType)) {
             test(`Product type ${type} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
@@ -470,7 +538,6 @@ describe('InstanceSnapshotRepository', () => {
                 expect(actualInstanceSnapshot).toEqual(instance);
             });
         }
-
 
         test('Unknown Product Type can not be mapped', async () => {
             const bestuurseenheid = aBestuurseenheid().build();

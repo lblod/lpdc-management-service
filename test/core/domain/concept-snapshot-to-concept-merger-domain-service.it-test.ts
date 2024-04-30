@@ -336,6 +336,25 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(createdConcept.isArchived).toBeTruthy();
         }, 10000);
 
+        test('Creates a new concept from a concept snapshot with keywords with other nl languages than nl ', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withKeywords([LanguageString.of(undefined, 'formal keyword')])
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const createdConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(createdConcept.id).toEqual(isVersionOfConceptId);
+            expect(createdConcept.uuid).toMatch(uuidRegex);
+            expect(createdConcept.keywords).toEqual([]);
+        }, 10000);
+
     });
 
     describe('updates a concept', () => {
@@ -1017,6 +1036,41 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(fourthTimeUpdatedConcept.latestFunctionallyChangedConceptSnapshot).toEqual(fourthTimeUpdatedConceptSnapshot.id);
 
         }, 30000);
+
+        test('Creates a new concept from a concept snapshot with keywords with other nl languages than nl ', async () => {
+            const isVersionOfConceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withKeywords([LanguageString.of('keyword')])
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .build();
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+
+            await merger.merge(conceptSnapshot.id);
+
+            const updatedConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(isVersionOfConceptId)
+                    .withTitle(suffixUnique(conceptSnapshot.title))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withKeywords([LanguageString.of(undefined, 'formal keyword')])
+                    .build();
+
+            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+
+            await conceptSnapshotRepository.save(updatedConceptSnapshot);
+
+            await merger.merge(updatedConceptSnapshot.id);
+
+            const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
+            expect(updatedConcept.id).toEqual(isVersionOfConceptId);
+            expect(updatedConcept.uuid).toMatch(uuidRegex);
+            expect(updatedConcept.title).toEqual(updatedConceptSnapshot.title);
+            expect(updatedConcept.keywords).toEqual([]);
+        }, 10000);
 
     });
 

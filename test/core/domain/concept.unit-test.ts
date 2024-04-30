@@ -179,7 +179,7 @@ describe('constructing', () => {
         expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
     });
 
-    test('keywords with other language than nl throws error', () => {
+    test('keywords with other nl language throws error', () => {
         const conceptTestBuilder = aFullConcept().withKeywords([LanguageString.of(undefined, 'overlijden'), LanguageString.of(undefined, 'geboorte')]);
         expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
     });

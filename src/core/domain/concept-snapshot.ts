@@ -110,7 +110,6 @@ export class ConceptSnapshot {
         this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
-        LanguageString.validateUniqueAndCorrectLanguages([Language.NL], ...this._keywords);
         this._requirements = [...requirements].map(Requirement.forConceptSnapshot);
         requireNoDuplicates(this._requirements.map(r => r.order), 'requirements > order');
         this._procedures = [...procedures].map(Procedure.forConceptSnapshot);

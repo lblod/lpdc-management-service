@@ -423,7 +423,8 @@ export class QuadsToDomainMapper {
     private keywords(id: Iri): LanguageString[] {
         return this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dcat('keyword'), {validateUniqueLanguages: false})
             .map(s => [s])
-            .flatMap(statements => this.asLanguageString(statements));
+            .flatMap(statements => this.asLanguageString(statements))
+            .filter(languageString => languageString != undefined);
     }
 
     private url(id: Iri): string | undefined {
@@ -713,17 +714,14 @@ export class QuadsToDomainMapper {
 
     private asLanguageString(statements: Statement[]): LanguageString | undefined {
         const literals: Literal[] | undefined = this.asLiterals(statements);
-        if (literals === undefined || (literals as []).length === 0) {
-            return undefined;
-        }
-
-        return LanguageString.of(
+        const languageString = LanguageString.of(
             literals?.find(l => l.language === 'nl')?.value,
             literals?.find(l => l.language === 'nl-be-x-formal')?.value,
             literals?.find(l => l.language === 'nl-be-x-informal')?.value,
             literals?.find(l => l.language === 'nl-be-x-generated-formal')?.value,
             literals?.find(l => l.language === 'nl-be-x-generated-informal')?.value,
         );
+        return languageString.definedLanguages.length ? languageString : undefined;
     }
 
     private asIris(statements: Statement[]): Iri[] {

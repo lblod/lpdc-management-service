@@ -16,8 +16,6 @@ describe('quads to domain mapper', () => {
 
     const logger = new Logger('QuadsToDomainMapper');
     describe('logs integrity problems', () => {
-
-
         const loggerSpy = jest.spyOn(logger, 'log');
 
         afterEach(() => {
@@ -123,6 +121,7 @@ describe('quads to domain mapper', () => {
         });
 
     });
+
     describe('sort', () => {
         const instanceId = buildInstanceIri(uuid());
         const bestuurseenheid = aBestuurseenheid().build();
@@ -164,6 +163,7 @@ describe('quads to domain mapper', () => {
 
 
         });
+
         test('When all orders are unique, dont throw error', () => {
             const quads =
                 [
