@@ -27,11 +27,9 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     }
 
     async fetchInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
-
         const jsonInstance = await this.fetchInstance(initialInstance);
 
-        const expandedContext = await this.fetchContext(jsonInstance['@context']);
-        jsonInstance['@context'] = (await expandedContext.json())['@context'];
+        jsonInstance['@context'] = await this.fetchContext(jsonInstance['@context']);
 
         const jsonLdDataAsString = JSON.stringify(jsonInstance);
         return this.mapInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
@@ -110,10 +108,16 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             headers: {'Accept': 'application/ld+json'}
         });
         if (response.ok) {
-            return response;
+            const contextAsJson = await response.json();
+            const expandedContext = contextAsJson['@context'];
+            if(!expandedContext) {
+                console.error(`Context ${context} is incorrect [${JSON.stringify(contextAsJson)}] `);
+                throw new SystemError(`Er is een fout opgetreden bij het bevragen van de context ${context} bij Ipdc, context was incorrect`);
+            }
+            return expandedContext;
         } else {
             console.error(await response.text());
-            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor context`);
+            throw new SystemError(`Er is een fout opgetreden bij het bevragen van de context ${context} bij Ipdc`);
         }
     }
 

@@ -42,7 +42,6 @@ export class ConvertInstanceToInformalDomainService {
         this.errorIfInstanceNotGepubliceerd(instance);
         this.errorInstanceReedsInformal(instance);
 
-
         const updatedInstance =
             (await this._instanceInformalLanguageStringsFetcher.fetchInstanceAndMap(bestuurseenheid, instance.reopen()))
                 .transformToInformal();
