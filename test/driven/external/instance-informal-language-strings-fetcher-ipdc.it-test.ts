@@ -24,6 +24,9 @@ import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial
 import {aMinimalLegalResourceForConcept} from "../../core/domain/legal-resource-test-builder";
 import {aFullInstance} from "../../core/domain/instance-test-builder";
 import {TNI_IPDC_ENDPOINT} from "../../test.config";
+import {graph, isLiteral, literal, Literal, parse, quad, Statement} from "rdflib";
+import * as jsonld from 'jsonld';
+import {GraphType, ObjectType, PredicateType, SubjectType} from "rdflib/lib/types";
 
 
 describe('Instance informal language strings fetcher ipdc', () => {
@@ -726,5 +729,499 @@ describe('Instance informal language strings fetcher ipdc', () => {
             const instance = InstanceBuilder.from(initialInstance).withLegalResources(newLegalResources).build();
             await expect(ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(InvariantError, "Het aantal regelgevingen van ipdc is niet gelijk aan het aantal originele regelgevingen");
         });
+    });
+
+    test('parse to quads and compact using json-ld context', async () => {
+        const jsonLdData = `[
+  {
+    "@id": "http://data.lblod.info/id/public-service/b87f3578-4dea-4425-a737-6374d49a4b3a",
+    "@type": [
+      "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService"
+    ],
+    "http://data.europa.eu/m8g/hasCompetentAuthority": [
+      {
+        "@id": "http://data.lblod.info/id/bestuurseenheden/0855d794d31887234a3edfede8cc68dbe7a177c9beba03c884d443177e9d5287"
+      }
+    ],
+    "http://mu.semte.ch/vocabularies/core/uuid": [
+      {
+        "@value": "b87f3578-4dea-4425-a737-6374d49a4b3a"
+      }
+    ],
+    "http://purl.org/dc/terms/description": [
+      {
+        "@language": "nl-be-x-formal",
+        "@value": "<p data-indentation-level=\\"0\\">b</p>"
+      }
+    ],
+    "http://purl.org/dc/terms/spatial": [
+      {
+        "@id": "http://data.europa.eu/nuts/code/BE21"
+      }
+    ],
+    "http://purl.org/dc/terms/title": [
+      {
+        "@language": "nl-be-x-formal",
+        "@value": "a"
+      }
+    ],
+    "http://purl.org/pav/createdBy": [
+      {
+        "@id": "http://data.lblod.info/id/bestuurseenheden/0855d794d31887234a3edfede8cc68dbe7a177c9beba03c884d443177e9d5287"
+      }
+    ],
+    "http://schema.org/dateCreated": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2024-04-30T11:02:38.043Z"
+      }
+    ],
+    "http://schema.org/dateModified": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2024-04-30T11:02:44.701Z"
+      }
+    ],
+    "http://schema.org/dateSent": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2024-04-30T11:02:44.699Z"
+      }
+    ],
+    "http://www.w3.org/ns/adms#status": [
+      {
+        "@id": "http://lblod.data.gift/concepts/instance-status/verstuurd"
+      }
+    ],
+    "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant": [
+      {
+        "@value": "nl-be-x-formal"
+      }
+    ],
+    "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority": [
+      {
+        "@id": "http://data.lblod.info/id/bestuurseenheden/0855d794d31887234a3edfede8cc68dbe7a177c9beba03c884d443177e9d5287"
+      }
+    ],
+    "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
+        "@value": "0"
+      }
+    ]
+  }
+]`;
+
+        const context = JSON.parse(`{
+  "@context": {
+    "instantieNs": "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#",
+    "dct": "http://purl.org/dc/terms/",
+    "purlCpsv": "http://purl.org/vocab/cpsv#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "deu": "http://data.europa.eu/m8g/",
+    "deuOntology": "http://data.europa.eu/eli/ontology#",
+    "locn": "http://www.w3.org/ns/locn#",
+    "sch": "http://schema.org/",
+    "ldes": "https://w3id.org/ldes#",
+    "tree": "https://w3id.org/tree#",
+    "hydra": "http://www.w3.org/ns/hydra/core#",
+    "sh": "http://www.w3.org/ns/shacl#",
+    "InstancePublicService": "instantieNs:InstancePublicService",
+    "InstancePublicServiceSnapshot": "instantieNs:InstancePublicServiceSnapshot",
+    "dtv": "https://data.vlaanderen.be/ns/",
+    "order": {
+      "@id": "sh:order"
+    },
+    "productnummer": {
+      "@id": "sch:productID",
+      "@type": "xsd:string"
+    },
+    "generatedAtTime": {
+      "@id": "prov:generatedAtTime",
+      "@type": "xsd:dateTime"
+    },
+    "isVersionOf": {
+      "@id": "dct:isVersionOf",
+      "@type": "@id"
+    },
+    "snapshotType": {
+      "@id": "instantieNs:snapshotType",
+      "@type": "@id",
+      "@context": {
+        "@base": "https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/"
+      }
+    },
+    "bevoegdBestuursniveaus": {
+      "@id": "instantieNs:competentAuthorityLevel",
+      "@container": "@set",
+      "@type": "@id",
+      "@context": {
+        "@base": "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/"
+      }
+    },
+    "uitvoerendBestuursniveaus": {
+      "@id": "instantieNs:executingAuthorityLevel",
+      "@container": "@set",
+      "@type": "@id",
+      "@context": {
+        "@base": "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/"
+      }
+    },
+    "naam": {
+      "@id": "dct:title",
+      "@container": "@language"
+    },
+    "verdereBeschrijving": {
+      "@id": "instantieNs:additionalDescription",
+      "@container": "@language"
+    },
+    "beschrijving": {
+      "@id": "dct:description",
+      "@container": "@language"
+    },
+    "eindeDienstVerlening": {
+      "@id": "sch:endDate",
+      "@type": "xsd:dateTime"
+    },
+    "uitzonderingen": {
+      "@id": "instantieNs:exception",
+      "@container": "@language"
+    },
+    "url": {
+      "@id": "sch:url"
+    },
+    "procedures": {
+      "@id": "http://purl.org/vocab/cpsv#follows",
+      "@container": "@set",
+      "@context": {
+        "websites": {
+          "@id": "instantieNs:hasWebsite",
+          "@container": "@set"
+        }
+      }
+    },
+    "procedure": {
+      "@id": "purlCpsv:Rule"
+    },
+    "bevoegdeOverheden": {
+      "@id": "deu:hasCompetentAuthority",
+      "@container": "@set",
+      "@context": {
+        "id": "@id",
+        "@base": "https://data.vlaanderen.be/id/organisatie/"
+      }
+    },
+    "contactgegevens": {
+      "@container": "@set",
+      "@id": "deu:hasContactPoint"
+    },
+    "contact": {
+      "@id": "sch:ContactPoint"
+    },
+    "kosten": {
+      "@id": "deu:hasCost",
+      "@container": "@set"
+    },
+    "kost": {
+      "@id": "deu:Cost"
+    },
+    "uitvoerendeOverheden": {
+      "@id": "instantieNs:hasExecutingAuthority",
+      "@container": "@set",
+      "@context": {
+        "id": "@id",
+        "@base": "https://data.vlaanderen.be/id/organisatie/"
+      }
+    },
+    "regelgeving": {
+      "@container": "@set",
+      "@id": "deu:hasLegalResource",
+      "@context": {
+        "id": "sch:url"
+      }
+    },
+    "regel": {
+      "@id": "deuOntology:LegalResource"
+    },
+    "websites": {
+      "@container": "@set",
+      "@id": "http://www.w3.org/2000/01/rdf-schema#seeAlso"
+    },
+    "website": {
+      "@id": "sch:WebSite"
+    },
+    "voorwaarden": {
+      "@id": "http://vocab.belgif.be/ns/publicservice#hasRequirement",
+      "@container": "@set",
+      "@context": {
+        "bewijs": {
+          "@id": "deu:hasSupportingEvidence"
+        }
+      }
+    },
+    "voorwaarde": {
+      "@id": "deu:Requirement"
+    },
+    "bewijsType": {
+      "@id": "deu:Evidence"
+    },
+    "zoektermen": {
+      "@container": [
+        "@language",
+        "@set"
+      ],
+      "@id": "http://www.w3.org/ns/dcat#keyword"
+    },
+    "talen": {
+      "@container": "@set",
+      "@id": "dct:language",
+      "@type": "@id",
+      "@context": {
+        "@base": "http://publications.europa.eu/resource/authority/language/"
+      }
+    },
+    "financieleVoordelen": {
+      "@container": "@set",
+      "@id": "http://purl.org/vocab/cpsv#produces"
+    },
+    "financieelVoordeel": {
+      "@id": "instantieNs:FinancialAdvantage"
+    },
+    "publicatiekanalen": {
+      "@container": "@set",
+      "@id": "instantieNs:publicationMedium",
+      "@type": "@id",
+      "@context": {
+        "@base": "https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/"
+      }
+    },
+    "regelgevingTekst": {
+      "@id": "instantieNs:regulation",
+      "@container": "@language"
+    },
+    "geografischToepassingsgebieden": {
+      "@container": "@set",
+      "@id": "dct:spatial",
+      "@type": "@id",
+      "@context": {
+        "@base": "http://data.europa.eu/nuts/code/"
+      }
+    },
+    "startDienstVerlening": {
+      "@id": "sch:startDate",
+      "@type": "xsd:dateTime"
+    },
+    "tags": {
+      "@container": "@set",
+      "@id": "instantieNs:instantieTag",
+      "@type": "@id",
+      "@context": {
+        "@base": "https://productencatalogus.data.vlaanderen.be/id/concept/InstantieTag/"
+      }
+    },
+    "doelgroepen": {
+      "@container": "@set",
+      "@id": "instantieNs:targetAudience",
+      "@type": "@id",
+      "@context": {
+        "@base": "https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/"
+      }
+    },
+    "themas": {
+      "@container": "@set",
+      "@id": "deu:thematicArea",
+      "@type": "@id",
+      "@context": {
+        "@base": "https://productencatalogus.data.vlaanderen.be/id/concept/Thema/"
+      }
+    },
+    "type": {
+      "@id": "dct:type",
+      "@type": "@id",
+      "@context": {
+        "@base": "https://productencatalogus.data.vlaanderen.be/id/concept/Type/"
+      }
+    },
+    "yourEuropeCategorieen": {
+      "@container": "@set",
+      "@id": "instantieNs:yourEuropeCategory",
+      "@type": "@id",
+      "@context": {
+        "@base": "https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/"
+      }
+    },
+    "email": {
+      "@id": "sch:email",
+      "@type": "xsd:string"
+    },
+    "telefoonnummer": {
+      "@id": "sch:telephone",
+      "@type": "xsd:string"
+    },
+    "openingsuren": {
+      "@id": "sch:openingHours",
+      "@type": "xsd:string"
+    },
+    "gearchiveerd": {
+      "@id": "instantieNs:isArchived",
+      "@type": "xsd:boolean"
+    },
+    "creatie": {
+      "@id": "sch:dateCreated",
+      "@type": "xsd:dateTime"
+    },
+    "laatstGewijzigd": {
+      "@id": "sch:dateModified",
+      "@type": "xsd:dateTime"
+    },
+    "linkedConcept": {
+      "@id": "dct:source",
+      "@type": "@id"
+    },
+    "adres": {
+      "@id": "instantieNs:address",
+      "@context": {
+        "land": {
+          "@id": "dtv:adres#land",
+          "@container": "@language"
+        },
+        "huisnummer": {
+          "@id": "dtv:adres#Adresvoorstelling.huisnummer",
+          "@type": "xsd:string"
+        },
+        "busnummer": {
+          "@id": "dtv:adres#Adresvoorstelling.busnummer",
+          "@type": "xsd:string"
+        },
+        "postcode": {
+          "@id": "dtv:adres#postcode",
+          "@type": "xsd:string"
+        },
+        "gemeentenaam": {
+          "@id": "dtv:adres#gemeentenaam",
+          "@container": "@language"
+        },
+        "straatnaam": {
+          "@id": "dtv:adres#Straatnaam",
+          "@container": "@language"
+        }
+      }
+    },
+    "EventStream": "ldes:EventStream",
+    "Node": "tree:Node",
+    "relation": {
+      "@container": "@set",
+      "@id": "tree:relation"
+    },
+    "view": "tree:view",
+    "shape": "tree:shape",
+    "member": {
+      "@id": "tree:member",
+      "@container": "@set"
+    },
+    "GreaterThanOrEqualToRelation": "tree:GreaterThanOrEqualToRelation",
+    "LessThanOrEqualToRelation": "tree:LessThanOrEqualToRelation",
+    "LessThanRelation": "tree:LessThanRelation",
+    "versionOfPath": {
+      "@id": "ldes:versionOfPath",
+      "@type": "@id"
+    },
+    "timestampPath": {
+      "@id": "ldes:timestampPath",
+      "@type": "@id"
+    },
+    "node": {
+      "@id": "tree:node",
+      "@type": "@id"
+    },
+    "path": {
+      "@id": "tree:path",
+      "@type": "@id"
+    },
+    "value": {
+      "@id": "tree:value",
+      "@type": "xsd:dateTime"
+    },
+    "hydraMember": {
+      "@id": "hydra:member",
+      "@type": "@id"
+    },
+    "hydraLimit": {
+      "@id": "hydra:limit",
+      "@type": "xsd:nonNegativeInteger"
+    },
+    "hydraPageIndex": {
+      "@id": "hydra:pageIndex",
+      "@type": "xsd:nonNegativeInteger"
+    },
+    "hydraView": {
+      "@id": "hydra:view",
+      "@type": "@id"
+    },
+    "hydraTotalItems": "hydra:totalItems",
+    "hydraFirst": {
+      "@id": "hydra:first",
+      "@type": "@id"
+    },
+    "hydraLast": {
+      "@id": "hydra:last",
+      "@type": "@id"
+    },
+    "hydraNext": {
+      "@id": "hydra:next",
+      "@type": "@id"
+    },
+    "hydraPrevious": {
+      "@id": "hydra:previous",
+      "@type": "@id"
+    }
+  }
+}`);
+
+        const store = graph();
+
+        const quads = await new Promise<Statement<SubjectType, PredicateType, ObjectType, GraphType>[]>((resolve, reject) => {
+
+            parse(jsonLdData, store, bestuurseenheid.userGraph().value, 'application/ld+json', (error: any, kb: any) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+
+                const originalQuads: Statement[] = kb.statementsMatching();
+
+                if (originalQuads.length < 5) {
+                    reject(new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor instance ${initialInstance.id}`));
+                }
+
+                //'translate' all formal to informal (by adding the same keys again, with informal)
+
+                const allInformalQuads =
+                    originalQuads.filter(
+                        q =>
+                            isLiteral(q.object)
+                            && (q.object as Literal).language === 'nl-be-x-formal'
+                    ).map(q =>
+                        quad(q.subject, q.predicate, literal(`${q.object.value} - informal`, 'nl-be-x-informal'), q.graph)
+                    );
+
+                resolve([...originalQuads, ...allInformalQuads]);
+            });
+        });
+
+        //console.log(quads);
+
+        const jsonLdDocument = await jsonld.fromRDF(quads.map(q => quad(q.subject, q.predicate, q.object, null)));
+
+        const compactedJsonLdDocument = await jsonld.compact(jsonLdDocument, context);
+
+        const expectedCompactedDocument = JSON.parse(`{"@context": {"EventStream": "ldes:EventStream", "GreaterThanOrEqualToRelation": "tree:GreaterThanOrEqualToRelation", "InstancePublicService": "instantieNs:InstancePublicService", "InstancePublicServiceSnapshot": "instantieNs:InstancePublicServiceSnapshot", "LessThanOrEqualToRelation": "tree:LessThanOrEqualToRelation", "LessThanRelation": "tree:LessThanRelation", "Node": "tree:Node", "adres": {"@context": {"busnummer": {"@id": "dtv:adres#Adresvoorstelling.busnummer", "@type": "xsd:string"}, "gemeentenaam": {"@container": "@language", "@id": "dtv:adres#gemeentenaam"}, "huisnummer": {"@id": "dtv:adres#Adresvoorstelling.huisnummer", "@type": "xsd:string"}, "land": {"@container": "@language", "@id": "dtv:adres#land"}, "postcode": {"@id": "dtv:adres#postcode", "@type": "xsd:string"}, "straatnaam": {"@container": "@language", "@id": "dtv:adres#Straatnaam"}}, "@id": "instantieNs:address"}, "beschrijving": {"@container": "@language", "@id": "dct:description"}, "bevoegdBestuursniveaus": {"@container": "@set", "@context": {"@base": "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/"}, "@id": "instantieNs:competentAuthorityLevel", "@type": "@id"}, "bevoegdeOverheden": {"@container": "@set", "@context": {"@base": "https://data.vlaanderen.be/id/organisatie/", "id": "@id"}, "@id": "deu:hasCompetentAuthority"}, "bewijsType": {"@id": "deu:Evidence"}, "contact": {"@id": "sch:ContactPoint"}, "contactgegevens": {"@container": "@set", "@id": "deu:hasContactPoint"}, "creatie": {"@id": "sch:dateCreated", "@type": "xsd:dateTime"}, "dct": "http://purl.org/dc/terms/", "deu": "http://data.europa.eu/m8g/", "deuOntology": "http://data.europa.eu/eli/ontology#", "doelgroepen": {"@container": "@set", "@context": {"@base": "https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/"}, "@id": "instantieNs:targetAudience", "@type": "@id"}, "dtv": "https://data.vlaanderen.be/ns/", "eindeDienstVerlening": {"@id": "sch:endDate", "@type": "xsd:dateTime"}, "email": {"@id": "sch:email", "@type": "xsd:string"}, "financieelVoordeel": {"@id": "instantieNs:FinancialAdvantage"}, "financieleVoordelen": {"@container": "@set", "@id": "http://purl.org/vocab/cpsv#produces"}, "gearchiveerd": {"@id": "instantieNs:isArchived", "@type": "xsd:boolean"}, "generatedAtTime": {"@id": "prov:generatedAtTime", "@type": "xsd:dateTime"}, "geografischToepassingsgebieden": {"@container": "@set", "@context": {"@base": "http://data.europa.eu/nuts/code/"}, "@id": "dct:spatial", "@type": "@id"}, "hydra": "http://www.w3.org/ns/hydra/core#", "hydraFirst": {"@id": "hydra:first", "@type": "@id"}, "hydraLast": {"@id": "hydra:last", "@type": "@id"}, "hydraLimit": {"@id": "hydra:limit", "@type": "xsd:nonNegativeInteger"}, "hydraMember": {"@id": "hydra:member", "@type": "@id"}, "hydraNext": {"@id": "hydra:next", "@type": "@id"}, "hydraPageIndex": {"@id": "hydra:pageIndex", "@type": "xsd:nonNegativeInteger"}, "hydraPrevious": {"@id": "hydra:previous", "@type": "@id"}, "hydraTotalItems": "hydra:totalItems", "hydraView": {"@id": "hydra:view", "@type": "@id"}, "instantieNs": "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#", "isVersionOf": {"@id": "dct:isVersionOf", "@type": "@id"}, "kost": {"@id": "deu:Cost"}, "kosten": {"@container": "@set", "@id": "deu:hasCost"}, "laatstGewijzigd": {"@id": "sch:dateModified", "@type": "xsd:dateTime"}, "ldes": "https://w3id.org/ldes#", "linkedConcept": {"@id": "dct:source", "@type": "@id"}, "locn": "http://www.w3.org/ns/locn#", "member": {"@container": "@set", "@id": "tree:member"}, "naam": {"@container": "@language", "@id": "dct:title"}, "node": {"@id": "tree:node", "@type": "@id"}, "openingsuren": {"@id": "sch:openingHours", "@type": "xsd:string"}, "order": {"@id": "sh:order"}, "path": {"@id": "tree:path", "@type": "@id"}, "procedure": {"@id": "purlCpsv:Rule"}, "procedures": {"@container": "@set", "@context": {"websites": {"@container": "@set", "@id": "instantieNs:hasWebsite"}}, "@id": "http://purl.org/vocab/cpsv#follows"}, "productnummer": {"@id": "sch:productID", "@type": "xsd:string"}, "prov": "http://www.w3.org/ns/prov#", "publicatiekanalen": {"@container": "@set", "@context": {"@base": "https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/"}, "@id": "instantieNs:publicationMedium", "@type": "@id"}, "purlCpsv": "http://purl.org/vocab/cpsv#", "regel": {"@id": "deuOntology:LegalResource"}, "regelgeving": {"@container": "@set", "@context": {"id": "sch:url"}, "@id": "deu:hasLegalResource"}, "regelgevingTekst": {"@container": "@language", "@id": "instantieNs:regulation"}, "relation": {"@container": "@set", "@id": "tree:relation"}, "sch": "http://schema.org/", "sh": "http://www.w3.org/ns/shacl#", "shape": "tree:shape", "snapshotType": {"@context": {"@base": "https://productencatalogus.data.vlaanderen.be/id/concept/SnapshotType/"}, "@id": "instantieNs:snapshotType", "@type": "@id"}, "startDienstVerlening": {"@id": "sch:startDate", "@type": "xsd:dateTime"}, "tags": {"@container": "@set", "@context": {"@base": "https://productencatalogus.data.vlaanderen.be/id/concept/InstantieTag/"}, "@id": "instantieNs:instantieTag", "@type": "@id"}, "talen": {"@container": "@set", "@context": {"@base": "http://publications.europa.eu/resource/authority/language/"}, "@id": "dct:language", "@type": "@id"}, "telefoonnummer": {"@id": "sch:telephone", "@type": "xsd:string"}, "themas": {"@container": "@set", "@context": {"@base": "https://productencatalogus.data.vlaanderen.be/id/concept/Thema/"}, "@id": "deu:thematicArea", "@type": "@id"}, "timestampPath": {"@id": "ldes:timestampPath", "@type": "@id"}, "tree": "https://w3id.org/tree#", "type": {"@context": {"@base": "https://productencatalogus.data.vlaanderen.be/id/concept/Type/"}, "@id": "dct:type", "@type": "@id"}, "uitvoerendBestuursniveaus": {"@container": "@set", "@context": {"@base": "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/"}, "@id": "instantieNs:executingAuthorityLevel", "@type": "@id"}, "uitvoerendeOverheden": {"@container": "@set", "@context": {"@base": "https://data.vlaanderen.be/id/organisatie/", "id": "@id"}, "@id": "instantieNs:hasExecutingAuthority"}, "uitzonderingen": {"@container": "@language", "@id": "instantieNs:exception"}, "url": {"@id": "sch:url"}, "value": {"@id": "tree:value", "@type": "xsd:dateTime"}, "verdereBeschrijving": {"@container": "@language", "@id": "instantieNs:additionalDescription"}, "versionOfPath": {"@id": "ldes:versionOfPath", "@type": "@id"}, "view": "tree:view", "voorwaarde": {"@id": "deu:Requirement"}, "voorwaarden": {"@container": "@set", "@context": {"bewijs": {"@id": "deu:hasSupportingEvidence"}}, "@id": "http://vocab.belgif.be/ns/publicservice#hasRequirement"}, "website": {"@id": "sch:WebSite"}, "websites": {"@container": "@set", "@id": "http://www.w3.org/2000/01/rdf-schema#seeAlso"}, "xsd": "http://www.w3.org/2001/XMLSchema#", "yourEuropeCategorieen": {"@container": "@set", "@context": {"@base": "https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCategorie/"}, "@id": "instantieNs:yourEuropeCategory", "@type": "@id"}, "zoektermen": {"@container": ["@language", "@set"], "@id": "http://www.w3.org/ns/dcat#keyword"}}, "@id": "http://data.lblod.info/id/public-service/b87f3578-4dea-4425-a737-6374d49a4b3a", "@type": "InstancePublicService", "beschrijving": {"nl-be-x-formal": "<p data-indentation-level=\\"0\\">b</p>", "nl-be-x-informal": "<p data-indentation-level=\\"0\\">b</p> - informal"}, "bevoegdeOverheden": [{"id": "http://data.lblod.info/id/bestuurseenheden/0855d794d31887234a3edfede8cc68dbe7a177c9beba03c884d443177e9d5287"}], "creatie": "2024-04-30T11:02:38.043Z", "geografischToepassingsgebieden": ["BE21"], "http://mu.semte.ch/vocabularies/core/uuid": "b87f3578-4dea-4425-a737-6374d49a4b3a", "http://purl.org/pav/createdBy": {"@id": "http://data.lblod.info/id/bestuurseenheden/0855d794d31887234a3edfede8cc68dbe7a177c9beba03c884d443177e9d5287"}, "http://www.w3.org/ns/adms#status": {"@id": "http://lblod.data.gift/concepts/instance-status/verstuurd"}, "instantieNs:dutchLanguageVariant": "nl-be-x-formal", "instantieNs:needsConversionFromFormalToInformal": {"@type": "xsd:boolean", "@value": "0"}, "laatstGewijzigd": "2024-04-30T11:02:44.701Z", "naam": {"nl-be-x-formal": "a", "nl-be-x-informal": "a - informal"}, "sch:dateSent": {"@type": "xsd:dateTime", "@value": "2024-04-30T11:02:44.699Z"}, "uitvoerendeOverheden": [{"id": "http://data.lblod.info/id/bestuurseenheden/0855d794d31887234a3edfede8cc68dbe7a177c9beba03c884d443177e9d5287"}]}`);
+
+        expect(compactedJsonLdDocument).toEqual(expectedCompactedDocument);
+
+
+
+
     });
 });
