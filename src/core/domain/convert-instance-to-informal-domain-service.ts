@@ -26,7 +26,7 @@ export class ConvertInstanceToInformalDomainService {
     }
 
     async confirmInstanceIsAlreadyInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
-        await this.errorIfBestuurdDidNotChooseInformal(bestuurseenheid);
+        await this.errorIfBestuurDidNotChooseInformal(bestuurseenheid);
         this.errorIfInstanceNotGepubliceerd(instance);
 
         const updatedInstance = instance
@@ -38,7 +38,7 @@ export class ConvertInstanceToInformalDomainService {
     }
 
     async convertInstanceToInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
-        await this.errorIfBestuurdDidNotChooseInformal(bestuurseenheid);
+        await this.errorIfBestuurDidNotChooseInformal(bestuurseenheid);
         this.errorIfInstanceNotGepubliceerd(instance);
         this.errorInstanceReedsInformal(instance);
 
@@ -49,7 +49,7 @@ export class ConvertInstanceToInformalDomainService {
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);
     }
 
-    private async errorIfBestuurdDidNotChooseInformal(bestuurseenheid: Bestuurseenheid) {
+    private async errorIfBestuurDidNotChooseInformal(bestuurseenheid: Bestuurseenheid) {
         const formalInformalChoice = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
         if (formalInformalChoice?.chosenForm !== ChosenFormType.INFORMAL) {
             throw new InvariantError('Je moet gekozen hebben voor de je-vorm');

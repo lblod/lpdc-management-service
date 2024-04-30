@@ -6,7 +6,7 @@ import {graph, parse, Statement} from "rdflib";
 import {NS} from "../persistence/namespaces";
 import {Requirement, RequirementBuilder} from "../../core/domain/requirement";
 import {LanguageString} from "../../core/domain/language-string";
-import {ConcurrentUpdateError, InvariantError, SystemError} from "../../core/domain/shared/lpdc-error";
+import {SystemError} from "../../core/domain/shared/lpdc-error";
 import {zip} from "lodash";
 import {Procedure, ProcedureBuilder} from "../../core/domain/procedure";
 import {Cost, CostBuilder} from "../../core/domain/cost";
@@ -65,7 +65,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
         const fetchedDateModified = mapper.dateModified(id);
         if (fetchedDateModified.value != initialInstance.dateModified.value) {
-            throw new ConcurrentUpdateError();
+            throw new SystemError(`Wijzigingsdatum ipdc is niet gelijk aan wijzigingsdatum lpdc voor ${initialInstance.id}`);
         }
 
         return InstanceBuilder.from(initialInstance)
@@ -84,12 +84,14 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     }
 
     private async fetchInstance(initialInstance: Instance) {
+        //TODO LPDC-1139: take last part of id of Instance instead of taking uuid -> see frontend logic ...
         const response = await fetch(`${this.endpoint}/doc/instantie/${initialInstance.uuid}`, {
             headers: {'Accept': 'application/ld+json'}
         });
 
         if (response.ok) {
             const instanceJson = await response.json();
+            //TODO LPDC-1139: ask why the @id of ipdc is not our generated iri id ?
             instanceJson['@id'] = initialInstance.id.value;
             return instanceJson;
         }
@@ -122,11 +124,12 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     }
 
     private mapLanguageString(newValue: LanguageString | undefined, initialValue: LanguageString | undefined): LanguageString | undefined {
+        //TODO LPDC-1139: verify if the initialValue is the same as the newValue for the language of the initialValue -> then we are a bit more sure we are not mapping some random other string ...
         if (newValue && initialValue) {
             const informalNewValue = newValue.nlGeneratedInformal;
 
             if (!informalNewValue || informalNewValue.trim() === "") {
-                throw new InvariantError('Geen informal waarde verkregen');
+                throw new SystemError('Geen informal waarde verkregen');
             }
 
             if (initialValue?.nl) {
@@ -138,12 +141,12 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
              return undefined;
         }
 
-        throw new InvariantError("De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn");
+        throw new SystemError("De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn");
     }
 
     private mapRequirements(newRequirements: Requirement[], initialRequirements: Requirement[]): Requirement[] {
         if (newRequirements.length != initialRequirements.length) {
-            throw new InvariantError("Het aantal voorwaarden van ipdc is niet gelijk aan het aantal originele voorwaarden");
+            throw new SystemError("Het aantal voorwaarden van ipdc is niet gelijk aan het aantal originele voorwaarden");
         }
         let requirements: Requirement[] = [];
 
@@ -168,12 +171,12 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
                 .withDescription(this.mapLanguageString(newEvidence.description, initialEvidence.description))
                 .build();
         }
-        throw new InvariantError("Het bewijs van ipdc is niet gelijk aan het originele bewijs");
+        throw new SystemError("Het bewijs van ipdc is niet gelijk aan het originele bewijs");
     }
 
     private mapProcedure(newProcedures: Procedure[], initialProcedures: Procedure[]): Procedure[] {
         if (newProcedures.length != initialProcedures.length) {
-            throw new InvariantError("Het aantal procedures van ipdc is niet gelijk aan het aantal originele procedures");
+            throw new SystemError("Het aantal procedures van ipdc is niet gelijk aan het aantal originele procedures");
         }
         let procedures: Procedure[] = [];
 
@@ -189,7 +192,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
     private mapWebsites(newWebsites: Website[], initialWebsites: Website[]): Website[] {
         if (newWebsites.length != initialWebsites.length) {
-            throw new InvariantError("Het aantal websites van ipdc is niet gelijk aan het aantal originele websites");
+            throw new SystemError("Het aantal websites van ipdc is niet gelijk aan het aantal originele websites");
         }
         let websites: Website[] = [];
 
@@ -206,7 +209,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
     private mapCosts(newCosts: Cost[], initialCosts: Cost[]): Cost[] {
         if (newCosts.length != initialCosts.length) {
-            throw new InvariantError("Het aantal kosten van ipdc is niet gelijk aan het aantal originele kosten");
+            throw new SystemError("Het aantal kosten van ipdc is niet gelijk aan het aantal originele kosten");
         }
         let costs: Cost[] = [];
 
@@ -222,7 +225,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
     private mapFinancialAdvantages(newFinancialAdvantages: FinancialAdvantage[], initialFinancialAdvantages: FinancialAdvantage[]): FinancialAdvantage[] {
         if (newFinancialAdvantages.length != initialFinancialAdvantages.length) {
-            throw new InvariantError("Het aantal financiele voordelen van ipdc is niet gelijk aan het aantal originele financiele voordelen");
+            throw new SystemError("Het aantal financiele voordelen van ipdc is niet gelijk aan het aantal originele financiele voordelen");
         }
         let financialAdvantages: FinancialAdvantage[] = [];
 
@@ -238,7 +241,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
     private mapLegalResources(newLegalResources: LegalResource[], initialLegalResources: LegalResource[]): LegalResource[] {
         if (newLegalResources.length != initialLegalResources.length) {
-            throw new InvariantError("Het aantal regelgevingen van ipdc is niet gelijk aan het aantal originele regelgevingen");
+            throw new SystemError("Het aantal regelgevingen van ipdc is niet gelijk aan het aantal originele regelgevingen");
         }
         let legalResources: LegalResource[] = [];
 
