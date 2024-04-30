@@ -84,7 +84,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -279,7 +279,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -326,7 +326,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -363,7 +363,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -456,7 +456,7 @@ describe('merges a new concept snapshot into a concept', () => {
                             anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(3).build()])
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(updatedConceptSnapshot);
 
@@ -674,7 +674,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -686,7 +686,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(updatedConceptSnapshot);
 
@@ -735,7 +735,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -745,7 +745,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(updatedConceptSnapshot);
 
@@ -766,7 +766,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -795,7 +795,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -806,7 +806,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(updatedConceptSnapshot);
 
@@ -825,7 +825,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(anotherOldUpdatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(anotherOldUpdatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(anotherOldUpdatedConceptSnapshot);
 
@@ -848,7 +848,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -860,7 +860,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(updatedConceptSnapshot);
 
@@ -882,7 +882,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -894,7 +894,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(archivedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(archivedConceptSnapshot);
 
             await conceptSnapshotRepository.save(archivedConceptSnapshot);
 
@@ -908,7 +908,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-12T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(unarchivedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(unarchivedConceptSnapshot);
 
             await conceptSnapshotRepository.save(unarchivedConceptSnapshot);
 
@@ -929,7 +929,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -940,7 +940,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(updatedConceptSnapshot);
 
@@ -961,7 +961,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-18T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(secondTimeUpdatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(secondTimeUpdatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(secondTimeUpdatedConceptSnapshot);
 
@@ -982,7 +982,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T12:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(thirdTimeButOlderUpdatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(thirdTimeButOlderUpdatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(thirdTimeButOlderUpdatedConceptSnapshot);
 
@@ -1003,7 +1003,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-19T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(fourthTimeUpdatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(fourthTimeUpdatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(fourthTimeUpdatedConceptSnapshot);
 
@@ -1041,7 +1041,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 .build();
         await conceptSnapshotRepository.save(conceptSnapshot);
 
-        insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+        await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
         await merger.merge(conceptSnapshot.id);
 
@@ -1133,7 +1133,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -1186,7 +1186,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
                     .build();
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
 
             await conceptSnapshotRepository.save(updatedConceptSnapshot);
 
@@ -1229,7 +1229,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -1293,7 +1293,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -1362,7 +1362,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
+            await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot);
 
             await merger.merge(conceptSnapshot.id);
 
@@ -1460,7 +1460,7 @@ describe('merges a new concept snapshot into a concept', () => {
     }
 
 
-    function insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot: ConceptSnapshot) {
+    async function insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(conceptSnapshot: ConceptSnapshot) {
         const triples = [
             conceptSnapshot.type ? `<${NS.dvc.type(conceptSnapshot.type).value}> skos:inScheme <${NS.dvcs('Type').value}>` : undefined,
             conceptSnapshot.type ? `<${NS.dvc.type(conceptSnapshot.type).value}> a skos:Concept` : undefined,
@@ -1500,7 +1500,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     `<${NS.dvc.conceptTag(v).value}> a skos:Concept`]),
         ].filter(t => t !== undefined);
         if (triples.length > 0) {
-            directDatabaseAccess.insertData(
+            await directDatabaseAccess.insertData(
                 PUBLIC_GRAPH,
                 triples,
                 [
