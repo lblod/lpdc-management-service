@@ -52,7 +52,7 @@ describe('Update Instance Application Service tests', () => {
             `
             @prefix : <#>.\n@prefix dct: <http://purl.org/dc/terms/>.\n
             @prefix pub: <http://data.lblod.info/id/public-service/>.\n\n
-            pub:${instance.uuid} dct:title "initial title"@nl-be-x-formal, "initial title en"@en.\n\n`);
+            pub:${instance.uuid} dct:title "initial title"@nl-be-x-formal.\n\n`);
 
 
         let updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
@@ -71,11 +71,11 @@ describe('Update Instance Application Service tests', () => {
 @prefix dct: <http://purl.org/dc/terms/>\n.
 @prefix pub: <http://data.lblod.info/id/public-service/>\n\n.
 
-pub:${instance.uuid} dct:title "initial title"@nl-be-x-formal, "initial title en"@en.\n\n`,
+pub:${instance.uuid} dct:title "initial title"@nl-be-x-formal.\n\n`,
             `
             @prefix : <#>.\n@prefix dct: <http://purl.org/dc/terms/>.\n
             @prefix pub: <http://data.lblod.info/id/public-service/>.\n\n
-            pub:${instance.uuid} dct:title "updated title"@nl-be-x-formal, "updated title en"@en.\n\n`);
+            pub:${instance.uuid} dct:title "updated title"@nl-be-x-formal.\n\n`);
 
         updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -114,9 +114,8 @@ nodes:02c296ca-d194-4971-9325-e17809afe087\n
     a cpsv:Rule;\n
     mu:uuid "dc4bd8fb-87a9-4257-9ab9-86f93a2f7ed8";\n
     dct:description\n
-            """<p data-indentation-level="0">beschrijving procedure</p>"""@nl-be-x-formal,\n
-            """<p data-indentation-level="0">engelse beschrijving procedure</p>"""@en;\n
-    dct:title "engelse titel procedure"@en, "titel procedure"@nl-be-x-formal;\n
+            """<p data-indentation-level="0">beschrijving procedure</p>"""@nl-be-x-formal;\n
+    dct:title "titel procedure"@nl-be-x-formal;\n
     sh:order 1 .\n
 pub:${instance.uuid}\n
     cpsv:follows nodes:02c296ca-d194-4971-9325-e17809afe087 .\n\n`);
