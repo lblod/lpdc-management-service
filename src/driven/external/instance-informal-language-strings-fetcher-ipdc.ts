@@ -21,9 +21,11 @@ import {
 export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInformalLanguageStringsFetcher {
 
     private readonly endpoint: string;
+    private readonly authenticationKey: string;
 
-    constructor(endpoint: string) {
+    constructor(endpoint: string, authenticationKey: string) {
         this.endpoint = endpoint;
+        this.authenticationKey = authenticationKey;
     }
 
     async fetchInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
@@ -86,7 +88,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     private async fetchInstance(initialInstance: Instance) {
         //TODO LPDC-1139: take last part of id of Instance instead of taking uuid -> see frontend logic ...
         const response = await fetch(`${this.endpoint}/doc/instantie/${initialInstance.uuid}`, {
-            headers: {'Accept': 'application/ld+json'}
+            headers: {'Accept': 'application/ld+json', 'x-api-key': this.authenticationKey}
         });
 
         if (response.ok) {
@@ -95,8 +97,10 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             instanceJson['@id'] = initialInstance.id.value;
             return instanceJson;
         }
-
-        if (response.status === 404) {
+        if (response.status === 401) {
+            console.error(await response.text());
+            throw new SystemError(`Niet geauthenticeerd bij ipdc`);
+        } else if (response.status === 404) {
             console.error(await response.text());
             throw new SystemError(`Instantie ${initialInstance.id} niet gevonden bij ipdc`);
         } else {
@@ -107,7 +111,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
     private async fetchContext(context: string) {
         const response = await fetch(context, {
-            headers: {'Accept': 'application/ld+json'}
+            headers: {'Accept': 'application/ld+json', 'x-api-key': this.authenticationKey}
         });
         if (response.ok) {
             const contextAsJson = await response.json();
@@ -117,6 +121,9 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
                 throw new SystemError(`Er is een fout opgetreden bij het bevragen van de context ${context} bij Ipdc, context was incorrect`);
             }
             return expandedContext;
+        } else if (response.status === 401) {
+            console.error(await response.text());
+            throw new SystemError(`Niet geauthenticeerd bij ipdc`);
         } else {
             console.error(await response.text());
             throw new SystemError(`Er is een fout opgetreden bij het bevragen van de context ${context} bij Ipdc`);

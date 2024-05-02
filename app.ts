@@ -3,7 +3,8 @@ import bodyparser from 'body-parser';
 import {
     CONCEPT_SNAPSHOT_LDES_GRAPH,
     INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN,
-    IPDC_ENDPOINT,
+    IPDC_API_ENDPOINT,
+    IPDC_API_KEY,
     LOG_INCOMING_DELTA
 } from './config';
 import {ProcessingQueue} from './lib/processing-queue';
@@ -171,7 +172,7 @@ const newFormalInformalChoiceAndSyncInstanceDomainService = new NewFormalInforma
     instanceRepository
 );
 
-const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc(IPDC_ENDPOINT);
+const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc(IPDC_API_ENDPOINT, IPDC_API_KEY);
 
 const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
 

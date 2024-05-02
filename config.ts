@@ -9,12 +9,13 @@ const USER_SESSIONS_GRAPH = 'http://mu.semte.ch/graphs/sessions';
 const QUEUE_POLL_INTERVAL = Number(process.env.QUEUE_POLL_INTERVAL) || 60000; //1min
 const LOG_INCOMING_DELTA = process.env.LOG_INCOMING_DELTA == 'true' || false;
 const ADRESSEN_REGISTER_API_KEY = process.env.ADRESSEN_REGISTER_API_KEY;
+const IPDC_API_KEY = process.env.IPDC_API_KEY;
 
 const ENABLE_ADDRESS_VALIDATION = (process.env.ENABLE_ADDRESS_VALIDATION ?? 'true') == 'true';
 
 const INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN = process.env.INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN || "*/1 * * * *"; //or every minute
 
-const IPDC_ENDPOINT = process.env.IPDC_ENDPOINT;
+const IPDC_API_ENDPOINT = process.env.IPDC_API_ENDPOINT;
 
 //TODO LPDC-894: use PREFIX object, and generate this list from it (make sure to add all needed to PREFIX)
 const PREFIXES = `
@@ -101,5 +102,6 @@ export {
     ADRESSEN_REGISTER_API_KEY,
     ENABLE_ADDRESS_VALIDATION,
     INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN,
-    IPDC_ENDPOINT
+    IPDC_API_ENDPOINT,
+    IPDC_API_KEY
 };
