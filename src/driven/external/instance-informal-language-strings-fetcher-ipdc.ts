@@ -91,11 +91,17 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
         const segmentedId = initialInstance.id.value.split('/');
         const uuidExtractedFromId = segmentedId[segmentedId.length - 1];
+        try {
+            return await this.fetchInstanceByValue(uuidExtractedFromId, initialInstance);
+        } catch (e) {
+            return this.fetchInstanceByValue(initialInstance.uuid, initialInstance);
+        }
+    }
 
-        const response = await fetch(`${this.endpoint}/doc/instantie/${uuidExtractedFromId}`, {
+    private async fetchInstanceByValue(uuid: string, initialInstance: Instance): Promise<string> {
+        const response = await fetch(`${this.endpoint}/doc/instantie/${uuid}`, {
             headers: {'Accept': 'application/ld+json', 'x-api-key': this.authenticationKey}
         });
-
         if (response.ok) {
             const instanceJson = await response.json();
             //TODO LPDC-1139: ask why the @id of ipdc is not our generated iri id ?
@@ -136,8 +142,6 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     }
 
     private mapLanguageString(newValue: LanguageString | undefined, initialValue: LanguageString | undefined, initialDutchLanguageVariant: Language): LanguageString | undefined {
-        //TODO LPDC-1139: verify if the initialValue is the same as the newValue for the language of the initialValue -> then we are a bit more sure we are not mapping some random other string ...
-
         if (newValue && initialValue && (newValue?.getLanguageValue(initialDutchLanguageVariant) === initialValue?.getLanguageValue(initialDutchLanguageVariant))) {
             const informalNewValue = newValue.nlGeneratedInformal;
 
@@ -154,6 +158,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
              return undefined;
         }
 
+        //TODO LPDC-1139: improve logging to see place
         throw new SystemError("De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn");
     }
 
