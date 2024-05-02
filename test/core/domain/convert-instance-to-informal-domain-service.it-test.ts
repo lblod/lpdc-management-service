@@ -5,7 +5,7 @@ import {
     ConvertInstanceToInformalDomainService
 } from "../../../src/core/domain/convert-instance-to-informal-domain-service";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {TEST_SPARQL_ENDPOINT, TNI_IPDC_ENDPOINT} from "../../test.config";
+import {TEST_SPARQL_ENDPOINT, TNI_IPDC_AUTHENTICATION_KEY, TNI_IPDC_ENDPOINT} from "../../test.config";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 import {ChosenFormType, InstancePublicationStatusType, InstanceStatusType} from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
@@ -32,7 +32,7 @@ describe('Convert Instance To Informal Domain Service', () => {
 
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc(TNI_IPDC_ENDPOINT);
+    const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc(TNI_IPDC_ENDPOINT, TNI_IPDC_AUTHENTICATION_KEY);
     const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
 
     describe('Confirm instance already informal', () => {

@@ -86,8 +86,11 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     }
 
     private async fetchInstance(initialInstance: Instance) {
-        //TODO LPDC-1139: take last part of id of Instance instead of taking uuid -> see frontend logic ...
-        const response = await fetch(`${this.endpoint}/doc/instantie/${initialInstance.uuid}`, {
+
+        const segmentedId = initialInstance.id.value.split('/');
+        const uuidExtractedFromId = segmentedId[segmentedId.length - 1];
+
+        const response = await fetch(`${this.endpoint}/doc/instantie/${uuidExtractedFromId}`, {
             headers: {'Accept': 'application/ld+json', 'x-api-key': this.authenticationKey}
         });
 

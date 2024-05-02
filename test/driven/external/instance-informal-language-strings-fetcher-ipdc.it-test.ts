@@ -23,7 +23,7 @@ import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
 import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial-advantage-test-builder";
 import {aMinimalLegalResourceForConcept} from "../../core/domain/legal-resource-test-builder";
 import {aFullInstance} from "../../core/domain/instance-test-builder";
-import {TNI_IPDC_ENDPOINT} from "../../test.config";
+import {TNI_IPDC_AUTHENTICATION_KEY, TNI_IPDC_ENDPOINT} from "../../test.config";
 import {graph, isLiteral, literal, Literal, parse, quad, Statement} from "rdflib";
 import * as jsonld from 'jsonld';
 import {GraphType, ObjectType, PredicateType, SubjectType} from "rdflib/lib/types";
@@ -31,13 +31,14 @@ import {GraphType, ObjectType, PredicateType, SubjectType} from "rdflib/lib/type
 
 describe('Instance informal language strings fetcher ipdc', () => {
 
-    const ipdcFetcher = new InstanceInformalLanguageStringsFetcherIpdc(TNI_IPDC_ENDPOINT);
+    const ipdcFetcher = new InstanceInformalLanguageStringsFetcherIpdc(TNI_IPDC_ENDPOINT, TNI_IPDC_AUTHENTICATION_KEY);
     const bestuurseenheid = aBestuurseenheid().build();
     const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
+    const otherUuid = 'e769dd18-375e-481c-bb3e-436cbfecbac1';
     const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
     const initialInstance = new InstanceBuilder()
         .withId(id)
-        .withUuid(uuid)
+        .withUuid(otherUuid)
         .withCreatedBy(bestuurseenheid.id)
         .withTitle(LanguageString.of(
             "titel en",
