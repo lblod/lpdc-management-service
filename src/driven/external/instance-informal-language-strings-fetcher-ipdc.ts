@@ -17,6 +17,8 @@ import {LegalResource, LegalResourceBuilder} from "../../core/domain/legal-resou
 import {
     InstanceInformalLanguageStringsFetcher
 } from "../../core/port/driven/external/instance-informal-language-strings-fetcher";
+import {Language} from "../../core/domain/language";
+import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 
 export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInformalLanguageStringsFetcher {
 
@@ -66,22 +68,22 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         mapper.errorIfMissingOrIncorrectType(id, NS.lpdcExt('InstancePublicService'));
 
         const fetchedDateModified = mapper.dateModified(id);
-        if (fetchedDateModified.value != initialInstance.dateModified.value) {
+        if (FormatPreservingDate.isFunctionallyChanged(fetchedDateModified, initialInstance.dateModified)) {
             throw new SystemError(`Wijzigingsdatum ipdc is niet gelijk aan wijzigingsdatum lpdc voor ${initialInstance.id}`);
         }
 
         return InstanceBuilder.from(initialInstance)
-            .withTitle(this.mapLanguageString(mapper.title(id), initialInstance.title))
-            .withDescription(this.mapLanguageString(mapper.description(id), initialInstance.description))
-            .withAdditionalDescription(this.mapLanguageString(mapper.additionalDescription(id), initialInstance.additionalDescription))
-            .withException(this.mapLanguageString(mapper.exception(id), initialInstance.exception))
-            .withRegulation(this.mapLanguageString(mapper.regulation(id), initialInstance.regulation))
-            .withRequirements(this.mapRequirements(mapper.requirements(id), initialInstance.requirements))
-            .withProcedures(this.mapProcedure(mapper.procedures(id), initialInstance.procedures))
-            .withWebsites(this.mapWebsites(mapper.websites(id), initialInstance.websites))
-            .withCosts(this.mapCosts(mapper.costs(id), initialInstance.costs))
-            .withFinancialAdvantages(this.mapFinancialAdvantages(mapper.financialAdvantages(id), initialInstance.financialAdvantages))
-            .withLegalResources(this.mapLegalResources(mapper.legalResources(id), initialInstance.legalResources))
+            .withTitle(this.mapLanguageString(mapper.title(id), initialInstance.title, initialInstance.dutchLanguageVariant))
+            .withDescription(this.mapLanguageString(mapper.description(id), initialInstance.description, initialInstance.dutchLanguageVariant))
+            .withAdditionalDescription(this.mapLanguageString(mapper.additionalDescription(id), initialInstance.additionalDescription, initialInstance.dutchLanguageVariant))
+            .withException(this.mapLanguageString(mapper.exception(id), initialInstance.exception, initialInstance.dutchLanguageVariant))
+            .withRegulation(this.mapLanguageString(mapper.regulation(id), initialInstance.regulation, initialInstance.dutchLanguageVariant))
+            .withRequirements(this.mapRequirements(mapper.requirements(id), initialInstance.requirements, initialInstance.dutchLanguageVariant))
+            .withProcedures(this.mapProcedure(mapper.procedures(id), initialInstance.procedures, initialInstance.dutchLanguageVariant))
+            .withWebsites(this.mapWebsites(mapper.websites(id), initialInstance.websites, initialInstance.dutchLanguageVariant))
+            .withCosts(this.mapCosts(mapper.costs(id), initialInstance.costs, initialInstance.dutchLanguageVariant))
+            .withFinancialAdvantages(this.mapFinancialAdvantages(mapper.financialAdvantages(id), initialInstance.financialAdvantages, initialInstance.dutchLanguageVariant))
+            .withLegalResources(this.mapLegalResources(mapper.legalResources(id), initialInstance.legalResources, initialInstance.dutchLanguageVariant))
             .build();
     }
 
@@ -133,9 +135,10 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         }
     }
 
-    private mapLanguageString(newValue: LanguageString | undefined, initialValue: LanguageString | undefined): LanguageString | undefined {
+    private mapLanguageString(newValue: LanguageString | undefined, initialValue: LanguageString | undefined, initialDutchLanguageVariant: Language): LanguageString | undefined {
         //TODO LPDC-1139: verify if the initialValue is the same as the newValue for the language of the initialValue -> then we are a bit more sure we are not mapping some random other string ...
-        if (newValue && initialValue) {
+
+        if (newValue && initialValue && (newValue?.getLanguageValue(initialDutchLanguageVariant) === initialValue?.getLanguageValue(initialDutchLanguageVariant))) {
             const informalNewValue = newValue.nlGeneratedInformal;
 
             if (!informalNewValue || informalNewValue.trim() === "") {
@@ -154,7 +157,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         throw new SystemError("De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn");
     }
 
-    private mapRequirements(newRequirements: Requirement[], initialRequirements: Requirement[]): Requirement[] {
+    private mapRequirements(newRequirements: Requirement[], initialRequirements: Requirement[], initialDutchLanguageVariant: Language): Requirement[] {
         if (newRequirements.length != initialRequirements.length) {
             throw new SystemError("Het aantal voorwaarden van ipdc is niet gelijk aan het aantal originele voorwaarden");
         }
@@ -163,28 +166,28 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         zip(newRequirements, initialRequirements).some((reqs: [Requirement, Requirement]) => {
 
             requirements = [...requirements, RequirementBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description))
-                .withEvidence(this.mapEvidence(reqs[0].evidence, reqs[1].evidence)).build()];
+                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
+                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
+                .withEvidence(this.mapEvidence(reqs[0].evidence, reqs[1].evidence, initialDutchLanguageVariant)).build()];
         });
         return requirements;
     }
 
-    private mapEvidence(newEvidence: Evidence | undefined, initialEvidence: Evidence | undefined): Evidence | undefined {
+    private mapEvidence(newEvidence: Evidence | undefined, initialEvidence: Evidence | undefined, initialDutchLanguageVariant: Language): Evidence | undefined {
         if (!newEvidence && !initialEvidence) {
             return undefined;
         }
 
         if (newEvidence && initialEvidence) {
             return EvidenceBuilder.from(initialEvidence)
-                .withTitle(this.mapLanguageString(newEvidence.title, initialEvidence.title))
-                .withDescription(this.mapLanguageString(newEvidence.description, initialEvidence.description))
+                .withTitle(this.mapLanguageString(newEvidence.title, initialEvidence.title, initialDutchLanguageVariant))
+                .withDescription(this.mapLanguageString(newEvidence.description, initialEvidence.description, initialDutchLanguageVariant))
                 .build();
         }
         throw new SystemError("Het bewijs van ipdc is niet gelijk aan het originele bewijs");
     }
 
-    private mapProcedure(newProcedures: Procedure[], initialProcedures: Procedure[]): Procedure[] {
+    private mapProcedure(newProcedures: Procedure[], initialProcedures: Procedure[], initialDutchLanguageVariant: Language): Procedure[] {
         if (newProcedures.length != initialProcedures.length) {
             throw new SystemError("Het aantal procedures van ipdc is niet gelijk aan het aantal originele procedures");
         }
@@ -193,14 +196,14 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         zip(newProcedures, initialProcedures).some((reqs: [Procedure, Procedure]) => {
 
             procedures = [...procedures, ProcedureBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description))
-                .withWebsites(this.mapWebsites(reqs[0].websites, reqs[1].websites)).build()];
+                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
+                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
+                .withWebsites(this.mapWebsites(reqs[0].websites, reqs[1].websites, initialDutchLanguageVariant)).build()];
         });
         return procedures;
     }
 
-    private mapWebsites(newWebsites: Website[], initialWebsites: Website[]): Website[] {
+    private mapWebsites(newWebsites: Website[], initialWebsites: Website[], initialDutchLanguageVariant: Language): Website[] {
         if (newWebsites.length != initialWebsites.length) {
             throw new SystemError("Het aantal websites van ipdc is niet gelijk aan het aantal originele websites");
         }
@@ -209,15 +212,15 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         zip(newWebsites, initialWebsites).some((reqs: [Website, Website]) => {
 
             const website = WebsiteBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description))
+                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
+                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
                 .build();
             websites = [...websites, website];
         });
         return websites;
     }
 
-    private mapCosts(newCosts: Cost[], initialCosts: Cost[]): Cost[] {
+    private mapCosts(newCosts: Cost[], initialCosts: Cost[], initialDutchLanguageVariant: Language): Cost[] {
         if (newCosts.length != initialCosts.length) {
             throw new SystemError("Het aantal kosten van ipdc is niet gelijk aan het aantal originele kosten");
         }
@@ -226,14 +229,14 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         zip(newCosts, initialCosts).some((reqs: [Cost, Cost]) => {
 
             costs = [...costs, CostBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description))
+                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
+                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
                 .build()];
         });
         return costs;
     }
 
-    private mapFinancialAdvantages(newFinancialAdvantages: FinancialAdvantage[], initialFinancialAdvantages: FinancialAdvantage[]): FinancialAdvantage[] {
+    private mapFinancialAdvantages(newFinancialAdvantages: FinancialAdvantage[], initialFinancialAdvantages: FinancialAdvantage[], initialDutchLanguageVariant: Language): FinancialAdvantage[] {
         if (newFinancialAdvantages.length != initialFinancialAdvantages.length) {
             throw new SystemError("Het aantal financiele voordelen van ipdc is niet gelijk aan het aantal originele financiele voordelen");
         }
@@ -242,14 +245,14 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         zip(newFinancialAdvantages, initialFinancialAdvantages).some((reqs: [FinancialAdvantage, FinancialAdvantage]) => {
 
             financialAdvantages = [...financialAdvantages, FinancialAdvantageBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description))
+                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
+                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
                 .build()];
         });
         return financialAdvantages;
     }
 
-    private mapLegalResources(newLegalResources: LegalResource[], initialLegalResources: LegalResource[]): LegalResource[] {
+    private mapLegalResources(newLegalResources: LegalResource[], initialLegalResources: LegalResource[], initialDutchLanguageVariant: Language): LegalResource[] {
         if (newLegalResources.length != initialLegalResources.length) {
             throw new SystemError("Het aantal regelgevingen van ipdc is niet gelijk aan het aantal originele regelgevingen");
         }
@@ -258,8 +261,8 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         zip(newLegalResources, initialLegalResources).some((reqs: [LegalResource, LegalResource]) => {
 
             legalResources = [...legalResources, LegalResourceBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description))
+                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
+                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
                 .build()];
         });
         return legalResources;
