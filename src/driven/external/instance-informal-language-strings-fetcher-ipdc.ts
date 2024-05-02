@@ -18,7 +18,6 @@ import {
     InstanceInformalLanguageStringsFetcher
 } from "../../core/port/driven/external/instance-informal-language-strings-fetcher";
 import {Language} from "../../core/domain/language";
-import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 
 export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInformalLanguageStringsFetcher {
 
@@ -67,11 +66,6 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         const id = initialInstance.id;
         mapper.errorIfMissingOrIncorrectType(id, NS.lpdcExt('InstancePublicService'));
 
-        const fetchedDateModified = mapper.dateModified(id);
-        if (FormatPreservingDate.isFunctionallyChanged(fetchedDateModified, initialInstance.dateModified)) {
-            throw new SystemError(`Wijzigingsdatum ipdc is niet gelijk aan wijzigingsdatum lpdc voor ${initialInstance.id}`);
-        }
-
         return InstanceBuilder.from(initialInstance)
             .withTitle(this.mapLanguageString(mapper.title(id), initialInstance.title, initialInstance.dutchLanguageVariant))
             .withDescription(this.mapLanguageString(mapper.description(id), initialInstance.description, initialInstance.dutchLanguageVariant))
@@ -88,7 +82,6 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     }
 
     private async fetchInstance(initialInstance: Instance) {
-
         const segmentedId = initialInstance.id.value.split('/');
         const uuidExtractedFromId = segmentedId[segmentedId.length - 1];
         try {
@@ -104,7 +97,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         });
         if (response.ok) {
             const instanceJson = await response.json();
-            //TODO LPDC-1139: ask why the @id of ipdc is not our generated iri id ?
+            // ipdc generates a new iri-id for our id ; so we need to mimic in the read data that it is our id referenced ...
             instanceJson['@id'] = initialInstance.id.value;
             return instanceJson;
         }
@@ -142,7 +135,8 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     }
 
     private mapLanguageString(newValue: LanguageString | undefined, initialValue: LanguageString | undefined, initialDutchLanguageVariant: Language): LanguageString | undefined {
-        if (newValue && initialValue && (newValue?.getLanguageValue(initialDutchLanguageVariant) === initialValue?.getLanguageValue(initialDutchLanguageVariant))) {
+        if (newValue && initialValue
+            && (newValue?.getLanguageValue(initialDutchLanguageVariant) === initialValue?.getLanguageValue(initialDutchLanguageVariant))) {
             const informalNewValue = newValue.nlGeneratedInformal;
 
             if (!informalNewValue || informalNewValue.trim() === "") {
@@ -158,8 +152,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
              return undefined;
         }
 
-        //TODO LPDC-1139: improve logging to see place
-        throw new SystemError("De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn");
+        throw new SystemError(`De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn nieuw[${JSON.stringify(newValue)}], initial[${JSON.stringify(initialValue)}], dutchLanguage[${initialDutchLanguageVariant}]`);
     }
 
     private mapRequirements(newRequirements: Requirement[], initialRequirements: Requirement[], initialDutchLanguageVariant: Language): Requirement[] {

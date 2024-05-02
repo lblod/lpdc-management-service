@@ -27,6 +27,10 @@ import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {uuid as uuidv4} from "../../../mu-helper";
 import {aFullEvidenceForInstance} from "./evidence-test-builder";
 import {aFullLegalResourceForInstance} from "./legal-resource-test-builder";
+import {
+    instancePublishedOnIpdcTni
+} from "../../driven/external/instance-informal-language-strings-fetcher-ipdc.it-test";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 
 describe('Convert Instance To Informal Domain Service', () => {
 
@@ -343,13 +347,8 @@ describe('Convert Instance To Informal Domain Service', () => {
         });
 
         test('When needConversionFromFormalToInformal is false, then throw error', async () => {
-            const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
-            const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
-
             const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withId(id)
-                .withUuid(uuid)
+            const instance = InstanceBuilder.from(instancePublishedOnIpdcTni)
                 .withCreatedBy(bestuurseenheid.id)
                 .withStatus(InstanceStatusType.VERSTUURD)
                 .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
@@ -357,17 +356,6 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .withDateModified(FormatPreservingDate.of("2024-04-24T14:09:32.778Z"))
-                .withRequirements([
-                    aFullRequirementForInstance().withUuid(uuidv4()).withEvidence(aFullEvidenceForInstance().withUuid(uuidv4()).build()).build(),
-                ])
-                .withProcedures([
-                    aFullProcedureForInstance().withUuid(uuidv4())
-                        .withWebsites([aFullWebsiteForInstance().withUuid(uuidv4()).withDescription(undefined).withOrder(0).build(),
-                            anotherFullWebsiteForInstance(uuidv4()).withOrder(1).withDescription(undefined).build()]).build()
-                ])
-                .withWebsites([
-                    aFullWebsiteForInstance().withUuid(uuidv4()).withOrder(0).build(),
-                    anotherFullWebsiteForInstance(uuidv4()).withOrder(1).withDescription(undefined).build()])
                 .build();
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
@@ -379,32 +367,18 @@ describe('Convert Instance To Informal Domain Service', () => {
 
         test('convertInstanceToInformal should merge informal fields from ipdc into the instance, reopen instance , set needsFormalToInformalConversion to false and dutchLanguageVersion to nl-be-x-informal ', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
-            const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
 
-            const instance = aFullInstance()
-                .withId(id)
-                .withUuid(uuid)
-                .withCreatedBy(bestuurseenheid.id)
-                .withStatus(InstanceStatusType.VERSTUURD)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                .withDateModified(FormatPreservingDate.of("2024-04-24T14:09:32.778Z"))
-                .withDutchLanguageVariant(Language.FORMAL)
-                .withNeedsConversionFromFormalToInformal(true)
-                .withRequirements([
-                    aFullRequirementForInstance().withUuid(uuidv4()).withEvidence(aFullEvidenceForInstance().withUuid(uuidv4()).build()).build(),
-                ])
-                .withProcedures([
-                    aFullProcedureForInstance().withUuid(uuidv4())
-                        .withWebsites([aFullWebsiteForInstance().withUuid(uuidv4()).withDescription(undefined).withOrder(0).build(),
-                            anotherFullWebsiteForInstance(uuidv4()).withOrder(1).withDescription(undefined).build()]).build()
-                ])
-                .withWebsites([
-                    aFullWebsiteForInstance().withUuid(uuidv4()).withOrder(0).build(),
-                    anotherFullWebsiteForInstance(uuidv4()).withOrder(1).withDescription(undefined).build()])
-                .build();
+            const instance =
+                InstanceBuilder.from(instancePublishedOnIpdcTni)
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withStatus(InstanceStatusType.VERSTUURD)
+                    .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+                    .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                    .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                    .withDateModified(FormatPreservingDate.of("2024-04-24T14:09:32.778Z"))
+                    .withDutchLanguageVariant(Language.FORMAL)
+                    .withNeedsConversionFromFormalToInformal(true)
+                    .build();
 
             await instanceRepository.save(bestuurseenheid, instance);
 
