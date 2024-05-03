@@ -34,8 +34,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
 
         jsonInstance['@context'] = await this.fetchContext(jsonInstance['@context']);
 
-        const jsonLdDataAsString = JSON.stringify(jsonInstance);
-        return this.mapInstance(jsonLdDataAsString, bestuurseenheid, initialInstance);
+        return this.mapInstance(JSON.stringify(jsonInstance), bestuurseenheid, initialInstance);
     }
 
     private async mapInstance(jsonLdData: string, bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
@@ -52,7 +51,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
                 const quads: Statement[] = kb.statementsMatching();
 
                 if (quads.length < 5) {
-                    reject(new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor instance ${initialInstance.id}`));
+                    reject(new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor instance ${initialInstance.id}, aantal quads [${quads.length}]`));
                 }
                 const mapper: QuadsToDomainMapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), doubleQuadReporter);
 
@@ -82,11 +81,12 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     }
 
     private async fetchInstance(initialInstance: Instance) {
-        const segmentedId = initialInstance.id.value.split('/');
-        const uuidExtractedFromId = segmentedId[segmentedId.length - 1];
         try {
+            const segmentedId = initialInstance.id.value.split('/');
+            const uuidExtractedFromId = segmentedId[segmentedId.length - 1];
             return await this.fetchInstanceByValue(uuidExtractedFromId, initialInstance);
         } catch (e) {
+            // ipdc has some historical data that uses the uuid as primary key, not the last part of the id ... so we try as well this way
             return this.fetchInstanceByValue(initialInstance.uuid, initialInstance);
         }
     }
@@ -109,7 +109,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             throw new SystemError(`Instantie ${initialInstance.id} niet gevonden bij ipdc`);
         } else {
             console.error(await response.text());
-            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor instantie ${initialInstance.id}`);
+            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor instantie ${initialInstance.id}; status=[${response.status}]`);
         }
     }
 
@@ -130,7 +130,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             throw new SystemError(`Niet geauthenticeerd bij ipdc`);
         } else {
             console.error(await response.text());
-            throw new SystemError(`Er is een fout opgetreden bij het bevragen van de context ${context} bij Ipdc`);
+            throw new SystemError(`Er is een fout opgetreden bij het bevragen van de context ${context} bij Ipdc; status=[${response.status}]`);
         }
     }
 
@@ -140,7 +140,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             const informalNewValue = newValue.nlGeneratedInformal;
 
             if (!informalNewValue || informalNewValue.trim() === "") {
-                throw new SystemError('Geen informal waarde verkregen');
+                throw new SystemError(`Geen informal waarde verkregen {nieuw[${JSON.stringify(newValue)}], initial[${JSON.stringify(initialValue)}], dutchLanguage[${initialDutchLanguageVariant}]}`);
             }
 
             if (initialValue?.nl) {
@@ -152,7 +152,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
              return undefined;
         }
 
-        throw new SystemError(`De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn nieuw[${JSON.stringify(newValue)}], initial[${JSON.stringify(initialValue)}], dutchLanguage[${initialDutchLanguageVariant}]`);
+        throw new SystemError(`De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn {nieuw[${JSON.stringify(newValue)}], initial[${JSON.stringify(initialValue)}], dutchLanguage[${initialDutchLanguageVariant}]}`);
     }
 
     private mapRequirements(newRequirements: Requirement[], initialRequirements: Requirement[], initialDutchLanguageVariant: Language): Requirement[] {
