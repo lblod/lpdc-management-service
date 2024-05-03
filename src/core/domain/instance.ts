@@ -122,6 +122,7 @@ export class Instance {
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
+        //TODO LPDC-1172: throw invariant error if last part of id <> uuid
         this._createdBy = requiredValue(createdBy, 'createdBy');
         this._title = title;
         this._description = description;

@@ -87,6 +87,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             return await this.fetchInstanceByValue(uuidExtractedFromId, initialInstance);
         } catch (e) {
             // ipdc has some historical data that uses the uuid as primary key, not the last part of the id ... so we try as well this way
+            //TODO LPDC-1172: remove fall back logic ...
             return this.fetchInstanceByValue(initialInstance.uuid, initialInstance);
         }
     }

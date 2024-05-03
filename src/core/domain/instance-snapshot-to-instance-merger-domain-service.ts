@@ -105,7 +105,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     }
 
     private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
-        const instance =  new Instance(
+        //TODO LPDC-1172: take the last part of the isVersionOfInstance and take this as the uuid, instead of generating a new one.
+        const instance = new Instance(
             instanceSnapshot.isVersionOfInstance,
             uuid(),
             bestuurseenheid.id,
