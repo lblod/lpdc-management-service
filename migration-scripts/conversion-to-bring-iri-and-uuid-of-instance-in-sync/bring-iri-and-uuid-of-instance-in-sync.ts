@@ -166,6 +166,7 @@ async function main() {
                     }`;
 
             fs.writeFileSync(`./migration-results/${sparqlFileUuidAsValueFromIsLeading}`, instancesForWhichUuidAsValueIsLeadingSparqlQuery);
+            console.log(instancesForWhichUuidAsValueIsLeadingSparqlQuery);
         }
 
         console.log(`total instances processed ` + totalInstancesProcessed);
