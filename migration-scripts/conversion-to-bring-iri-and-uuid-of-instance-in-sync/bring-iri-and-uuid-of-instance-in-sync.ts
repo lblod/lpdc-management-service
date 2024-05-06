@@ -1,6 +1,6 @@
 import {Iri} from "../../src/core/domain/shared/iri";
 import {PREFIX, PUBLIC_GRAPH} from "../../config";
-import {sparqlEscapeUri} from "../../mu-helper";
+import {sparqlEscapeString, sparqlEscapeUri} from "../../mu-helper";
 import {DirectDatabaseAccess} from "../../test/driven/persistence/direct-database-access";
 import {
     BestuurseenheidSparqlTestRepository
@@ -9,8 +9,8 @@ import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 import {Instance} from "../../src/core/domain/instance";
 import {NotFoundError, SystemError} from "../../src/core/domain/shared/lpdc-error";
-import {InstanceStatusType} from "../../src/core/domain/types";
 import {wait} from "ts-retry-promise";
+import fs from "fs";
 
 const sparqlUrl = process.env.SPARQL_URL;
 
@@ -31,6 +31,8 @@ type UUIDS = {
 
 
 async function main() {
+
+
     let totalInstancesProcessed = 0;
 
     const bestuurseenhedenIds: Iri[] = await getAllBestuurseenheden();
@@ -40,7 +42,16 @@ async function main() {
         const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
         const instanceIds = await getAllInstanceIdsForBestuurseenheid(bestuurseenheid);
 
-        const uuidsForBestuursEenheid: UUIDS[] = [];
+        const uuidsForBestuurseenheid: UUIDS[] = [];
+
+        const now = new Date();
+        const segmentedBestuurseenheidId = bestuurseenheidId.value.split('/');
+        const uuidExtractedFromBestuurseenheidId = segmentedBestuurseenheidId[segmentedBestuurseenheidId.length - 1];
+
+        const formattedDate = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}${(now.getHours()+1).toString().padStart(2, '0')}${(now.getMinutes()+1).toString().padStart(2, '0')}${(now.getSeconds()+1).toString().padStart(2, '0')}`;
+
+        const sparqlFileUuidExtractedFromIdIsLeading = `${formattedDate}-instance-copy-uuid-from-iri-to-uuid-triple-${uuidExtractedFromBestuurseenheidId}.sparql`;
+        const sparqlFileUuidAsValueFromIsLeading = `${formattedDate}-instance-copy-uuid-from-value-to-iri-${uuidExtractedFromBestuurseenheidId}.sparql`;
 
         for (const instanceId of instanceIds) {
             const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
@@ -55,61 +66,116 @@ async function main() {
                     extractedFromId: uuidExtractedFromId,
                     asValue: uuidAsValue
                 };
-                uuidsForBestuursEenheid.push(uuidsForInstance);
+                uuidsForBestuurseenheid.push(uuidsForInstance);
                 uuidsForInstance.instance = instance;
 
                 totalInstancesProcessed++;
 
                 try {
-                    await fetchInstanceByValue(uuidExtractedFromId, instance);
+                    await fetchInstanceByUuid(uuidExtractedFromId, instance);
                     uuidsForInstance.extractedFromIdFound = true;
                 } catch (NotFoundError) {
                     try {
-                        await fetchInstanceByValue(uuidAsValue, instance);
+                        await fetchInstanceByUuid(uuidAsValue, instance);
                         uuidsForInstance.asValueFound = true;
                     } catch (NotFoundError) { /* empty */
-                        if (instance.status === InstanceStatusType.VERSTUURD) {
-                            throw new Error(`instantie ${instance.id} is verstuurd, but cannot be found in ipdc ...`);
-                        }
                     }
                 }
+
                 if (uuidsForInstance.extractedFromIdFound
                     && uuidsForInstance.asValueFound) {
                     throw new Error(`instantie ${instance.id} found two times ...`);
                 }
+
+                if (!uuidsForInstance.extractedFromIdFound
+                    && !uuidsForInstance.asValueFound
+                    && instance.datePublished) {
+                    throw new Error(`instantie ${instance.id} is verstuurd (date published present), but cannot be found in ipdc ...`);
+                }
+
             }
         }
 
         const instancesForWhichUuidExtractedFromIdIsLeading =
-            uuidsForBestuursEenheid
+            uuidsForBestuurseenheid
                 .filter(uuids => (uuids.extractedFromIdFound || (!uuids.extractedFromIdFound && !uuids.asValueFound)));
 
-        const instancesForWhichUuidAsValueFrom =
-            uuidsForBestuursEenheid
+        const instancesForWhichUuidAsValueIsLeading =
+            uuidsForBestuurseenheid
                 .filter(uuids => uuids.asValueFound);
 
-        instancesForWhichUuidExtractedFromIdIsLeading.forEach(uuids => {
-            console.log(`${uuids.instance.id} [${uuids.extractedFromId}:${uuids.extractedFromIdFound}]  [${uuids.asValue}:${uuids.asValueFound}]`);
-        });
-        //TODO LPDC-1172: write out sparql queries if size  instancesForWhichUuidExtractedFromIdIsLeading > 0
 
-        instancesForWhichUuidAsValueFrom.forEach(uuids => {
-            console.log(`${uuids.instance.id} [${uuids.extractedFromId}:${uuids.extractedFromIdFound}]  [${uuids.asValue}:${uuids.asValueFound}]`);
-        });
-        //TODO LPDC-1172: write out sparql queries if size  instancesForWhichUuidAsValueFrom > 0
+        if(instancesForWhichUuidExtractedFromIdIsLeading.length > 0) {
+
+            instancesForWhichUuidExtractedFromIdIsLeading.forEach(uuids => {
+                console.log(`${uuids.instance.id} [${uuids.extractedFromId}:${uuids.extractedFromIdFound}]  [${uuids.asValue}:${uuids.asValueFound}]`);
+            });
+
+            const instancesForWhichUuidExtractedFromIdIsLeadingSparqlQuery =
+                `DELETE {
+                    GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                        ?instance <http://mu.semte.ch/vocabularies/core/uuid> ?uuidtoupdate.
+                    }
+                }
+                INSERT {
+                    GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                        ?instance <http://mu.semte.ch/vocabularies/core/uuid> ?updateduuid.
+                    }
+                }
+                WHERE {
+                    GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                        VALUES (?instance ?uuidtoupdate ?updateduuid) {
+                            ${instancesForWhichUuidExtractedFromIdIsLeading.map(uuids => `(${sparqlEscapeUri(uuids.instance.id)} ${sparqlEscapeString(uuids.asValue)} ${sparqlEscapeString(uuids.extractedFromId)})`).join('\r\n')}
+                        }
+                        ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
+                        ?instance <http://mu.semte.ch/vocabularies/core/uuid> ?uuidtoupdate.
+                        }                
+                }`;
+
+            fs.writeFileSync(`./migration-results/${sparqlFileUuidExtractedFromIdIsLeading}`, instancesForWhichUuidExtractedFromIdIsLeadingSparqlQuery);
+            console.log(instancesForWhichUuidExtractedFromIdIsLeadingSparqlQuery);
+        }
+
+        if(instancesForWhichUuidAsValueIsLeading.length > 0) {
+
+            instancesForWhichUuidAsValueIsLeading.forEach(uuids => {
+                console.log(`${uuids.instance.id} [${uuids.extractedFromId}:${uuids.extractedFromIdFound}]  [${uuids.asValue}:${uuids.asValueFound}]`);
+            });
+
+            const instancesForWhichUuidAsValueIsLeadingSparqlQuery = `
+                    DELETE {
+                        GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                            ?instance ?anypredicate ?anyobject.
+                        }
+                    }
+                    INSERT {
+                        GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                            ?newinstanceid ?anypredicate ?anyobject.
+                        }
+                    }
+                    WHERE {
+                        GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                            VALUES (?instance ?uuidtoupdate ?updateduuid) {
+                                ${instancesForWhichUuidAsValueIsLeading.map(uuids => `(${sparqlEscapeUri(uuids.instance.id)} ${sparqlEscapeString(uuids.extractedFromId)} ${sparqlEscapeString(uuids.asValue)})`).join('\r\n')}
+                            }
+                            ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
+                            ?instance ?anypredicate ?anyobject.
+                        }
+                    
+                        BIND(IRI(CONCAT(STR("http://data.lblod.info/id/public-service/"), STR(?updateduuid))) as ?newinstanceid)
+                    }`;
+
+            fs.writeFileSync(`./migration-results/${sparqlFileUuidAsValueFromIsLeading}`, instancesForWhichUuidAsValueIsLeadingSparqlQuery);
+        }
 
         console.log(`total instances processed ` + totalInstancesProcessed);
-
-        //TODO LPDC-1172: remove if condition ...
-        if (totalInstancesProcessed > 5000) {
-            break;
-        }
     }
+
     console.log('total instances processed ' + totalInstancesProcessed);
 }
 
-//copied from instance-informal-language-strings-fetcher.ipdc.ts
-async function fetchInstanceByValue(uuid: string, instance: Instance): Promise<string> {
+//inspired by instance-informal-language-strings-fetcher.ipdc.ts
+async function fetchInstanceByUuid(uuid: string, instance: Instance): Promise<string> {
     await wait(100);
     const response = await fetch(`${ipdcUrl}/doc/instantie/${uuid}`, {
         headers: {'Accept': 'application/ld+json', 'x-api-key': ipdcAuthenticationKey}
