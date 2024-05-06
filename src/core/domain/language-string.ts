@@ -165,6 +165,11 @@ export class LanguageString {
         return 0;
     }
 
+    //TODO LPDC-1172: add tests
+    static isAbsent(value: LanguageString | undefined, languageVariant: Language): boolean {
+        return !value || !value?.getLanguageValue(languageVariant) || value?.getLanguageValue(languageVariant).trim() === "";
+    }
+
     private static compareValues(a: string | undefined, b: string | undefined): number {
         const strA = a || "";
         const strB = b || "";

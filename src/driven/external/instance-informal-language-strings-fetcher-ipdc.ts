@@ -136,6 +136,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     }
 
     private mapLanguageString(newValue: LanguageString | undefined, initialValue: LanguageString | undefined, initialDutchLanguageVariant: Language): LanguageString | undefined {
+
         if (newValue && initialValue
             && (newValue?.getLanguageValue(initialDutchLanguageVariant) === initialValue?.getLanguageValue(initialDutchLanguageVariant))) {
             const informalNewValue = newValue.nlGeneratedInformal;
@@ -149,7 +150,10 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             } else {
                 return LanguageString.of(initialValue?.en, undefined, informalNewValue);
             }
-        } else if (!newValue && !initialValue) {
+        } else if (
+            LanguageString.isAbsent(newValue, initialDutchLanguageVariant) &&
+            LanguageString.isAbsent(initialValue, initialDutchLanguageVariant)
+        ) {
              return undefined;
         }
 
