@@ -893,13 +893,14 @@ describe('InstanceRepository', () => {
         test('Verify minimal mappings - invalid dutch language should throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
 
-            const instanceId = buildInstanceIri(uuid());
+            const instanceUuid = uuid();
+            const instanceId = buildInstanceIri(instanceUuid);
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
                     `<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
-                    `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${uuid()}"""`,
+                    `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${instanceUuid}"""`,
                     `<${instanceId}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
                     `<${instanceId}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -936,13 +937,14 @@ describe('InstanceRepository', () => {
         test('Verify minimal mappings - missing dutch language ', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
 
-            const instanceId = buildInstanceIri(uuid());
+            const instanceUuid = uuid();
+            const instanceId = buildInstanceIri(instanceUuid);
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
                     `<${instanceId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
-                    `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${uuid()}"""`,
+                    `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${instanceUuid}"""`,
                     `<${instanceId}> <http://purl.org/pav/createdBy> <${bestuurseenheid.id.value}>`,
                     `<${instanceId}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,

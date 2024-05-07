@@ -125,10 +125,12 @@ export const requireAllPresentOrAllAbsent = <T>(values: T[], name: string = 'lis
     const invariant: Invariant<T[]> = Invariant.require(values, name);
     return invariant.to(invariant.allPresentOrAllAbsent());
 };
+
 export const requireShouldEqualAcceptedValue = <T>(value: T, name: string = 'list', acceptedValues: any[]): T => {
     const invariant: Invariant<T> = Invariant.require(value, name);
     return invariant.to(invariant.shouldEqualGivenValue(value, acceptedValues));
 };
+
 export const requiredAtLeastOneValuePresent = <T>(values: T[], name: string = 'list'): T[] => {
     const invariant: Invariant<T[]> = Invariant.require(values, name);
     return invariant.to(invariant.haveAtLeastOneValuePresent());

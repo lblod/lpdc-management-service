@@ -33,6 +33,7 @@ import {instanceLanguages, Language} from "./language";
 import {LegalResource} from "./legal-resource";
 import {InvariantError} from "./shared/lpdc-error";
 import {isEqual} from "lodash";
+import {lastPartAfter} from "./shared/string-helper";
 
 export class Instance {
 
@@ -122,7 +123,9 @@ export class Instance {
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
-        //TODO LPDC-1172: throw invariant error if last part of id <> uuid
+
+        requireShouldEqualAcceptedValue(this._uuid, 'uuid', [lastPartAfter(this._id.value, '/')]);
+
         this._createdBy = requiredValue(createdBy, 'createdBy');
         this._title = title;
         this._description = description;

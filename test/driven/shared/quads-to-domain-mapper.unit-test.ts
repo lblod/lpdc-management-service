@@ -1,6 +1,6 @@
 import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../../../src/driven/shared/quads-to-domain-mapper";
 import {literal, namedNode, quad} from "rdflib";
-import {buildBestuurseenheidIri, buildConceptSnapshotIri, buildInstanceIri} from "../../core/domain/iri-test-builder";
+import {buildBestuurseenheidIri, buildInstanceIri} from "../../core/domain/iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {CONCEPT_GRAPH} from "../../../config";
@@ -25,14 +25,15 @@ describe('quads to domain mapper', () => {
         });
 
         test('No data integrity issues results in no logging', () => {
-            const instanceId = buildConceptSnapshotIri(uuid());
+            const instanceUuid = uuid();
+            const instanceId = buildInstanceIri(instanceUuid);
             const subject = namedNode(instanceId.value);
             const graph = namedNode(CONCEPT_GRAPH);
 
             const quads =
                 [
                     quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
-                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.mu('uuid'), literal(instanceUuid), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(buildBestuurseenheidIri(uuid()).value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
@@ -49,16 +50,16 @@ describe('quads to domain mapper', () => {
         });
 
         test('unique value contains more than one triple', () => {
-            const instanceId = buildConceptSnapshotIri(uuid());
+            const instanceUuid = uuid();
+            const instanceId = buildInstanceIri(instanceUuid);
             const subject = namedNode(instanceId.value);
             const graph = namedNode(CONCEPT_GRAPH);
-            const uuid1 = uuid();
             const uuid2 = uuid();
 
             const quads =
                 [
                     quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
-                    quad(subject, NS.mu('uuid'), literal(uuid1), graph),
+                    quad(subject, NS.mu('uuid'), literal(instanceUuid), graph),
                     quad(subject, NS.mu('uuid'), literal(uuid2), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(buildBestuurseenheidIri(uuid()).value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
@@ -70,11 +71,12 @@ describe('quads to domain mapper', () => {
             new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleQuadReporter(logger))
                 .instance(instanceId);
 
-            expect(loggerSpy).toHaveBeenCalledWith(`DoubleQuad|http://mu.semte.ch/graphs/public|${instanceId}|http://mu.semte.ch/vocabularies/core/uuid|undefined|1|2|"${uuid1}"|"${uuid2}"`);
+            expect(loggerSpy).toHaveBeenCalledWith(`DoubleQuad|http://mu.semte.ch/graphs/public|${instanceId}|http://mu.semte.ch/vocabularies/core/uuid|undefined|1|2|"${instanceUuid}"|"${uuid2}"`);
         });
 
         test('unique statement contains more than one triple', () => {
-            const instanceId = buildConceptSnapshotIri(uuid());
+            const instanceUuid = uuid();
+            const instanceId = buildInstanceIri(instanceUuid);
             const subject = namedNode(instanceId.value);
             const graph = namedNode(CONCEPT_GRAPH);
             const createdByIri1 = buildBestuurseenheidIri(uuid()).value;
@@ -83,7 +85,7 @@ describe('quads to domain mapper', () => {
             const quads =
                 [
                     quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
-                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.mu('uuid'), literal(instanceUuid), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(createdByIri1), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(createdByIri2), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
@@ -99,14 +101,15 @@ describe('quads to domain mapper', () => {
         });
 
         test('language string contains more than one triple for same language', () => {
-            const instanceId = buildInstanceIri(uuid());
+            const instanceUuid = uuid();
+            const instanceId = buildInstanceIri(instanceUuid);
             const subject = namedNode(instanceId.value);
             const graph = namedNode(CONCEPT_GRAPH);
 
             const quads =
                 [
                     quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
-                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.mu('uuid'), literal(instanceUuid), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(buildBestuurseenheidIri(uuid()).value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
@@ -125,7 +128,8 @@ describe('quads to domain mapper', () => {
 
     });
     describe('sort', () => {
-        const instanceId = buildInstanceIri(uuid());
+        const instanceUuid = uuid();
+        const instanceId = buildInstanceIri(instanceUuid);
         const bestuurseenheid = aBestuurseenheid().build();
         const cost1 = aMinimalCostForInstance().build();
         const subjectCost1 = namedNode(cost1.id.value);
@@ -138,7 +142,7 @@ describe('quads to domain mapper', () => {
             const quads =
                 [
                     quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
-                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.mu('uuid'), literal(instanceUuid), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
@@ -169,7 +173,7 @@ describe('quads to domain mapper', () => {
             const quads =
                 [
                     quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
-                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.mu('uuid'), literal(instanceUuid), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
@@ -199,7 +203,7 @@ describe('quads to domain mapper', () => {
             const quads =
                 [
                     quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
-                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.mu('uuid'), literal(instanceUuid), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
@@ -215,7 +219,7 @@ describe('quads to domain mapper', () => {
             const quads =
                 [
                     quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
-                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.mu('uuid'), literal(instanceUuid), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
@@ -244,7 +248,7 @@ describe('quads to domain mapper', () => {
             const quads =
                 [
                     quad(subject, NS.rdf('type'), NS.lpdcExt('InstancePublicService'), graph),
-                    quad(subject, NS.mu('uuid'), literal(uuid()), graph),
+                    quad(subject, NS.mu('uuid'), literal(instanceUuid), graph),
                     quad(subject, NS.pav('createdBy'), namedNode(bestuurseenheid.id.value), graph),
                     quad(subject, NS.schema('dateCreated'), literal(InstanceTestBuilder.DATE_CREATED.value), graph),
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),

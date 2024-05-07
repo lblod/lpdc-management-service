@@ -26,6 +26,7 @@ import {
 } from "./ensure-linked-authorities-exist-as-code-list-domain-service";
 import {DeleteInstanceDomainService} from "./delete-instance-domain-service";
 import {LegalResource, LegalResourceBuilder} from "./legal-resource";
+import {lastPartAfter} from "./shared/string-helper";
 
 
 export class InstanceSnapshotToInstanceMergerDomainService {
@@ -105,10 +106,9 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     }
 
     private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
-        //TODO LPDC-1172: take the last part of the isVersionOfInstance and take this as the uuid, instead of generating a new one.
         const instance = new Instance(
             instanceSnapshot.isVersionOfInstance,
-            uuid(),
+            lastPartAfter(instanceSnapshot.isVersionOfInstance.value, '/'),
             bestuurseenheid.id,
             instanceSnapshot.title,
             instanceSnapshot.description,

@@ -36,8 +36,8 @@ describe('Deleting a new Instance domain service', () => {
         const concept = aFullConcept().build();
         await conceptRepository.save(concept);
 
-        const instanceId = buildInstanceIri(uuid());
-        const instance = aFullInstance().withId(instanceId).withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
+        const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
+        const instanceId = instance.id;
 
         const anotherInstanceUUID = uuid();
         const anotherInstance =
@@ -72,8 +72,7 @@ describe('Deleting a new Instance domain service', () => {
     test('if instance does not exists, throw error', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         const nonExistingInstanceId = buildInstanceIri(uuid());
-        const instanceId = buildInstanceIri(uuid());
-        const instance = aFullInstance().withId(instanceId).withCreatedBy(bestuurseenheid.id).build();
+        const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
         await instanceRepository.save(bestuurseenheid, instance);
 
 

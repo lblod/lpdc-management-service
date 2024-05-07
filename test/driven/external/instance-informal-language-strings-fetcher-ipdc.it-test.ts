@@ -30,11 +30,10 @@ import {GraphType, ObjectType, PredicateType, SubjectType} from "rdflib/lib/type
 
 const bestuurseenheid = aBestuurseenheid().build();
 const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
-const otherUuid = 'e769dd18-375e-481c-bb3e-436cbfecbac1';
 const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
 export const instancePublishedOnIpdcTni = new InstanceBuilder()
     .withId(id)
-    .withUuid(otherUuid)
+    .withUuid(uuid)
     .withCreatedBy(bestuurseenheid.id)
     .withTitle(LanguageString.of(
         "titel en",

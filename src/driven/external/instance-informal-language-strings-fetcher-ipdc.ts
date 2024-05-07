@@ -80,26 +80,14 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             .build();
     }
 
-    private async fetchInstance(initialInstance: Instance) {
-        try {
-            const segmentedId = initialInstance.id.value.split('/');
-            const uuidExtractedFromId = segmentedId[segmentedId.length - 1];
-            return await this.fetchInstanceByValue(uuidExtractedFromId, initialInstance);
-        } catch (e) {
-            // ipdc has some historical data that uses the uuid as primary key, not the last part of the id ... so we try as well this way
-            //TODO LPDC-1172: remove fall back logic ...
-            return this.fetchInstanceByValue(initialInstance.uuid, initialInstance);
-        }
-    }
-
-    private async fetchInstanceByValue(uuid: string, initialInstance: Instance): Promise<string> {
-        const response = await fetch(`${this.endpoint}/doc/instantie/${uuid}`, {
+    private async fetchInstance(instance: Instance) {
+        const response = await fetch(`${this.endpoint}/doc/instantie/${instance.uuid}`, {
             headers: {'Accept': 'application/ld+json', 'x-api-key': this.authenticationKey}
         });
         if (response.ok) {
             const instanceJson = await response.json();
             // ipdc generates a new iri-id for our id ; so we need to mimic in the read data that it is our id referenced ...
-            instanceJson['@id'] = initialInstance.id.value;
+            instanceJson['@id'] = instance.id.value;
             return instanceJson;
         }
         if (response.status === 401) {
@@ -107,10 +95,10 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             throw new SystemError(`Niet geauthenticeerd bij ipdc`);
         } else if (response.status === 404) {
             console.error(await response.text());
-            throw new SystemError(`Instantie ${initialInstance.id} niet gevonden bij ipdc`);
+            throw new SystemError(`Instantie ${instance.id} niet gevonden bij ipdc`);
         } else {
             console.error(await response.text());
-            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor instantie ${initialInstance.id}; status=[${response.status}]`);
+            throw new SystemError(`Er is een fout opgetreden bij het bevragen van Ipdc voor instantie ${instance.id}; status=[${response.status}]`);
         }
     }
 
