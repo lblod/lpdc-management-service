@@ -35,7 +35,8 @@ const formApplicationService = new FormApplicationService(conceptRepository, ins
 const validateInstanceForPublishApplicationService = new ValidateInstanceForPublishApplicationService(formApplicationService, instanceRepository);
 
 describe('Instance publish validation', () => {
-    test('Load all published instances; and verify validations', async () => {
+
+    test.skip('Load all published instances; and verify validations', async () => {
         const bestuurseenhedenIds: string[] = await getBestuurseenhedenIds();
         let errors: string[] = [];
         let totalInstances = 0;

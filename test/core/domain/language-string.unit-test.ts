@@ -502,3 +502,41 @@ describe('transformToInformal', () => {
 
 });
 
+describe('isAbsent', () => {
+
+    for (const language of Object.values(Language)) {
+        test(`when value is undefined for language ${language}, returns true`, () => {
+            expect(LanguageString.isAbsent(undefined, language)).toBeTrue();
+        });
+    }
+
+    test(`when value is defined`, () => {
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nl'), Language.NL)).toBeFalse();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nl'), Language.FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nl'), Language.INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nl'), Language.GENERATED_FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nl'), Language.GENERATED_INFORMAL)).toBeTrue();
+
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, 'nlFormal'), Language.NL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, 'nlFormal'), Language.FORMAL)).toBeFalse();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, 'nlFormal'), Language.INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, 'nlFormal'), Language.GENERATED_FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, 'nlFormal'), Language.GENERATED_INFORMAL)).toBeTrue();
+    });
+
+    test(`when value is blank`, () => {
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, '     '), Language.NL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, '     '), Language.FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, '     '), Language.INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, '     '), Language.GENERATED_FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, '     '), Language.GENERATED_INFORMAL)).toBeTrue();
+
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, '   '), Language.NL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, '   '), Language.FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, '   '), Language.INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, '   '), Language.GENERATED_FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, '   '), Language.GENERATED_INFORMAL)).toBeTrue();
+    });
+
+});
+
