@@ -97,6 +97,7 @@ describe('Convert Instance To Informal Domain Service', () => {
         test('When bestuurseenheid did not not make formalInformal choice yet, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
+                .withStatus(InstanceStatusType.VERSTUURD)
                 .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
                 .withDatePublished(FormatPreservingDate.now())
                 .withDutchLanguageVariant(Language.FORMAL)
@@ -336,6 +337,7 @@ describe('Convert Instance To Informal Domain Service', () => {
         test('When bestuurseenheid did not not make formalInformal choice yet, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
+                .withStatus(InstanceStatusType.VERSTUURD)
                 .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
                 .withDatePublished(FormatPreservingDate.now())
                 .withDutchLanguageVariant(Language.FORMAL)

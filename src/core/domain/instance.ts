@@ -121,6 +121,9 @@ export class Instance {
                 spatials: Iri[],
                 legalResources: LegalResource[]
     ) {
+        //TODO LPDC-1172 when InstanceStatusType VERSTUURD InstancePublicationStatusType is te-herpubliceren or gepubliceerd
+        //TODO LPDC-1172 When InstanceStatusType ONTWERP InstancePublicationStatusType is undefined or te-herpubliceren
+
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
 
@@ -175,6 +178,7 @@ export class Instance {
         this._legalResources = [...legalResources].map(LegalResource.forInstance);
         requireNoDuplicates(this.legalResources.map(lr => lr.order), 'legal resources > order');
         this.validateLanguages();
+        this.validateStatuses();
     }
 
     reopen(): Instance {
@@ -233,6 +237,13 @@ export class Instance {
         if (calculatedInstanceNLLanguages.length != 0 && calculatedInstanceNLLanguages[0] != this.dutchLanguageVariant) {
             throw new InvariantError('DutchLanguageVariant verschilt van de calculatedInstanceNlLanguages');
         }
+    }
+
+    private validateStatuses(): void {
+        if (this.status === InstanceStatusType.ONTWERP && (this.publicationStatus != InstancePublicationStatusType.TE_HERPUBLICEREN && this.publicationStatus != undefined)) {
+            throw new InvariantError('Instantie kan niet in ontwerp staan en gepubliceerd zijn');
+        }
+
     }
 
     get id(): Iri {
@@ -437,6 +448,7 @@ export class Instance {
             }
         }
     }
+
 
     publish(): Instance {
         if (this.status === InstanceStatusType.VERSTUURD) {

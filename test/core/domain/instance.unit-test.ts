@@ -517,6 +517,23 @@ describe('constructing', () => {
 
     });
 
+    test('When status is ontwerp and publicationStatus is different from undefined or te-herpubliceren then throw error', () => {
+        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.ONTWERP).withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD);
+
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'Instantie kan niet in ontwerp staan en gepubliceerd zijn');
+
+    });
+    test('When status is ontwerp and is undefined not throw error', () => {
+        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.ONTWERP).withPublicationStatus(undefined).withDatePublished(undefined);
+
+        expect(() => instanceTestBuilder.build()).not.toThrow();
+    });
+    test('When status is ontwerp and is te-herpubliceren not throw error', () => {
+        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.ONTWERP).withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN);
+
+        expect(() => instanceTestBuilder.build()).not.toThrow();
+    });
+
     test('When datePublished is present and dateSent is undefined should throw error', () => {
         const instanceTestBuilder = aFullInstance().withDateSent(undefined).withDatePublished(InstanceTestBuilder.DATE_PUBLISHED);
 
@@ -1028,6 +1045,7 @@ describe('transformToInformal', () => {
         const instance = aMinimalInstance()
             .withDateSent(FormatPreservingDate.now())
             .withDatePublished(FormatPreservingDate.now())
+            .withStatus(InstanceStatusType.VERSTUURD)
             .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
             .withNeedsConversionFromFormalToInformal(false)
             .build();
