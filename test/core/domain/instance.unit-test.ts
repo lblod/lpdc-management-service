@@ -534,6 +534,23 @@ describe('constructing', () => {
         expect(() => instanceTestBuilder.build()).not.toThrow();
     });
 
+    test('When status is verstuurd and publicationStatus is different from gepubliceer or te-herpubliceren then throw error', () => {
+        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.VERSTUURD).withDatePublished(undefined).withPublicationStatus(undefined);
+
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'Instantie moet een publicatieStatus hebben wanneer de status verstuurd is');
+
+    });
+    test('When status is verstuurd and is gepubliceerd not throw error', () => {
+        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.VERSTUURD).withDatePublished(FormatPreservingDate.now()).withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD);
+
+        expect(() => instanceTestBuilder.build()).not.toThrow();
+    });
+    test('When status is verstuurd and is te-herpubliceren not throw error', () => {
+        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.VERSTUURD).withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN);
+
+        expect(() => instanceTestBuilder.build()).not.toThrow();
+    });
+
     test('When datePublished is present and dateSent is undefined should throw error', () => {
         const instanceTestBuilder = aFullInstance().withDateSent(undefined).withDatePublished(InstanceTestBuilder.DATE_PUBLISHED);
 
