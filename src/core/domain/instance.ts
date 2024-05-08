@@ -236,16 +236,11 @@ export class Instance {
         }
     }
 
-    //TODO LPDC-1172 when InstanceStatusType VERSTUURD InstancePublicationStatusType is te-herpubliceren or gepubliceerd
+
     private validateStatuses(): void {
         if (this.status === InstanceStatusType.ONTWERP && (this.publicationStatus != InstancePublicationStatusType.TE_HERPUBLICEREN && this.publicationStatus != undefined)) {
             throw new InvariantError('Instantie kan niet in ontwerp staan en gepubliceerd zijn');
         }
-
-        if (this.status == InstanceStatusType.VERSTUURD && (this.publicationStatus != InstancePublicationStatusType.TE_HERPUBLICEREN && this.publicationStatus != InstancePublicationStatusType.GEPUBLICEERD)) {
-            throw new InvariantError('Instantie moet een publicatieStatus hebben wanneer de status verstuurd is');
-        }
-
     }
 
     get id(): Iri {
