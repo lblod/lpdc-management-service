@@ -225,13 +225,13 @@ export class Instance {
         ];
         LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...values);
 
-        const calculatedInstanceNLLanguages = this.calculatedInstanceLanguages();
+        const calculatedInstanceLanguages = this.calculatedInstanceLanguages();
 
-        if (calculatedInstanceNLLanguages.length > 1) {
+        if (calculatedInstanceLanguages.length > 1) {
             throw new InvariantError('Er is meer dan een nl-taal aanwezig');
         }
 
-        if (calculatedInstanceNLLanguages.length != 0 && calculatedInstanceNLLanguages[0] != this.dutchLanguageVariant) {
+        if (calculatedInstanceLanguages.length != 0 && calculatedInstanceLanguages[0] != this.dutchLanguageVariant) {
             throw new InvariantError('DutchLanguageVariant verschilt van de calculatedInstanceLanguages');
         }
     }

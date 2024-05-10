@@ -108,8 +108,6 @@ export function aFullConcept(): ConceptTestBuilder {
 
 export class ConceptTestBuilder {
 
-
-    public static readonly TITLE_EN = 'Concept Title - en';
     public static readonly TITLE_NL = 'Concept Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Concept Title - nl-formal';
     public static readonly TITLE_NL_INFORMAL = 'Concept Title - nl-informal';
@@ -117,28 +115,24 @@ export class ConceptTestBuilder {
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Concept Title - nl-generated-informal';
     public static readonly MINIMAL_TITLE = aMinimalLanguageString().withNl(ConceptTestBuilder.TITLE_NL).build();
 
-    public static readonly DESCRIPTION_EN = 'Concept Description - en';
     public static readonly DESCRIPTION_NL = 'Concept Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Concept Description - nl-formal';
     public static readonly DESCRIPTION_NL_INFORMAL = 'Concept Description - nl-informal';
     public static readonly DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Description - nl-generated-formal';
     public static readonly DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Description - nl-generated-informal';
 
-    public static readonly ADDITIONAL_DESCRIPTION_EN = 'Concept Additional Description - en';
     public static readonly ADDITIONAL_DESCRIPTION_NL = 'Concept Additional Description - nl';
     public static readonly ADDITIONAL_DESCRIPTION_NL_FORMAL = 'Concept Additional Description - nl-formal';
     public static readonly ADDITIONAL_DESCRIPTION_NL_INFORMAL = 'Concept Additional Description - nl-informal';
     public static readonly ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Additional Description - nl-generated-formal';
     public static readonly ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Additional Description - nl-generated-informal';
 
-    public static readonly EXCEPTION_EN = 'Concept Exception - en';
     public static readonly EXCEPTION_NL = 'Concept Exception - nl';
     public static readonly EXCEPTION_NL_FORMAL = 'Concept Exception - nl-formal';
     public static readonly EXCEPTION_NL_INFORMAL = 'Concept Exception - nl-informal';
     public static readonly EXCEPTION_NL_GENERATED_FORMAL = 'Concept Exception - nl-generated-formal';
     public static readonly EXCEPTION_NL_GENERATED_INFORMAL = 'Concept Exception - nl-generated-informal';
 
-    public static readonly REGULATION_EN = 'Concept Regulation - en';
     public static readonly REGULATION_NL = 'Concept Regulation - nl';
     public static readonly REGULATION_NL_FORMAL = 'Concept Regulation - nl-formal';
     public static readonly REGULATION_NL_INFORMAL = 'Concept Regulation - nl-informal';

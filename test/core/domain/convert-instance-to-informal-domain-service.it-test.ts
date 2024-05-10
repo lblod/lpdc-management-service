@@ -46,7 +46,7 @@ describe('Convert Instance To Informal Domain Service', () => {
         test('When instance dutchLanguageVersion already is informal, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aMinimalInstance()
-                .withTitle(LanguageString.of('title', undefined, undefined, 'titel informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'titel informal'))
                 .withStatus(InstanceStatusType.VERSTUURD)
                 .withDateSent(FormatPreservingDate.now())
                 .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
@@ -168,40 +168,40 @@ describe('Convert Instance To Informal Domain Service', () => {
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
-            expect(actualInstance.calculatedInstanceNlLanguages()).toEqual([Language.INFORMAL]);
-            expect(actualInstance.title).toEqual(LanguageString.of('Instance Title - en', undefined, undefined, 'Instance Title - nl-formal'));
-            expect(actualInstance.description).toEqual(LanguageString.of('Instance Description - en', undefined, undefined, 'Instance Description - nl-formal'));
-            expect(actualInstance.additionalDescription).toEqual(LanguageString.of('Instance Additional Description - en', undefined, undefined, 'Instance Additional Description - nl-formal'));
-            expect(actualInstance.exception).toEqual(LanguageString.of('Instance Exception - en', undefined, undefined, 'Instance Exception - nl-formal'));
-            expect(actualInstance.regulation).toEqual(LanguageString.of('Instance Regulation - en', undefined, undefined, 'Instance Regulation - nl-formal'));
-            expect(actualInstance.requirements[0].title).toEqual(LanguageString.of('Requirement Title - en', undefined, undefined, 'Requirement Title - nl-formal'));
-            expect(actualInstance.requirements[0].description).toEqual(LanguageString.of('Requirement Description - en', undefined, undefined, 'Requirement Description - nl-formal'));
-            expect(actualInstance.requirements[0].evidence.title).toEqual(LanguageString.of('Evidence Title - en', undefined, undefined, 'Evidence Title - nl-formal'));
-            expect(actualInstance.requirements[0].evidence.description).toEqual(LanguageString.of('Evidence Description - en', undefined, undefined, 'Evidence Description - nl-formal'));
-            expect(actualInstance.requirements[1].title).toEqual(LanguageString.of('Requirement Title - en', undefined, undefined, 'Requirement Title - nl-formal'));
-            expect(actualInstance.requirements[1].description).toEqual(LanguageString.of('Requirement Description - en', undefined, undefined, 'Requirement Description - nl-formal'));
-            expect(actualInstance.procedures[0].title).toEqual(LanguageString.of('Procedure Title - en', undefined, undefined, 'Procedure Title - nl-formal'));
-            expect(actualInstance.procedures[0].description).toEqual(LanguageString.of('Procedure Description - en', undefined, undefined, 'Procedure Description - nl-formal'));
-            expect(actualInstance.procedures[0].websites[0].title).toEqual(LanguageString.of('Website Title - en', undefined, undefined, 'Website Title - nl-formal'));
-            expect(actualInstance.procedures[0].websites[0].description).toEqual(LanguageString.of('Website Description - en', undefined, undefined, 'Website Description - nl-formal'));
-            expect(actualInstance.procedures[1].title).toEqual(LanguageString.of('Procedure Title - en', undefined, undefined, 'Procedure Title - nl-formal'));
-            expect(actualInstance.procedures[1].description).toEqual(LanguageString.of('Procedure Description - en', undefined, undefined, 'Procedure Description - nl-formal'));
-            expect(actualInstance.websites[0].title).toEqual(LanguageString.of('Website Title - en', undefined, undefined, 'Website Title - nl-formal'));
-            expect(actualInstance.websites[0].description).toEqual(LanguageString.of('Website Description - en', undefined, undefined, 'Website Description - nl-formal'));
-            expect(actualInstance.websites[1].title).toEqual(LanguageString.of('Website Title - en', undefined, undefined, 'Website Title - nl-formal'));
-            expect(actualInstance.websites[1].description).toEqual(LanguageString.of('Website Description - en', undefined, undefined, 'Website Description - nl-formal'));
-            expect(actualInstance.costs[0].title).toEqual(LanguageString.of('Cost Title - en', undefined, undefined, 'Cost Title - nl-formal'));
-            expect(actualInstance.costs[0].description).toEqual(LanguageString.of('Cost Description - en', undefined, undefined, 'Cost Description - nl-formal'));
-            expect(actualInstance.costs[1].title).toEqual(LanguageString.of('Cost Title - en', undefined, undefined, 'Cost Title - nl-formal'));
-            expect(actualInstance.costs[1].description).toEqual(LanguageString.of('Cost Description - en', undefined, undefined, 'Cost Description - nl-formal'));
-            expect(actualInstance.financialAdvantages[0].title).toEqual(LanguageString.of('Financial Advantage Title - en', undefined, undefined, 'Financial Advantage Title - nl-formal'));
-            expect(actualInstance.financialAdvantages[0].description).toEqual(LanguageString.of('Financial Advantage Description - en', undefined, undefined, 'Financial Advantage Description - nl-formal'));
-            expect(actualInstance.financialAdvantages[1].title).toEqual(LanguageString.of('Financial Advantage Title - en', undefined, undefined, 'Financial Advantage Title - nl-formal'));
-            expect(actualInstance.financialAdvantages[1].description).toEqual(LanguageString.of('Financial Advantage Description - en', undefined, undefined, 'Financial Advantage Description - nl-formal'));
-            expect(actualInstance.legalResources[0].title).toEqual(LanguageString.of('Legal Resource Title - en', undefined, undefined, 'Legal Resource Title - nl-formal'));
-            expect(actualInstance.legalResources[0].description).toEqual(LanguageString.of('Legal Resource Description - en', undefined, undefined, 'Legal Resource Description - nl-formal'));
-            expect(actualInstance.legalResources[1].title).toEqual(LanguageString.of('Legal Resource Title - en', undefined, undefined, 'Legal Resource Title - nl-formal'));
-            expect(actualInstance.legalResources[1].description).toEqual(LanguageString.of('Legal Resource Description - en', undefined, undefined, 'Legal Resource Description - nl-formal'));
+            expect(actualInstance.calculatedInstanceLanguages()).toEqual([Language.INFORMAL]);
+            expect(actualInstance.title).toEqual(LanguageString.of(undefined, undefined, 'Instance Title - nl-formal'));
+            expect(actualInstance.description).toEqual(LanguageString.of(undefined, undefined, 'Instance Description - nl-formal'));
+            expect(actualInstance.additionalDescription).toEqual(LanguageString.of(undefined, undefined, 'Instance Additional Description - nl-formal'));
+            expect(actualInstance.exception).toEqual(LanguageString.of(undefined, undefined, 'Instance Exception - nl-formal'));
+            expect(actualInstance.regulation).toEqual(LanguageString.of(undefined, undefined, 'Instance Regulation - nl-formal'));
+            expect(actualInstance.requirements[0].title).toEqual(LanguageString.of(undefined, undefined, 'Requirement Title - nl-formal'));
+            expect(actualInstance.requirements[0].description).toEqual(LanguageString.of(undefined, undefined, 'Requirement Description - nl-formal'));
+            expect(actualInstance.requirements[0].evidence.title).toEqual(LanguageString.of(undefined, undefined, 'Evidence Title - nl-formal'));
+            expect(actualInstance.requirements[0].evidence.description).toEqual(LanguageString.of(undefined, undefined, 'Evidence Description - nl-formal'));
+            expect(actualInstance.requirements[1].title).toEqual(LanguageString.of(undefined, undefined, 'Requirement Title - nl-formal'));
+            expect(actualInstance.requirements[1].description).toEqual(LanguageString.of(undefined, undefined, 'Requirement Description - nl-formal'));
+            expect(actualInstance.procedures[0].title).toEqual(LanguageString.of(undefined, undefined, 'Procedure Title - nl-formal'));
+            expect(actualInstance.procedures[0].description).toEqual(LanguageString.of(undefined, undefined, 'Procedure Description - nl-formal'));
+            expect(actualInstance.procedures[0].websites[0].title).toEqual(LanguageString.of(undefined, undefined, 'Website Title - nl-formal'));
+            expect(actualInstance.procedures[0].websites[0].description).toEqual(LanguageString.of(undefined, undefined, 'Website Description - nl-formal'));
+            expect(actualInstance.procedures[1].title).toEqual(LanguageString.of(undefined, undefined, 'Procedure Title - nl-formal'));
+            expect(actualInstance.procedures[1].description).toEqual(LanguageString.of(undefined, undefined, 'Procedure Description - nl-formal'));
+            expect(actualInstance.websites[0].title).toEqual(LanguageString.of(undefined, undefined, 'Website Title - nl-formal'));
+            expect(actualInstance.websites[0].description).toEqual(LanguageString.of(undefined, undefined, 'Website Description - nl-formal'));
+            expect(actualInstance.websites[1].title).toEqual(LanguageString.of(undefined, undefined, 'Website Title - nl-formal'));
+            expect(actualInstance.websites[1].description).toEqual(LanguageString.of(undefined, undefined, 'Website Description - nl-formal'));
+            expect(actualInstance.costs[0].title).toEqual(LanguageString.of(undefined, undefined, 'Cost Title - nl-formal'));
+            expect(actualInstance.costs[0].description).toEqual(LanguageString.of(undefined, undefined, 'Cost Description - nl-formal'));
+            expect(actualInstance.costs[1].title).toEqual(LanguageString.of(undefined, undefined, 'Cost Title - nl-formal'));
+            expect(actualInstance.costs[1].description).toEqual(LanguageString.of(undefined, undefined, 'Cost Description - nl-formal'));
+            expect(actualInstance.financialAdvantages[0].title).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Title - nl-formal'));
+            expect(actualInstance.financialAdvantages[0].description).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Description - nl-formal'));
+            expect(actualInstance.financialAdvantages[1].title).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Title - nl-formal'));
+            expect(actualInstance.financialAdvantages[1].description).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Description - nl-formal'));
+            expect(actualInstance.legalResources[0].title).toEqual(LanguageString.of(undefined, undefined, 'Legal Resource Title - nl-formal'));
+            expect(actualInstance.legalResources[0].description).toEqual(LanguageString.of(undefined, undefined, 'Legal Resource Description - nl-formal'));
+            expect(actualInstance.legalResources[1].title).toEqual(LanguageString.of(undefined, undefined, 'Legal Resource Title - nl-formal'));
+            expect(actualInstance.legalResources[1].description).toEqual(LanguageString.of(undefined, undefined, 'Legal Resource Description - nl-formal'));
         });
 
         test('confirmInstanceIsAlreadyInformal should set dutchLanguageVersion to nl-be-x-informal', async () => {

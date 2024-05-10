@@ -134,7 +134,6 @@ export function anotherFullCostForInstanceSnapshot(): CostBuilder {
 export class CostTestBuilder {
 
     public static readonly TITLE = 'Cost Title';
-    public static readonly TITLE_EN = 'Cost Title - en';
     public static readonly TITLE_NL = 'Cost Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Cost Title - nl-formal';
     public static readonly TITLE_NL_INFORMAL = 'Cost Title - nl-informal';
@@ -142,21 +141,18 @@ export class CostTestBuilder {
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Cost Title - nl-generated-informal';
 
     public static readonly DESCRIPTION = 'Cost Description';
-    public static readonly DESCRIPTION_EN = 'Cost Description - en';
     public static readonly DESCRIPTION_NL = 'Cost Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Cost Description - nl-formal';
     public static readonly DESCRIPTION_NL_INFORMAL = 'Cost Description - nl-informal';
     public static readonly DESCRIPTION_NL_GENERATED_FORMAL = 'Cost Description - nl-generated-formal';
     public static readonly DESCRIPTION_NL_GENERATED_INFORMAL = 'Cost Description - nl-generated-informal';
 
-    public static readonly ANOTHER_TITLE_EN = 'Cost Another Title - en';
     public static readonly ANOTHER_TITLE_NL = 'Cost Another Title - nl';
     public static readonly ANOTHER_TITLE_NL_FORMAL = 'Cost Another Title - nl-formal';
     public static readonly ANOTHER_TITLE_NL_INFORMAL = 'Cost Another Title - nl-informal';
     public static readonly ANOTHER_TITLE_NL_GENERATED_FORMAL = 'Cost Another Title - nl-generated-formal';
     public static readonly ANOTHER_TITLE_NL_GENERATED_INFORMAL = 'Cost Another Title - nl-generated-informal';
 
-    public static readonly ANOTHER_DESCRIPTION_EN = 'Cost Another Description - en';
     public static readonly ANOTHER_DESCRIPTION_NL = 'Cost Another Description - nl';
     public static readonly ANOTHER_DESCRIPTION_NL_FORMAL = 'Cost Another Description - nl-formal';
     public static readonly ANOTHER_DESCRIPTION_NL_INFORMAL = 'Cost Another Description - nl-informal';

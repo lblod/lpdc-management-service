@@ -415,31 +415,31 @@ describe('isAbsent', () => {
     }
 
     test(`when value is defined`, () => {
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nl'), Language.NL)).toBeFalse();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nl'), Language.FORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nl'), Language.INFORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nl'), Language.GENERATED_FORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nl'), Language.GENERATED_INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of('nl'), Language.NL)).toBeFalse();
+        expect(LanguageString.isAbsent(LanguageString.of('nl'), Language.FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of('nl'), Language.INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of('nl'), Language.GENERATED_FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of('nl'), Language.GENERATED_INFORMAL)).toBeTrue();
 
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, 'nlFormal'), Language.NL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, 'nlFormal'), Language.FORMAL)).toBeFalse();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, 'nlFormal'), Language.INFORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, 'nlFormal'), Language.GENERATED_FORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, 'nlFormal'), Language.GENERATED_INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nlFormal'), Language.NL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nlFormal'), Language.FORMAL)).toBeFalse();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nlFormal'), Language.INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nlFormal'), Language.GENERATED_FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, 'nlFormal'), Language.GENERATED_INFORMAL)).toBeTrue();
     });
 
     test(`when value is blank`, () => {
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, '     '), Language.NL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, '     '), Language.FORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, '     '), Language.INFORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, '     '), Language.GENERATED_FORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, '     '), Language.GENERATED_INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of('     '), Language.NL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of('     '), Language.FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of('     '), Language.INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of('     '), Language.GENERATED_FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of('     '), Language.GENERATED_INFORMAL)).toBeTrue();
 
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, '   '), Language.NL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, '   '), Language.FORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, '   '), Language.INFORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, '   '), Language.GENERATED_FORMAL)).toBeTrue();
-        expect(LanguageString.isAbsent(LanguageString.of(undefined, undefined, '   '), Language.GENERATED_INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, '   '), Language.NL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, '   '), Language.FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, '   '), Language.INFORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, '   '), Language.GENERATED_FORMAL)).toBeTrue();
+        expect(LanguageString.isAbsent(LanguageString.of(undefined, '   '), Language.GENERATED_INFORMAL)).toBeTrue();
     });
 
 });

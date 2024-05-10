@@ -842,7 +842,7 @@ describe('validateLanguages', () => {
 
     }
 
-    test('if dutchLanguageVariant differs from calculatedInstanceNlLanguages, throws error', () => {
+    test('if dutchLanguageVariant differs from calculatedInstanceLanguages, throws error', () => {
         const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, InstanceTestBuilder.TITLE_NL_FORMAL)).withDutchLanguageVariant(Language.INFORMAL);
 
         expect(() => instance.build()).toThrowWithMessage(InvariantError, 'DutchLanguageVariant verschilt van de calculatedInstanceLanguages');
@@ -1096,10 +1096,10 @@ describe('transformToInformal', () => {
         expect(updatedInstance.financialAdvantages[0].description).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Description - nl-formal'));
         expect(updatedInstance.financialAdvantages[1].title).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Title - nl-formal'));
         expect(updatedInstance.financialAdvantages[1].description).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Description - nl-formal'));
-        expect(updatedInstance.legalResources[0].title).toEqual(LanguageString.of('Legal Resource Title - en', undefined, undefined, 'Legal Resource Title - nl-formal'));
-        expect(updatedInstance.legalResources[0].description).toEqual(LanguageString.of('Legal Resource Description - en', undefined, undefined, 'Legal Resource Description - nl-formal'));
-        expect(updatedInstance.legalResources[1].title).toEqual(LanguageString.of('Legal Resource Title - en', undefined, undefined, 'Legal Resource Title - nl-formal'));
-        expect(updatedInstance.legalResources[1].description).toEqual(LanguageString.of('Legal Resource Description - en', undefined, undefined, 'Legal Resource Description - nl-formal'));
+        expect(updatedInstance.legalResources[0].title).toEqual(LanguageString.of(undefined, undefined, 'Legal Resource Title - nl-formal'));
+        expect(updatedInstance.legalResources[0].description).toEqual(LanguageString.of(undefined, undefined, 'Legal Resource Description - nl-formal'));
+        expect(updatedInstance.legalResources[1].title).toEqual(LanguageString.of(undefined, undefined, 'Legal Resource Title - nl-formal'));
+        expect(updatedInstance.legalResources[1].description).toEqual(LanguageString.of(undefined, undefined, 'Legal Resource Description - nl-formal'));
     });
 
     test('should set dutchLanguageVariant to nl-be-x-informal', () => {

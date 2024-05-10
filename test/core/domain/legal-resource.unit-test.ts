@@ -2,7 +2,8 @@ import {
     aFullLegalResourceForConcept,
     aFullLegalResourceForConceptSnapshot,
     aFullLegalResourceForInstance,
-    aFullLegalResourceForInstanceSnapshot, aMinimalLegalResourceForInstance
+    aFullLegalResourceForInstanceSnapshot,
+    aMinimalLegalResourceForInstance
 } from "./legal-resource-test-builder";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
@@ -192,11 +193,11 @@ describe('nl language', () => {
 
         let valueInNlLanguage: LanguageString;
         if (nlLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} in nl`, undefined, undefined, undefined);
         } else if (nlLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, `value ${uuid()} in nl formal`, undefined, undefined);
         } else if (nlLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, `value ${uuid()} in nl informal`, undefined);
         }
 
         test(`title has nl language ${nlLanguage}`, () => {
@@ -241,8 +242,8 @@ describe('transformToInformal', () => {
 
         expect(legalResource.transformToInformal()).toEqual(LegalResourceBuilder
             .from(legalResource)
-            .withTitle(LanguageString.of(undefined, undefined, undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
             .build()
         );
     });

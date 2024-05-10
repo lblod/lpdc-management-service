@@ -36,27 +36,22 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
     .withUuid(uuid)
     .withCreatedBy(bestuurseenheid.id)
     .withTitle(LanguageString.of(
-        "titel en",
         undefined,
         "Volledig ingevulde test om contract tussen ipdc en lpdc te testen"))
     .withDescription(LanguageString.of(
-        "<p data-indentation-level=\"0\">beschrijving en</p>",
         undefined,
         "<p data-indentation-level=\"0\">Dit is de hoofding voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>"
     ))
     .withAdditionalDescription(LanguageString.of(
-        '<p data-indentation-level="0">aanvullende beschrijving en</p>',
         undefined,
         "<p data-indentation-level=\"0\">Dit is de verdere beschrijving voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>"
     ))
     .withRegulation(LanguageString.of(
             undefined,
-            undefined,
             "<p data-indentation-level=\"0\">Dit zijn de regelgevingen voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>"
         )
     )
     .withException(LanguageString.of(
-            '<p data-indentation-level="0">uitzonderingen en</p>',
             undefined,
             "<p data-indentation-level=\"0\">Dit zijn de uitzonderingen voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>"
         )
@@ -69,12 +64,10 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .withUuid("2e24c02e-0de5-4460-8366-1a76514e0407")
             .withTitle(LanguageString.of(
                     undefined,
-                    undefined,
                     "Voorwaarden"
                 )
             )
             .withDescription(LanguageString.of(
-                    undefined,
                     undefined,
                     "<p data-indentation-level=\"0\">Dit zijn de voorwaarden voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>"
                 )
@@ -85,12 +78,10 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
                     .withUuid("d3ec32ba-4ed5-4072-af39-591b5c232974")
                     .withTitle(LanguageString.of(
                             undefined,
-                            undefined,
                             "Bewijs"
                         )
                     )
                     .withDescription(LanguageString.of(
-                            undefined,
                             undefined,
                             "<p data-indentation-level=\"0\">Dit zijn de bewijsstukken een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>"
                         )
@@ -107,12 +98,10 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .withUuid("91e7e795-6d19-4cdd-b039-cc94fb1ccc8f")
             .withTitle(LanguageString.of(
                     undefined,
-                    undefined,
                     "Procedure"
                 )
             )
             .withDescription(LanguageString.of(
-                    undefined,
                     undefined,
                     "<p data-indentation-level=\"0\">Dit is de procedure voor een volledig ingevulde test om zodat u het contract tussen ipdc en lpdc kan testen</p>"
                 )
@@ -123,7 +112,6 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
                     .withId(new Iri("http://data.lblod.info/id/website/b99e8207-7af5-420e-9d46-d66d7f0a401c"))
                     .withUuid("b99e8207-7af5-420e-9d46-d66d7f0a401c")
                     .withTitle(LanguageString.of(
-                            undefined,
                             undefined,
                             "Subsidiereglement Stad Gent voor de financiële ondersteuning van projecten in kunst, cultuur en cultureel erfgoed voor periode 2021-2025"
                         )
@@ -137,7 +125,6 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
                     .withId(new Iri("http://data.lblod.info/id/website/a411b281-70b7-42ab-acf4-32e4f1341c53"))
                     .withUuid("a411b281-70b7-42ab-acf4-32e4f1341c53")
                     .withTitle(LanguageString.of(
-                            undefined,
                             undefined,
                             "Subsidie verfraaing handelspanden"
                         )
@@ -155,12 +142,10 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .withUuid("494dee06-d193-422b-9578-c14c2cecd6aa")
             .withTitle(LanguageString.of(
                     undefined,
-                    undefined,
                     "website 1"
                 )
             )
             .withDescription(LanguageString.of(
-                    undefined,
                     undefined,
                     "<p data-indentation-level=\"0\">website 1 beschrijving</p>"
                 )
@@ -173,7 +158,6 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .withId(new Iri("http://data.lblod.info/id/website/16711870-514c-4d64-bc9a-45663d4a6b1d"))
             .withUuid("16711870-514c-4d64-bc9a-45663d4a6b1d")
             .withTitle(LanguageString.of(
-                    undefined,
                     undefined,
                     "Starterscontract"
                 )
@@ -189,12 +173,10 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .withUuid("45a39cc3-2201-4661-9759-9d12dff6065b")
             .withTitle(LanguageString.of(
                     undefined,
-                    undefined,
                     "Dit is de eerste kost voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen"
                 )
             )
             .withDescription(LanguageString.of(
-                    undefined,
                     undefined,
                     "<p data-indentation-level=\"0\">Dit is de beschrijving van de eerste kost voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>"
                 )
@@ -207,12 +189,10 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .withUuid("e120e5df-cb2d-4d72-bf9d-48854fd2c748")
             .withTitle(LanguageString.of(
                     undefined,
-                    undefined,
                     "Dit is de tweede kost voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen"
                 )
             )
             .withDescription(LanguageString.of(
-                    undefined,
                     undefined,
                     "<p data-indentation-level=\"0\">Dit is de beschrijving van de tweede kost voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>"
                 )
@@ -226,12 +206,10 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .withUuid("9feda2ec-6bc0-479e-ae8a-2bf73c143bbe")
             .withTitle(LanguageString.of(
                     undefined,
-                    undefined,
                     "Dit is het eerste financieel voordeel voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen"
                 )
             )
             .withDescription(LanguageString.of(
-                    undefined,
                     undefined,
                     "<p data-indentation-level=\"0\">Dit is de beschrijving voor de eerste financiele voordelen voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>"
                 )
@@ -244,12 +222,10 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .withUuid("d97330de-8110-4fd3-ab68-76e22d71dd39")
             .withTitle(LanguageString.of(
                     undefined,
-                    undefined,
                     "Dit is het tweede financieel voordeel voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen"
                 )
             )
             .withDescription(LanguageString.of(
-                    undefined,
                     undefined,
                     "<p data-indentation-level=\"0\">Dit is de beschrijving voor de tweede financiele voordelen voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>"
                 )
@@ -264,12 +240,10 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .withUuid("17f01e3a-3d4a-4492-8989-b0c9e17ff990")
             .withTitle(LanguageString.of(
                     undefined,
-                    undefined,
                     "regelgeving titel"
                 )
             )
             .withDescription(LanguageString.of(
-                    undefined,
                     undefined,
                     "<p data-indentation-level=\"0\">regelgeving titel</p>"
                 )
@@ -283,12 +257,10 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .withUuid("75d1ef7f-d31c-4432-8f64-7a5bd4756db3")
             .withTitle(LanguageString.of(
                     undefined,
-                    undefined,
                     "regelgeving 2"
                 )
             )
             .withDescription(LanguageString.of(
-                    undefined,
                     undefined,
                     "<p data-indentation-level=\"0\">regelgeving 2 bescrhijving</p>"
                 )
@@ -312,28 +284,22 @@ describe('Instance informal language strings fetcher ipdc', () => {
 
     const expectedInstance = InstanceBuilder.from(instancePublishedOnIpdcTni)
         .withTitle(LanguageString.of(
-            "titel en",
             undefined,
             "Volledig ingevulde test om contract tussen ipdc en lpdc te testen"))
         .withDescription(LanguageString.of(
-            "<p data-indentation-level=\"0\">beschrijving en</p>",
             undefined,
             "<p data-indentation-level=\"0\">Dit is de hoofding voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"
         ))
         .withAdditionalDescription(LanguageString.of(
-            '<p data-indentation-level="0">aanvullende beschrijving en</p>',
             undefined,
-
             "<p data-indentation-level=\"0\">Dit is de verdere beschrijving voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"
         ))
         .withRegulation(LanguageString.of(
-                undefined,
                 undefined,
                 "<p data-indentation-level=\"0\">Dit zijn de regelgevingen voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"
             )
         )
         .withException(LanguageString.of(
-                '<p data-indentation-level="0">uitzonderingen en</p>',
                 undefined,
                 "<p data-indentation-level=\"0\">Dit zijn de uitzonderingen voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"
             )
@@ -344,12 +310,10 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withUuid("2e24c02e-0de5-4460-8366-1a76514e0407")
                 .withTitle(LanguageString.of(
                         undefined,
-                        undefined,
                         "Voorwaarden"
                     )
                 )
                 .withDescription(LanguageString.of(
-                        undefined,
                         undefined,
                         "<p data-indentation-level=\"0\">Dit zijn de voorwaarden voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"
                     )
@@ -360,12 +324,10 @@ describe('Instance informal language strings fetcher ipdc', () => {
                         .withUuid("d3ec32ba-4ed5-4072-af39-591b5c232974")
                         .withTitle(LanguageString.of(
                                 undefined,
-                                undefined,
                                 "Bewijs"
                             )
                         )
                         .withDescription(LanguageString.of(
-                                undefined,
                                 undefined,
                                 "<p data-indentation-level=\"0\">Dit zijn de bewijsstukken een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"
                             )
@@ -382,12 +344,10 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withUuid("91e7e795-6d19-4cdd-b039-cc94fb1ccc8f")
                 .withTitle(LanguageString.of(
                         undefined,
-                        undefined,
                         "Procedure"
                     )
                 )
                 .withDescription(LanguageString.of(
-                        undefined,
                         undefined,
                         "<p data-indentation-level=\"0\">Dit is de procedure voor een volledig ingevulde test om zodat je het contract tussen ipdc en lpdc kan testen</p>"
                     )
@@ -398,7 +358,6 @@ describe('Instance informal language strings fetcher ipdc', () => {
                         .withId(new Iri("http://data.lblod.info/id/website/b99e8207-7af5-420e-9d46-d66d7f0a401c"))
                         .withUuid("b99e8207-7af5-420e-9d46-d66d7f0a401c")
                         .withTitle(LanguageString.of(
-                                undefined,
                                 undefined,
                                 "Subsidiereglement Stad Gent voor de financiële ondersteuning van projecten in kunst, cultuur en cultureel erfgoed voor periode 2021-2025"
                             )
@@ -412,7 +371,6 @@ describe('Instance informal language strings fetcher ipdc', () => {
                         .withId(new Iri("http://data.lblod.info/id/website/a411b281-70b7-42ab-acf4-32e4f1341c53"))
                         .withUuid("a411b281-70b7-42ab-acf4-32e4f1341c53")
                         .withTitle(LanguageString.of(
-                                undefined,
                                 undefined,
                                 "Subsidie verfraaing handelspanden"
                             )
@@ -430,12 +388,10 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withUuid("494dee06-d193-422b-9578-c14c2cecd6aa")
                 .withTitle(LanguageString.of(
                         undefined,
-                        undefined,
                         "website 1"
                     )
                 )
                 .withDescription(LanguageString.of(
-                        undefined,
                         undefined,
                         "<p data-indentation-level=\"0\">website 1 beschrijving</p>"
                     )
@@ -448,7 +404,6 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withId(new Iri("http://data.lblod.info/id/website/16711870-514c-4d64-bc9a-45663d4a6b1d"))
                 .withUuid("16711870-514c-4d64-bc9a-45663d4a6b1d")
                 .withTitle(LanguageString.of(
-                        undefined,
                         undefined,
                         "Starterscontract"
                     )
@@ -464,12 +419,10 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withUuid("45a39cc3-2201-4661-9759-9d12dff6065b")
                 .withTitle(LanguageString.of(
                         undefined,
-                        undefined,
                         "Dit is de eerste kost voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen"
                     )
                 )
                 .withDescription(LanguageString.of(
-                        undefined,
                         undefined,
                         "<p data-indentation-level=\"0\">Dit is de beschrijving van de eerste kost voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"
                     )
@@ -482,12 +435,10 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withUuid("e120e5df-cb2d-4d72-bf9d-48854fd2c748")
                 .withTitle(LanguageString.of(
                         undefined,
-                        undefined,
                         "Dit is de tweede kost voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen"
                     )
                 )
                 .withDescription(LanguageString.of(
-                        undefined,
                         undefined,
                         "<p data-indentation-level=\"0\">Dit is de beschrijving van de tweede kost voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"
                     )
@@ -501,12 +452,10 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withUuid("9feda2ec-6bc0-479e-ae8a-2bf73c143bbe")
                 .withTitle(LanguageString.of(
                         undefined,
-                        undefined,
                         "Dit is het eerste financieel voordeel voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen"
                     )
                 )
                 .withDescription(LanguageString.of(
-                        undefined,
                         undefined,
                         "<p data-indentation-level=\"0\">Dit is de beschrijving voor de eerste financiele voordelen voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"
                     )
@@ -519,12 +468,10 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withUuid("d97330de-8110-4fd3-ab68-76e22d71dd39")
                 .withTitle(LanguageString.of(
                         undefined,
-                        undefined,
                         "Dit is het tweede financieel voordeel voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen"
                     )
                 )
                 .withDescription(LanguageString.of(
-                        undefined,
                         undefined,
                         "<p data-indentation-level=\"0\">Dit is de beschrijving voor de tweede financiele voordelen voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"
                     )
@@ -539,12 +486,10 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withUuid("17f01e3a-3d4a-4492-8989-b0c9e17ff990")
                 .withTitle(LanguageString.of(
                         undefined,
-                        undefined,
                         "regelgeving titel"
                     )
                 )
                 .withDescription(LanguageString.of(
-                        undefined,
                         undefined,
                         "<p data-indentation-level=\"0\">regelgeving titel</p>"
                     )
@@ -558,12 +503,10 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withUuid("75d1ef7f-d31c-4432-8f64-7a5bd4756db3")
                 .withTitle(LanguageString.of(
                         undefined,
-                        undefined,
                         "regelgeving 2"
                     )
                 )
                 .withDescription(LanguageString.of(
-                        undefined,
                         undefined,
                         "<p data-indentation-level=\"0\">regelgeving 2 bescrhijving</p>"
                     )
@@ -582,7 +525,7 @@ describe('Instance informal language strings fetcher ipdc', () => {
 
     test('when receiving an instance with a missing value, throw error', async () => {
         const instance = InstanceBuilder.from(instancePublishedOnIpdcTni).withDescription(undefined).build();
-        await expect(ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(SystemError, `De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn {nieuw[{"_en":"<p data-indentation-level=\\"0\\">beschrijving en</p>","_nl":"<p data-indentation-level=\\"0\\">Dit is de hoofding voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>","_nlFormal":"<p data-indentation-level=\\"0\\">Dit is de hoofding voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>","_nlGeneratedInformal":"<p data-indentation-level=\\"0\\">Dit is de hoofding voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"}], initial[undefined], dutchLanguage[nl-be-x-formal]}`);
+        await expect(ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, instance)).rejects.toThrowWithMessage(SystemError, `De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn {nieuw[{"_nl":"<p data-indentation-level=\\"0\\">Dit is de hoofding voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>","_nlFormal":"<p data-indentation-level=\\"0\\">Dit is de hoofding voor een volledig ingevulde test zodat u het contract tussen ipdc en lpdc kan testen</p>","_nlGeneratedInformal":"<p data-indentation-level=\\"0\\">Dit is de hoofding voor een volledig ingevulde test zodat je het contract tussen ipdc en lpdc kan testen</p>"}], initial[undefined], dutchLanguage[nl-be-x-formal]}`);
     });
 
     test('when instance is not found, throw error', async () => {
@@ -638,7 +581,6 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .withId(new Iri("http://data.lblod.info/id/website/b99e8207-7af5-420e-9d46-d66d7f0a401c"))
                 .withUuid("b99e8207-7af5-420e-9d46-d66d7f0a401c")
                 .withTitle(LanguageString.of(
-                        undefined,
                         undefined,
                         "Subsidiereglement Stad Gent voor de financiële ondersteuning van projecten in kunst, cultuur en cultureel erfgoed voor periode 2021-2025"
                     )
