@@ -24,6 +24,7 @@ import {
 } from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
+import {aFullContactPointForInstanceSnapshot} from "../../core/domain/contact-point-test-builder";
 
 describe('InstanceSnapshotRepository', () => {
 
@@ -209,13 +210,11 @@ describe('InstanceSnapshotRepository', () => {
                     .withCreatedBy(bestuurseenheid.id)
                     .withIsVersionOfInstance(instanceId)
                     .withTitle(LanguageString.of(
-                        InstanceSnapshotTestBuilder.TITLE_EN,
                         undefined,
                         undefined,
                         InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL))
                     .withDescription(
                         LanguageString.of(
-                            InstanceSnapshotTestBuilder.DESCRIPTION_EN,
                             undefined,
                             undefined,
                             InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
@@ -232,9 +231,7 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_EN}"""@EN`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_EN}"""@EN`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://schema.org/dateCreated> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://schema.org/dateModified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -274,15 +271,10 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/source> ${sparqlEscapeUri(conceptId)}`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_EN}"""@EN`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_EN}"""@EN`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${InstanceSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_EN}"""@en`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#additionalDescription> """${InstanceSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#exception> """${InstanceSnapshotTestBuilder.EXCEPTION_EN}"""@en`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#exception> """${InstanceSnapshotTestBuilder.EXCEPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """${InstanceSnapshotTestBuilder.REGULATION_EN}"""@en`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#regulation> """${InstanceSnapshotTestBuilder.REGULATION_NL_INFORMAL}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://schema.org/startDate> """${InstanceSnapshotTestBuilder.START_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://schema.org/endDate> """${InstanceSnapshotTestBuilder.END_DATE.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
@@ -309,10 +301,8 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> ${sparqlEscapeUri(NS.dvc.yourEuropeCategorie(InstanceSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES[0]).value)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> ${sparqlEscapeUri(NS.dvc.yourEuropeCategorie(InstanceSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES[1]).value)}`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> ${sparqlEscapeUri(NS.dvc.yourEuropeCategorie(InstanceSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES[2]).value)}`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[0].en}"""@en`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[0].nl}"""@nl`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[1].nl}"""@nl`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[2].nl}"""@nl`,
-                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[3].en}"""@en`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NLD>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/FRA>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/ENG>`,
@@ -325,140 +315,104 @@ describe('InstanceSnapshotRepository', () => {
 
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasLegalResource> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id)}`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
-                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].title.en}"""@EN`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].title.nlInformal}"""@nl-BE-x-informal`,
-                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].description.en}"""@EN`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].description.nlInformal}"""@nl-BE-x-informal`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://schema.org/url> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].url}"""`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasLegalResource> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id)}`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
-                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].title.en}"""@EN`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].title.nlInformal}"""@nl-BE-x-informal`,
-                    `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].description.en}"""@EN`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].description.nlInformal}"""@nl-BE-x-informal`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://schema.org/url> """${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].url}"""`,
                     `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
 
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://vocab.belgif.be/ns/publicservice#hasRequirement> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].id)} a <http://data.europa.eu/m8g/Requirement>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].id)} <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].id)} <http://data.europa.eu/m8g/hasSupportingEvidence> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id)} a <http://data.europa.eu/m8g/Evidence>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[1].evidence.description.nlInformal}"""@nl-BE-x-informal`,
 
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://vocab.belgif.be/ns/publicservice#hasRequirement> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].id)} a <http://data.europa.eu/m8g/Requirement>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].id)} <http://data.europa.eu/m8g/hasSupportingEvidence> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id)} a <http://data.europa.eu/m8g/Evidence>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.REQUIREMENTS[0].evidence.description.nlInformal}"""@nl-BE-x-informal`,
 
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/2000/01/rdf-schema#seeAlso> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[1].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[1].id)} a <http://schema.org/WebSite>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.WEBSITES[1].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.WEBSITES[1].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.WEBSITES[1].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.WEBSITES[1].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[1].id)} <http://schema.org/url> """${InstanceSnapshotTestBuilder.WEBSITES[1].url}"""`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[1].id)} <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/2000/01/rdf-schema#seeAlso> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[0].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[0].id)} a <http://schema.org/WebSite>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.WEBSITES[0].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.WEBSITES[0].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.WEBSITES[0].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.WEBSITES[0].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[0].id)} <http://schema.org/url> """${InstanceSnapshotTestBuilder.WEBSITES[0].url}"""`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.WEBSITES[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
 
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/vocab/cpsv#follows> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].id)} a <http://purl.org/vocab/cpsv#Rule>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[1].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[1].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[1].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[1].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].id)} <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].id)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].id)} a <http://schema.org/WebSite>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].id)} <http://schema.org/url> """${InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].url}"""`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[1].id)} <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].id)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].id)} a <http://schema.org/WebSite>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].id)} <http://schema.org/url> """${InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].url}"""`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[1].websites[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/vocab/cpsv#follows> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].id)} a <http://purl.org/vocab/cpsv#Rule>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[0].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[0].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[0].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[0].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].id)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].id)} a <http://schema.org/WebSite>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].id)} <http://schema.org/url> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].url}"""`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[1].id)} <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].id)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)} a <http://schema.org/WebSite>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)} <http://schema.org/url> """${InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].url}"""`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.PROCEDURES[0].websites[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
 
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCost> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} a <http://data.europa.eu/m8g/Cost>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.COSTS[1].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.COSTS[1].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.COSTS[1].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.COSTS[1].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[1].id)} <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCost> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} a <http://data.europa.eu/m8g/Cost>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.COSTS[0].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.COSTS[0].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.COSTS[0].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.COSTS[0].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.COSTS[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
 
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/vocab/cpsv#produces> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].id)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#FinancialAdvantage>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[1].id)} <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/vocab/cpsv#produces> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].id)}`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].id)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#FinancialAdvantage>`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].title.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].id)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].title.nlInformal}"""@nl-BE-x-informal`,
-                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].description.en}"""@EN`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].id)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].description.nlInformal}"""@nl-BE-x-informal`,
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.FINANCIAL_ADVANTAGES[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
 
@@ -502,6 +456,73 @@ describe('InstanceSnapshotRepository', () => {
 
         });
 
+        test('Verify minimal mapping with unknown languages', async () => {
+            const instanceUUID = uuid();
+            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceSnapshotUUID = uuid();
+
+            const instanceSnapshotId = buildInstanceSnapshotIri(instanceSnapshotUUID);
+
+            const bestuurseenheid = aBestuurseenheid().build();
+
+            const instanceSnapshot =
+                aMinimalInstanceSnapshot()
+                    .withId(instanceSnapshotId)
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withIsVersionOfInstance(instanceId)
+                    .withKeywords([InstanceSnapshotTestBuilder.KEYWORDS[0], InstanceSnapshotTestBuilder.KEYWORDS[1]])
+                    .withContactPoints([InstanceSnapshotTestBuilder.CONTACT_POINTS[0]])
+                    .build();
+
+            await directDatabaseAccess.insertData(
+                `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                [
+                    `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/isVersionOf> ${sparqlEscapeUri(instanceId)}`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """${InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """Instance Snapshot title english language is ignored"""@EN`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/title> """Concept Snapshot French language is ignored"""@fr`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/description> """${InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL}"""@nl-BE-x-informal`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://schema.org/dateCreated> """${InstanceSnapshotTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://schema.org/dateModified> """${InstanceSnapshotTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> <${InstanceSnapshotTestBuilder.SPATIALS[0].value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0].value}>`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[0].nl}"""@nl`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """${InstanceSnapshotTestBuilder.KEYWORDS[1].nl}"""@nl`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """english language keyword is ignored"""@en`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/dcat#keyword> """german language keyword is ignored"""@de`,
+                    `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasContactPoint> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)}`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} a <http://schema.org/ContactPoint>`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <http://schema.org/url> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].url}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <http://schema.org/email> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].email}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <http://schema.org/telephone> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].telephone}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <http://schema.org/openingHours> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].openingHours}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#address> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)}`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].id)} <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} a <http://www.w3.org/ns/locn#Address>`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#gemeentenaam> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.gemeentenaam.nl}"""@NL`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#gemeentenaam> """english language gemeentenaam is ignored"""@EN`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#gemeentenaam> """german language gemeentenaam is ignored"""@DE`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#land> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.land.nl}"""@NL`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#land> """english language land is ignored"""@EN`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#land> """german language land is ignored"""@DE`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#Adresvoorstelling.huisnummer> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.huisnummer}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#Adresvoorstelling.busnummer> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.busnummer}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#postcode> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.postcode}"""`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#Straatnaam> """${InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.straatnaam.nl}"""@NL`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#Straatnaam> """english language straatnaam is ignored"""@EN`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#Straatnaam> """german language straatnaam is ignored"""@DE`,
+                    `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#verwijstNaar> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.verwijstNaar)}`,
+                ]);
+
+            const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+
+            expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
+
+        });
+
         for (const type of Object.values(ProductType)) {
             test(`Product type ${type} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
@@ -517,7 +538,6 @@ describe('InstanceSnapshotRepository', () => {
                 expect(actualInstanceSnapshot).toEqual(instance);
             });
         }
-
 
         test('Unknown Product Type can not be mapped', async () => {
             const bestuurseenheid = aBestuurseenheid().build();

@@ -55,27 +55,22 @@ export function aFullInstance(): InstanceBuilder {
     return aMinimalInstance()
         .withTitle(
             LanguageString.of(
-                InstanceTestBuilder.TITLE_EN,
                 undefined,
                 InstanceTestBuilder.TITLE_NL_FORMAL))
         .withDescription(
             LanguageString.of(
-                InstanceTestBuilder.DESCRIPTION_EN,
                 undefined,
                 InstanceTestBuilder.DESCRIPTION_NL_FORMAL))
         .withAdditionalDescription(
             LanguageString.of(
-                InstanceTestBuilder.ADDITIONAL_DESCRIPTION_EN,
                 undefined,
                 InstanceTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL))
         .withException(
             LanguageString.of(
-                InstanceTestBuilder.EXCEPTION_EN,
                 undefined,
                 InstanceTestBuilder.EXCEPTION_NL_FORMAL))
         .withRegulation(
             LanguageString.of(
-                InstanceTestBuilder.REGULATION_EN,
                 undefined,
                 InstanceTestBuilder.REGULATION_NL_FORMAL))
         .withStartDate(InstanceTestBuilder.START_DATE)
@@ -112,12 +107,10 @@ export function aFullInstance(): InstanceBuilder {
 
 export class InstanceTestBuilder {
 
-    public static readonly TITLE_EN = 'Instance Title - en';
     public static readonly TITLE_NL = 'Instance Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Instance Title - nl-formal';
     public static readonly TITLE_NL_INFORMAL = 'Instance Title - nl-informal';
 
-    public static readonly DESCRIPTION_EN = 'Instance Description - en';
     public static readonly DESCRIPTION_NL = 'Instance Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Instance Description - nl-formal';
     public static readonly DESCRIPTION_NL_INFORMAL = 'Instance Description - nl-informal';
@@ -136,15 +129,12 @@ export class InstanceTestBuilder {
 
     public static readonly EXECUTING_AUTHORITIES = [BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI];
 
-    public static readonly ADDITIONAL_DESCRIPTION_EN = 'Instance Additional Description - en';
     public static readonly ADDITIONAL_DESCRIPTION_NL_FORMAL = 'Instance Additional Description - nl-formal';
     public static readonly ADDITIONAL_DESCRIPTION_NL_INFORMAL = 'Instance Additional Description - nl-informal';
 
-    public static readonly EXCEPTION_EN = 'Instance Exception - en';
     public static readonly EXCEPTION_NL_FORMAL = 'Instance Exception - nl-formal';
     public static readonly EXCEPTION_NL_INFORMAL = 'Instance Exception - nl-informal';
 
-    public static readonly REGULATION_EN = 'Instance Regulation - en';
     public static readonly REGULATION_NL_FORMAL = 'Instance Regulation - nl-formal';
     public static readonly REGULATION_NL_INFORMAL = 'Instance Regulation - nl-informal';
 
@@ -164,7 +154,7 @@ export class InstanceTestBuilder {
 
     public static readonly YOUR_EUROPE_CATEGORIES = [YourEuropeCategoryType.WERKENPENSIONERING, YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFPENSIOENENVERZEKERINGSREGELINGENWERKGEVER, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE];
 
-    public static readonly KEYWORDS = [LanguageString.of('overlijden - en'), LanguageString.of(undefined, 'overlijden - nl'), LanguageString.of(undefined, 'goederen verhandelen'), LanguageString.of('sacrale activiteiten')];
+    public static readonly KEYWORDS = [LanguageString.of('overlijden'), LanguageString.of('goederen verhandelen')];
 
     public static readonly REQUIREMENTS = [
         aFullRequirementForInstance().withUuid(uuid()).withEvidence(aFullEvidenceForInstance().withUuid(uuid()).build()).build(),

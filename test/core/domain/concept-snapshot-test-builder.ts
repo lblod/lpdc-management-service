@@ -49,7 +49,6 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
         .withId(buildConceptSnapshotIri(id))
         .withTitle(
             LanguageString.of(
-                ConceptSnapshotTestBuilder.TITLE_EN,
                 ConceptSnapshotTestBuilder.TITLE_NL,
                 ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
                 ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL,
@@ -57,7 +56,6 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
                 ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
             LanguageString.of(
-                ConceptSnapshotTestBuilder.DESCRIPTION_EN,
                 ConceptSnapshotTestBuilder.DESCRIPTION_NL,
                 ConceptSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
                 ConceptSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL,
@@ -65,7 +63,6 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
                 ConceptSnapshotTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
         .withAdditionalDescription(
             LanguageString.of(
-                ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_EN,
                 ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL,
                 ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL,
                 ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_INFORMAL,
@@ -73,7 +70,6 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
                 ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL))
         .withException(
             LanguageString.of(
-                ConceptSnapshotTestBuilder.EXCEPTION_EN,
                 ConceptSnapshotTestBuilder.EXCEPTION_NL,
                 ConceptSnapshotTestBuilder.EXCEPTION_NL_FORMAL,
                 ConceptSnapshotTestBuilder.EXCEPTION_NL_INFORMAL,
@@ -81,7 +77,6 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
                 ConceptSnapshotTestBuilder.EXCEPTION_NL_GENERATED_INFORMAL))
         .withRegulation(
             LanguageString.of(
-                ConceptSnapshotTestBuilder.REGULATION_EN,
                 ConceptSnapshotTestBuilder.REGULATION_NL,
                 ConceptSnapshotTestBuilder.REGULATION_NL_FORMAL,
                 ConceptSnapshotTestBuilder.REGULATION_NL_INFORMAL,
@@ -117,7 +112,6 @@ export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
 export class ConceptSnapshotTestBuilder {
 
     public static readonly TITLE = 'Concept Snapshot Title';
-    public static readonly TITLE_EN = 'Concept Snapshot Title - en';
     public static readonly TITLE_NL = 'Concept Snapshot Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Concept Snapshot Title - nl-formal';
     public static readonly TITLE_NL_INFORMAL = 'Concept Snapshot Title - nl-informal';
@@ -126,28 +120,24 @@ export class ConceptSnapshotTestBuilder {
     public static readonly MINIMAL_TITLE = aMinimalLanguageString().withNl(ConceptSnapshotTestBuilder.TITLE_NL).build();
 
     public static readonly DESCRIPTION = 'Concept Snapshot Description';
-    public static readonly DESCRIPTION_EN = 'Concept Snapshot Description - en';
     public static readonly DESCRIPTION_NL = 'Concept Snapshot Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Concept Snapshot Description - nl-formal';
     public static readonly DESCRIPTION_NL_INFORMAL = 'Concept Snapshot Description - nl-informal';
     public static readonly DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Snapshot Description - nl-generated-formal';
     public static readonly DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Snapshot Description - nl-generated-informal';
 
-    public static readonly ADDITIONAL_DESCRIPTION_EN = 'Concept Snapshot Additional Description - en';
     public static readonly ADDITIONAL_DESCRIPTION_NL = 'Concept Snapshot Additional Description - nl';
     public static readonly ADDITIONAL_DESCRIPTION_NL_FORMAL = 'Concept Snapshot Additional Description - nl-formal';
     public static readonly ADDITIONAL_DESCRIPTION_NL_INFORMAL = 'Concept Snapshot Additional Description - nl-informal';
     public static readonly ADDITIONAL_DESCRIPTION_NL_GENERATED_FORMAL = 'Concept Snapshot Additional Description - nl-generated-formal';
     public static readonly ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL = 'Concept Snapshot Additional Description - nl-generated-informal';
 
-    public static readonly EXCEPTION_EN = 'Concept Snapshot Exception - en';
     public static readonly EXCEPTION_NL = 'Concept Snapshot Exception - nl';
     public static readonly EXCEPTION_NL_FORMAL = 'Concept Snapshot Exception - nl-formal';
     public static readonly EXCEPTION_NL_INFORMAL = 'Concept Snapshot Exception - nl-informal';
     public static readonly EXCEPTION_NL_GENERATED_FORMAL = 'Concept Snapshot Exception - nl-generated-formal';
     public static readonly EXCEPTION_NL_GENERATED_INFORMAL = 'Concept Snapshot Exception - nl-generated-informal';
 
-    public static readonly REGULATION_EN = 'Concept Snapshot Regulation - en';
     public static readonly REGULATION_NL = 'Concept Snapshot Regulation - nl';
     public static readonly REGULATION_NL_FORMAL = 'Concept Snapshot Regulation - nl-formal';
     public static readonly REGULATION_NL_INFORMAL = 'Concept Snapshot Regulation - nl-informal';
@@ -173,7 +163,7 @@ export class ConceptSnapshotTestBuilder {
 
     public static readonly YOUR_EUROPE_CATEGORIES = [YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE];
 
-    public static readonly KEYWORDS = [LanguageString.of('buitenland'), LanguageString.of(undefined, 'buitenland'), LanguageString.of(undefined, 'ambulante activiteit'), LanguageString.of('levensloos')];
+    public static readonly KEYWORDS = [LanguageString.of('buitenland'), LanguageString.of('levensloos')];
 
     public static readonly REQUIREMENTS = [aFullRequirement().build(), anotherFullRequirement().build()];
 

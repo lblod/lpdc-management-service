@@ -101,11 +101,11 @@ describe('ValidateInstanceForPublishApplicationService', () => {
             }]);
         });
 
-        test('when form is valid and languages for title/description is invalid, language error is returned in errorlist', async () => {
+        test('when form is valid and languages for description is blank wile titel is not, language error is returned in errorlist', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withTitle(LanguageString.of('title',  undefined, 'titel'))
-                .withDescription(LanguageString.of(undefined,  undefined, 'beschrijving'))
+                .withTitle(LanguageString.of(undefined, 'titel'))
+                .withDescription(LanguageString.of(undefined, ' '))
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -119,8 +119,8 @@ describe('ValidateInstanceForPublishApplicationService', () => {
         test('when form is valid and languages for description nl is blank, language error is returned in errorlist', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withTitle(LanguageString.of('title',  undefined, 'titel'))
-                .withDescription(LanguageString.of('description',  undefined, ''))
+                .withTitle(LanguageString.of(undefined, 'titel'))
+                .withDescription(LanguageString.of(undefined, ''))
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -135,8 +135,8 @@ describe('ValidateInstanceForPublishApplicationService', () => {
         test('when form is valid and languages for title nl is blank, language error is returned in errorlist', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withTitle(LanguageString.of('title',  undefined, ''))
-                .withDescription(LanguageString.of('description',  undefined, 'description'))
+                .withTitle(LanguageString.of(undefined, ''))
+                .withDescription(LanguageString.of(undefined, 'description'))
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -148,11 +148,11 @@ describe('ValidateInstanceForPublishApplicationService', () => {
             }]);
         });
 
-        test('when form is valid and languages for title en blank, language error is returned in errorlist', async () => {
+        test('when form is valid and languages for description is blank and title is not, language error is returned in errorlist', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withTitle(LanguageString.of('',  undefined, 'title'))
-                .withDescription(LanguageString.of('description',  undefined, 'description'))
+                .withTitle(LanguageString.of(undefined, 'title'))
+                .withDescription(LanguageString.of(undefined, ' '))
                 .withPublicationMedia([])
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -163,35 +163,5 @@ describe('ValidateInstanceForPublishApplicationService', () => {
             }]);
         });
 
-        test('when form is valid and languages for description en is blank, language error is returned in errorlist', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withTitle(LanguageString.of('title',  undefined, 'title'))
-                .withDescription(LanguageString.of('',  undefined, 'description'))
-                .withPublicationMedia([])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errorList = await validateInstanceForPublishApplicationService.validate(instance.id, bestuurseenheid);
-            expect(errorList).toEqual([{
-                "message": "Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn",
-            }]);
-        });
-
-        test('when form is valid and language for title/description is invalid and adress is invalid, language error is returned in errorlist', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance()
-                .withTitle(LanguageString.of('title',  undefined, 'titel'))
-                .withDescription(LanguageString.of(undefined,  undefined, 'beschrijving'))
-                .withPublicationMedia([])
-                .withContactPoints([aFullContactPointForInstance().withAddress(aFullAddressForInstance().withVerwijstNaar(undefined).build()).build()])
-                .build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const errorList = await validateInstanceForPublishApplicationService.validate(instance.id, bestuurseenheid);
-            expect(errorList).toEqual([{
-                "message": "Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn",
-            }]);
-        });
     });
 });

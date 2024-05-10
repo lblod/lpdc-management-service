@@ -253,7 +253,6 @@ export class NewInstanceDomainService {
         const selectedVersion = languageString.getLanguageValue(selectedLanguage);
 
         return LanguageString.of(
-            languageString.en,
             undefined,
             chosenForm === ChosenFormType.FORMAL || chosenForm === undefined ? selectedVersion : undefined,
             chosenForm === ChosenFormType.INFORMAL ? selectedVersion : undefined);
@@ -261,17 +260,17 @@ export class NewInstanceDomainService {
 
     private selectLanguageVersionForConcept(concept: Concept, chosenForm: ChosenFormType | undefined): Language {
         if (chosenForm === ChosenFormType.INFORMAL) {
-            if (concept.conceptNlLanguages.includes(Language.INFORMAL)) {
+            if (concept.conceptLanguages.includes(Language.INFORMAL)) {
                 return Language.INFORMAL;
-            } else if (concept.conceptNlLanguages.includes(Language.GENERATED_INFORMAL)) {
+            } else if (concept.conceptLanguages.includes(Language.GENERATED_INFORMAL)) {
                 return Language.GENERATED_INFORMAL;
             } else {
                 return Language.NL;
             }
         } else {
-            if (concept.conceptNlLanguages.includes(Language.FORMAL)) {
+            if (concept.conceptLanguages.includes(Language.FORMAL)) {
                 return Language.FORMAL;
-            } else if (concept.conceptNlLanguages.includes(Language.GENERATED_FORMAL) && concept.conceptNlLanguages.includes(Language.INFORMAL)) {
+            } else if (concept.conceptLanguages.includes(Language.GENERATED_FORMAL) && concept.conceptLanguages.includes(Language.INFORMAL)) {
                 return Language.GENERATED_FORMAL;
             } else {
                 return Language.NL;

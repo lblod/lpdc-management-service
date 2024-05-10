@@ -139,7 +139,7 @@ describe('for instance', () => {
     });
 
     test('If title and description have the same nl language requirement is created', () => {
-        const langString = LanguageString.of('en', 'nl');
+        const langString = LanguageString.of('nl');
         const requirement = aFullRequirementForInstance().withTitle(langString).withDescription(langString).withEvidence(undefined).build();
         expect(() => Requirement.forInstance(requirement)).not.toThrow();
     });
@@ -150,38 +150,38 @@ describe('for instance', () => {
     });
 
     test('If title and description have different nl languages, throws error', () => {
-        const title = LanguageString.of('en', 'nl', undefined);
-        const description = LanguageString.of('en', undefined, 'nl-formal');
+        const title = LanguageString.of('nl', undefined);
+        const description = LanguageString.of(undefined, 'nl-formal');
         const requirement = aFullRequirementForInstance().withTitle(title).withDescription(description).build();
 
         expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If title has different nl languages, throws error', () => {
-        const title = LanguageString.of('en', 'nl', 'nl-formal');
+        const title = LanguageString.of('nl', 'nl-formal');
         const requirement = aFullRequirementForInstance().withTitle(title).withDescription(undefined).build();
 
         expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If description has different nl languages, throws error', () => {
-        const description = LanguageString.of('en', 'nl', 'nl-formal');
+        const description = LanguageString.of('nl', 'nl-formal');
         const requirement = aFullRequirementForInstance().withDescription(description).withTitle(undefined).build();
 
         expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If title description and evidence have the same nl language requirement is created', () => {
-        const langString = LanguageString.of('en', undefined, 'nl');
-        const evidence = aFullEvidenceForInstance().withTitle(LanguageString.of('en', undefined, 'nl-formal-evidence1')).build();
+        const langString = LanguageString.of(undefined, 'nl-formal');
+        const evidence = aFullEvidenceForInstance().withTitle(LanguageString.of(undefined, 'nl-formal-evidence1')).build();
 
         const requirement = aFullRequirementForInstance().withTitle(langString).withDescription(langString).withEvidence(evidence).build();
         expect(() => Requirement.forInstance(requirement)).not.toThrow();
     });
 
     test('If a evidence has a different nl language than title or description, throws error', () => {
-        const languageString = LanguageString.of('en', 'nl', undefined);
-        const evidence = aFullEvidenceForInstance().withTitle(LanguageString.of('en', undefined, 'nl-formal')).build();
+        const languageString = LanguageString.of('nl', undefined);
+        const evidence = aFullEvidenceForInstance().withTitle(LanguageString.of(undefined, 'nl-formal')).build();
         const requirement = aFullRequirementForInstance().withDescription(languageString).withTitle(languageString).withEvidence(evidence).build();
         expect(() => Requirement.forInstance(requirement)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
 
@@ -190,9 +190,9 @@ describe('for instance', () => {
     for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, 'value in generated formal', undefined);
         } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, undefined, 'value in generated formal');
         }
 
         test('If title contains invalid language, throws error', () => {
@@ -223,11 +223,11 @@ describe('for instance', () => {
     for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of('value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, 'value formal', undefined, undefined, undefined);
         } else if (validLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, 'value informal', undefined, undefined);
         }
 
         test('If title contains valid language, not throws error', () => {
@@ -287,21 +287,21 @@ describe('for instance snapshot', () => {
     });
 
     test('If title and description have the same nl language requirement is created', () => {
-        const langString = LanguageString.of('en', 'nl');
+        const langString = LanguageString.of('nl');
         const requirement = aFullRequirementForInstanceSnapshot().withTitle(langString).withDescription(langString).withEvidence(undefined).build();
         expect(() => Requirement.forInstanceSnapshot(requirement)).not.toThrow();
     });
 
     test('If title and description have different nl languages, throws error', () => {
-        const title = LanguageString.of('en', 'nl', undefined);
-        const description = LanguageString.of('en', undefined, 'nl-formal');
+        const title = LanguageString.of('nl', undefined);
+        const description = LanguageString.of(undefined, 'nl-formal');
         const requirement = aFullRequirementForInstanceSnapshot().withTitle(title).withDescription(description).withEvidence(undefined).build();
 
         expect(() => Requirement.forInstanceSnapshot(requirement)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If title, description and evidence title description have the same nl language requirement is created', () => {
-        const langString = LanguageString.of('en', undefined, 'nl');
+        const langString = LanguageString.of(undefined, 'nl-formal');
 
         const evidence = aFullEvidenceForInstanceSnapshot().withTitle(langString).withDescription(langString).build();
         const requirement = aFullRequirementForInstanceSnapshot().withTitle(langString).withDescription(langString).withEvidence(evidence).build();
@@ -310,8 +310,8 @@ describe('for instance snapshot', () => {
     });
 
     test('If a evidence title has a different nl language than title or description, throws error', () => {
-        const langString = LanguageString.of('en', 'nl', undefined);
-        const otherLangString = LanguageString.of('en', undefined, 'nl-formal');
+        const langString = LanguageString.of('nl', undefined);
+        const otherLangString = LanguageString.of(undefined, 'nl-formal');
 
         const evidence = aFullEvidenceForInstanceSnapshot().withTitle(otherLangString).withDescription(langString).build();
         const requirement = aFullRequirementForInstanceSnapshot().withDescription(langString).withTitle(langString).withEvidence(evidence).build();
@@ -320,8 +320,8 @@ describe('for instance snapshot', () => {
     });
 
     test('If a evidence description has a different nl language than title or description, throws error', () => {
-        const langString = LanguageString.of('en', 'nl', undefined);
-        const otherLangString = LanguageString.of('en', undefined, 'nl-formal');
+        const langString = LanguageString.of('nl', undefined);
+        const otherLangString = LanguageString.of(undefined, 'nl-formal');
 
         const evidence = aFullEvidenceForInstanceSnapshot().withTitle(langString).withDescription(otherLangString).build();
         const requirement = aFullRequirementForInstanceSnapshot().withDescription(langString).withTitle(langString).withEvidence(evidence).build();
@@ -332,9 +332,9 @@ describe('for instance snapshot', () => {
     for (const invalidLanguage of invalidLanguages) {
         let invalidValueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
-            invalidValueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+            invalidValueInNlLanguage = LanguageString.of(undefined, undefined, undefined, 'value in generated formal', undefined);
         } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
-            invalidValueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+            invalidValueInNlLanguage = LanguageString.of(undefined, undefined, undefined, undefined, 'value in generated formal');
         }
 
         test(`If title or description contains invalid language ${invalidLanguage}, throws error`, () => {
@@ -353,11 +353,11 @@ describe('for instance snapshot', () => {
     for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of('value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, 'value formal', undefined, undefined, undefined);
         } else if (validLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, 'value informal', undefined, undefined);
         }
 
         test(`If title and description contains valid language ${validLanguage}, not throws error`, () => {
@@ -396,11 +396,11 @@ describe('nl language', () => {
 
         let valueInNlLanguage: LanguageString;
         if (nlLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
         } else if (nlLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
         } else if (nlLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
         }
 
         test(`title has nl language ${nlLanguage}`, () => {
@@ -473,8 +473,8 @@ describe('nl language', () => {
 describe('transformToInformal', () => {
     test('should transform requirement with title, description and evidence to informal', () => {
        const requirement = aFullRequirementForInstance()
-           .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-           .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
+           .withTitle(LanguageString.of(undefined, 'titel'))
+           .withDescription(LanguageString.of(undefined, 'beschrijving'))
            .withEvidence(aFullEvidenceForInstance()
                .withTitle(LanguageString.of(undefined, undefined, 'titel'))
                .build())
@@ -482,9 +482,9 @@ describe('transformToInformal', () => {
 
        const transformedRequirement = requirement.transformToInformal();
 
-       expect(transformedRequirement.title).toEqual(LanguageString.of(undefined, undefined, undefined, 'titel'));
-       expect(transformedRequirement.description).toEqual(LanguageString.of(undefined, undefined, undefined, 'beschrijving'));
-       expect(transformedRequirement.evidence.title).toEqual(LanguageString.of(undefined, undefined, undefined, 'titel'));
+       expect(transformedRequirement.title).toEqual(LanguageString.of(undefined, undefined, 'titel'));
+       expect(transformedRequirement.description).toEqual(LanguageString.of(undefined, undefined, 'beschrijving'));
+       expect(transformedRequirement.evidence.title).toEqual(LanguageString.of(undefined, undefined, 'titel'));
     });
 
     test('should transform without title, description and evidence', () => {

@@ -32,7 +32,7 @@ import {ContactPoint} from "./contact-point";
 import {instanceLanguages, Language} from "./language";
 import {LegalResource} from "./legal-resource";
 import {InvariantError} from "./shared/lpdc-error";
-import {isEqual} from "lodash";
+import {isEqual, uniq} from "lodash";
 import {lastPartAfter} from "./shared/string-helper";
 
 export class Instance {
@@ -144,6 +144,7 @@ export class Instance {
         this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
+        LanguageString.validateUniqueAndCorrectLanguages([Language.NL], ...this._keywords);
         this._requirements = [...requirements].map(Requirement.forInstance);
         requireNoDuplicates(this._requirements.map(r => r.order), 'requirements > order');
         this._procedures = [...procedures].map(Procedure.forInstance);
@@ -192,16 +193,16 @@ export class Instance {
             .build();
     }
 
-    public calculatedInstanceNlLanguages(): Language[] {
+    public calculatedInstanceLanguages(): Language[] {
         const nlLanguage =
-            LanguageString.extractNlLanguages([
+            LanguageString.extractLanguages([
                 this._title,
                 this._description,
                 this._additionalDescription,
                 this._exception,
                 this._regulation,
             ]);
-        const uniquelanguages = new Set([
+        const uniquelanguages = uniq([
             ...nlLanguage,
             ...this._requirements.map(r => r.nlLanguage),
             ...this._procedures.map(p => p.nlLanguage),
@@ -210,7 +211,6 @@ export class Instance {
             ...this._financialAdvantages.map(f => f.nlLanguage),
             ...this._legalResources.map(l => l.nlLanguage)
         ].filter(l => l !== undefined));
-
 
         return [...uniquelanguages];
     }
@@ -225,14 +225,14 @@ export class Instance {
         ];
         LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...values);
 
-        const calculatedInstanceNLLanguages = this.calculatedInstanceNlLanguages();
+        const calculatedInstanceNLLanguages = this.calculatedInstanceLanguages();
 
         if (calculatedInstanceNLLanguages.length > 1) {
             throw new InvariantError('Er is meer dan een nl-taal aanwezig');
         }
 
         if (calculatedInstanceNLLanguages.length != 0 && calculatedInstanceNLLanguages[0] != this.dutchLanguageVariant) {
-            throw new InvariantError('DutchLanguageVariant verschilt van de calculatedInstanceNlLanguages');
+            throw new InvariantError('DutchLanguageVariant verschilt van de calculatedInstanceLanguages');
         }
     }
 
@@ -445,7 +445,6 @@ export class Instance {
             }
         }
     }
-
 
     publish(): Instance {
         if (this.status === InstanceStatusType.VERSTUURD) {

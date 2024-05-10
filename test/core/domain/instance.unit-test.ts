@@ -131,13 +131,18 @@ describe('constructing', () => {
         expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
     });
 
+    test('keywords with other nl language throws error', () => {
+        const instanceTestBuilder = aFullInstance().withKeywords([LanguageString.of(undefined, 'overlijden'), LanguageString.of(undefined, 'geboorte')]);
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
+    });
+
     test('languages with duplicates throws error', () => {
         const instanceTestBuilder = aFullInstance().withLanguages([LanguageType.ENG, LanguageType.ENG]);
         expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'languages mag geen duplicaten bevatten');
     });
 
     describe('dutchLanguageVariant', () => {
-        const invalidLanguages = [Language.EN, Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
+        const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
         const validLanguages = instanceLanguages;
 
         test('Undefined dutchLanguageVariant throws error', () => {
@@ -533,7 +538,7 @@ describe('constructing', () => {
 
         expect(() => instanceTestBuilder.build()).not.toThrow();
     });
-    
+
     test('When datePublished is present and dateSent is undefined should throw error', () => {
         const instanceTestBuilder = aFullInstance().withDateSent(undefined).withDatePublished(InstanceTestBuilder.DATE_PUBLISHED);
 
@@ -670,8 +675,8 @@ describe('validateLanguages', () => {
     const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
 
     test('if values have different nl language strings, then throws error', () => {
-        const title = LanguageString.of(undefined, 'nl', undefined);
-        const description = LanguageString.of(undefined, undefined, 'nl-formal');
+        const title = LanguageString.of('nl', undefined);
+        const description = LanguageString.of(undefined, 'nl-formal');
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
@@ -679,8 +684,8 @@ describe('validateLanguages', () => {
     });
 
     test('if 1 value has different nl language strings, then throws error', () => {
-        const title = LanguageString.of(undefined, 'nl', 'nl-formal');
-        const description = LanguageString.of(undefined, undefined, undefined);
+        const title = LanguageString.of('nl', 'nl-formal');
+        const description = LanguageString.of(undefined, undefined);
 
         const instance = aFullInstance().withTitle(title).withDescription(description);
 
@@ -696,18 +701,9 @@ describe('validateLanguages', () => {
         expect(() => instance.build()).not.toThrow();
     });
 
-    test('if values have 1 nl language string but non-consistent en language strings, then no error is thrown', () => {
-        const title = LanguageString.of(undefined, undefined, undefined);
-        const description = LanguageString.of('en', undefined, undefined);
-
-        const instance = aFullInstance().withTitle(title).withDescription(description);
-
-        expect(() => instance.build()).not.toThrow();
-    });
-
     test('if only 1 value has 1 nl language string, then no error is thrown', () => {
-        const title = LanguageString.of(undefined, undefined, undefined);
-        const description = LanguageString.of('en', 'nl', undefined);
+        const title = LanguageString.of(undefined, undefined);
+        const description = LanguageString.of('nl', undefined);
 
         const instance = aMinimalInstance().withTitle(title).withDescription(description).withDutchLanguageVariant(Language.NL);
 
@@ -719,50 +715,50 @@ describe('validateLanguages', () => {
 
         test('if a requirement contains a different nl version, then throws error', () => {
             const requirement = aMinimalRequirementForInstance()
-                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .build();
-            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withRequirements([requirement]);
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, 'nl-formal')).withRequirements([requirement]);
 
             expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a procedure contains a different nl version, then throws error', () => {
             const procedure = aMinimalProcedureForInstance()
-                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .build();
-            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withProcedures([procedure]);
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, 'nl-formal')).withProcedures([procedure]);
 
             expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a website contains a different nl version, then throws error', () => {
             const website = aMinimalWebsiteForInstance()
-                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .build();
-            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withWebsites([website]);
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, 'nl-formal')).withWebsites([website]);
 
             expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a cost contains a different nl version, then throws error', () => {
             const cost = aMinimalCostForInstance()
-                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .build();
-            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withCosts([cost]);
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, 'nl-formal')).withCosts([cost]);
 
             expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
 
         test('if a financial advantage contains a different nl version, then throws error', () => {
             const financialAdvantage = aMinimalFinancialAdvantageForInstance()
-                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .build();
-            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, 'nl-formal')).withFinancialAdvantages([financialAdvantage]);
+            const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, 'nl-formal')).withFinancialAdvantages([financialAdvantage]);
 
             expect(() => instance.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
@@ -783,13 +779,12 @@ describe('validateLanguages', () => {
         expect(() => aFullInstance().build()).not.toThrow();
     });
 
-
     for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, 'value in generated formal', undefined);
         } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, undefined, 'value in generated formal');
         }
 
         test('If title contains invalid language, throws error', () => {
@@ -818,11 +813,11 @@ describe('validateLanguages', () => {
     for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of('value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, 'value formal', undefined, undefined, undefined);
         } else if (validLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, 'value informal', undefined, undefined);
         }
         test('If title contains valid language, does not throws error', () => {
             const instance = aMinimalInstance().withTitle(valueInNlLanguage).withDutchLanguageVariant(validLanguage);
@@ -848,9 +843,9 @@ describe('validateLanguages', () => {
     }
 
     test('if dutchLanguageVariant differs from calculatedInstanceNlLanguages, throws error', () => {
-        const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, undefined, InstanceTestBuilder.TITLE_NL_FORMAL)).withDutchLanguageVariant(Language.INFORMAL);
+        const instance = aMinimalInstance().withTitle(LanguageString.of(undefined, InstanceTestBuilder.TITLE_NL_FORMAL)).withDutchLanguageVariant(Language.INFORMAL);
 
-        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'DutchLanguageVariant verschilt van de calculatedInstanceNlLanguages');
+        expect(() => instance.build()).toThrowWithMessage(InvariantError, 'DutchLanguageVariant verschilt van de calculatedInstanceLanguages');
     });
 
 });
@@ -945,24 +940,6 @@ describe('validateForPublish', () => {
         const instance = aFullInstance().build();
 
         expect(() => instance.validateForPublish(false)).not.toThrow();
-    });
-
-    test('when english title is defined, then english description should also be defined', () => {
-        const instance = aMinimalInstance()
-            .withTitle(LanguageString.of('english title', undefined, 'nederlandse titel'))
-            .withDescription(LanguageString.of(undefined, undefined, 'nederlandse beschrijving'))
-            .build();
-
-        expect(() => instance.validateForPublish(false)).toThrowWithMessage(InvariantError, 'Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
-    });
-
-    test('when english description is defined, then english title should also be defined', () => {
-        const instance = aMinimalInstance()
-            .withTitle(LanguageString.of(undefined, undefined, 'nederlandse titel'))
-            .withDescription(LanguageString.of('english description', undefined, 'nederlandse beschrijving'))
-            .build();
-
-        expect(() => instance.validateForPublish(false)).toThrowWithMessage(InvariantError, 'Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
     });
 
     test('When address should be checked and has addressId, instance is valid', () => {
@@ -1089,36 +1066,36 @@ describe('transformToInformal', () => {
 
         const updatedInstance = instance.transformToInformal();
 
-        expect(updatedInstance.calculatedInstanceNlLanguages()).toEqual([Language.INFORMAL]);
-        expect(updatedInstance.title).toEqual(LanguageString.of('Instance Title - en', undefined, undefined, 'Instance Title - nl-formal'));
-        expect(updatedInstance.description).toEqual(LanguageString.of('Instance Description - en', undefined, undefined, 'Instance Description - nl-formal'));
-        expect(updatedInstance.additionalDescription).toEqual(LanguageString.of('Instance Additional Description - en', undefined, undefined, 'Instance Additional Description - nl-formal'));
-        expect(updatedInstance.exception).toEqual(LanguageString.of('Instance Exception - en', undefined, undefined, 'Instance Exception - nl-formal'));
-        expect(updatedInstance.regulation).toEqual(LanguageString.of('Instance Regulation - en', undefined, undefined, 'Instance Regulation - nl-formal'));
-        expect(updatedInstance.requirements[0].title).toEqual(LanguageString.of('Requirement Title - en', undefined, undefined, 'Requirement Title - nl-formal'));
-        expect(updatedInstance.requirements[0].description).toEqual(LanguageString.of('Requirement Description - en', undefined, undefined, 'Requirement Description - nl-formal'));
-        expect(updatedInstance.requirements[0].evidence.title).toEqual(LanguageString.of('Evidence Title - en', undefined, undefined, 'Evidence Title - nl-formal'));
-        expect(updatedInstance.requirements[0].evidence.description).toEqual(LanguageString.of('Evidence Description - en', undefined, undefined, 'Evidence Description - nl-formal'));
-        expect(updatedInstance.requirements[1].title).toEqual(LanguageString.of('Requirement Title - en', undefined, undefined, 'Requirement Title - nl-formal'));
-        expect(updatedInstance.requirements[1].description).toEqual(LanguageString.of('Requirement Description - en', undefined, undefined, 'Requirement Description - nl-formal'));
-        expect(updatedInstance.procedures[0].title).toEqual(LanguageString.of('Procedure Title - en', undefined, undefined, 'Procedure Title - nl-formal'));
-        expect(updatedInstance.procedures[0].description).toEqual(LanguageString.of('Procedure Description - en', undefined, undefined, 'Procedure Description - nl-formal'));
-        expect(updatedInstance.procedures[0].websites[0].title).toEqual(LanguageString.of('Website Title - en', undefined, undefined, 'Website Title - nl-formal'));
-        expect(updatedInstance.procedures[0].websites[0].description).toEqual(LanguageString.of('Website Description - en', undefined, undefined, 'Website Description - nl-formal'));
-        expect(updatedInstance.procedures[1].title).toEqual(LanguageString.of('Procedure Title - en', undefined, undefined, 'Procedure Title - nl-formal'));
-        expect(updatedInstance.procedures[1].description).toEqual(LanguageString.of('Procedure Description - en', undefined, undefined, 'Procedure Description - nl-formal'));
-        expect(updatedInstance.websites[0].title).toEqual(LanguageString.of('Website Title - en', undefined, undefined, 'Website Title - nl-formal'));
-        expect(updatedInstance.websites[0].description).toEqual(LanguageString.of('Website Description - en', undefined, undefined, 'Website Description - nl-formal'));
-        expect(updatedInstance.websites[1].title).toEqual(LanguageString.of('Website Title - en', undefined, undefined, 'Website Title - nl-formal'));
-        expect(updatedInstance.websites[1].description).toEqual(LanguageString.of('Website Description - en', undefined, undefined, 'Website Description - nl-formal'));
-        expect(updatedInstance.costs[0].title).toEqual(LanguageString.of('Cost Title - en', undefined, undefined, 'Cost Title - nl-formal'));
-        expect(updatedInstance.costs[0].description).toEqual(LanguageString.of('Cost Description - en', undefined, undefined, 'Cost Description - nl-formal'));
-        expect(updatedInstance.costs[1].title).toEqual(LanguageString.of('Cost Title - en', undefined, undefined, 'Cost Title - nl-formal'));
-        expect(updatedInstance.costs[1].description).toEqual(LanguageString.of('Cost Description - en', undefined, undefined, 'Cost Description - nl-formal'));
-        expect(updatedInstance.financialAdvantages[0].title).toEqual(LanguageString.of('Financial Advantage Title - en', undefined, undefined, 'Financial Advantage Title - nl-formal'));
-        expect(updatedInstance.financialAdvantages[0].description).toEqual(LanguageString.of('Financial Advantage Description - en', undefined, undefined, 'Financial Advantage Description - nl-formal'));
-        expect(updatedInstance.financialAdvantages[1].title).toEqual(LanguageString.of('Financial Advantage Title - en', undefined, undefined, 'Financial Advantage Title - nl-formal'));
-        expect(updatedInstance.financialAdvantages[1].description).toEqual(LanguageString.of('Financial Advantage Description - en', undefined, undefined, 'Financial Advantage Description - nl-formal'));
+        expect(updatedInstance.calculatedInstanceLanguages()).toEqual([Language.INFORMAL]);
+        expect(updatedInstance.title).toEqual(LanguageString.of(undefined, undefined, 'Instance Title - nl-formal'));
+        expect(updatedInstance.description).toEqual(LanguageString.of(undefined, undefined, 'Instance Description - nl-formal'));
+        expect(updatedInstance.additionalDescription).toEqual(LanguageString.of(undefined, undefined, 'Instance Additional Description - nl-formal'));
+        expect(updatedInstance.exception).toEqual(LanguageString.of(undefined, undefined, 'Instance Exception - nl-formal'));
+        expect(updatedInstance.regulation).toEqual(LanguageString.of(undefined, undefined, 'Instance Regulation - nl-formal'));
+        expect(updatedInstance.requirements[0].title).toEqual(LanguageString.of(undefined, undefined, 'Requirement Title - nl-formal'));
+        expect(updatedInstance.requirements[0].description).toEqual(LanguageString.of(undefined, undefined, 'Requirement Description - nl-formal'));
+        expect(updatedInstance.requirements[0].evidence.title).toEqual(LanguageString.of(undefined, undefined, 'Evidence Title - nl-formal'));
+        expect(updatedInstance.requirements[0].evidence.description).toEqual(LanguageString.of(undefined, undefined, 'Evidence Description - nl-formal'));
+        expect(updatedInstance.requirements[1].title).toEqual(LanguageString.of(undefined, undefined, 'Requirement Title - nl-formal'));
+        expect(updatedInstance.requirements[1].description).toEqual(LanguageString.of(undefined, undefined, 'Requirement Description - nl-formal'));
+        expect(updatedInstance.procedures[0].title).toEqual(LanguageString.of(undefined, undefined, 'Procedure Title - nl-formal'));
+        expect(updatedInstance.procedures[0].description).toEqual(LanguageString.of(undefined, undefined, 'Procedure Description - nl-formal'));
+        expect(updatedInstance.procedures[0].websites[0].title).toEqual(LanguageString.of(undefined, undefined, 'Website Title - nl-formal'));
+        expect(updatedInstance.procedures[0].websites[0].description).toEqual(LanguageString.of(undefined, undefined, 'Website Description - nl-formal'));
+        expect(updatedInstance.procedures[1].title).toEqual(LanguageString.of(undefined, undefined, 'Procedure Title - nl-formal'));
+        expect(updatedInstance.procedures[1].description).toEqual(LanguageString.of(undefined, undefined, 'Procedure Description - nl-formal'));
+        expect(updatedInstance.websites[0].title).toEqual(LanguageString.of(undefined, undefined, 'Website Title - nl-formal'));
+        expect(updatedInstance.websites[0].description).toEqual(LanguageString.of(undefined, undefined, 'Website Description - nl-formal'));
+        expect(updatedInstance.websites[1].title).toEqual(LanguageString.of(undefined, undefined, 'Website Title - nl-formal'));
+        expect(updatedInstance.websites[1].description).toEqual(LanguageString.of(undefined, undefined, 'Website Description - nl-formal'));
+        expect(updatedInstance.costs[0].title).toEqual(LanguageString.of(undefined, undefined, 'Cost Title - nl-formal'));
+        expect(updatedInstance.costs[0].description).toEqual(LanguageString.of(undefined, undefined, 'Cost Description - nl-formal'));
+        expect(updatedInstance.costs[1].title).toEqual(LanguageString.of(undefined, undefined, 'Cost Title - nl-formal'));
+        expect(updatedInstance.costs[1].description).toEqual(LanguageString.of(undefined, undefined, 'Cost Description - nl-formal'));
+        expect(updatedInstance.financialAdvantages[0].title).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Title - nl-formal'));
+        expect(updatedInstance.financialAdvantages[0].description).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Description - nl-formal'));
+        expect(updatedInstance.financialAdvantages[1].title).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Title - nl-formal'));
+        expect(updatedInstance.financialAdvantages[1].description).toEqual(LanguageString.of(undefined, undefined, 'Financial Advantage Description - nl-formal'));
         expect(updatedInstance.legalResources[0].title).toEqual(LanguageString.of('Legal Resource Title - en', undefined, undefined, 'Legal Resource Title - nl-formal'));
         expect(updatedInstance.legalResources[0].description).toEqual(LanguageString.of('Legal Resource Description - en', undefined, undefined, 'Legal Resource Description - nl-formal'));
         expect(updatedInstance.legalResources[1].title).toEqual(LanguageString.of('Legal Resource Title - en', undefined, undefined, 'Legal Resource Title - nl-formal'));

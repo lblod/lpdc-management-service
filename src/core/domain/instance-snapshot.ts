@@ -27,6 +27,7 @@ import {
 import {instanceLanguages, Language} from "./language";
 import {LegalResource} from "./legal-resource";
 import {InvariantError} from "./shared/lpdc-error";
+import {uniq} from "lodash";
 
 export class InstanceSnapshot {
 
@@ -121,6 +122,7 @@ export class InstanceSnapshot {
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         requireAtLeastOneValuePresentIfCondition(this._yourEuropeCategories, 'yourEuropeCategories', () => publicationMedia.includes(PublicationMediumType.YOUREUROPE));
         this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
+        LanguageString.validateUniqueAndCorrectLanguages([Language.NL], ...this._keywords);
         this._requirements = [...requirements].map(r => Requirement.forInstanceSnapshot(r));
         requireNoDuplicates(this._requirements.map(r => r.order), 'requirements > order');
         this._procedures = [...procedures].map(p => Procedure.forInstanceSnapshot(p));
@@ -148,24 +150,23 @@ export class InstanceSnapshot {
     }
 
     get dutchLanguageVariant(): Language | undefined {
-        return this.extractNlLanguages()[0];
+        return this.extractLanguages()[0];
     }
 
     private validateLanguages(): void {
         LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, ...this.languageStrings());
 
-        const uniqueNlLanguage = new Set([...this.extractNlLanguages()]);
-        if (uniqueNlLanguage.size > 1) {
+        const uniqueNlLanguage = uniq([...this.extractLanguages()]);
+        if (uniqueNlLanguage.length > 1) {
             throw new InvariantError('Er is meer dan een nl-taal aanwezig');
         }
-        if (uniqueNlLanguage.size == 0) {
+        if (uniqueNlLanguage.length == 0) {
             throw new InvariantError("Er is geen nl taal aanwezig");
         }
-
     }
 
-    private extractNlLanguages(): Language[] {
-        const nlLanguage = LanguageString.extractNlLanguages(this.languageStrings());
+    private extractLanguages(): Language[] {
+        const nlLanguage = LanguageString.extractLanguages(this.languageStrings());
 
         return [
             ...nlLanguage,

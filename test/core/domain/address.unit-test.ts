@@ -32,44 +32,39 @@ describe('constructing', () => {
 
             test('invalid gemeentenaam throws error', () => {
                 expect(() => Address.forInstance(aFullAddressForInstance()
-                    .withGemeentenaam(LanguageString.of('english', 'dutch'))
+                    .withGemeentenaam(LanguageString.of('nl gemeentenaam', 'formal gemeentenaam'))
                     .build()))
-                    .toThrowWithMessage(InvariantError, 'Address mag alleen NL bevatten in de taalstring');
+                    .toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
             });
 
             test('invalid land throws error', () => {
                 expect(() => Address.forInstance(aFullAddressForInstance()
-                    .withGemeentenaam(LanguageString.of('english', 'dutch'))
+                    .withGemeentenaam(LanguageString.of('nl land', 'formal land'))
                     .build()))
-                    .toThrowWithMessage(InvariantError, 'Address mag alleen NL bevatten in de taalstring');
+                    .toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
             });
 
             test('invalid straatnaam throws error', () => {
                 expect(() => Address.forInstance(aFullAddressForInstance()
-                    .withGemeentenaam(LanguageString.of('english', 'dutch'))
+                    .withGemeentenaam(LanguageString.of('nl straatnaam', 'formal straatnaam'))
                     .build()))
-                    .toThrowWithMessage(InvariantError, 'Address mag alleen NL bevatten in de taalstring');
+                    .toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
             });
 
-            test('language EN and NL throws error', () => {
+            test('straatnaam, land and straatnaam should have nl languageString', () => {
                 expect(() => Address.forInstance(aFullAddressForInstance()
-                    .withGemeentenaam(LanguageString.of('english', 'dutch'))
+                    .withGemeentenaam(LanguageString.of(undefined, 'formal gemeentenaam'))
+                    .withLand(LanguageString.of(undefined, 'formal land'))
+                    .withStraatnaam(LanguageString.of(undefined, 'formal straatnaam'))
                     .build()))
-                    .toThrowWithMessage(InvariantError, 'Address mag alleen NL bevatten in de taalstring');
-            });
-
-            test('language NL and NL-FORMAL throws error', () => {
-                expect(() => Address.forInstance(aFullAddressForInstance()
-                    .withGemeentenaam(LanguageString.of(undefined, 'dutch', 'nl-formal'))
-                    .build()))
-                    .toThrowWithMessage(InvariantError, 'Address mag alleen NL bevatten in de taalstring');
+                    .toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
             });
 
             test('valid languages does not throw error', () => {
                 expect(() => Address.forInstance(aFullAddressForInstance()
-                    .withGemeentenaam(LanguageString.of(undefined, 'gemeente'))
-                    .withLand(LanguageString.of(undefined, 'land'))
-                    .withStraatnaam(LanguageString.of(undefined, 'straat'))
+                    .withGemeentenaam(LanguageString.of('gemeente'))
+                    .withLand(LanguageString.of('land'))
+                    .withStraatnaam(LanguageString.of('straat'))
                     .build()))
                     .not.toThrow();
             });
@@ -100,44 +95,30 @@ describe('constructing', () => {
 
             test('invalid gemeentenaam throws error', () => {
                 expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
-                    .withGemeentenaam(LanguageString.of('english', 'dutch'))
+                    .withGemeentenaam(LanguageString.of('nl', 'formal'))
                     .build()))
-                    .toThrowWithMessage(InvariantError, 'Address mag alleen NL bevatten in de taalstring');
+                    .toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
             });
 
             test('invalid land throws error', () => {
                 expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
-                    .withGemeentenaam(LanguageString.of('english', 'dutch'))
+                    .withGemeentenaam(LanguageString.of('nl', 'formal'))
                     .build()))
-                    .toThrowWithMessage(InvariantError, 'Address mag alleen NL bevatten in de taalstring');
+                    .toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
             });
 
             test('invalid straatnaam throws error', () => {
                 expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
-                    .withGemeentenaam(LanguageString.of('english', 'dutch'))
+                    .withGemeentenaam(LanguageString.of('nl', 'formal'))
                     .build()))
-                    .toThrowWithMessage(InvariantError, 'Address mag alleen NL bevatten in de taalstring');
-            });
-
-            test('language EN and NL throws error', () => {
-                expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
-                    .withGemeentenaam(LanguageString.of('english', 'dutch'))
-                    .build()))
-                    .toThrowWithMessage(InvariantError, 'Address mag alleen NL bevatten in de taalstring');
-            });
-
-            test('language NL and NL-FORMAL throws error', () => {
-                expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
-                    .withGemeentenaam(LanguageString.of(undefined, 'dutch', 'nl-formal'))
-                    .build()))
-                    .toThrowWithMessage(InvariantError, 'Address mag alleen NL bevatten in de taalstring');
+                    .toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
             });
 
             test('valid languages does not throw error', () => {
                 expect(() => Address.forInstanceSnapshot(aFullAddressForInstanceSnapshot()
-                    .withGemeentenaam(LanguageString.of(undefined, 'gemeente'))
-                    .withLand(LanguageString.of(undefined, 'land'))
-                    .withStraatnaam(LanguageString.of(undefined, 'straat'))
+                    .withGemeentenaam(LanguageString.of('gemeente'))
+                    .withLand(LanguageString.of('land'))
+                    .withStraatnaam(LanguageString.of('straat'))
                     .build()))
                     .not.toThrow();
             });

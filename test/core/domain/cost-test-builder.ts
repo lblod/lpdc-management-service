@@ -42,7 +42,6 @@ export function aFullCost(): CostBuilder {
         .withId(CostBuilder.buildIri(uuid()))
         .withUuid(uuid())
         .withTitle(LanguageString.of(
-            CostTestBuilder.TITLE_EN,
             CostTestBuilder.TITLE_NL,
             CostTestBuilder.TITLE_NL_FORMAL,
             CostTestBuilder.TITLE_NL_INFORMAL,
@@ -50,7 +49,6 @@ export function aFullCost(): CostBuilder {
             CostTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
             LanguageString.of(
-                CostTestBuilder.DESCRIPTION_EN,
                 CostTestBuilder.DESCRIPTION_NL,
                 CostTestBuilder.DESCRIPTION_NL_FORMAL,
                 CostTestBuilder.DESCRIPTION_NL_INFORMAL,
@@ -64,7 +62,6 @@ export function anotherFullCost(): CostBuilder {
         .withId(CostBuilder.buildIri(uuid()))
         .withUuid(uuid())
         .withTitle(LanguageString.of(
-            CostTestBuilder.ANOTHER_TITLE_EN,
             CostTestBuilder.ANOTHER_TITLE_NL,
             CostTestBuilder.ANOTHER_TITLE_NL_FORMAL,
             CostTestBuilder.ANOTHER_TITLE_NL_INFORMAL,
@@ -72,7 +69,6 @@ export function anotherFullCost(): CostBuilder {
             CostTestBuilder.ANOTHER_TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
             LanguageString.of(
-                CostTestBuilder.ANOTHER_DESCRIPTION_EN,
                 CostTestBuilder.ANOTHER_DESCRIPTION_NL,
                 CostTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
                 CostTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL,
@@ -86,11 +82,9 @@ export function aFullCostForInstance(): CostBuilder {
         .withId(CostBuilder.buildIri(uuid()))
         .withUuid(uuid())
         .withTitle(LanguageString.of(
-            CostTestBuilder.TITLE_EN,
             undefined,
             CostTestBuilder.TITLE_NL_FORMAL))
         .withDescription(LanguageString.of(
-            CostTestBuilder.DESCRIPTION_EN,
             undefined,
             CostTestBuilder.DESCRIPTION_NL_FORMAL))
         .withOrder(1);
@@ -101,11 +95,9 @@ export function anotherFullCostForInstance(): CostBuilder {
         .withId(CostBuilder.buildIri(uuid()))
         .withUuid(uuid())
         .withTitle(LanguageString.of(
-            CostTestBuilder.ANOTHER_TITLE_EN,
             undefined,
             CostTestBuilder.ANOTHER_TITLE_NL_FORMAL))
         .withDescription(LanguageString.of(
-            CostTestBuilder.ANOTHER_DESCRIPTION_EN,
             undefined,
             CostTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL))
         .withOrder(2);
@@ -115,12 +107,10 @@ export function aFullCostForInstanceSnapshot(): CostBuilder {
     return new CostBuilder()
         .withId(CostBuilder.buildIri(uuid()))
         .withTitle(LanguageString.of(
-            CostTestBuilder.TITLE_EN,
             undefined,
             undefined,
             CostTestBuilder.TITLE_NL_INFORMAL))
         .withDescription(LanguageString.of(
-            CostTestBuilder.DESCRIPTION_EN,
             undefined,
             undefined,
             CostTestBuilder.DESCRIPTION_NL_INFORMAL))
@@ -131,12 +121,10 @@ export function anotherFullCostForInstanceSnapshot(): CostBuilder {
     return new CostBuilder()
         .withId(CostBuilder.buildIri(uuid()))
         .withTitle(LanguageString.of(
-            CostTestBuilder.ANOTHER_TITLE_EN,
             undefined,
             undefined,
             CostTestBuilder.ANOTHER_TITLE_NL_INFORMAL))
         .withDescription(LanguageString.of(
-            CostTestBuilder.ANOTHER_DESCRIPTION_EN,
             undefined,
             undefined,
             CostTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL))

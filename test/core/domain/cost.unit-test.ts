@@ -101,7 +101,7 @@ describe('for instance', () => {
     });
 
     test('If title and description have the same nl language cost is created', () => {
-        const langString = LanguageString.of('en', 'nl');
+        const langString = LanguageString.of('nl');
         const cost = aFullCostForInstance().withTitle(langString).withDescription(langString).build();
         expect(() => Cost.forInstance(cost)).not.toThrow();
     });
@@ -112,22 +112,22 @@ describe('for instance', () => {
     });
 
     test('If title and description have different nl languages, throws error', () => {
-        const title = LanguageString.of('en', 'nl', undefined);
-        const description = LanguageString.of('en', undefined, 'nl-formal');
+        const title = LanguageString.of('nl', undefined);
+        const description = LanguageString.of(undefined, 'nl-formal');
         const cost = aFullCostForInstance().withTitle(title).withDescription(description).build();
 
         expect(() => Cost.forInstance(cost)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
-    test('If title has different nl languages, throws error', () => {
-        const title = LanguageString.of('en', 'nl', 'nl-formal');
+    test('If title has multiple nl languages, throws error', () => {
+        const title = LanguageString.of('nl', 'nl-formal');
         const cost = aFullCostForInstance().withTitle(title).withDescription(undefined).build();
 
         expect(() => Cost.forInstance(cost)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If description has different nl languages, throws error', () => {
-        const description = LanguageString.of('en', 'nl', 'nl-formal');
+        const description = LanguageString.of('nl', 'nl-formal');
         const cost = aFullCostForInstance().withDescription(description).withTitle(undefined).build();
 
         expect(() => Cost.forInstance(cost)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
@@ -136,9 +136,9 @@ describe('for instance', () => {
     for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, 'value in generated formal', undefined);
         } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, undefined, 'value in generated formal');
         }
         test('If title contains invalid language, throws error', () => {
             const cost = aFullCostForInstance().withTitle(valueInNlLanguage).withDescription(undefined).build();
@@ -155,11 +155,11 @@ describe('for instance', () => {
     for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of('value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, 'value formal', undefined, undefined, undefined);
         } else if (validLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, 'value informal', undefined, undefined);
         }
 
         test('If title contains valid language, not throws error', () => {
@@ -205,14 +205,14 @@ describe('for instance snapshot', () => {
     });
 
     test('If title and description have the same nl language cost is created', () => {
-        const langString = LanguageString.of('en', 'nl');
+        const langString = LanguageString.of('nl');
         const cost = aFullCostForInstanceSnapshot().withTitle(langString).withDescription(langString).build();
         expect(() => Cost.forInstanceSnapshot(cost)).not.toThrow();
     });
 
     test('If title and description have different nl languages, throws error', () => {
-        const title = LanguageString.of('en', 'nl', undefined);
-        const description = LanguageString.of('en', undefined, 'nl-formal');
+        const title = LanguageString.of('nl', undefined);
+        const description = LanguageString.of(undefined, 'nl-formal');
         const cost = aFullCostForInstanceSnapshot().withTitle(title).withDescription(description).build();
 
         expect(() => Cost.forInstanceSnapshot(cost)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
@@ -221,9 +221,9 @@ describe('for instance snapshot', () => {
     for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, 'value in generated formal', undefined);
         } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, undefined, 'value in generated formal');
         }
 
         test(`If title and description contains invalid language ${invalidLanguage}, throws error`, () => {
@@ -236,11 +236,11 @@ describe('for instance snapshot', () => {
     for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of('value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, 'value formal', undefined, undefined, undefined);
         } else if (validLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, 'value informal', undefined, undefined);
         }
 
         test(`If title and description contains valid language ${validLanguage}, not throws error`, () => {
@@ -272,11 +272,11 @@ describe('nl Language', () => {
 
         let valueInNlLanguage: LanguageString;
         if (nlLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
         } else if (nlLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
         } else if (nlLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
         }
 
         test(`title has nl language ${nlLanguage}`, () => {
@@ -315,14 +315,14 @@ describe('nl Language', () => {
 describe('transformToInformal', () => {
     test('should transform cost with title, description to informal', () => {
         const cost = aFullCostForInstance()
-            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
+            .withTitle(LanguageString.of(undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, 'beschrijving'))
             .build();
 
         expect(cost.transformToInformal()).toEqual(CostBuilder
             .from(cost)
-            .withTitle(LanguageString.of(undefined, undefined, undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
+            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
             .build()
         );
     });

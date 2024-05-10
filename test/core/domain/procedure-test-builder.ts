@@ -52,7 +52,6 @@ export function aFullProcedure(): ProcedureBuilder {
         .withId(ProcedureBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
-            ProcedureTestBuilder.TITLE_EN,
             ProcedureTestBuilder.TITLE_NL,
             ProcedureTestBuilder.TITLE_NL_FORMAL,
             ProcedureTestBuilder.TITLE_NL_INFORMAL,
@@ -60,7 +59,6 @@ export function aFullProcedure(): ProcedureBuilder {
             ProcedureTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
             LanguageString.of(
-                ProcedureTestBuilder.DESCRIPTION_EN,
                 ProcedureTestBuilder.DESCRIPTION_NL,
                 ProcedureTestBuilder.DESCRIPTION_NL_FORMAL,
                 ProcedureTestBuilder.DESCRIPTION_NL_INFORMAL,
@@ -74,7 +72,6 @@ export function anotherFullProcedure(): ProcedureBuilder {
     return new ProcedureBuilder()
         .withId(ProcedureBuilder.buildIri(uuid()))
         .withTitle(LanguageString.of(
-            ProcedureTestBuilder.ANOTHER_TITLE_EN,
             ProcedureTestBuilder.ANOTHER_TITLE_NL,
             ProcedureTestBuilder.ANOTHER_TITLE_NL_FORMAL,
             ProcedureTestBuilder.ANOTHER_TITLE_NL_INFORMAL,
@@ -82,7 +79,6 @@ export function anotherFullProcedure(): ProcedureBuilder {
             ProcedureTestBuilder.ANOTHER_TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
             LanguageString.of(
-                ProcedureTestBuilder.ANOTHER_DESCRIPTION_EN,
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL,
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL,
                 ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL,
@@ -98,13 +94,11 @@ export function aFullProcedureForInstance(): ProcedureBuilder {
         .withId(ProcedureBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
-            ProcedureTestBuilder.TITLE_EN,
             undefined,
             ProcedureTestBuilder.TITLE_NL_FORMAL
         ))
         .withDescription(
             LanguageString.of(
-                ProcedureTestBuilder.DESCRIPTION_EN,
                 undefined,
                 ProcedureTestBuilder.DESCRIPTION_NL_FORMAL
             ))
@@ -118,12 +112,10 @@ export function anotherFullProcedureForInstance() {
         .withId(ProcedureBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withTitle(LanguageString.of(
-            ProcedureTestBuilder.ANOTHER_TITLE_EN,
             undefined,
             ProcedureTestBuilder.ANOTHER_TITLE_NL_FORMAL
         ))
         .withDescription(LanguageString.of(
-            ProcedureTestBuilder.ANOTHER_DESCRIPTION_EN,
             undefined,
             ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_FORMAL
         ))
@@ -136,14 +128,12 @@ export function aFullProcedureForInstanceSnapshot(): ProcedureBuilder {
     return new ProcedureBuilder()
         .withId(ProcedureBuilder.buildIri(uniqueId))
         .withTitle(LanguageString.of(
-            ProcedureTestBuilder.TITLE_EN,
             undefined,
             undefined,
             ProcedureTestBuilder.TITLE_NL_INFORMAL
         ))
         .withDescription(
             LanguageString.of(
-                ProcedureTestBuilder.DESCRIPTION_EN,
                 undefined,
                 undefined,
                 ProcedureTestBuilder.DESCRIPTION_NL_INFORMAL
@@ -156,13 +146,11 @@ export function anotherFullProcedureForInstanceSnapshot() {
     return new ProcedureBuilder()
         .withId(ProcedureBuilder.buildIri(uuid()))
         .withTitle(LanguageString.of(
-            ProcedureTestBuilder.ANOTHER_TITLE_EN,
             undefined,
             undefined,
             ProcedureTestBuilder.ANOTHER_TITLE_NL_INFORMAL
         ))
         .withDescription(LanguageString.of(
-            ProcedureTestBuilder.ANOTHER_DESCRIPTION_EN,
             undefined,
             undefined,
             ProcedureTestBuilder.ANOTHER_DESCRIPTION_NL_INFORMAL
@@ -174,7 +162,6 @@ export function anotherFullProcedureForInstanceSnapshot() {
 export class ProcedureTestBuilder {
 
     public static readonly TITLE = 'Procedure Title';
-    public static readonly TITLE_EN = 'Procedure Title - en';
     public static readonly TITLE_NL = 'Procedure Title - nl';
     public static readonly TITLE_NL_FORMAL = 'Procedure Title - nl-formal';
     public static readonly TITLE_NL_INFORMAL = 'Procedure Title - nl-informal';
@@ -182,21 +169,18 @@ export class ProcedureTestBuilder {
     public static readonly TITLE_NL_GENERATED_INFORMAL = 'Procedure Title - nl-generated-informal';
 
     public static readonly DESCRIPTION = 'Procedure Description';
-    public static readonly DESCRIPTION_EN = 'Procedure Description - en';
     public static readonly DESCRIPTION_NL = 'Procedure Description - nl';
     public static readonly DESCRIPTION_NL_FORMAL = 'Procedure Description - nl-formal';
     public static readonly DESCRIPTION_NL_INFORMAL = 'Procedure Description - nl-informal';
     public static readonly DESCRIPTION_NL_GENERATED_FORMAL = 'Procedure Description - nl-generated-formal';
     public static readonly DESCRIPTION_NL_GENERATED_INFORMAL = 'Procedure Description - nl-generated-informal';
 
-    public static readonly ANOTHER_TITLE_EN = 'Procedure Another Title - en';
     public static readonly ANOTHER_TITLE_NL = 'Procedure Another Title - nl';
     public static readonly ANOTHER_TITLE_NL_FORMAL = 'Procedure Another Title - nl-formal';
     public static readonly ANOTHER_TITLE_NL_INFORMAL = 'Procedure Another Title - nl-informal';
     public static readonly ANOTHER_TITLE_NL_GENERATED_FORMAL = 'Procedure Another Title - nl-generated-formal';
     public static readonly ANOTHER_TITLE_NL_GENERATED_INFORMAL = 'Procedure Another Title - nl-generated-informal';
 
-    public static readonly ANOTHER_DESCRIPTION_EN = 'Procedure Another Description - en';
     public static readonly ANOTHER_DESCRIPTION_NL = 'Procedure Another Description - nl';
     public static readonly ANOTHER_DESCRIPTION_NL_FORMAL = 'Procedure Another Description - nl-formal';
     public static readonly ANOTHER_DESCRIPTION_NL_INFORMAL = 'Procedure Another Description - nl-informal';

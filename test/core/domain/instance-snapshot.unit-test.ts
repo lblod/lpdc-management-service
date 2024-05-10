@@ -117,6 +117,11 @@ describe('constructing', () => {
             .toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
     });
 
+    test('keywords with other nl language throws error', () => {
+        const instanceSnapshotTestBuilder = aFullInstanceSnapshot().withKeywords([LanguageString.of(undefined, 'overlijden'), LanguageString.of(undefined, 'geboorte')]);
+        expect(() => instanceSnapshotTestBuilder.build()).toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
+    });
+
     test('languages with duplicates throws error', () => {
         expect(() => aFullInstanceSnapshot().withLanguages([LanguageType.ENG, LanguageType.ENG]).build())
             .toThrowWithMessage(InvariantError, 'languages mag geen duplicaten bevatten');
@@ -183,8 +188,8 @@ describe('constructing', () => {
             const validRequirement = Requirement.reconstitute(
                 RequirementBuilder.buildIri(uuidValue),
                 undefined,
-                LanguageString.of('title', undefined, undefined, 'title'),
-                LanguageString.of('description', undefined, undefined, 'omschrijving'),
+                LanguageString.of(undefined, undefined, 'title'),
+                LanguageString.of(undefined, undefined, 'omschrijving'),
                 1,
                 undefined
             );
@@ -230,8 +235,8 @@ describe('constructing', () => {
                 const validEvidence = Evidence.reconstitute(
                     EvidenceBuilder.buildIri(uuidValue),
                     undefined,
-                    LanguageString.of('title', undefined, undefined, 'title'),
-                    LanguageString.of('description', undefined, undefined, 'omschrijving')
+                    LanguageString.of(undefined, undefined, 'title'),
+                    LanguageString.of(undefined, undefined, 'omschrijving')
                 );
                 const validRequirement = aFullRequirementForInstanceSnapshot().withEvidence(validEvidence).build();
 
@@ -261,8 +266,8 @@ describe('constructing', () => {
             const validProcedure = Procedure.reconstitute(
                 ProcedureBuilder.buildIri(uuidValue),
                 undefined,
-                LanguageString.of('title', undefined, undefined, 'title'),
-                LanguageString.of('description', undefined, undefined, 'omschrijving'),
+                LanguageString.of(undefined, undefined, 'title'),
+                LanguageString.of(undefined, undefined, 'omschrijving'),
                 1,
                 []
             );
@@ -308,8 +313,8 @@ describe('constructing', () => {
                 const validEvidence = Evidence.reconstitute(
                     EvidenceBuilder.buildIri(uuidValue),
                     undefined,
-                    LanguageString.of('title', undefined, undefined, 'title'),
-                    LanguageString.of('description', undefined, undefined, 'omschrijving')
+                    LanguageString.of(undefined, undefined, 'title'),
+                    LanguageString.of(undefined, undefined, 'omschrijving')
                 );
                 const validRequirement = aFullRequirementForInstanceSnapshot().withEvidence(validEvidence).build();
 
@@ -582,8 +587,8 @@ describe('validateLanguages', () => {
     const invalidLanguages = [Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL];
 
     test('if values have different nl language strings, then throws error', () => {
-        const title = LanguageString.of(undefined, 'nl', undefined);
-        const description = LanguageString.of(undefined, undefined, 'nl-formal');
+        const title = LanguageString.of('nl', undefined);
+        const description = LanguageString.of(undefined, 'nl-formal');
 
         const instanceSnapshot = aFullInstanceSnapshot().withTitle(title).withDescription(description);
 
@@ -591,8 +596,8 @@ describe('validateLanguages', () => {
     });
 
     test('if 1 value has different nl language strings, then throws error', () => {
-        const title = LanguageString.of(undefined, 'nl', 'nl-formal');
-        const description = LanguageString.of(undefined, undefined, undefined);
+        const title = LanguageString.of('nl', 'nl-formal');
+        const description = LanguageString.of(undefined, undefined);
 
         const instanceSnapshot = aFullInstanceSnapshot().withTitle(title).withDescription(description);
 
@@ -600,8 +605,8 @@ describe('validateLanguages', () => {
     });
 
     test('if values have no nl language strings, then throws error', () => {
-        const title = LanguageString.of('abc', undefined, undefined);
-        const description = LanguageString.of('def', undefined, undefined);
+        const title = LanguageString.of(undefined, undefined);
+        const description = LanguageString.of(undefined, undefined);
 
         const instanceSnapshot = aMinimalInstanceSnapshot().withTitle(title).withDescription(description);
 
@@ -609,8 +614,8 @@ describe('validateLanguages', () => {
     });
 
     test('if only 1 value has 1 nl language string, then throws error', () => {
-        const title = LanguageString.of(undefined, undefined, undefined);
-        const description = LanguageString.of('en', 'nl', undefined);
+        const title = LanguageString.of(undefined, undefined);
+        const description = LanguageString.of('nl', undefined);
 
         const instanceSnapshot = aMinimalInstanceSnapshot().withTitle(title).withDescription(description);
 
@@ -621,12 +626,12 @@ describe('validateLanguages', () => {
 
         test('if a requirement contains a different nl version, then throws error', () => {
             const requirement = aMinimalRequirementForInstanceSnapshot()
-                .withTitle(LanguageString.of(undefined, undefined, 'nl-formal', undefined))
-                .withDescription(LanguageString.of(undefined, undefined, 'nl-formal', undefined))
+                .withTitle(LanguageString.of(undefined, 'nl-formal', undefined))
+                .withDescription(LanguageString.of(undefined, 'nl-formal', undefined))
                 .build();
             const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .withRequirements([requirement]);
 
             expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
@@ -634,12 +639,12 @@ describe('validateLanguages', () => {
 
         test('if a procedure contains a different nl version, then throws error', () => {
             const procedure = aMinimalProcedureForInstanceSnapshot()
-                .withTitle(LanguageString.of(undefined, undefined, 'nl-formal', undefined))
-                .withDescription(LanguageString.of(undefined, undefined, 'nl-formal', undefined))
+                .withTitle(LanguageString.of(undefined, 'nl-formal', undefined))
+                .withDescription(LanguageString.of(undefined, 'nl-formal', undefined))
                 .build();
             const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .withProcedures([procedure]);
 
             expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
@@ -647,12 +652,12 @@ describe('validateLanguages', () => {
 
         test('if a website contains a different nl version, then throws error', () => {
             const website = aMinimalWebsiteForInstanceSnapshot()
-                .withTitle(LanguageString.of(undefined, undefined, 'nl-formal', undefined))
-                .withDescription(LanguageString.of(undefined, undefined, 'nl-formal', undefined))
+                .withTitle(LanguageString.of(undefined, 'nl-formal', undefined))
+                .withDescription(LanguageString.of(undefined, 'nl-formal', undefined))
                 .build();
             const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .withWebsites([website]);
 
             expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
@@ -660,12 +665,12 @@ describe('validateLanguages', () => {
 
         test('if a cost contains a different nl version, then throws error', () => {
             const cost = aMinimalCostForInstanceSnapshot()
-                .withTitle(LanguageString.of(undefined, undefined, 'nl-formal', undefined))
-                .withDescription(LanguageString.of(undefined, undefined, 'nl-formal', undefined))
+                .withTitle(LanguageString.of(undefined, 'nl-formal', undefined))
+                .withDescription(LanguageString.of(undefined, 'nl-formal', undefined))
                 .build();
             const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .withCosts([cost]);
 
             expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
@@ -673,12 +678,12 @@ describe('validateLanguages', () => {
 
         test('if a financial advantage contains a different nl version, then throws error', () => {
             const financialAdvantage = aMinimalFinancialAdvantageForInstanceSnapshot()
-                .withTitle(LanguageString.of(undefined, undefined, 'nl-formal', undefined))
-                .withDescription(LanguageString.of(undefined, undefined, 'nl-formal', undefined))
+                .withTitle(LanguageString.of(undefined, 'nl-formal', undefined))
+                .withDescription(LanguageString.of(undefined, 'nl-formal', undefined))
                 .build();
             const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withTitle(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'nl-informal'))
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .withFinancialAdvantages([financialAdvantage]);
 
             expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
@@ -693,9 +698,9 @@ describe('validateLanguages', () => {
     for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, 'value in generated formal', undefined);
         } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, undefined, 'value in generated formal');
         }
 
         test(`If title and description contains invalid language ${invalidLanguage}, throws error`, () => {
@@ -723,11 +728,11 @@ describe('validateLanguages', () => {
     for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of('value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, 'value formal', undefined, undefined, undefined);
         } else if (validLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, 'value informal', undefined, undefined);
         }
         test(`If title and description contains valid language ${validLanguage}, does not throws error`, () => {
             const instanceSnapshot = aMinimalInstanceSnapshot().withTitle(valueInNlLanguage).withDescription(valueInNlLanguage);
@@ -759,11 +764,11 @@ describe('dutch language variant', () => {
 
         let valueInNlLanguage: LanguageString;
         if (nlLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
         } else if (nlLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
         } else if (nlLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
         }
 
 

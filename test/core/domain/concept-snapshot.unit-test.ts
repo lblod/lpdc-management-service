@@ -85,7 +85,7 @@ describe('constructing', () => {
     });
 
     test('NL not present in title throws error', () => {
-        expect(() => aFullConceptSnapshot().withTitle(LanguageString.of('en', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in title mag niet ontbreken');
+        expect(() => aFullConceptSnapshot().withTitle(LanguageString.of(undefined, 'formeel', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in title mag niet ontbreken');
     });
 
     test('Undefined description throws error', () => {
@@ -93,7 +93,7 @@ describe('constructing', () => {
     });
 
     test('NL not present in description throws error', () => {
-        expect(() => aFullConceptSnapshot().withDescription(LanguageString.of('en', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in description mag niet ontbreken');
+        expect(() => aFullConceptSnapshot().withDescription(LanguageString.of(undefined, 'formeel')).build()).toThrowWithMessage(InvariantError, 'nl version in description mag niet ontbreken');
     });
 
     test('Undefined productId throws error', () => {
@@ -147,6 +147,11 @@ describe('constructing', () => {
     test('keywords with duplicates throws error', () => {
         const conceptTestBuilder = aFullConceptSnapshot().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]);
         expect(() => conceptTestBuilder.build()).toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
+    });
+
+    test('keywords with other nl language does not throws error', () => {
+        const conceptTestBuilder = aFullConceptSnapshot().withKeywords([LanguageString.of(undefined, 'overlijden'), LanguageString.of(undefined, 'geboorte')]);
+        expect(() => conceptTestBuilder.build()).not.toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
     });
 
     test('undefined isArchived duplicates throws error', () => {
@@ -476,7 +481,15 @@ describe('is functionally changed', () => {
                 .build(),
             aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2027-09-16T00:00:00.000Z'))
-                .build()],];
+                .build()],
+        ['title formal changed',
+            aFullConceptSnapshot()
+                .withTitle(LanguageString.of("text-nl", "text-nl-formal"))
+                .build(),
+            aFullConceptSnapshot()
+                .withTitle(LanguageString.of("text-nl", "text-nl-formal-veranderd"))
+                .build()],
+    ];
 
     for (const testCase of functionallyUnchangedTestCases) {
         test(`not functionally changed when ${testCase[0]}`, () => {
@@ -488,38 +501,38 @@ describe('is functionally changed', () => {
         = [
         ['title changed',
             aFullConceptSnapshot()
-                .withTitle(LanguageString.of("text-en", "text-nl", "text-nl-formal"))
+                .withTitle(LanguageString.of("text-nl", "text-nl-formal"))
                 .build(),
             aFullConceptSnapshot()
-                .withTitle(LanguageString.of("text-en-changed", "text-nl-veranderd", "text-nl-formal-veranderd",))
+                .withTitle(LanguageString.of("text-nl-veranderd", "text-nl-formal-veranderd",))
                 .build()],
         ['description changed',
             aFullConceptSnapshot()
-                .withDescription(LanguageString.of("text-en", "text-nl",))
+                .withDescription(LanguageString.of("text-nl",))
                 .build(),
             aFullConceptSnapshot()
-                .withDescription(LanguageString.of("text-en-changed", "text-nl-veranderd"))
+                .withDescription(LanguageString.of("text-nl-veranderd"))
                 .build()],
         ['additional description changed',
             aFullConceptSnapshot()
-                .withAdditionalDescription(LanguageString.of("text-en"))
+                .withAdditionalDescription(LanguageString.of("text-nl"))
                 .build(),
             aFullConceptSnapshot()
-                .withAdditionalDescription(LanguageString.of("text-en-changed"))
+                .withAdditionalDescription(LanguageString.of("text-nl-changed"))
                 .build()],
         ['exception changed',
             aFullConceptSnapshot()
-                .withException(LanguageString.of("text-en"))
+                .withException(LanguageString.of("text-nl"))
                 .build(),
             aFullConceptSnapshot()
-                .withException(LanguageString.of("text-en-changed"))
+                .withException(LanguageString.of("text-nl-changed"))
                 .build()],
         ['regulation changed',
             aFullConceptSnapshot()
-                .withRegulation(LanguageString.of("text-en"))
+                .withRegulation(LanguageString.of("text-nl"))
                 .build(),
             aFullConceptSnapshot()
-                .withRegulation(LanguageString.of("text-en-changed"))
+                .withRegulation(LanguageString.of("text-nl-changed"))
                 .build()],
         ['start date changed',
             aFullConceptSnapshot()
@@ -752,26 +765,12 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withYourEuropeCategories([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING])
                 .build()],
-        ['keyword updated - en',
+        ['keyword updated - nl',
             aFullConceptSnapshot()
                 .withKeywords([LanguageString.of('abc')])
                 .build(),
             aFullConceptSnapshot()
                 .withKeywords([LanguageString.of('def')])
-                .build()],
-        ['keyword updated - nl',
-            aFullConceptSnapshot()
-                .withKeywords([LanguageString.of(undefined, 'abc')])
-                .build(),
-            aFullConceptSnapshot()
-                .withKeywords([LanguageString.of(undefined, 'def')])
-                .build()],
-        ['keyword updated - en became nl',
-            aFullConceptSnapshot()
-                .withKeywords([LanguageString.of('abc')])
-                .build(),
-            aFullConceptSnapshot()
-                .withKeywords([LanguageString.of(undefined, 'abc')])
                 .build()],
         ['keyword added',
             aFullConceptSnapshot()
@@ -803,68 +802,54 @@ describe('is functionally changed', () => {
                 .build()],
         ['requirement order changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-1')).withOrder(1).build(),
-                    aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-2')).withOrder(2).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl-1')).withOrder(1).build(),
+                    aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl-2')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-2')).withOrder(1).build(),
-                    aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en-1')).withOrder(2).build()])
-                .build()],
-        ['requirement title updated : en changed',
-            aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en')).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en - updated')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl-2')).withOrder(1).build(),
+                    aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl-1')).withOrder(2).build()])
                 .build()],
         ['requirement title updated: nl added',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of(undefined)).build()])
                 .build()],
         ['requirement title updated: nl removed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of(undefined)).build()])
                 .build()],
-        ['requirement title updated : nl changed',
+        ['requirement title updated: nl changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-en', 'requirement-title-changed')).build()])
-                .build()],
-        ['requirement description updated : en changed',
-            aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en')).build()])
-                .build(),
-            aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en - updated')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-changed')).build()])
                 .build()],
         ['requirement description updated: nl added',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of()).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-nl')).build()])
                 .build()],
         ['requirement description updated: nl removed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of()).build()])
                 .build()],
-        ['requirement description updated : nl changed',
+        ['requirement description updated: nl changed',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-nl')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-en', 'requirement-description-changed')).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-changed')).build()])
                 .build()],
         ['requirement > evidence : added',
             aFullConceptSnapshot()
@@ -882,17 +867,17 @@ describe('is functionally changed', () => {
                 .build()],
         ['requirement > evidence title updated',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withTitle(LanguageString.of('evidence title en')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withTitle(LanguageString.of('evidence title nl')).build()).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withTitle(LanguageString.of('evidence title en updated')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withTitle(LanguageString.of('evidence title nl updated')).build()).build()])
                 .build()],
         ['requirement > evidence description updated',
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withDescription(LanguageString.of('evidence description en')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withDescription(LanguageString.of('evidence description nl')).build()).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withDescription(LanguageString.of('evidence description en updated')).build()).build()])
+                .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withDescription(LanguageString.of('evidence description nl updated')).build()).build()])
                 .build()],
         ['procedure added',
             aFullConceptSnapshot()
@@ -910,51 +895,51 @@ describe('is functionally changed', () => {
                 .build()],
         ['procedure order changed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en')).withOrder(1).build(),
-                    aFullProcedure().withTitle(LanguageString.of('procedure title en another')).withOrder(2).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title nl')).withOrder(1).build(),
+                    aFullProcedure().withTitle(LanguageString.of('procedure title nl another')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en another')).withOrder(1).build(),
-                    aFullProcedure().withTitle(LanguageString.of('procedure title en')).withOrder(2).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title nl another')).withOrder(1).build(),
+                    aFullProcedure().withTitle(LanguageString.of('procedure title nl')).withOrder(2).build()])
                 .build()],
         ['procedure title updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en')).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title en updated')).build()])
+                .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title nl updated')).build()])
                 .build()],
         ['procedure description updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description en')).build()])
+                .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description en updated')).build()])
+                .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description nl updated')).build()])
                 .build()],
         ['procedure website title updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('procedure website title en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('procedure website title nl')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('procedure website title en updated')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('procedure website title nl updated')).build()]).build()])
                 .build()],
         ['procedure website description updated',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description nl')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description en updated')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description nl updated')).build()]).build()])
                 .build()],
         ['procedure website description added',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description nl')).build()]).build()])
                 .build()],
         ['procedure website description removed',
             aFullConceptSnapshot()
-                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description en')).build()]).build()])
+                .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description nl')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()]).build()])
@@ -1003,28 +988,28 @@ describe('is functionally changed', () => {
                 .build()],
         ['website title updated',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('website title en')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('website title nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('website title en updated')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('website title nl updated')).build()])
                 .build()],
         ['website description updated',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description en')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description en updated')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description nl updated')).build()])
                 .build()],
         ['website description added',
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description en')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description nl')).build()])
                 .build()],
         ['website description removed',
             aFullConceptSnapshot()
-                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description en')).build()])
+                .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()])
@@ -1059,24 +1044,24 @@ describe('is functionally changed', () => {
                 .build()],
         ['cost title updated',
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(LanguageString.of('cost title en')).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(LanguageString.of('cost title en updated')).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title nl updated')).build()])
                 .build()],
         ['cost description updated',
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withDescription(LanguageString.of('cost description en')).build()])
+                .withCosts([aFullCost().withDescription(LanguageString.of('cost description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withDescription(LanguageString.of('cost description en updated')).build()])
+                .withCosts([aFullCost().withDescription(LanguageString.of('cost description nl updated')).build()])
                 .build()],
         ['cost order changed',
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(LanguageString.of('cost title 1 en')).withOrder(1).build(), aFullCost().withTitle(LanguageString.of('cost title 2 en')).withOrder(2).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title 1 nl')).withOrder(1).build(), aFullCost().withTitle(LanguageString.of('cost title 2 nl')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withCosts([aFullCost().withTitle(LanguageString.of('cost title 2 en')).withOrder(1).build(), aFullCost().withTitle(LanguageString.of('cost title 1 en')).withOrder(2).build()])
+                .withCosts([aFullCost().withTitle(LanguageString.of('cost title 2 nl')).withOrder(1).build(), aFullCost().withTitle(LanguageString.of('cost title 1 nl')).withOrder(2).build()])
                 .build()],
         ['financial advantage added',
             aFullConceptSnapshot()
@@ -1094,24 +1079,24 @@ describe('is functionally changed', () => {
                 .build()],
         ['financial advantage title updated',
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title en updated')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title nl updated')).build()])
                 .build()],
         ['financial advantage description updated',
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description en')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description en updated')).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description nl updated')).build()])
                 .build()],
         ['financial advantage order changed',
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 en')).withOrder(1).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 en')).withOrder(2).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 nl')).withOrder(1).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 nl')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 en')).withOrder(1).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 en')).withOrder(2).build()])
+                .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 nl')).withOrder(1).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 nl')).withOrder(2).build()])
                 .build()],
         ['legal resource added',
             aFullConceptSnapshot()
@@ -1129,17 +1114,17 @@ describe('is functionally changed', () => {
                 .build()],
         ['legal resource title updated',
             aFullConceptSnapshot()
-                .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title en')).build()])
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title en updated')).build()])
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title nl updated')).build()])
                 .build()],
         ['legal resource description updated',
             aFullConceptSnapshot()
-                .withLegalResources([aFullLegalResourceForConceptSnapshot().withDescription(LanguageString.of('legal resource description en')).build()])
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withDescription(LanguageString.of('legal resource description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
-                .withLegalResources([aFullLegalResourceForConceptSnapshot().withDescription(LanguageString.of('legal resource description en updated')).build()])
+                .withLegalResources([aFullLegalResourceForConceptSnapshot().withDescription(LanguageString.of('legal resource description nl updated')).build()])
                 .build()],
         ['legal resource url updated',
             aFullConceptSnapshot()

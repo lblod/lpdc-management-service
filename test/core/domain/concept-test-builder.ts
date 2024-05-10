@@ -48,7 +48,6 @@ export function aFullConcept(): ConceptTestBuilder {
         .withUuid(uuid())
         .withTitle(
             LanguageString.of(
-                ConceptTestBuilder.TITLE_EN,
                 ConceptTestBuilder.TITLE_NL,
                 ConceptTestBuilder.TITLE_NL_FORMAL,
                 ConceptTestBuilder.TITLE_NL_INFORMAL,
@@ -56,7 +55,6 @@ export function aFullConcept(): ConceptTestBuilder {
                 ConceptTestBuilder.TITLE_NL_GENERATED_INFORMAL))
         .withDescription(
             LanguageString.of(
-                ConceptTestBuilder.DESCRIPTION_EN,
                 ConceptTestBuilder.DESCRIPTION_NL,
                 ConceptTestBuilder.DESCRIPTION_NL_FORMAL,
                 ConceptTestBuilder.DESCRIPTION_NL_INFORMAL,
@@ -64,7 +62,6 @@ export function aFullConcept(): ConceptTestBuilder {
                 ConceptTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL))
         .withAdditionalDescription(
             LanguageString.of(
-                ConceptTestBuilder.ADDITIONAL_DESCRIPTION_EN,
                 ConceptTestBuilder.ADDITIONAL_DESCRIPTION_NL,
                 ConceptTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL,
                 ConceptTestBuilder.ADDITIONAL_DESCRIPTION_NL_INFORMAL,
@@ -72,7 +69,6 @@ export function aFullConcept(): ConceptTestBuilder {
                 ConceptTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL))
         .withException(
             LanguageString.of(
-                ConceptTestBuilder.EXCEPTION_EN,
                 ConceptTestBuilder.EXCEPTION_NL,
                 ConceptTestBuilder.EXCEPTION_NL_FORMAL,
                 ConceptTestBuilder.EXCEPTION_NL_INFORMAL,
@@ -80,7 +76,6 @@ export function aFullConcept(): ConceptTestBuilder {
                 ConceptTestBuilder.EXCEPTION_NL_GENERATED_INFORMAL))
         .withRegulation(
             LanguageString.of(
-                ConceptTestBuilder.REGULATION_EN,
                 ConceptTestBuilder.REGULATION_NL,
                 ConceptTestBuilder.REGULATION_NL_FORMAL,
                 ConceptTestBuilder.REGULATION_NL_INFORMAL,
@@ -169,7 +164,7 @@ export class ConceptTestBuilder {
 
     public static readonly YOUR_EUROPE_CATEGORIES = [YourEuropeCategoryType.WERKENPENSIONERING, YourEuropeCategoryType.PROCEDURESTARTENEXPLOITERENSLUITENBEDRIJFPENSIOENENVERZEKERINGSREGELINGENWERKGEVER, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE];
 
-    public static readonly KEYWORDS = [LanguageString.of('overlijden - en'), LanguageString.of(undefined, 'overlijden - nl'), LanguageString.of(undefined, 'goederen verhandelen'), LanguageString.of('sacrale activiteiten')];
+    public static readonly KEYWORDS = [LanguageString.of('overlijden - nl'), LanguageString.of('goederen verhandelen'),];
 
     public static readonly REQUIREMENTS = [
         aFullRequirement().withUuid(uuid()).withEvidence(aFullEvidence().withUuid(uuid()).build()).build(),

@@ -475,7 +475,6 @@ export class DomainToQuadsMapper {
     private languageStringToQuads(subject: NamedNode, predicate: NamedNode, object: LanguageString | undefined): Statement[] {
         return object ?
             [
-                ["en", object.en],
                 ["nl", object.nl],
                 ["nl-be-x-formal", object.nlFormal],
                 ["nl-be-x-informal", object.nlInformal],

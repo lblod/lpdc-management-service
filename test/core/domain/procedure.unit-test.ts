@@ -193,7 +193,7 @@ describe('for instance', () => {
     });
 
     test('If title and description have the same nl language procedure is created', () => {
-        const langString = LanguageString.of('en', 'nl');
+        const langString = LanguageString.of('nl');
         const procedure = aFullProcedureForInstance().withTitle(langString).withDescription(langString).withWebsites([]).build();
         expect(() => Procedure.forInstance(procedure)).not.toThrow();
     });
@@ -204,39 +204,39 @@ describe('for instance', () => {
     });
 
     test('If title and description have different nl languages, throws error', () => {
-        const title = LanguageString.of('en', 'nl', undefined);
-        const description = LanguageString.of('en', undefined, 'nl-formal');
+        const title = LanguageString.of('nl', undefined);
+        const description = LanguageString.of(undefined, 'nl-formal');
         const procedure = aFullProcedureForInstance().withTitle(title).withDescription(description).build();
 
         expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If title has different nl languages, throws error', () => {
-        const title = LanguageString.of('en', 'nl', 'nl-formal');
+        const title = LanguageString.of('nl', 'nl-formal');
         const procedure = aFullProcedureForInstance().withTitle(title).withDescription(undefined).build();
 
         expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If description has different nl languages, throws error', () => {
-        const description = LanguageString.of('en', 'nl', 'nl-formal');
+        const description = LanguageString.of('nl', 'nl-formal');
         const procedure = aFullProcedureForInstance().withDescription(description).withTitle(undefined).build();
 
         expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If title description and all websites have the same nl language procedure is created', () => {
-        const langString = LanguageString.of('en', undefined, 'nl');
-        const website = aFullWebsiteForInstance().withTitle(LanguageString.of('en', undefined, 'nl-formal-website1')).withOrder(1).build();
-        const anotherWebsite = aFullWebsiteForInstance().withTitle(LanguageString.of('en', undefined, 'nl-formal-website2')).withOrder(2).build();
+        const langString = LanguageString.of(undefined, 'nl-formal');
+        const website = aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, 'nl-formal-website1')).withOrder(1).build();
+        const anotherWebsite = aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, 'nl-formal-website2')).withOrder(2).build();
 
         const procedure = aFullProcedureForInstance().withTitle(langString).withDescription(langString).withWebsites([website, anotherWebsite]).build();
         expect(() => Procedure.forInstance(procedure)).not.toThrow();
     });
 
     test('If a website has a different nl language than title or description, throws error', () => {
-        const languageString = LanguageString.of('en', 'nl', undefined);
-        const website = aFullWebsiteForInstance().withTitle(LanguageString.of('en', undefined, 'nl-formal')).build();
+        const languageString = LanguageString.of('nl', undefined);
+        const website = aFullWebsiteForInstance().withTitle(LanguageString.of(undefined, 'nl-formal')).build();
         const procedure = aFullProcedureForInstance().withDescription(languageString).withTitle(languageString).withWebsites([website]).build();
         expect(() => Procedure.forInstance(procedure)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
@@ -262,9 +262,9 @@ describe('for instance', () => {
     for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, 'value in generated formal', undefined);
         } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, undefined, 'value in generated formal');
         }
 
         test('If title contains invalid language, throws error', () => {
@@ -295,11 +295,11 @@ describe('for instance', () => {
     for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of('value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, 'value formal', undefined, undefined, undefined);
         } else if (validLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, 'value informal', undefined, undefined);
         }
 
         test('If title contains valid language, does not throw error', () => {
@@ -359,21 +359,21 @@ describe('for instance snapshot', () => {
     });
 
     test('If title and description have the same nl language procedure is created', () => {
-        const langString = LanguageString.of('en', 'nl');
+        const langString = LanguageString.of('nl');
         const procedure = aFullProcedureForInstanceSnapshot().withTitle(langString).withDescription(langString).withWebsites([]).build();
         expect(() => Procedure.forInstanceSnapshot(procedure)).not.toThrow();
     });
 
     test('If title and description have different nl languages, throws error', () => {
-        const title = LanguageString.of('en', 'nl', undefined);
-        const description = LanguageString.of('en', undefined, 'nl-formal');
+        const title = LanguageString.of('nl', undefined);
+        const description = LanguageString.of(undefined, 'nl-formal');
         const procedure = aFullProcedureForInstanceSnapshot().withTitle(title).withDescription(description).withWebsites([]).build();
 
         expect(() => Procedure.forInstanceSnapshot(procedure)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
     });
 
     test('If title description and all websites have the same nl language procedure is created', () => {
-        const langString = LanguageString.of('en', undefined, 'nl');
+        const langString = LanguageString.of(undefined, 'nl-formal');
         const website = aFullWebsiteForInstance().withTitle(langString).withDescription(langString).withOrder(1).build();
         const anotherWebsite = aFullWebsiteForInstance().withTitle(langString).withDescription(langString).withOrder(2).build();
 
@@ -382,8 +382,8 @@ describe('for instance snapshot', () => {
     });
 
     test('If a website has a different nl language than title or description, throws error', () => {
-        const languageString = LanguageString.of('en', 'nl', undefined);
-        const anotherLanguageString = LanguageString.of('en', undefined, 'nl');
+        const languageString = LanguageString.of('nl', undefined);
+        const anotherLanguageString = LanguageString.of(undefined, 'nl');
         const website = aFullWebsiteForInstance().withTitle(anotherLanguageString).withDescription(anotherLanguageString).build();
         const procedure = aFullProcedureForInstanceSnapshot().withDescription(languageString).withTitle(languageString).withWebsites([website]).build();
         expect(() => Procedure.forInstanceSnapshot(procedure)).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
@@ -410,9 +410,9 @@ describe('for instance snapshot', () => {
     for (const invalidLanguage of invalidLanguages) {
         let valueInNlLanguage: LanguageString;
         if (invalidLanguage === Language.GENERATED_FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, 'value in generated formal', undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, 'value in generated formal', undefined);
         } else if (invalidLanguage == Language.GENERATED_INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, undefined, undefined, 'value in generated formal');
+            valueInNlLanguage = LanguageString.of(undefined, undefined, undefined, undefined, 'value in generated formal');
         }
 
         test(`If title and description contains invalid language ${invalidLanguage}, throws error`, () => {
@@ -432,11 +432,11 @@ describe('for instance snapshot', () => {
     for (const validLanguage of validLanguages) {
         let valueInNlLanguage: LanguageString;
         if (validLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value en`, 'value nl', undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of('value nl', undefined, undefined, undefined, undefined);
         } else if (validLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, 'value formal', undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, 'value formal', undefined, undefined, undefined);
         } else if (validLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value en`, undefined, undefined, 'value informal', undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, 'value informal', undefined, undefined);
         }
 
         test(`If title and description contains valid language ${validLanguage}, does not throw error`, () => {
@@ -476,11 +476,11 @@ describe('nl Language', () => {
 
         let valueInNlLanguage: LanguageString;
         if (nlLanguage === Language.NL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, `value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(`value ${uuid()} in nl`, undefined, undefined, undefined, undefined);
         } else if (nlLanguage == Language.FORMAL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, `value ${uuid()} in nl formal`, undefined, undefined, undefined);
         } else if (nlLanguage == Language.INFORMAL) {
-            valueInNlLanguage = LanguageString.of(`value ${uuid()} en`, undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
+            valueInNlLanguage = LanguageString.of(undefined, undefined, `value ${uuid()} in nl informal`, undefined, undefined);
         }
 
         test(`title has nl language ${nlLanguage}`, () => {
@@ -553,20 +553,20 @@ describe('nl Language', () => {
 describe('transformToInformal', () => {
     test('should transform procedure with title, description and website to informal', () => {
         const procedure = aFullProcedure()
-            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
+            .withTitle(LanguageString.of(undefined, 'titel'))
+            .withDescription(LanguageString.of(undefined, 'beschrijving'))
             .withWebsites([
                 aFullWebsiteForInstance()
-                    .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+                    .withTitle(LanguageString.of(undefined, 'titel'))
                     .build()
             ])
             .build();
 
         const transformedProcedure = procedure.transformToInformal();
 
-        expect(transformedProcedure.title).toEqual(LanguageString.of(undefined, undefined, undefined, 'titel'));
-        expect(transformedProcedure.description).toEqual(LanguageString.of(undefined, undefined, undefined, 'beschrijving'));
-        expect(transformedProcedure.websites[0].title).toEqual(LanguageString.of(undefined, undefined, undefined, 'titel'));
+        expect(transformedProcedure.title).toEqual(LanguageString.of(undefined, undefined, 'titel'));
+        expect(transformedProcedure.description).toEqual(LanguageString.of(undefined, undefined, 'beschrijving'));
+        expect(transformedProcedure.websites[0].title).toEqual(LanguageString.of(undefined, undefined, 'titel'));
     });
 
     test('should transform procedure with title, description to informal', () => {

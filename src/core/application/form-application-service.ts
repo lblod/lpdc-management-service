@@ -4,7 +4,7 @@ import {Iri} from "../domain/shared/iri";
 import {CodeRepository} from "../port/driven/persistence/code-repository";
 import {SelectFormLanguageDomainService} from "../domain/select-form-language-domain-service";
 import {Bestuurseenheid} from "../domain/bestuurseenheid";
-import {FormType, PublicationMediumType} from "../domain/types";
+import {FormType} from "../domain/types";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {SemanticFormsMapper} from "../port/driven/persistence/semantic-forms-mapper";
 import {validateForm} from '@lblod/submission-form-helpers';
@@ -46,8 +46,7 @@ export class FormApplicationService {
         const concept = await this._conceptRepository.findById(conceptId);
         const languageForForm = await this._selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
 
-        const isEnglishRequired = concept.publicationMedia.includes(PublicationMediumType.YOUREUROPE);
-        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm, isEnglishRequired);
+        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm);
 
         const tailoredSchemes = formType === FormType.EIGENSCHAPPEN ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
 
@@ -68,8 +67,7 @@ export class FormApplicationService {
 
         const instance = await this._instanceRepository.findById(bestuurseenheid, instanceId);
 
-        const isEnglishRequired = instance.publicationMedia.includes(PublicationMediumType.YOUREUROPE);
-        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, instance.dutchLanguageVariant, isEnglishRequired);
+        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, instance.dutchLanguageVariant);
 
         const tailoredSchemes = formType === FormType.EIGENSCHAPPEN ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
 

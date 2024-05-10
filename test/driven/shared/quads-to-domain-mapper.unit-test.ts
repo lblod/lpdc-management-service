@@ -16,8 +16,6 @@ describe('quads to domain mapper', () => {
 
     const logger = new Logger('QuadsToDomainMapper');
     describe('logs integrity problems', () => {
-
-
         const loggerSpy = jest.spyOn(logger, 'log');
 
         afterEach(() => {
@@ -39,7 +37,6 @@ describe('quads to domain mapper', () => {
                     quad(subject, NS.schema('dateModified'), literal(InstanceTestBuilder.DATE_MODIFIED.value), graph),
                     quad(subject, NS.adms('status'), NS.concepts.instanceStatus(InstanceTestBuilder.STATUS), graph),
                     quad(subject, NS.lpdcExt('dutchLanguageVariant'), literal(Language.NL), graph),
-                    quad(subject, NS.dct('title'), literal('title en', Language.EN), graph),
                     quad(subject, NS.dct('title'), literal('title nl', Language.NL), graph),
                 ];
 
@@ -127,6 +124,7 @@ describe('quads to domain mapper', () => {
         });
 
     });
+
     describe('sort', () => {
         const instanceUuid = uuid();
         const instanceId = buildInstanceIri(instanceUuid);
@@ -169,6 +167,7 @@ describe('quads to domain mapper', () => {
 
 
         });
+
         test('When all orders are unique, dont throw error', () => {
             const quads =
                 [

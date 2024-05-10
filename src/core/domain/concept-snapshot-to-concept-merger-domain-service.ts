@@ -20,6 +20,7 @@ import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
 } from "./ensure-linked-authorities-exist-as-code-list-domain-service";
 import {LegalResource, LegalResourceBuilder} from "./legal-resource";
+import {Language} from "./language";
 
 export class ConceptSnapshotToConceptMergerDomainService {
 
@@ -129,7 +130,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.executingAuthorities,
             conceptSnapshot.publicationMedia,
             conceptSnapshot.yourEuropeCategories,
-            conceptSnapshot.keywords,
+            conceptSnapshot.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)),
             this.copyRequirements(conceptSnapshot.requirements),
             this.copyProcedures(conceptSnapshot.procedures),
             this.copyWebsites(conceptSnapshot.websites),
@@ -165,7 +166,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.executingAuthorities,
             conceptSnapshot.publicationMedia,
             conceptSnapshot.yourEuropeCategories,
-            conceptSnapshot.keywords,
+            conceptSnapshot.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)),
             this.copyRequirements(conceptSnapshot.requirements),
             this.copyProcedures(conceptSnapshot.procedures),
             this.copyWebsites(conceptSnapshot.websites),
