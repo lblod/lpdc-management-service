@@ -24,7 +24,6 @@ import {
 } from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
-import {aFullContactPointForInstanceSnapshot} from "../../core/domain/contact-point-test-builder";
 
 describe('InstanceSnapshotRepository', () => {
 
