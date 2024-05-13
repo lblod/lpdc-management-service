@@ -322,6 +322,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
 
         const currentConceptSnapshot = await this._conceptSnapshotRepository.findById(currentSnapshotId);
 
+        //TODO LPDC-1166: adapt to new interface -> if empty -> not functdionally changed
         return ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
     }
 

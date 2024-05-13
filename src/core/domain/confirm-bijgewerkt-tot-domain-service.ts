@@ -24,6 +24,9 @@ export class ConfirmBijgewerktTotDomainService {
         this._conceptSnapshotRepository = conceptSnapshotRepository;
     }
 
+    //TODO LPDC-1168: add method to take all data from concept snapshot, and call confirmBijgewerktTot method
+
+    //TODO LPDC-1168: use method, after reopen, and copying fields
     async confirmBijgewerktTot(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
         if (instance.conceptSnapshotId.equals(conceptSnapshot.id)) {
             return;

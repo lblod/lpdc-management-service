@@ -615,6 +615,7 @@ async function validateAddress(req: Request, res: Response) {
     return res.json(address);
 }
 
+//TODO LPDC-1166: create new endpoint for concept-snapshots + add security
 async function compareSnapshots(req: Request, res: Response) {
     const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.currentSnapshotUri as string));
     const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.newSnapshotUri as string));
