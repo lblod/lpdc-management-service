@@ -1,4 +1,4 @@
-import {END2END_TEST_SPARQL_ENDPOINT, TEST_SPARQL_ENDPOINT} from "../test.config";
+import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../config";
 import {sparqlEscapeUri} from "../../mu-helper";
@@ -24,11 +24,11 @@ import {CodeSparqlRepository} from "../../src/driven/persistence/code-sparql-rep
 const endPoint = END2END_TEST_SPARQL_ENDPOINT;
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
-const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+const conceptRepository = new ConceptSparqlRepository(endPoint);
 const instanceRepository = new InstanceSparqlRepository(endPoint);
 const formDefinitionRepository = new FormDefinitionFileRepository();
 const codeRepository = new CodeSparqlRepository(endPoint);
-const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
+const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(endPoint);
 const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
 const semanticFormsMapper = new SemanticFormsMapperImpl();
 const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);
@@ -54,6 +54,7 @@ describe('Instance publish validation', () => {
 
             const instanceErrors = [];
             for (const instanceId of instanceIds) {
+                console.log(`${(new Date()).toISOString()} - ${instanceId}`);
                 try {
 
                     const errorList = await validateInstanceForPublishApplicationService.validate(new Iri(instanceId), bestuurseenheid);
