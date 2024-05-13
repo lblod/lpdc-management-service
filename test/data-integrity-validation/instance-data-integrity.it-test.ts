@@ -132,6 +132,7 @@ describe('Instance Data Integrity Validation', () => {
             const numberOfLoops = 1;
             const averageTimes = [];
             const dataErrors = [];
+            const checkedNuts: Iri[] = [];
 
             if (instanceIds.length > 0) {
 
@@ -174,6 +175,13 @@ describe('Instance Data Integrity Validation', () => {
                             expect(instance.createdBy).toEqual(bestuurseenheid.id);
 
                             await validateNeedsConversionFromFormalToInformalFlag(instance, bestuurseenheid);
+
+                            for (const nutscode of instance.spatials) {
+                                if (!checkedNuts.includes(nutscode)) {
+                                    await validateNuts(nutscode);
+                                    checkedNuts.push(nutscode);
+                                }
+                            }
 
                             const doubleQuadsErrorsForInstance = doubleQuadReporterCapture.logs(instance);
                             totalDoubleQuads.push(...doubleQuadsErrorsForInstance);
@@ -236,6 +244,8 @@ describe('Instance Data Integrity Validation', () => {
         fs.writeFileSync(`/tmp/instance-total-double-triples.csv`, totalDoubleQuads.join('\n'));
         fs.writeFileSync(`/tmp/instance-total-remaining-quads.txt`, totalRemainingQuadsInstance.join('\n'));
         expect(totalErrors).toEqual([]);
+
+
     }, 60000 * 15 * 100);
 
     test.skip('Find all triples for instance', async () => {
@@ -289,6 +299,19 @@ describe('Instance Data Integrity Validation', () => {
         } else {
             expect(instance.needsConversionFromFormalToInformal).toBeFalse();
         }
+    }
+
+    async function validateNuts(nuts: Iri): Promise<boolean> {
+        const query = `
+            ASK {
+                ${sparqlEscapeUri(nuts)} a <http://www.w3.org/2004/02/skos/core#Concept>.
+                ${sparqlEscapeUri(nuts)} <http://mu.semte.ch/vocabularies/core/uuid> ?uuid.
+                ${sparqlEscapeUri(nuts)} <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel.
+            }
+        `;
+        const validNuts = await sparqlQuerying.ask(query);
+        expect(validNuts).toBeTrue();
+        return validNuts;
     }
 
 });
