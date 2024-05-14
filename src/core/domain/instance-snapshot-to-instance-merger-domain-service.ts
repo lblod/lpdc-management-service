@@ -6,12 +6,6 @@ import {Instance} from "./instance";
 import {uuid} from "../../../mu-helper";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {InstancePublicationStatusType, InstanceStatusType} from "./types";
-import {Requirement, RequirementBuilder} from "./requirement";
-import {Evidence, EvidenceBuilder} from "./evidence";
-import {Procedure, ProcedureBuilder} from "./procedure";
-import {Website, WebsiteBuilder} from "./website";
-import {Cost, CostBuilder} from "./cost";
-import {FinancialAdvantage, FinancialAdvantageBuilder} from "./financial-advantage";
 import {ContactPoint, ContactPointBuilder} from "./contact-point";
 import {Address, AddressBuilder} from "./address";
 import {FormatPreservingDate} from "./format-preserving-date";
@@ -25,9 +19,7 @@ import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
 } from "./ensure-linked-authorities-exist-as-code-list-domain-service";
 import {DeleteInstanceDomainService} from "./delete-instance-domain-service";
-import {LegalResource, LegalResourceBuilder} from "./legal-resource";
 import {lastPartAfter} from "./shared/string-helper";
-
 
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
@@ -127,11 +119,11 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.publicationMedia,
             instanceSnapshot.yourEuropeCategories,
             instanceSnapshot.keywords,
-            this.copyRequirements(instanceSnapshot.requirements),
-            this.copyProcedures(instanceSnapshot.procedures),
-            this.copyWebsites(instanceSnapshot.websites),
-            this.copyCosts(instanceSnapshot.costs),
-            this.copyFinancialAdvantage(instanceSnapshot.financialAdvantages),
+            instanceSnapshot.requirements.map(req => req.transformWithNewId()),
+            instanceSnapshot.procedures.map(proc => proc.transformWithNewId()),
+            instanceSnapshot.websites.map(ws => ws.transformWithNewId()),
+            instanceSnapshot.costs.map(c => c.transformWithNewId()),
+            instanceSnapshot.financialAdvantages.map(fa => fa.transformWithNewId()),
             this.copyContactPoints(instanceSnapshot.contactPoints),
             concept?.id,
             concept?.latestConceptSnapshot,
@@ -147,7 +139,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             undefined,
             undefined,
             instanceSnapshot.spatials,
-            this.copyLegalResources(instanceSnapshot.legalResources)
+            instanceSnapshot.legalResources.map(lr => lr.transformWithNewId())
         );
         instance.validateForPublish(false);
         return instance;
@@ -175,11 +167,11 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.publicationMedia,
             instanceSnapshot.yourEuropeCategories,
             instanceSnapshot.keywords,
-            this.copyRequirements(instanceSnapshot.requirements),
-            this.copyProcedures(instanceSnapshot.procedures),
-            this.copyWebsites(instanceSnapshot.websites),
-            this.copyCosts(instanceSnapshot.costs),
-            this.copyFinancialAdvantage(instanceSnapshot.financialAdvantages),
+            instanceSnapshot.requirements.map(req => req.transformWithNewId()),
+            instanceSnapshot.procedures.map(proc => proc.transformWithNewId()),
+            instanceSnapshot.websites.map(ws => ws.transformWithNewId()),
+            instanceSnapshot.costs.map(c => c.transformWithNewId()),
+            instanceSnapshot.financialAdvantages.map(fa => fa.transformWithNewId()),
             this.copyContactPoints(instanceSnapshot.contactPoints),
             concept?.id,
             concept?.latestConceptSnapshot,
@@ -195,92 +187,10 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             undefined,
             instance.datePublished ? InstancePublicationStatusType.TE_HERPUBLICEREN : undefined,
             instanceSnapshot.spatials,
-            this.copyLegalResources(instanceSnapshot.legalResources),
+            instanceSnapshot.legalResources.map(lr => lr.transformWithNewId()),
         );
         mergedInstance.validateForPublish(false);
         return mergedInstance;
-    }
-
-    private copyRequirements(requirements: Requirement[]) {
-        return requirements.map(r => {
-                const newUuid = uuid();
-                return Requirement.reconstitute(
-                    RequirementBuilder.buildIri(newUuid),
-                    newUuid,
-                    r.title,
-                    r.description,
-                    r.order,
-                    r.evidence ? this.copyEvidence(r.evidence) : undefined
-                );
-            }
-        );
-    }
-
-    private copyEvidence(evidence: Evidence): Evidence {
-        const newUuid = uuid();
-        return Evidence.reconstitute(
-            EvidenceBuilder.buildIri(newUuid),
-            newUuid,
-            evidence.title,
-            evidence.description
-        );
-    }
-
-    private copyProcedures(procedures: Procedure[]) {
-        return procedures.map(p => {
-                const newUuid = uuid();
-                return Procedure.reconstitute(
-                    ProcedureBuilder.buildIri(newUuid),
-                    newUuid,
-                    p.title,
-                    p.description,
-                    p.order,
-                    this.copyWebsites(p.websites)
-                );
-            }
-        );
-    }
-
-    private copyWebsites(websites: Website[]) {
-        return websites.map(w => {
-                const newUuid = uuid();
-                return Website.reconstitute(
-                    WebsiteBuilder.buildIri(newUuid),
-                    newUuid,
-                    w.title,
-                    w.description,
-                    w.order,
-                    w.url
-                );
-            }
-        );
-    }
-
-    private copyCosts(costs: Cost[]) {
-        return costs.map(c => {
-            const newUuid = uuid();
-            return Cost.reconstitute(
-                CostBuilder.buildIri(newUuid),
-                newUuid,
-                c.title,
-                c.description,
-                c.order
-            );
-        });
-    }
-
-    private copyFinancialAdvantage(financialAdvantages: FinancialAdvantage[]) {
-        return financialAdvantages.map(fa => {
-                const newUuid = uuid();
-                return FinancialAdvantage.reconstitute(
-                    FinancialAdvantageBuilder.buildIri(newUuid),
-                    newUuid,
-                    fa.title,
-                    fa.description,
-                    fa.order
-                );
-            }
-        );
     }
 
     private copyContactPoints(contactPoints: ContactPoint[]) {
@@ -299,7 +209,10 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         );
     }
 
-    private copyAddress(address: Address): Address {
+    private copyAddress(address: Address | undefined): Address | undefined {
+        if (!address) {
+            return undefined;
+        }
         const newUuid = uuid();
         return Address.reconstitute(
             AddressBuilder.buildIri(newUuid),
@@ -310,21 +223,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             address.postcode,
             address.straatnaam,
             address.verwijstNaar);
-    }
-
-    private copyLegalResources(legalResources: LegalResource[]): LegalResource[] {
-        return legalResources.map(lr => {
-                const newUuid = uuid();
-                return LegalResource.reconstitute(
-                    LegalResourceBuilder.buildIri(newUuid),
-                    newUuid,
-                    lr.title,
-                    lr.description,
-                    lr.url,
-                    lr.order
-                );
-            }
-        );
     }
 
     private async getConceptIfSpecified(conceptId: Iri | undefined): Promise<Concept | undefined> {

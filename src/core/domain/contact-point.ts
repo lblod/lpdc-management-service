@@ -157,7 +157,6 @@ export class ContactPointBuilder {
         return this;
     }
 
-
     public build(): ContactPoint {
         return ContactPoint.reconstitute(
             this.id,
