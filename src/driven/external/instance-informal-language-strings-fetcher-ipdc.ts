@@ -134,9 +134,9 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
             }
 
             if (initialValue?.nl) {
-                return LanguageString.of(informalNewValue);
+                return LanguageString.ofValueInLanguage(informalNewValue, Language.NL);
             } else {
-                return LanguageString.of(undefined, informalNewValue);
+                return LanguageString.ofValueInLanguage(informalNewValue, Language.FORMAL);
             }
         } else if (
             LanguageString.isAbsent(newValue, initialDutchLanguageVariant) &&

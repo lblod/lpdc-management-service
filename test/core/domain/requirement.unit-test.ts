@@ -2,7 +2,8 @@ import {
     aFullRequirement,
     aFullRequirementForInstance,
     aFullRequirementForInstanceSnapshot,
-    aMinimalRequirementForInstance
+    aMinimalRequirementForInstance,
+    RequirementTestBuilder
 } from "./requirement-test-builder";
 import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
 import {uuid} from "../../../mu-helper";
@@ -471,6 +472,7 @@ describe('nl language', () => {
 });
 
 describe('transformToInformal', () => {
+
     test('should transform requirement with title, description and evidence to informal', () => {
        const requirement = aFullRequirementForInstance()
            .withTitle(LanguageString.of(undefined, 'titel'))
@@ -504,6 +506,43 @@ describe('transformToInformal', () => {
         expect(() => requirement.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
 
     });
+});
+
+describe('transformLanguage', () => {
+
+    test('should transform requirement with title, description and evidence to informal', () => {
+        const requirement = aFullRequirement()
+            .build();
+
+        const transformedRequirement = requirement.transformLanguage(Language.FORMAL, Language.INFORMAL);
+
+        expect(transformedRequirement).toEqual(
+            new RequirementBuilder()
+                .withId(requirement.id)
+                .withUuid(requirement.uuid)
+                .withTitle(LanguageString.ofValueInLanguage(RequirementTestBuilder.TITLE_NL_FORMAL, Language.INFORMAL))
+                .withDescription(LanguageString.ofValueInLanguage(RequirementTestBuilder.DESCRIPTION_NL_FORMAL, Language.INFORMAL))
+                .withOrder(requirement.order)
+                .withEvidence(new EvidenceBuilder()
+                    .withId(requirement.evidence.id)
+                    .withUuid(requirement.evidence.uuid)
+                    .withTitle(LanguageString.ofValueInLanguage(EvidenceTestBuilder.TITLE_NL_FORMAL, Language.INFORMAL))
+                    .withDescription(LanguageString.ofValueInLanguage(EvidenceTestBuilder.DESCRIPTION_NL_FORMAL, Language.INFORMAL))
+                    .build())
+                .build());
+    });
+
+    test('should transform without title, description and evidence', () => {
+        const requirement = aFullRequirementForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .withEvidence(undefined)
+            .build();
+
+        expect(requirement.transformToInformal()).toEqual(requirement);
+
+    });
+
 });
 
 describe('builder', () => {

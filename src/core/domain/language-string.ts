@@ -36,6 +36,15 @@ export class LanguageString {
         return new LanguageString(nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal);
     }
 
+    public static ofValueInLanguage(value: string, language: Language): LanguageString {
+        return LanguageString.of(
+            language === Language.NL ? value : undefined,
+            language === Language.FORMAL ? value : undefined,
+            language === Language.INFORMAL ? value : undefined,
+            language === Language.GENERATED_FORMAL ? value : undefined,
+            language === Language.GENERATED_INFORMAL ? value : undefined);
+    }
+
     get nl(): string | undefined {
         return this._nl;
     }
@@ -88,9 +97,14 @@ export class LanguageString {
         if (this.definedLanguages.length > 1) {
             throw new InvariantError('voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
         }
-        const oldDutchLanguage = this.definedLanguages[0];
-        const languageValue = this.getLanguageValue(oldDutchLanguage);
-        return LanguageString.of(undefined, undefined, languageValue);
+        const previousDutchLanguage = this.definedLanguages[0];
+        return this.transformLanguage(previousDutchLanguage, Language.INFORMAL);
+    }
+
+    transformLanguage(from: Language, to: Language) {
+        return LanguageString.ofValueInLanguage(
+            this.getLanguageValue(from),
+            to);
     }
 
     static extractLanguages(languages: (LanguageString | undefined)[]): Language[] {

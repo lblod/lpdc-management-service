@@ -4,6 +4,7 @@ import {zip} from 'lodash';
 import {Evidence} from "./evidence";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
+import {uuid} from "../../../mu-helper";
 
 export class Requirement {
 
@@ -128,6 +129,23 @@ export class Requirement {
             .withTitle(this.title?.transformToInformal())
             .withDescription(this.description?.transformToInformal())
             .withEvidence(this.evidence?.transformToInformal())
+            .build();
+    }
+
+    transformLanguage(from: Language, to: Language): Requirement {
+        return RequirementBuilder.from(this)
+            .withTitle(this.title?.transformLanguage(from, to))
+            .withDescription(this.description?.transformLanguage(from, to))
+            .withEvidence(this.evidence?.transformLanguage(from, to))
+            .build();
+    }
+
+    transformWithNewId(): Requirement {
+        const uniqueId = uuid();
+        return RequirementBuilder.from(this)
+            .withId(RequirementBuilder.buildIri(uniqueId))
+            .withUuid(uniqueId)
+            .withEvidence(this.evidence?.transformWithNewId())
             .build();
     }
 

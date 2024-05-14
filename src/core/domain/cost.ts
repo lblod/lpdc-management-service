@@ -3,6 +3,7 @@ import {LanguageString} from "./language-string";
 import {zip} from "lodash";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
+import {uuid} from "../../../mu-helper";
 
 export class Cost {
 
@@ -105,6 +106,21 @@ export class Cost {
             .build();
     }
 
+    transformLanguage(from: Language, to: Language): Cost {
+        return CostBuilder.from(this)
+            .withTitle(this.title?.transformLanguage(from, to))
+            .withDescription(this.description?.transformLanguage(from, to))
+            .build();
+    }
+
+    transformWithNewId(): Cost {
+        const uniqueId = uuid();
+        return CostBuilder.from(this)
+            .withId(CostBuilder.buildIri(uniqueId))
+            .withUuid(uniqueId)
+            .build();
+    }
+
     static isFunctionallyChanged(value: Cost[], other: Cost[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((costs: [Cost, Cost]) => {
@@ -116,6 +132,7 @@ export class Cost {
     get nlLanguage(): Language | undefined {
         return LanguageString.extractLanguages([this._title, this._description])[0];
     }
+
 }
 
 export class CostBuilder {
@@ -163,7 +180,7 @@ export class CostBuilder {
         this.order = order;
         return this;
     }
-    
+
     public build(): Cost {
         return Cost.reconstitute(
             this.id,

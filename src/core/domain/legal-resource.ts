@@ -3,7 +3,7 @@ import {requiredValue} from "./shared/invariant";
 import {zip} from "lodash";
 import {LanguageString} from "./language-string";
 import {Language} from "./language";
-
+import {uuid} from "../../../mu-helper";
 
 export class LegalResource {
 
@@ -109,6 +109,28 @@ export class LegalResource {
         return this._order;
     }
 
+    transformToInformal(): LegalResource {
+        return LegalResourceBuilder.from(this)
+            .withTitle(this.title?.transformToInformal())
+            .withDescription(this.description?.transformToInformal())
+            .build();
+    }
+
+    transformLanguage(from: Language, to: Language): LegalResource {
+        return LegalResourceBuilder.from(this)
+            .withTitle(this.title?.transformLanguage(from, to))
+            .withDescription(this.description?.transformLanguage(from, to))
+            .build();
+    }
+
+    transformWithNewId(): LegalResource {
+        const uniqueId = uuid();
+        return LegalResourceBuilder.from(this)
+            .withId(LegalResourceBuilder.buildIri(uniqueId))
+            .withUuid(uniqueId)
+            .build();
+    }
+
     static isFunctionallyChanged(value: LegalResource[], other: LegalResource[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((lr: [LegalResource, LegalResource]) => {
@@ -116,13 +138,6 @@ export class LegalResource {
                     || LanguageString.isFunctionallyChanged(lr[0].description, lr[1].description)
                     || lr[0].url !== lr[1].url;
             });
-    }
-
-    transformToInformal(): LegalResource {
-        return LegalResourceBuilder.from(this)
-            .withTitle(this.title?.transformToInformal())
-            .withDescription(this.description?.transformToInformal())
-            .build();
     }
 }
 
@@ -147,6 +162,7 @@ export class LegalResourceBuilder {
             .withUrl(legalResource.url)
             .withOrder(legalResource.order);
     }
+
     public withId(id: Iri): LegalResourceBuilder {
         this.id = id;
         return this;

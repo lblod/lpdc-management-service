@@ -4,7 +4,7 @@ import {zip} from "lodash";
 import {Website} from "./website";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
-
+import {uuid} from "../../../mu-helper";
 
 export class Procedure {
 
@@ -133,6 +133,23 @@ export class Procedure {
             .withTitle(this.title?.transformToInformal())
             .withDescription(this.description?.transformToInformal())
             .withWebsites(this.websites.map(website => website.transformToInformal()))
+            .build();
+    }
+
+    transformLanguage(from: Language, to: Language) {
+        return ProcedureBuilder.from(this)
+            .withTitle(this.title?.transformLanguage(from, to))
+            .withDescription(this.description?.transformLanguage(from, to))
+            .withWebsites(this._websites.map(ws => ws.transformLanguage(from, to)))
+            .build();
+    }
+
+    transformWithNewId(): Procedure {
+        const uniqueId = uuid();
+        return ProcedureBuilder.from(this)
+            .withId(ProcedureBuilder.buildIri(uniqueId))
+            .withUuid(uniqueId)
+            .withWebsites(this._websites.map(ws => ws.transformWithNewId()))
             .build();
     }
 

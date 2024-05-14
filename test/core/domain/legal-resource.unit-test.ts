@@ -3,7 +3,8 @@ import {
     aFullLegalResourceForConceptSnapshot,
     aFullLegalResourceForInstance,
     aFullLegalResourceForInstanceSnapshot,
-    aMinimalLegalResourceForInstance
+    aMinimalLegalResourceForInstance,
+    LegalResourceTestBuilder
 } from "./legal-resource-test-builder";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
@@ -234,6 +235,7 @@ describe('nl language', () => {
 });
 
 describe('transformToInformal', () => {
+
     test('should transform legalResource with title, description to informal', () => {
         const legalResource = aFullLegalResourceForInstance()
             .withTitle(LanguageString.of(undefined, undefined, 'titel'))
@@ -265,6 +267,30 @@ describe('transformToInformal', () => {
     });
 });
 
+describe('transformLanguage', () => {
+
+    test('should transform legalResource with title, description', () => {
+        const legalResource = aFullLegalResourceForConcept()
+            .build();
+
+        expect(legalResource.transformLanguage(Language.FORMAL, Language.INFORMAL)).toEqual(LegalResourceBuilder
+            .from(legalResource)
+            .withTitle(LanguageString.ofValueInLanguage(LegalResourceTestBuilder.TITLE_NL_FORMAL, Language.INFORMAL))
+            .withDescription(LanguageString.ofValueInLanguage(LegalResourceTestBuilder.DESCRIPTION_NL_FORMAL, Language.INFORMAL))
+            .build()
+        );
+    });
+
+    test('should transform legalResource without title, description', () => {
+        const legalResource = aFullLegalResourceForConcept()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+
+        expect(legalResource.transformLanguage(Language.FORMAL, Language.INFORMAL)).toEqual(legalResource);
+    });
+
+});
 
 describe('builder', () => {
     test('from copies all fields', () => {

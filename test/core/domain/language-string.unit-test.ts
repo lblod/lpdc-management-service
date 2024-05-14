@@ -15,33 +15,28 @@ describe('constructing', () => {
     });
 
     test('can build a languageString with only nl', () => {
-        const languageString = LanguageString.of('text-nl');
-
-        expect(languageString.nl).toEqual('text-nl');
+        expect(LanguageString.of('text-nl').nl).toEqual('text-nl');
+        expect(LanguageString.ofValueInLanguage('text-nl', Language.NL).nl).toEqual('text-nl');
     });
 
     test('can build a languageString with only nl-formal', () => {
-        const languageString = LanguageString.of(undefined, 'text-nl-formal');
-
-        expect(languageString.nlFormal).toEqual('text-nl-formal');
+        expect(LanguageString.of(undefined, 'text-nl-formal').nlFormal).toEqual('text-nl-formal');
+        expect(LanguageString.ofValueInLanguage('text-nl-formal', Language.FORMAL).nlFormal).toEqual('text-nl-formal');
     });
 
     test('can build a languageString with only nl-informal', () => {
-        const languageString = LanguageString.of(undefined, undefined, 'text-nl-informal');
-
-        expect(languageString.nlInformal).toEqual('text-nl-informal');
+        expect(LanguageString.of(undefined, undefined, 'text-nl-informal').nlInformal).toEqual('text-nl-informal');
+        expect(LanguageString.ofValueInLanguage('text-nl-informal', Language.INFORMAL).nlInformal).toEqual('text-nl-informal');
     });
 
     test('can build a languageString with only nl-generated-formal', () => {
-        const languageString = LanguageString.of(undefined, undefined, undefined, 'text-nl-generated-formal');
-
-        expect(languageString.nlGeneratedFormal).toEqual('text-nl-generated-formal');
+        expect(LanguageString.of(undefined, undefined, undefined, 'text-nl-generated-formal').nlGeneratedFormal).toEqual('text-nl-generated-formal');
+        expect(LanguageString.ofValueInLanguage('text-nl-generated-formal', Language.GENERATED_FORMAL).nlGeneratedFormal).toEqual('text-nl-generated-formal');
     });
 
     test('can build a languageString with only nl-generated-informal', () => {
-        const languageString = LanguageString.of(undefined, undefined, undefined, undefined, 'text-nl-generated-informal');
-
-        expect(languageString.nlGeneratedInformal).toEqual('text-nl-generated-informal');
+        expect(LanguageString.of(undefined, undefined, undefined, undefined, 'text-nl-generated-informal').nlGeneratedInformal).toEqual('text-nl-generated-informal');
+        expect(LanguageString.ofValueInLanguage('text-nl-generated-informal', Language.GENERATED_INFORMAL).nlGeneratedInformal).toEqual('text-nl-generated-informal');
     });
 
     //TODO LPDC-968: re-enable when empty triples are fixed in data
@@ -54,29 +49,34 @@ describe('constructing', () => {
 describe('get defined languages', () => {
 
     test('defined language - nl', () => {
-        const languageString = LanguageString.of('nl');
-        expect(languageString.definedLanguages).toEqual([Language.NL]);
+        expect(LanguageString.of('nl').definedLanguages).toEqual([Language.NL]);
+        expect(LanguageString.ofValueInLanguage('nl', Language.NL).definedLanguages).toEqual([Language.NL]);
     });
 
     test('defined language - formal', () => {
-        const languageString = LanguageString.of(undefined, 'text-formal');
-        expect(languageString.definedLanguages).toEqual([Language.FORMAL]);
+        expect(LanguageString.of(undefined, 'text-formal').definedLanguages).toEqual([Language.FORMAL]);
+        expect(LanguageString.ofValueInLanguage('text-formal', Language.FORMAL).definedLanguages).toEqual([Language.FORMAL]);
     });
 
     test('defined language - informal', () => {
-        const languageString = LanguageString.of(undefined, undefined, 'text-informal');
-        expect(languageString.definedLanguages).toEqual([Language.INFORMAL]);
+        expect(LanguageString.of(undefined, undefined, 'text-informal').definedLanguages).toEqual([Language.INFORMAL]);
+        expect(LanguageString.ofValueInLanguage('text-informal', Language.INFORMAL).definedLanguages).toEqual([Language.INFORMAL]);
     });
 
     test('defined language - generatedFormal', () => {
-        const languageString = LanguageString.of(undefined, undefined, undefined, 'text-generated-formal');
-        expect(languageString.definedLanguages).toEqual([Language.GENERATED_FORMAL]);
+        expect(LanguageString.of(undefined, undefined, undefined, 'text-generated-formal').definedLanguages).toEqual([Language.GENERATED_FORMAL]);
+        expect(LanguageString.ofValueInLanguage('text-generated-formal', Language.GENERATED_FORMAL).definedLanguages).toEqual([Language.GENERATED_FORMAL]);
     });
 
     test('defined language - generatedInFormal', () => {
-        const languageString = LanguageString.of(undefined, undefined, undefined, undefined, 'text-generated-informal');
-        expect(languageString.definedLanguages).toEqual([Language.GENERATED_INFORMAL]);
+        expect(LanguageString.of(undefined, undefined, undefined, undefined, 'text-generated-informal').definedLanguages).toEqual([Language.GENERATED_INFORMAL]);
+        expect(LanguageString.ofValueInLanguage('text-generated-informal', Language.GENERATED_INFORMAL).definedLanguages).toEqual([Language.GENERATED_INFORMAL]);
     });
+
+    test('defined languages', () => {
+        expect(LanguageString.of('a', 'b', 'c', 'd', 'e').definedLanguages).toEqual([Language.NL, Language.FORMAL, Language.INFORMAL, Language.GENERATED_FORMAL, Language.GENERATED_INFORMAL]);
+    });
+
 });
 
 describe('get not blank languages', () => {
@@ -395,7 +395,7 @@ describe('transformToInformal', () => {
     });
 
     test('When already informal set, keep informal', () => {
-        const language = LanguageString.of( undefined, undefined, 'informal');
+        const language = LanguageString.of(undefined, undefined, 'informal');
         expect(language.transformToInformal()).toEqual(LanguageString.of(undefined, undefined, 'informal'));
     });
 

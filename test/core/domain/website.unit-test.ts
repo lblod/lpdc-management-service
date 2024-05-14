@@ -1,4 +1,10 @@
-import {aFullWebsite, aFullWebsiteForInstance, aFullWebsiteForInstanceSnapshot} from "./website-test-builder";
+import {
+    aFullWebsite,
+    aFullWebsiteForInstance,
+    aFullWebsiteForInstanceSnapshot,
+    aMinimalWebsiteForInstance,
+    WebsiteTestBuilder
+} from "./website-test-builder";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Language} from "../../../src/core/domain/language";
@@ -208,7 +214,7 @@ describe('for instance snapshot', () => {
     });
 
     test('If title and description have the same nl language website is created', () => {
-        const langString = LanguageString.of( 'nl');
+        const langString = LanguageString.of('nl');
         const website = aFullWebsiteForInstanceSnapshot().withTitle(langString).withDescription(langString).build();
         expect(() => Website.forInstanceSnapshot(website)).not.toThrow();
     });
@@ -289,6 +295,32 @@ describe('transformToInformal', () => {
         expect(() => website.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
 
     });
+});
+
+describe('transformLanguage', () => {
+
+    test('should transform website with title, description', () => {
+        const website = aFullWebsite()
+            .build();
+
+        expect(website.transformLanguage(Language.FORMAL, Language.INFORMAL))
+            .toEqual(WebsiteBuilder
+                .from(website)
+                .withTitle(LanguageString.ofValueInLanguage(WebsiteTestBuilder.TITLE_NL_FORMAL, Language.INFORMAL))
+                .withDescription(LanguageString.ofValueInLanguage(WebsiteTestBuilder.DESCRIPTION_NL_FORMAL, Language.INFORMAL))
+                .build()
+            );
+    });
+
+    test('should transform website without title, description to informal', () => {
+        const website = aMinimalWebsiteForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+
+        expect(website.transformLanguage(Language.FORMAL, Language.INFORMAL)).toEqual(website);
+    });
+
 });
 
 describe('builder', () => {

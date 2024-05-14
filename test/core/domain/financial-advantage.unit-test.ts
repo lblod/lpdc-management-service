@@ -2,7 +2,8 @@ import {
     aFullFinancialAdvantage,
     aFullFinancialAdvantageForInstance,
     aFullFinancialAdvantageForInstanceSnapshot,
-    aMinimalFinancialAdvantageForInstance
+    aMinimalFinancialAdvantageForInstance,
+    FinancialAdvantageTestBuilder
 } from "./financial-advantage-test-builder";
 import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {Iri} from "../../../src/core/domain/shared/iri";
@@ -309,6 +310,7 @@ describe('nl language', () => {
 });
 
 describe('transformToInformal', () => {
+
     test('should transform financialAdvantage with title, description to informal', () => {
         const financialAdvantage = aFullFinancialAdvantageForInstance()
             .withTitle(LanguageString.of(undefined, 'titel'))
@@ -338,6 +340,31 @@ describe('transformToInformal', () => {
         expect(() => financialAdvantage.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
 
     });
+});
+
+describe('transformLanguage', () => {
+
+    test('should transform financialAdvantage with title, description', () => {
+        const financialAdvantage = aFullFinancialAdvantage()
+            .build();
+
+        expect(financialAdvantage.transformLanguage(Language.FORMAL, Language.INFORMAL)).toEqual(FinancialAdvantageBuilder
+            .from(financialAdvantage)
+            .withTitle(LanguageString.ofValueInLanguage(FinancialAdvantageTestBuilder.TITLE_NL_FORMAL, Language.INFORMAL))
+            .withDescription(LanguageString.ofValueInLanguage(FinancialAdvantageTestBuilder.DESCRIPTION_NL_FORMAL, Language.INFORMAL))
+            .build()
+        );
+    });
+
+    test('should transform financialAdvantage without title, description', () => {
+        const financialAdvantage = aFullFinancialAdvantage()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+
+        expect(financialAdvantage.transformLanguage(Language.FORMAL, Language.INFORMAL)).toEqual(financialAdvantage);
+    });
+
 });
 
 describe('builder', () => {

@@ -2,6 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
+import {uuid} from "../../../mu-helper";
 
 export class Evidence {
 
@@ -97,6 +98,21 @@ export class Evidence {
             .build();
     }
 
+    transformLanguage(from: Language, to: Language): Evidence {
+        return EvidenceBuilder.from(this)
+                .withTitle(this.title?.transformLanguage(from, to))
+                .withDescription(this.description?.transformLanguage(from, to))
+                .build();
+    }
+
+    transformWithNewId(): Evidence {
+        const uniqueId = uuid();
+        return EvidenceBuilder.from(this)
+            .withId(EvidenceBuilder.buildIri(uniqueId))
+            .withUuid(uniqueId)
+            .build();
+    }
+
     static isFunctionallyChanged(value: Evidence | undefined, other: Evidence | undefined): boolean {
         return LanguageString.isFunctionallyChanged(value?.title, other?.title)
             || LanguageString.isFunctionallyChanged(value?.description, other?.description);
@@ -140,7 +156,7 @@ export class EvidenceBuilder {
         this.description = description;
         return this;
     }
-    
+
     public build(): Evidence {
         return Evidence.reconstitute(
             this.id,

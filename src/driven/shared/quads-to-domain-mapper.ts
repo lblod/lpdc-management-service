@@ -717,11 +717,11 @@ export class QuadsToDomainMapper {
     private asLanguageString(statements: Statement[]): LanguageString | undefined {
         const literals: Literal[] | undefined = this.asLiterals(statements);
         const languageString = LanguageString.of(
-            literals?.find(l => l.language === 'nl')?.value,
-            literals?.find(l => l.language === 'nl-be-x-formal')?.value,
-            literals?.find(l => l.language === 'nl-be-x-informal')?.value,
-            literals?.find(l => l.language === 'nl-be-x-generated-formal')?.value,
-            literals?.find(l => l.language === 'nl-be-x-generated-informal')?.value,
+            literals?.find(l => l.language?.toLowerCase() === Language.NL)?.value,
+            literals?.find(l => l.language?.toLowerCase() === Language.FORMAL)?.value,
+            literals?.find(l => l.language?.toLowerCase() === Language.INFORMAL)?.value,
+            literals?.find(l => l.language?.toLowerCase() === Language.GENERATED_FORMAL)?.value,
+            literals?.find(l => l.language?.toLowerCase() === Language.GENERATED_INFORMAL)?.value,
         );
         return languageString.definedLanguages.length ? languageString : undefined;
     }

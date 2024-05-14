@@ -2,7 +2,8 @@ import {
     aFullCost,
     aFullCostForInstance,
     aFullCostForInstanceSnapshot,
-    aMinimalCostForInstance
+    aMinimalCostForInstance,
+    CostTestBuilder
 } from "./cost-test-builder";
 import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {Iri} from "../../../src/core/domain/shared/iri";
@@ -313,6 +314,7 @@ describe('nl Language', () => {
 });
 
 describe('transformToInformal', () => {
+
     test('should transform cost with title, description to informal', () => {
         const cost = aFullCostForInstance()
             .withTitle(LanguageString.of(undefined, 'titel'))
@@ -342,6 +344,33 @@ describe('transformToInformal', () => {
         expect(() => cost.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
 
     });
+
+});
+
+describe('transformLanguage', () => {
+
+    test('should transform cost with title, description', () => {
+        const cost = aFullCost()
+            .build();
+
+        expect(cost.transformLanguage(Language.FORMAL, Language.INFORMAL)).toEqual(CostBuilder
+            .from(cost)
+            .withTitle(LanguageString.ofValueInLanguage(CostTestBuilder.TITLE_NL_FORMAL, Language.INFORMAL))
+            .withDescription(LanguageString.ofValueInLanguage(CostTestBuilder.DESCRIPTION_NL_FORMAL, Language.INFORMAL))
+            .build()
+        );
+
+    });
+
+    test('should transform cost without title, description', () => {
+        const cost = aFullCost()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+
+        expect(cost.transformLanguage(Language.FORMAL, Language.INFORMAL)).toEqual(cost);
+    });
+
 });
 
 describe('builder', () => {

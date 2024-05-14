@@ -3,6 +3,8 @@ import {LanguageString} from "./language-string";
 import {zip} from "lodash";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
+import {uuid} from "../../../mu-helper";
+
 
 export class Website {
 
@@ -120,6 +122,22 @@ export class Website {
             .build();
     }
 
+    transformLanguage(from: Language, to: Language): Website {
+        return WebsiteBuilder.from(this)
+            .withTitle(this.title?.transformLanguage(from, to))
+            .withDescription(this.description?.transformLanguage(from, to))
+            .build();
+    }
+
+    transformWithNewId(): Website {
+        const uniqueId = uuid();
+        return WebsiteBuilder.from(this)
+            .withId(WebsiteBuilder.buildIri(uniqueId))
+            .withUuid(uniqueId)
+            .build();
+    }
+
+
     static isFunctionallyChanged(value: Website[], other: Website[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((websites: [Website, Website]) => {
@@ -183,7 +201,7 @@ export class WebsiteBuilder {
         this.url = url;
         return this;
     }
-    
+
     public build(): Website {
         return Website.reconstitute(
             this.id,

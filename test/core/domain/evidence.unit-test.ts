@@ -1,4 +1,9 @@
-import {aFullEvidence, aFullEvidenceForInstance, aFullEvidenceForInstanceSnapshot} from "./evidence-test-builder";
+import {
+    aFullEvidence,
+    aFullEvidenceForInstance,
+    aFullEvidenceForInstanceSnapshot,
+    EvidenceTestBuilder
+} from "./evidence-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {Language} from "../../../src/core/domain/language";
@@ -275,8 +280,44 @@ describe('transformToInformal', () => {
         const evidence = aFullEvidence().build();
 
         expect(() => evidence.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
-
     });
+
+});
+
+describe('transformLanguage', () => {
+
+    test('should transform Evidence with title, description', () => {
+        const evidence = aFullEvidence()
+            .build();
+
+        expect(evidence.transformLanguage(Language.FORMAL, Language.INFORMAL)).toEqual(EvidenceBuilder
+            .from(evidence)
+            .withTitle(LanguageString.ofValueInLanguage(EvidenceTestBuilder.TITLE_NL_FORMAL, Language.INFORMAL))
+            .withDescription(LanguageString.ofValueInLanguage(EvidenceTestBuilder.DESCRIPTION_NL_FORMAL, Language.INFORMAL))
+            .build());
+
+        expect(evidence.transformLanguage(Language.FORMAL, Language.FORMAL)).toEqual(EvidenceBuilder
+            .from(evidence)
+            .withTitle(LanguageString.ofValueInLanguage(EvidenceTestBuilder.TITLE_NL_FORMAL, Language.FORMAL))
+            .withDescription(LanguageString.ofValueInLanguage(EvidenceTestBuilder.DESCRIPTION_NL_FORMAL, Language.FORMAL))
+            .build());
+
+        expect(evidence.transformLanguage(Language.NL, Language.FORMAL)).toEqual(EvidenceBuilder
+            .from(evidence)
+            .withTitle(LanguageString.ofValueInLanguage(EvidenceTestBuilder.TITLE_NL, Language.FORMAL))
+            .withDescription(LanguageString.ofValueInLanguage(EvidenceTestBuilder.DESCRIPTION_NL, Language.FORMAL))
+            .build());
+    });
+
+    test('should transform Evidence without title, description', () => {
+        const evidence = aFullEvidenceForInstance()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .build();
+
+        expect(evidence.transformLanguage(Language.FORMAL, Language.INFORMAL)).toEqual(evidence);
+    });
+
 });
 
 describe('builder', () => {

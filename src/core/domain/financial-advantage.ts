@@ -3,6 +3,7 @@ import {LanguageString} from "./language-string";
 import {zip} from "lodash";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
+import {uuid} from "../../../mu-helper";
 
 export class FinancialAdvantage {
 
@@ -109,6 +110,21 @@ export class FinancialAdvantage {
             .build();
     }
 
+    transformLanguage(from: Language, to: Language): FinancialAdvantage {
+        return FinancialAdvantageBuilder.from(this)
+            .withTitle(this.title?.transformLanguage(from, to))
+            .withDescription(this.description?.transformLanguage(from, to))
+            .build();
+    }
+
+    transformWithNewId(): FinancialAdvantage {
+        const uniqueId = uuid();
+        return FinancialAdvantageBuilder.from(this)
+            .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
+            .withUuid(uniqueId)
+            .build();
+    }
+
     static isFunctionallyChanged(value: FinancialAdvantage[], other: FinancialAdvantage[]): boolean {
         return value.length !== other.length
             || zip(value, other).some((financialAdvantages: [FinancialAdvantage, FinancialAdvantage]) => {
@@ -163,7 +179,7 @@ export class FinancialAdvantageBuilder {
         this.order = order;
         return this;
     }
-    
+
     public build(): FinancialAdvantage {
         return FinancialAdvantage.reconstitute(
             this.id,

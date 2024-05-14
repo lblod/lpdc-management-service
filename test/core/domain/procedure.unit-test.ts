@@ -3,7 +3,8 @@ import {
     aFullProcedureForInstance,
     aFullProcedureForInstanceSnapshot,
     aMinimalProcedureForInstance,
-    aMinimalProcedureForInstanceSnapshot
+    aMinimalProcedureForInstanceSnapshot,
+    ProcedureTestBuilder
 } from "./procedure-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
@@ -551,6 +552,7 @@ describe('nl Language', () => {
 });
 
 describe('transformToInformal', () => {
+
     test('should transform procedure with title, description and website to informal', () => {
         const procedure = aFullProcedure()
             .withTitle(LanguageString.of(undefined, 'titel'))
@@ -585,6 +587,42 @@ describe('transformToInformal', () => {
         expect(() => procedure.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
 
     });
+});
+
+describe('transformLanguage', () => {
+
+    test('should transform procedure with title, description and website', () => {
+        const procedure = aFullProcedure()
+            .build();
+
+        const transformedProcedure = procedure.transformLanguage(Language.FORMAL, Language.INFORMAL);
+
+        expect(transformedProcedure).toEqual(
+            ProcedureBuilder.from(procedure)
+                .withTitle(LanguageString.ofValueInLanguage(ProcedureTestBuilder.TITLE_NL_FORMAL, Language.INFORMAL))
+                .withDescription(LanguageString.ofValueInLanguage(ProcedureTestBuilder.DESCRIPTION_NL_FORMAL, Language.INFORMAL))
+                .withWebsites([
+                    WebsiteBuilder.from(procedure.websites[0])
+                        .withTitle(LanguageString.ofValueInLanguage(procedure.websites[0].title.getLanguageValue(Language.FORMAL), Language.INFORMAL))
+                        .withDescription(LanguageString.ofValueInLanguage(procedure.websites[0].description.getLanguageValue(Language.FORMAL), Language.INFORMAL))
+                        .build(),
+                    WebsiteBuilder.from(procedure.websites[1])
+                        .withTitle(LanguageString.ofValueInLanguage(procedure.websites[1].title.getLanguageValue(Language.FORMAL), Language.INFORMAL))
+                        .withDescription(LanguageString.ofValueInLanguage(procedure.websites[1].description.getLanguageValue(Language.FORMAL), Language.INFORMAL))
+                        .build()])
+                .build());
+    });
+
+    test('should transform procedure with title, description to informal', () => {
+        const procedure = aFullProcedure()
+            .withTitle(undefined)
+            .withDescription(undefined)
+            .withWebsites([])
+            .build();
+
+        expect(procedure.transformLanguage(Language.FORMAL, Language.INFORMAL)).toEqual(procedure);
+    });
+
 });
 
 describe('builder', () => {
