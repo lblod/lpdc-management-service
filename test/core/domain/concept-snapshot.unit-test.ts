@@ -450,7 +450,7 @@ describe('constructing', () => {
 
 describe('is functionally changed', () => {
 
-    type TestCase = [string, ConceptSnapshot, ConceptSnapshot];
+    type TestCase = [string, ConceptSnapshot, ConceptSnapshot, string?];
 
     const aConceptSnapshotId = buildConceptSnapshotIri(uuid());
     const aConceptSnapshot =
@@ -493,7 +493,7 @@ describe('is functionally changed', () => {
 
     for (const testCase of functionallyUnchangedTestCases) {
         test(`not functionally changed when ${testCase[0]}`, () => {
-            expect(ConceptSnapshot.isFunctionallyChanged(testCase[1], testCase[2])).toBeFalsy();
+            expect(ConceptSnapshot.isFunctionallyChanged(testCase[1], testCase[2])).toEqual([]);
         });
     }
 
@@ -505,301 +505,305 @@ describe('is functionally changed', () => {
                 .build(),
             aFullConceptSnapshot()
                 .withTitle(LanguageString.of("text-nl-veranderd", "text-nl-formal-veranderd",))
-                .build()],
+                .build(),
+            'basisinformatie'],
         ['description changed',
             aFullConceptSnapshot()
                 .withDescription(LanguageString.of("text-nl",))
                 .build(),
             aFullConceptSnapshot()
                 .withDescription(LanguageString.of("text-nl-veranderd"))
-                .build()],
+                .build(),
+            'basisinformatie'],
         ['additional description changed',
             aFullConceptSnapshot()
                 .withAdditionalDescription(LanguageString.of("text-nl"))
                 .build(),
             aFullConceptSnapshot()
                 .withAdditionalDescription(LanguageString.of("text-nl-changed"))
-                .build()],
+                .build(),
+            'basisinformatie'],
         ['exception changed',
             aFullConceptSnapshot()
                 .withException(LanguageString.of("text-nl"))
                 .build(),
             aFullConceptSnapshot()
                 .withException(LanguageString.of("text-nl-changed"))
-                .build()],
+                .build(),
+            'basisinformatie'],
         ['regulation changed',
             aFullConceptSnapshot()
                 .withRegulation(LanguageString.of("text-nl"))
                 .build(),
             aFullConceptSnapshot()
                 .withRegulation(LanguageString.of("text-nl-changed"))
-                .build()],
+                .build(), 'regelgeving'],
         ['start date changed',
             aFullConceptSnapshot()
                 .withStartDate(FormatPreservingDate.of('2023-11-10T00:00:00.000Z'))
                 .build(),
             aFullConceptSnapshot()
                 .withStartDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['start date appeared',
             aFullConceptSnapshot()
                 .withStartDate(undefined)
                 .build(),
             aFullConceptSnapshot()
                 .withStartDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['start date disappeared',
             aFullConceptSnapshot()
                 .withStartDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
                 .build(),
             aFullConceptSnapshot()
                 .withStartDate(undefined)
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['end date changed',
             aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2023-11-10T00:00:00.000Z'))
                 .build(),
             aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['end date appeared',
             aFullConceptSnapshot()
                 .withEndDate(undefined)
                 .build(),
             aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['end date disappeared',
             aFullConceptSnapshot()
                 .withEndDate(FormatPreservingDate.of('2023-11-09T00:00:00.000Z'))
                 .build(),
             aFullConceptSnapshot()
                 .withEndDate(undefined)
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['type changed',
             aFullConceptSnapshot()
                 .withType(ProductType.FINANCIEELVOORDEEL)
                 .build(),
             aFullConceptSnapshot()
                 .withType(ProductType.BEWIJS)
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['type appeared',
             aFullConceptSnapshot()
                 .withType(undefined)
                 .build(),
             aFullConceptSnapshot()
                 .withType(ProductType.FINANCIEELVOORDEEL)
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['type disappeared',
             aFullConceptSnapshot()
                 .withType(ProductType.FINANCIEELVOORDEEL)
                 .build(),
             aFullConceptSnapshot()
                 .withType(undefined)
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['target audience updated',
             aFullConceptSnapshot()
                 .withTargetAudiences([TargetAudienceType.BURGER])
                 .build(),
             aFullConceptSnapshot()
                 .withTargetAudiences([TargetAudienceType.VLAAMSEOVERHEID])
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['target audience added',
             aFullConceptSnapshot()
                 .withTargetAudiences([TargetAudienceType.BURGER])
                 .build(),
             aFullConceptSnapshot()
                 .withTargetAudiences([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER])
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['target audience removed',
             aFullConceptSnapshot()
                 .withTargetAudiences([TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.BURGER])
                 .build(),
             aFullConceptSnapshot()
                 .withTargetAudiences([TargetAudienceType.BURGER])
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['theme updated',
             aFullConceptSnapshot()
                 .withThemes([ThemeType.WELZIJNGEZONDHEID])
                 .build(),
             aFullConceptSnapshot()
                 .withThemes([ThemeType.CULTUURSPORTVRIJETIJD])
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['theme added',
             aFullConceptSnapshot()
                 .withThemes([ThemeType.WELZIJNGEZONDHEID])
                 .build(),
             aFullConceptSnapshot()
                 .withThemes([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID])
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['theme removed',
             aFullConceptSnapshot()
                 .withThemes([ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID])
                 .build(),
             aFullConceptSnapshot()
                 .withThemes([ThemeType.WELZIJNGEZONDHEID])
-                .build()],
+                .build(), 'algemene info (eigenschappen)'],
         ['competent Authority Level updated',
             aFullConceptSnapshot()
                 .withCompetentAuthorityLevels([CompetentAuthorityLevelType.EUROPEES])
                 .build(),
             aFullConceptSnapshot()
                 .withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['competent Authority Level added',
             aFullConceptSnapshot()
                 .withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL])
                 .build(),
             aFullConceptSnapshot()
                 .withCompetentAuthorityLevels([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.LOKAAL])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['competent Authority Level removed',
             aFullConceptSnapshot()
                 .withCompetentAuthorityLevels([CompetentAuthorityLevelType.PROVINCIAAL, CompetentAuthorityLevelType.FEDERAAL])
                 .build(),
             aFullConceptSnapshot()
                 .withCompetentAuthorityLevels([CompetentAuthorityLevelType.FEDERAAL])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['competent authorities updated',
             aFullConceptSnapshot()
                 .withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI])
                 .build(),
             aFullConceptSnapshot()
                 .withCompetentAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['competent authorities added',
             aFullConceptSnapshot()
                 .withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI])
                 .build(),
             aFullConceptSnapshot()
                 .withCompetentAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['competent authorities removed',
             aFullConceptSnapshot()
                 .withCompetentAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI])
                 .build(),
             aFullConceptSnapshot()
                 .withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['executing Authority Level updated',
             aFullConceptSnapshot()
                 .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.EUROPEES])
                 .build(),
             aFullConceptSnapshot()
                 .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['executing Authority Level added',
             aFullConceptSnapshot()
                 .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL])
                 .build(),
             aFullConceptSnapshot()
                 .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.LOKAAL])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['executing Authority Level removed',
             aFullConceptSnapshot()
                 .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.PROVINCIAAL, ExecutingAuthorityLevelType.DERDEN])
                 .build(),
             aFullConceptSnapshot()
                 .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.DERDEN])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['executing authorities updated',
             aFullConceptSnapshot()
                 .withExecutingAuthorities([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI])
                 .build(),
             aFullConceptSnapshot()
                 .withExecutingAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['executing authorities added',
             aFullConceptSnapshot()
                 .withExecutingAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
                 .build(),
             aFullConceptSnapshot()
                 .withExecutingAuthorities([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['executing authorities removed',
             aFullConceptSnapshot()
                 .withExecutingAuthorities([BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI])
                 .build(),
             aFullConceptSnapshot()
                 .withExecutingAuthorities([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI])
-                .build()],
+                .build(), 'bevoegdheid (eigenschappen)'],
         ['publication medium updated',
             aFullConceptSnapshot()
                 .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
                 .build(),
             aFullConceptSnapshot()
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
-                .build()],
+                .build(), 'gerelateerd (eigenschappen)'],
         ['publication medium added',
             aFullConceptSnapshot()
                 .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
                 .build(),
             aFullConceptSnapshot()
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE, PublicationMediumType.RECHTENVERKENNER])
-                .build()],
+                .build(), 'gerelateerd (eigenschappen)'],
         ['publication medium removed',
             aFullConceptSnapshot()
                 .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER, PublicationMediumType.YOUREUROPE])
                 .build(),
             aFullConceptSnapshot()
                 .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
-                .build()],
+                .build(), 'gerelateerd (eigenschappen)'],
         ['your europe category updated',
             aFullConceptSnapshot()
                 .withYourEuropeCategories([YourEuropeCategoryType.GOEDERENRECYCLAGE])
                 .build(),
             aFullConceptSnapshot()
                 .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJFINTELLECTUELEEIGENDOMSRECHTEN])
-                .build()],
+                .build(), 'gerelateerd (eigenschappen)'],
         ['your europe category added',
             aFullConceptSnapshot()
                 .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING])
                 .build(),
             aFullConceptSnapshot()
                 .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJFKREDIETVERZEKERING, YourEuropeCategoryType.GEZONDHEIDSZORG])
-                .build()],
+                .build(), 'gerelateerd (eigenschappen)'],
         ['your europe category removed',
             aFullConceptSnapshot()
                 .withYourEuropeCategories([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING, YourEuropeCategoryType.ONDERWIJSOFSTAGESTAGE])
                 .build(),
             aFullConceptSnapshot()
                 .withYourEuropeCategories([YourEuropeCategoryType.PROCEDUREVERHUIZINGADRESWIJZIGING])
-                .build()],
+                .build(), 'gerelateerd (eigenschappen)'],
         ['keyword updated - nl',
             aFullConceptSnapshot()
                 .withKeywords([LanguageString.of('abc')])
                 .build(),
             aFullConceptSnapshot()
                 .withKeywords([LanguageString.of('def')])
-                .build()],
+                .build(), 'gerelateerd (eigenschappen)'],
         ['keyword added',
             aFullConceptSnapshot()
                 .withKeywords([LanguageString.of('abc')])
                 .build(),
             aFullConceptSnapshot()
                 .withKeywords([LanguageString.of('abc'), LanguageString.of('def')])
-                .build()],
+                .build(), 'gerelateerd (eigenschappen)'],
         ['keyword removed',
             aFullConceptSnapshot()
                 .withKeywords([LanguageString.of('abc'), LanguageString.of('def')])
                 .build(),
             aFullConceptSnapshot()
                 .withKeywords([LanguageString.of('abc')])
-                .build()],
+                .build(), 'gerelateerd (eigenschappen)'],
         ['requirement added',
             aFullConceptSnapshot()
                 .withRequirements([])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement removed',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement order changed',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl-1')).withOrder(1).build(),
@@ -808,91 +812,91 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl-2')).withOrder(1).build(),
                     aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl-1')).withOrder(2).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement title updated: nl added',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of(undefined)).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement title updated: nl removed',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of(undefined)).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement title updated: nl changed',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withTitle(LanguageString.of('requirement-title-changed')).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement description updated: nl added',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of()).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-nl')).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement description updated: nl removed',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of()).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement description updated: nl changed',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withDescription(LanguageString.of('requirement-description-changed')).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement > evidence : added',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aFullEvidence().build()).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement > evidence : removed',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aFullEvidence().build()).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(undefined).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement > evidence title updated',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withTitle(LanguageString.of('evidence title nl')).build()).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withTitle(LanguageString.of('evidence title nl updated')).build()).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['requirement > evidence description updated',
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withDescription(LanguageString.of('evidence description nl')).build()).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withRequirements([aMinimalRequirementForConceptSnapshot().withEvidence(aMinimalEvidenceForConceptSnapshot().withDescription(LanguageString.of('evidence description nl updated')).build()).build()])
-                .build()],
+                .build(), 'voorwaarden'],
         ['procedure added',
             aFullConceptSnapshot()
                 .withProcedures([])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure removed',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([])
-                .build()],
+                .build(), 'procedure'],
         ['procedure order changed',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title nl')).withOrder(1).build(),
@@ -901,250 +905,258 @@ describe('is functionally changed', () => {
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title nl another')).withOrder(1).build(),
                     aFullProcedure().withTitle(LanguageString.of('procedure title nl')).withOrder(2).build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure title updated',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withTitle(LanguageString.of('procedure title nl updated')).build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure description updated',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withDescription(LanguageString.of('procedure description nl updated')).build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure website title updated',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('procedure website title nl')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('procedure website title nl updated')).build()]).build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure website description updated',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description nl')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description nl updated')).build()]).build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure website description added',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description nl')).build()]).build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure website description removed',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('procedure website description nl')).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()]).build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure website url updated',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build()]).build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure website added',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aFullWebsite().build()]).build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure website removed',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aFullWebsite().build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([]).build()])
-                .build()],
+                .build(), 'procedure'],
         ['procedure website order changed',
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').withOrder(1).build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').withOrder(2).build()]).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withProcedures([aFullProcedure().withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').withOrder(1).build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').withOrder(2).build()]).build()])
-                .build()],
+                .build(), 'procedure'],
         ['website added',
             aFullConceptSnapshot()
                 .withWebsites([])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aFullWebsite().build()])
-                .build()],
+                .build(), 'meer info'],
         ['website removed',
             aFullConceptSnapshot()
                 .withWebsites([aFullWebsite().build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([])
-                .build()],
+                .build(), 'meer info'],
         ['website title updated',
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('website title nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withTitle(LanguageString.of('website title nl updated')).build()])
-                .build()],
+                .build(), 'meer info'],
         ['website description updated',
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description nl updated')).build()])
-                .build()],
+                .build(), 'meer info'],
         ['website description added',
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description nl')).build()])
-                .build()],
+                .build(), 'meer info'],
         ['website description removed',
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(LanguageString.of('website description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withDescription(undefined).build()])
-                .build()],
+                .build(), 'meer info'],
         ['website url updated',
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').build()])
-                .build()],
+                .build(), 'meer info'],
         ['website order changed',
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').withOrder(1).build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withWebsites([aMinimalWebsiteForConceptSnapshot().withUrl('https://url2.com').withOrder(1).build(), aMinimalWebsiteForConceptSnapshot().withUrl('https://url1.com').withOrder(2).build()])
-                .build()],
+                .build(), 'meer info'],
         ['cost added',
             aFullConceptSnapshot()
                 .withCosts([])
                 .build(),
             aFullConceptSnapshot()
                 .withCosts([aFullCost().build()])
-                .build()],
+                .build(), 'kosten'],
         ['cost removed',
             aFullConceptSnapshot()
                 .withCosts([aFullCost().build()])
                 .build(),
             aFullConceptSnapshot()
                 .withCosts([])
-                .build()],
+                .build(), 'kosten'],
         ['cost title updated',
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(LanguageString.of('cost title nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(LanguageString.of('cost title nl updated')).build()])
-                .build()],
+                .build(), 'kosten'],
         ['cost description updated',
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(LanguageString.of('cost description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withDescription(LanguageString.of('cost description nl updated')).build()])
-                .build()],
+                .build(), 'kosten'],
         ['cost order changed',
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(LanguageString.of('cost title 1 nl')).withOrder(1).build(), aFullCost().withTitle(LanguageString.of('cost title 2 nl')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withCosts([aFullCost().withTitle(LanguageString.of('cost title 2 nl')).withOrder(1).build(), aFullCost().withTitle(LanguageString.of('cost title 1 nl')).withOrder(2).build()])
-                .build()],
+                .build(), 'kosten'],
         ['financial advantage added',
             aFullConceptSnapshot()
                 .withFinancialAdvantages([])
                 .build(),
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().build()])
-                .build()],
+                .build(), 'financiële voordelen'],
         ['financial advantage removed',
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().build()])
                 .build(),
             aFullConceptSnapshot()
                 .withFinancialAdvantages([])
-                .build()],
+                .build(), 'financiële voordelen'],
         ['financial advantage title updated',
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title nl updated')).build()])
-                .build()],
+                .build(), 'financiële voordelen'],
         ['financial advantage description updated',
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withDescription(LanguageString.of('financial advantage description nl updated')).build()])
-                .build()],
+                .build(), 'financiële voordelen'],
         ['financial advantage order changed',
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 nl')).withOrder(1).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 nl')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withFinancialAdvantages([aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 2 nl')).withOrder(1).build(), aFullFinancialAdvantage().withTitle(LanguageString.of('financial advantage title 1 nl')).withOrder(2).build()])
-                .build()],
+                .build(), 'financiële voordelen'],
         ['legal resource added',
             aFullConceptSnapshot()
                 .withLegalResources([])
                 .build(),
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().build()])
-                .build()],
+                .build(), 'regelgeving'],
         ['legal resource removed',
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().build()])
                 .build(),
             aFullConceptSnapshot()
                 .withLegalResources([])
-                .build()],
+                .build(), 'regelgeving'],
         ['legal resource title updated',
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title nl updated')).build()])
-                .build()],
+                .build(), 'regelgeving'],
         ['legal resource description updated',
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().withDescription(LanguageString.of('legal resource description nl')).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().withDescription(LanguageString.of('legal resource description nl updated')).build()])
-                .build()],
+                .build(), 'regelgeving'],
         ['legal resource url updated',
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().withUrl(buildCodexVlaanderenIri('1234').value).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().withUrl(buildCodexVlaanderenIri('12345').value).build()])
-                .build()],
+                .build(), 'regelgeving'],
         ['legal resource order changed',
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title 1')).withOrder(1).build(), aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title 2')).withOrder(2).build()])
                 .build(),
             aFullConceptSnapshot()
                 .withLegalResources([aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title 2')).withOrder(1).build(), aFullLegalResourceForConceptSnapshot().withTitle(LanguageString.of('legal resource title 1')).withOrder(2).build()])
-                .build()],
+                .build(), 'regelgeving'],
+        ['is archived changed',
+            aFullConceptSnapshot()
+                .withIsArchived(false)
+                .build(),
+            aFullConceptSnapshot()
+                .withIsArchived(true)
+                .build(), 'gearchiveerd'],
+
     ];
 
     for (const testCase of functionallyChangedTestCases) {
         test(`functionally changed when ${testCase[0]}`, () => {
-            expect(ConceptSnapshot.isFunctionallyChanged(testCase[1], testCase[2])).toBeTruthy();
+            expect(ConceptSnapshot.isFunctionallyChanged(testCase[1], testCase[2])).toEqual([testCase[3]]);
         });
     }
 

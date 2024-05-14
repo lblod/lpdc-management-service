@@ -259,31 +259,44 @@ export class ConceptSnapshot {
     }
 
     //TODO LPDC-1166: return a list of all changed 'grouped semantic form elements'; (inernally we can use a map to build, filter, and reeturn keys?).
-    static isFunctionallyChanged(value: ConceptSnapshot, other: ConceptSnapshot): boolean {
-        return LanguageString.isFunctionallyChanged(value.title, other.title)
-            || LanguageString.isFunctionallyChanged(value.description, other.description)
-            || LanguageString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription)
-            || LanguageString.isFunctionallyChanged(value.exception, other.exception)
-            || LanguageString.isFunctionallyChanged(value.regulation, other.regulation)
-            || FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate)
-            || FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate)
-            || value.type !== other.type
-            || !isEqual(value.targetAudiences, other.targetAudiences)
-            || !isEqual(value.themes, other.themes)
-            || !isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels)
-            || !isEqual(value.competentAuthorities, other.competentAuthorities)
-            || !isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels)
-            || !isEqual(value.executingAuthorities, other.executingAuthorities)
-            || !isEqual(value.publicationMedia, other.publicationMedia)
-            || !isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
-            || !isEqual(value.keywords, other.keywords)
-            || Requirement.isFunctionallyChanged(value.requirements, other.requirements)
-            || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
-            || Website.isFunctionallyChanged(value.websites, other.websites)
-            || Cost.isFunctionallyChanged(value.costs, other.costs)
-            || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages)
-            || LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources)
-            || !isEqual(value.isArchived, other.isArchived);
+    static isFunctionallyChanged(value: ConceptSnapshot, other: ConceptSnapshot): string[] {
+        const functionallyChanged: Map<string, boolean> = new Map();
+        functionallyChanged.set("basisinformatie",
+            LanguageString.isFunctionallyChanged(value.title, other.title) ||
+            LanguageString.isFunctionallyChanged(value.description, other.description) ||
+            LanguageString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription) ||
+            LanguageString.isFunctionallyChanged(value.exception, other.exception));
+        functionallyChanged.set("regelgeving",
+            LanguageString.isFunctionallyChanged(value.regulation, other.regulation) ||
+            LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources));
+        functionallyChanged.set("algemene info (eigenschappen)",
+            FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate) ||
+            FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate) ||
+            value.type !== other.type ||
+            !isEqual(value.targetAudiences, other.targetAudiences) ||
+            !isEqual(value.themes, other.themes));
+        functionallyChanged.set("bevoegdheid (eigenschappen)",
+            !isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels) ||
+            !isEqual(value.competentAuthorities, other.competentAuthorities) ||
+            !isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels) ||
+            !isEqual(value.executingAuthorities, other.executingAuthorities));
+
+        functionallyChanged.set("gerelateerd (eigenschappen)",
+            !isEqual(value.publicationMedia, other.publicationMedia) ||
+            !isEqual(value.yourEuropeCategories, other.yourEuropeCategories) ||
+            !isEqual(value.keywords, other.keywords));
+
+        functionallyChanged.set("voorwaarden", Requirement.isFunctionallyChanged(value.requirements, other.requirements));
+        functionallyChanged.set("procedure", Procedure.isFunctionallyChanged(value.procedures, other.procedures));
+        functionallyChanged.set("meer info", Website.isFunctionallyChanged(value.websites, other.websites));
+        functionallyChanged.set("kosten", Cost.isFunctionallyChanged(value.costs, other.costs));
+        functionallyChanged.set("financiële voordelen", FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages));
+        functionallyChanged.set("gearchiveerd", !isEqual(value.isArchived, other.isArchived));
+
+        return Array.from(functionallyChanged.entries())
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            .filter(([key, value]) => value === true)
+            .map(([key]) => key);
     }
 
 }
