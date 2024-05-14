@@ -57,6 +57,13 @@ export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
             .withPublicationMedia(conceptSnapshot.publicationMedia)
             .withYourEuropeCategories(conceptSnapshot.yourEuropeCategories)
             .withKeywords(conceptSnapshot.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)))
+            .withRequirements(conceptSnapshot.requirements.map(req => req.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
+            .withProcedures(conceptSnapshot.procedures.map(req => req.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
+            .withWebsites(conceptSnapshot.websites.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
+            .withCosts(conceptSnapshot.costs.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
+            .withFinancialAdvantages(conceptSnapshot.financialAdvantages.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
+            .withLegalResources(conceptSnapshot.legalResources.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
+            .withProductId(conceptSnapshot.productId)
             .build();
 
         await this.confirmBijgewerktTot(bestuurseenheid, updatedInstance, instanceVersion, conceptSnapshot);

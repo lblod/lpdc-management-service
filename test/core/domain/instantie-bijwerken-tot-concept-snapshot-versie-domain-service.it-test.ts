@@ -22,6 +22,19 @@ import {SelectConceptLanguageDomainService} from "../../../src/core/domain/selec
 import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
+import {anotherFullWebsite} from "./website-test-builder";
+import {WebsiteBuilder} from "../../../src/core/domain/website";
+import {anotherFullRequirement} from "./requirement-test-builder";
+import {RequirementBuilder} from "../../../src/core/domain/requirement";
+import {EvidenceBuilder} from "../../../src/core/domain/evidence";
+import {anotherFullProcedure} from "./procedure-test-builder";
+import {ProcedureBuilder} from "../../../src/core/domain/procedure";
+import {anotherFullCost} from "./cost-test-builder";
+import {CostBuilder} from "../../../src/core/domain/cost";
+import {anotherFullFinancialAdvantage} from "./financial-advantage-test-builder";
+import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
+import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
+import {anotherFullLegalResourceForConceptSnapshot} from "./legal-resource-test-builder";
 
 
 describe('Instantie bijwerken tot concept snapshot versie domain service ', () => {
@@ -244,6 +257,13 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
                     .withExecutingAuthorities([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI])
                     .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                     .withKeywords([LanguageString.of('buitenland'), LanguageString.of('levensloos'), LanguageString.of(undefined, 'not nl')])
+                    .withRequirements([anotherFullRequirement().withOrder(1).build()])
+                    .withProcedures([anotherFullProcedure().withOrder(1).withWebsites([anotherFullWebsite(uuid()).withOrder(1).build()]).build()])
+                    .withWebsites([anotherFullWebsite(uuid()).withOrder(1).build(), anotherFullWebsite(uuid()).withOrder(2).build()])
+                    .withCosts([anotherFullCost().withOrder(1).build()])
+                    .withFinancialAdvantages([anotherFullFinancialAdvantage().withOrder(1).build()])
+                    .withLegalResources([anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).build()])
+                    .withProductId('new-product-id')
                     .build();
             await instanceRepository.save(bestuurseenheid, instance);
             await conceptRepository.save(concept);
@@ -273,12 +293,76 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
                 .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                 .withYourEuropeCategories(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)
                 .withKeywords([LanguageString.of('buitenland'), LanguageString.of('levensloos')])
-                //TODO LPDC-1168: add requirements
-                //TODO LPDC-1168: add procedures
-                //TODO LPDC-1168: add websites
-                //TODO LPDC-1168: add costs
-                //TODO LPDC-1168: add financial advantages
-                //TODO LPDC-1168: add legal resources
+                .withRequirements([
+                    RequirementBuilder.from(newConceptSnapshot.requirements[0])
+                        .withId(expect.any(Object))
+                        .withUuid(expect.any(String))
+                        .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.requirements[0].title.nlFormal, Language.FORMAL))
+                        .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.requirements[0].description.nlFormal, Language.FORMAL))
+                        .withEvidence(
+                            EvidenceBuilder.from(newConceptSnapshot.requirements[0].evidence)
+                                .withId(expect.any(Object))
+                                .withUuid(expect.any(String))
+                                .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.requirements[0].evidence.title.nlFormal, Language.FORMAL))
+                                .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.requirements[0].evidence.description.nlFormal, Language.FORMAL))
+                                .build())
+                        .build()
+                ])
+                .withProcedures([
+                    ProcedureBuilder.from(newConceptSnapshot.procedures[0])
+                        .withId(expect.any(Object))
+                        .withUuid(expect.any(String))
+                        .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.procedures[0].title.nlFormal, Language.FORMAL))
+                        .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.procedures[0].description.nlFormal, Language.FORMAL))
+                        .withWebsites([
+                            WebsiteBuilder.from(newConceptSnapshot.procedures[0].websites[0])
+                                .withId(expect.any(Object))
+                                .withUuid(expect.any(String))
+                                .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.procedures[0].websites[0].title.nlFormal, Language.FORMAL))
+                                .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.procedures[0].websites[0].description.nlFormal, Language.FORMAL))
+                                .build()
+                        ])
+                        .build()
+                ])
+                .withWebsites([
+                    WebsiteBuilder.from(newConceptSnapshot.websites[0])
+                        .withId(expect.any(Object))
+                        .withUuid(expect.any(String))
+                        .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.websites[0].title.nlFormal, Language.FORMAL))
+                        .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.websites[0].description.nlFormal, Language.FORMAL))
+                        .build(),
+                    WebsiteBuilder.from(newConceptSnapshot.websites[1])
+                        .withId(expect.any(Object))
+                        .withUuid(expect.any(String))
+                        .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.websites[1].title.nlFormal, Language.FORMAL))
+                        .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.websites[1].description.nlFormal, Language.FORMAL))
+                        .build(),
+                ])
+                .withCosts([
+                    CostBuilder.from(newConceptSnapshot.costs[0])
+                        .withId(expect.any(Object))
+                        .withUuid(expect.any(String))
+                        .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.costs[0].title.nlFormal, Language.FORMAL))
+                        .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.costs[0].description.nlFormal, Language.FORMAL))
+                        .build()
+                ])
+                .withFinancialAdvantages([
+                    FinancialAdvantageBuilder.from(newConceptSnapshot.financialAdvantages[0])
+                        .withId(expect.any(Object))
+                        .withUuid(expect.any(String))
+                        .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.financialAdvantages[0].title.nlFormal, Language.FORMAL))
+                        .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.financialAdvantages[0].description.nlFormal, Language.FORMAL))
+                        .build()
+                ])
+                .withLegalResources([
+                    LegalResourceBuilder.from(newConceptSnapshot.legalResources[0])
+                        .withId(expect.any(Object))
+                        .withUuid(expect.any(String))
+                        .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.legalResources[0].title.nlFormal, Language.FORMAL))
+                        .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.legalResources[0].description.nlFormal, Language.FORMAL))
+                        .build()
+                ])
+                .withProductId('new-product-id')
                 .build();
 
             expect(actualInstance).toEqual(expectedInstance);
