@@ -4,11 +4,11 @@ import {
 import {aFullInstance} from "./instance-test-builder";
 import {aFullConceptSnapshot, ConceptSnapshotTestBuilder} from "./concept-snapshot-test-builder";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
+import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {aFullConcept} from "./concept-test-builder";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
-import {InstanceReviewStatusType} from "../../../src/core/domain/types";
+import {InstanceReviewStatusType, PublicationMediumType} from "../../../src/core/domain/types";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {buildConceptIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
@@ -237,10 +237,18 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
                 .withReviewStatus(undefined)
                 .build();
-            const newConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
+            const newConceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(conceptId)
+                    .withCompetentAuthorities([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI])
+                    .withExecutingAuthorities([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI])
+                    .withPublicationMedia([PublicationMediumType.YOUREUROPE])
+                    .withKeywords([LanguageString.of('buitenland'), LanguageString.of('levensloos'), LanguageString.of(undefined, 'not nl')])
+                    .build();
             await instanceRepository.save(bestuurseenheid, instance);
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
+            await conceptSnapshotRepository.save(newConceptSnapshot);
 
             await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
@@ -250,6 +258,27 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
                 .withReviewStatus(undefined)
                 .withDateModified(FormatPreservingDate.now())
                 .withTitle(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.TITLE_NL_FORMAL, Language.FORMAL))
+                .withDescription(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.DESCRIPTION_NL_FORMAL, Language.FORMAL))
+                .withAdditionalDescription(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_FORMAL, Language.FORMAL))
+                .withException(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.EXCEPTION_NL_FORMAL, Language.FORMAL))
+                .withRegulation(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.REGULATION_NL_FORMAL, Language.FORMAL))
+                .withStartDate(ConceptSnapshotTestBuilder.START_DATE)
+                .withEndDate(ConceptSnapshotTestBuilder.END_DATE)
+                .withType(ConceptSnapshotTestBuilder.TYPE)
+                .withTargetAudiences(ConceptSnapshotTestBuilder.TARGET_AUDIENCES)
+                .withThemes(ConceptSnapshotTestBuilder.THEMES)
+                .withCompetentAuthorityLevels(ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS)
+                .withCompetentAuthorities([BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI, BestuurseenheidTestBuilder.ASSENEDE_IRI])
+                .withExecutingAuthorityLevels(ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS)
+                .withPublicationMedia([PublicationMediumType.YOUREUROPE])
+                .withYourEuropeCategories(ConceptSnapshotTestBuilder.YOUR_EUROPE_CATEGORIES)
+                .withKeywords([LanguageString.of('buitenland'), LanguageString.of('levensloos')])
+                //TODO LPDC-1168: add requirements
+                //TODO LPDC-1168: add procedures
+                //TODO LPDC-1168: add websites
+                //TODO LPDC-1168: add costs
+                //TODO LPDC-1168: add financial advantages
+                //TODO LPDC-1168: add legal resources
                 .build();
 
             expect(actualInstance).toEqual(expectedInstance);

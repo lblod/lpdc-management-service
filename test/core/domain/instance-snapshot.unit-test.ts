@@ -36,7 +36,7 @@ import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {aFullLegalResourceForInstanceSnapshot, LegalResourceTestBuilder} from "./legal-resource-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
-import {buildNutsCodeIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildNutsCodeIri} from "./iri-test-builder";
 
 beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
@@ -76,7 +76,7 @@ describe('constructing', () => {
     });
 
     test('CompetentAuthorities with duplicates throws error', () => {
-        expect(() => aFullInstanceSnapshot().withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI, BestuurseenheidTestBuilder.BORGLOON_IRI]).build())
+        expect(() => aFullInstanceSnapshot().withCompetentAuthorities([buildBestuurseenheidIri('abc'), buildBestuurseenheidIri('abc')]).build())
             .toThrowWithMessage(InvariantError, 'competentAuthorities mag geen duplicaten bevatten');
     });
 

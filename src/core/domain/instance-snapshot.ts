@@ -114,10 +114,10 @@ export class InstanceSnapshot {
         this._targetAudiences = requireNoDuplicates(asSortedArray(targetAudiences), 'targetAudiences');
         this._themes = requireNoDuplicates(asSortedArray(themes), 'themes');
         this._competentAuthorityLevels = requireNoDuplicates(asSortedArray(competentAuthorityLevels), 'competentAuthorityLevels');
-        this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities), 'competentAuthorities');
+        this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities, Iri.compare), 'competentAuthorities');
         requiredAtLeastOneValuePresent(this._competentAuthorities, 'competentAuthorities');
         this._executingAuthorityLevels = requireNoDuplicates(asSortedArray(executingAuthorityLevels), 'executingAuthorityLevels');
-        this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities), 'executingAuthorities');
+        this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities, Iri.compare), 'executingAuthorities');
         this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
         this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
         requireAtLeastOneValuePresentIfCondition(this._yourEuropeCategories, 'yourEuropeCategories', () => publicationMedia.includes(PublicationMediumType.YOUREUROPE));
@@ -142,7 +142,7 @@ export class InstanceSnapshot {
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._generatedAtTime = requiredValue(generatedAtTime, 'generatedAtTime');
         this._isArchived = requiredValue(isArchived, 'isArchived');
-        this._spatials = requireNoDuplicates(asSortedArray(spatials), 'spatials');
+        this._spatials = requireNoDuplicates(asSortedArray(spatials, Iri.compare), 'spatials');
         requiredAtLeastOneValuePresent(this._spatials, 'spatials');
         this._legalResources = [...legalResources].map(LegalResource.forInstanceSnapshot);
         requireNoDuplicates(this._legalResources.map(lr => lr.order), 'legal resources > order');

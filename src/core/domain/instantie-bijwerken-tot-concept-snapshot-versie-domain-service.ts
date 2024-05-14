@@ -10,6 +10,7 @@ import {InvariantError} from "./shared/lpdc-error";
 import {SelectConceptLanguageDomainService} from "./select-concept-language-domain-service";
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
 import {FormalInformalChoice} from "./formal-informal-choice";
+import {Language} from "./language";
 
 export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
 
@@ -41,6 +42,21 @@ export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
 
         const updatedInstance = InstanceBuilder.from(instance)
             .withTitle(conceptSnapshot.title?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
+            .withDescription(conceptSnapshot.description?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
+            .withAdditionalDescription(conceptSnapshot.additionalDescription?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
+            .withException(conceptSnapshot.exception?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
+            .withRegulation(conceptSnapshot.regulation?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
+            .withStartDate(conceptSnapshot.startDate)
+            .withEndDate(conceptSnapshot.endDate)
+            .withType(conceptSnapshot.type)
+            .withTargetAudiences(conceptSnapshot.targetAudiences)
+            .withThemes(conceptSnapshot.themes)
+            .withCompetentAuthorityLevels(conceptSnapshot.competentAuthorityLevels)
+            .withCompetentAuthorities(conceptSnapshot.competentAuthorities)
+            .withExecutingAuthorityLevels(conceptSnapshot.executingAuthorityLevels)
+            .withPublicationMedia(conceptSnapshot.publicationMedia)
+            .withYourEuropeCategories(conceptSnapshot.yourEuropeCategories)
+            .withKeywords(conceptSnapshot.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)))
             .build();
 
         await this.confirmBijgewerktTot(bestuurseenheid, updatedInstance, instanceVersion, conceptSnapshot);
