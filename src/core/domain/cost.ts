@@ -99,13 +99,6 @@ export class Cost {
         return this._order;
     }
 
-    transformToInformal(): Cost {
-        return CostBuilder.from(this)
-            .withTitle(this.title?.transformToInformal())
-            .withDescription(this.description?.transformToInformal())
-            .build();
-    }
-
     transformLanguage(from: Language, to: Language): Cost {
         return CostBuilder.from(this)
             .withTitle(this.title?.transformLanguage(from, to))

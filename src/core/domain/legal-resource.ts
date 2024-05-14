@@ -109,13 +109,6 @@ export class LegalResource {
         return this._order;
     }
 
-    transformToInformal(): LegalResource {
-        return LegalResourceBuilder.from(this)
-            .withTitle(this.title?.transformToInformal())
-            .withDescription(this.description?.transformToInformal())
-            .build();
-    }
-
     transformLanguage(from: Language, to: Language): LegalResource {
         return LegalResourceBuilder.from(this)
             .withTitle(this.title?.transformLanguage(from, to))

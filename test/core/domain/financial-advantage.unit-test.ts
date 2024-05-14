@@ -309,39 +309,6 @@ describe('nl language', () => {
 
 });
 
-describe('transformToInformal', () => {
-
-    test('should transform financialAdvantage with title, description to informal', () => {
-        const financialAdvantage = aFullFinancialAdvantageForInstance()
-            .withTitle(LanguageString.of(undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, 'beschrijving'))
-            .build();
-
-        expect(financialAdvantage.transformToInformal()).toEqual(FinancialAdvantageBuilder
-            .from(financialAdvantage)
-            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
-            .build()
-        );
-    });
-
-    test('should transform financialAdvantage without title, description to informal', () => {
-        const financialAdvantage = aFullFinancialAdvantageForInstance()
-            .withTitle(undefined)
-            .withDescription(undefined)
-            .build();
-
-        expect(financialAdvantage.transformToInformal()).toEqual(financialAdvantage);
-    });
-
-    test('concept financialAdvantage can not be transformed', () => {
-        const financialAdvantage = aFullFinancialAdvantage().build();
-
-        expect(() => financialAdvantage.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
-
-    });
-});
-
 describe('transformLanguage', () => {
 
     test('should transform financialAdvantage with title, description', () => {

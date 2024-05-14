@@ -115,13 +115,6 @@ export class Website {
         return this._url;
     }
 
-    transformToInformal(): Website {
-        return WebsiteBuilder.from(this)
-            .withTitle(this.title?.transformToInformal())
-            .withDescription(this.description?.transformToInformal())
-            .build();
-    }
-
     transformLanguage(from: Language, to: Language): Website {
         return WebsiteBuilder.from(this)
             .withTitle(this.title?.transformLanguage(from, to))

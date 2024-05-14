@@ -313,40 +313,6 @@ describe('nl Language', () => {
 
 });
 
-describe('transformToInformal', () => {
-
-    test('should transform cost with title, description to informal', () => {
-        const cost = aFullCostForInstance()
-            .withTitle(LanguageString.of(undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, 'beschrijving'))
-            .build();
-
-        expect(cost.transformToInformal()).toEqual(CostBuilder
-            .from(cost)
-            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
-            .build()
-        );
-    });
-
-    test('should transform cost without title, description to informal', () => {
-        const cost = aFullCostForInstance()
-            .withTitle(undefined)
-            .withDescription(undefined)
-            .build();
-
-        expect(cost.transformToInformal()).toEqual(cost);
-    });
-
-    test('concept cost can not be transformed', () => {
-        const cost = aFullCost().build();
-
-        expect(() => cost.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
-
-    });
-
-});
-
 describe('transformLanguage', () => {
 
     test('should transform cost with title, description', () => {

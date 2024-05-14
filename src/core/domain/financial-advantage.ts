@@ -103,13 +103,6 @@ export class FinancialAdvantage {
         return this._order;
     }
 
-    transformToInformal(): FinancialAdvantage {
-        return FinancialAdvantageBuilder.from(this)
-            .withTitle(this.title?.transformToInformal())
-            .withDescription(this.description?.transformToInformal())
-            .build();
-    }
-
     transformLanguage(from: Language, to: Language): FinancialAdvantage {
         return FinancialAdvantageBuilder.from(this)
             .withTitle(this.title?.transformLanguage(from, to))

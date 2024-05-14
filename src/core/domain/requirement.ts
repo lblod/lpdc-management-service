@@ -124,14 +124,6 @@ export class Requirement {
         return this._evidence;
     }
 
-    transformToInformal(): Requirement {
-        return RequirementBuilder.from(this)
-            .withTitle(this.title?.transformToInformal())
-            .withDescription(this.description?.transformToInformal())
-            .withEvidence(this.evidence?.transformToInformal())
-            .build();
-    }
-
     transformLanguage(from: Language, to: Language): Requirement {
         return RequirementBuilder.from(this)
             .withTitle(this.title?.transformLanguage(from, to))

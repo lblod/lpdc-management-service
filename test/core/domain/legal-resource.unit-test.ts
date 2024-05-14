@@ -234,39 +234,6 @@ describe('nl language', () => {
 
 });
 
-describe('transformToInformal', () => {
-
-    test('should transform legalResource with title, description to informal', () => {
-        const legalResource = aFullLegalResourceForInstance()
-            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
-            .build();
-
-        expect(legalResource.transformToInformal()).toEqual(LegalResourceBuilder
-            .from(legalResource)
-            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
-            .build()
-        );
-    });
-
-    test('should transform legalResource without title, description to informal', () => {
-        const legalResource = aFullLegalResourceForInstance()
-            .withTitle(undefined)
-            .withDescription(undefined)
-            .build();
-
-        expect(legalResource.transformToInformal()).toEqual(legalResource);
-    });
-
-    test('concept legalResource can not be transformed', () => {
-        const legalResource = aFullLegalResourceForConcept().build();
-
-        expect(() => legalResource.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
-
-    });
-});
-
 describe('transformLanguage', () => {
 
     test('should transform legalResource with title, description', () => {

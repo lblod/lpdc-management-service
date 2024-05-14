@@ -128,14 +128,6 @@ export class Procedure {
         return [...this._websites];
     }
 
-    transformToInformal(): Procedure {
-        return ProcedureBuilder.from(this)
-            .withTitle(this.title?.transformToInformal())
-            .withDescription(this.description?.transformToInformal())
-            .withWebsites(this.websites.map(website => website.transformToInformal()))
-            .build();
-    }
-
     transformLanguage(from: Language, to: Language) {
         return ProcedureBuilder.from(this)
             .withTitle(this.title?.transformLanguage(from, to))

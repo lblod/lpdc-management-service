@@ -382,30 +382,6 @@ describe('validate unique nl language', () => {
 
 });
 
-describe('transformToInformal', () => {
-
-    test('When more then one dutch language, throw error', () => {
-        const language = LanguageString.of('nl', 'formal');
-        expect(() => language.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
-    });
-
-    test('When formal set, transform to informal', () => {
-        const language = LanguageString.of(undefined, 'formal');
-        expect(language.transformToInformal()).toEqual(LanguageString.of(undefined, undefined, 'formal'));
-    });
-
-    test('When already informal set, keep informal', () => {
-        const language = LanguageString.of(undefined, undefined, 'informal');
-        expect(language.transformToInformal()).toEqual(LanguageString.of(undefined, undefined, 'informal'));
-    });
-
-    test('When no language set, nothing changes', () => {
-        const language = LanguageString.of();
-        expect(language.transformToInformal()).toEqual(LanguageString.of());
-    });
-
-});
-
 describe('isAbsent', () => {
 
     for (const language of Object.values(Language)) {

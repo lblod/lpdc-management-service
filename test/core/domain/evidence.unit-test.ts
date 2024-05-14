@@ -251,39 +251,6 @@ describe('for instance snapshot', () => {
 
 });
 
-describe('transformToInformal', () => {
-
-    test('should transform Evidence with title, description to informal', () => {
-        const evidence = aFullEvidenceForInstance()
-            .withTitle(LanguageString.of(undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, 'beschrijving'))
-            .build();
-
-        expect(evidence.transformToInformal()).toEqual(EvidenceBuilder
-            .from(evidence)
-            .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
-            .build()
-        );
-    });
-
-    test('should transform Evidence without title, description to informal', () => {
-        const evidence = aFullEvidenceForInstance()
-            .withTitle(undefined)
-            .withDescription(undefined)
-            .build();
-
-        expect(evidence.transformToInformal()).toEqual(evidence);
-    });
-
-    test('concept evidence can not be transformed', () => {
-        const evidence = aFullEvidence().build();
-
-        expect(() => evidence.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
-    });
-
-});
-
 describe('transformLanguage', () => {
 
     test('should transform Evidence with title, description', () => {

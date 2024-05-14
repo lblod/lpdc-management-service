@@ -91,13 +91,6 @@ export class Evidence {
         return this._description;
     }
 
-    transformToInformal(): Evidence {
-        return EvidenceBuilder.from(this)
-            .withTitle(this.title?.transformToInformal())
-            .withDescription(this.description?.transformToInformal())
-            .build();
-    }
-
     transformLanguage(from: Language, to: Language): Evidence {
         return EvidenceBuilder.from(this)
                 .withTitle(this.title?.transformLanguage(from, to))

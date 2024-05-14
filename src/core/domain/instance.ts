@@ -408,26 +408,30 @@ export class Instance {
     }
 
     transformToInformal(): Instance {
-        if (this.dutchLanguageVariant == Language.INFORMAL) {
+        if (this._dutchLanguageVariant == Language.INFORMAL) {
             throw new InvariantError('Instantie is reeds in de je-vorm');
         }
-        if (!this.needsConversionFromFormalToInformal) {
+        if (!this._needsConversionFromFormalToInformal) {
             throw new InvariantError('Instantie moet u naar je conversie nodig hebben');
         }
+
+        const from = this._dutchLanguageVariant;
+        const to = Language.INFORMAL;
+
         return InstanceBuilder.from(this)
-            .withDutchLanguageVariant(Language.INFORMAL)
+            .withDutchLanguageVariant(to)
             .withNeedsConversionFromFormalToInformal(false)
-            .withTitle(this.title?.transformToInformal())
-            .withDescription(this.description?.transformToInformal())
-            .withAdditionalDescription(this.additionalDescription?.transformToInformal())
-            .withException(this.exception?.transformToInformal())
-            .withRegulation(this.regulation?.transformToInformal())
-            .withRequirements(this.requirements.map(requirement => requirement.transformToInformal()))
-            .withProcedures(this.procedures.map(procedure => procedure.transformToInformal()))
-            .withWebsites(this.websites.map(website => website.transformToInformal()))
-            .withCosts(this.costs.map(cost => cost.transformToInformal()))
-            .withFinancialAdvantages(this.financialAdvantages.map(financialAdvantage => financialAdvantage.transformToInformal()))
-            .withLegalResources(this.legalResources.map(legalResource => legalResource.transformToInformal()))
+            .withTitle(this._title?.transformLanguage(from, to))
+            .withDescription(this._description?.transformLanguage(from, to))
+            .withAdditionalDescription(this._additionalDescription?.transformLanguage(from, to))
+            .withException(this._exception?.transformLanguage(from, to))
+            .withRegulation(this._regulation?.transformLanguage(from, to))
+            .withRequirements(this._requirements.map(req => req.transformLanguage(from, to)))
+            .withProcedures(this._procedures.map(proc => proc.transformLanguage(from, to)))
+            .withWebsites(this._websites.map(ws => ws.transformLanguage(from, to)))
+            .withCosts(this._costs.map(c => c.transformLanguage(from, to)))
+            .withFinancialAdvantages(this._financialAdvantages.map(fa => fa.transformLanguage(from, to)))
+            .withLegalResources(this._legalResources.map(lr => lr.transformLanguage(from, to)))
             .build();
     }
 

@@ -93,14 +93,6 @@ export class LanguageString {
         if (language === Language.GENERATED_INFORMAL) return this._nlGeneratedInformal;
     }
 
-    transformToInformal(): LanguageString {
-        if (this.definedLanguages.length > 1) {
-            throw new InvariantError('voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
-        }
-        const previousDutchLanguage = this.definedLanguages[0];
-        return this.transformLanguage(previousDutchLanguage, Language.INFORMAL);
-    }
-
     transformLanguage(from: Language, to: Language) {
         return LanguageString.ofValueInLanguage(
             this.getLanguageValue(from),

@@ -551,44 +551,6 @@ describe('nl Language', () => {
 
 });
 
-describe('transformToInformal', () => {
-
-    test('should transform procedure with title, description and website to informal', () => {
-        const procedure = aFullProcedure()
-            .withTitle(LanguageString.of(undefined, 'titel'))
-            .withDescription(LanguageString.of(undefined, 'beschrijving'))
-            .withWebsites([
-                aFullWebsiteForInstance()
-                    .withTitle(LanguageString.of(undefined, 'titel'))
-                    .build()
-            ])
-            .build();
-
-        const transformedProcedure = procedure.transformToInformal();
-
-        expect(transformedProcedure.title).toEqual(LanguageString.of(undefined, undefined, 'titel'));
-        expect(transformedProcedure.description).toEqual(LanguageString.of(undefined, undefined, 'beschrijving'));
-        expect(transformedProcedure.websites[0].title).toEqual(LanguageString.of(undefined, undefined, 'titel'));
-    });
-
-    test('should transform procedure with title, description to informal', () => {
-        const procedure = aFullProcedure()
-            .withTitle(undefined)
-            .withDescription(undefined)
-            .withWebsites([])
-            .build();
-
-        expect(procedure.transformToInformal()).toEqual(procedure);
-    });
-
-    test('concept procedure can not be transformed', () => {
-        const procedure = aFullProcedure().build();
-
-        expect(() => procedure.transformToInformal()).toThrowWithMessage(InvariantError, 'voor omzetting naar je-vorm mag languageString maar 1 NL taal bevatten');
-
-    });
-});
-
 describe('transformLanguage', () => {
 
     test('should transform procedure with title, description and website', () => {
