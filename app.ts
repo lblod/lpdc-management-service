@@ -314,7 +314,11 @@ app.get('/address/validate', async (req, res, next): Promise<any> => {
     return await validateAddress(req, res).catch(next);
 });
 
-app.get('/concept-snapshot-compare', async (req, res, next): Promise<any> => {
+app.use('/concept-snapshot', async (req, res, next) => {
+    await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
+});
+
+app.get('/concept-snapshot/compare', async (req, res, next): Promise<any> => {
     return await compareSnapshots(req, res).catch(next);
 });
 
