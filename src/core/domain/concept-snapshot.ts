@@ -20,6 +20,7 @@ import {
 } from "./types";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {LegalResource} from "./legal-resource";
+import {Language} from "./language";
 
 export class ConceptSnapshot {
 
@@ -128,6 +129,10 @@ export class ConceptSnapshot {
         this._isArchived = requiredValue(isArchived, 'isArchived');
         this._legalResources = [...legalResources].map(LegalResource.forConceptSnapshot);
         requireNoDuplicates(this._legalResources.map(lr => lr.order), 'legalResources > order');
+    }
+
+    get definedLanguages(): Language[] {
+        return [...this._title.definedLanguages];
     }
 
     get id(): Iri {

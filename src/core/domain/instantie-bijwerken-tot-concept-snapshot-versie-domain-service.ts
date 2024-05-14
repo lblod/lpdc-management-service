@@ -7,26 +7,46 @@ import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snap
 import {Concept} from "./concept";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {InvariantError} from "./shared/lpdc-error";
+import {SelectConceptLanguageDomainService} from "./select-concept-language-domain-service";
+import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
+import {FormalInformalChoice} from "./formal-informal-choice";
 
-
-export class ConfirmBijgewerktTotDomainService {
+export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
 
     private readonly _instanceRepository: InstanceRepository;
     private readonly _conceptRepository: ConceptRepository;
     private readonly _conceptSnapshotRepository: ConceptSnapshotRepository;
+    private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
+    private readonly _selectConceptLanguageDomainService: SelectConceptLanguageDomainService;
 
     constructor(
         instanceRepository: InstanceRepository,
         conceptRepository: ConceptRepository,
-        conceptSnapshotRepository: ConceptSnapshotRepository) {
+        conceptSnapshotRepository: ConceptSnapshotRepository,
+        formalInformalChoiceRepository: FormalInformalChoiceRepository,
+        selectConceptLanguageDomainService: SelectConceptLanguageDomainService) {
         this._instanceRepository = instanceRepository;
         this._conceptRepository = conceptRepository;
         this._conceptSnapshotRepository = conceptSnapshotRepository;
+        this._formalInformalChoiceRepository = formalInformalChoiceRepository;
+        this._selectConceptLanguageDomainService = selectConceptLanguageDomainService;
     }
 
-    //TODO LPDC-1168: add method to take all data from concept snapshot, and call confirmBijgewerktTot method
+    async conceptSnapshotVolledigOvernemen(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
+        //TODO LPDC-1168: reopen if needed
+        //TODO LPDC-1168: copy relevant fields from concept snapshot
 
-    //TODO LPDC-1168: use method, after reopen, and copying fields
+        const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
+        const conceptSnapshotLanguage = await this._selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+
+        const updatedInstance = InstanceBuilder.from(instance)
+            .withTitle(conceptSnapshot.title?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
+            .build();
+
+        await this.confirmBijgewerktTot(bestuurseenheid, updatedInstance, instanceVersion, conceptSnapshot);
+
+    }
+
     async confirmBijgewerktTot(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
         if (instance.conceptSnapshotId.equals(conceptSnapshot.id)) {
             return;

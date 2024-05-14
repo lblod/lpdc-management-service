@@ -38,7 +38,9 @@ import {FormApplicationService} from "./src/core/application/form-application-se
 import {Bestuurseenheid} from "./src/core/domain/bestuurseenheid";
 import {DeleteInstanceDomainService} from "./src/core/domain/delete-instance-domain-service";
 import {LinkConceptToInstanceDomainService} from "./src/core/domain/link-concept-to-instance-domain-service";
-import {ConfirmBijgewerktTotDomainService} from "./src/core/domain/confirm-bijgewerkt-tot-domain-service";
+import {
+    InstantieBijwerkenTotConceptSnapshotVersieDomainService
+} from "./src/core/domain/instantie-bijwerken-tot-concept-snapshot-versie-domain-service";
 import {UpdateInstanceApplicationService} from "./src/core/application/update-instance-application-service";
 import {SemanticFormsMapperImpl} from "./src/driven/persistence/semantic-forms-mapper-impl";
 import {
@@ -141,10 +143,12 @@ const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainServic
     conceptDisplayConfigurationRepository
 );
 
-const confirmBijgewerktTotDomainService = new ConfirmBijgewerktTotDomainService(
+const instantieBijwerkenTotConceptSnapshotVersieDomainService = new InstantieBijwerkenTotConceptSnapshotVersieDomainService(
     instanceRepository,
     conceptRepository,
-    conceptSnapshotRepository
+    conceptSnapshotRepository,
+    formalInformalChoiceRepository,
+    selectConceptLanguageDomainService,
 );
 
 const updateInstanceApplicationService = new UpdateInstanceApplicationService(
@@ -453,7 +457,7 @@ async function confirmBijgewerktTot(req: Request, res: Response) {
     const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
     const conceptSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
-    await confirmBijgewerktTotDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instanceVersion, conceptSnapshot);
+    await instantieBijwerkenTotConceptSnapshotVersieDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instanceVersion, conceptSnapshot);
     return res.sendStatus(200);
 }
 

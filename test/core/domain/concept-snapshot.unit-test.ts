@@ -43,6 +43,8 @@ import {
     aMinimalLegalResourceForConceptSnapshot
 } from "./legal-resource-test-builder";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
+import {ConceptTestBuilder} from "./concept-test-builder";
+import {Language} from "../../../src/core/domain/language";
 
 describe('constructing', () => {
 
@@ -1161,4 +1163,26 @@ describe('is functionally changed', () => {
     }
 
 
+});
+
+
+test('defined languages', () => {
+    const aConceptSnapshot =
+        aFullConceptSnapshot()
+            .withTitle(
+                LanguageString.of(
+                    ConceptTestBuilder.TITLE_NL,
+                    ConceptTestBuilder.TITLE_NL_FORMAL,
+                    ConceptTestBuilder.TITLE_NL_INFORMAL,
+                    ConceptTestBuilder.TITLE_NL_GENERATED_FORMAL,
+                    ConceptTestBuilder.TITLE_NL_GENERATED_INFORMAL))
+            .build();
+
+    expect(aConceptSnapshot.definedLanguages).toEqual([
+        Language.NL,
+        Language.FORMAL,
+        Language.INFORMAL,
+        Language.GENERATED_FORMAL,
+        Language.GENERATED_INFORMAL
+    ]);
 });

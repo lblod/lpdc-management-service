@@ -2,13 +2,13 @@ import {Concept} from "./concept";
 import {Language} from "./language";
 import {ChosenFormType} from "./types";
 import {FormalInformalChoice} from "./formal-informal-choice";
+import {ConceptSnapshot} from "./concept-snapshot";
 
 export class SelectConceptLanguageDomainService {
 
-    //TODO LPDC-1168: expand to conceptOrConceptSnapshot (both will have a list of languages)
-    public async select(concept: Concept, formalInformalChoice: FormalInformalChoice | undefined): Promise<Language> {
+    public async select(conceptOrConceptSnapshot: Concept | ConceptSnapshot, formalInformalChoice: FormalInformalChoice | undefined): Promise<Language> {
 
-        const conceptLanguages = concept.conceptLanguages;
+        const conceptLanguages = conceptOrConceptSnapshot.definedLanguages;
         const chosenForm: ChosenFormType | undefined = formalInformalChoice?.chosenForm;
 
         if (chosenForm === ChosenFormType.INFORMAL) {

@@ -133,8 +133,7 @@ export class Concept {
         requireNoDuplicates(this.legalResources.map(lr => lr.order), 'legal resources > order');
     }
 
-    get conceptLanguages(): Language[] {
-        //TODO LPDC-1168: is it sufficient to just take the title?
+    get definedLanguages(): Language[] {
         return [...this._title.definedLanguages];
     }
 
