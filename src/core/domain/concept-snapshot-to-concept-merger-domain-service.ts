@@ -4,12 +4,6 @@ import {ConceptSnapshot} from "./concept-snapshot";
 import {Iri} from "./shared/iri";
 import {Concept} from "./concept";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
-import {Requirement, RequirementBuilder} from "./requirement";
-import {Evidence, EvidenceBuilder} from "./evidence";
-import {Procedure, ProcedureBuilder} from "./procedure";
-import {Website, WebsiteBuilder} from "./website";
-import {Cost, CostBuilder} from "./cost";
-import {FinancialAdvantage, FinancialAdvantageBuilder} from "./financial-advantage";
 import {
     ConceptDisplayConfigurationRepository
 } from "../port/driven/persistence/concept-display-configuration-repository";
@@ -19,7 +13,6 @@ import {Logger} from "../../../platform/logger";
 import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
 } from "./ensure-linked-authorities-exist-as-code-list-domain-service";
-import {LegalResource, LegalResourceBuilder} from "./legal-resource";
 import {Language} from "./language";
 
 export class ConceptSnapshotToConceptMergerDomainService {
@@ -131,18 +124,18 @@ export class ConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.publicationMedia,
             conceptSnapshot.yourEuropeCategories,
             conceptSnapshot.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)),
-            this.copyRequirements(conceptSnapshot.requirements),
-            this.copyProcedures(conceptSnapshot.procedures),
-            this.copyWebsites(conceptSnapshot.websites),
-            this.copyCosts(conceptSnapshot.costs),
-            this.copyFinancialAdvantages(conceptSnapshot.financialAdvantages),
+            conceptSnapshot.requirements.map(req => req.transformWithNewId()),
+            conceptSnapshot.procedures.map(proc => proc.transformWithNewId()),
+            conceptSnapshot.websites.map(ws => ws.transformWithNewId()),
+            conceptSnapshot.costs.map(c => c.transformWithNewId()),
+            conceptSnapshot.financialAdvantages.map(fa => fa.transformWithNewId()),
             conceptSnapshot.productId,
             conceptSnapshot.id,
             [],
             conceptSnapshot.id,
             conceptSnapshot.conceptTags,
             conceptSnapshot.isArchived,
-            this.copyLegalResources(conceptSnapshot.legalResources),
+            conceptSnapshot.legalResources.map(lr => lr.transformWithNewId()),
         );
     }
 
@@ -167,18 +160,18 @@ export class ConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.publicationMedia,
             conceptSnapshot.yourEuropeCategories,
             conceptSnapshot.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)),
-            this.copyRequirements(conceptSnapshot.requirements),
-            this.copyProcedures(conceptSnapshot.procedures),
-            this.copyWebsites(conceptSnapshot.websites),
-            this.copyCosts(conceptSnapshot.costs),
-            this.copyFinancialAdvantages(conceptSnapshot.financialAdvantages),
+            conceptSnapshot.requirements.map(req => req.transformWithNewId()),
+            conceptSnapshot.procedures.map(proc => proc.transformWithNewId()),
+            conceptSnapshot.websites.map(ws => ws.transformWithNewId()),
+            conceptSnapshot.costs.map(c => c.transformWithNewId()),
+            conceptSnapshot.financialAdvantages.map(fa => fa.transformWithNewId()),
             conceptSnapshot.productId,
             conceptSnapshot.id,
             concept.appliedConceptSnapshots,
             isConceptSnapshotFunctionallyChanged ? conceptSnapshot.id : concept.latestConceptSnapshot,
             conceptSnapshot.conceptTags,
             conceptSnapshot.isArchived,
-            this.copyLegalResources(conceptSnapshot.legalResources),
+            conceptSnapshot.legalResources.map(lr => lr.transformWithNewId()),
         );
     }
 
@@ -218,103 +211,6 @@ export class ConceptSnapshotToConceptMergerDomainService {
         );
     }
 
-    private copyRequirements(requirements: Requirement[]) {
-        return requirements.map(r => {
-                const newUuid = uuid();
-                return Requirement.reconstitute(
-                    RequirementBuilder.buildIri(newUuid),
-                    newUuid,
-                    r.title,
-                    r.description,
-                    r.order,
-                    r.evidence ? this.copyEvidence(r.evidence) : undefined
-                );
-            }
-        );
-    }
-
-    private copyProcedures(procedures: Procedure[]) {
-        return procedures.map(p => {
-                const newUuid = uuid();
-                return Procedure.forConcept(
-                    Procedure.reconstitute(
-                        ProcedureBuilder.buildIri(newUuid),
-                        newUuid,
-                        p.title,
-                        p.description,
-                        p.order,
-                        this.copyWebsites(p.websites)
-                    )
-                );
-            }
-        );
-    }
-
-    private copyWebsites(websites: Website[]) {
-        return websites.map(w => {
-                const newUuid = uuid();
-                return Website.reconstitute(
-                    WebsiteBuilder.buildIri(newUuid),
-                    newUuid,
-                    w.title,
-                    w.description,
-                    w.order,
-                    w.url
-                );
-            }
-        );
-    }
-
-    private copyCosts(costs: Cost[]) {
-        return costs.map(c => {
-            const newUuid = uuid();
-            return Cost.reconstitute(
-                CostBuilder.buildIri(newUuid),
-                newUuid,
-                c.title,
-                c.description,
-                c.order
-            );
-        });
-    }
-
-    private copyFinancialAdvantages(financialAdvantages: FinancialAdvantage[]) {
-        return financialAdvantages.map(fa => {
-                const newUuid = uuid();
-                return FinancialAdvantage.reconstitute(
-                    FinancialAdvantageBuilder.buildIri(newUuid),
-                    newUuid,
-                    fa.title,
-                    fa.description,
-                    fa.order
-                );
-            }
-        );
-    }
-
-    private copyEvidence(evidence: Evidence): Evidence {
-        const newUuid = uuid();
-        return Evidence.reconstitute(
-            EvidenceBuilder.buildIri(newUuid),
-            newUuid,
-            evidence.title,
-            evidence.description
-        );
-    }
-
-    private copyLegalResources(legalResourceUrls: LegalResource[]): LegalResource[] {
-        return legalResourceUrls.map((lr) => {
-            const newUuid = uuid();
-            return LegalResource.reconstitute(
-                LegalResourceBuilder.buildIri(newUuid),
-                newUuid,
-                lr.title,
-                lr.description,
-                lr.url,
-                lr.order);
-        });
-    }
-
     private async isConceptChanged(newConceptSnapshot: ConceptSnapshot, currentSnapshotId: Iri): Promise<boolean> {
         if (!currentSnapshotId) {
             return false;
@@ -322,7 +218,6 @@ export class ConceptSnapshotToConceptMergerDomainService {
 
         const currentConceptSnapshot = await this._conceptSnapshotRepository.findById(currentSnapshotId);
 
-        //TODO LPDC-1166: adapt to new interface -> if empty -> not functdionally changed
         return ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot).length != 0;
     }
 

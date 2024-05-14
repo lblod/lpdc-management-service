@@ -93,9 +93,9 @@ export class Evidence {
 
     transformLanguage(from: Language, to: Language): Evidence {
         return EvidenceBuilder.from(this)
-                .withTitle(this.title?.transformLanguage(from, to))
-                .withDescription(this.description?.transformLanguage(from, to))
-                .build();
+            .withTitle(this.title?.transformLanguage(from, to))
+            .withDescription(this.description?.transformLanguage(from, to))
+            .build();
     }
 
     transformWithNewId(): Evidence {
