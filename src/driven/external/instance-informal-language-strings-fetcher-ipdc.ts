@@ -109,7 +109,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         if (response.ok) {
             const contextAsJson = await response.json();
             const expandedContext = contextAsJson['@context'];
-            if(!expandedContext) {
+            if (!expandedContext) {
                 console.error(`Context ${context} is incorrect [${JSON.stringify(contextAsJson)}] `);
                 throw new SystemError(`Er is een fout opgetreden bij het bevragen van de context ${context} bij Ipdc, context was incorrect`);
             }
@@ -139,10 +139,9 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
                 return LanguageString.ofValueInLanguage(informalNewValue, Language.FORMAL);
             }
         } else if (
-            LanguageString.isAbsent(newValue, initialDutchLanguageVariant) &&
-            LanguageString.isAbsent(initialValue, initialDutchLanguageVariant)
-        ) {
-             return undefined;
+            LanguageString.isAbsent(newValue, initialDutchLanguageVariant)
+            && LanguageString.isAbsent(initialValue, initialDutchLanguageVariant)) {
+            return undefined;
         }
 
         throw new SystemError(`De nieuwe en initiële waarde moeten beiden aanwezig of afwezig zijn {nieuw[${JSON.stringify(newValue)}], initial[${JSON.stringify(initialValue)}], dutchLanguage[${initialDutchLanguageVariant}]}`);
@@ -152,16 +151,14 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         if (newRequirements.length != initialRequirements.length) {
             throw new SystemError("Het aantal voorwaarden van ipdc is niet gelijk aan het aantal originele voorwaarden");
         }
-        let requirements: Requirement[] = [];
-
-        zip(newRequirements, initialRequirements).some((reqs: [Requirement, Requirement]) => {
-
-            requirements = [...requirements, RequirementBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
-                .withEvidence(this.mapEvidence(reqs[0].evidence, reqs[1].evidence, initialDutchLanguageVariant)).build()];
-        });
-        return requirements;
+        return zip(newRequirements, initialRequirements)
+            .map((reqs: [Requirement, Requirement]) => {
+                return RequirementBuilder.from(reqs[1])
+                    .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
+                    .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
+                    .withEvidence(this.mapEvidence(reqs[0].evidence, reqs[1].evidence, initialDutchLanguageVariant))
+                    .build();
+            });
     }
 
     private mapEvidence(newEvidence: Evidence | undefined, initialEvidence: Evidence | undefined, initialDutchLanguageVariant: Language): Evidence | undefined {
@@ -182,80 +179,65 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         if (newProcedures.length != initialProcedures.length) {
             throw new SystemError("Het aantal procedures van ipdc is niet gelijk aan het aantal originele procedures");
         }
-        let procedures: Procedure[] = [];
-
-        zip(newProcedures, initialProcedures).some((reqs: [Procedure, Procedure]) => {
-
-            procedures = [...procedures, ProcedureBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
-                .withWebsites(this.mapWebsites(reqs[0].websites, reqs[1].websites, initialDutchLanguageVariant)).build()];
-        });
-        return procedures;
+        return zip(newProcedures, initialProcedures)
+            .map((procs: [Procedure, Procedure]) => {
+                return ProcedureBuilder.from(procs[1])
+                    .withTitle(this.mapLanguageString(procs[0].title, procs[1].title, initialDutchLanguageVariant))
+                    .withDescription(this.mapLanguageString(procs[0].description, procs[1].description, initialDutchLanguageVariant))
+                    .withWebsites(this.mapWebsites(procs[0].websites, procs[1].websites, initialDutchLanguageVariant))
+                    .build();
+            });
     }
 
     private mapWebsites(newWebsites: Website[], initialWebsites: Website[], initialDutchLanguageVariant: Language): Website[] {
         if (newWebsites.length != initialWebsites.length) {
             throw new SystemError("Het aantal websites van ipdc is niet gelijk aan het aantal originele websites");
         }
-        let websites: Website[] = [];
-
-        zip(newWebsites, initialWebsites).some((reqs: [Website, Website]) => {
-
-            const website = WebsiteBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
-                .build();
-            websites = [...websites, website];
-        });
-        return websites;
+        return zip(newWebsites, initialWebsites)
+            .map((websites: [Website, Website]) => {
+                return WebsiteBuilder.from(websites[1])
+                    .withTitle(this.mapLanguageString(websites[0].title, websites[1].title, initialDutchLanguageVariant))
+                    .withDescription(this.mapLanguageString(websites[0].description, websites[1].description, initialDutchLanguageVariant))
+                    .build();
+            });
     }
 
     private mapCosts(newCosts: Cost[], initialCosts: Cost[], initialDutchLanguageVariant: Language): Cost[] {
         if (newCosts.length != initialCosts.length) {
             throw new SystemError("Het aantal kosten van ipdc is niet gelijk aan het aantal originele kosten");
         }
-        let costs: Cost[] = [];
-
-        zip(newCosts, initialCosts).some((reqs: [Cost, Cost]) => {
-
-            costs = [...costs, CostBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
-                .build()];
-        });
-        return costs;
+        return zip(newCosts, initialCosts)
+            .map((costs: [Cost, Cost]) => {
+                return CostBuilder.from(costs[1])
+                    .withTitle(this.mapLanguageString(costs[0].title, costs[1].title, initialDutchLanguageVariant))
+                    .withDescription(this.mapLanguageString(costs[0].description, costs[1].description, initialDutchLanguageVariant))
+                    .build();
+            });
     }
 
     private mapFinancialAdvantages(newFinancialAdvantages: FinancialAdvantage[], initialFinancialAdvantages: FinancialAdvantage[], initialDutchLanguageVariant: Language): FinancialAdvantage[] {
         if (newFinancialAdvantages.length != initialFinancialAdvantages.length) {
             throw new SystemError("Het aantal financiele voordelen van ipdc is niet gelijk aan het aantal originele financiele voordelen");
         }
-        let financialAdvantages: FinancialAdvantage[] = [];
-
-        zip(newFinancialAdvantages, initialFinancialAdvantages).some((reqs: [FinancialAdvantage, FinancialAdvantage]) => {
-
-            financialAdvantages = [...financialAdvantages, FinancialAdvantageBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
-                .build()];
-        });
-        return financialAdvantages;
+        return zip(newFinancialAdvantages, initialFinancialAdvantages)
+            .map((financialAdvantages: [FinancialAdvantage, FinancialAdvantage]) => {
+                return FinancialAdvantageBuilder.from(financialAdvantages[1])
+                    .withTitle(this.mapLanguageString(financialAdvantages[0].title, financialAdvantages[1].title, initialDutchLanguageVariant))
+                    .withDescription(this.mapLanguageString(financialAdvantages[0].description, financialAdvantages[1].description, initialDutchLanguageVariant))
+                    .build();
+            });
     }
 
     private mapLegalResources(newLegalResources: LegalResource[], initialLegalResources: LegalResource[], initialDutchLanguageVariant: Language): LegalResource[] {
         if (newLegalResources.length != initialLegalResources.length) {
             throw new SystemError("Het aantal regelgevingen van ipdc is niet gelijk aan het aantal originele regelgevingen");
         }
-        let legalResources: LegalResource[] = [];
-
-        zip(newLegalResources, initialLegalResources).some((reqs: [LegalResource, LegalResource]) => {
-
-            legalResources = [...legalResources, LegalResourceBuilder.from(reqs[1])
-                .withTitle(this.mapLanguageString(reqs[0].title, reqs[1].title, initialDutchLanguageVariant))
-                .withDescription(this.mapLanguageString(reqs[0].description, reqs[1].description, initialDutchLanguageVariant))
-                .build()];
-        });
-        return legalResources;
+        return zip(newLegalResources, initialLegalResources)
+            .map((legalResources: [LegalResource, LegalResource]) => {
+                return LegalResourceBuilder.from(legalResources[1])
+                    .withTitle(this.mapLanguageString(legalResources[0].title, legalResources[1].title, initialDutchLanguageVariant))
+                    .withDescription(this.mapLanguageString(legalResources[0].description, legalResources[1].description, initialDutchLanguageVariant))
+                    .build();
+            });
     }
 }
