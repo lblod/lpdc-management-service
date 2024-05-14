@@ -322,7 +322,7 @@ app.use('/concept-snapshot', async (req, res, next) => {
     await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
 });
 
-app.get('/concept-snapshot/compare', async (req, res, next): Promise<any> => {
+app.get('/concept-snapshot/compare-with-latest/:snapshotId', async (req, res, next): Promise<any> => {
     return await compareSnapshots(req, res).catch(next);
 });
 
@@ -624,14 +624,19 @@ async function validateAddress(req: Request, res: Response) {
     return res.json(address);
 }
 
-//TODO LPDC-1166: create new endpoint for concept-snapshots + add security
 async function compareSnapshots(req: Request, res: Response) {
-    const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.currentSnapshotUri as string));
-    const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(req.query.newSnapshotUri as string));
+    const snapshotIdRequestParam = req.params.snapshotId;
 
-    const isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
+    let isChanged: string[] = [''];
+    if (snapshotIdRequestParam) {
+        const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(snapshotIdRequestParam));
+        const concept = await conceptRepository.findById(currentConceptSnapshot.isVersionOfConcept);
+        const newConceptSnapshot = await conceptSnapshotRepository.findById(concept.latestConceptSnapshot);
+        isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
+    }
 
-    return res.json({isChanged});
+    return res.json(isChanged);
+
 
 }
 

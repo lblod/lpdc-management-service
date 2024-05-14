@@ -263,7 +263,6 @@ export class ConceptSnapshot {
         return [...this._legalResources];
     }
 
-    //TODO LPDC-1166: return a list of all changed 'grouped semantic form elements'; (inernally we can use a map to build, filter, and reeturn keys?).
     static isFunctionallyChanged(value: ConceptSnapshot, other: ConceptSnapshot): string[] {
         const functionallyChanged: Map<string, boolean> = new Map();
         functionallyChanged.set("basisinformatie",
