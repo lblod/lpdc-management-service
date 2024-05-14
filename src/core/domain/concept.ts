@@ -134,6 +134,7 @@ export class Concept {
     }
 
     get conceptLanguages(): Language[] {
+        //TODO LPDC-1168: is it sufficient to just take the title?
         return [...this._title.definedLanguages];
     }
 

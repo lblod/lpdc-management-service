@@ -32,7 +32,7 @@ import {NewInstanceDomainService} from "./src/core/domain/new-instance-domain-se
 import {Session} from "./src/core/domain/session";
 import {authenticateAndAuthorizeRequest} from "./src/driving/sessions";
 import {FormDefinitionFileRepository} from "./src/driven/persistence/form-definition-file-repository";
-import {SelectFormLanguageDomainService} from "./src/core/domain/select-form-language-domain-service";
+import {SelectConceptLanguageDomainService} from "./src/core/domain/select-concept-language-domain-service";
 import {FormalInformalChoiceSparqlRepository} from "./src/driven/persistence/formal-informal-choice-sparql-repository";
 import {FormApplicationService} from "./src/core/application/form-application-service";
 import {Bestuurseenheid} from "./src/core/domain/bestuurseenheid";
@@ -105,16 +105,15 @@ const conceptSnapshotToConceptMergerDomainService =
         instanceRepository,
     );
 
+const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
+
 const newInstanceDomainService =
     new NewInstanceDomainService(
         instanceRepository,
         formalInformalChoiceRepository,
+        selectConceptLanguageDomainService,
         conceptDisplayConfigurationRepository
     );
-
-const selectFormLanguageDomainService = new SelectFormLanguageDomainService(
-    formalInformalChoiceRepository,
-);
 
 const deleteInstanceDomainService = new DeleteInstanceDomainService(
     instanceRepository,
@@ -126,7 +125,8 @@ const formApplicationService = new FormApplicationService(
     instanceRepository,
     formDefinitionRepository,
     codeRepository,
-    selectFormLanguageDomainService,
+    formalInformalChoiceRepository,
+    selectConceptLanguageDomainService,
     semanticFormsMapper,
 );
 
@@ -519,8 +519,9 @@ async function getDutchLanguageVersionForConcept(req: Request, res: Response) {
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const concept = await conceptRepository.findById(conceptId);
+    const formalInformalChoice = await formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
 
-    const languageVersion = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+    const languageVersion = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
     return res.json({languageVersion: languageVersion});
 }
 

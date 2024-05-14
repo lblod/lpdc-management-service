@@ -13,18 +13,22 @@ import {isEqual, uniqWith} from "lodash";
 import {
     ConceptDisplayConfigurationRepository
 } from "../port/driven/persistence/concept-display-configuration-repository";
+import {SelectConceptLanguageDomainService} from "./select-concept-language-domain-service";
 
 export class NewInstanceDomainService {
 
     private readonly _instanceRepository: InstanceRepository;
     private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
+    private readonly _selectConceptLanguageDomainService: SelectConceptLanguageDomainService;
     private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
 
     constructor(instanceRepository: InstanceRepository,
                 formalInformalChoiceRepository: FormalInformalChoiceRepository,
+                selectConceptLanguageDomainService: SelectConceptLanguageDomainService,
                 conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository) {
         this._instanceRepository = instanceRepository;
         this._formalInformalChoiceRepository = formalInformalChoiceRepository;
+        this._selectConceptLanguageDomainService = selectConceptLanguageDomainService;
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
     }
 
@@ -92,20 +96,20 @@ export class NewInstanceDomainService {
         const now = FormatPreservingDate.of(new Date().toISOString());
 
         const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
-        const chosenForm = formalInformalChoice?.chosenForm;
-        const conceptLanguageVersion = this.selectLanguageVersionForConcept(concept, chosenForm);
-        const dutchLanguageVariant = this.toDutchLanguageVariant(chosenForm);
+        const conceptLanguage = await this._selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+
+        const dutchLanguageVariant = this.toDutchLanguageVariant(formalInformalChoice?.chosenForm);
 
         const newInstance =
             new Instance(
                 instanceId,
                 instanceUuid,
                 bestuurseenheid.id,
-                concept.title?.transformLanguage(conceptLanguageVersion, dutchLanguageVariant),
-                concept.description?.transformLanguage(conceptLanguageVersion, dutchLanguageVariant),
-                concept.additionalDescription?.transformLanguage(conceptLanguageVersion, dutchLanguageVariant),
-                concept.exception?.transformLanguage(conceptLanguageVersion, dutchLanguageVariant),
-                concept.regulation?.transformLanguage(conceptLanguageVersion, dutchLanguageVariant),
+                concept.title?.transformLanguage(conceptLanguage, dutchLanguageVariant),
+                concept.description?.transformLanguage(conceptLanguage, dutchLanguageVariant),
+                concept.additionalDescription?.transformLanguage(conceptLanguage, dutchLanguageVariant),
+                concept.exception?.transformLanguage(conceptLanguage, dutchLanguageVariant),
+                concept.regulation?.transformLanguage(conceptLanguage, dutchLanguageVariant),
                 concept.startDate,
                 concept.endDate,
                 concept.type,
@@ -118,11 +122,11 @@ export class NewInstanceDomainService {
                 concept.publicationMedia,
                 concept.yourEuropeCategories,
                 concept.keywords,
-                concept.requirements.map(r => r.transformLanguage(conceptLanguageVersion, dutchLanguageVariant).transformWithNewId()),
-                concept.procedures.map(proc => proc.transformLanguage(conceptLanguageVersion, dutchLanguageVariant).transformWithNewId()),
-                concept.websites.map(ws => ws.transformLanguage(conceptLanguageVersion, dutchLanguageVariant).transformWithNewId()),
-                concept.costs.map(c => c.transformLanguage(conceptLanguageVersion, dutchLanguageVariant).transformWithNewId()),
-                concept.financialAdvantages.map(fa => fa.transformLanguage(conceptLanguageVersion, dutchLanguageVariant).transformWithNewId()),
+                concept.requirements.map(r => r.transformLanguage(conceptLanguage, dutchLanguageVariant).transformWithNewId()),
+                concept.procedures.map(proc => proc.transformLanguage(conceptLanguage, dutchLanguageVariant).transformWithNewId()),
+                concept.websites.map(ws => ws.transformLanguage(conceptLanguage, dutchLanguageVariant).transformWithNewId()),
+                concept.costs.map(c => c.transformLanguage(conceptLanguage, dutchLanguageVariant).transformWithNewId()),
+                concept.financialAdvantages.map(fa => fa.transformLanguage(conceptLanguage, dutchLanguageVariant).transformWithNewId()),
                 [],
                 concept.id,
                 concept.latestConceptSnapshot,
@@ -138,33 +142,13 @@ export class NewInstanceDomainService {
                 undefined,
                 undefined,
                 bestuurseenheid.spatials,
-                concept.legalResources.map(lr => lr.transformLanguage(conceptLanguageVersion, dutchLanguageVariant).transformWithNewId()),
+                concept.legalResources.map(lr => lr.transformLanguage(conceptLanguage, dutchLanguageVariant).transformWithNewId()),
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);
         await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
 
         return newInstance;
-    }
-
-    private selectLanguageVersionForConcept(concept: Concept, chosenForm: ChosenFormType | undefined): Language {
-        if (chosenForm === ChosenFormType.INFORMAL) {
-            if (concept.conceptLanguages.includes(Language.INFORMAL)) {
-                return Language.INFORMAL;
-            } else if (concept.conceptLanguages.includes(Language.GENERATED_INFORMAL)) {
-                return Language.GENERATED_INFORMAL;
-            } else {
-                return Language.NL;
-            }
-        } else {
-            if (concept.conceptLanguages.includes(Language.FORMAL)) {
-                return Language.FORMAL;
-            } else if (concept.conceptLanguages.includes(Language.GENERATED_FORMAL) && concept.conceptLanguages.includes(Language.INFORMAL)) {
-                return Language.GENERATED_FORMAL;
-            } else {
-                return Language.NL;
-            }
-        }
     }
 
     private toDutchLanguageVariant(chosenForm: ChosenFormType | undefined): Language {

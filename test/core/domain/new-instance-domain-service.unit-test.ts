@@ -29,6 +29,7 @@ import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {Language} from "../../../src/core/domain/language";
+import {SelectConceptLanguageDomainService} from "../../../src/core/domain/select-concept-language-domain-service";
 
 describe('Creating a new Instance domain service', () => {
 
@@ -37,7 +38,8 @@ describe('Creating a new Instance domain service', () => {
     const formalInformalChoiceTestRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationTestRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, conceptDisplayConfigurationRepository);
+    const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
+    const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, conceptDisplayConfigurationRepository);
 
     beforeAll(() => setFixedTime());
 

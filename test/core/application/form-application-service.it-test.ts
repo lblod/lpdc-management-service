@@ -5,7 +5,7 @@ import {aFullConcept} from "../domain/concept-test-builder";
 import {mock} from 'jest-mock-extended';
 import {CodeRepository} from "../../../src/core/port/driven/persistence/code-repository";
 import {FormDefinitionRepository} from "../../../src/core/port/driven/persistence/form-definition-repository";
-import {SelectFormLanguageDomainService} from "../../../src/core/domain/select-form-language-domain-service";
+import {SelectConceptLanguageDomainService} from "../../../src/core/domain/select-concept-language-domain-service";
 import {aFormalInformalChoice} from "../domain/formal-informal-choice-test-builder";
 import {ChosenFormType, FormType, PublicationMediumType} from "../../../src/core/domain/types";
 import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
@@ -38,11 +38,11 @@ describe('Form application service tests', () => {
         const formDefinitionRepository = mock<FormDefinitionRepository>();
         const codeRepository = mock<CodeRepository>();
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-        const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
+        const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
         const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const semanticFormsMapper = new SemanticFormsMapperImpl();
 
-        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);
+        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, semanticFormsMapper);
 
         test('can load a inhoud form for a concept in correct language', async () => {
             const concept =
@@ -130,11 +130,11 @@ describe('Form application service tests', () => {
         const formDefinitionRepository = mock<FormDefinitionRepository>();
         const codeRepository = mock<CodeRepository>();
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-        const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
+        const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
         const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const semanticFormsMapper = new SemanticFormsMapperImpl();
 
-        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);
+        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, semanticFormsMapper);
 
         test('can load a inhoud form for an instance in correct language', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
@@ -218,10 +218,10 @@ describe('Form application service tests', () => {
         const formDefinitionRepository = new FormDefinitionFileRepository();
         const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-        const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
+        const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
         const semanticFormsMapper = new SemanticFormsMapperImpl();
 
-        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);
+        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, semanticFormsMapper);
 
         test('valid form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();

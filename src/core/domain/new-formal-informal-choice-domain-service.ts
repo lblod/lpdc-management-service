@@ -15,15 +15,12 @@ export class NewFormalInformalChoiceDomainService {
         this._formalInformalChoiceRepository = formalInformalChoiceRepository;
     }
 
-
     public async saveFormalInformalChoiceAndSyncInstances(bestuurseenheid: Bestuurseenheid, chosenForm: ChosenFormType): Promise<FormalInformalChoice> {
         const formalInformalChoose = await this.saveFormalInformalChoice(bestuurseenheid, chosenForm);
         await this._instanceRepository.syncNeedsConversionFromFormalToInformal(bestuurseenheid, formalInformalChoose.chosenForm);
 
-
         return formalInformalChoose;
     }
-
 
     private async saveFormalInformalChoice(bestuurseenheid: Bestuurseenheid, chosenForm: ChosenFormType): Promise<FormalInformalChoice> {
         const newUuid = uuid();
@@ -35,7 +32,6 @@ export class NewFormalInformalChoiceDomainService {
             chosenForm,
             bestuurseenheid.id);
         await this._formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
-
 
         return formalInformalChoice;
     }

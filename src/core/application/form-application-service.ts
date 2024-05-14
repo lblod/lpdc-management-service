@@ -2,7 +2,7 @@ import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 import {FormDefinitionRepository} from "../port/driven/persistence/form-definition-repository";
 import {Iri} from "../domain/shared/iri";
 import {CodeRepository} from "../port/driven/persistence/code-repository";
-import {SelectFormLanguageDomainService} from "../domain/select-form-language-domain-service";
+import {SelectConceptLanguageDomainService} from "../domain/select-concept-language-domain-service";
 import {Bestuurseenheid} from "../domain/bestuurseenheid";
 import {FormType} from "../domain/types";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
@@ -10,6 +10,7 @@ import {SemanticFormsMapper} from "../port/driven/persistence/semantic-forms-map
 import {validateForm} from '@lblod/submission-form-helpers';
 import ForkingStore from "forking-store";
 import {namedNode} from "rdflib";
+import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
 
 export class FormApplicationService {
 
@@ -17,7 +18,8 @@ export class FormApplicationService {
     private readonly _instanceRepository: InstanceRepository;
     private readonly _formDefinitionRepository: FormDefinitionRepository;
     private readonly _codeRepository: CodeRepository;
-    private readonly _selectFormLanguageDomainService: SelectFormLanguageDomainService;
+    private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
+    private readonly _selectConceptLanguageDomainService: SelectConceptLanguageDomainService;
     private readonly _semanticFormsMapper: SemanticFormsMapper;
 
     constructor(
@@ -25,14 +27,16 @@ export class FormApplicationService {
         instanceRepository: InstanceRepository,
         formDefinitionRepository: FormDefinitionRepository,
         codeRepository: CodeRepository,
-        selectFormLanguageDomainService: SelectFormLanguageDomainService,
+        formalInformalChoiceRepository: FormalInformalChoiceRepository,
+        selectConceptLanguageDomainService: SelectConceptLanguageDomainService,
         semanticFormsMapper: SemanticFormsMapper,
     ) {
         this._conceptRepository = conceptRepository;
         this._instanceRepository = instanceRepository;
         this._formDefinitionRepository = formDefinitionRepository;
         this._codeRepository = codeRepository;
-        this._selectFormLanguageDomainService = selectFormLanguageDomainService;
+        this._formalInformalChoiceRepository = formalInformalChoiceRepository;
+        this._selectConceptLanguageDomainService = selectConceptLanguageDomainService;
         this._semanticFormsMapper = semanticFormsMapper;
     }
 
@@ -44,7 +48,8 @@ export class FormApplicationService {
     }> {
 
         const concept = await this._conceptRepository.findById(conceptId);
-        const languageForForm = await this._selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const formalInformalChoice = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
+        const languageForForm = await this._selectConceptLanguageDomainService.select(concept, formalInformalChoice);
 
         const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm);
 

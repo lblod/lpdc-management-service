@@ -16,7 +16,7 @@ import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-spar
 import {
     FormalInformalChoiceSparqlRepository
 } from "../../src/driven/persistence/formal-informal-choice-sparql-repository";
-import {SelectFormLanguageDomainService} from "../../src/core/domain/select-form-language-domain-service";
+import {SelectConceptLanguageDomainService} from "../../src/core/domain/select-concept-language-domain-service";
 import {SemanticFormsMapperImpl} from "../../src/driven/persistence/semantic-forms-mapper-impl";
 import {FormDefinitionFileRepository} from "../../src/driven/persistence/form-definition-file-repository";
 import {CodeSparqlRepository} from "../../src/driven/persistence/code-sparql-repository";
@@ -29,9 +29,9 @@ const instanceRepository = new InstanceSparqlRepository(endPoint);
 const formDefinitionRepository = new FormDefinitionFileRepository();
 const codeRepository = new CodeSparqlRepository(endPoint);
 const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(endPoint);
-const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
+const selectFormLanguageDomainService = new SelectConceptLanguageDomainService();
 const semanticFormsMapper = new SemanticFormsMapperImpl();
-const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, selectFormLanguageDomainService, semanticFormsMapper);
+const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, formalInformalChoiceRepository, selectFormLanguageDomainService, semanticFormsMapper);
 const validateInstanceForPublishApplicationService = new ValidateInstanceForPublishApplicationService(formApplicationService, instanceRepository);
 
 describe('Instance publish validation', () => {

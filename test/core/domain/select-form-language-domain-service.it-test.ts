@@ -2,7 +2,7 @@ import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
 import {ChosenFormType} from "../../../src/core/domain/types";
 import {aMinimalConcept} from "./concept-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {SelectFormLanguageDomainService} from "../../../src/core/domain/select-form-language-domain-service";
+import {SelectConceptLanguageDomainService} from "../../../src/core/domain/select-concept-language-domain-service";
 import {Language} from "../../../src/core/domain/language";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
@@ -11,11 +11,11 @@ import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 
-describe('select form language for concept', () => {
+describe('select concept language ', () => {
 
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const selectFormLanguageDomainService = new SelectFormLanguageDomainService(formalInformalChoiceRepository);
+    const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
 
     test('When chosenForm informal and concept in informal version then formLanguage should be @nl-be-x-informal', async () => {
         const bestuurseenheid =
@@ -37,7 +37,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
         expect(selectedLanguage).toEqual(Language.INFORMAL);
     });
 
@@ -61,7 +61,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
         expect(selectedLanguage).toEqual(Language.GENERATED_INFORMAL);
     });
 
@@ -85,7 +85,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
         expect(selectedLanguage).toEqual(Language.GENERATED_INFORMAL);
     });
 
@@ -110,7 +110,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
         expect(selectedLanguage).toEqual(Language.INFORMAL);
     });
 
@@ -134,7 +134,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
         expect(selectedLanguage).toEqual(Language.NL);
     });
 
@@ -158,7 +158,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
         expect(selectedLanguage).toEqual(Language.FORMAL);
     });
 
@@ -182,7 +182,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
         expect(selectedLanguage).toEqual(Language.GENERATED_FORMAL);
     });
 
@@ -206,7 +206,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
         expect(selectedLanguage).toEqual(Language.NL);
     });
 
@@ -230,7 +230,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
         expect(selectedLanguage).toEqual(Language.FORMAL);
     });
 
@@ -254,7 +254,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
         expect(selectedLanguage).toEqual(Language.NL);
     });
 
@@ -271,7 +271,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, undefined);
         expect(selectedLanguage).toEqual(Language.FORMAL);
     });
 
@@ -288,7 +288,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, undefined);
         expect(selectedLanguage).toEqual(Language.GENERATED_FORMAL);
     });
 
@@ -305,7 +305,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, undefined);
         expect(selectedLanguage).toEqual(Language.NL);
     });
 
@@ -322,7 +322,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, undefined);
         expect(selectedLanguage).toEqual(Language.FORMAL);
     });
 
@@ -339,7 +339,7 @@ describe('select form language for concept', () => {
                 )
                 .build();
 
-        const selectedLanguage = await selectFormLanguageDomainService.selectForConcept(concept, bestuurseenheid);
+        const selectedLanguage = await selectConceptLanguageDomainService.select(concept, undefined);
         expect(selectedLanguage).toEqual(Language.NL);
     });
 

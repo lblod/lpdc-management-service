@@ -1,25 +1,17 @@
 import {Concept} from "./concept";
 import {Language} from "./language";
 import {ChosenFormType} from "./types";
-import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
-import {Bestuurseenheid} from "./bestuurseenheid";
 import {FormalInformalChoice} from "./formal-informal-choice";
 
-export class SelectFormLanguageDomainService {
+export class SelectConceptLanguageDomainService {
 
-    private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
-
-    constructor(
-        formalInformalChoiceRepository: FormalInformalChoiceRepository,
-    ) {
-        this._formalInformalChoiceRepository = formalInformalChoiceRepository;
-    }
-
-    public async selectForConcept(concept: Concept, bestuurseenheid: Bestuurseenheid): Promise<Language> {
-        const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
+    //TODO LPDC-1168: expand to conceptOrConceptSnapshot (both will have a list of languages)
+    public async select(concept: Concept, formalInformalChoice: FormalInformalChoice | undefined): Promise<Language> {
 
         const conceptLanguages = concept.conceptLanguages;
-        if (formalInformalChoice?.chosenForm === ChosenFormType.INFORMAL) {
+        const chosenForm: ChosenFormType | undefined = formalInformalChoice?.chosenForm;
+
+        if (chosenForm === ChosenFormType.INFORMAL) {
             if (conceptLanguages.includes(Language.INFORMAL)) {
                 return Language.INFORMAL;
             } else if (conceptLanguages.includes(Language.GENERATED_INFORMAL)) {

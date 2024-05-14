@@ -18,6 +18,7 @@ import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {ConcurrentUpdateError} from "../../../src/core/domain/shared/lpdc-error";
+import {SelectConceptLanguageDomainService} from "../../../src/core/domain/select-concept-language-domain-service";
 
 describe('Update Instance Application Service tests', () => {
 
@@ -30,7 +31,8 @@ describe('Update Instance Application Service tests', () => {
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, conceptDisplayConfigurationRepository);
+    const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
+    const newInstanceDomainService = new NewInstanceDomainService(instanceRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, conceptDisplayConfigurationRepository);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const semanticFormsMapper = new SemanticFormsMapperImpl();
 
