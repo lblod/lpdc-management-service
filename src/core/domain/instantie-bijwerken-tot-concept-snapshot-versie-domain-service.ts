@@ -11,6 +11,7 @@ import {SelectConceptLanguageDomainService} from "./select-concept-language-doma
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
 import {FormalInformalChoice} from "./formal-informal-choice";
 import {Language} from "./language";
+import {InstanceStatusType} from "./types";
 
 export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
 
@@ -34,18 +35,19 @@ export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
     }
 
     async conceptSnapshotVolledigOvernemen(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
-        //TODO LPDC-1168: reopen if needed
-        //TODO LPDC-1168: copy relevant fields from concept snapshot
 
         const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
         const conceptSnapshotLanguage = await this._selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+        const instanceLanguage = instance.dutchLanguageVariant;
 
-        const updatedInstance = InstanceBuilder.from(instance)
-            .withTitle(conceptSnapshot.title?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
-            .withDescription(conceptSnapshot.description?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
-            .withAdditionalDescription(conceptSnapshot.additionalDescription?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
-            .withException(conceptSnapshot.exception?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
-            .withRegulation(conceptSnapshot.regulation?.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant))
+        const instanceInStatusOntwerp = instance.status === InstanceStatusType.VERSTUURD ? instance.reopen() : instance;
+
+        const instanceMergedWithConceptSnapshot = InstanceBuilder.from(instanceInStatusOntwerp)
+            .withTitle(conceptSnapshot.title?.transformLanguage(conceptSnapshotLanguage, instanceLanguage))
+            .withDescription(conceptSnapshot.description?.transformLanguage(conceptSnapshotLanguage, instanceLanguage))
+            .withAdditionalDescription(conceptSnapshot.additionalDescription?.transformLanguage(conceptSnapshotLanguage, instanceLanguage))
+            .withException(conceptSnapshot.exception?.transformLanguage(conceptSnapshotLanguage, instanceLanguage))
+            .withRegulation(conceptSnapshot.regulation?.transformLanguage(conceptSnapshotLanguage, instanceLanguage))
             .withStartDate(conceptSnapshot.startDate)
             .withEndDate(conceptSnapshot.endDate)
             .withType(conceptSnapshot.type)
@@ -57,16 +59,16 @@ export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
             .withPublicationMedia(conceptSnapshot.publicationMedia)
             .withYourEuropeCategories(conceptSnapshot.yourEuropeCategories)
             .withKeywords(conceptSnapshot.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)))
-            .withRequirements(conceptSnapshot.requirements.map(req => req.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
-            .withProcedures(conceptSnapshot.procedures.map(req => req.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
-            .withWebsites(conceptSnapshot.websites.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
-            .withCosts(conceptSnapshot.costs.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
-            .withFinancialAdvantages(conceptSnapshot.financialAdvantages.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
-            .withLegalResources(conceptSnapshot.legalResources.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instance.dutchLanguageVariant).transformWithNewId()))
+            .withRequirements(conceptSnapshot.requirements.map(req => req.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
+            .withProcedures(conceptSnapshot.procedures.map(req => req.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
+            .withWebsites(conceptSnapshot.websites.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
+            .withCosts(conceptSnapshot.costs.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
+            .withFinancialAdvantages(conceptSnapshot.financialAdvantages.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
+            .withLegalResources(conceptSnapshot.legalResources.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
             .withProductId(conceptSnapshot.productId)
             .build();
 
-        await this.confirmBijgewerktTot(bestuurseenheid, updatedInstance, instanceVersion, conceptSnapshot);
+        await this.confirmBijgewerktTot(bestuurseenheid, instanceMergedWithConceptSnapshot, instanceVersion, conceptSnapshot);
 
     }
 
@@ -77,7 +79,7 @@ export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
 
         const concept = await this._conceptRepository.findById(instance.conceptId);
 
-        this.verifyConceptSnapshotBelongsToConcept(concept, conceptSnapshot);
+        this.errorIfConceptSnapshotDoesNotBelongToConcept(concept, conceptSnapshot);
 
         const isBijgewerktTotLatestFunctionalChange = await this.isBijgewerktTotLatestFunctionalChange(concept, conceptSnapshot);
 
@@ -89,7 +91,7 @@ export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);
     }
 
-    private verifyConceptSnapshotBelongsToConcept(concept: Concept, conceptSnapshot: ConceptSnapshot): void {
+    private errorIfConceptSnapshotDoesNotBelongToConcept(concept: Concept, conceptSnapshot: ConceptSnapshot): void {
         if (!conceptSnapshot.isVersionOfConcept.equals(concept.id)) {
             throw new InvariantError('BijgewerktTot: concept snapshot hoort niet bij het concept gekoppeld aan de instantie');
         }

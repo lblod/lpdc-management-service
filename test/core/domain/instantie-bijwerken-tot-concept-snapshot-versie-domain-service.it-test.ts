@@ -8,7 +8,12 @@ import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuurseenheid-te
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {aFullConcept} from "./concept-test-builder";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
-import {InstanceReviewStatusType, PublicationMediumType} from "../../../src/core/domain/types";
+import {
+    InstancePublicationStatusType,
+    InstanceReviewStatusType,
+    InstanceStatusType,
+    PublicationMediumType
+} from "../../../src/core/domain/types";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {buildConceptIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
@@ -366,6 +371,70 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
                 .build();
 
             expect(actualInstance).toEqual(expectedInstance);
+        });
+
+        test('should reopen instance if verstuurd', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const conceptId = buildConceptIri(uuid());
+            const conceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
+            const concept = aFullConcept()
+                .withId(conceptId)
+                .withLatestFunctionallyChangedConceptSnapshot(conceptSnapshot.id)
+                .withLatestConceptSnapshot(conceptSnapshot.id)
+                .build();
+            const instance = aFullInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withReviewStatus(undefined)
+                .withStatus(InstanceStatusType.VERSTUURD)
+                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+                .build();
+            const newConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptRepository.save(concept);
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+
+            const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+
+            expect(actualInstance.conceptSnapshotId).toEqual(newConceptSnapshot.id);
+            expect(actualInstance.reviewStatus).toBeUndefined();
+            expect(actualInstance.dateModified).toEqual(FormatPreservingDate.now());
+            expect(actualInstance.status).toEqual(InstanceStatusType.ONTWERP);
+            expect(actualInstance.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
+        });
+
+        test('should remain in ontwerp if in status ontwerp', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const conceptId = buildConceptIri(uuid());
+            const conceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
+            const concept = aFullConcept()
+                .withId(conceptId)
+                .withLatestFunctionallyChangedConceptSnapshot(conceptSnapshot.id)
+                .withLatestConceptSnapshot(conceptSnapshot.id)
+                .build();
+            const instance = aFullInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withReviewStatus(undefined)
+                .withStatus(InstanceStatusType.ONTWERP)
+                .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
+                .build();
+            const newConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptRepository.save(concept);
+            await conceptSnapshotRepository.save(conceptSnapshot);
+
+            await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+
+            const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+
+            expect(actualInstance.conceptSnapshotId).toEqual(newConceptSnapshot.id);
+            expect(actualInstance.reviewStatus).toBeUndefined();
+            expect(actualInstance.dateModified).toEqual(FormatPreservingDate.now());
+            expect(actualInstance.status).toEqual(InstanceStatusType.ONTWERP);
+            expect(actualInstance.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
         });
 
         test('should update conceptSnapshot on instance', async () => {
