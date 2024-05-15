@@ -2,27 +2,35 @@ import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {uuid} from "../../../mu-helper";
 import {
-        aFullConceptSnapshot,
-        aMinimalConceptSnapshot,
-        ConceptSnapshotTestBuilder
+    aFullConceptSnapshot,
+    aMinimalConceptSnapshot,
+    ConceptSnapshotTestBuilder
 } from "../../core/domain/concept-snapshot-test-builder";
 import {ConceptSnapshotSparqlTestRepository} from "./concept-snapshot-sparql-test-repository";
 import {
-        aMinimalRequirementForConceptSnapshot,
-        RequirementTestBuilder
+    aMinimalRequirementForConceptSnapshot,
+    RequirementTestBuilder
 } from "../../core/domain/requirement-test-builder";
 import {aMinimalEvidenceForConceptSnapshot, EvidenceTestBuilder} from "../../core/domain/evidence-test-builder";
-import {aMinimalProcedureForConceptSnapshot, ProcedureTestBuilder} from "../../core/domain/procedure-test-builder";
-import {aMinimalWebsiteForConceptSnapshot, WebsiteTestBuilder} from "../../core/domain/website-test-builder";
 import {
-        CompetentAuthorityLevelType,
-        ConceptTagType,
-        ExecutingAuthorityLevelType,
-        ProductType,
-        PublicationMediumType,
-        TargetAudienceType,
-        ThemeType,
-        YourEuropeCategoryType
+    aMinimalProcedureForConceptSnapshot,
+    anotherFullProcedure,
+    ProcedureTestBuilder
+} from "../../core/domain/procedure-test-builder";
+import {
+    aMinimalWebsiteForConceptSnapshot,
+    anotherFullWebsite,
+    WebsiteTestBuilder
+} from "../../core/domain/website-test-builder";
+import {
+    CompetentAuthorityLevelType,
+    ConceptTagType,
+    ExecutingAuthorityLevelType,
+    ProductType,
+    PublicationMediumType,
+    TargetAudienceType,
+    ThemeType,
+    YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {buildConceptSnapshotIri} from "../../core/domain/iri-test-builder";
 import {NS} from "../../../src/driven/persistence/namespaces";
@@ -34,7 +42,7 @@ import {EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {RequirementBuilder} from "../../../src/core/domain/requirement";
 import {ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {WebsiteBuilder} from "../../../src/core/domain/website";
-import {NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
+import {InvariantError, NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('ConceptSnapshotRepository', () => {
     const repository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -1085,6 +1093,256 @@ describe('ConceptSnapshotRepository', () => {
             expect(actualConceptSnapshot).toEqual(conceptSnapshot);
         });
 
+        describe('Verify mappings with some nested value objects having only non - dutch values', () => {
+
+            describe('for websites', () => {
+                for (const nonDutchLanguage of ['de', 'fr', 'en']) {
+                    test(`Filters out websites when title only available in language ${nonDutchLanguage}`, async () => {
+                        const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+                        const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
+                        const conceptSnapshotDescription = aMinimalLanguageString('description').build();
+                        const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
+                        const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
+                        const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
+                        const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
+                        const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withOrder(2).build();
+                        const conceptSnapshotNotRetainedWebsiteId = WebsiteBuilder.buildIri(uuid());
+
+
+                        const conceptSnapshot =
+                            aMinimalConceptSnapshot()
+                                .withId(conceptSnapshotId)
+                                .withTitle(conceptSnapshotTitle)
+                                .withDescription(conceptSnapshotDescription)
+                                .withProductId(conceptSnapshotProductId)
+                                .withDateCreated(conceptSnapshotDateCreated)
+                                .withDateModified(conceptSnapshotDateModified)
+                                .withGeneratedAtTime(conceptSnapshotGeneratedAtTime)
+                                .withWebsites([conceptSnapshotRetainedWebsite])
+                                .build();
+
+                        await directDatabaseAccess.insertData(
+                            CONCEPT_SNAPSHOT_LDES_GRAPH,
+                            [
+                                `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
+                                `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
+                                `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
+                                `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                `<${conceptSnapshotId}> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <${conceptSnapshotRetainedWebsite.id}>`,
+                                `<${conceptSnapshotRetainedWebsite.id}> a <http://schema.org/WebSite>`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nl}"""@NL`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlFormal}"""@nl-BE-x-formal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlInformal}"""@nl-BE-x-informal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nl}"""@NL`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlFormal}"""@nl-BE-x-formal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlInformal}"""@nl-BE-x-informal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://schema.org/url> """${conceptSnapshotRetainedWebsite.url}"""`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                                `<${conceptSnapshotId}> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <${conceptSnapshotNotRetainedWebsiteId}>`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> a <http://schema.org/WebSite>`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/title> """title only available in non-dutch language"""@${nonDutchLanguage}`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/description> """conceptSnapshotNotRetainedWebsiteId.description.nl"""@NL`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/description> """conceptSnapshotNotRetainedWebsiteId.description.nlFormal"""@nl-BE-x-formal`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/description> """conceptSnapshotNotRetainedWebsiteId.description.nlInformal"""@nl-BE-x-informal`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/description> """conceptSnapshotNotRetainedWebsiteId.description.nlGeneratedFormal"""@nl-BE-x-generated-formal`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/description> """conceptSnapshotNotRetainedWebsiteId.description.nlGeneratedInformal"""@nl-BE-x-generated-informal`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://schema.org/url> """http://some-url.com"""`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                            ]);
+
+                        const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
+
+                        expect(actualConceptSnapshot).toEqual(conceptSnapshot);
+                    });
+                }
+
+                for (const nonDutchLanguage of ['de', 'fr', 'en']) {
+                    test(`Filters out description when description only available in language ${nonDutchLanguage}`, async () => {
+                        const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+                        const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
+                        const conceptSnapshotDescription = aMinimalLanguageString('description').build();
+                        const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
+                        const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
+                        const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
+                        const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
+                        const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withDescription(undefined).withOrder(2).build();
+
+                        const conceptSnapshot =
+                            aMinimalConceptSnapshot()
+                                .withId(conceptSnapshotId)
+                                .withTitle(conceptSnapshotTitle)
+                                .withDescription(conceptSnapshotDescription)
+                                .withProductId(conceptSnapshotProductId)
+                                .withDateCreated(conceptSnapshotDateCreated)
+                                .withDateModified(conceptSnapshotDateModified)
+                                .withGeneratedAtTime(conceptSnapshotGeneratedAtTime)
+                                .withWebsites([conceptSnapshotRetainedWebsite])
+                                .build();
+
+                        await directDatabaseAccess.insertData(
+                            CONCEPT_SNAPSHOT_LDES_GRAPH,
+                            [
+                                `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
+                                `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
+                                `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
+                                `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                `<${conceptSnapshotId}> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <${conceptSnapshotRetainedWebsite.id}>`,
+                                `<${conceptSnapshotRetainedWebsite.id}> a <http://schema.org/WebSite>`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nl}"""@NL`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlFormal}"""@nl-BE-x-formal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlInformal}"""@nl-BE-x-informal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """description in non-dutch language"""@${nonDutchLanguage}`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://schema.org/url> """${conceptSnapshotRetainedWebsite.url}"""`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                            ]);
+
+                        const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
+
+                        expect(actualConceptSnapshot).toEqual(conceptSnapshot);
+                    });
+                }
+
+                test(`Throws error if required fields are missing on website`, async () => {
+                    const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+                    const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
+                    const conceptSnapshotDescription = aMinimalLanguageString('description').build();
+                    const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
+                    const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
+                    const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
+                    const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
+                    const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withOrder(2).build();
+
+                    await directDatabaseAccess.insertData(
+                        CONCEPT_SNAPSHOT_LDES_GRAPH,
+                        [
+                            `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                            `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                            `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
+                            `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
+                            `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
+                            `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                            `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                            `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                            `<${conceptSnapshotId}> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <${conceptSnapshotRetainedWebsite.id}>`,
+                            `<${conceptSnapshotRetainedWebsite.id}> a <http://schema.org/WebSite>`,
+                            `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nl}"""@NL`,
+                            `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlFormal}"""@nl-BE-x-formal`,
+                            `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlInformal}"""@nl-BE-x-informal`,
+                            `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                            `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                            `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nl}"""@NL`,
+                            `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlFormal}"""@nl-BE-x-formal`,
+                            `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlInformal}"""@nl-BE-x-informal`,
+                            `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                            `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                        ]);
+
+                    await expect(repository.findById(conceptSnapshotId)).rejects.toThrowWithMessage(InvariantError, `order mag niet ontbreken`);
+                });
+
+            });
+
+            describe('for websites under procedures', () => {
+                for (const nonDutchLanguage of ['de', 'fr', 'en']) {
+                    test(`Filters out websites when title only available in language ${nonDutchLanguage}`, async () => {
+                        const conceptSnapshotId = buildConceptSnapshotIri(uuid());
+                        const conceptSnapshotTitle = ConceptSnapshotTestBuilder.MINIMAL_TITLE;
+                        const conceptSnapshotDescription = aMinimalLanguageString('description').build();
+                        const conceptSnapshotProductId = ConceptSnapshotTestBuilder.PRODUCT_ID;
+                        const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
+                        const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
+                        const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
+                        const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withOrder(2).build();
+                        const conceptSnapshotProcedure = anotherFullProcedure().withOrder(1).withWebsites([conceptSnapshotRetainedWebsite]).build();
+                        const conceptSnapshotNotRetainedWebsiteId = WebsiteBuilder.buildIri(uuid());
+
+                        const conceptSnapshot =
+                            aMinimalConceptSnapshot()
+                                .withId(conceptSnapshotId)
+                                .withTitle(conceptSnapshotTitle)
+                                .withDescription(conceptSnapshotDescription)
+                                .withProductId(conceptSnapshotProductId)
+                                .withDateCreated(conceptSnapshotDateCreated)
+                                .withDateModified(conceptSnapshotDateModified)
+                                .withGeneratedAtTime(conceptSnapshotGeneratedAtTime)
+                                .withProcedures([conceptSnapshotProcedure])
+                                .build();
+
+                        await directDatabaseAccess.insertData(
+                            CONCEPT_SNAPSHOT_LDES_GRAPH,
+                            [
+                                `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
+                                `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
+                                `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
+                                `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                                `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+
+                                `<${conceptSnapshotId}> <http://purl.org/vocab/cpsv#follows> <${conceptSnapshotProcedure.id}>`,
+                                `<${conceptSnapshotProcedure.id}> a <http://purl.org/vocab/cpsv#Rule>`,
+                                `<${conceptSnapshotProcedure.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotProcedure.title.nl}"""@NL`,
+                                `<${conceptSnapshotProcedure.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotProcedure.title.nlFormal}"""@nl-BE-x-formal`,
+                                `<${conceptSnapshotProcedure.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotProcedure.title.nlInformal}"""@nl-BE-x-informal`,
+                                `<${conceptSnapshotProcedure.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotProcedure.title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                                `<${conceptSnapshotProcedure.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotProcedure.title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                                `<${conceptSnapshotProcedure.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotProcedure.description.nl}"""@NL`,
+                                `<${conceptSnapshotProcedure.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotProcedure.description.nlFormal}"""@nl-BE-x-formal`,
+                                `<${conceptSnapshotProcedure.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotProcedure.description.nlInformal}"""@nl-BE-x-informal`,
+                                `<${conceptSnapshotProcedure.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotProcedure.description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                                `<${conceptSnapshotProcedure.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotProcedure.description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                                `<${conceptSnapshotProcedure.id}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+
+                                `<${conceptSnapshotProcedure.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${conceptSnapshotRetainedWebsite.id}>`,
+                                `<${conceptSnapshotRetainedWebsite.id}> a <http://schema.org/WebSite>`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nl}"""@NL`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlFormal}"""@nl-BE-x-formal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlInformal}"""@nl-BE-x-informal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/title> """${conceptSnapshotRetainedWebsite.title.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nl}"""@NL`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlFormal}"""@nl-BE-x-formal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlInformal}"""@nl-BE-x-informal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlGeneratedFormal}"""@nl-BE-x-generated-formal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://purl.org/dc/terms/description> """${conceptSnapshotRetainedWebsite.description.nlGeneratedInformal}"""@nl-BE-x-generated-informal`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://schema.org/url> """${conceptSnapshotRetainedWebsite.url}"""`,
+                                `<${conceptSnapshotRetainedWebsite.id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+
+                                `<${conceptSnapshotProcedure.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> <${conceptSnapshotNotRetainedWebsiteId}>`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> a <http://schema.org/WebSite>`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/title> """title only available in non-dutch language"""@${nonDutchLanguage}`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/description> """conceptSnapshotNotRetainedWebsiteId.description.nl"""@NL`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/description> """conceptSnapshotNotRetainedWebsiteId.description.nlFormal"""@nl-BE-x-formal`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/description> """conceptSnapshotNotRetainedWebsiteId.description.nlInformal"""@nl-BE-x-informal`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/description> """conceptSnapshotNotRetainedWebsiteId.description.nlGeneratedFormal"""@nl-BE-x-generated-formal`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://purl.org/dc/terms/description> """conceptSnapshotNotRetainedWebsiteId.description.nlGeneratedInformal"""@nl-BE-x-generated-informal`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://schema.org/url> """http://some-url.com"""`,
+                                `<${conceptSnapshotNotRetainedWebsiteId}> <http://www.w3.org/ns/shacl#order> """1"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+                            ]);
+
+                        const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
+
+                        expect(actualConceptSnapshot).toEqual(conceptSnapshot);
+                    });
+                }
+            });
+
+        });
 
         for (const type of Object.values(ProductType)) {
             test(`Product type ${type} can be mapped`, async () => {

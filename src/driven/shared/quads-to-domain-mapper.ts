@@ -7,7 +7,7 @@ import {Cost} from '../../core/domain/cost';
 import {asSortedArray} from '../../core/domain/shared/collections-helper';
 import {FinancialAdvantage} from '../../core/domain/financial-advantage';
 import {Website} from '../../core/domain/website';
-import {Procedure} from '../../core/domain/procedure';
+import {Procedure, ProcedureBuilder} from '../../core/domain/procedure';
 import {Requirement} from '../../core/domain/requirement';
 import {Evidence} from '../../core/domain/evidence';
 import {NS} from '../persistence/namespaces';
@@ -154,8 +154,12 @@ export class QuadsToDomainMapper {
             this.yourEuropeCategories(id),
             this.keywords(id),
             this.requirements(id),
-            this.procedures(id),
-            this.websites(id),
+            this.procedures(id)
+                .map(proc =>
+                    ProcedureBuilder.from(proc)
+                        .withWebsites(proc.websites.filter(ws => ws.title !== undefined))
+                        .build()),
+            this.websites(id).filter(ws => ws.title !== undefined),
             this.costs(id),
             this.financialAdvantages(id),
             this.isVersionOf(id),
@@ -507,7 +511,7 @@ export class QuadsToDomainMapper {
     }
 
     private asNamedOrBlankNode(id: Iri): NamedNode | BlankNode {
-        if(id.value.startsWith('_:')) {
+        if (id.value.startsWith('_:')) {
             return blankNode(id.value.substring(2));
         }
         return namedNode(id.value);
@@ -731,7 +735,7 @@ export class QuadsToDomainMapper {
     }
 
     private asIri(statement: Statement | undefined): Iri | undefined {
-        if(!statement) {
+        if (!statement) {
             return undefined;
         }
         const obj = this.objectAsNamedNodeOrBlankNode(statement);
@@ -749,15 +753,15 @@ export class QuadsToDomainMapper {
         return statement.object as Literal;
     }
 
-    private objectAsNamedNodeOrBlankNode(statement: Statement| undefined): NamedNode | BlankNode {
-        if(!statement) {
+    private objectAsNamedNodeOrBlankNode(statement: Statement | undefined): NamedNode | BlankNode {
+        if (!statement) {
             return undefined;
         }
         if (!isNamedNode(statement.object)
             && !isBlankNode(statement.object)) {
             throw new SystemError(`Expecting (${statement}) to have an object that is a named node or a blank node.`);
         }
-        if(isNamedNode(statement.object)) {
+        if (isNamedNode(statement.object)) {
             return statement.object as NamedNode;
         }
         return statement.object as BlankNode;
