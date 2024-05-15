@@ -8,7 +8,7 @@ import {asSortedArray} from '../../core/domain/shared/collections-helper';
 import {FinancialAdvantage} from '../../core/domain/financial-advantage';
 import {Website} from '../../core/domain/website';
 import {Procedure, ProcedureBuilder} from '../../core/domain/procedure';
-import {Requirement} from '../../core/domain/requirement';
+import {Requirement, RequirementBuilder} from '../../core/domain/requirement';
 import {Evidence} from '../../core/domain/evidence';
 import {NS} from '../persistence/namespaces';
 import {FormatPreservingDate} from '../../core/domain/format-preserving-date';
@@ -153,8 +153,14 @@ export class QuadsToDomainMapper {
             this.publicationMedia(id),
             this.yourEuropeCategories(id),
             this.keywords(id),
-            this.requirements(id),
+            this.requirements(id)
+                .filter(req => req.title !== undefined && req.description != undefined)
+                .map(req =>
+                    RequirementBuilder.from(req)
+                        .withEvidence((req.evidence?.title !== undefined && req.evidence?.description !== undefined) ? req.evidence : undefined)
+                        .build()),
             this.procedures(id)
+                .filter(proc => proc.title !== undefined && proc.description != undefined)
                 .map(proc =>
                     ProcedureBuilder.from(proc)
                         .withWebsites(proc.websites.filter(ws => ws.title !== undefined))
