@@ -166,8 +166,10 @@ export class QuadsToDomainMapper {
                         .withWebsites(proc.websites.filter(ws => ws.title !== undefined))
                         .build()),
             this.websites(id).filter(ws => ws.title !== undefined),
-            this.costs(id),
-            this.financialAdvantages(id),
+            this.costs(id)
+                .filter(c => c.title !== undefined && c.description !== undefined),
+            this.financialAdvantages(id)
+                .filter(fa => fa.title !== undefined && fa.description !== undefined),
             this.isVersionOf(id),
             this.dateCreated(id),
             this.dateModified(id),
