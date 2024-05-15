@@ -40,7 +40,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.INFORMAL);
         });
 
@@ -64,7 +64,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.GENERATED_INFORMAL);
         });
 
@@ -88,7 +88,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.GENERATED_INFORMAL);
         });
 
@@ -112,7 +112,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.INFORMAL);
         });
 
@@ -136,7 +136,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.NL);
         });
 
@@ -160,7 +160,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.FORMAL);
         });
 
@@ -184,7 +184,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.GENERATED_FORMAL);
         });
 
@@ -208,7 +208,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.NL);
         });
 
@@ -232,7 +232,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.FORMAL);
         });
 
@@ -256,7 +256,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.NL);
         });
 
@@ -273,7 +273,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, undefined);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, undefined);
             expect(selectedLanguage).toEqual(Language.FORMAL);
         });
 
@@ -290,7 +290,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, undefined);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, undefined);
             expect(selectedLanguage).toEqual(Language.GENERATED_FORMAL);
         });
 
@@ -307,7 +307,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, undefined);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, undefined);
             expect(selectedLanguage).toEqual(Language.NL);
         });
 
@@ -324,7 +324,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, undefined);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, undefined);
             expect(selectedLanguage).toEqual(Language.FORMAL);
         });
 
@@ -341,7 +341,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(concept, undefined);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, undefined);
             expect(selectedLanguage).toEqual(Language.NL);
         });
 
@@ -369,7 +369,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.INFORMAL);
         });
 
@@ -393,7 +393,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.GENERATED_INFORMAL);
         });
 
@@ -417,7 +417,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.GENERATED_INFORMAL);
         });
 
@@ -441,7 +441,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.INFORMAL);
         });
 
@@ -465,7 +465,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.NL);
         });
 
@@ -489,7 +489,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.FORMAL);
         });
 
@@ -513,7 +513,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.GENERATED_FORMAL);
         });
 
@@ -537,7 +537,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.NL);
         });
 
@@ -561,7 +561,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.FORMAL);
         });
 
@@ -585,7 +585,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, formalInformalChoice);
             expect(selectedLanguage).toEqual(Language.NL);
         });
 
@@ -602,7 +602,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, undefined);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, undefined);
             expect(selectedLanguage).toEqual(Language.FORMAL);
         });
 
@@ -619,7 +619,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, undefined);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, undefined);
             expect(selectedLanguage).toEqual(Language.GENERATED_FORMAL);
         });
 
@@ -636,7 +636,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, undefined);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, undefined);
             expect(selectedLanguage).toEqual(Language.NL);
         });
 
@@ -653,7 +653,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, undefined);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, undefined);
             expect(selectedLanguage).toEqual(Language.FORMAL);
         });
 
@@ -670,7 +670,7 @@ describe('select concept language ', () => {
                     )
                     .build();
 
-            const selectedLanguage = await selectConceptLanguageDomainService.select(conceptSnapshot, undefined);
+            const selectedLanguage = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(conceptSnapshot, undefined);
             expect(selectedLanguage).toEqual(Language.NL);
         });
 

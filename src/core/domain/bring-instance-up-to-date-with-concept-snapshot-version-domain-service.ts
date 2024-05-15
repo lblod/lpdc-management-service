@@ -8,8 +8,6 @@ import {Concept} from "./concept";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {InvariantError} from "./shared/lpdc-error";
 import {SelectConceptLanguageDomainService} from "./select-concept-language-domain-service";
-import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
-import {FormalInformalChoice} from "./formal-informal-choice";
 import {Language} from "./language";
 import {InstanceStatusType} from "./types";
 
@@ -18,27 +16,23 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
     private readonly _instanceRepository: InstanceRepository;
     private readonly _conceptRepository: ConceptRepository;
     private readonly _conceptSnapshotRepository: ConceptSnapshotRepository;
-    private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
     private readonly _selectConceptLanguageDomainService: SelectConceptLanguageDomainService;
 
     constructor(
         instanceRepository: InstanceRepository,
         conceptRepository: ConceptRepository,
         conceptSnapshotRepository: ConceptSnapshotRepository,
-        formalInformalChoiceRepository: FormalInformalChoiceRepository,
         selectConceptLanguageDomainService: SelectConceptLanguageDomainService) {
         this._instanceRepository = instanceRepository;
         this._conceptRepository = conceptRepository;
         this._conceptSnapshotRepository = conceptSnapshotRepository;
-        this._formalInformalChoiceRepository = formalInformalChoiceRepository;
         this._selectConceptLanguageDomainService = selectConceptLanguageDomainService;
     }
 
-    async conceptSnapshotVolledigOvernemen(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
+    async fullyTakeConceptSnapshotOver(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
 
-        const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
-        const conceptSnapshotLanguage = await this._selectConceptLanguageDomainService.select(conceptSnapshot, formalInformalChoice);
         const instanceLanguage = instance.dutchLanguageVariant;
+        const conceptSnapshotLanguage = this._selectConceptLanguageDomainService.selectAvailableLanguage(conceptSnapshot, instanceLanguage === Language.INFORMAL);
 
         const instanceInStatusOntwerp = instance.status === InstanceStatusType.VERSTUURD ? instance.reopen() : instance;
 

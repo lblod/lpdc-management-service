@@ -96,7 +96,7 @@ export class NewInstanceDomainService {
         const now = FormatPreservingDate.of(new Date().toISOString());
 
         const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
-        const conceptLanguage = await this._selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+        const conceptLanguage = this._selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
 
         const dutchLanguageVariant = this.toDutchLanguageVariant(formalInformalChoice?.chosenForm);
 

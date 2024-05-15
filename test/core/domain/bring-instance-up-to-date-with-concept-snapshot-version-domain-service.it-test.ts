@@ -1,14 +1,19 @@
 import {
     BringInstanceUpToDateWithConceptSnapshotVersionDomainService
 } from "../../../src/core/domain/bring-instance-up-to-date-with-concept-snapshot-version-domain-service";
-import {aFullInstance} from "./instance-test-builder";
-import {aFullConceptSnapshot, ConceptSnapshotTestBuilder} from "./concept-snapshot-test-builder";
+import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "./instance-test-builder";
+import {
+    aFullConceptSnapshot,
+    aMinimalConceptSnapshot,
+    ConceptSnapshotTestBuilder
+} from "./concept-snapshot-test-builder";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {aFullConcept} from "./concept-test-builder";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {
+    ChosenFormType,
     InstancePublicationStatusType,
     InstanceReviewStatusType,
     InstanceStatusType,
@@ -40,6 +45,7 @@ import {anotherFullFinancialAdvantage} from "./financial-advantage-test-builder"
 import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
 import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {anotherFullLegalResourceForConceptSnapshot} from "./legal-resource-test-builder";
+import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
 
 
 describe('Bring instance up to date with concept snapshot version domain service ', () => {
@@ -49,7 +55,7 @@ describe('Bring instance up to date with concept snapshot version domain service
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
-    const bringInstanceUpToDateWithConceptSnapshotVersionDomainService = new BringInstanceUpToDateWithConceptSnapshotVersionDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService);
+    const bringInstanceUpToDateWithConceptSnapshotVersionDomainService = new BringInstanceUpToDateWithConceptSnapshotVersionDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository, selectConceptLanguageDomainService);
 
     const date1 = FormatPreservingDate.of('2023-11-05T00:00:00.657Z');
     const date2 = FormatPreservingDate.of('2023-11-06T00:00:00.657Z');
@@ -236,9 +242,9 @@ describe('Bring instance up to date with concept snapshot version domain service
         });
     });
 
-    describe('ConceptSnapshotVolledigOvernemen', () => {
+    describe('Fully Take Concept Snapshot Over', () => {
 
-        test('should override instance fields with fields from concept snapshot', async () => {
+        test('should override instance fields with fields from concept snapshot, takes over formal when instance has dutch language variant formal', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const conceptId = buildConceptIri(uuid());
             const conceptSnapshot =
@@ -250,10 +256,15 @@ describe('Bring instance up to date with concept snapshot version domain service
                 .withLatestFunctionallyChangedConceptSnapshot(conceptSnapshot.id)
                 .withLatestConceptSnapshot(conceptSnapshot.id)
                 .build();
+            const formalInformalChoice = aFormalInformalChoice()
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .withChosenForm(ChosenFormType.INFORMAL)
+                .build();
             const instance = aFullInstance()
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
                 .withReviewStatus(undefined)
+                .withDutchLanguageVariant(Language.FORMAL)
                 .build();
             const newConceptSnapshot =
                 aFullConceptSnapshot()
@@ -274,8 +285,9 @@ describe('Bring instance up to date with concept snapshot version domain service
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
             await conceptSnapshotRepository.save(newConceptSnapshot);
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             const expectedInstance = InstanceBuilder.from(instance)
@@ -373,6 +385,118 @@ describe('Bring instance up to date with concept snapshot version domain service
             expect(actualInstance).toEqual(expectedInstance);
         });
 
+        test('should override instance fields with fields from concept snapshot, takes over informal when instance has dutch language variant informal', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const conceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(conceptId)
+                    .build();
+            const concept = aFullConcept()
+                .withId(conceptId)
+                .withLatestFunctionallyChangedConceptSnapshot(conceptSnapshot.id)
+                .withLatestConceptSnapshot(conceptSnapshot.id)
+                .build();
+            const formalInformalChoice = aFormalInformalChoice()
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .withChosenForm(ChosenFormType.FORMAL)
+                .build();
+            const instance = aMinimalInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withReviewStatus(undefined)
+                .withDutchLanguageVariant(Language.INFORMAL)
+                .withNeedsConversionFromFormalToInformal(false)
+                .withTitle(LanguageString.ofValueInLanguage('title that needs updating', Language.INFORMAL))
+                .withProductId(InstanceTestBuilder.PRODUCT_ID)
+                .build();
+            const newConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(conceptId)
+                    .withTitle(
+                        LanguageString.of(
+                            ConceptSnapshotTestBuilder.TITLE_NL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL))
+                    .build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptRepository.save(concept);
+            await conceptSnapshotRepository.save(conceptSnapshot);
+            await conceptSnapshotRepository.save(newConceptSnapshot);
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+
+            const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            const expectedInstance = InstanceBuilder.from(instance)
+                .withConceptSnapshotId(newConceptSnapshot.id)
+                .withReviewStatus(undefined)
+                .withDateModified(FormatPreservingDate.now())
+                .withTitle(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL, Language.INFORMAL))
+                .withProductId(ConceptSnapshotTestBuilder.PRODUCT_ID)
+                .build();
+
+            expect(actualInstance).toEqual(expectedInstance);
+        });
+
+        test('should override instance fields with fields from concept snapshot, takes over nl when instance has dutch language variant undetermined', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const conceptId = buildConceptIri(uuid());
+            const conceptSnapshot =
+                aFullConceptSnapshot()
+                    .withIsVersionOfConcept(conceptId)
+                    .build();
+            const concept = aFullConcept()
+                .withId(conceptId)
+                .withLatestFunctionallyChangedConceptSnapshot(conceptSnapshot.id)
+                .withLatestConceptSnapshot(conceptSnapshot.id)
+                .build();
+            const formalInformalChoice = aFormalInformalChoice()
+                .withBestuurseenheidId(bestuurseenheid.id)
+                .withChosenForm(ChosenFormType.FORMAL)
+                .build();
+            const instance = aMinimalInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(concept.latestConceptSnapshot)
+                .withReviewStatus(undefined)
+                .withDutchLanguageVariant(Language.NL)
+                .withNeedsConversionFromFormalToInformal(false)
+                .withTitle(LanguageString.ofValueInLanguage('title that needs updating', Language.NL))
+                .withProductId(InstanceTestBuilder.PRODUCT_ID)
+                .build();
+            const newConceptSnapshot =
+                aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(conceptId)
+                    .withTitle(
+                        LanguageString.of(
+                            ConceptSnapshotTestBuilder.TITLE_NL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL))
+                    .build();
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptRepository.save(concept);
+            await conceptSnapshotRepository.save(conceptSnapshot);
+            await conceptSnapshotRepository.save(newConceptSnapshot);
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+
+            const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            const expectedInstance = InstanceBuilder.from(instance)
+                .withConceptSnapshotId(newConceptSnapshot.id)
+                .withReviewStatus(undefined)
+                .withDateModified(FormatPreservingDate.now())
+                .withTitle(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.TITLE_NL_FORMAL, Language.NL))
+                .withProductId(ConceptSnapshotTestBuilder.PRODUCT_ID)
+                .build();
+
+            expect(actualInstance).toEqual(expectedInstance);
+        });
+
         test('should reopen instance if verstuurd', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const conceptId = buildConceptIri(uuid());
@@ -394,7 +518,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -426,7 +550,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -456,7 +580,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -483,7 +607,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(latestFunctionalChangedSnapshot);
 
-            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, latestFunctionalChangedSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, latestFunctionalChangedSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -513,7 +637,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot3);
 
-            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, conceptSnapshot2);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, conceptSnapshot2);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -543,7 +667,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot2);
 
-            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, conceptSnapshot3);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, conceptSnapshot3);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -570,7 +694,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await expect(() => bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, aFullConceptSnapshot().build()))
+            await expect(() => bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, aFullConceptSnapshot().build()))
                 .rejects.toThrowWithMessage(InvariantError, 'BijgewerktTot: concept snapshot hoort niet bij het concept gekoppeld aan de instantie');
         });
 
@@ -592,7 +716,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, conceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, conceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             expect(actualInstance).toEqual(instance);

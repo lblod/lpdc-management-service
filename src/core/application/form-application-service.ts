@@ -49,7 +49,7 @@ export class FormApplicationService {
 
         const concept = await this._conceptRepository.findById(conceptId);
         const formalInformalChoice = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
-        const languageForForm = await this._selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+        const languageForForm = this._selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
 
         const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm);
 

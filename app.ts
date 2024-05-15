@@ -147,7 +147,6 @@ const bringInstanceUpToDateWithConceptSnapshotVersionDomainService = new BringIn
     instanceRepository,
     conceptRepository,
     conceptSnapshotRepository,
-    formalInformalChoiceRepository,
     selectConceptLanguageDomainService,
 );
 
@@ -244,6 +243,10 @@ app.put('/public-services/:instanceId/reopen', async function (req, res, next): 
 
 app.post('/public-services/:instanceId/confirm-up-to-date-till', async function (req, res, next): Promise<any> {
     return await confirmUpToDateTill(req, res).catch(next);
+});
+
+app.post('/public-services/:instanceId/fully-take-concept-snapshot-over', async function (req, res, next): Promise<any> {
+    return await fullyTakeConceptSnapshotOver(req, res).catch(next);
 });
 
 app.post('/public-services/:instanceId/confirm-instance-is-already-informal', async function (req, res, next): Promise<any> {
@@ -448,7 +451,7 @@ async function reopenInstance(req: Request, res: Response) {
 
 async function confirmUpToDateTill(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
-    const conceptSnapshotIdRequestParam = req.body.upToDateTillConceptSnapshot;
+    const conceptSnapshotIdRequestParam = req.body.upToDateTillConceptSnapshotId;
     const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
@@ -457,7 +460,26 @@ async function confirmUpToDateTill(req: Request, res: Response) {
     const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
     const conceptSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
+
     await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(bestuurseenheid, instance, instanceVersion, conceptSnapshot);
+
+    return res.sendStatus(200);
+}
+
+async function fullyTakeConceptSnapshotOver(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+    const conceptSnapshotIdRequestParam = req.body.conceptSnapshotId;
+    const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
+
+    const instanceId = new Iri(instanceIdRequestParam);
+    const conceptSnapshotId = new Iri(conceptSnapshotIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+    const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+    const conceptSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
+
+    await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instanceVersion, conceptSnapshot);
+
     return res.sendStatus(200);
 }
 
@@ -523,9 +545,9 @@ async function getDutchLanguageVersionForConcept(req: Request, res: Response) {
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const concept = await conceptRepository.findById(conceptId);
-    const formalInformalChoice = await formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
+    const formalInformalChoice: FormalInformalChoice | undefined = await formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
 
-    const languageVersion = await selectConceptLanguageDomainService.select(concept, formalInformalChoice);
+    const languageVersion = selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
     return res.json({languageVersion: languageVersion});
 }
 
@@ -539,7 +561,6 @@ async function getConceptForm(req: Request, res: Response) {
     const bundle = await formApplicationService.loadConceptForm(bestuurseenheid, conceptId, formId);
 
     return res.status(200).json(bundle);
-
 }
 
 async function removeIsNewFlag(req: Request, res: Response) {
