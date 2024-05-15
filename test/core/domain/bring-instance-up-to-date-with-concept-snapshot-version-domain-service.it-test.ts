@@ -1,6 +1,6 @@
 import {
-    InstantieBijwerkenTotConceptSnapshotVersieDomainService
-} from "../../../src/core/domain/instantie-bijwerken-tot-concept-snapshot-versie-domain-service";
+    BringInstanceUpToDateWithConceptSnapshotVersionDomainService
+} from "../../../src/core/domain/bring-instance-up-to-date-with-concept-snapshot-version-domain-service";
 import {aFullInstance} from "./instance-test-builder";
 import {aFullConceptSnapshot, ConceptSnapshotTestBuilder} from "./concept-snapshot-test-builder";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
@@ -42,14 +42,14 @@ import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {anotherFullLegalResourceForConceptSnapshot} from "./legal-resource-test-builder";
 
 
-describe('Instantie bijwerken tot concept snapshot versie domain service ', () => {
+describe('Bring instance up to date with concept snapshot version domain service ', () => {
 
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
-    const instantieBijwerkenTotConceptSnapshotVersieDomainService = new InstantieBijwerkenTotConceptSnapshotVersieDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService);
+    const bringInstanceUpToDateWithConceptSnapshotVersionDomainService = new BringInstanceUpToDateWithConceptSnapshotVersionDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService);
 
     const date1 = FormatPreservingDate.of('2023-11-05T00:00:00.657Z');
     const date2 = FormatPreservingDate.of('2023-11-06T00:00:00.657Z');
@@ -60,7 +60,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
 
     afterAll(() => restoreRealTime());
 
-    describe('ConfirmBijgewerktTot', () => {
+    describe('ConfirmUpToDateTill', () => {
 
         test('should update conceptSnapshot on instance', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
@@ -81,7 +81,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             const expectedInstance = InstanceBuilder.from(instance)
@@ -111,7 +111,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(latestFunctionalChangedSnapshot);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, latestFunctionalChangedSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(bestuurseenheid, instance, instance.dateModified, latestFunctionalChangedSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             const expectedInstance = InstanceBuilder.from(instance)
@@ -144,7 +144,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot3);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, conceptSnapshot2);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(bestuurseenheid, instance, instance.dateModified, conceptSnapshot2);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             const expectedInstance = InstanceBuilder.from(instance)
@@ -177,7 +177,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot2);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, conceptSnapshot3);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(bestuurseenheid, instance, instance.dateModified, conceptSnapshot3);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             const expectedInstance = InstanceBuilder.from(instance)
@@ -207,7 +207,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await expect(() => instantieBijwerkenTotConceptSnapshotVersieDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, aFullConceptSnapshot().build()))
+            await expect(() => bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(bestuurseenheid, instance, instance.dateModified, aFullConceptSnapshot().build()))
                 .rejects.toThrowWithMessage(InvariantError, 'BijgewerktTot: concept snapshot hoort niet bij het concept gekoppeld aan de instantie');
         });
 
@@ -229,7 +229,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instance.dateModified, conceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(bestuurseenheid, instance, instance.dateModified, conceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             expect(actualInstance).toEqual(instance);
@@ -275,7 +275,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptSnapshotRepository.save(conceptSnapshot);
             await conceptSnapshotRepository.save(newConceptSnapshot);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             const expectedInstance = InstanceBuilder.from(instance)
@@ -394,7 +394,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -426,7 +426,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -456,7 +456,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, newConceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -483,7 +483,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(latestFunctionalChangedSnapshot);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, latestFunctionalChangedSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, latestFunctionalChangedSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -513,7 +513,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot3);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, conceptSnapshot2);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, conceptSnapshot2);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -543,7 +543,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot2);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, conceptSnapshot3);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, conceptSnapshot3);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
 
@@ -570,7 +570,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await expect(() => instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, aFullConceptSnapshot().build()))
+            await expect(() => bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, aFullConceptSnapshot().build()))
                 .rejects.toThrowWithMessage(InvariantError, 'BijgewerktTot: concept snapshot hoort niet bij het concept gekoppeld aan de instantie');
         });
 
@@ -592,7 +592,7 @@ describe('Instantie bijwerken tot concept snapshot versie domain service ', () =
             await conceptRepository.save(concept);
             await conceptSnapshotRepository.save(conceptSnapshot);
 
-            await instantieBijwerkenTotConceptSnapshotVersieDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, conceptSnapshot);
+            await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.conceptSnapshotVolledigOvernemen(bestuurseenheid, instance, instance.dateModified, conceptSnapshot);
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             expect(actualInstance).toEqual(instance);

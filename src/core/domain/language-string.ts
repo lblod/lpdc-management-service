@@ -27,6 +27,7 @@ export class LanguageString {
         this._nlGeneratedInformal = nlGeneratedInformal;
     }
 
+    //TODO LPDC-1168: remove method ... ?
     public static of(
         nl?: string | undefined,
         nlFormal?: string | undefined,
@@ -36,6 +37,7 @@ export class LanguageString {
         return new LanguageString(nl, nlFormal, nlInformal, nlGeneratedFormal, nlGeneratedInformal);
     }
 
+    //TODO LPDC-1168: support one, and then 'others ... ' ?
     public static ofValueInLanguage(value: string, language: Language): LanguageString {
         return LanguageString.of(
             language === Language.NL ? value : undefined,

@@ -13,7 +13,7 @@ import {FormalInformalChoice} from "./formal-informal-choice";
 import {Language} from "./language";
 import {InstanceStatusType} from "./types";
 
-export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
+export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
 
     private readonly _instanceRepository: InstanceRepository;
     private readonly _conceptRepository: ConceptRepository;
@@ -68,11 +68,11 @@ export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
             .withProductId(conceptSnapshot.productId)
             .build();
 
-        await this.confirmBijgewerktTot(bestuurseenheid, instanceMergedWithConceptSnapshot, instanceVersion, conceptSnapshot);
+        await this.confirmUpToDateTill(bestuurseenheid, instanceMergedWithConceptSnapshot, instanceVersion, conceptSnapshot);
 
     }
 
-    async confirmBijgewerktTot(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
+    async confirmUpToDateTill(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
         if (instance.conceptSnapshotId.equals(conceptSnapshot.id)) {
             return;
         }
@@ -81,11 +81,11 @@ export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
 
         this.errorIfConceptSnapshotDoesNotBelongToConcept(concept, conceptSnapshot);
 
-        const isBijgewerktTotLatestFunctionalChange = await this.isBijgewerktTotLatestFunctionalChange(concept, conceptSnapshot);
+        const isUpToDateTillLatestFunctionalChange = await this.isUpToDateTillLatestFunctionalChange(concept, conceptSnapshot);
 
         const updatedInstance = InstanceBuilder.from(instance)
             .withConceptSnapshotId(conceptSnapshot.id)
-            .withReviewStatus(isBijgewerktTotLatestFunctionalChange ? undefined : instance.reviewStatus)
+            .withReviewStatus(isUpToDateTillLatestFunctionalChange ? undefined : instance.reviewStatus)
             .build();
 
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);
@@ -97,7 +97,7 @@ export class InstantieBijwerkenTotConceptSnapshotVersieDomainService {
         }
     }
 
-    private async isBijgewerktTotLatestFunctionalChange(concept: Concept, conceptSnapshot: ConceptSnapshot): Promise<boolean> {
+    private async isUpToDateTillLatestFunctionalChange(concept: Concept, conceptSnapshot: ConceptSnapshot): Promise<boolean> {
         const latestFunctionalChangedConceptSnapshot = await this._conceptSnapshotRepository.findById(concept.latestFunctionallyChangedConceptSnapshot);
         return !conceptSnapshot.generatedAtTime.before(latestFunctionalChangedConceptSnapshot.generatedAtTime);
     }

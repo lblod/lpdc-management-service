@@ -39,8 +39,8 @@ import {Bestuurseenheid} from "./src/core/domain/bestuurseenheid";
 import {DeleteInstanceDomainService} from "./src/core/domain/delete-instance-domain-service";
 import {LinkConceptToInstanceDomainService} from "./src/core/domain/link-concept-to-instance-domain-service";
 import {
-    InstantieBijwerkenTotConceptSnapshotVersieDomainService
-} from "./src/core/domain/instantie-bijwerken-tot-concept-snapshot-versie-domain-service";
+    BringInstanceUpToDateWithConceptSnapshotVersionDomainService
+} from "./src/core/domain/bring-instance-up-to-date-with-concept-snapshot-version-domain-service";
 import {UpdateInstanceApplicationService} from "./src/core/application/update-instance-application-service";
 import {SemanticFormsMapperImpl} from "./src/driven/persistence/semantic-forms-mapper-impl";
 import {
@@ -143,7 +143,7 @@ const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainServic
     conceptDisplayConfigurationRepository
 );
 
-const instantieBijwerkenTotConceptSnapshotVersieDomainService = new InstantieBijwerkenTotConceptSnapshotVersieDomainService(
+const bringInstanceUpToDateWithConceptSnapshotVersionDomainService = new BringInstanceUpToDateWithConceptSnapshotVersionDomainService(
     instanceRepository,
     conceptRepository,
     conceptSnapshotRepository,
@@ -242,8 +242,8 @@ app.put('/public-services/:instanceId/reopen', async function (req, res, next): 
     return await reopenInstance(req, res).catch(next);
 });
 
-app.post('/public-services/:instanceId/confirm-bijgewerkt-tot', async function (req, res, next): Promise<any> {
-    return await confirmBijgewerktTot(req, res).catch(next);
+app.post('/public-services/:instanceId/confirm-up-to-date-till', async function (req, res, next): Promise<any> {
+    return await confirmUpToDateTill(req, res).catch(next);
 });
 
 app.post('/public-services/:instanceId/confirm-instance-is-already-informal', async function (req, res, next): Promise<any> {
@@ -446,9 +446,9 @@ async function reopenInstance(req: Request, res: Response) {
     return res.sendStatus(200);
 }
 
-async function confirmBijgewerktTot(req: Request, res: Response) {
+async function confirmUpToDateTill(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
-    const conceptSnapshotIdRequestParam = req.body.bijgewerktTot;
+    const conceptSnapshotIdRequestParam = req.body.upToDateTillConceptSnapshot;
     const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
@@ -457,7 +457,7 @@ async function confirmBijgewerktTot(req: Request, res: Response) {
     const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
     const conceptSnapshot = await conceptSnapshotRepository.findById(conceptSnapshotId);
-    await instantieBijwerkenTotConceptSnapshotVersieDomainService.confirmBijgewerktTot(bestuurseenheid, instance, instanceVersion, conceptSnapshot);
+    await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(bestuurseenheid, instance, instanceVersion, conceptSnapshot);
     return res.sendStatus(200);
 }
 
