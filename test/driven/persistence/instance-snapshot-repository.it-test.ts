@@ -25,7 +25,7 @@ import {
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
+import {INSTANCE_SNAPHOT_LDES_GRAPH, PUBLIC_GRAPH} from "../../../config";
 
 describe('InstanceSnapshotRepository', () => {
 
@@ -99,6 +99,18 @@ describe('InstanceSnapshotRepository', () => {
             await repository.save(instanceSnapshotGraph, instanceSnapshot);
 
             await expect(repository.findById(new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('another-integrating-partner')), instanceSnapshot.id)).rejects.toThrowWithMessage(NotFoundError, `Kan <${instanceSnapshot.id.value}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> in graph <http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/another-integrating-partner>`);
+
+        });
+
+        test('When requesting a graph that is not a subgraph of the instance snapshot graph, then throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await repository.save(instanceSnapshotGraph, instanceSnapshot);
+
+            await expect(repository.findById(new Iri(PUBLIC_GRAPH), instanceSnapshot.id)).rejects.toThrowWithMessage(SystemError, `Kan Instance Snapshots niet opzoeken in graph <http://mu.semte.ch/graphs/public>`);
 
         });
 
@@ -226,6 +238,13 @@ describe('InstanceSnapshotRepository', () => {
             const result = await directDatabaseAccess.list(query);
             expect(result[0]['graph']?.value).toEqual(instanceSnapshotGraph.value);
         });
+
+        test('When requesting a graph that is not a subgraph of the instance snapshot graph, then throw error', async () => {
+            const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
+
+            await expect(repository.addToProcessedInstanceSnapshots(new Iri(PUBLIC_GRAPH), instanceSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan Instance Snapshots niet opzoeken in graph <http://mu.semte.ch/graphs/public>`);
+        });
+
     });
 
     describe('Verify ontology and mapping', () => {

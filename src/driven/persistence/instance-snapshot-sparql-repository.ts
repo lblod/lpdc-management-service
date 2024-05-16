@@ -8,6 +8,7 @@ import {Logger} from "../../../platform/logger";
 import {NS} from "./namespaces";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
+import {SystemError} from "../../core/domain/shared/lpdc-error";
 
 export class InstanceSnapshotSparqlRepository implements InstanceSnapshotRepository {
 
@@ -24,6 +25,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
     }
 
     async findById(instanceSnapshotGraph: Iri, id: Iri): Promise<InstanceSnapshot> {
+        this.errorIfNoInstanceSnapshotGraph(instanceSnapshotGraph);
         //TODO LPDC-981: verify instanceSnapshotGraph starts with prefix
         const quads = await this.fetcher.fetch(
             instanceSnapshotGraph,
@@ -86,7 +88,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
     }
 
     async addToProcessedInstanceSnapshots(instanceSnapshotGraph: Iri, instanceSnapshotId: Iri): Promise<void> {
-        //TODO LPDC-981: verify instanceSnapshotGraph starts with prefix
+        this.errorIfNoInstanceSnapshotGraph(instanceSnapshotGraph);
         const query = `
             INSERT DATA {
                 GRAPH ${sparqlEscapeUri(instanceSnapshotGraph)} {
@@ -98,7 +100,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
     }
 
     async hasNewerProcessedInstanceSnapshot(instanceSnapshotGraph: Iri, instanceSnapshot: InstanceSnapshot): Promise<boolean> {
-        //TODO LPDC-981: verify instanceSnapshotGraph starts with prefix
+        this.errorIfNoInstanceSnapshotGraph(instanceSnapshotGraph);
         const query = `
             ASK WHERE {
                 GRAPH ${sparqlEscapeUri(instanceSnapshotGraph)} {
@@ -120,4 +122,11 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
 
         return this.querying.ask(query);
     }
+
+    errorIfNoInstanceSnapshotGraph(instanceSnapshotGraph: Iri): void {
+        if(!instanceSnapshotGraph.value.startsWith(INSTANCE_SNAPHOT_LDES_GRAPH())) {
+            throw new SystemError(`Kan Instance Snapshots niet opzoeken in graph <${instanceSnapshotGraph.value}>`);
+        }
+    }
+
 }
