@@ -55,7 +55,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
 
         allQuadsOfGraph = sanitizeBooleans(allQuadsOfGraph);
 
-        //filter out fr and de language strings
+        //filter out en, fr and de language strings
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !(isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr' || q.object.language === 'en')));
 
         //filter out the saving state of the ldes stream read

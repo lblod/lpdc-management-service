@@ -8,8 +8,8 @@ import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-
 import {isLiteral, namedNode, Statement} from "rdflib";
 import {sortedUniq, uniq} from "lodash";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
+import {sanitizeBooleans} from "./helpers/query-helpers";
 
-//TODO LPDC-981: fix test
 describe('Instance Snapshot Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
@@ -25,9 +25,17 @@ describe('Instance Snapshot Data Integrity Validation', () => {
 
             const instanceSnapshots = await findAllInstanceSnapshots();
 
-            const instanceSnapshotGraphs = sortedUniq(instanceSnapshots.map(is => is.instanceSnapshotGraph));
+            const instanceSnapshotGraphAsStrings: string[] = sortedUniq(instanceSnapshots.map(is => is.instanceSnapshotGraph.value));
 
-            for (const instanceSnapshotGraph of instanceSnapshotGraphs) {
+            for (const instanceSnapshotGraphStr of instanceSnapshotGraphAsStrings) {
+
+                const instanceSnapshotGraph = new Iri(instanceSnapshotGraphStr);
+
+                const instanceSnapshotIds = instanceSnapshots
+                    .filter(is => is.instanceSnapshotGraph.value === instanceSnapshotGraph.value)
+                    .map(is => is.instanceSnapshotId);
+
+                console.log(`verifying ${instanceSnapshotIds.length} instance snapshots in <${instanceSnapshotGraph}>`);
 
                 const allTriplesOfGraphQuery = `
                         ${PREFIX.lpdcExt}
@@ -40,13 +48,7 @@ describe('Instance Snapshot Data Integrity Validation', () => {
                 const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
                 let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, instanceSnapshotGraph.value));
 
-                //map booleans
-                allQuadsOfGraph.map(q => {
-                    if (isLiteral(q.object) && q.object.datatype.value === 'http://www.w3.org/2001/XMLSchema#boolean') {
-                        q.object.value === "1" ? q.object.value = "true" : q.object.value = "false";
-                    }
-                    return q;
-                });
+                allQuadsOfGraph = sanitizeBooleans(allQuadsOfGraph);
 
                 // filter out processed snapshots list
                 allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/processed')));
@@ -54,12 +56,11 @@ describe('Instance Snapshot Data Integrity Validation', () => {
                 // filter out ldes state
                 allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/state')));
 
+                //filter out en, fr and de language strings
+                allQuadsOfGraph = allQuadsOfGraph.filter(q => !(isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr' || q.object.language === 'en')));
+
 
                 let quadsForQueriedInstanceSnapshots: Statement[] = [];
-
-                const instanceSnapshotIds = instanceSnapshots
-                    .filter(is => is.instanceSnapshotGraph === instanceSnapshotGraph)
-                    .map(is => is.instanceSnapshotId);
 
                 for (const instanceSnapshotId of instanceSnapshotIds) {
                     try {
