@@ -24,6 +24,7 @@ import {
 } from "../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {ChosenFormType} from "../../src/core/domain/types";
 import {Language} from "../../src/core/domain/language";
+import {sanitizeBooleans} from "./helpers/query-helpers";
 
 class DoubleQuadReporterCapture implements DoubleQuadReporter {
 
@@ -56,7 +57,7 @@ describe('Instance Data Integrity Validation', () => {
     const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
     const informalFormalChoiceRepository = new FormalInformalChoiceSparqlRepository(endPoint);
 
-    test.skip('Load all instances; print errors to console.log', async () => {
+    test('Load all instances; print errors to console.log', async () => {
 
         const query = `
             ${PREFIX.besluit}
@@ -111,12 +112,7 @@ describe('Instance Data Integrity Validation', () => {
             const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
             let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, bestuurseenheid.userGraph().value));
 
-            allQuadsOfGraph.map(q => {
-                if (isLiteral(q.object) && q.object.datatype.value === 'http://www.w3.org/2001/XMLSchema#boolean') {
-                    q.object.value === "1" ? q.object.value = "true" : q.object.value = "false";
-                }
-                return q;
-            });
+            allQuadsOfGraph = sanitizeBooleans(allQuadsOfGraph);
 
             const tombStonesSubjects = new Set([...allQuadsOfGraph.filter(q => q.object.equals(namedNode('https://www.w3.org/ns/activitystreams#Tombstone'))).map(q => q.subject.value)]);
 

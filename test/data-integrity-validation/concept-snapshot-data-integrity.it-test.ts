@@ -13,6 +13,8 @@ import {
 } from "../../src/driven/persistence/datastore-to-quads-recursive-sparql-fetcher";
 import {NS} from "../../src/driven/persistence/namespaces";
 import {sparqlEscapeUri} from "../../mu-helper";
+import fs from "fs";
+import {sanitizeBooleans} from "./helpers/query-helpers";
 
 describe('Concept Snapshot Data Integrity Validation', () => {
 
@@ -37,6 +39,8 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         `;
         const conceptSnapshotIds = await directDatabaseAccess.list(conceptSnapshotIdsQuery);
 
+        console.log(`Verifying ${conceptSnapshotIds.length} concept snapshots`);
+
         const allTriplesOfGraphQuery = `
              ${PREFIX.lpdcExt}
             SELECT ?s ?p ?o WHERE {
@@ -49,11 +53,16 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         const allTriplesOfGraph = await directDatabaseAccess.list(allTriplesOfGraphQuery);
         let allQuadsOfGraph: Statement[] = uniq(sparqlQuerying.asQuads(allTriplesOfGraph, graph.value));
 
+        allQuadsOfGraph = sanitizeBooleans(allQuadsOfGraph);
+
         //filter out fr and de language strings
-        allQuadsOfGraph = allQuadsOfGraph.filter(q => !(isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr')));
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !(isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr' || q.object.language === 'en')));
 
         //filter out the saving state of the ldes stream read
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/state')));
+
+        //we don't use https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType anymore ...
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType')));
 
         const delayTime = 0;
         const averageTimes = [];
@@ -95,7 +104,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
             .filter(q => !quadsFromRequeriedConceptSnapshotsAsStrings.includes(q));
 
         //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
-        //fs.writeFileSync(`/tmp/remaining-quads.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
+        fs.writeFileSync(`/tmp/remaining-quads-concept-snapshot.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
         expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
 
         const averageTime = (new Date().valueOf() - before - delayTime * conceptSnapshotIds.length) / conceptSnapshotIds.length;
@@ -112,8 +121,8 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         console.log(`Data Errors Size [${dataErrors}]`);
 
         if (conceptSnapshotIds.length > 0) {
-            expect(totalAverageTime).toBeLessThan(35);
             expect(technicalErrors).toEqual([]);
+            expect(totalAverageTime).toBeLessThan(35);
         }
 
     }, 60000 * 15 * 100);
@@ -128,9 +137,8 @@ describe('Concept Snapshot Data Integrity Validation', () => {
             [
                 NS.skos('Concept').value,
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
-                NS.besluit('bestuurseenheid').value,
+                NS.besluit('Bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
-                NS.eli('LegalResource').value,
             ]);
         console.log('recursive queries');
         const allQuadsAsStrings = asSortedArray(allQuads.map(q => q.toString()));
