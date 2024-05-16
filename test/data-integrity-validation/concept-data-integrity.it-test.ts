@@ -24,6 +24,7 @@ import {Website} from "../../src/core/domain/website";
 import {Cost} from "../../src/core/domain/cost";
 import {FinancialAdvantage} from "../../src/core/domain/financial-advantage";
 import {LegalResource} from "../../src/core/domain/legal-resource";
+import fs from "fs";
 
 describe('Concept Data Integrity Validation', () => {
 
@@ -168,7 +169,7 @@ describe('Concept Data Integrity Validation', () => {
                 .filter(q => !quadsFromRequeriedConceptsAsStrings.includes(q));
 
             //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
-            //fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
+            fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
             expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
 
             const averageTime = (new Date().valueOf() - before - delayTime * conceptIds.length) / conceptIds.length;
@@ -186,8 +187,8 @@ describe('Concept Data Integrity Validation', () => {
         console.log(`Data Errors [${dataErrors}]`);
 
         if (conceptIds.length > 0) {
-            expect(totalAverageTime).toBeLessThan(250);
             expect(technicalErrors).toEqual([]);
+            expect(totalAverageTime).toBeLessThan(250);
         }
 
     }, 60000 * 15 * 100);
@@ -241,33 +242,40 @@ describe('Concept Data Integrity Validation', () => {
     function validateThatConceptDataIsInSyncWithLatestConceptSnapshot(concept: Concept, latestConceptSnapshot: ConceptSnapshot, latestFunctionallyChangedConceptSnapshot: ConceptSnapshot) {
         expect(isConceptFunctionallyChangedComparedToConceptSnapshot(concept, latestFunctionallyChangedConceptSnapshot)).toBeFalsy();
         expect(isConceptFunctionallyChangedComparedToConceptSnapshot(concept, latestConceptSnapshot)).toBeFalsy();
-        expect(ConceptSnapshot.isFunctionallyChanged(latestConceptSnapshot, latestFunctionallyChangedConceptSnapshot)).toBeFalsy();
+        expect(ConceptSnapshot.isFunctionallyChanged(latestConceptSnapshot, latestFunctionallyChangedConceptSnapshot)).toBeEmpty();
     }
 
     function isConceptFunctionallyChangedComparedToConceptSnapshot(value: Concept, other: ConceptSnapshot): boolean {
-        return LanguageString.isFunctionallyChanged(value.title, other.title)
-            || LanguageString.isFunctionallyChanged(value.description, other.description)
-            || LanguageString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription)
-            || LanguageString.isFunctionallyChanged(value.exception, other.exception)
-            || LanguageString.isFunctionallyChanged(value.regulation, other.regulation)
-            || FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate)
-            || FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate)
-            || value.type !== other.type
-            || !isEqual(value.targetAudiences, other.targetAudiences)
-            || !isEqual(value.themes, other.themes)
-            || !isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels)
-            || !isEqual(value.competentAuthorities, other.competentAuthorities)
-            || !isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels)
-            || !isEqual(value.executingAuthorities, other.executingAuthorities)
-            || !isEqual(value.publicationMedia, other.publicationMedia)
-            || !isEqual(value.yourEuropeCategories, other.yourEuropeCategories)
-            || !isEqual(value.keywords, other.keywords)
-            || Requirement.isFunctionallyChanged(value.requirements, other.requirements)
-            || Procedure.isFunctionallyChanged(value.procedures, other.procedures)
-            || Website.isFunctionallyChanged(value.websites, other.websites)
-            || Cost.isFunctionallyChanged(value.costs, other.costs)
-            || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages)
-            || LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources);
+        return printIfDifferent('title', LanguageString.isFunctionallyChanged(value.title, other.title))
+            || printIfDifferent('description', LanguageString.isFunctionallyChanged(value.description, other.description))
+            || printIfDifferent('additionalDescription', LanguageString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription))
+            || printIfDifferent('exception', LanguageString.isFunctionallyChanged(value.exception, other.exception))
+            || printIfDifferent('regulation', LanguageString.isFunctionallyChanged(value.regulation, other.regulation))
+            || printIfDifferent('startDate', FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate))
+            || printIfDifferent('endDate', FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate))
+            || printIfDifferent('type', value.type !== other.type)
+            || printIfDifferent('targetAudiences', !isEqual(value.targetAudiences, other.targetAudiences))
+            || printIfDifferent('themes', !isEqual(value.themes, other.themes))
+            || printIfDifferent('competentAuthorityLevels', !isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels))
+            || printIfDifferent('competentAuthorityLevels', !isEqual(value.competentAuthorities, other.competentAuthorities))
+            || printIfDifferent('executingAuthorityLevels', !isEqual(value.executingAuthorityLevels, other.executingAuthorityLevels))
+            || printIfDifferent('executingAuthorities', !isEqual(value.executingAuthorities, other.executingAuthorities))
+            || printIfDifferent('publicationMedia', !isEqual(value.publicationMedia, other.publicationMedia))
+            || printIfDifferent('yourEuropeCategories', !isEqual(value.yourEuropeCategories, other.yourEuropeCategories))
+            || printIfDifferent('keywords', !isEqual(value.keywords, other.keywords))
+            || printIfDifferent('Requirements', Requirement.isFunctionallyChanged(value.requirements, other.requirements))
+            || printIfDifferent('Procedures', Procedure.isFunctionallyChanged(value.procedures, other.procedures))
+            || printIfDifferent('Websites', Website.isFunctionallyChanged(value.websites, other.websites))
+            || printIfDifferent('Costs', Cost.isFunctionallyChanged(value.costs, other.costs))
+            || printIfDifferent('FinancialAdvantages', FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages))
+            || printIfDifferent('LegalResources', LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources));
+    }
+
+    function printIfDifferent(description: string, aValue: boolean): boolean {
+        if(aValue) {
+            console.log(`${description} was changed ...`);
+        }
+        return aValue;
     }
 
     function wait(milliseconds: number) {
