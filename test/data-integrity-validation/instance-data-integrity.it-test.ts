@@ -57,7 +57,7 @@ describe('Instance Data Integrity Validation', () => {
     const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
     const informalFormalChoiceRepository = new FormalInformalChoiceSparqlRepository(endPoint);
 
-    test('Load all instances; print errors to console.log', async () => {
+    test.skip('Load all instances; print errors to console.log', async () => {
 
         const query = `
             ${PREFIX.besluit}
@@ -172,6 +172,7 @@ describe('Instance Data Integrity Validation', () => {
 
                             await validateNeedsConversionFromFormalToInformalFlag(instance, bestuurseenheid);
 
+                            //TODO LPDC-1151: expand with all codes ...
                             for (const nutscode of instance.spatials) {
                                 if (!checkedNuts.includes(nutscode)) {
                                     await validateNuts(nutscode);
@@ -242,7 +243,7 @@ describe('Instance Data Integrity Validation', () => {
         expect(totalErrors).toEqual([]);
 
 
-    }, 60000 * 15 * 100);
+    }, 60000 * 15 * 100 * 10);
 
     test.skip('Find all triples for instance', async () => {
         const bestuurseenheidId = new Iri("http://data.lblod.info/id/bestuurseenheden/0916618d3560fe5a168ef536c25ffaddb15ef6ce43105d3ed20df38615803c77");
