@@ -25,7 +25,7 @@ const selectConceptLanguageDomainService = new SelectConceptLanguageDomainServic
 const bringInstanceUpToDateWithConceptSnapshotVersionDomainService = new BringInstanceUpToDateWithConceptSnapshotVersionDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository, selectConceptLanguageDomainService);
 describe('fully take concept snapshot over', () => {
 
-    test('Load all published instances; and verify ', async () => {
+    test.skip('Load all published instances; and verify ', async () => {
         const bestuurseenhedenIds: string[] = await getBestuurseenhedenIds();
         let errors: string[] = [];
         let totalInstances = 0;

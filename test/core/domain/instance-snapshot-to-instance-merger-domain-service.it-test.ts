@@ -27,7 +27,7 @@ import {
     ConceptDisplayConfigurationSparqlRepository
 } from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {PREFIX, PUBLIC_GRAPH} from "../../../config";
+import {INSTANCE_SNAPHOT_LDES_GRAPH, PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {NS} from "../../../src/driven/persistence/namespaces";
 import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
 import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
@@ -43,6 +43,11 @@ import {aFullAddressForInstance} from "./address-test-builder";
 import {Language} from "../../../src/core/domain/language";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
+
+    beforeEach(async () => {
+        await instanceSnapshotRepository.clearAllInstanceSnapshotGraphs();
+    });
+
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -77,12 +82,15 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await bestuurseenheidRepository.save(bestuurseenheid);
 
             const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(undefined).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(false);
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
@@ -137,12 +145,13 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
             const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(false);
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
@@ -399,12 +408,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         undefined,
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
                 .withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(false);
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
@@ -432,12 +443,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
                         undefined))
                 .withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(false);
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
@@ -455,12 +468,13 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
             const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(false);
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
             const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             expect(conceptDisplayConfiguration.conceptIsNew).toEqual(false);
@@ -477,9 +491,10 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .withCreatedBy(bestuurseenheid.id)
                 .withConceptId(undefined)
                 .build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            await expect(() => mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id))
+            await expect(() => mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id))
                 .rejects.toThrowWithMessage(InvariantError, 'Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
         });
 
@@ -492,9 +507,10 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .withConceptId(undefined)
                 .withContactPoints([aFullContactPointForInstance().withAddress(aFullAddressForInstance().withVerwijstNaar(undefined).build()).build()])
                 .build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            await expect(mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id)).resolves.not.toThrow();
+            await expect(mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id)).resolves.not.toThrow();
         });
 
     });
@@ -512,12 +528,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
                 const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
-                await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+                await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
                 const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
                 expect(instanceExists).toEqual(true);
 
-                await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+                await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
                 const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
 
@@ -579,12 +597,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
                 const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(concept.id).build();
-                await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+                await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
                 const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
                 expect(instanceExists).toEqual(true);
 
-                await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+                await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
                 const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
                 expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
@@ -831,12 +851,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
                 const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
-                await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+                await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
                 const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
                 expect(instanceExists).toEqual(true);
 
-                await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+                await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
                 expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
 
@@ -874,12 +896,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await instanceRepository.save(bestuurseenheid, instance);
 
                 const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
-                await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+                await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
                 const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
                 expect(instanceExists).toEqual(true);
 
-                await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+                await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
                 expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
 
@@ -918,13 +942,15 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
                 const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
-                await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+                await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
                 await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
 
                 const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
                 expect(instanceExists).toEqual(true);
 
-                await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+                await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
                 const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
                 expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
             });
@@ -946,7 +972,9 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept2.id);
 
             const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(concept2.id).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
             await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
             await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept2.id);
@@ -954,7 +982,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
             const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
@@ -966,7 +994,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         test('Dont merge instanceSnapshots if newer one is already processed for the same instance', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
-
 
             const concept = aFullConcept().build();
             await conceptRepository.save(concept);
@@ -997,18 +1024,20 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .withConceptId(concept.id)
                 .build();
 
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshotForOtherInstance);
-            await instanceSnapshotRepository.save(bestuurseenheid, secondInstanceSnapshot);
-            await instanceSnapshotRepository.save(bestuurseenheid, firstInstanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotForOtherInstance.id);
-            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, instanceSnapshotForOtherInstance.id);
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshotForOtherInstance);
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, secondInstanceSnapshot);
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, firstInstanceSnapshot);
 
-            await mapperDomainService.merge(bestuurseenheid, secondInstanceSnapshot.id);
-            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, secondInstanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshotForOtherInstance.id);
+            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(instanceSnapshotGraph, instanceSnapshotForOtherInstance.id);
 
-            await mapperDomainService.merge(bestuurseenheid, firstInstanceSnapshot.id);
-            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, firstInstanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, secondInstanceSnapshot.id);
+            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(instanceSnapshotGraph, secondInstanceSnapshot.id);
+
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, firstInstanceSnapshot.id);
+            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(instanceSnapshotGraph, firstInstanceSnapshot.id);
 
             const actual = await instanceRepository.findById(bestuurseenheid, instanceId);
             expect(actual.title).toEqual(secondInstanceSnapshot.title);
@@ -1024,14 +1053,16 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             const instanceSnapshot = aMinimalInstanceSnapshot()
                 .withTitle(LanguageString.of(undefined, undefined, 'titel'))
-                .withDescription(LanguageString.of( undefined, undefined, ''))
+                .withDescription(LanguageString.of(undefined, undefined, ''))
                 .withCreatedBy(bestuurseenheid.id)
                 .withConceptId(undefined)
                 .withIsVersionOfInstance(instance.id)
                 .build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-            await expect(() => mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id))
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
+
+            await expect(() => mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id))
                 .rejects.toThrowWithMessage(InvariantError, 'Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
         });
 
@@ -1049,9 +1080,11 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .withContactPoints([aFullContactPointForInstance().withAddress(aFullAddressForInstance().withVerwijstNaar(undefined).build()).build()])
                 .withIsVersionOfInstance(instance.id)
                 .build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-            await expect(mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id)).resolves.not.toThrow();
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
+
+            await expect(mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id)).resolves.not.toThrow();
         });
 
         test('Given a instanceSnapshot with formal languageStrings, then instance is merged with formal dutchLanguageVersion', async () => {
@@ -1073,12 +1106,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
                         undefined))
                 .withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
 
@@ -1107,12 +1142,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         undefined,
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
                 .withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
 
@@ -1153,12 +1190,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         undefined,
                         InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL))
                 .withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
             expect(instanceExists).toEqual(true);
 
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
             const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
 
@@ -1193,10 +1232,11 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         ]));
 
         const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(false).build();
-        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+        const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-        await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+        await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
         expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeTruthy();
         const quadsBeforeAfterRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
@@ -1232,9 +1272,11 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         ]));
 
         const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
-        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+        const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-        await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
+
+        await mapperDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
         expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
         const quadsBeforeAfterArchivingAgain = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
@@ -1286,10 +1328,11 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 .withCompetentAuthorities([competentAuthorityWithoutCodeList])
                 .withExecutingAuthorities([executingAuthorityWithoutCodeList])
                 .build();
+        const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-        await merger.merge(bestuurseenheid, instanceSnapshot.id);
+        await merger.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
 
         const createdInstance = await instanceRepository.findById(bestuurseenheid, isVersionOfInstanceId);
         expect(createdInstance.id).toEqual(isVersionOfInstanceId);

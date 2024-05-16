@@ -47,10 +47,10 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         this._logger = logger ?? this._logger;
     }
 
-    async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri) {
-        const instanceSnapshot = await this._instanceSnapshotRepository.findById(bestuurseenheid, instanceSnapshotId);
+    async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotGraph: Iri, instanceSnapshotId: Iri) {
+        const instanceSnapshot = await this._instanceSnapshotRepository.findById(instanceSnapshotGraph, instanceSnapshotId);
 
-        const hasNewerProcessedInstanceSnapshot = await this._instanceSnapshotRepository.hasNewerProcessedInstanceSnapshot(bestuurseenheid, instanceSnapshot);
+        const hasNewerProcessedInstanceSnapshot = await this._instanceSnapshotRepository.hasNewerProcessedInstanceSnapshot(instanceSnapshotGraph, instanceSnapshot);
 
         if (hasNewerProcessedInstanceSnapshot) {
             this._logger.log(`The versioned resource <${instanceSnapshotId}> is an older version, or already processed, of service <${instanceSnapshot.isVersionOfInstance}>`);

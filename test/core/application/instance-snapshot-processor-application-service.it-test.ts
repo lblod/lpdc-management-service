@@ -25,6 +25,8 @@ import {
 import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
 import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";
 import {aFullConcept} from "../domain/concept-test-builder";
+import {Iri} from "../../../src/core/domain/shared/iri";
+import {INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
 
 
 describe('InstanceSnapshotProcessorApplicationService', () => {
@@ -57,12 +59,14 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
         const instanceSnapshot  = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z')).withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+        const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
         await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot.conceptId);
 
         const invalidInstanceSnapshotId = buildInstanceSnapshotIri(uuid());
         await directDatabaseAccess.insertData(
-            `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+            instanceSnapshotGraph.value,
             [
                 `${sparqlEscapeUri(invalidInstanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                 `${sparqlEscapeUri(invalidInstanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
@@ -73,7 +77,11 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
 
         const snapshots = await instanceSnapshotRepository.findToProcessInstanceSnapshots();
         expect(snapshots).toEqual([
-            {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: invalidInstanceSnapshotId}
+            {
+                bestuurseenheidId: bestuurseenheid.id,
+                instanceSnapshotGraph: instanceSnapshotGraph,
+                instanceSnapshotId: invalidInstanceSnapshotId
+            }
         ]);
 
     });
@@ -108,9 +116,12 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
             .withIsVersionOfInstance(instanceId)
             .withConceptId(concept.id)
             .build();
-        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot2);
-        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot1);
-        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot3);
+
+        const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot2);
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot1);
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot3);
 
         await instanceSnapshotProcessor.process();
 

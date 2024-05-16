@@ -2,6 +2,7 @@ const APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH;
 
 const PUBLIC_GRAPH = 'http://mu.semte.ch/graphs/public';
 const CONCEPT_SNAPSHOT_LDES_GRAPH = 'http://mu.semte.ch/graphs/lpdc/conceptsnapshots-ldes-data/ipdc';
+const INSTANCE_SNAPHOT_LDES_GRAPH = (suffix: string = ''): string => `http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/${suffix}`;
 const CONCEPT_GRAPH = 'http://mu.semte.ch/graphs/public';
 
 const USER_SESSIONS_GRAPH = 'http://mu.semte.ch/graphs/sessions';
@@ -95,6 +96,7 @@ export {
     CONCEPT_GRAPH,
     PUBLIC_GRAPH,
     CONCEPT_SNAPSHOT_LDES_GRAPH,
+    INSTANCE_SNAPHOT_LDES_GRAPH,
     APPLICATION_GRAPH,
     USER_SESSIONS_GRAPH,
     PREFIXES,

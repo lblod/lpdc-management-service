@@ -1,15 +1,18 @@
-import {Bestuurseenheid} from "../../../domain/bestuurseenheid";
 import {Iri} from "../../../domain/shared/iri";
 import {InstanceSnapshot} from "../../../domain/instance-snapshot";
 
 export interface InstanceSnapshotRepository {
 
-    findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<InstanceSnapshot>;
+    findById(instanceSnapshotGraph: Iri, id: Iri): Promise<InstanceSnapshot>;
 
-    findToProcessInstanceSnapshots(): Promise<{ bestuurseenheidId: Iri, instanceSnapshotId: Iri }[]>;
+    findToProcessInstanceSnapshots(): Promise<{
+        bestuurseenheidId: Iri,
+        instanceSnapshotGraph: Iri,
+        instanceSnapshotId: Iri
+    }[]>;
 
-    addToProcessedInstanceSnapshots(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri): Promise<void>;
+    addToProcessedInstanceSnapshots(instanceSnapshotGraph: Iri, instanceSnapshotId: Iri): Promise<void>;
 
-    hasNewerProcessedInstanceSnapshot(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot): Promise<boolean>;
+    hasNewerProcessedInstanceSnapshot(instanceSnapshotGraph: Iri, instanceSnapshot: InstanceSnapshot): Promise<boolean>;
 
 }

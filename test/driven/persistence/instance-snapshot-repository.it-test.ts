@@ -24,6 +24,8 @@ import {
 } from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
+import {Iri} from "../../../src/core/domain/shared/iri";
+import {INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
 
 describe('InstanceSnapshotRepository', () => {
 
@@ -44,12 +46,13 @@ describe('InstanceSnapshotRepository', () => {
             await bestuurseenheidRepository.save(anotherBestuurseenheid);
 
             const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
-            await repository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await repository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const anotherInstanceSnapshot = aFullInstanceSnapshot().withCreatedBy(anotherBestuurseenheid.id).build();
-            await repository.save(bestuurseenheid, anotherInstanceSnapshot);
+            await repository.save(instanceSnapshotGraph, anotherInstanceSnapshot);
 
-            const actualInstance = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+            const actualInstance = await repository.findById(instanceSnapshotGraph, instanceSnapshot.id);
 
             expect(actualInstance).toEqual(instanceSnapshot);
         });
@@ -61,12 +64,13 @@ describe('InstanceSnapshotRepository', () => {
             await bestuurseenheidRepository.save(anotherBestuurseenheid);
 
             const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
-            await repository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await repository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const anotherInstanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(anotherBestuurseenheid.id).build();
-            await repository.save(bestuurseenheid, anotherInstanceSnapshot);
+            await repository.save(instanceSnapshotGraph, anotherInstanceSnapshot);
 
-            const actualInstance = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+            const actualInstance = await repository.findById(instanceSnapshotGraph, instanceSnapshot.id);
 
             expect(actualInstance).toEqual(instanceSnapshot);
 
@@ -77,24 +81,24 @@ describe('InstanceSnapshotRepository', () => {
             await bestuurseenheidRepository.save(bestuurseenheid);
 
             const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
-            await repository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await repository.save(instanceSnapshotGraph, instanceSnapshot);
 
             const nonExistentInstanceSnapshotId = buildInstanceSnapshotIri('thisiddoesnotexist');
 
-            await expect(repository.findById(bestuurseenheid, nonExistentInstanceSnapshotId)).rejects.toThrowWithMessage(NotFoundError, `Kan <http://data.lblod.info/id/public-service-snapshot/thisiddoesnotexist> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> in graph <http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/${bestuurseenheid.uuid}>`);
+            await expect(repository.findById(instanceSnapshotGraph, nonExistentInstanceSnapshotId)).rejects.toThrowWithMessage(NotFoundError, `Kan <http://data.lblod.info/id/public-service-snapshot/thisiddoesnotexist> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> in graph <http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/an-integrating-partner>`);
 
         });
 
-        test('When instance snapshot bestuurseenheid graph is not same as bestuurseenheid createdBy, then throw error', async () => {
+        test('When instance snapshot does not exist in given graph, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
-            const otherBestuurseenheid = aBestuurseenheid().build();
 
-            const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(otherBestuurseenheid.id).build();
-            await repository.save(bestuurseenheid, instanceSnapshot);
+            const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await repository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            await expect(repository.findById(bestuurseenheid, instanceSnapshot.id)).rejects.toThrowWithMessage(
-                SystemError, `De bestuurseenheid van instantiesnapshot met id: <${instanceSnapshot.id}> komt niet overeen met de bestuurseenheid graph`);
+            await expect(repository.findById(new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('another-integrating-partner')), instanceSnapshot.id)).rejects.toThrowWithMessage(NotFoundError, `Kan <${instanceSnapshot.id.value}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> in graph <http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/another-integrating-partner>`);
 
         });
 
@@ -105,20 +109,31 @@ describe('InstanceSnapshotRepository', () => {
         test('When no instanceSnapshots processed, then return all', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const otherBestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            const anotherInstanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('another-integrating-partner'));
             const instanceSnapshot1 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
             const instanceSnapshot2 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
             const instanceSnapshotOtherBestuurseenheid = aFullInstanceSnapshot().withCreatedBy(otherBestuurseenheid.id).build();
-            await repository.save(bestuurseenheid, instanceSnapshot1);
-            await repository.save(bestuurseenheid, instanceSnapshot2);
-            await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
+            await repository.save(instanceSnapshotGraph, instanceSnapshot1);
+            await repository.save(instanceSnapshotGraph, instanceSnapshot2);
+            await repository.save(anotherInstanceSnapshotGraph, instanceSnapshotOtherBestuurseenheid);
 
             const actual = await repository.findToProcessInstanceSnapshots();
             expect(actual).toEqual([
-                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
-                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot2.id},
+                {
+                    bestuurseenheidId: bestuurseenheid.id,
+                    instanceSnapshotId: instanceSnapshot1.id,
+                    instanceSnapshotGraph: instanceSnapshotGraph,
+                },
+                {
+                    bestuurseenheidId: bestuurseenheid.id,
+                    instanceSnapshotId: instanceSnapshot2.id,
+                    instanceSnapshotGraph: instanceSnapshotGraph,
+                },
                 {
                     bestuurseenheidId: otherBestuurseenheid.id,
-                    instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id
+                    instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id,
+                    instanceSnapshotGraph: anotherInstanceSnapshotGraph,
                 },
             ]);
         });
@@ -126,15 +141,18 @@ describe('InstanceSnapshotRepository', () => {
         test('When some instanceSnapshots are already processed, then return only to process instanceSnapshots', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const otherBestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            const anotherInstanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('another-integrating-partner'));
             const instanceSnapshot1 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
             const instanceSnapshot2 = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).build();
             const instanceSnapshotOtherBestuurseenheid = aFullInstanceSnapshot().withCreatedBy(otherBestuurseenheid.id).build();
-            await repository.save(bestuurseenheid, instanceSnapshot1);
-            await repository.save(bestuurseenheid, instanceSnapshot2);
-            await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
+
+            await repository.save(instanceSnapshotGraph, instanceSnapshot1);
+            await repository.save(instanceSnapshotGraph, instanceSnapshot2);
+            await repository.save(anotherInstanceSnapshotGraph, instanceSnapshotOtherBestuurseenheid);
 
             await directDatabaseAccess.insertData(
-                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'),
                 [
                     `<http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> <${instanceSnapshot2.id}>`
                 ]
@@ -142,10 +160,15 @@ describe('InstanceSnapshotRepository', () => {
 
             const actual = await repository.findToProcessInstanceSnapshots();
             expect(actual).toEqual([
-                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
+                {
+                    bestuurseenheidId: bestuurseenheid.id,
+                    instanceSnapshotId: instanceSnapshot1.id,
+                    instanceSnapshotGraph: instanceSnapshotGraph,
+                },
                 {
                     bestuurseenheidId: otherBestuurseenheid.id,
-                    instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id
+                    instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id,
+                    instanceSnapshotGraph: anotherInstanceSnapshotGraph,
                 },
             ]);
         });
@@ -153,21 +176,33 @@ describe('InstanceSnapshotRepository', () => {
         test('should return findToProcessInstanceSnapshots sorted by generatedAt date', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const otherBestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            const anotherInstanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('another-integrating-partner'));
             const instanceSnapshot1 = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-05T00:00:00.657Z')).withCreatedBy(bestuurseenheid.id).build();
             const instanceSnapshot2 = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-07T00:00:00.657Z')).withCreatedBy(bestuurseenheid.id).build();
             const instanceSnapshotOtherBestuurseenheid = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-06T00:00:00.657Z')).withCreatedBy(otherBestuurseenheid.id).build();
-            await repository.save(bestuurseenheid, instanceSnapshot1);
-            await repository.save(bestuurseenheid, instanceSnapshot2);
-            await repository.save(otherBestuurseenheid, instanceSnapshotOtherBestuurseenheid);
+            await repository.save(instanceSnapshotGraph, instanceSnapshot1);
+            await repository.save(instanceSnapshotGraph, instanceSnapshot2);
+            await repository.save(anotherInstanceSnapshotGraph, instanceSnapshotOtherBestuurseenheid);
 
             const actual = await repository.findToProcessInstanceSnapshots();
             expect(actual).toEqual([
-                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot1.id},
+                {
+                    bestuurseenheidId: bestuurseenheid.id,
+                    instanceSnapshotId: instanceSnapshot1.id,
+                    instanceSnapshotGraph: instanceSnapshotGraph,
+                },
                 {
                     bestuurseenheidId: otherBestuurseenheid.id,
-                    instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id
+                    instanceSnapshotId: instanceSnapshotOtherBestuurseenheid.id,
+                    instanceSnapshotGraph: anotherInstanceSnapshotGraph,
                 },
-                {bestuurseenheidId: bestuurseenheid.id, instanceSnapshotId: instanceSnapshot2.id},
+                {
+                    bestuurseenheidId: bestuurseenheid.id,
+                    instanceSnapshotId: instanceSnapshot2.id,
+                    instanceSnapshotGraph: instanceSnapshotGraph,
+                },
+
             ]);
         });
 
@@ -176,10 +211,10 @@ describe('InstanceSnapshotRepository', () => {
     describe('addToProcessedInstanceSnapshots', () => {
 
         test('should add to processedInstanceSnapshot to given graph', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
             const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
 
-            await repository.addToProcessedInstanceSnapshots(bestuurseenheid, instanceSnapshotId);
+            await repository.addToProcessedInstanceSnapshots(instanceSnapshotGraph, instanceSnapshotId);
 
             const query = `
                 SELECT ?graph WHERE {
@@ -189,7 +224,7 @@ describe('InstanceSnapshotRepository', () => {
                 } 
             `;
             const result = await directDatabaseAccess.list(query);
-            expect(result[0]['graph']?.value).toEqual(bestuurseenheid.instanceSnapshotsLdesDataGraph().value);
+            expect(result[0]['graph']?.value).toEqual(instanceSnapshotGraph.value);
         });
     });
 
@@ -200,6 +235,7 @@ describe('InstanceSnapshotRepository', () => {
             const instanceId = buildInstanceIri(instanceUUID);
             const instanceSnapshotUUID = uuid();
             const instanceSnapshotId = buildInstanceSnapshotIri(instanceSnapshotUUID);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
             const bestuurseenheid = aBestuurseenheid().build();
 
@@ -225,7 +261,7 @@ describe('InstanceSnapshotRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                instanceSnapshotGraph.value,
                 [
                     `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
@@ -239,7 +275,7 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0].value}>`,
                 ]);
 
-            const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+            const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshotId);
 
             expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
         });
@@ -248,6 +284,7 @@ describe('InstanceSnapshotRepository', () => {
             const instanceUUID = uuid();
             const instanceId = buildInstanceIri(instanceUUID);
             const instanceSnapshotUUID = uuid();
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
             const conceptId = buildConceptIri(uuid());
 
@@ -264,7 +301,7 @@ describe('InstanceSnapshotRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                instanceSnapshotGraph.value,
                 [
                     `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
@@ -449,7 +486,7 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#verwijstNaar> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.verwijstNaar)}`,
                 ]);
 
-            const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+            const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshotId);
 
             expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
 
@@ -461,6 +498,7 @@ describe('InstanceSnapshotRepository', () => {
             const instanceSnapshotUUID = uuid();
 
             const instanceSnapshotId = buildInstanceSnapshotIri(instanceSnapshotUUID);
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
             const bestuurseenheid = aBestuurseenheid().build();
 
@@ -474,7 +512,7 @@ describe('InstanceSnapshotRepository', () => {
                     .build();
 
             await directDatabaseAccess.insertData(
-                `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                instanceSnapshotGraph.value,
                 [
                     `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
@@ -516,7 +554,7 @@ describe('InstanceSnapshotRepository', () => {
                     `${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.id)} <https://data.vlaanderen.be/ns/adres#verwijstNaar> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.CONTACT_POINTS[0].address.verwijstNaar)}`,
                 ]);
 
-            const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+            const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshotId);
 
             expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
 
@@ -525,31 +563,34 @@ describe('InstanceSnapshotRepository', () => {
         for (const type of Object.values(ProductType)) {
             test(`Product type ${type} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
-                const instance = aMinimalInstanceSnapshot()
+                const instanceSnapshot = aMinimalInstanceSnapshot()
                     .withCreatedBy(bestuurseenheid.id)
                     .withType(type)
                     .build();
 
-                await repository.save(bestuurseenheid, instance);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instance.id);
+                await repository.save(instanceSnapshotGraph, instanceSnapshot);
 
-                expect(actualInstanceSnapshot).toEqual(instance);
+                const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshot.id);
+
+                expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
             });
         }
 
         test('Unknown Product Type can not be mapped', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
             const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
 
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
             await directDatabaseAccess.insertData(
-                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                instanceSnapshotGraph.value,
                 [
                     `<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> .' niet mappen.`);
+            await expect(repository.findById(instanceSnapshotGraph, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <http://purl.org/dc/terms/type> <https://productencatalogus.data.vlaanderen.be/id/concept/Type/UnknownProductType> .' niet mappen.`);
         });
 
         for (const targetAudience of Object.values(TargetAudienceType)) {
@@ -558,25 +599,26 @@ describe('InstanceSnapshotRepository', () => {
                 const instanceSnapshot = aMinimalInstanceSnapshot()
                     .withCreatedBy(bestuurseenheid.id)
                     .withTargetAudiences([targetAudience]).build();
-                await repository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+                await repository.save(instanceSnapshotGraph, instanceSnapshot);
 
-                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+                const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshot.id);
 
                 expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
             });
         }
 
         test('Unknown Target Audience Type can not be mapped', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
             const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
             await directDatabaseAccess.insertData(
-                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                instanceSnapshotGraph.value,
                 [`<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience> .' niet mappen.`);
+            await expect(repository.findById(instanceSnapshotGraph, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#targetAudience> <https://productencatalogus.data.vlaanderen.be/id/concept/Doelgroep/NonExistingTargetAudience> .' niet mappen.`);
         });
 
         for (const theme of Object.values(ThemeType)) {
@@ -586,9 +628,10 @@ describe('InstanceSnapshotRepository', () => {
                     .withCreatedBy(bestuurseenheid.id)
                     .withThemes([theme])
                     .build();
-                await repository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+                await repository.save(instanceSnapshotGraph, instanceSnapshot);
 
-                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+                const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshot.id);
 
                 expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
             });
@@ -596,15 +639,16 @@ describe('InstanceSnapshotRepository', () => {
 
         test('Unknown Theme type can not be mapped', async () => {
             const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
-            const bestuurseenheid = aBestuurseenheid().build();
+
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
             await directDatabaseAccess.insertData(
-                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                instanceSnapshotGraph.value,
                 [`<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <http://data.europa.eu/m8g/thematicArea> <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <http://data.europa.eu/m8g/thematicArea> <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme> .' niet mappen.`);
+            await expect(repository.findById(instanceSnapshotGraph, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <http://data.europa.eu/m8g/thematicArea> <https://productencatalogus.data.vlaanderen.be/id/concept/Thema/NonExistingTheme> .' niet mappen.`);
         });
 
         for (const competentAuthorityLevel of Object.values(CompetentAuthorityLevelType)) {
@@ -614,25 +658,28 @@ describe('InstanceSnapshotRepository', () => {
                     .withCreatedBy(bestuurseenheid.id)
                     .withCompetentAuthorityLevels([competentAuthorityLevel])
                     .build();
-                await repository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+                await repository.save(instanceSnapshotGraph, instanceSnapshot);
+
+                const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshot.id);
 
                 expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
             });
         }
 
         test('Unknown Competent Authority Level type can not be mapped', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
             const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
 
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
             await directDatabaseAccess.insertData(
-                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                instanceSnapshotGraph.value,
                 [`<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel> .' niet mappen.`);
+            await expect(repository.findById(instanceSnapshotGraph, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/NonExistingCompetentAuthorityLevel> .' niet mappen.`);
         });
 
         for (const executingAuthorityLevel of Object.values(ExecutingAuthorityLevelType)) {
@@ -642,25 +689,28 @@ describe('InstanceSnapshotRepository', () => {
                     .withCreatedBy(bestuurseenheid.id)
                     .withExecutingAuthorityLevels([executingAuthorityLevel])
                     .build();
-                await repository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+                await repository.save(instanceSnapshotGraph, instanceSnapshot);
+
+                const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshot.id);
 
                 expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
             });
         }
 
         test('Unknown ExecutingAuthorityLevelType can not be mapped', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
             const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
 
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
             await directDatabaseAccess.insertData(
-                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                instanceSnapshotGraph.value,
                 [`<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel> .' niet mappen.`);
+            await expect(repository.findById(instanceSnapshotGraph, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/NonExistingExecutingAuthorityLevel> .' niet mappen.`);
         });
 
         for (const publicationMedium of Object.values(PublicationMediumType)) {
@@ -671,25 +721,28 @@ describe('InstanceSnapshotRepository', () => {
                     .withPublicationMedia([publicationMedium])
                     .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF])
                     .build();
-                await repository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+                await repository.save(instanceSnapshotGraph, instanceSnapshot);
+
+                const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshot.id);
 
                 expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
             });
         }
 
         test('Unknown PublicationMediumType can not be mapped', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
             const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
 
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
             await directDatabaseAccess.insertData(
-                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                instanceSnapshotGraph.value,
                 [`<${instanceSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> .' niet mappen.`);
+            await expect(repository.findById(instanceSnapshotGraph, instanceSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <https://productencatalogus.data.vlaanderen.be/id/concept/PublicatieKanaal/NonExistingPublicationMedium> .' niet mappen.`);
         });
 
         for (const yourEuropeCategory of Object.values(YourEuropeCategoryType)) {
@@ -699,25 +752,28 @@ describe('InstanceSnapshotRepository', () => {
                     .withCreatedBy(bestuurseenheid.id)
                     .withYourEuropeCategories([yourEuropeCategory])
                     .build();
-                await repository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-                const actualInstance = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+                await repository.save(instanceSnapshotGraph, instanceSnapshot);
+
+                const actualInstance = await repository.findById(instanceSnapshotGraph, instanceSnapshot.id);
 
                 expect(actualInstance).toEqual(instanceSnapshot);
             });
         }
 
         test('Unknown YourEuropeCategoryType can not be mapped', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
             const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
 
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
             await directDatabaseAccess.insertData(
-                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                instanceSnapshotGraph.value,
                 [`<${instanceSnapshotIri}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> .' niet mappen.`);
+            await expect(repository.findById(instanceSnapshotGraph, instanceSnapshotIri)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotIri}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#yourEuropeCategory> <https://productencatalogus.data.vlaanderen.be/id/concept/YourEuropeCatagory/NonExistingYourEuropeCategory> .' niet mappen.`);
         });
 
         for (const languageType of Object.values(LanguageType)) {
@@ -727,25 +783,27 @@ describe('InstanceSnapshotRepository', () => {
                     .withCreatedBy(bestuurseenheid.id)
                     .withLanguages([languageType])
                     .build();
-                await repository.save(bestuurseenheid, instanceSnapshot);
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
-                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshot.id);
+                await repository.save(instanceSnapshotGraph, instanceSnapshot);
+
+                const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshot.id);
 
                 expect(actualInstanceSnapshot).toEqual(instanceSnapshot);
             });
         }
 
         test('Unknown LanguageType can not be mapped', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
             const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
             await directDatabaseAccess.insertData(
-                bestuurseenheid.instanceSnapshotsLdesDataGraph().value,
+                instanceSnapshotGraph.value,
                 [`<${instanceSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                     `<${instanceSnapshotId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType>`,
                 ]);
 
-            await expect(repository.findById(bestuurseenheid, instanceSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType> .' niet mappen.`);
+            await expect(repository.findById(instanceSnapshotGraph, instanceSnapshotId)).rejects.toThrowWithMessage(SystemError, `Kan '<${instanceSnapshotId}> <http://purl.org/dc/terms/language> <http://publications.europa.eu/resource/authority/language/NonExistingLanguageType> .' niet mappen.`);
         });
 
         describe('isArchived', () => {
@@ -757,8 +815,10 @@ describe('InstanceSnapshotRepository', () => {
 
                 const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
 
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
                 await directDatabaseAccess.insertData(
-                    `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                    instanceSnapshotGraph.value,
                     [
                         `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
@@ -773,7 +833,7 @@ describe('InstanceSnapshotRepository', () => {
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceSnapshotTestBuilder.COMPETENT_AUTHORITIES[0].value}>`,
                     ]);
 
-                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+                const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshotId);
 
                 expect(actualInstanceSnapshot.isArchived).toEqual(false);
             });
@@ -785,8 +845,10 @@ describe('InstanceSnapshotRepository', () => {
 
                 const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
 
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
                 await directDatabaseAccess.insertData(
-                    `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                    instanceSnapshotGraph.value,
                     [
                         `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
@@ -802,7 +864,7 @@ describe('InstanceSnapshotRepository', () => {
                         `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     ]);
 
-                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+                const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshotId);
 
                 expect(actualInstanceSnapshot.isArchived).toEqual(false);
             });
@@ -814,8 +876,10 @@ describe('InstanceSnapshotRepository', () => {
 
                 const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
 
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+
                 await directDatabaseAccess.insertData(
-                    `${bestuurseenheid.instanceSnapshotsLdesDataGraph()}`,
+                    instanceSnapshotGraph.value,
                     [
                         `${sparqlEscapeUri(instanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
                         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
@@ -831,7 +895,7 @@ describe('InstanceSnapshotRepository', () => {
                         `${sparqlEscapeUri(instanceSnapshotId)} <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     ]);
 
-                const actualInstanceSnapshot = await repository.findById(bestuurseenheid, instanceSnapshotId);
+                const actualInstanceSnapshot = await repository.findById(instanceSnapshotGraph, instanceSnapshotId);
 
                 expect(actualInstanceSnapshot.isArchived).toEqual(true);
             });

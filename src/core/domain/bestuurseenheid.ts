@@ -51,10 +51,6 @@ export class Bestuurseenheid {
         return new Iri(`http://mu.semte.ch/graphs/organizations/${this.uuid}/${SessionRoleType.LOKETLB_LPDCGEBRUIKER}`);
     }
 
-    //TODO LPDC-1002: this is not part of the domain, it should be moved to the persistence adapter
-    instanceSnapshotsLdesDataGraph(): Iri {
-        return new Iri(`http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/${this.uuid}`);
-    }
 }
 
 export enum BestuurseenheidClassificatieCode {

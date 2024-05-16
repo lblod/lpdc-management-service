@@ -1,9 +1,9 @@
 import {InstanceSnapshotSparqlRepository} from "../../../src/driven/persistence/instance-snapshot-sparql-repository";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {InstanceSnapshot} from "../../../src/core/domain/instance-snapshot";
-import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 import {DomainToQuadsMapper} from "../../../src/driven/persistence/domain-to-quads-mapper";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
 
 export class InstanceSnapshotSparqlTestRepository extends InstanceSnapshotSparqlRepository {
 
@@ -14,12 +14,11 @@ export class InstanceSnapshotSparqlTestRepository extends InstanceSnapshotSparql
         this.directDatabaseAccess = new DirectDatabaseAccess(endpoint);
     }
 
-    async save(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot): Promise<void> {
-        const graph = bestuurseenheid.instanceSnapshotsLdesDataGraph().value;
+    async save(instanceSnapshotGraph: Iri, instanceSnapshot: InstanceSnapshot): Promise<void> {
         await this.directDatabaseAccess.insertData(
-            graph,
+            instanceSnapshotGraph.value,
             [
-                ...new DomainToQuadsMapper(new Iri(graph)).instanceSnapshotToQuads(instanceSnapshot).map(s => s.toNT())
+                ...new DomainToQuadsMapper(instanceSnapshotGraph).instanceSnapshotToQuads(instanceSnapshot).map(s => s.toNT())
             ]);
     }
 
@@ -29,7 +28,7 @@ export class InstanceSnapshotSparqlTestRepository extends InstanceSnapshotSparql
             GRAPH ?graph {
                 ?s ?p ?o
             } 
-            FILTER(STRSTARTS(STR(?graph), "http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data"))
+            FILTER(STRSTARTS(STR(?graph), "${INSTANCE_SNAPHOT_LDES_GRAPH()}"))
         }`;
         const queryResult = await this.directDatabaseAccess.list(query);
         const graphs: string[] = queryResult.map(it => it['graph'].value);

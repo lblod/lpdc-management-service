@@ -1,4 +1,3 @@
-import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
 import {Iri} from "../../core/domain/shared/iri";
 import {InstanceSnapshotRepository} from "../../core/port/driven/persistence/instance-snapshot-repository";
@@ -8,7 +7,7 @@ import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from
 import {Logger} from "../../../platform/logger";
 import {NS} from "./namespaces";
 import {sparqlEscapeUri} from "../../../mu-helper";
-import {SystemError} from "../../core/domain/shared/lpdc-error";
+import {INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
 
 export class InstanceSnapshotSparqlRepository implements InstanceSnapshotRepository {
 
@@ -24,9 +23,10 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
         }
     }
 
-    async findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<InstanceSnapshot> {
+    async findById(instanceSnapshotGraph: Iri, id: Iri): Promise<InstanceSnapshot> {
+        //TODO LPDC-981: verify instanceSnapshotGraph starts with prefix
         const quads = await this.fetcher.fetch(
-            bestuurseenheid.instanceSnapshotsLdesDataGraph(),
+            instanceSnapshotGraph,
             id,
             [],
             [
@@ -54,27 +54,22 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
                 NS.m8g('PublicOrganisation').value,
             ]);
 
-        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.instanceSnapshotsLdesDataGraph(), this.doubleQuadReporter);
-        const instanceSnapshot = mapper.instanceSnapshot(id);
+        const mapper = new QuadsToDomainMapper(quads, instanceSnapshotGraph, this.doubleQuadReporter);
 
-        if(!instanceSnapshot.createdBy.equals(bestuurseenheid.id)) {
-            throw new SystemError(`De bestuurseenheid van instantiesnapshot met id: <${instanceSnapshot.id}> komt niet overeen met de bestuurseenheid graph`);
-        }
-
-        return instanceSnapshot;
+        return mapper.instanceSnapshot(id);
     }
 
-    async findToProcessInstanceSnapshots(): Promise<{ bestuurseenheidId: Iri, instanceSnapshotId: Iri }[]> {
+    async findToProcessInstanceSnapshots(): Promise<{ bestuurseenheidId: Iri, instanceSnapshotGraph: Iri, instanceSnapshotId: Iri }[]> {
         const query = `
-            SELECT ?instanceSnapshotIri ?createdBy WHERE {
-                GRAPH ?graph {
+            SELECT ?instanceSnapshotIri ?createdBy ?instanceSnapshotGraph WHERE {
+                GRAPH ?instanceSnapshotGraph {
                      ?instanceSnapshotIri a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> .
                      ?instanceSnapshotIri <http://purl.org/pav/createdBy> ?createdBy .
                      ?instanceSnapshotIri <http://www.w3.org/ns/prov#generatedAtTime> ?generatedAtTime .
                 }
-                FILTER(STRSTARTS(STR(?graph), "http://mu.semte.ch/graphs/lpdc/instancesnapshots-ldes-data/"))
+                FILTER(STRSTARTS(STR(?instanceSnapshotGraph), "${INSTANCE_SNAPHOT_LDES_GRAPH()}"))
                 FILTER NOT EXISTS {
-                    GRAPH ?graph {
+                    GRAPH ?instanceSnapshotGraph {
                         <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ?instanceSnapshotIri .
                     }
                 }
@@ -85,14 +80,16 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
 
         return result.map(item => ({
             bestuurseenheidId: new Iri(item['createdBy'].value),
+            instanceSnapshotGraph: new Iri(item['instanceSnapshotGraph'].value),
             instanceSnapshotId: new Iri(item['instanceSnapshotIri'].value)
         }));
     }
 
-    async addToProcessedInstanceSnapshots(bestuurseenheid: Bestuurseenheid, instanceSnapshotId: Iri): Promise<void> {
+    async addToProcessedInstanceSnapshots(instanceSnapshotGraph: Iri, instanceSnapshotId: Iri): Promise<void> {
+        //TODO LPDC-981: verify instanceSnapshotGraph starts with prefix
         const query = `
             INSERT DATA {
-                GRAPH ${sparqlEscapeUri(bestuurseenheid.instanceSnapshotsLdesDataGraph())} {
+                GRAPH ${sparqlEscapeUri(instanceSnapshotGraph)} {
                     <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ${sparqlEscapeUri(instanceSnapshotId)} .
                 }
             }
@@ -100,10 +97,11 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
         await this.querying.insert(query);
     }
 
-    async hasNewerProcessedInstanceSnapshot(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot): Promise<boolean> {
+    async hasNewerProcessedInstanceSnapshot(instanceSnapshotGraph: Iri, instanceSnapshot: InstanceSnapshot): Promise<boolean> {
+        //TODO LPDC-981: verify instanceSnapshotGraph starts with prefix
         const query = `
             ASK WHERE {
-                GRAPH ${sparqlEscapeUri(bestuurseenheid.instanceSnapshotsLdesDataGraph())} {
+                GRAPH ${sparqlEscapeUri(instanceSnapshotGraph)} {
                        ?instanceSnapshotIri a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> .
                        ?instanceSnapshotIri <http://www.w3.org/ns/prov#generatedAtTime> ?generatedAtTime .
                        ?instanceSnapshotIri <http://purl.org/dc/terms/isVersionOf> ?instance.
@@ -112,7 +110,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
                FILTER (?instanceSnapshotIri != ${sparqlEscapeUri(instanceSnapshot.id)})
                FILTER (?instance = ${sparqlEscapeUri(instanceSnapshot.isVersionOfInstance)})
                FILTER EXISTS {
-                    GRAPH ${sparqlEscapeUri(bestuurseenheid.instanceSnapshotsLdesDataGraph())} {
+                    GRAPH ${sparqlEscapeUri(instanceSnapshotGraph)} {
                             <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ?instanceSnapshotIri .
                     }
                }
