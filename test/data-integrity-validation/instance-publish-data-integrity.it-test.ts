@@ -189,6 +189,22 @@ describe('Form validation of published instances', () => {
         expect(errors.length).toEqual(0);
     }, 60000 * 15 * 100);
 
+    test('cost', async () => {
+        const errors: RapportErrorType[] = await formValidationCost();
+
+        if (errors.length != 0) {
+            const fileStream = fs.createWriteStream(`/tmp/failing-form/cost.csv`);
+            fileStream.write('CreatedBy,Instance,Field\n');
+
+            errors.forEach((entry) => {
+                fileStream.write(`${entry.bestuurseenheid},${entry.instance},${entry.field}\n`);
+            });
+
+            fileStream.end();
+        }
+        expect(errors.length).toEqual(0);
+    }, 60000 * 15 * 100);
+
     test('contactPoint', async () => {
 
         const errors: RapportErrorType[] = await formValidationContactPoint();
@@ -493,6 +509,49 @@ async function formValidationWebsite(): Promise<RapportErrorType[]> {
         const bestuurseenheid = result['createdBy'].value;
         const instance = result['instance'].value;
         const field = result['website'].value;
+
+        resultMap.push({instance, bestuurseenheid, field});
+    });
+    return resultMap;
+}
+
+async function formValidationCost(): Promise<RapportErrorType[]> {
+    const query = `
+        SELECT  ?instance ?createdBy ?cost WHERE {
+            ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
+            ?instance <http://schema.org/publication> ?publicationStatus.
+            ?instance <http://purl.org/pav/createdBy> ?createdBy.
+        
+            ?instance <http://data.europa.eu/m8g/hasCost> ?cost
+
+            
+            OPTIONAL{
+                ?cost <http://purl.org/dc/terms/title> ?title.
+                BIND(REPLACE(?title, "^\\\\s+|\\\\s+$", "") AS ?trimmedTitle)
+            }
+            OPTIONAL{
+                ?cost <http://purl.org/dc/terms/description> ?description.
+                BIND(REPLACE(?description, "^\\\\s+|\\\\s+$", "") AS ?trimmedDescription)
+            }
+            
+            FILTER (?publicationStatus IN (
+                <http://lblod.data.gift/concepts/publication-status/gepubliceerd>,
+                <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>
+            ))
+        
+            FILTER (
+                (!bound(?trimmedTitle) || ?trimmedTitle = "") ||
+                (!bound(?trimmedDescription) || ?trimmedDescription = "") 
+            )
+        }
+    `;
+
+    const results = await directDatabaseAccess.list(query);
+    const resultMap: RapportErrorType[] = [];
+    results.forEach(result => {
+        const bestuurseenheid = result['createdBy'].value;
+        const instance = result['instance'].value;
+        const field = result['cost'].value;
 
         resultMap.push({instance, bestuurseenheid, field});
     });
