@@ -159,7 +159,7 @@ describe('Form validation of published instances', () => {
             const errors: RapportErrorType[] = await formValidationProcedureWebsite();
 
             if (errors.length != 0) {
-                const fileStream = fs.createWriteStream(`/tmp/failing-form/website.csv`);
+                const fileStream = fs.createWriteStream(`/tmp/failing-form/procedureWebsite.csv`);
                 fileStream.write('CreatedBy,Instance,Field\n');
 
                 errors.forEach((entry) => {
@@ -173,6 +173,21 @@ describe('Form validation of published instances', () => {
 
     });
 
+    test('website', async () => {
+        const errors: RapportErrorType[] = await formValidationWebsite();
+
+        if (errors.length != 0) {
+            const fileStream = fs.createWriteStream(`/tmp/failing-form/website.csv`);
+            fileStream.write('CreatedBy,Instance,Field\n');
+
+            errors.forEach((entry) => {
+                fileStream.write(`${entry.bestuurseenheid},${entry.instance},${entry.field}\n`);
+            });
+
+            fileStream.end();
+        }
+        expect(errors.length).toEqual(0);
+    }, 60000 * 15 * 100);
 
     test('contactPoint', async () => {
 
@@ -435,6 +450,55 @@ async function formValidationProcedureWebsite(): Promise<RapportErrorType[]> {
     });
     return resultMap;
 }
+
+async function formValidationWebsite(): Promise<RapportErrorType[]> {
+    const query = `
+        SELECT  ?instance ?createdBy ?website WHERE {
+            ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
+            ?instance <http://schema.org/publication> ?publicationStatus.
+            ?instance <http://purl.org/pav/createdBy> ?createdBy.
+        
+            ?instance <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?website.
+
+            
+            OPTIONAL{
+                ?website <http://purl.org/dc/terms/title> ?title.
+                BIND(REPLACE(?title, "^\\\\s+|\\\\s+$", "") AS ?trimmedTitle)
+            }
+            OPTIONAL{
+                ?website <http://schema.org/url> ?url.
+            }
+            
+            FILTER (?publicationStatus IN (
+                <http://lblod.data.gift/concepts/publication-status/gepubliceerd>,
+                <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>
+            ))
+        
+            FILTER (
+                (bound(?url) && !(
+                    STRSTARTS(?url, "http://") || 
+                    STRSTARTS(?url, "https://") || 
+                    STRSTARTS(?url, "ftp://") || 
+                    STRSTARTS(?url, "sftp://")
+                    )
+                )||
+                (!bound(?trimmedTitle) || ?trimmedTitle = "")
+            )
+        }
+    `;
+
+    const results = await directDatabaseAccess.list(query);
+    const resultMap: RapportErrorType[] = [];
+    results.forEach(result => {
+        const bestuurseenheid = result['createdBy'].value;
+        const instance = result['instance'].value;
+        const field = result['website'].value;
+
+        resultMap.push({instance, bestuurseenheid, field});
+    });
+    return resultMap;
+}
+
 
 async function formValidationContactPoint(): Promise<RapportErrorType[]> {
     //Check that telephone just contains digits
