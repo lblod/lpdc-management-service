@@ -294,7 +294,7 @@ export class DomainToQuadsMapper {
             .flatMap(keyword => this.languageStringToQuads(namedNode(id.value), namedNode(NS.dcat('keyword').value), keyword));
     }
 
-    private conceptTags(id: Iri, values: ConceptTagType[]): Statement[] {
+    conceptTags(id: Iri, values: ConceptTagType[]): Statement[] {
         return this.irisToQuads(namedNode(id.value), NS.lpdcExt('conceptTag'), this.enumsToIris(values, NS.dvc.conceptTag));
     }
 

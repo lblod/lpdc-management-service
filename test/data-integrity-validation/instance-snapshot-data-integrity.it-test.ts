@@ -9,6 +9,7 @@ import {isLiteral, namedNode, Statement} from "rdflib";
 import {sortedUniq, uniq} from "lodash";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";
 import {sanitizeBooleans} from "./helpers/query-helpers";
+import {ConceptCodeValidator, extractAllConceptCodesForInstanceSnapshot} from "./helpers/concept-code.validator";
 
 describe('Instance Snapshot Data Integrity Validation', () => {
 
@@ -19,6 +20,9 @@ describe('Instance Snapshot Data Integrity Validation', () => {
     const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 
     test.skip('Query for each bestuurseenheid the instance snapshots in the ldes input graph', async () => {
+
+        const conceptCodeValidator = new ConceptCodeValidator(sparqlQuerying);
+
         const dataErrors = [];
 
         try {
@@ -30,6 +34,8 @@ describe('Instance Snapshot Data Integrity Validation', () => {
             for (const instanceSnapshotGraphStr of instanceSnapshotGraphAsStrings) {
 
                 const instanceSnapshotGraph = new Iri(instanceSnapshotGraphStr);
+
+                const domainToQuadsMapper = new DomainToQuadsMapper(instanceSnapshotGraph);
 
                 const instanceSnapshotIds = instanceSnapshots
                     .filter(is => is.instanceSnapshotGraph.value === instanceSnapshotGraph.value)
@@ -71,6 +77,8 @@ describe('Instance Snapshot Data Integrity Validation', () => {
                         const quadsForInstanceSnapshotForId = new DomainToQuadsMapper(instanceSnapshotGraph)
                             .instanceSnapshotToQuads(instanceSnapshot);
                         quadsForQueriedInstanceSnapshots = [...quadsForInstanceSnapshotForId, ...quadsForQueriedInstanceSnapshots];
+
+                        await conceptCodeValidator.validateConceptCodes(extractAllConceptCodesForInstanceSnapshot(domainToQuadsMapper, instanceSnapshot));
 
                     } catch (e) {
                         console.error(instanceSnapshotId);

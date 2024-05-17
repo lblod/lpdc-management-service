@@ -25,6 +25,7 @@ import {Cost} from "../../src/core/domain/cost";
 import {FinancialAdvantage} from "../../src/core/domain/financial-advantage";
 import {LegalResource} from "../../src/core/domain/legal-resource";
 import fs from "fs";
+import {ConceptCodeValidator, extractAllConceptCodesForConcept} from "./helpers/concept-code.validator";
 
 describe('Concept Data Integrity Validation', () => {
 
@@ -38,6 +39,8 @@ describe('Concept Data Integrity Validation', () => {
     const domainToQuadsMapper = new DomainToQuadsMapper(conceptGraph);
 
     test.skip('Load all concepts; print errors to console.log', async () => {
+
+        const conceptCodeValidator = new ConceptCodeValidator(sparqlQuerying);
 
         const conceptIdsQuery = `
             ${PREFIX.lpdcExt}
@@ -132,6 +135,8 @@ describe('Concept Data Integrity Validation', () => {
                         domainToQuadsMapper.conceptToQuads(conceptForId);
                     quadsFromRequeriedConcepts =
                         [...quadsForConceptForId, ...quadsFromRequeriedConcepts];
+
+                    await conceptCodeValidator.validateConceptCodes(extractAllConceptCodesForConcept(domainToQuadsMapper, conceptForId));
 
                     if (alsoLoadRelatedConceptSnapshots) {
                         const latestConceptSnapshot = await snapshotRepository.findById(conceptForId.latestConceptSnapshot);

@@ -1,7 +1,7 @@
 import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../config";
-import {NamedNode, namedNode, Statement} from "rdflib";
+import {namedNode, Statement} from "rdflib";
 import {shuffle, sortedUniq, uniq} from "lodash";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {sparqlEscapeUri} from "../../mu-helper";
@@ -25,6 +25,7 @@ import {
 import {ChosenFormType} from "../../src/core/domain/types";
 import {Language} from "../../src/core/domain/language";
 import {sanitizeBooleans} from "./helpers/query-helpers";
+import {ConceptCodeValidator, extractAllConceptCodesForInstance} from "./helpers/concept-code.validator";
 
 class DoubleQuadReporterCapture implements DoubleQuadReporter {
 
@@ -41,52 +42,6 @@ class DoubleQuadReporterCapture implements DoubleQuadReporter {
 
     logs(instance: Instance): string [] {
         return this._logs.map(str => str.replace('INSTANCE_MARKER', `${instance.id}|${instance.title?.nl}`));
-    }
-}
-
-class ConceptCodeValidator {
-
-    private sparqlQuerying: SparqlQuerying;
-    private cachedResults: Map<string, boolean>;
-
-    constructor(sparqlQuerying: SparqlQuerying) {
-        this.sparqlQuerying = sparqlQuerying;
-        this.cachedResults = new Map<string, boolean>();
-    }
-
-    async validateConceptCodes(conceptCodes: Iri[]) {
-        for (const conceptCode of conceptCodes) {
-            await this.validateConceptCode(conceptCode);
-        }
-    }
-
-    private async validateConceptCode(conceptCode: Iri): Promise<void> {
-        console.log(`Validating Concept Code <${conceptCode}>`);
-
-        const isValid = await this.isValidCode(conceptCode);
-
-        try {
-            expect(isValid).toBeTrue();
-        } catch(e) {
-            throw new Error(`Concept Code ${conceptCode} not found`);
-        }
-    }
-
-    private async isValidCode(conceptCode: Iri): Promise<boolean> {
-        if (this.cachedResults.has(conceptCode.value)) {
-            console.log(`return cached result`);
-            return this.cachedResults.get(conceptCode.value);
-        }
-        const query = `
-            ASK {
-                ${sparqlEscapeUri(conceptCode)} a <http://www.w3.org/2004/02/skos/core#Concept>.
-                ${sparqlEscapeUri(conceptCode)} <http://mu.semte.ch/vocabularies/core/uuid> ?uuid.
-                ${sparqlEscapeUri(conceptCode)} <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel.
-            }
-        `;
-        const result = await this.sparqlQuerying.ask(query);
-        this.cachedResults.set(conceptCode.value, result);
-        return result;
     }
 }
 
@@ -219,7 +174,7 @@ describe('Instance Data Integrity Validation', () => {
 
                             await validateNeedsConversionFromFormalToInformalFlag(instance, bestuurseenheid);
 
-                            await conceptCodeValidator.validateConceptCodes(extractAllConceptCodes(domainToQuadsMapper, instance));
+                            await conceptCodeValidator.validateConceptCodes(extractAllConceptCodesForInstance(domainToQuadsMapper, instance));
 
                             const doubleQuadsErrorsForInstance = doubleQuadReporterCapture.logs(instance);
                             totalDoubleQuads.push(...doubleQuadsErrorsForInstance);
@@ -339,26 +294,7 @@ describe('Instance Data Integrity Validation', () => {
         }
     }
 
-    function extractAllConceptCodes(domainToQuadsMapper: DomainToQuadsMapper, instance: Instance): Iri[] {
-        return [
-            ...(instance.type ? [domainToQuadsMapper.type(instance.id, instance.type)].map(objectAsIri): []),
-            ...domainToQuadsMapper.targetAudiences(instance.id, instance.targetAudiences).map(objectAsIri),
-            ...domainToQuadsMapper.themes(instance.id, instance.themes).map(objectAsIri),
-            ...domainToQuadsMapper.competentAuthorityLevels(instance.id, instance.competentAuthorityLevels).map(objectAsIri),
-            ...domainToQuadsMapper.executingAuthorityLevels(instance.id, instance.executingAuthorityLevels).map(objectAsIri),
-            ...domainToQuadsMapper.publicationMedia(instance.id, instance.publicationMedia).map(objectAsIri),
-            ...domainToQuadsMapper.yourEuropeCategories(instance.id, instance.yourEuropeCategories).map(objectAsIri),
-            ...domainToQuadsMapper.languages(instance.id, instance.languages).map(objectAsIri),
-            ...[domainToQuadsMapper.instanceStatus(instance.id, instance.status)].map(objectAsIri),
-            ...(instance.reviewStatus ? [domainToQuadsMapper.reviewStatus(instance.id, instance.reviewStatus)].map(objectAsIri): []),
-            ...(instance.publicationStatus ? [domainToQuadsMapper.publicationStatus(instance.id, instance.publicationStatus)].map(objectAsIri): []),
-            ...instance.spatials,
-        ];
-    }
 
-    function objectAsIri(statement: Statement): Iri {
-        return new Iri((statement.object as NamedNode).value);
-    }
 
 });
 

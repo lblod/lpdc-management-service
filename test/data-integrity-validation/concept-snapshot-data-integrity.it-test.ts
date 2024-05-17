@@ -15,6 +15,7 @@ import {NS} from "../../src/driven/persistence/namespaces";
 import {sparqlEscapeUri} from "../../mu-helper";
 import fs from "fs";
 import {sanitizeBooleans} from "./helpers/query-helpers";
+import {ConceptCodeValidator, extractAllConceptCodesForConceptSnapshot,} from "./helpers/concept-code.validator";
 
 describe('Concept Snapshot Data Integrity Validation', () => {
 
@@ -28,6 +29,8 @@ describe('Concept Snapshot Data Integrity Validation', () => {
     const domainToQuadsMapper = new DomainToQuadsMapper(graph);
 
     test.skip('Load all concept snapshots; print errors to console.log', async () => {
+
+        const conceptCodeValidator = new ConceptCodeValidator(sparqlQuerying);
 
         const conceptSnapshotIdsQuery = `
              ${PREFIX.lpdcExt}
@@ -58,6 +61,9 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         //filter out en, fr and de language strings
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !(isLiteral(q.object) && (q.object.language === 'de' || q.object.language === 'fr' || q.object.language === 'en')));
 
+        //filter out languages of the ldes stream read
+        allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://purl.org/dc/terms/language')));
+
         //filter out the saving state of the ldes stream read
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('http://mu.semte.ch/vocabularies/ext/state')));
 
@@ -86,6 +92,9 @@ describe('Concept Snapshot Data Integrity Validation', () => {
                     new DomainToQuadsMapper(graph).conceptSnapshotToQuads(conceptSnapshotForId);
                 quadsFromRequeriedConceptSnapshots =
                     [...quadsForConceptSnapshotForId, ...quadsFromRequeriedConceptSnapshots];
+
+                await conceptCodeValidator.validateConceptCodes(extractAllConceptCodesForConceptSnapshot(domainToQuadsMapper, conceptSnapshotForId));
+
             } catch (e) {
                 console.error(e);
                 if (!e.message.startsWith('could not map')) {
