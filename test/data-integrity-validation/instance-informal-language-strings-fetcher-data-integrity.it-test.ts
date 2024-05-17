@@ -48,7 +48,7 @@ describe('Instance informal language strings fetcher', () => {
                         instance.needsConversionFromFormalToInformal &&
                         instance.publicationStatus == InstancePublicationStatusType.GEPUBLICEERD) {
 
-                        transformedInstances += 0;
+                        transformedInstances += 1;
                         await ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, instance);
                         await wait(100);
                     }
