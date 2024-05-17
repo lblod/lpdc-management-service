@@ -1162,6 +1162,79 @@ describe('is functionally changed', () => {
         });
     }
 
+    test('functionally changed returns in a fixed order', () => {
+        const conceptSnapshot = aFullConceptSnapshot()
+            .withTitle(LanguageString.of("title-nl"))
+            .withDescription(LanguageString.of("description-nl"))
+            .withAdditionalDescription(LanguageString.of("additionalDescription-nl"))
+            .withException(LanguageString.of("exception-nl"))
+            .withRegulation(LanguageString.of("regulation-nl"))
+            .withLegalResources([aFullLegalResourceForConceptSnapshot().build()])
+            .withStartDate(FormatPreservingDate.of('2023-10-28T00:00:00.000Z'))
+            .withEndDate(FormatPreservingDate.of('2023-10-28T00:00:00.002Z'))
+            .withType(ProductType.FINANCIEELVOORDEEL)
+            .withTargetAudiences([TargetAudienceType.BURGER])
+            .withThemes([ThemeType.BOUWENWONEN])
+            .withCompetentAuthorityLevels([CompetentAuthorityLevelType.EUROPEES])
+            .withCompetentAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI])
+            .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.VLAAMS])
+            .withExecutingAuthorities([BestuurseenheidTestBuilder.ASSENEDE_IRI])
+            .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
+            .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJFAANSPRAKELIJKHEIDBESTUURDERS])
+            .withKeywords([LanguageString.of('keyword')])
+            .withRequirements([aFullRequirement().build()])
+            .withProcedures([aFullProcedure().build()])
+            .withWebsites([aFullWebsite().build()])
+            .withCosts([aFullCost().build()])
+            .withFinancialAdvantages([aFullFinancialAdvantage().build()])
+            .withIsArchived(false)
+            .build();
+
+        const anotherConceptSnapshot = aFullConceptSnapshot()
+            .withTitle(LanguageString.of("title-nl-changed"))
+            .withDescription(LanguageString.of("description-nl-changed"))
+            .withAdditionalDescription(LanguageString.of("additionalDescription-nl-changed"))
+            .withException(LanguageString.of("exception-nl-changed"))
+            .withRegulation(LanguageString.of("regulation-nl-changed"))
+            .withLegalResources([])
+            .withStartDate(FormatPreservingDate.of('2023-10-28T00:00:00.001Z'))
+            .withEndDate(FormatPreservingDate.of('2023-10-28T00:00:00.003Z'))
+            .withType(ProductType.BEWIJS)
+            .withTargetAudiences([TargetAudienceType.ORGANISATIE])
+            .withThemes([ThemeType.BURGEROVERHEID])
+            .withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL])
+            .withCompetentAuthorities([BestuurseenheidTestBuilder.BORGLOON_IRI])
+            .withExecutingAuthorityLevels([ExecutingAuthorityLevelType.FEDERAAL])
+            .withExecutingAuthorities([BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI])
+            .withPublicationMedia([PublicationMediumType.YOUREUROPE])
+            .withYourEuropeCategories([YourEuropeCategoryType.GEZONDHEIDVEILIGHEIDWERK])
+            .withKeywords([LanguageString.of('keyword-changed')])
+            .withRequirements([])
+            .withProcedures([])
+            .withWebsites([])
+            .withCosts([])
+            .withFinancialAdvantages([])
+            .withIsArchived(true)
+            .build();
+
+
+        expect(ConceptSnapshot.isFunctionallyChanged(conceptSnapshot, anotherConceptSnapshot))
+            .toEqual([
+                'basisinformatie',
+                'voorwaarden',
+                'procedure',
+                'kosten',
+                'financiële voordelen',
+                'regelgeving',
+                'meer info',
+                'algemene info (eigenschappen)',
+                'bevoegdheid (eigenschappen)',
+                'gerelateerd (eigenschappen)',
+                'gearchiveerd'
+            ]);
+
+    });
+
 
 });
 

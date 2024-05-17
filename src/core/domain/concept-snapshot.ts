@@ -265,20 +265,34 @@ export class ConceptSnapshot {
 
     static isFunctionallyChanged(value: ConceptSnapshot, other: ConceptSnapshot): string[] {
         const functionallyChanged: Map<string, boolean> = new Map();
+
         functionallyChanged.set("basisinformatie",
             LanguageString.isFunctionallyChanged(value.title, other.title) ||
             LanguageString.isFunctionallyChanged(value.description, other.description) ||
             LanguageString.isFunctionallyChanged(value.additionalDescription, other.additionalDescription) ||
             LanguageString.isFunctionallyChanged(value.exception, other.exception));
+
+        functionallyChanged.set("voorwaarden", Requirement.isFunctionallyChanged(value.requirements, other.requirements));
+
+        functionallyChanged.set("procedure", Procedure.isFunctionallyChanged(value.procedures, other.procedures));
+
+        functionallyChanged.set("kosten", Cost.isFunctionallyChanged(value.costs, other.costs));
+
+        functionallyChanged.set("financiële voordelen", FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages));
+
         functionallyChanged.set("regelgeving",
             LanguageString.isFunctionallyChanged(value.regulation, other.regulation) ||
             LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources));
+
+        functionallyChanged.set("meer info", Website.isFunctionallyChanged(value.websites, other.websites));
+
         functionallyChanged.set("algemene info (eigenschappen)",
             FormatPreservingDate.isFunctionallyChanged(value.startDate, other.startDate) ||
             FormatPreservingDate.isFunctionallyChanged(value.endDate, other.endDate) ||
             value.type !== other.type ||
             !isEqual(value.targetAudiences, other.targetAudiences) ||
             !isEqual(value.themes, other.themes));
+
         functionallyChanged.set("bevoegdheid (eigenschappen)",
             !isEqual(value.competentAuthorityLevels, other.competentAuthorityLevels) ||
             !isEqual(value.competentAuthorities, other.competentAuthorities) ||
@@ -290,11 +304,6 @@ export class ConceptSnapshot {
             !isEqual(value.yourEuropeCategories, other.yourEuropeCategories) ||
             !isEqual(value.keywords, other.keywords));
 
-        functionallyChanged.set("voorwaarden", Requirement.isFunctionallyChanged(value.requirements, other.requirements));
-        functionallyChanged.set("procedure", Procedure.isFunctionallyChanged(value.procedures, other.procedures));
-        functionallyChanged.set("meer info", Website.isFunctionallyChanged(value.websites, other.websites));
-        functionallyChanged.set("kosten", Cost.isFunctionallyChanged(value.costs, other.costs));
-        functionallyChanged.set("financiële voordelen", FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages));
         functionallyChanged.set("gearchiveerd", !isEqual(value.isArchived, other.isArchived));
 
         return Array.from(functionallyChanged.entries())
