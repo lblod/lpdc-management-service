@@ -23,6 +23,7 @@ const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
 const instanceRepository = new InstanceSparqlRepository(endPoint);
 const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
 const bringInstanceUpToDateWithConceptSnapshotVersionDomainService = new BringInstanceUpToDateWithConceptSnapshotVersionDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository, selectConceptLanguageDomainService);
+
 describe('fully take concept snapshot over', () => {
 
     test.skip('Load all published instances; and verify ', async () => {
@@ -50,9 +51,7 @@ describe('fully take concept snapshot over', () => {
                     const concept = await conceptRepository.findById(instance.conceptId);
                     const conceptSnapshot = await conceptSnapshotRepository.findById(concept.latestConceptSnapshot);
 
-                    const errorList = await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, conceptSnapshot);
-                    expect(errorList).toEqual([]);
-
+                    await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, conceptSnapshot);
                 } catch (e) {
                     errors = [...errors, `Bestuurseenheid: ${bestuurseenheid.id.value} and instance ${instanceId}`];
                     console.error(e);
