@@ -101,7 +101,43 @@ describe('Form validation of published instances', () => {
         expect(errors.length).toEqual(0);
     }, 60000 * 15 * 100);
 
-    describe('procedure validations', () => {
+
+    describe('Requirement validations', () => {
+
+        test('Requirement', async () => {
+            const errors: RapportErrorType[] = await formValidationRequirement();
+
+            if (errors.length != 0) {
+                const fileStream = fs.createWriteStream(`/tmp/failing-form/requirement.csv`);
+                fileStream.write('CreatedBy,Instance,Field\n');
+
+                errors.forEach((entry) => {
+                    fileStream.write(`${entry.bestuurseenheid},${entry.instance},${entry.field}\n`);
+                });
+
+                fileStream.end();
+            }
+            expect(errors.length).toEqual(0);
+        }, 60000 * 15 * 100);
+
+        test('evidence', async () => {
+            const errors: RapportErrorType[] = await formValidationRequirementEvidence();
+
+            if (errors.length != 0) {
+                const fileStream = fs.createWriteStream(`/tmp/failing-form/evidence.csv`);
+                fileStream.write('CreatedBy,Instance,Field\n');
+
+                errors.forEach((entry) => {
+                    fileStream.write(`${entry.bestuurseenheid},${entry.instance},${entry.field}\n`);
+                });
+
+                fileStream.end();
+            }
+            expect(errors.length).toEqual(0);
+        }, 60000 * 15 * 100);
+    });
+
+    describe('Procedure validations', () => {
 
         test('prodedure', async () => {
             const errors: RapportErrorType[] = await formValidationProcedure();
@@ -225,22 +261,22 @@ async function formValidationBasisInformatie(): Promise<RapportBasisInformatieTy
     return resultMap;
 }
 
-async function formValidationProcedureWebsite(): Promise<RapportErrorType[]> {
+async function formValidationRequirement(): Promise<RapportErrorType[]> {
     const query = `
-        SELECT  ?instance ?createdBy ?website WHERE {
+        SELECT  ?instance ?createdBy ?requirement WHERE {
             ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
             ?instance <http://schema.org/publication> ?publicationStatus.
             ?instance <http://purl.org/pav/createdBy> ?createdBy.
         
-            ?instance <http://purl.org/vocab/cpsv#follows> ?procedure.
-            ?procedure <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> ?website.
+            ?instance <http://vocab.belgif.be/ns/publicservice#hasRequirement> ?requirement.
             
             OPTIONAL{
-                ?website <http://purl.org/dc/terms/title> ?title.
+                ?requirement <http://purl.org/dc/terms/title> ?title.
                 BIND(REPLACE(?title, "^\\\\s+|\\\\s+$", "") AS ?trimmedTitle)
             }
             OPTIONAL{
-                ?website <http://schema.org/url> ?url.
+                ?requirement <http://purl.org/dc/terms/description> ?description.
+                BIND(REPLACE(?description, "^\\\\s+|\\\\s+$", "") AS ?trimmedDescription)
             }
             
             FILTER (?publicationStatus IN (
@@ -249,14 +285,8 @@ async function formValidationProcedureWebsite(): Promise<RapportErrorType[]> {
             ))
         
             FILTER (
-                (bound(?url) && !(
-                    STRSTARTS(?url, "http://") || 
-                    STRSTARTS(?url, "https://") || 
-                    STRSTARTS(?url, "ftp://") || 
-                    STRSTARTS(?url, "sftp://")
-                    )
-                )||
-                (!bound(?trimmedTitle) || ?trimmedTitle = "")
+                (!bound(?trimmedTitle) || ?trimmedTitle = "") ||
+                (!bound(?trimmedDescription) || ?trimmedDescription = "") 
             )
         }
     `;
@@ -266,7 +296,50 @@ async function formValidationProcedureWebsite(): Promise<RapportErrorType[]> {
     results.forEach(result => {
         const bestuurseenheid = result['createdBy'].value;
         const instance = result['instance'].value;
-        const field = result['website'].value;
+        const field = result['requirement'].value;
+
+        resultMap.push({instance, bestuurseenheid, field});
+    });
+    return resultMap;
+}
+
+async function formValidationRequirementEvidence(): Promise<RapportErrorType[]> {
+    const query = `
+        SELECT  ?instance ?createdBy ?requirement WHERE {
+            ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
+            ?instance <http://schema.org/publication> ?publicationStatus.
+            ?instance <http://purl.org/pav/createdBy> ?createdBy.
+        
+            ?instance <http://vocab.belgif.be/ns/publicservice#hasRequirement> ?requirement.
+            ?requirement <http://data.europa.eu/m8g/hasSupportingEvidence> ?evidence.
+            
+            OPTIONAL{
+                ?evidence <http://purl.org/dc/terms/title> ?title.
+                BIND(REPLACE(?title, "^\\\\s+|\\\\s+$", "") AS ?trimmedTitle)
+            }
+            OPTIONAL{
+                ?evidence <http://purl.org/dc/terms/description> ?description.
+                BIND(REPLACE(?description, "^\\\\s+|\\\\s+$", "") AS ?trimmedDescription)
+            }
+            
+            FILTER (?publicationStatus IN (
+                <http://lblod.data.gift/concepts/publication-status/gepubliceerd>,
+                <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>
+            ))
+        
+            FILTER (
+                (!bound(?trimmedTitle) || ?trimmedTitle = "") ||
+                (!bound(?trimmedDescription) || ?trimmedDescription = "") 
+            )
+        }
+    `;
+
+    const results = await directDatabaseAccess.list(query);
+    const resultMap: RapportErrorType[] = [];
+    results.forEach(result => {
+        const bestuurseenheid = result['createdBy'].value;
+        const instance = result['instance'].value;
+        const field = result['evidence'].value;
 
         resultMap.push({instance, bestuurseenheid, field});
     });
@@ -309,6 +382,54 @@ async function formValidationProcedure(): Promise<RapportErrorType[]> {
         const bestuurseenheid = result['createdBy'].value;
         const instance = result['instance'].value;
         const field = result['procedure'].value;
+
+        resultMap.push({instance, bestuurseenheid, field});
+    });
+    return resultMap;
+}
+
+async function formValidationProcedureWebsite(): Promise<RapportErrorType[]> {
+    const query = `
+        SELECT  ?instance ?createdBy ?website WHERE {
+            ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
+            ?instance <http://schema.org/publication> ?publicationStatus.
+            ?instance <http://purl.org/pav/createdBy> ?createdBy.
+        
+            ?instance <http://purl.org/vocab/cpsv#follows> ?procedure.
+            ?procedure <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> ?website.
+            
+            OPTIONAL{
+                ?website <http://purl.org/dc/terms/title> ?title.
+                BIND(REPLACE(?title, "^\\\\s+|\\\\s+$", "") AS ?trimmedTitle)
+            }
+            OPTIONAL{
+                ?website <http://schema.org/url> ?url.
+            }
+            
+            FILTER (?publicationStatus IN (
+                <http://lblod.data.gift/concepts/publication-status/gepubliceerd>,
+                <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>
+            ))
+        
+            FILTER (
+                (bound(?url) && !(
+                    STRSTARTS(?url, "http://") || 
+                    STRSTARTS(?url, "https://") || 
+                    STRSTARTS(?url, "ftp://") || 
+                    STRSTARTS(?url, "sftp://")
+                    )
+                )||
+                (!bound(?trimmedTitle) || ?trimmedTitle = "")
+            )
+        }
+    `;
+
+    const results = await directDatabaseAccess.list(query);
+    const resultMap: RapportErrorType[] = [];
+    results.forEach(result => {
+        const bestuurseenheid = result['createdBy'].value;
+        const instance = result['instance'].value;
+        const field = result['website'].value;
 
         resultMap.push({instance, bestuurseenheid, field});
     });
