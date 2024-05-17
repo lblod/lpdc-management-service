@@ -46,7 +46,7 @@ describe('Instance publish validation', () => {
         if (!fs.existsSync(`/tmp/failing-published`)) {
             fs.mkdirSync(`/tmp/failing-published`);
         }
-        
+
         for (const bestuurseenheidId of bestuurseenhedenIds) {
             const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(new Iri(bestuurseenheidId));
             const instanceIds: string[] = await getPublishedInstancesForBestuurseenheid(bestuurseenheid);
@@ -72,6 +72,85 @@ describe('Instance publish validation', () => {
             totalInstances += instanceIds.length;
             console.log(`Verified ${totalInstances} instances`);
 
+        }
+        expect(errors.length).toEqual(0);
+    }, 60000 * 15 * 100);
+});
+
+describe('Form validation of published instances', () => {
+    beforeEach(() => {
+        if (!fs.existsSync(`/tmp/failing-form`)) {
+            fs.mkdirSync(`/tmp/failing-form`);
+        }
+    });
+
+
+    test('basisinformatie', async () => {
+        const errors: RapportBasisInformatieType[] = await formValidationBasisInformatie();
+
+        if (errors.length != 0) {
+            const fileStream = fs.createWriteStream(`/tmp/failing-form/basisinformatie.csv`);
+            fileStream.write('CreatedBy,Instance\n');
+
+            errors.forEach((entry) => {
+                fileStream.write(`${entry.bestuurseenheid},${entry.instance}\n`);
+            });
+
+            fileStream.end();
+        }
+        expect(errors.length).toEqual(0);
+    }, 60000 * 15 * 100);
+
+    describe('procedure validations', () => {
+
+        test('prodedure', async () => {
+            const errors: RapportErrorType[] = await formValidationProcedure();
+
+            if (errors.length != 0) {
+                const fileStream = fs.createWriteStream(`/tmp/failing-form/procedure.csv`);
+                fileStream.write('CreatedBy,Instance,Field\n');
+
+                errors.forEach((entry) => {
+                    fileStream.write(`${entry.bestuurseenheid},${entry.instance},${entry.field}\n`);
+                });
+
+                fileStream.end();
+            }
+            expect(errors.length).toEqual(0);
+        }, 60000 * 15 * 100);
+
+        test('website', async () => {
+            const errors: RapportErrorType[] = await formValidationProcedureWebsite();
+
+            if (errors.length != 0) {
+                const fileStream = fs.createWriteStream(`/tmp/failing-form/website.csv`);
+                fileStream.write('CreatedBy,Instance,Field\n');
+
+                errors.forEach((entry) => {
+                    fileStream.write(`${entry.bestuurseenheid},${entry.instance},${entry.field}\n`);
+                });
+
+                fileStream.end();
+            }
+            expect(errors.length).toEqual(0);
+        }, 60000 * 15 * 100);
+
+    });
+
+
+    test('contactPoint', async () => {
+
+        const errors: RapportErrorType[] = await formValidationContactPoint();
+
+        if (errors.length != 0) {
+            const fileStream = fs.createWriteStream(`/tmp/failing-form/contactPoint.csv`);
+            fileStream.write('CreatedBy,Instance,Field\n');
+
+            errors.forEach((entry) => {
+                fileStream.write(`${entry.bestuurseenheid},${entry.instance},${entry.field}\n`);
+            });
+
+            fileStream.end();
         }
         expect(errors.length).toEqual(0);
     }, 60000 * 15 * 100);
@@ -107,5 +186,197 @@ async function getPublishedInstancesForBestuurseenheid(bestuurseenheid: Bestuurs
     return ids.map(id => id['id'].value);
 }
 
+async function formValidationBasisInformatie(): Promise<RapportBasisInformatieType[]> {
+    const query = `
+        SELECT  ?instance ?createdBy WHERE {
+            ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
+            ?instance <http://schema.org/publication> ?publicationStatus.
+            ?instance <http://purl.org/pav/createdBy> ?createdBy.
+        
+            OPTIONAL{
+                ?instance <http://purl.org/dc/terms/title> ?title.
+                BIND(REPLACE(?title, "^\\\\s+|\\\\s+$", "") AS ?trimmedTitle)
+
+            }
+            OPTIONAL{
+                ?instance <http://purl.org/dc/terms/description> ?description.
+                BIND(REPLACE(?description, "^\\\\s+|\\\\s+$", "") AS ?trimmedDescription)
+            }  
+        
+            FILTER (?publicationStatus IN (
+                <http://lblod.data.gift/concepts/publication-status/gepubliceerd>,
+                <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>
+            ))
+        
+            FILTER (
+                (!bound(?trimmedTitle) || ?trimmedTitle = "") ||
+                (!bound(?trimmedDescription) || ?trimmedDescription = "") 
+            )
+        }
+    `;
+    const results = await directDatabaseAccess.list(query);
+    const resultMap: RapportBasisInformatieType[] = [];
+    results.forEach(result => {
+        const bestuurseenheid = result['createdBy'].value;
+        const instance = result['instance'].value;
+
+        resultMap.push({instance, bestuurseenheid});
+    });
+    return resultMap;
+}
+
+async function formValidationProcedureWebsite(): Promise<RapportErrorType[]> {
+    const query = `
+        SELECT  ?instance ?createdBy ?website WHERE {
+            ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
+            ?instance <http://schema.org/publication> ?publicationStatus.
+            ?instance <http://purl.org/pav/createdBy> ?createdBy.
+        
+            ?instance <http://purl.org/vocab/cpsv#follows> ?procedure.
+            ?procedure <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite> ?website.
+            
+            OPTIONAL{
+                ?website <http://purl.org/dc/terms/title> ?title.
+                BIND(REPLACE(?title, "^\\\\s+|\\\\s+$", "") AS ?trimmedTitle)
+            }
+            OPTIONAL{
+                ?website <http://schema.org/url> ?url.
+            }
+            
+            FILTER (?publicationStatus IN (
+                <http://lblod.data.gift/concepts/publication-status/gepubliceerd>,
+                <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>
+            ))
+        
+            FILTER (
+                (bound(?url) && !(
+                    STRSTARTS(?url, "http://") || 
+                    STRSTARTS(?url, "https://") || 
+                    STRSTARTS(?url, "ftp://") || 
+                    STRSTARTS(?url, "sftp://")
+                    )
+                )||
+                (!bound(?trimmedTitle) || ?trimmedTitle = "")
+            )
+        }
+    `;
+
+    const results = await directDatabaseAccess.list(query);
+    const resultMap: RapportErrorType[] = [];
+    results.forEach(result => {
+        const bestuurseenheid = result['createdBy'].value;
+        const instance = result['instance'].value;
+        const field = result['website'].value;
+
+        resultMap.push({instance, bestuurseenheid, field});
+    });
+    return resultMap;
+}
+
+async function formValidationProcedure(): Promise<RapportErrorType[]> {
+    const query = `
+        SELECT  ?instance ?createdBy ?procedure WHERE {
+            ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
+            ?instance <http://schema.org/publication> ?publicationStatus.
+            ?instance <http://purl.org/pav/createdBy> ?createdBy.
+        
+            ?instance <http://purl.org/vocab/cpsv#follows> ?procedure.
+            
+            OPTIONAL{
+                ?procedure <http://purl.org/dc/terms/title> ?title.
+                BIND(REPLACE(?title, "^\\\\s+|\\\\s+$", "") AS ?trimmedTitle)
+            }
+            OPTIONAL{
+                ?procedure <http://purl.org/dc/terms/description> ?description.
+                BIND(REPLACE(?description, "^\\\\s+|\\\\s+$", "") AS ?trimmedDescription)
+            }
+            
+            FILTER (?publicationStatus IN (
+                <http://lblod.data.gift/concepts/publication-status/gepubliceerd>,
+                <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>
+            ))
+        
+            FILTER (
+                (!bound(?trimmedTitle) || ?trimmedTitle = "") ||
+                (!bound(?trimmedDescription) || ?trimmedDescription = "") 
+            )
+        }
+    `;
+
+    const results = await directDatabaseAccess.list(query);
+    const resultMap: RapportErrorType[] = [];
+    results.forEach(result => {
+        const bestuurseenheid = result['createdBy'].value;
+        const instance = result['instance'].value;
+        const field = result['procedure'].value;
+
+        resultMap.push({instance, bestuurseenheid, field});
+    });
+    return resultMap;
+}
+
+async function formValidationContactPoint(): Promise<RapportErrorType[]> {
+    //Check that telephone just contains digits
+    const query = `
+        SELECT  ?instance ?createdBy ?contactPoint
+        WHERE {
+            ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.
+            ?instance <http://schema.org/publication> ?publicationStatus.
+            ?instance <http://purl.org/pav/createdBy> ?createdBy.
+        
+            ?instance <http://data.europa.eu/m8g/hasContactPoint> ?contactPoint.
+            
+            OPTIONAL{
+                ?contactPoint <http://schema.org/email> ?email.
+            }
+            OPTIONAL {
+                ?contactPoint <http://schema.org/telephone> ?telephone.
+            }
+            OPTIONAL {
+                ?contactPoint <http://schema.org/url> ?url.
+            }
+            
+
+            
+            FILTER (?publicationStatus IN (
+                <http://lblod.data.gift/concepts/publication-status/gepubliceerd>,
+                <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>
+            ))
+        
+            FILTER (
+                (bound(?email) && !REGEX(?email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$")) ||
+                (bound(?telephone) && !REGEX(STRDT(STR(REPLACE(?telephone, "[^0-9+/\\\\-]", "")), xsd:string), "^[+\\\\-]?[0-9/\\\\-]*$")) ||
+                (bound(?url) && !(
+                    STRSTARTS(?url, "http://") || 
+                    STRSTARTS(?url, "https://") || 
+                    STRSTARTS(?url, "ftp://") || 
+                    STRSTARTS(?url, "sftp://")
+                    )
+                )
+           )
+        }
+    `;
+
+    const results = await directDatabaseAccess.list(query);
+    const resultMap: RapportErrorType[] = [];
+    results.forEach(result => {
+        const bestuurseenheid = result['createdBy'].value;
+        const instance = result['instance'].value;
+        const field = result['contactPoint'].value;
+
+        resultMap.push({instance, bestuurseenheid, field});
+    });
+    return resultMap;
+}
+
+type RapportErrorType = {
+    instance: string;
+    bestuurseenheid: string;
+    field: string;
+}
+type RapportBasisInformatieType = {
+    instance: string;
+    bestuurseenheid: string
+}
 
 

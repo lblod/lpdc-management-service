@@ -13,7 +13,6 @@ import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address
 import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "./src/driven/persistence/concept-snapshot-sparql-repository";
-import {ConceptSnapshot} from "./src/core/domain/concept-snapshot";
 import {ConceptSparqlRepository} from "./src/driven/persistence/concept-sparql-repository";
 import {Iri} from "./src/core/domain/shared/iri";
 import {flatten} from "lodash";
@@ -649,12 +648,12 @@ async function compareSnapshots(req: Request, res: Response) {
     const currentSnapshotIdRequestParam = req.query.snapshot1 as string;
     const newSnapshotIdRequestParam = req.query.snapshot2 as string;
 
-    let isChanged: string[] = [''];
-    if (currentSnapshotIdRequestParam && newSnapshotIdRequestParam) {
-        const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(currentSnapshotIdRequestParam));
-        const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(newSnapshotIdRequestParam));
-        isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
-    }
+    const isChanged: string[] = [''];
+    // if (currentSnapshotIdRequestParam && newSnapshotIdRequestParam) {
+    //     const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(currentSnapshotIdRequestParam));
+    //     const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(newSnapshotIdRequestParam));
+    //     isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
+    // }
 
     return res.json(isChanged);
 
