@@ -1,7 +1,7 @@
 import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../config";
-import {isLiteral, namedNode, Statement} from "rdflib";
+import {NamedNode, namedNode, Statement} from "rdflib";
 import {shuffle, sortedUniq, uniq} from "lodash";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {sparqlEscapeUri} from "../../mu-helper";
@@ -44,6 +44,52 @@ class DoubleQuadReporterCapture implements DoubleQuadReporter {
     }
 }
 
+class ConceptCodeValidator {
+
+    private sparqlQuerying: SparqlQuerying;
+    private cachedResults: Map<string, boolean>;
+
+    constructor(sparqlQuerying: SparqlQuerying) {
+        this.sparqlQuerying = sparqlQuerying;
+        this.cachedResults = new Map<string, boolean>();
+    }
+
+    async validateConceptCodes(conceptCodes: Iri[]) {
+        for (const conceptCode of conceptCodes) {
+            await this.validateConceptCode(conceptCode);
+        }
+    }
+
+    private async validateConceptCode(conceptCode: Iri): Promise<void> {
+        console.log(`Validating Concept Code <${conceptCode}>`);
+
+        const isValid = await this.isValidCode(conceptCode);
+
+        try {
+            expect(isValid).toBeTrue();
+        } catch(e) {
+            throw new Error(`Concept Code ${conceptCode} not found`);
+        }
+    }
+
+    private async isValidCode(conceptCode: Iri): Promise<boolean> {
+        if (this.cachedResults.has(conceptCode.value)) {
+            console.log(`return cached result`);
+            return this.cachedResults.get(conceptCode.value);
+        }
+        const query = `
+            ASK {
+                ${sparqlEscapeUri(conceptCode)} a <http://www.w3.org/2004/02/skos/core#Concept>.
+                ${sparqlEscapeUri(conceptCode)} <http://mu.semte.ch/vocabularies/core/uuid> ?uuid.
+                ${sparqlEscapeUri(conceptCode)} <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel.
+            }
+        `;
+        const result = await this.sparqlQuerying.ask(query);
+        this.cachedResults.set(conceptCode.value, result);
+        return result;
+    }
+}
+
 describe('Instance Data Integrity Validation', () => {
 
     const endPoint = END2END_TEST_SPARQL_ENDPOINT; //Note: replace by END2END_TEST_SPARQL_ENDPOINT to verify all
@@ -58,6 +104,8 @@ describe('Instance Data Integrity Validation', () => {
     const informalFormalChoiceRepository = new FormalInformalChoiceSparqlRepository(endPoint);
 
     test.skip('Load all instances; print errors to console.log', async () => {
+
+        const conceptCodeValidator = new ConceptCodeValidator(sparqlQuerying);
 
         const query = `
             ${PREFIX.besluit}
@@ -128,7 +176,6 @@ describe('Instance Data Integrity Validation', () => {
             const numberOfLoops = 1;
             const averageTimes = [];
             const dataErrors = [];
-            const checkedNuts: Iri[] = [];
 
             if (instanceIds.length > 0) {
 
@@ -172,13 +219,7 @@ describe('Instance Data Integrity Validation', () => {
 
                             await validateNeedsConversionFromFormalToInformalFlag(instance, bestuurseenheid);
 
-                            //TODO LPDC-1151: expand with all codes ...
-                            for (const nutscode of instance.spatials) {
-                                if (!checkedNuts.includes(nutscode)) {
-                                    await validateNuts(nutscode);
-                                    checkedNuts.push(nutscode);
-                                }
-                            }
+                            await conceptCodeValidator.validateConceptCodes(extractAllConceptCodes(domainToQuadsMapper, instance));
 
                             const doubleQuadsErrorsForInstance = doubleQuadReporterCapture.logs(instance);
                             totalDoubleQuads.push(...doubleQuadsErrorsForInstance);
@@ -298,17 +339,25 @@ describe('Instance Data Integrity Validation', () => {
         }
     }
 
-    async function validateNuts(nuts: Iri): Promise<boolean> {
-        const query = `
-            ASK {
-                ${sparqlEscapeUri(nuts)} a <http://www.w3.org/2004/02/skos/core#Concept>.
-                ${sparqlEscapeUri(nuts)} <http://mu.semte.ch/vocabularies/core/uuid> ?uuid.
-                ${sparqlEscapeUri(nuts)} <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel.
-            }
-        `;
-        const validNuts = await sparqlQuerying.ask(query);
-        expect(validNuts).toBeTrue();
-        return validNuts;
+    function extractAllConceptCodes(domainToQuadsMapper: DomainToQuadsMapper, instance: Instance): Iri[] {
+        return [
+            ...(instance.type ? [domainToQuadsMapper.type(instance.id, instance.type)].map(objectAsIri): []),
+            ...domainToQuadsMapper.targetAudiences(instance.id, instance.targetAudiences).map(objectAsIri),
+            ...domainToQuadsMapper.themes(instance.id, instance.themes).map(objectAsIri),
+            ...domainToQuadsMapper.competentAuthorityLevels(instance.id, instance.competentAuthorityLevels).map(objectAsIri),
+            ...domainToQuadsMapper.executingAuthorityLevels(instance.id, instance.executingAuthorityLevels).map(objectAsIri),
+            ...domainToQuadsMapper.publicationMedia(instance.id, instance.publicationMedia).map(objectAsIri),
+            ...domainToQuadsMapper.yourEuropeCategories(instance.id, instance.yourEuropeCategories).map(objectAsIri),
+            ...domainToQuadsMapper.languages(instance.id, instance.languages).map(objectAsIri),
+            ...[domainToQuadsMapper.instanceStatus(instance.id, instance.status)].map(objectAsIri),
+            ...(instance.reviewStatus ? [domainToQuadsMapper.reviewStatus(instance.id, instance.reviewStatus)].map(objectAsIri): []),
+            ...(instance.publicationStatus ? [domainToQuadsMapper.publicationStatus(instance.id, instance.publicationStatus)].map(objectAsIri): []),
+            ...instance.spatials,
+        ];
+    }
+
+    function objectAsIri(statement: Statement): Iri {
+        return new Iri((statement.object as NamedNode).value);
     }
 
 });

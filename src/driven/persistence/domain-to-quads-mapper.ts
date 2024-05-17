@@ -12,6 +12,9 @@ import {
     CompetentAuthorityLevelType,
     ConceptTagType,
     ExecutingAuthorityLevelType,
+    InstancePublicationStatusType,
+    InstanceReviewStatusType,
+    InstanceStatusType,
     LanguageType,
     ProductType,
     PublicationMediumType,
@@ -149,9 +152,9 @@ export class DomainToQuadsMapper {
             this.dateModified(instance.id, instance.dateModified),
             instance.dateSent ? this.buildQuad(namedNode(instance.id.value), NS.schema('dateSent'), literal(instance.dateSent.value, NS.xsd('dateTime'))) : undefined,
             instance.datePublished ? this.buildQuad(namedNode(instance.id.value), NS.schema('datePublished'), literal(instance.datePublished.value, NS.xsd('dateTime'))) : undefined,
-            this.buildQuad(namedNode(instance.id.value), NS.adms('status'), namedNode(this.enumToIri(instance.status, NS.concepts.instanceStatus).value)),
-            instance.reviewStatus ? this.buildQuad(namedNode(instance.id.value), NS.ext('reviewStatus'), namedNode(this.enumToIri(instance.reviewStatus, NS.concepts.reviewStatus).value)) : undefined,
-            instance.publicationStatus ? this.buildQuad(namedNode(instance.id.value), NS.schema('publication'), namedNode(this.enumToIri(instance.publicationStatus, NS.concepts.publicationStatus).value)) : undefined,
+            this.instanceStatus(instance.id, instance.status),
+            this.reviewStatus(instance.id, instance.reviewStatus),
+            this.publicationStatus(instance.id, instance.publicationStatus),
             ...this.spatials(instance.id, instance.spatials),
             ...this.legalResources(instance.id, instance.legalResources),
         ].filter(t => t !== undefined);
@@ -226,13 +229,12 @@ export class DomainToQuadsMapper {
         return value ? this.buildQuad(namedNode(id.value), NS.prov('generatedAtTime'), literal(value.value, NS.xsd('dateTime'))) : undefined;
     }
 
-    private type(id: Iri, value: ProductType): Statement | undefined {
+    type(id: Iri, value: ProductType): Statement | undefined {
         return value ? this.buildQuad(namedNode(id.value), NS.dct('type'), namedNode(this.enumToIri(value, NS.dvc.type).value)) : undefined;
     }
 
     private bestuurseenheidId(id: Iri, value: Iri): Statement {
         return this.buildQuad(namedNode(id.value), NS.pav('createdBy'), namedNode(value.value));
-
     }
 
     private title(id: Iri, value: LanguageString): Statement [] {
@@ -255,15 +257,15 @@ export class DomainToQuadsMapper {
         return this.languageStringToQuads(namedNode(id.value), NS.lpdcExt('regulation'), value);
     }
 
-    private targetAudiences(id: Iri, values: TargetAudienceType[]): Statement[] {
+    targetAudiences(id: Iri, values: TargetAudienceType[]): Statement[] {
         return this.irisToQuads(namedNode(id.value), NS.lpdcExt('targetAudience'), this.enumsToIris(values, NS.dvc.doelgroep));
     }
 
-    private themes(id: Iri, values: ThemeType[]): Statement[] {
+    themes(id: Iri, values: ThemeType[]): Statement[] {
         return this.irisToQuads(namedNode(id.value), NS.m8g('thematicArea'), this.enumsToIris(values, NS.dvc.thema));
     }
 
-    private competentAuthorityLevels(id: Iri, values: CompetentAuthorityLevelType[]): Statement[] {
+    competentAuthorityLevels(id: Iri, values: CompetentAuthorityLevelType[]): Statement[] {
         return this.irisToQuads(namedNode(id.value), NS.lpdcExt('competentAuthorityLevel'), this.enumsToIris(values, NS.dvc.bevoegdBestuursniveau));
     }
 
@@ -271,7 +273,7 @@ export class DomainToQuadsMapper {
         return this.irisToQuads(namedNode(id.value), NS.m8g('hasCompetentAuthority'), values);
     }
 
-    private executingAuthorityLevels(id: Iri, values: ExecutingAuthorityLevelType[]): Statement[] {
+    executingAuthorityLevels(id: Iri, values: ExecutingAuthorityLevelType[]): Statement[] {
         return this.irisToQuads(namedNode(id.value), NS.lpdcExt('executingAuthorityLevel'), this.enumsToIris(values, NS.dvc.uitvoerendBestuursniveau));
     }
 
@@ -279,11 +281,11 @@ export class DomainToQuadsMapper {
         return this.irisToQuads(namedNode(id.value), NS.lpdcExt('hasExecutingAuthority'), values);
     }
 
-    private publicationMedia(id: Iri, values: PublicationMediumType[]): Statement[] {
+    publicationMedia(id: Iri, values: PublicationMediumType[]): Statement[] {
         return this.irisToQuads(namedNode(id.value), NS.lpdcExt('publicationMedium'), this.enumsToIris(values, NS.dvc.publicatieKanaal));
     }
 
-    private yourEuropeCategories(id: Iri, values: YourEuropeCategoryType[]): Statement [] {
+    yourEuropeCategories(id: Iri, values: YourEuropeCategoryType[]): Statement [] {
         return this.irisToQuads(namedNode(id.value), NS.lpdcExt('yourEuropeCategory'), this.enumsToIris(values, NS.dvc.yourEuropeCategorie));
     }
 
@@ -302,6 +304,18 @@ export class DomainToQuadsMapper {
 
     private spatials(id: Iri, values: Iri[]): Statement[] {
         return this.irisToQuads(namedNode(id.value), NS.dct('spatial'), values);
+    }
+
+    instanceStatus(id: Iri, value: InstanceStatusType): Statement {
+        return this.buildQuad(namedNode(id.value), NS.adms('status'), namedNode(this.enumToIri(value, NS.concepts.instanceStatus).value));
+    }
+
+    reviewStatus(id: Iri, value: InstanceReviewStatusType | undefined): Statement | undefined {
+        return value ? this.buildQuad(namedNode(id.value), NS.ext('reviewStatus'), namedNode(this.enumToIri(value, NS.concepts.reviewStatus).value)) : undefined;
+    }
+
+    publicationStatus(id: Iri, value: InstancePublicationStatusType | undefined): Statement | undefined {
+        return value ? this.buildQuad(namedNode(id.value), NS.schema('publication'), namedNode(this.enumToIri(value, NS.concepts.publicationStatus).value)) : undefined;
     }
 
     private latestConceptSnapshot(id: Iri, value: Iri): Statement {
@@ -456,7 +470,7 @@ export class DomainToQuadsMapper {
         return versionedSource ? this.buildQuad(namedNode(id.value), NS.ext('hasVersionedSource'), namedNode(versionedSource.value)) : undefined;
     }
 
-    private languages(id: Iri, values: LanguageType[]): Statement[] {
+    languages(id: Iri, values: LanguageType[]): Statement[] {
         return this.irisToQuads(namedNode(id.value), NS.dct('language'), this.enumsToIris(values, NS.pera.languageType));
     }
 
