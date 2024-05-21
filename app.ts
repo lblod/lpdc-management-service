@@ -68,6 +68,7 @@ import {ConvertInstanceToInformalDomainService} from "./src/core/domain/convert-
 import {
     InstanceInformalLanguageStringsFetcherIpdc
 } from "./src/driven/external/instance-informal-language-strings-fetcher-ipdc";
+import {ConceptSnapshot} from "./src/core/domain/concept-snapshot";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -648,16 +649,14 @@ async function compareSnapshots(req: Request, res: Response) {
     const currentSnapshotIdRequestParam = req.query.snapshot1 as string;
     const newSnapshotIdRequestParam = req.query.snapshot2 as string;
 
-    const isChanged: string[] = [''];
-    // if (currentSnapshotIdRequestParam && newSnapshotIdRequestParam) {
-    //     const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(currentSnapshotIdRequestParam));
-    //     const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(newSnapshotIdRequestParam));
-    //     isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
-    // }
+    let isChanged: string[] = [''];
+    if (currentSnapshotIdRequestParam && newSnapshotIdRequestParam) {
+       const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(currentSnapshotIdRequestParam));
+       const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(newSnapshotIdRequestParam));
+       isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
+    }
 
     return res.json(isChanged);
-
-
 }
 
 new CronJob(
