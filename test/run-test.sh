@@ -18,5 +18,8 @@ fi
 echo "Stopping containers"
 docker compose -p lpdc-management-service-tests down
 
-cd test
+cd test || exit
+
+echo $exit_code_lint
+echo $exit_code_test
 exit $exit_code
