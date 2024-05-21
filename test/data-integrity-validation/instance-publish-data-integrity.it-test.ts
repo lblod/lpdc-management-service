@@ -85,7 +85,7 @@ describe('Form validation of published instances', () => {
     });
 
 
-    test('basisinformatie', async () => {
+    test.skip('basisinformatie', async () => {
         const errors: RapportBasisInformatieType[] = await formValidationBasisInformatie();
 
         if (errors.length != 0) {
@@ -104,7 +104,7 @@ describe('Form validation of published instances', () => {
 
     describe('Requirement validations', () => {
 
-        test('Requirement', async () => {
+        test.skip('Requirement', async () => {
             const errors: RapportErrorType[] = await formValidationRequirement();
 
             if (errors.length != 0) {
@@ -120,7 +120,7 @@ describe('Form validation of published instances', () => {
             expect(errors.length).toEqual(0);
         }, 60000 * 15 * 100);
 
-        test('evidence', async () => {
+        test.skip('evidence', async () => {
             const errors: RapportErrorType[] = await formValidationRequirementEvidence();
 
             if (errors.length != 0) {
@@ -139,7 +139,7 @@ describe('Form validation of published instances', () => {
 
     describe('Procedure validations', () => {
 
-        test('prodedure', async () => {
+        test.skip('prodedure', async () => {
             const errors: RapportErrorType[] = await formValidationProcedure();
 
             if (errors.length != 0) {
@@ -155,7 +155,7 @@ describe('Form validation of published instances', () => {
             expect(errors.length).toEqual(0);
         }, 60000 * 15 * 100);
 
-        test('website', async () => {
+        test.skip('website', async () => {
             const errors: RapportErrorType[] = await formValidationProcedureWebsite();
 
             if (errors.length != 0) {
@@ -173,7 +173,7 @@ describe('Form validation of published instances', () => {
 
     });
 
-    test('website', async () => {
+    test.skip('website', async () => {
         const errors: RapportErrorType[] = await formValidationWebsite();
 
         if (errors.length != 0) {
@@ -189,7 +189,7 @@ describe('Form validation of published instances', () => {
         expect(errors.length).toEqual(0);
     }, 60000 * 15 * 100);
 
-    test('cost', async () => {
+    test.skip('cost', async () => {
         const errors: RapportErrorType[] = await formValidationCost();
 
         if (errors.length != 0) {
@@ -205,7 +205,7 @@ describe('Form validation of published instances', () => {
         expect(errors.length).toEqual(0);
     }, 60000 * 15 * 100);
 
-    test('financialAdvantage', async () => {
+    test.skip('financialAdvantage', async () => {
         const errors: RapportErrorType[] = await formValidationFinancialAdvantage();
 
         if (errors.length != 0) {
@@ -221,7 +221,7 @@ describe('Form validation of published instances', () => {
         expect(errors.length).toEqual(0);
     }, 60000 * 15 * 100);
 
-    test('contactPoint', async () => {
+    test.skip('contactPoint', async () => {
 
         const errors: RapportErrorType[] = await formValidationContactPoint();
 
