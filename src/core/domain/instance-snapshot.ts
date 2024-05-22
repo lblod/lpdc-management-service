@@ -130,7 +130,7 @@ export class InstanceSnapshot {
         this._websites = [...websites].map(w => Website.forInstanceSnapshot(w));
         requireNoDuplicates(this._websites.map(w => w.order), 'websites > order');
         this._costs = [...costs].map(c => Cost.forInstanceSnapshot(c));
-        requireNoDuplicates(this._costs.map(w => w.order), 'costs > order');
+        requireNoDuplicates(this._costs.map(c => c.order), 'costs > order');
         this._financialAdvantages = [...financialAdvantages].map(fa => FinancialAdvantage.forInstanceSnapshot(fa));
         requireNoDuplicates(this._financialAdvantages.map(fa => fa.order), 'financial advantages > order');
         this._contactPoints = [...contactPoints].map(cp => ContactPoint.forInstanceSnapshot(cp));
@@ -173,8 +173,9 @@ export class InstanceSnapshot {
             ...this._requirements.map(r => r.nlLanguage),
             ...this._procedures.map(p => p.nlLanguage),
             ...this._websites.map(p => p.nlLanguage),
-            ...this._costs.map(p => p.nlLanguage),
-            ...this._financialAdvantages.map(p => p.nlLanguage),
+            ...this._costs.map(c => c.nlLanguage),
+            ...this._financialAdvantages.map(fa => fa.nlLanguage),
+            // TODO: add legalResource
         ].filter(l => l !== undefined);
     }
 

@@ -598,7 +598,7 @@ async function getFormalInformalChoice(req: Request, res: Response) {
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
     const formalInformalChoice: FormalInformalChoice | undefined = await formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
-    if(formalInformalChoice) {
+    if (formalInformalChoice) {
         return res.status(200).json({
             data: [
                 {
@@ -649,14 +649,13 @@ async function compareSnapshots(req: Request, res: Response) {
     const currentSnapshotIdRequestParam = req.query.snapshot1 as string;
     const newSnapshotIdRequestParam = req.query.snapshot2 as string;
 
-    let isChanged: string[] = [''];
     if (currentSnapshotIdRequestParam && newSnapshotIdRequestParam) {
-       const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(currentSnapshotIdRequestParam));
-       const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(newSnapshotIdRequestParam));
-       isChanged = ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot);
+        const currentConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(currentSnapshotIdRequestParam));
+        const newConceptSnapshot = await conceptSnapshotRepository.findById(new Iri(newSnapshotIdRequestParam));
+        return res.json(ConceptSnapshot.isFunctionallyChanged(currentConceptSnapshot, newConceptSnapshot));
+    } else {
+        throw new InvariantError('Geef 2 snapshots op om te vergelijken');
     }
-
-    return res.json(isChanged);
 }
 
 new CronJob(

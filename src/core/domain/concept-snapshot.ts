@@ -307,8 +307,7 @@ export class ConceptSnapshot {
         functionallyChanged.set("gearchiveerd", !isEqual(value.isArchived, other.isArchived));
 
         return Array.from(functionallyChanged.entries())
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            .filter(([key, value]) => value === true)
+            .filter(([, value]) => value === true)
             .map(([key]) => key);
     }
 
