@@ -55,7 +55,6 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
             .withKeywords(conceptSnapshot.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)))
             .withRequirements(conceptSnapshot.requirements.map(req => req.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
             .withProcedures(conceptSnapshot.procedures.map(proc => proc.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
-            .withWebsites(conceptSnapshot.websites.map(ws => ws.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
             .withCosts(conceptSnapshot.costs.map(co => co.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
             .withFinancialAdvantages(conceptSnapshot.financialAdvantages.map(fa => fa.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))
             .withLegalResources(conceptSnapshot.legalResources.map(lr => lr.transformLanguage(conceptSnapshotLanguage, instanceLanguage).transformWithNewId()))

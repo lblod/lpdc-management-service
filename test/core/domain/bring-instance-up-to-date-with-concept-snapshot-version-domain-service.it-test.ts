@@ -341,20 +341,6 @@ describe('Bring instance up to date with concept snapshot version domain service
                         ])
                         .build()
                 ])
-                .withWebsites([
-                    WebsiteBuilder.from(newConceptSnapshot.websites[0])
-                        .withId(expect.any(Object))
-                        .withUuid(expect.any(String))
-                        .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.websites[0].title.nlFormal, Language.FORMAL))
-                        .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.websites[0].description.nlFormal, Language.FORMAL))
-                        .build(),
-                    WebsiteBuilder.from(newConceptSnapshot.websites[1])
-                        .withId(expect.any(Object))
-                        .withUuid(expect.any(String))
-                        .withTitle(LanguageString.ofValueInLanguage(newConceptSnapshot.websites[1].title.nlFormal, Language.FORMAL))
-                        .withDescription(LanguageString.ofValueInLanguage(newConceptSnapshot.websites[1].description.nlFormal, Language.FORMAL))
-                        .build(),
-                ])
                 .withCosts([
                     CostBuilder.from(newConceptSnapshot.costs[0])
                         .withId(expect.any(Object))
