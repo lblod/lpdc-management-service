@@ -175,7 +175,7 @@ export class InstanceSnapshot {
             ...this._websites.map(p => p.nlLanguage),
             ...this._costs.map(c => c.nlLanguage),
             ...this._financialAdvantages.map(fa => fa.nlLanguage),
-            // TODO: add legalResource
+            ...this._legalResources.map(lr => lr.nlLanguage),
         ].filter(l => l !== undefined);
     }
 

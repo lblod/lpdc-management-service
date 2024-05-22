@@ -34,7 +34,11 @@ import {Language} from "../../../src/core/domain/language";
 import {aMinimalProcedureForInstanceSnapshot} from "./procedure-test-builder";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
-import {aFullLegalResourceForInstanceSnapshot, LegalResourceTestBuilder} from "./legal-resource-test-builder";
+import {
+    aFullLegalResourceForInstanceSnapshot,
+    aMinimalLegalResourceForInstanceSnapshot,
+    LegalResourceTestBuilder
+} from "./legal-resource-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 import {buildBestuurseenheidIri, buildNutsCodeIri} from "./iri-test-builder";
 
@@ -685,6 +689,19 @@ describe('validateLanguages', () => {
                 .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
                 .withFinancialAdvantages([financialAdvantage]);
+
+            expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
+        });
+
+        test('if a legal resource contains a different nl version, then throws error', () => {
+            const legalResource = aMinimalLegalResourceForInstanceSnapshot()
+                .withTitle(LanguageString.of(undefined, 'nl-formal', undefined))
+                .withDescription(LanguageString.of(undefined, 'nl-formal', undefined))
+                .build();
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withTitle(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withDescription(LanguageString.of(undefined, undefined, 'nl-informal'))
+                .withLegalResources([legalResource]);
 
             expect(() => instanceSnapshot.build()).toThrowWithMessage(InvariantError, 'Er is meer dan een nl-taal aanwezig');
         });
