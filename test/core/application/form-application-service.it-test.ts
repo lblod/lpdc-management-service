@@ -1,13 +1,18 @@
 import {FormApplicationService} from "../../../src/core/application/form-application-service";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
-import {aFullConcept} from "../domain/concept-test-builder";
+import {aFullConcept, aMinimalConcept} from "../domain/concept-test-builder";
 import {mock} from 'jest-mock-extended';
 import {CodeRepository} from "../../../src/core/port/driven/persistence/code-repository";
 import {FormDefinitionRepository} from "../../../src/core/port/driven/persistence/form-definition-repository";
 import {SelectConceptLanguageDomainService} from "../../../src/core/domain/select-concept-language-domain-service";
 import {aFormalInformalChoice} from "../domain/formal-informal-choice-test-builder";
-import {ChosenFormType, FormType, PublicationMediumType} from "../../../src/core/domain/types";
+import {
+    ChosenFormType,
+    FormType,
+    InstanceReviewStatusType,
+    PublicationMediumType
+} from "../../../src/core/domain/types";
 import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {Language} from "../../../src/core/domain/language";
@@ -28,12 +33,16 @@ import {aFullCostForInstance} from "../domain/cost-test-builder";
 import {aFullFinancialAdvantageForInstance} from "../domain/financial-advantage-test-builder";
 import {aFullLegalResourceForInstance} from "../domain/legal-resource-test-builder";
 import {aFullContactPointForInstance} from "../domain/contact-point-test-builder";
+import {aFullConceptSnapshot, aMinimalConceptSnapshot} from "../domain/concept-snapshot-test-builder";
+import {ConceptSnapshotSparqlTestRepository} from "../../driven/persistence/concept-snapshot-sparql-test-repository";
+import {ConceptSnapshotSparqlRepository} from "../../../src/driven/persistence/concept-snapshot-sparql-repository";
 
 describe('Form application service tests', () => {
 
     describe('loadConceptForm', () => {
 
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+        const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
         const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = mock<FormDefinitionRepository>();
         const codeRepository = mock<CodeRepository>();
@@ -42,7 +51,7 @@ describe('Form application service tests', () => {
         const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const semanticFormsMapper = new SemanticFormsMapperImpl();
 
-        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, semanticFormsMapper);
+        const formApplicationService = new FormApplicationService(conceptRepository, conceptSnapshotRepository, instanceRepository, formDefinitionRepository, codeRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, semanticFormsMapper);
 
         test('can load a inhoud form for a concept in correct language', async () => {
             const concept =
@@ -126,6 +135,7 @@ describe('Form application service tests', () => {
     describe('loadInstanceForm', () => {
 
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+        const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = mock<FormDefinitionRepository>();
         const codeRepository = mock<CodeRepository>();
@@ -134,79 +144,299 @@ describe('Form application service tests', () => {
         const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const semanticFormsMapper = new SemanticFormsMapperImpl();
 
-        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, semanticFormsMapper);
+        const formApplicationService = new FormApplicationService(conceptRepository, conceptSnapshotRepository, instanceRepository, formDefinitionRepository, codeRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, semanticFormsMapper);
 
-        test('can load a inhoud form for an instance in correct language', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
+        describe('inhoud form', () => {
 
-            const instance = aFullInstance().build();
-            await instanceRepository.save(bestuurseenheid, instance);
+            test('can load form for an instance without concept in correct language', async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
 
-            const formalInformalChoice =
-                aFormalInformalChoice()
-                    .withChosenForm(ChosenFormType.INFORMAL)
+                const instance = aMinimalInstance()
                     .build();
-            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+                await instanceRepository.save(bestuurseenheid, instance);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+                const formalInformalChoice =
+                    aFormalInformalChoice()
+                        .withChosenForm(ChosenFormType.INFORMAL)
+                        .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            const {
-                form,
-                meta,
-                source,
-                serviceUri
-            } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, FormType.INHOUD);
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
-            expect(form).toEqual('formdefinition');
-            expect(meta).toEqual('');
-            expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
-            expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
-            expect(serviceUri).toEqual(instance.id.value);
+                const {
+                    form,
+                    meta,
+                    source,
+                    serviceUri
+                } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, undefined, FormType.INHOUD);
+
+                expect(form).toEqual('formdefinition');
+                expect(meta).toEqual('');
+                expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
+                expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
+                expect(serviceUri).toEqual(instance.id.value);
+            });
+
+            test('can load form for an instance with concept, without review status in correct language', async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const concept = aMinimalConcept()
+                    .build();
+                await conceptRepository.save(concept);
+
+                const conceptSnapshot = aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .build();
+                await conceptSnapshotRepository.save(conceptSnapshot);
+
+                const instance = aMinimalInstance()
+                    .withConceptId(concept.id)
+                    .withConceptSnapshotId(conceptSnapshot.id)
+                    .withProductId(concept.productId)
+                    .withReviewStatus(undefined)
+                    .build();
+
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                const formalInformalChoice =
+                    aFormalInformalChoice()
+                        .withChosenForm(ChosenFormType.INFORMAL)
+                        .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+
+                const {
+                    form,
+                    meta,
+                    source,
+                    serviceUri
+                } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, conceptSnapshot.id, FormType.INHOUD);
+
+                expect(form).toEqual('formdefinition');
+                expect(meta).toEqual('');
+                expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
+                expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
+                expect(serviceUri).toEqual(instance.id.value);
+            });
+
+            test('can load form for an instance with concept and review status in correct language', async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const concept = aMinimalConcept()
+                    .build();
+                await conceptRepository.save(concept);
+
+                const conceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .build();
+                const latestConceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .build();
+
+                await conceptSnapshotRepository.save(conceptSnapshot);
+                await conceptSnapshotRepository.save(latestConceptSnapshot);
+
+                const instance = aMinimalInstance()
+                    .withConceptId(concept.id)
+                    .withConceptSnapshotId(conceptSnapshot.id)
+                    .withProductId(concept.productId)
+                    .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
+                    .build();
+
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                const formalInformalChoice =
+                    aFormalInformalChoice()
+                        .withChosenForm(ChosenFormType.INFORMAL)
+                        .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+
+                const {
+                    form,
+                    meta,
+                    source,
+                    serviceUri
+                } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, latestConceptSnapshot.id, FormType.INHOUD);
+
+                expect(form).toEqual('formdefinition');
+                expect(meta).toContain(`<${conceptSnapshot.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`);
+                expect(meta).toContain(`<${latestConceptSnapshot.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`);
+                expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
+                expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
+                expect(serviceUri).toEqual(instance.id.value);
+            });
+
         });
 
-        test('can load a eigenschappen form for an instance in correct language', async () => {
-            const bestuurseenheid =
-                aBestuurseenheid()
+        describe('eigenschappen form', () => {
+
+            test('can load form for an instance without concept in correct language', async () => {
+                const bestuurseenheid =
+                    aBestuurseenheid()
+                        .build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const instance =
+                    aMinimalInstance()
+                        .withTitle(LanguageString.of(undefined, undefined, undefined))
+                        .withDescription(undefined)
+                        .withAdditionalDescription(undefined)
+                        .withException(undefined)
+                        .withRegulation(undefined)
+                        .withDutchLanguageVariant(Language.INFORMAL)
+                        .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
+                        .withConceptId(undefined)
+                        .withConceptSnapshotId(undefined)
+                        .withProductId(undefined)
+                        .build();
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                const formalInformalChoice =
+                    aFormalInformalChoice()
+                        .withChosenForm(ChosenFormType.INFORMAL)
+                        .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
+                codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
+
+                const {
+                    form,
+                    meta,
+                    source,
+                    serviceUri
+                } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, undefined, FormType.EIGENSCHAPPEN);
+
+                expect(form).toEqual('formdefinition');
+                expect(meta).toEqual('org1 a concept.\r\norg2 a concept.');
+                expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
+                expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
+                expect(serviceUri).toEqual(instance.id.value);
+
+            });
+
+            test('can load form for an instance with concept, without review status in correct language', async () => {
+                const bestuurseenheid =
+                    aBestuurseenheid()
+                        .build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const concept = aMinimalConcept()
                     .build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
+                await conceptRepository.save(concept);
 
-            const instance =
-                aMinimalInstance()
-                    .withTitle(
-                        LanguageString.of(undefined, undefined, undefined)
-                    )
-                    .withDescription(undefined)
-                    .withAdditionalDescription(undefined)
-                    .withException(undefined)
-                    .withRegulation(undefined)
-                    .withDutchLanguageVariant(Language.INFORMAL)
-                    .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
+                const conceptSnapshot = aMinimalConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
                     .build();
-            await instanceRepository.save(bestuurseenheid, instance);
+                await conceptSnapshotRepository.save(conceptSnapshot);
 
-            const formalInformalChoice =
-                aFormalInformalChoice()
-                    .withChosenForm(ChosenFormType.INFORMAL)
+                const instance =
+                    aMinimalInstance()
+                        .withTitle(LanguageString.of(undefined, undefined, undefined))
+                        .withDescription(undefined)
+                        .withAdditionalDescription(undefined)
+                        .withException(undefined)
+                        .withRegulation(undefined)
+                        .withDutchLanguageVariant(Language.INFORMAL)
+                        .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
+                        .withConceptId(concept.id)
+                        .withConceptSnapshotId(conceptSnapshot.id)
+                        .withProductId(concept.productId)
+                        .build();
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                const formalInformalChoice =
+                    aFormalInformalChoice()
+                        .withChosenForm(ChosenFormType.INFORMAL)
+                        .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
+                codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
+
+                const {
+                    form,
+                    meta,
+                    source,
+                    serviceUri
+                } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, conceptSnapshot.id, FormType.EIGENSCHAPPEN);
+
+                expect(form).toEqual('formdefinition');
+                expect(meta).toEqual('org1 a concept.\r\norg2 a concept.');
+                expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
+                expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
+                expect(serviceUri).toEqual(instance.id.value);
+
+            });
+
+            test('can load form for an instance with concept and review status in correct language', async () => {
+                const bestuurseenheid =
+                    aBestuurseenheid()
+                        .build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const concept = aMinimalConcept()
                     .build();
-            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+                await conceptRepository.save(concept);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
-            codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
+                const conceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .build();
+                const latestConceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .build();
 
-            const {
-                form,
-                meta,
-                source,
-                serviceUri
-            } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, FormType.EIGENSCHAPPEN);
+                await conceptSnapshotRepository.save(conceptSnapshot);
+                await conceptSnapshotRepository.save(latestConceptSnapshot);
 
-            expect(form).toEqual('formdefinition');
-            expect(meta).toEqual('org1 a concept.\r\norg2 a concept.');
-            expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
-            expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
-            expect(serviceUri).toEqual(instance.id.value);
+                const instance =
+                    aMinimalInstance()
+                        .withTitle(LanguageString.of(undefined, undefined, undefined))
+                        .withDescription(undefined)
+                        .withAdditionalDescription(undefined)
+                        .withException(undefined)
+                        .withRegulation(undefined)
+                        .withDutchLanguageVariant(Language.INFORMAL)
+                        .withPublicationMedia([PublicationMediumType.RECHTENVERKENNER])
+                        .withConceptId(concept.id)
+                        .withConceptSnapshotId(conceptSnapshot.id)
+                        .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
+                        .withProductId(concept.productId)
+                        .build();
+                await instanceRepository.save(bestuurseenheid, instance);
 
+                const formalInformalChoice =
+                    aFormalInformalChoice()
+                        .withChosenForm(ChosenFormType.INFORMAL)
+                        .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
+                codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
+
+                const {
+                    form,
+                    meta,
+                    source,
+                    serviceUri
+                } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, latestConceptSnapshot.id, FormType.EIGENSCHAPPEN);
+
+                expect(form).toEqual('formdefinition');
+                expect(meta).toContain('org1 a concept.');
+                expect(meta).toContain('org2 a concept.');
+                expect(meta).toContain(`<${conceptSnapshot.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`);
+                expect(meta).toContain(`<${latestConceptSnapshot.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`);
+                expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
+                expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
+                expect(serviceUri).toEqual(instance.id.value);
+
+            });
         });
 
     });
@@ -214,6 +444,7 @@ describe('Form application service tests', () => {
     describe('validateForms', () => {
 
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+        const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
         const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = new FormDefinitionFileRepository();
         const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -221,7 +452,7 @@ describe('Form application service tests', () => {
         const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
         const semanticFormsMapper = new SemanticFormsMapperImpl();
 
-        const formApplicationService = new FormApplicationService(conceptRepository, instanceRepository, formDefinitionRepository, codeRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, semanticFormsMapper);
+        const formApplicationService = new FormApplicationService(conceptRepository, conceptSnapshotRepository, instanceRepository, formDefinitionRepository, codeRepository, formalInformalChoiceRepository, selectConceptLanguageDomainService, semanticFormsMapper);
 
         test('valid form', async () => {
             const bestuurseenheid = aBestuurseenheid().build();

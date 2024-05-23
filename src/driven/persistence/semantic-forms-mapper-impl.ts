@@ -4,12 +4,13 @@ import {Instance} from "../../core/domain/instance";
 import {Iri} from "../../core/domain/shared/iri";
 import {SemanticFormsMapper} from "../../core/port/driven/persistence/semantic-forms-mapper";
 import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
-import {CONCEPT_GRAPH} from "../../../config";
+import {CONCEPT_GRAPH, CONCEPT_SNAPSHOT_LDES_GRAPH} from "../../../config";
 import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {Logger} from "../../../platform/logger";
 import {Quad} from "rdflib/lib/tf-types";
 import {graph, namedNode, parse, quad} from 'rdflib';
 import {uuid} from "../../../mu-helper";
+import {ConceptSnapshot} from "../../core/domain/concept-snapshot";
 
 export class SemanticFormsMapperImpl implements SemanticFormsMapper {
 
@@ -41,6 +42,10 @@ export class SemanticFormsMapperImpl implements SemanticFormsMapper {
 
     conceptAsTurtleFormat(concept: Concept): string[] {
         return new DomainToQuadsMapper(new Iri(CONCEPT_GRAPH)).conceptToQuads(concept).map(s => s.toNT());
+    }
+
+    conceptSnapshotAsTurtleFormat(conceptSnapshot: ConceptSnapshot): string[] {
+        return new DomainToQuadsMapper(new Iri(CONCEPT_SNAPSHOT_LDES_GRAPH)).conceptSnapshotToQuads(conceptSnapshot).map(s => s.toNT());
     }
 
     private parseStatements(aGraph: Iri, statements: string): Quad[] {

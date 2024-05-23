@@ -11,10 +11,13 @@ import {validateForm} from '@lblod/submission-form-helpers';
 import ForkingStore from "forking-store";
 import {namedNode} from "rdflib";
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
+import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snapshot-repository";
+import {uniq} from "lodash";
 
 export class FormApplicationService {
 
     private readonly _conceptRepository: ConceptRepository;
+    private readonly _conceptSnapshotRepository: ConceptSnapshotRepository;
     private readonly _instanceRepository: InstanceRepository;
     private readonly _formDefinitionRepository: FormDefinitionRepository;
     private readonly _codeRepository: CodeRepository;
@@ -24,6 +27,7 @@ export class FormApplicationService {
 
     constructor(
         conceptRepository: ConceptRepository,
+        conceptSnapshotRepository: ConceptSnapshotRepository,
         instanceRepository: InstanceRepository,
         formDefinitionRepository: FormDefinitionRepository,
         codeRepository: CodeRepository,
@@ -32,6 +36,7 @@ export class FormApplicationService {
         semanticFormsMapper: SemanticFormsMapper,
     ) {
         this._conceptRepository = conceptRepository;
+        this._conceptSnapshotRepository = conceptSnapshotRepository;
         this._instanceRepository = instanceRepository;
         this._formDefinitionRepository = formDefinitionRepository;
         this._codeRepository = codeRepository;
@@ -63,7 +68,16 @@ export class FormApplicationService {
         };
     }
 
-    async loadInstanceForm(bestuurseenheid: Bestuurseenheid, instanceId: Iri, formType: FormType): Promise<{
+    async loadInstanceForm(bestuurseenheid: Bestuurseenheid, instanceId: Iri, latestConceptSnapshotId: Iri | undefined, formType: FormType): Promise<{
+        form: string,
+        meta: string,
+        source: string,
+        serviceUri: string
+    }> {
+        return this.doLoadInstanceForm(bestuurseenheid, instanceId, latestConceptSnapshotId, formType, true);
+    }
+
+    private async doLoadInstanceForm(bestuurseenheid: Bestuurseenheid, instanceId: Iri, latestConceptSnapshotId: Iri | undefined, formType: FormType, loadMetaData: boolean): Promise<{
         form: string,
         meta: string,
         source: string,
@@ -74,11 +88,39 @@ export class FormApplicationService {
 
         const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, instance.dutchLanguageVariant);
 
-        const tailoredSchemes = formType === FormType.EIGENSCHAPPEN ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
+        let meta = [];
+        if (loadMetaData) {
+            if (formType === FormType.EIGENSCHAPPEN) {
+                meta = [
+                    ...meta,
+                    ...(await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat()),
+                ];
+            }
+
+            if (instance.reviewStatus
+                && instance.conceptSnapshotId) {
+
+                //TODO LPDC-1171: validate that the latestConceptSnapshotId should present when the instance has a conceptSnapshotId (throw an InvariantError if not the case)
+                //TODO LPDC-1171: validate that the latestConceptSnapshotId is linked to the concept the instance is linked to (load the concept) (throw an InvariantError if not the case)
+                //TODO LPDC-1171: validate that the instance snapshot id is linked to the concept the instance is linked to (load the concept) (throw an InvariantError if not the case)
+
+                //TODO LPDC-1171: performance improvement ? : load all three concurrently
+                const latestConceptSnapshot = await this._conceptSnapshotRepository.findById(latestConceptSnapshotId);
+                const instanceConceptSnapshot = await this._conceptSnapshotRepository.findById(instance.conceptSnapshotId);
+
+                meta = [
+                    ...meta,
+                    //TODO LPDC-1171: performance improvement: only retain triples of correct language (to reduce the data sent?)
+                    ...(this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(latestConceptSnapshot)),
+                    //TODO LPDC-1171: performance improvement: only retain triples of correct language (to reduce the data sent?)
+                    ...(this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(instanceConceptSnapshot)),
+                ];
+            }
+        }
 
         return {
             form: formDefinition,
-            meta: tailoredSchemes.join("\r\n"),
+            meta: uniq(meta).join("\r\n"),
             source: this._semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"),
             serviceUri: instanceId.value,
         };
@@ -87,7 +129,7 @@ export class FormApplicationService {
     async validateForms(instanceId: Iri, bestuurseenheid: Bestuurseenheid): Promise<ValidationError[]> {
         const errors = [];
         for (const formType of Object.values(FormType)) {
-            const form = await this.loadInstanceForm(bestuurseenheid, instanceId, formType);
+            const form = await this.doLoadInstanceForm(bestuurseenheid, instanceId, undefined, formType, false);
 
             const FORM_GRAPHS = {
                 formGraph: namedNode('http://data.lblod.info/form'),
@@ -97,7 +139,6 @@ export class FormApplicationService {
 
             const formStore = new ForkingStore();
             formStore.parse(form.form, FORM_GRAPHS.formGraph, 'text/turtle');
-            formStore.parse(form.meta, FORM_GRAPHS.metaGraph, 'text/turtle');
             formStore.parse(form.source, FORM_GRAPHS.sourceGraph, 'text/turtle');
 
             const options = {

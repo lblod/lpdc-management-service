@@ -124,6 +124,7 @@ const deleteInstanceDomainService = new DeleteInstanceDomainService(
 
 const formApplicationService = new FormApplicationService(
     conceptRepository,
+    conceptSnapshotRepository,
     instanceRepository,
     formDefinitionRepository,
     codeRepository,
@@ -370,13 +371,15 @@ async function createInstance(req: Request, res: Response) {
 
 async function getInstanceForm(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
+    const latestConceptSnapshotIdBody: string | undefined = req.query.latestConceptSnapshotId as string;
     const formId = req.params.formId as FormType;
 
     const instanceId = new Iri(instanceIdRequestParam);
+    const latestConceptSnapshotId = latestConceptSnapshotIdBody ? new Iri(latestConceptSnapshotIdBody) : undefined;
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
-    const bundle = await formApplicationService.loadInstanceForm(bestuurseenheid, instanceId, formId);
+    const bundle = await formApplicationService.loadInstanceForm(bestuurseenheid, instanceId, latestConceptSnapshotId, formId);
     return res.status(200).json(bundle);
 }
 
@@ -451,11 +454,11 @@ async function reopenInstance(req: Request, res: Response) {
 
 async function confirmUpToDateTill(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
-    const conceptSnapshotIdRequestParam = req.body.upToDateTillConceptSnapshotId;
+    const conceptSnapshotIdData = req.body.upToDateTillConceptSnapshotId;
     const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
-    const conceptSnapshotId = new Iri(conceptSnapshotIdRequestParam);
+    const conceptSnapshotId = new Iri(conceptSnapshotIdData);
     const session: Session = req['session'];
     const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
@@ -468,11 +471,11 @@ async function confirmUpToDateTill(req: Request, res: Response) {
 
 async function fullyTakeConceptSnapshotOver(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
-    const conceptSnapshotIdRequestParam = req.body.conceptSnapshotId;
+    const conceptSnapshotIdBody = req.body.conceptSnapshotId;
     const instanceVersion: FormatPreservingDate | undefined = FormatPreservingDate.of(req.headers['instance-version'] as string);
 
     const instanceId = new Iri(instanceIdRequestParam);
-    const conceptSnapshotId = new Iri(conceptSnapshotIdRequestParam);
+    const conceptSnapshotId = new Iri(conceptSnapshotIdBody);
     const session: Session = req['session'];
     const bestuurseenheid: Bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
