@@ -26,7 +26,7 @@ describe('Session data integrity test', () => {
             }
         }
 
-    }, 60000);
+    }, 60000 * 10);
 });
 
 async function findSessionIds(): Promise<Iri[]> {

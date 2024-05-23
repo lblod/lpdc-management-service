@@ -2,10 +2,13 @@
 
 When running this migration-script, u must comment this line in the constructor of Instance
 
-`this._dutchLanguageVariant = requireShouldEqualAcceptedValue(dutchLanguageVariant, 'dutchLanguageVariant', instanceLanguages);`
+`requireShouldEqualAcceptedValue(this._uuid, 'uuid', [lastPartAfter(this._id.value, '/')]);`
 
+`this._dutchLanguageVariant = requireShouldEqualAcceptedValue(dutchLanguageVariant, 'dutchLanguageVariant', instanceLanguages);`
+`this._needsConversionFromFormalToInformal = requiredValue(needsConversionFromFormalToInformal, 'needsConversionFromFormalToInformal');`
 
 `if (calculatedInstanceNLLanguages.length != 0 && calculatedInstanceNLLanguages[0] != this.dutchLanguageVariant) {
 throw new InvariantError('DutchLanguageVariant verschilt van de calculatedInstanceNlLanguages');
 }`
+
 

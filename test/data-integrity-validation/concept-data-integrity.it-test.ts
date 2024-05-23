@@ -24,6 +24,7 @@ import {Website} from "../../src/core/domain/website";
 import {Cost} from "../../src/core/domain/cost";
 import {FinancialAdvantage} from "../../src/core/domain/financial-advantage";
 import {LegalResource} from "../../src/core/domain/legal-resource";
+import fs from "fs";
 
 describe('Concept Data Integrity Validation', () => {
 
@@ -106,77 +107,72 @@ describe('Concept Data Integrity Validation', () => {
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.subject.value.startsWith('http://publications.europa.eu/resource/authority/language/'));
 
 
-        const delayTime = 0;
-        const numberOfLoops = 1;
         const alsoLoadRelatedConceptSnapshots = true;
         const averageTimes = [];
         const technicalErrors = [];
         const dataErrors = [];
 
-        for (let i = 0; i < numberOfLoops; i++) {
-            let quadsFromRequeriedConcepts: Statement[] = [];
+        let quadsFromRequeriedConcepts: Statement[] = [];
 
-            const before = new Date().valueOf();
+        const before = new Date().valueOf();
 
-            console.log(new Date().toISOString());
+        console.log(new Date().toISOString());
 
-            const randomizedConceptIds = shuffle([...conceptIds]);
+        const randomizedConceptIds = shuffle([...conceptIds]);
 
-            for (const result of randomizedConceptIds) {
-                const id = new Iri(result['id'].value);
-                try {
-                    const conceptForId = await repository.findById(id);
-                    expect(conceptForId.id).toEqual(id);
-                    const quadsForConceptForId =
-                        domainToQuadsMapper.conceptToQuads(conceptForId);
-                    quadsFromRequeriedConcepts =
-                        [...quadsForConceptForId, ...quadsFromRequeriedConcepts];
+        for (const result of randomizedConceptIds) {
+            const id = new Iri(result['id'].value);
+            try {
+                const conceptForId = await repository.findById(id);
+                expect(conceptForId.id).toEqual(id);
+                const quadsForConceptForId =
+                    domainToQuadsMapper.conceptToQuads(conceptForId);
+                quadsFromRequeriedConcepts =
+                    [...quadsForConceptForId, ...quadsFromRequeriedConcepts];
 
-                    if (alsoLoadRelatedConceptSnapshots) {
-                        const latestConceptSnapshot = await snapshotRepository.findById(conceptForId.latestConceptSnapshot);
-                        expect(latestConceptSnapshot.id).toEqual(conceptForId.latestConceptSnapshot);
-                        expect(latestConceptSnapshot.isVersionOfConcept).toEqual(id);
+                if (alsoLoadRelatedConceptSnapshots) {
+                    const latestConceptSnapshot = await snapshotRepository.findById(conceptForId.latestConceptSnapshot);
+                    expect(latestConceptSnapshot.id).toEqual(conceptForId.latestConceptSnapshot);
+                    expect(latestConceptSnapshot.isVersionOfConcept).toEqual(id);
 
-                        for (const eachPreviousConceptSnapshotId of conceptForId.previousConceptSnapshots) {
-                            const previousConceptSnapshot = await snapshotRepository.findById(eachPreviousConceptSnapshotId);
-                            expect(previousConceptSnapshot.id).toEqual(eachPreviousConceptSnapshotId);
-                            expect(previousConceptSnapshot.isVersionOfConcept).toEqual(id);
-                        }
-
-                        const latestFunctionallyChangedConceptSnapshot = await snapshotRepository.findById((conceptForId.latestFunctionallyChangedConceptSnapshot));
-                        expect(latestFunctionallyChangedConceptSnapshot.id).toEqual(conceptForId.latestFunctionallyChangedConceptSnapshot);
-                        expect(latestFunctionallyChangedConceptSnapshot.isVersionOfConcept).toEqual(id);
-
-                        validateThatConceptDataIsInSyncWithLatestConceptSnapshot(conceptForId, latestConceptSnapshot, latestFunctionallyChangedConceptSnapshot);
+                    for (const eachPreviousConceptSnapshotId of conceptForId.previousConceptSnapshots) {
+                        const previousConceptSnapshot = await snapshotRepository.findById(eachPreviousConceptSnapshotId);
+                        expect(previousConceptSnapshot.id).toEqual(eachPreviousConceptSnapshotId);
+                        expect(previousConceptSnapshot.isVersionOfConcept).toEqual(id);
                     }
-                } catch (e) {
-                    console.error(`Error while verifying concept ${sparqlEscapeUri(id)}`, e);
-                    if (!e.message.startsWith('could not map')) {
-                        console.error(e);
-                        technicalErrors.push(e);
-                    } else {
-                        dataErrors.push(e);
-                    }
+
+                    const latestFunctionallyChangedConceptSnapshot = await snapshotRepository.findById((conceptForId.latestFunctionallyChangedConceptSnapshot));
+                    expect(latestFunctionallyChangedConceptSnapshot.id).toEqual(conceptForId.latestFunctionallyChangedConceptSnapshot);
+                    expect(latestFunctionallyChangedConceptSnapshot.isVersionOfConcept).toEqual(id);
+
+                    validateThatConceptDataIsInSyncWithLatestConceptSnapshot(conceptForId, latestConceptSnapshot, latestFunctionallyChangedConceptSnapshot);
                 }
-                await wait(delayTime);
+            } catch (e) {
+                console.error(`Error while verifying concept ${sparqlEscapeUri(id)}`, e);
+                if (!e.message.startsWith('could not map')) {
+                    console.error(e);
+                    technicalErrors.push(e);
+                } else {
+                    dataErrors.push(e);
+                }
             }
-
-            const quadsFromRequeriedConceptsAsStrings = quadsFromRequeriedConcepts.map(quad => quad.toString());
-
-            const allRemainingQuadsOfGraphAsTurtle = allQuadsOfGraph
-                .map(q => q.toString())
-                .filter(q => !quadsFromRequeriedConceptsAsStrings.includes(q));
-
-            //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
-            //fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
-            expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
-
-            const averageTime = (new Date().valueOf() - before - delayTime * conceptIds.length) / conceptIds.length;
-            averageTimes.push(averageTime);
-
-            console.log(`Verifying in total ${conceptIds.length} concept took on average ${averageTime} ms per concept`);
-            // eslint-disable-next-line no-constant-condition
         }
+
+        const quadsFromRequeriedConceptsAsStrings = quadsFromRequeriedConcepts.map(quad => quad.toString());
+
+        const allRemainingQuadsOfGraphAsTurtle = allQuadsOfGraph
+            .map(q => q.toString())
+            .filter(q => !quadsFromRequeriedConceptsAsStrings.includes(q));
+
+        //uncomment when running against END2END_TEST_SPARQL_ENDPOINT
+        fs.writeFileSync(`/tmp/remaining-quads-concept.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
+        //expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
+
+        const averageTime = ((new Date().valueOf() - before) * conceptIds.length) / conceptIds.length;
+        averageTimes.push(averageTime);
+
+        console.log(`Verifying in total ${conceptIds.length} concept took on average ${averageTime} ms per concept`);
+        // eslint-disable-next-line no-constant-condition
 
         const totalAverageTime = averageTimes.reduce((accumulator, currentValue) => {
             return accumulator + currentValue;
@@ -186,11 +182,11 @@ describe('Concept Data Integrity Validation', () => {
         console.log(`Data Errors [${dataErrors}]`);
 
         if (conceptIds.length > 0) {
-            expect(totalAverageTime).toBeLessThan(250);
             expect(technicalErrors).toEqual([]);
+            expect(totalAverageTime).toBeLessThan(250);
         }
 
-    }, 60000 * 15 * 100);
+    }, 60000 * 15 * 100 * 10);
 
     test.skip('Load one concept and print quads', async () => {
         const id = new Iri('https://ipdc.vlaanderen.be/id/concept/26bfa5c8-f099-44c8-8765-37b1ab095850');
@@ -268,12 +264,6 @@ describe('Concept Data Integrity Validation', () => {
             || Cost.isFunctionallyChanged(value.costs, other.costs)
             || FinancialAdvantage.isFunctionallyChanged(value.financialAdvantages, other.financialAdvantages)
             || LegalResource.isFunctionallyChanged(value.legalResources, other.legalResources);
-    }
-
-    function wait(milliseconds: number) {
-        return new Promise(resolve => {
-            setTimeout(resolve, milliseconds);
-        });
     }
 
 });

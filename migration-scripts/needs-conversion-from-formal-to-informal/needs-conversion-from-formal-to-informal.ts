@@ -28,6 +28,8 @@ async function main() {
 
     const bestuurseenhedenIds: Iri[] = await getAllBestuurseenheden();
 
+    console.log("total bestuurseenheden " + bestuurseenhedenIds.length);
+
     for (const bestuurseenheidId of bestuurseenhedenIds) {
         const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
         const formalInformalChoice = await formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
@@ -44,6 +46,7 @@ async function main() {
                 insertQuads.push(quad);
             }
         }
+        console.log("instances done " + insertQuads.length);
     }
 
     fs.writeFileSync(`./migration-results/needsConversionFromFormalToInformal.ttl`, insertQuads.join('\n'));

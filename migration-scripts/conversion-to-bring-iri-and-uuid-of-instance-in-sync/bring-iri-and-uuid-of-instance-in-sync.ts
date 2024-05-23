@@ -32,7 +32,6 @@ type UUIDS = {
 
 async function main() {
 
-
     let totalInstancesProcessed = 0;
 
     const bestuurseenhedenIds: Iri[] = await getAllBestuurseenheden();
