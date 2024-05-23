@@ -36,6 +36,9 @@ import {aFullContactPointForInstance} from "../domain/contact-point-test-builder
 import {aFullConceptSnapshot, aMinimalConceptSnapshot} from "../domain/concept-snapshot-test-builder";
 import {ConceptSnapshotSparqlTestRepository} from "../../driven/persistence/concept-snapshot-sparql-test-repository";
 import {ConceptSnapshotSparqlRepository} from "../../../src/driven/persistence/concept-snapshot-sparql-repository";
+import {SystemError} from "../../../src/core/domain/shared/lpdc-error";
+import {buildConceptIri} from "../domain/iri-test-builder";
+import {uuid} from "../../../mu-helper";
 
 describe('Form application service tests', () => {
 
@@ -271,6 +274,121 @@ describe('Form application service tests', () => {
                 expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
                 expect(serviceUri).toEqual(instance.id.value);
             });
+
+            test('throws a system error when trying to load form for an instance with concept and review status but latestConceptSnapshotId absent', async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const concept = aMinimalConcept()
+                    .build();
+                await conceptRepository.save(concept);
+
+                const conceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .build();
+                const latestConceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .build();
+
+                await conceptSnapshotRepository.save(conceptSnapshot);
+                await conceptSnapshotRepository.save(latestConceptSnapshot);
+
+                const instance = aMinimalInstance()
+                    .withConceptId(concept.id)
+                    .withConceptSnapshotId(conceptSnapshot.id)
+                    .withProductId(concept.productId)
+                    .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
+                    .build();
+
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                const formalInformalChoice =
+                    aFormalInformalChoice()
+                        .withChosenForm(ChosenFormType.INFORMAL)
+                        .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+
+                await expect(formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, undefined, FormType.INHOUD)).rejects.toThrowWithMessage(SystemError, 'latestConceptSnapshotId mag niet ontbreken');
+            });
+
+            test('throws a system error when trying to load form for an instance with concept and review status but latestConceptSnapshotId of different concept', async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const concept = aMinimalConcept()
+                    .build();
+                await conceptRepository.save(concept);
+
+                const conceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .build();
+                const latestConceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(buildConceptIri(uuid()))
+                    .build();
+
+                await conceptSnapshotRepository.save(conceptSnapshot);
+                await conceptSnapshotRepository.save(latestConceptSnapshot);
+
+                const instance = aMinimalInstance()
+                    .withConceptId(concept.id)
+                    .withConceptSnapshotId(conceptSnapshot.id)
+                    .withProductId(concept.productId)
+                    .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
+                    .build();
+
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                const formalInformalChoice =
+                    aFormalInformalChoice()
+                        .withChosenForm(ChosenFormType.INFORMAL)
+                        .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+
+                await expect(formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, latestConceptSnapshot.id, FormType.INHOUD)).rejects.toThrowWithMessage(SystemError, 'latestConceptSnapshot hoort niet bij concept van instantie');
+            });
+
+            test('throws a system error when trying to load form for an instance with concept and review status but versioned concept snapshot id of instance is of different concept', async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const concept = aMinimalConcept()
+                    .build();
+                await conceptRepository.save(concept);
+
+                const conceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(buildConceptIri(uuid()))
+                    .build();
+                const latestConceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .build();
+
+                await conceptSnapshotRepository.save(conceptSnapshot);
+                await conceptSnapshotRepository.save(latestConceptSnapshot);
+
+                const instance = aMinimalInstance()
+                    .withConceptId(concept.id)
+                    .withConceptSnapshotId(conceptSnapshot.id)
+                    .withProductId(concept.productId)
+                    .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
+                    .build();
+
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                const formalInformalChoice =
+                    aFormalInformalChoice()
+                        .withChosenForm(ChosenFormType.INFORMAL)
+                        .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+
+                await expect(formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, latestConceptSnapshot.id, FormType.INHOUD)).rejects.toThrowWithMessage(SystemError, 'concept snapshot van instantie hoort niet bij concept van instantie');
+            });
+
 
         });
 

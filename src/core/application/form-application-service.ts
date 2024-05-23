@@ -13,6 +13,7 @@ import {namedNode} from "rdflib";
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
 import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snapshot-repository";
 import {uniq} from "lodash";
+import {SystemError} from "../domain/shared/lpdc-error";
 
 export class FormApplicationService {
 
@@ -100,19 +101,27 @@ export class FormApplicationService {
             if (instance.reviewStatus
                 && instance.conceptSnapshotId) {
 
-                //TODO LPDC-1171: validate that the latestConceptSnapshotId should present when the instance has a conceptSnapshotId (throw an InvariantError if not the case)
-                //TODO LPDC-1171: validate that the latestConceptSnapshotId is linked to the concept the instance is linked to (load the concept) (throw an InvariantError if not the case)
-                //TODO LPDC-1171: validate that the instance snapshot id is linked to the concept the instance is linked to (load the concept) (throw an InvariantError if not the case)
+                if(!latestConceptSnapshotId) {
+                    throw new SystemError(`latestConceptSnapshotId mag niet ontbreken`);
+                }
 
-                //TODO LPDC-1171: performance improvement ? : load all three concurrently
+                //TODO LPDC-1171: use:   this._selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice); to get the language from the concept snapshot (for each)
+                //TODO LPDC-1171: take the instance language (dutch langauge variant), and do a transformLanguage on concept-snapshot => and put this into the output.
+
                 const latestConceptSnapshot = await this._conceptSnapshotRepository.findById(latestConceptSnapshotId);
                 const instanceConceptSnapshot = await this._conceptSnapshotRepository.findById(instance.conceptSnapshotId);
 
+                if(!latestConceptSnapshot.isVersionOfConcept.equals(instance.conceptId)) {
+                    throw new SystemError(`latestConceptSnapshot hoort niet bij concept van instantie`);
+                }
+
+                if(!instanceConceptSnapshot.isVersionOfConcept.equals(instance.conceptId)) {
+                    throw new SystemError(`concept snapshot van instantie hoort niet bij concept van instantie`);
+                }
+
                 meta = [
                     ...meta,
-                    //TODO LPDC-1171: performance improvement: only retain triples of correct language (to reduce the data sent?)
                     ...(this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(latestConceptSnapshot)),
-                    //TODO LPDC-1171: performance improvement: only retain triples of correct language (to reduce the data sent?)
                     ...(this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(instanceConceptSnapshot)),
                 ];
             }
