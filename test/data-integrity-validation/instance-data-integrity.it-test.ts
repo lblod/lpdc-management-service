@@ -71,8 +71,8 @@ describe('Instance Data Integrity Validation', () => {
             }
         `;
         const bestuurseenheidIdsResult = await directDatabaseAccess.list(query);
-        const randomizedInstanceIds = shuffle([...bestuurseenheidIdsResult]);
-        //randomizedInstanceIds = randomizedInstanceIds.slice(0, 50);
+        const randomizedBestuurseenheidsIds = shuffle([...bestuurseenheidIdsResult]);
+        //randomizedBestuurseenheidsIds = randomizedBestuurseenheidsIds.slice(0, 50);
 
         let verifiedBestuurseenheden = 0;
         let verifiedInstances = 0;
@@ -81,13 +81,13 @@ describe('Instance Data Integrity Validation', () => {
         const totalStartTime = new Date();
         const totalDoubleQuads: string[] = [];
 
-        console.log(`Verifying ${randomizedInstanceIds.length} bestuurseenheden`);
+        console.log(`Verifying ${randomizedBestuurseenheidsIds.length} bestuurseenheden`);
 
         if (!fs.existsSync(`/tmp/remaining-quads-instance`)) {
             fs.mkdirSync(`/tmp/remaining-quads-instance`);
         }
 
-        for (const bestuurseenheidId of randomizedInstanceIds) {
+        for (const bestuurseenheidId of randomizedBestuurseenheidsIds) {
 
             const bestuurseenheid = await bestuurseenheidRepository.findById(new Iri(bestuurseenheidId['id'].value));
             const domainToQuadsMapper = new DomainToQuadsMapper(bestuurseenheid.userGraph());
@@ -228,11 +228,12 @@ describe('Instance Data Integrity Validation', () => {
             const timeInMinutes = Math.round(timeInSeconds / 60);
             console.log(
                 '\n', `- Verified ${bestuurseenheid.userGraph()}`,
-                '\n', `- Verified ${verifiedBestuurseenheden} of the ${randomizedInstanceIds.length} bestuurseenheden`,
+                '\n', `- Verified ${verifiedBestuurseenheden} of the ${randomizedBestuurseenheidsIds.length} bestuurseenheden`,
                 '\n', `- Verified ${verifiedInstances} instances`,
                 '\n', `- Total time:  ${timeInMs} ms or ${timeInSeconds} seconds or ${timeInMinutes} minutes `);
 
         }
+
         fs.writeFileSync(`/tmp/instance-total-errors.json`, sortedUniq(totalErrors.map(o => JSON.stringify(o))).join('\n'));
         fs.writeFileSync(`/tmp/instance-total-double-triples.csv`, totalDoubleQuads.join('\n'));
         fs.writeFileSync(`/tmp/instance-total-remaining-quads.txt`, totalRemainingQuadsInstance.join('\n'));

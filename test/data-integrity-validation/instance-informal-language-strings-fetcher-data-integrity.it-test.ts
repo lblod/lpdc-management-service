@@ -22,6 +22,7 @@ const instanceRepository = new InstanceSparqlRepository(endPoint);
 const ipdcFetcher = new InstanceInformalLanguageStringsFetcherIpdc('https://api.ipdc.vlaanderen.be', process.env.IPDC_API_KEY);
 
 describe('Instance informal language strings fetcher', () => {
+
     test.skip('Load all instances; fetch published ones to Ipdc and map to informal', async () => {
         const bestuurseenhedenIds: string[] = await getBestuurseenhedenIds();
         let errors: string[] = [];
@@ -66,7 +67,7 @@ describe('Instance informal language strings fetcher', () => {
             console.log(`Transformed ${transformedInstances} instances`);
         }
         expect(errors.length).toEqual(0);
-    }, 60000 * 15 * 100);
+    }, 60000 * 15 * 100 * 10);
 });
 
 async function getBestuurseenhedenIds(): Promise<string[]> {

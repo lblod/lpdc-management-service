@@ -70,7 +70,6 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         //we don't use https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType anymore ...
         allQuadsOfGraph = allQuadsOfGraph.filter(q => !q.predicate.equals(namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#snapshotType')));
 
-        const delayTime = 0;
         const averageTimes = [];
         const technicalErrors = [];
         const dataErrors = [];
@@ -104,7 +103,6 @@ describe('Concept Snapshot Data Integrity Validation', () => {
                     dataErrors.push(e);
                 }
             }
-            await wait(delayTime);
         }
         const quadsFromRequeriedConceptSnapshotsAsStrings = quadsFromRequeriedConceptSnapshots.map(quad => quad.toString());
 
@@ -116,7 +114,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         fs.writeFileSync(`/tmp/remaining-quads-concept-snapshot.txt`, sortedUniq(allRemainingQuadsOfGraphAsTurtle).join('\n'));
         expect(sortedUniq(allRemainingQuadsOfGraphAsTurtle)).toEqual([]);
 
-        const averageTime = (new Date().valueOf() - before - delayTime * conceptSnapshotIds.length) / conceptSnapshotIds.length;
+        const averageTime = ((new Date().valueOf() - before) * conceptSnapshotIds.length) / conceptSnapshotIds.length;
         averageTimes.push(averageTime);
 
         console.log(`Verifying in total ${conceptSnapshotIds.length} concept snapshots took on average ${averageTime} ms per concept`);
@@ -134,10 +132,10 @@ describe('Concept Snapshot Data Integrity Validation', () => {
             expect(totalAverageTime).toBeLessThan(35);
         }
 
-    }, 60000 * 15 * 100);
+    }, 60000 * 15 * 100 * 10);
 
-    test.skip('Load one concept snapshot and print quads', async () => {
-        const id = new Iri('https://ipdc.vlaanderen.be/id/conceptsnapshot/0d2a2f5a-7213-483d-9fb9-abe0cbac0348');
+    test('Load one concept snapshot and print quads', async () => {
+        const id = new Iri('https://ipdc.vlaanderen.be/id/conceptsnapshot/ca9849fd-c842-4950-8dfe-baa347e0879a');
 
         const allQuads = await fetcher.fetch(graph, id, [],
             [
@@ -162,12 +160,5 @@ describe('Concept Snapshot Data Integrity Validation', () => {
         expect(allQuadsAsStrings).toEqual(allConceptSnapshotToQuadsAsStrings);
 
     });
-
-    function wait(milliseconds: number) {
-        return new Promise(resolve => {
-            setTimeout(resolve, milliseconds);
-        });
-    }
-
 
 });

@@ -30,7 +30,7 @@ async function main() {
 
     const bestuurseenhedenIds: Iri[] = await getAllBestuurseenheden();
 
-    console.log("total bestuurseenheden" + bestuurseenhedenIds.length);
+    console.log("total bestuurseenheden " + bestuurseenhedenIds.length);
 
     for (const bestuurseenheidId of bestuurseenhedenIds) {
         const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
@@ -49,7 +49,7 @@ async function main() {
     }
 
     fs.writeFileSync(`./migration-results/insertDutchLanguageVariant.ttl`, insertQuads.join('\n'));
-    console.log('totalInstances' + totalInstances);
+    console.log('totalInstances ' + totalInstances);
 
 
 }
