@@ -1,6 +1,10 @@
-import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
+import {ConceptSnapshot, ConceptSnapshotBuilder} from "../../../src/core/domain/concept-snapshot";
 import {uuid} from "../../../mu-helper";
-import {aFullConceptSnapshot} from "./concept-snapshot-test-builder";
+import {
+    aFullConceptSnapshot,
+    aMinimalConceptSnapshot,
+    ConceptSnapshotTestBuilder
+} from "./concept-snapshot-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
@@ -86,16 +90,8 @@ describe('constructing', () => {
         expect(() => aFullConceptSnapshot().withTitle(undefined).build()).toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
     });
 
-    test('NL not present in title throws error', () => {
-        expect(() => aFullConceptSnapshot().withTitle(LanguageString.of(undefined, 'formeel', undefined)).build()).toThrowWithMessage(InvariantError, 'nl version in title mag niet ontbreken');
-    });
-
     test('Undefined description throws error', () => {
         expect(() => aFullConceptSnapshot().withDescription(undefined).build()).toThrowWithMessage(InvariantError, 'description mag niet ontbreken');
-    });
-
-    test('NL not present in description throws error', () => {
-        expect(() => aFullConceptSnapshot().withDescription(LanguageString.of(undefined, 'formeel')).build()).toThrowWithMessage(InvariantError, 'nl version in description mag niet ontbreken');
     });
 
     test('Undefined productId throws error', () => {
@@ -217,10 +213,10 @@ describe('constructing', () => {
     describe('Legal Resource', () => {
 
         test('valid legal resource does not throw error', () => {
-           const validLegalResource = LegalResource.reconstitute(LegalResourceBuilder.buildIri(uuid()), undefined, undefined, undefined,
-               buildCodexVlaanderenIri('123').value, 1);
+            const validLegalResource = LegalResource.reconstitute(LegalResourceBuilder.buildIri(uuid()), undefined, undefined, undefined,
+                buildCodexVlaanderenIri('123').value, 1);
 
-           expect(() => aFullConceptSnapshot().withLegalResources([validLegalResource]).build()).not.toThrow();
+            expect(() => aFullConceptSnapshot().withLegalResources([validLegalResource]).build()).not.toThrow();
         });
 
         test('invalid legal resource does throw error', () => {
@@ -1258,4 +1254,92 @@ test('defined languages', () => {
         Language.GENERATED_FORMAL,
         Language.GENERATED_INFORMAL
     ]);
+});
+
+describe('builder', () => {
+
+    test("from copies all fields", () => {
+        const conceptSnapshot = aFullConceptSnapshot().build();
+        const fromConceptSnapshot = ConceptSnapshotBuilder.from(conceptSnapshot).build();
+
+        expect(fromConceptSnapshot).toEqual(conceptSnapshot);
+
+    });
+});
+
+test('transform language for full concept snapshot', () => {
+    const aConceptSnapshot =
+        aFullConceptSnapshot()
+            .build();
+
+    expect(aConceptSnapshot.transformLanguage(Language.GENERATED_INFORMAL, Language.INFORMAL)).toEqual(
+        ConceptSnapshotBuilder.from(aConceptSnapshot)
+            .withTitle(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL, Language.INFORMAL))
+            .withDescription(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.DESCRIPTION_NL_GENERATED_INFORMAL, Language.INFORMAL))
+            .withAdditionalDescription(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.ADDITIONAL_DESCRIPTION_NL_GENERATED_INFORMAL, Language.INFORMAL))
+            .withException(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.EXCEPTION_NL_GENERATED_INFORMAL, Language.INFORMAL))
+            .withRegulation(LanguageString.ofValueInLanguage(ConceptSnapshotTestBuilder.REGULATION_NL_GENERATED_INFORMAL, Language.INFORMAL))
+            .withRequirements(
+                [0, 1].map(index => RequirementBuilder.from(aConceptSnapshot.requirements[index])
+                    .withTitle(LanguageString.ofValueInLanguage(aConceptSnapshot.requirements[index].title.nlGeneratedInformal, Language.INFORMAL))
+                    .withDescription(LanguageString.ofValueInLanguage(aConceptSnapshot.requirements[index].description.nlGeneratedInformal, Language.INFORMAL))
+                    .withEvidence(EvidenceBuilder.from(aConceptSnapshot.requirements[index].evidence)
+                        .withTitle(LanguageString.ofValueInLanguage(aConceptSnapshot.requirements[index].evidence.title.nlGeneratedInformal, Language.INFORMAL))
+                        .withDescription(LanguageString.ofValueInLanguage(aConceptSnapshot.requirements[index].evidence.description.nlGeneratedInformal, Language.INFORMAL))
+                        .build())
+                    .build()))
+            .withProcedures(
+                [0, 1].map(index => ProcedureBuilder.from(aConceptSnapshot.procedures[index])
+                    .withTitle(LanguageString.ofValueInLanguage(aConceptSnapshot.procedures[index].title.nlGeneratedInformal, Language.INFORMAL))
+                    .withDescription(LanguageString.ofValueInLanguage(aConceptSnapshot.procedures[index].description.nlGeneratedInformal, Language.INFORMAL))
+                    .withWebsites(
+                        [0, 1].map(innerIndex => WebsiteBuilder.from(aConceptSnapshot.procedures[index].websites[innerIndex])
+                            .withTitle(LanguageString.ofValueInLanguage(aConceptSnapshot.procedures[index].websites[innerIndex].title.nlGeneratedInformal, Language.INFORMAL))
+                            .withDescription(LanguageString.ofValueInLanguage(aConceptSnapshot.procedures[index].websites[innerIndex].description.nlGeneratedInformal, Language.INFORMAL))
+                            .build()))
+                    .build()))
+            .withWebsites(
+                [0, 1].map(index => WebsiteBuilder.from(aConceptSnapshot.websites[index])
+                    .withTitle(LanguageString.ofValueInLanguage(aConceptSnapshot.websites[index].title.nlGeneratedInformal, Language.INFORMAL))
+                    .withDescription(LanguageString.ofValueInLanguage(aConceptSnapshot.websites[index].description.nlGeneratedInformal, Language.INFORMAL))
+                    .build()))
+            .withCosts(
+                [0, 1].map(index => CostBuilder.from(aConceptSnapshot.costs[index])
+                    .withTitle(LanguageString.ofValueInLanguage(aConceptSnapshot.costs[index].title.nlGeneratedInformal, Language.INFORMAL))
+                    .withDescription(LanguageString.ofValueInLanguage(aConceptSnapshot.costs[index].description.nlGeneratedInformal, Language.INFORMAL))
+                    .build()))
+            .withFinancialAdvantages(
+                [0, 1].map(index => FinancialAdvantageBuilder.from(aConceptSnapshot.financialAdvantages[index])
+                    .withTitle(LanguageString.ofValueInLanguage(aConceptSnapshot.financialAdvantages[index].title.nlGeneratedInformal, Language.INFORMAL))
+                    .withDescription(LanguageString.ofValueInLanguage(aConceptSnapshot.financialAdvantages[index].description.nlGeneratedInformal, Language.INFORMAL))
+                    .build()))
+            .withLegalResources(
+                [0, 1].map(index => LegalResourceBuilder.from(aConceptSnapshot.legalResources[index])
+                    .withTitle(LanguageString.ofValueInLanguage(aConceptSnapshot.legalResources[index].title.nlGeneratedInformal, Language.INFORMAL))
+                    .withDescription(LanguageString.ofValueInLanguage(aConceptSnapshot.legalResources[index].description.nlGeneratedInformal, Language.INFORMAL))
+                    .build()))
+            .build());
+
+});
+
+test('transform language for minimal concept snapshot', () => {
+
+    const aMinimalConceptSnapshotInNLOnly = aMinimalConceptSnapshot().build();
+    expect(aMinimalConceptSnapshotInNLOnly.transformLanguage(Language.GENERATED_INFORMAL, Language.INFORMAL)).toEqual(
+        ConceptSnapshotBuilder.from(aMinimalConceptSnapshotInNLOnly)
+            .withTitle(LanguageString.ofValueInLanguage(undefined, Language.INFORMAL))
+            .withDescription(LanguageString.ofValueInLanguage(undefined, Language.INFORMAL))
+            .build());
+
+    const aMinimalConceptSnapshotInRequestedLanguage =
+        aMinimalConceptSnapshot()
+            .withTitle(LanguageString.ofValueInLanguage('title', Language.GENERATED_INFORMAL))
+            .withDescription(LanguageString.ofValueInLanguage('description', Language.GENERATED_INFORMAL))
+            .build();
+    expect(aMinimalConceptSnapshotInRequestedLanguage.transformLanguage(Language.GENERATED_INFORMAL, Language.INFORMAL)).toEqual(
+        ConceptSnapshotBuilder.from(aMinimalConceptSnapshotInRequestedLanguage)
+            .withTitle(LanguageString.ofValueInLanguage('title', Language.INFORMAL))
+            .withDescription(LanguageString.ofValueInLanguage('description', Language.INFORMAL))
+            .build());
+
 });

@@ -90,10 +90,8 @@ export class ConceptSnapshot {
     ) {
         this._id = requiredValue(id, 'id');
         requiredValue(title, 'title');
-        requiredValue(title.nl, 'nl version in title');
         this._title = title;
         requiredValue(description, 'description');
-        requiredValue(description.nl, 'nl version in description');
         this._description = description;
         this._additionalDescription = additionalDescription;
         this._exception = exception;
@@ -263,6 +261,22 @@ export class ConceptSnapshot {
         return [...this._legalResources];
     }
 
+    transformLanguage(from: Language, to: Language): ConceptSnapshot {
+        return ConceptSnapshotBuilder.from(this)
+            .withTitle(this._title.transformLanguage(from, to))
+            .withDescription(this._description.transformLanguage(from, to))
+            .withAdditionalDescription(this._additionalDescription?.transformLanguage(from, to))
+            .withException(this._exception?.transformLanguage(from, to))
+            .withRegulation(this._regulation?.transformLanguage(from, to))
+            .withRequirements(this._requirements.map(req => req.transformLanguage(from, to)))
+            .withProcedures(this._procedures.map(proc => proc.transformLanguage(from, to)))
+            .withWebsites(this._websites.map(ws => ws.transformLanguage(from, to)))
+            .withCosts(this._costs.map(c => c.transformLanguage(from, to)))
+            .withFinancialAdvantages(this._financialAdvantages.map(fa => fa.transformLanguage(from, to)))
+            .withLegalResources(this._legalResources.map(lr => lr.transformLanguage(from, to)))
+            .build();
+    }
+
     static isFunctionallyChanged(value: ConceptSnapshot, other: ConceptSnapshot): string[] {
         const functionallyChanged: Map<string, boolean> = new Map();
 
@@ -311,5 +325,266 @@ export class ConceptSnapshot {
             .map(([key]) => key);
     }
 
+}
+
+export class ConceptSnapshotBuilder {
+
+    private id: Iri;
+    private title: LanguageString | undefined;
+    private description: LanguageString | undefined;
+    private additionalDescription: LanguageString | undefined;
+    private exception: LanguageString | undefined;
+    private regulation: LanguageString | undefined;
+    private startDate: FormatPreservingDate | undefined;
+    private endDate: FormatPreservingDate | undefined;
+    private type: ProductType | undefined;
+    private targetAudiences: TargetAudienceType[] = [];
+    private themes: ThemeType[] = [];
+    private competentAuthorityLevels: CompetentAuthorityLevelType[] = [];
+    private competentAuthorities: Iri[] = [];
+    private executingAuthorityLevels: ExecutingAuthorityLevelType[] = [];
+    private executingAuthorities: Iri[] = [];
+    private publicationMedia: PublicationMediumType[] = [];
+    private yourEuropeCategories: YourEuropeCategoryType[] = [];
+    private keywords: LanguageString[] = [];
+    private requirements: Requirement[] = [];
+    private procedures: Procedure[] = [];
+    private websites: Website[] = [];
+    private costs: Cost[] = [];
+    private financialAdvantages: FinancialAdvantage[] = [];
+    private isVersionOfConcept: Iri | undefined;
+    private dateCreated: FormatPreservingDate | undefined;
+    private dateModified: FormatPreservingDate | undefined;
+    private generatedAtTime: FormatPreservingDate | undefined;
+    private productId: string | undefined;
+    private conceptTags: ConceptTagType[] = [];
+    private isArchived: boolean;
+    private legalResources: LegalResource[] = [];
+
+    static from(conceptSnapshot: ConceptSnapshot): ConceptSnapshotBuilder {
+        return new ConceptSnapshotBuilder()
+            .withId(conceptSnapshot.id)
+            .withTitle(conceptSnapshot.title)
+            .withDescription(conceptSnapshot.description)
+            .withAdditionalDescription(conceptSnapshot.additionalDescription)
+            .withException(conceptSnapshot.exception)
+            .withRegulation(conceptSnapshot.regulation)
+            .withStartDate(conceptSnapshot.startDate)
+            .withEndDate(conceptSnapshot.endDate)
+            .withType(conceptSnapshot.type)
+            .withTargetAudiences(conceptSnapshot.targetAudiences)
+            .withThemes(conceptSnapshot.themes)
+            .withCompetentAuthorityLevels(conceptSnapshot.competentAuthorityLevels)
+            .withCompetentAuthorities(conceptSnapshot.competentAuthorities)
+            .withExecutingAuthorityLevels(conceptSnapshot.executingAuthorityLevels)
+            .withExecutingAuthorities(conceptSnapshot.executingAuthorities)
+            .withPublicationMedia(conceptSnapshot.publicationMedia)
+            .withYourEuropeCategories(conceptSnapshot.yourEuropeCategories)
+            .withKeywords(conceptSnapshot.keywords)
+            .withRequirements(conceptSnapshot.requirements)
+            .withProcedures(conceptSnapshot.procedures)
+            .withWebsites(conceptSnapshot.websites)
+            .withCosts(conceptSnapshot.costs)
+            .withFinancialAdvantages(conceptSnapshot.financialAdvantages)
+            .withIsVersionOfConcept(conceptSnapshot.isVersionOfConcept)
+            .withDateCreated(conceptSnapshot.dateCreated)
+            .withDateModified(conceptSnapshot.dateModified)
+            .withGeneratedAtTime(conceptSnapshot.generatedAtTime)
+            .withProductId(conceptSnapshot.productId)
+            .withConceptTags(conceptSnapshot.conceptTags)
+            .withIsArchived(conceptSnapshot.isArchived)
+            .withLegalResources(conceptSnapshot.legalResources);
+    }
+
+    public withId(id: Iri): ConceptSnapshotBuilder {
+        this.id = id;
+        return this;
+    }
+
+    public withTitle(title: LanguageString): ConceptSnapshotBuilder {
+        this.title = title;
+        return this;
+    }
+
+    public withDescription(description: LanguageString): ConceptSnapshotBuilder {
+        this.description = description;
+        return this;
+    }
+
+    public withAdditionalDescription(additionalDescription: LanguageString): ConceptSnapshotBuilder {
+        this.additionalDescription = additionalDescription;
+        return this;
+    }
+
+    public withException(exception: LanguageString): ConceptSnapshotBuilder {
+        this.exception = exception;
+        return this;
+    }
+
+    public withRegulation(regulation: LanguageString): ConceptSnapshotBuilder {
+        this.regulation = regulation;
+        return this;
+    }
+
+    public withStartDate(startDate: FormatPreservingDate): ConceptSnapshotBuilder {
+        this.startDate = startDate;
+        return this;
+    }
+
+    public withEndDate(endDate: FormatPreservingDate): ConceptSnapshotBuilder {
+        this.endDate = endDate;
+        return this;
+    }
+
+    public withType(type: ProductType): ConceptSnapshotBuilder {
+        this.type = type;
+        return this;
+    }
+
+    public withTargetAudiences(targetAudiences: TargetAudienceType[]): ConceptSnapshotBuilder {
+        this.targetAudiences = targetAudiences;
+        return this;
+    }
+
+    public withThemes(themes: ThemeType[]): ConceptSnapshotBuilder {
+        this.themes = themes;
+        return this;
+    }
+
+    public withCompetentAuthorityLevels(competentAuthorityLevels: CompetentAuthorityLevelType[]): ConceptSnapshotBuilder {
+        this.competentAuthorityLevels = competentAuthorityLevels;
+        return this;
+    }
+
+    public withCompetentAuthorities(competentAuthorities: Iri[]): ConceptSnapshotBuilder {
+        this.competentAuthorities = competentAuthorities;
+        return this;
+    }
+
+    public withExecutingAuthorityLevels(executingAuthorityLevels: ExecutingAuthorityLevelType[]): ConceptSnapshotBuilder {
+        this.executingAuthorityLevels = executingAuthorityLevels;
+        return this;
+    }
+
+    public withExecutingAuthorities(executingAuthorities: Iri[]): ConceptSnapshotBuilder {
+        this.executingAuthorities = executingAuthorities;
+        return this;
+    }
+
+    public withPublicationMedia(publicationMedia: PublicationMediumType[]): ConceptSnapshotBuilder {
+        this.publicationMedia = publicationMedia;
+        return this;
+    }
+
+    public withYourEuropeCategories(yourEuropeCategories: YourEuropeCategoryType[]): ConceptSnapshotBuilder {
+        this.yourEuropeCategories = yourEuropeCategories;
+        return this;
+    }
+
+    public withKeywords(keywords: LanguageString[]): ConceptSnapshotBuilder {
+        this.keywords = keywords;
+        return this;
+    }
+
+    public withRequirements(requirements: Requirement[]): ConceptSnapshotBuilder {
+        this.requirements = requirements;
+        return this;
+    }
+
+    public withProcedures(procedures: Procedure[]): ConceptSnapshotBuilder {
+        this.procedures = procedures;
+        return this;
+    }
+
+    public withWebsites(websites: Website[]): ConceptSnapshotBuilder {
+        this.websites = websites;
+        return this;
+    }
+
+    public withCosts(costs: Cost[]): ConceptSnapshotBuilder {
+        this.costs = costs;
+        return this;
+    }
+
+    public withFinancialAdvantages(financialAdvantages: FinancialAdvantage[]): ConceptSnapshotBuilder {
+        this.financialAdvantages = financialAdvantages;
+        return this;
+    }
+
+    public withIsVersionOfConcept(isVersionOfConcept: Iri): ConceptSnapshotBuilder {
+        this.isVersionOfConcept = isVersionOfConcept;
+        return this;
+    }
+
+    public withDateCreated(dateCreated: FormatPreservingDate): ConceptSnapshotBuilder {
+        this.dateCreated = dateCreated;
+        return this;
+    }
+
+    public withDateModified(dateModified: FormatPreservingDate): ConceptSnapshotBuilder {
+        this.dateModified = dateModified;
+        return this;
+    }
+
+    public withGeneratedAtTime(generatedAtTime: FormatPreservingDate): ConceptSnapshotBuilder {
+        this.generatedAtTime = generatedAtTime;
+        return this;
+    }
+
+    public withProductId(productId: string): ConceptSnapshotBuilder {
+        this.productId = productId;
+        return this;
+    }
+
+    public withConceptTags(conceptTags: ConceptTagType[]): ConceptSnapshotBuilder {
+        this.conceptTags = conceptTags;
+        return this;
+    }
+
+    public withIsArchived(isArchived: boolean): ConceptSnapshotBuilder {
+        this.isArchived = isArchived;
+        return this;
+    }
+
+    public withLegalResources(legalResources: LegalResource[]): ConceptSnapshotBuilder {
+        this.legalResources = legalResources;
+        return this;
+    }
+
+    public build(): ConceptSnapshot {
+        return new ConceptSnapshot(
+            this.id,
+            this.title,
+            this.description,
+            this.additionalDescription,
+            this.exception,
+            this.regulation,
+            this.startDate,
+            this.endDate,
+            this.type,
+            this.targetAudiences,
+            this.themes,
+            this.competentAuthorityLevels,
+            this.competentAuthorities,
+            this.executingAuthorityLevels,
+            this.executingAuthorities,
+            this.publicationMedia,
+            this.yourEuropeCategories,
+            this.keywords,
+            this.requirements,
+            this.procedures,
+            this.websites,
+            this.costs,
+            this.financialAdvantages,
+            this.isVersionOfConcept,
+            this.dateCreated,
+            this.dateModified,
+            this.generatedAtTime,
+            this.productId,
+            this.conceptTags,
+            this.isArchived,
+            this.legalResources,
+        );
+    }
 }
 

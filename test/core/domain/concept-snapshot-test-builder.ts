@@ -1,18 +1,12 @@
-import {Iri} from "../../../src/core/domain/shared/iri";
 import {uuid} from "../../../mu-helper";
-import {ConceptSnapshot} from "../../../src/core/domain/concept-snapshot";
+import {ConceptSnapshotBuilder} from "../../../src/core/domain/concept-snapshot";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
-import {Requirement} from "../../../src/core/domain/requirement";
 import {aFullRequirement, anotherFullRequirement} from "./requirement-test-builder";
-import {Procedure} from "../../../src/core/domain/procedure";
 import {aFullProcedure, anotherFullProcedure} from "./procedure-test-builder";
 import {anotherFullWebsite} from "./website-test-builder";
-import {Website} from "../../../src/core/domain/website";
 import {aFullCost, anotherFullCost} from "./cost-test-builder";
-import {Cost} from "../../../src/core/domain/cost";
 import {aFullFinancialAdvantage, anotherFullFinancialAdvantage} from "./financial-advantage-test-builder";
-import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,
@@ -27,11 +21,10 @@ import {
 import {buildConceptIri, buildConceptSnapshotIri} from "./iri-test-builder";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {anotherFullLegalResourceForConceptSnapshot} from "./legal-resource-test-builder";
-import {LegalResource} from "../../../src/core/domain/legal-resource";
 
 
-export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
-    return new ConceptSnapshotTestBuilder()
+export function aMinimalConceptSnapshot(): ConceptSnapshotBuilder {
+    return new ConceptSnapshotBuilder()
         .withId(buildConceptSnapshotIri(uuid()))
         .withTitle(ConceptSnapshotTestBuilder.MINIMAL_TITLE)
         .withDescription(aMinimalLanguageString('Concept Snapshot Description').build())
@@ -42,9 +35,9 @@ export function aMinimalConceptSnapshot(): ConceptSnapshotTestBuilder {
         .withIsArchived(false);
 }
 
-export function aFullConceptSnapshot(): ConceptSnapshotTestBuilder {
+export function aFullConceptSnapshot(): ConceptSnapshotBuilder {
     const id = uuid();
-    return new ConceptSnapshotTestBuilder()
+    return new ConceptSnapshotBuilder()
         .withId(buildConceptSnapshotIri(id))
         .withTitle(
             LanguageString.of(
@@ -185,228 +178,5 @@ export class ConceptSnapshotTestBuilder {
     public static readonly CONCEPT_TAGS = [ConceptTagType.YOUREUROPEAANBEVOLEN, ConceptTagType.YOUREUROPEVERPLICHT];
 
     public static readonly LEGAL_RESOURCES = [anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).build(), anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).build()];
-
-    private id: Iri;
-    private title: LanguageString | undefined;
-    private description: LanguageString | undefined;
-    private additionalDescription: LanguageString | undefined;
-    private exception: LanguageString | undefined;
-    private regulation: LanguageString | undefined;
-    private startDate: FormatPreservingDate | undefined;
-    private endDate: FormatPreservingDate | undefined;
-    private type: ProductType | undefined;
-    private targetAudiences: TargetAudienceType[] = [];
-    private themes: ThemeType[] = [];
-    private competentAuthorityLevels: CompetentAuthorityLevelType[] = [];
-    private competentAuthorities: Iri[] = [];
-    private executingAuthorityLevels: ExecutingAuthorityLevelType[] = [];
-    private executingAuthorities: Iri[] = [];
-    private publicationMedia: PublicationMediumType[] = [];
-    private yourEuropeCategories: YourEuropeCategoryType[] = [];
-    private keywords: LanguageString[] = [];
-    private requirements: Requirement[] = [];
-    private procedures: Procedure[] = [];
-    private websites: Website[] = [];
-    private costs: Cost[] = [];
-    private financialAdvantages: FinancialAdvantage[] = [];
-    private isVersionOfConcept: Iri | undefined;
-    private dateCreated: FormatPreservingDate | undefined;
-    private dateModified: FormatPreservingDate | undefined;
-    private generatedAtTime: FormatPreservingDate | undefined;
-    private productId: string | undefined;
-    private conceptTags: ConceptTagType[] = [];
-    private isArchived: boolean;
-    private legalResources: LegalResource[] = [];
-
-    public withId(id: Iri): ConceptSnapshotTestBuilder {
-        this.id = id;
-        return this;
-    }
-
-    public withTitle(title: LanguageString): ConceptSnapshotTestBuilder {
-        this.title = title;
-        return this;
-    }
-
-    public withDescription(description: LanguageString): ConceptSnapshotTestBuilder {
-        this.description = description;
-        return this;
-    }
-
-    public withAdditionalDescription(additionalDescription: LanguageString): ConceptSnapshotTestBuilder {
-        this.additionalDescription = additionalDescription;
-        return this;
-    }
-
-    public withException(exception: LanguageString): ConceptSnapshotTestBuilder {
-        this.exception = exception;
-        return this;
-    }
-
-    public withRegulation(regulation: LanguageString): ConceptSnapshotTestBuilder {
-        this.regulation = regulation;
-        return this;
-    }
-
-    public withStartDate(startDate: FormatPreservingDate): ConceptSnapshotTestBuilder {
-        this.startDate = startDate;
-        return this;
-    }
-
-    public withEndDate(endDate: FormatPreservingDate): ConceptSnapshotTestBuilder {
-        this.endDate = endDate;
-        return this;
-    }
-
-    public withType(type: ProductType): ConceptSnapshotTestBuilder {
-        this.type = type;
-        return this;
-    }
-
-    public withTargetAudiences(targetAudiences: TargetAudienceType[]): ConceptSnapshotTestBuilder {
-        this.targetAudiences = targetAudiences;
-        return this;
-    }
-
-    public withThemes(themes: ThemeType[]): ConceptSnapshotTestBuilder {
-        this.themes = themes;
-        return this;
-    }
-
-    public withCompetentAuthorityLevels(competentAuthorityLevels: CompetentAuthorityLevelType[]): ConceptSnapshotTestBuilder {
-        this.competentAuthorityLevels = competentAuthorityLevels;
-        return this;
-    }
-
-    public withCompetentAuthorities(competentAuthorities: Iri[]): ConceptSnapshotTestBuilder {
-        this.competentAuthorities = competentAuthorities;
-        return this;
-    }
-
-    public withExecutingAuthorityLevels(executingAuthorityLevels: ExecutingAuthorityLevelType[]): ConceptSnapshotTestBuilder {
-        this.executingAuthorityLevels = executingAuthorityLevels;
-        return this;
-    }
-
-    public withExecutingAuthorities(executingAuthorities: Iri[]): ConceptSnapshotTestBuilder {
-        this.executingAuthorities = executingAuthorities;
-        return this;
-    }
-
-    public withPublicationMedia(publicationMedia: PublicationMediumType[]): ConceptSnapshotTestBuilder {
-        this.publicationMedia = publicationMedia;
-        return this;
-    }
-
-    public withYourEuropeCategories(yourEuropeCategories: YourEuropeCategoryType[]): ConceptSnapshotTestBuilder {
-        this.yourEuropeCategories = yourEuropeCategories;
-        return this;
-    }
-
-    public withKeywords(keywords: LanguageString[]): ConceptSnapshotTestBuilder {
-        this.keywords = keywords;
-        return this;
-    }
-
-    public withRequirements(requirements: Requirement[]): ConceptSnapshotTestBuilder {
-        this.requirements = requirements;
-        return this;
-    }
-
-    public withProcedures(procedures: Procedure[]): ConceptSnapshotTestBuilder {
-        this.procedures = procedures;
-        return this;
-    }
-
-    public withWebsites(websites: Website[]): ConceptSnapshotTestBuilder {
-        this.websites = websites;
-        return this;
-    }
-
-    public withCosts(costs: Cost[]): ConceptSnapshotTestBuilder {
-        this.costs = costs;
-        return this;
-    }
-
-    public withFinancialAdvantages(financialAdvantages: FinancialAdvantage[]): ConceptSnapshotTestBuilder {
-        this.financialAdvantages = financialAdvantages;
-        return this;
-    }
-
-    public withIsVersionOfConcept(isVersionOfConcept: Iri): ConceptSnapshotTestBuilder {
-        this.isVersionOfConcept = isVersionOfConcept;
-        return this;
-    }
-
-    public withDateCreated(dateCreated: FormatPreservingDate): ConceptSnapshotTestBuilder {
-        this.dateCreated = dateCreated;
-        return this;
-    }
-
-    public withDateModified(dateModified: FormatPreservingDate): ConceptSnapshotTestBuilder {
-        this.dateModified = dateModified;
-        return this;
-    }
-
-    public withGeneratedAtTime(generatedAtTime: FormatPreservingDate): ConceptSnapshotTestBuilder {
-        this.generatedAtTime = generatedAtTime;
-        return this;
-    }
-
-    public withProductId(productId: string): ConceptSnapshotTestBuilder {
-        this.productId = productId;
-        return this;
-    }
-
-    public withConceptTags(conceptTags: ConceptTagType[]): ConceptSnapshotTestBuilder {
-        this.conceptTags = conceptTags;
-        return this;
-    }
-
-    public withIsArchived(isArchived: boolean): ConceptSnapshotTestBuilder {
-        this.isArchived = isArchived;
-        return this;
-    }
-
-    public withLegalResources(legalResources: LegalResource[]): ConceptSnapshotTestBuilder {
-        this.legalResources = legalResources;
-        return this;
-    }
-
-    public build(): ConceptSnapshot {
-        return new ConceptSnapshot(
-            this.id,
-            this.title,
-            this.description,
-            this.additionalDescription,
-            this.exception,
-            this.regulation,
-            this.startDate,
-            this.endDate,
-            this.type,
-            this.targetAudiences,
-            this.themes,
-            this.competentAuthorityLevels,
-            this.competentAuthorities,
-            this.executingAuthorityLevels,
-            this.executingAuthorities,
-            this.publicationMedia,
-            this.yourEuropeCategories,
-            this.keywords,
-            this.requirements,
-            this.procedures,
-            this.websites,
-            this.costs,
-            this.financialAdvantages,
-            this.isVersionOfConcept,
-            this.dateCreated,
-            this.dateModified,
-            this.generatedAtTime,
-            this.productId,
-            this.conceptTags,
-            this.isArchived,
-            this.legalResources,
-        );
-    }
 
 }
