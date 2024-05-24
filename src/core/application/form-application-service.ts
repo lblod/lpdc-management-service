@@ -12,11 +12,13 @@ import ForkingStore from "forking-store";
 import {namedNode} from "rdflib";
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
 import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snapshot-repository";
-import {uniq} from "lodash";
+import {uniq, zip} from "lodash";
 import {SystemError} from "../domain/shared/lpdc-error";
 import {Language} from "../domain/language";
 import {Instance} from "../domain/instance";
 import {ConceptSnapshot} from "../domain/concept-snapshot";
+import {Requirement} from "../domain/requirement";
+import {Procedure} from "../domain/procedure";
 
 export class FormApplicationService {
 
@@ -183,14 +185,26 @@ export class FormApplicationService {
     }
 
     private findComparisonSources(instance: Instance, conceptSnapshot: ConceptSnapshot): ComparisonSource[] {
+        const mapToComparisonSource = (a1: Identifiable[], a2: Identifiable[], extractNested: (a1: Identifiable, a2: Identifiable) => ComparisonSource[] = () => []) => zip(a1, a2)
+            .flatMap(([o1, o2]: [Identifiable, Identifiable]) => [
+                {instanceSourceIri: o1?.id, conceptSnapshotSourceIri: o2?.id},
+                ...extractNested(o1, o2)
+            ])
+            .filter((cs: ComparisonSource) => cs.instanceSourceIri && cs.conceptSnapshotSourceIri);
+
         return [
-            {
-                instanceSourceIri: instance.id,
-                conceptSnapshotSourceIri: conceptSnapshot.id
-            }
+            {instanceSourceIri: instance.id, conceptSnapshotSourceIri: conceptSnapshot.id},
+            ...mapToComparisonSource(instance.requirements, conceptSnapshot.requirements, (req1: Requirement, req2: Requirement) => mapToComparisonSource([req1?.evidence], [req2?.evidence])),
+            ...mapToComparisonSource(instance.procedures, conceptSnapshot.procedures, (proc1: Procedure, proc2: Procedure) => mapToComparisonSource(proc1?.websites, proc2?.websites)),
+            ...mapToComparisonSource(instance.costs, conceptSnapshot.costs),
+            ...mapToComparisonSource(instance.financialAdvantages, conceptSnapshot.financialAdvantages),
+            ...mapToComparisonSource(instance.websites, conceptSnapshot.websites),
+            ...mapToComparisonSource(instance.legalResources, conceptSnapshot.legalResources),
         ];
     }
 }
+
+type Identifiable = {id: Iri}
 
 
 export interface ValidationError {

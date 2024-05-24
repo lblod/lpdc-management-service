@@ -25,13 +25,19 @@ import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-
 import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
-import {aFullRequirementForInstance} from "../domain/requirement-test-builder";
+import {aFullRequirementForInstance, aMinimalRequirementForConceptSnapshot} from "../domain/requirement-test-builder";
 import {aFullEvidenceForInstance} from "../domain/evidence-test-builder";
-import {aFullProcedureForInstance} from "../domain/procedure-test-builder";
-import {aFullWebsiteForInstance} from "../domain/website-test-builder";
-import {aFullCostForInstance} from "../domain/cost-test-builder";
-import {aFullFinancialAdvantageForInstance} from "../domain/financial-advantage-test-builder";
-import {aFullLegalResourceForInstance} from "../domain/legal-resource-test-builder";
+import {aFullProcedureForInstance, aMinimalProcedureForConceptSnapshot} from "../domain/procedure-test-builder";
+import {aFullWebsiteForInstance, aMinimalWebsiteForConceptSnapshot} from "../domain/website-test-builder";
+import {aFullCostForInstance, aMinimalCostForConceptSnapshot} from "../domain/cost-test-builder";
+import {
+    aFullFinancialAdvantageForInstance,
+    aMinimalFinancialAdvantageForConceptSnapshot
+} from "../domain/financial-advantage-test-builder";
+import {
+    aFullLegalResourceForInstance,
+    aMinimalLegalResourceForConceptSnapshot
+} from "../domain/legal-resource-test-builder";
 import {aFullContactPointForInstance} from "../domain/contact-point-test-builder";
 import {
     aFullConceptSnapshot,
@@ -313,23 +319,9 @@ describe('Form application service tests', () => {
 
                 const conceptSnapshot = aFullConceptSnapshot()
                     .withIsVersionOfConcept(concept.id)
-                    .withTitle(
-                        LanguageString.of(
-                            ConceptSnapshotTestBuilder.TITLE_NL,
-                            ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
-                            ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL,
-                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL,
-                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL))
                     .build();
                 const latestConceptSnapshot = aFullConceptSnapshot()
                     .withIsVersionOfConcept(concept.id)
-                    .withTitle(
-                        LanguageString.of(
-                            ConceptSnapshotTestBuilder.TITLE_NL + 'latest',
-                            ConceptSnapshotTestBuilder.TITLE_NL_FORMAL + 'latest',
-                            ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL + 'latest',
-                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL + 'latest',
-                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL + 'latest'))
                     .build();
 
                 await conceptSnapshotRepository.save(conceptSnapshot);
@@ -360,6 +352,130 @@ describe('Form application service tests', () => {
                 expect(form).toEqual('formdefinition');
                 expect(meta).toContain(`<${instance.id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.id}> .`);
                 expect(meta).toContain(`<${instance.id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.id}> .`);
+                expect(meta).toContain(`<${instance.requirements[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.requirements[0].id}> .`);
+                expect(meta).toContain(`<${instance.requirements[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.requirements[0].id}> .`);
+                expect(meta).toContain(`<${instance.requirements[0].evidence.id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.requirements[0].evidence.id}> .`);
+                expect(meta).toContain(`<${instance.requirements[0].evidence.id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.requirements[0].evidence.id}> .`);
+                expect(meta).toContain(`<${instance.requirements[1].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.requirements[1].id}> .`);
+                expect(meta).toContain(`<${instance.requirements[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.requirements[1].id}> .`);
+                expect(meta).toContain(`<${instance.requirements[1].evidence.id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.requirements[1].evidence.id}> .`);
+                expect(meta).toContain(`<${instance.requirements[1].evidence.id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.requirements[1].evidence.id}> .`);
+                expect(meta).toContain(`<${instance.procedures[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.procedures[0].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[0].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[0].websites[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.procedures[0].websites[0].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[0].websites[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[0].websites[0].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[0].websites[1].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.procedures[0].websites[1].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[0].websites[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[0].websites[1].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[1].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.procedures[1].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[1].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[1].websites[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.procedures[1].websites[0].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[1].websites[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[1].websites[0].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[1].websites[1].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.procedures[1].websites[1].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[1].websites[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[1].websites[1].id}> .`);
+                expect(meta).toContain(`<${instance.costs[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.costs[0].id}> .`);
+                expect(meta).toContain(`<${instance.costs[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.costs[0].id}> .`);
+                expect(meta).toContain(`<${instance.costs[1].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.costs[1].id}> .`);
+                expect(meta).toContain(`<${instance.costs[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.costs[1].id}> .`);
+                expect(meta).toContain(`<${instance.financialAdvantages[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.financialAdvantages[0].id}> .`);
+                expect(meta).toContain(`<${instance.financialAdvantages[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.financialAdvantages[0].id}> .`);
+                expect(meta).toContain(`<${instance.financialAdvantages[1].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.financialAdvantages[1].id}> .`);
+                expect(meta).toContain(`<${instance.financialAdvantages[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.financialAdvantages[1].id}> .`);
+                expect(meta).toContain(`<${instance.websites[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.websites[0].id}> .`);
+                expect(meta).toContain(`<${instance.websites[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.websites[0].id}> .`);
+                expect(meta).toContain(`<${instance.websites[1].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.websites[1].id}> .`);
+                expect(meta).toContain(`<${instance.websites[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.websites[1].id}> .`);
+                expect(meta).toContain(`<${instance.legalResources[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.legalResources[0].id}> .`);
+                expect(meta).toContain(`<${instance.legalResources[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.legalResources[0].id}> .`);
+                expect(meta).toContain(`<${instance.legalResources[1].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.legalResources[1].id}> .`);
+                expect(meta).toContain(`<${instance.legalResources[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.legalResources[1].id}> .`);
+                expect(serviceUri).toEqual(instance.id.value);
+            });
+
+            test('meta data contains comparison sources for instance with concept and review status where length of nested objects differ', async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const concept = aMinimalConcept().build();
+                await conceptRepository.save(concept);
+
+                const conceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .withRequirements([aMinimalRequirementForConceptSnapshot().build()])
+                    .withProcedures([aMinimalProcedureForConceptSnapshot().build()])
+                    .withCosts([aMinimalCostForConceptSnapshot().withOrder(0).build(), aMinimalCostForConceptSnapshot().withOrder(1).build(), aMinimalCostForConceptSnapshot().withOrder(2).build()])
+                    .withFinancialAdvantages([aMinimalFinancialAdvantageForConceptSnapshot().build()])
+                    .withWebsites([aMinimalWebsiteForConceptSnapshot().build()])
+                    .withLegalResources([aMinimalLegalResourceForConceptSnapshot().build()])
+                    .build();
+                const latestConceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .build();
+
+                await conceptSnapshotRepository.save(conceptSnapshot);
+                await conceptSnapshotRepository.save(latestConceptSnapshot);
+
+                const instance = aFullInstance()
+                    .withConceptId(concept.id)
+                    .withConceptSnapshotId(conceptSnapshot.id)
+                    .withProductId(concept.productId)
+                    .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
+                    .build();
+
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                const formalInformalChoice = aFormalInformalChoice()
+                    .withChosenForm(ChosenFormType.INFORMAL)
+                    .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+
+                const {
+                    form,
+                    meta,
+                    serviceUri
+                } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, latestConceptSnapshot.id, FormType.INHOUD);
+
+                expect(form).toEqual('formdefinition');
+                expect(meta).toContain(`<${instance.id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.id}> .`);
+                expect(meta).toContain(`<${instance.id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.id}> .`);
+                expect(meta).toContain(`<${instance.requirements[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.requirements[0].id}> .`);
+                expect(meta).toContain(`<${instance.requirements[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.requirements[0].id}> .`);
+                expect(meta).not.toContain(`<${instance.requirements[0].evidence.id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.requirements[0].evidence.id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.requirements[0].evidence.id}> .`);
+                expect(meta).not.toContain(`<${instance.requirements[1].id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.requirements[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.requirements[1].id}> .`);
+                expect(meta).not.toContain(`<${instance.requirements[1].evidence.id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.requirements[1].evidence.id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.requirements[1].evidence.id}> .`);
+                expect(meta).toContain(`<${instance.procedures[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.procedures[0].id}> .`);
+                expect(meta).toContain(`<${instance.procedures[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[0].id}> .`);
+                expect(meta).not.toContain(`<${instance.procedures[0].websites[0].id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.procedures[0].websites[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[0].websites[0].id}> .`);
+                expect(meta).not.toContain(`<${instance.procedures[0].websites[1].id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.procedures[0].websites[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[0].websites[1].id}> .`);
+                expect(meta).not.toContain(`<${instance.procedures[1].id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.procedures[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[1].id}> .`);
+                expect(meta).not.toContain(`<${instance.procedures[1].websites[0].id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.procedures[1].websites[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[1].websites[0].id}> .`);
+                expect(meta).not.toContain(`<${instance.procedures[1].websites[1].id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.procedures[1].websites[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.procedures[1].websites[1].id}> .`);
+                expect(meta).toContain(`<${instance.costs[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.costs[0].id}> .`);
+                expect(meta).toContain(`<${instance.costs[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.costs[0].id}> .`);
+                expect(meta).toContain(`<${instance.costs[1].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.costs[1].id}> .`);
+                expect(meta).toContain(`<${instance.costs[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.costs[1].id}> .`);
+                expect(meta).not.toContain(`<${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.costs[2].id}> .`);
+                expect(meta).toContain(`<${instance.financialAdvantages[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.financialAdvantages[0].id}> .`);
+                expect(meta).toContain(`<${instance.financialAdvantages[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.financialAdvantages[0].id}> .`);
+                expect(meta).not.toContain(`<${instance.financialAdvantages[1].id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.financialAdvantages[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.financialAdvantages[1].id}> .`);
+                expect(meta).toContain(`<${instance.websites[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.websites[0].id}> .`);
+                expect(meta).toContain(`<${instance.websites[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.websites[0].id}> .`);
+                expect(meta).not.toContain(`<${instance.websites[1].id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.websites[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.websites[1].id}> .`);
+                expect(meta).toContain(`<${instance.legalResources[0].id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.legalResources[0].id}> .`);
+                expect(meta).toContain(`<${instance.legalResources[0].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.legalResources[0].id}> .`);
+                expect(meta).not.toContain(`<${instance.legalResources[1].id}> <${NS.ext('comparisonSourceCurrent').value}>`);
+                expect(meta).toContain(`<${instance.legalResources[1].id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.legalResources[1].id}> .`);
                 expect(serviceUri).toEqual(instance.id.value);
             });
 
