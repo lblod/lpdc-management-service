@@ -2,7 +2,7 @@ import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {Concept} from "../../core/domain/concept";
 import {Instance} from "../../core/domain/instance";
 import {Iri} from "../../core/domain/shared/iri";
-import {SemanticFormsMapper} from "../../core/port/driven/persistence/semantic-forms-mapper";
+import {ComparisonSource, SemanticFormsMapper} from "../../core/port/driven/persistence/semantic-forms-mapper";
 import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {CONCEPT_GRAPH, CONCEPT_SNAPSHOT_LDES_GRAPH} from "../../../config";
 import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
@@ -11,6 +11,7 @@ import {Quad} from "rdflib/lib/tf-types";
 import {graph, namedNode, parse, quad} from 'rdflib';
 import {uuid} from "../../../mu-helper";
 import {ConceptSnapshot} from "../../core/domain/concept-snapshot";
+import {NS} from "./namespaces";
 
 export class SemanticFormsMapperImpl implements SemanticFormsMapper {
 
@@ -46,6 +47,11 @@ export class SemanticFormsMapperImpl implements SemanticFormsMapper {
 
     conceptSnapshotAsTurtleFormat(conceptSnapshot: ConceptSnapshot): string[] {
         return new DomainToQuadsMapper(new Iri(CONCEPT_SNAPSHOT_LDES_GRAPH)).conceptSnapshotToQuads(conceptSnapshot).map(s => s.toNT());
+    }
+
+    comparisonSourceAsTurtleFormat(comparisonSources: ComparisonSource[], type: "current" | "latest"): string[] {
+        const predicate = type === "current" ? NS.ext("comparisonSourceCurrent").value : NS.ext("comparisonSourceLatest").value;
+        return comparisonSources.map(cs => `<${cs.instanceSourceIri}> <${predicate}> <${cs.conceptSnapshotSourceIri}> .`);
     }
 
     private parseStatements(aGraph: Iri, statements: string): Quad[] {

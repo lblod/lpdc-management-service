@@ -2,6 +2,7 @@ import {Bestuurseenheid} from "../../../domain/bestuurseenheid";
 import {Instance} from "../../../domain/instance";
 import {Concept} from "../../../domain/concept";
 import {ConceptSnapshot} from "../../../domain/concept-snapshot";
+import {Iri} from "../../../domain/shared/iri";
 
 export interface SemanticFormsMapper {
 
@@ -13,4 +14,11 @@ export interface SemanticFormsMapper {
 
     conceptSnapshotAsTurtleFormat(conceptSnapshot: ConceptSnapshot): string[];
 
+    comparisonSourceAsTurtleFormat(comparisonSources: ComparisonSource[], type: "current" | "latest"): string[];
+
+}
+
+export interface ComparisonSource {
+    instanceSourceIri: Iri,
+    conceptSnapshotSourceIri: Iri
 }

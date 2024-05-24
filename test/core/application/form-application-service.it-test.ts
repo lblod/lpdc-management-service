@@ -43,6 +43,7 @@ import {ConceptSnapshotSparqlRepository} from "../../../src/driven/persistence/c
 import {SystemError} from "../../../src/core/domain/shared/lpdc-error";
 import {buildConceptIri} from "../domain/iri-test-builder";
 import {uuid} from "../../../mu-helper";
+import {NS} from "../../../src/driven/persistence/namespaces";
 
 describe('Form application service tests', () => {
 
@@ -300,6 +301,65 @@ describe('Form application service tests', () => {
                 expect(meta).not.toContain(`<${latestConceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nl-generated-informallatest"@nl-be-x-generated-informal`);
                 expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
                 expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
+                expect(serviceUri).toEqual(instance.id.value);
+            });
+
+            test('meta data contains comparison sources for instance with concept and review status', async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const concept = aMinimalConcept().build();
+                await conceptRepository.save(concept);
+
+                const conceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .withTitle(
+                        LanguageString.of(
+                            ConceptSnapshotTestBuilder.TITLE_NL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL))
+                    .build();
+                const latestConceptSnapshot = aFullConceptSnapshot()
+                    .withIsVersionOfConcept(concept.id)
+                    .withTitle(
+                        LanguageString.of(
+                            ConceptSnapshotTestBuilder.TITLE_NL + 'latest',
+                            ConceptSnapshotTestBuilder.TITLE_NL_FORMAL + 'latest',
+                            ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL + 'latest',
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL + 'latest',
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL + 'latest'))
+                    .build();
+
+                await conceptSnapshotRepository.save(conceptSnapshot);
+                await conceptSnapshotRepository.save(latestConceptSnapshot);
+
+                const instance = aFullInstance()
+                    .withConceptId(concept.id)
+                    .withConceptSnapshotId(conceptSnapshot.id)
+                    .withProductId(concept.productId)
+                    .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
+                    .build();
+
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                const formalInformalChoice = aFormalInformalChoice()
+                    .withChosenForm(ChosenFormType.INFORMAL)
+                    .build();
+                await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+
+                const {
+                    form,
+                    meta,
+                    serviceUri
+                } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, latestConceptSnapshot.id, FormType.INHOUD);
+
+                expect(form).toEqual('formdefinition');
+                expect(meta).toContain(`<${instance.id}> <${NS.ext('comparisonSourceCurrent').value}> <${conceptSnapshot.id}> .`);
+                expect(meta).toContain(`<${instance.id}> <${NS.ext('comparisonSourceLatest').value}> <${latestConceptSnapshot.id}> .`);
                 expect(serviceUri).toEqual(instance.id.value);
             });
 

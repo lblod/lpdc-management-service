@@ -6,7 +6,7 @@ import {SelectConceptLanguageDomainService} from "../domain/select-concept-langu
 import {Bestuurseenheid} from "../domain/bestuurseenheid";
 import {FormType} from "../domain/types";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
-import {SemanticFormsMapper} from "../port/driven/persistence/semantic-forms-mapper";
+import {ComparisonSource, SemanticFormsMapper} from "../port/driven/persistence/semantic-forms-mapper";
 import {validateForm} from '@lblod/submission-form-helpers';
 import ForkingStore from "forking-store";
 import {namedNode} from "rdflib";
@@ -15,6 +15,8 @@ import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snap
 import {uniq} from "lodash";
 import {SystemError} from "../domain/shared/lpdc-error";
 import {Language} from "../domain/language";
+import {Instance} from "../domain/instance";
+import {ConceptSnapshot} from "../domain/concept-snapshot";
 
 export class FormApplicationService {
 
@@ -102,28 +104,33 @@ export class FormApplicationService {
             if (instance.reviewStatus
                 && instance.conceptSnapshotId) {
 
-                if(!latestConceptSnapshotId) {
+                if (!latestConceptSnapshotId) {
                     throw new SystemError(`latestConceptSnapshotId mag niet ontbreken`);
                 }
 
                 const latestConceptSnapshot = await this._conceptSnapshotRepository.findById(latestConceptSnapshotId);
                 const instanceConceptSnapshot = await this._conceptSnapshotRepository.findById(instance.conceptSnapshotId);
 
-                if(!latestConceptSnapshot.isVersionOfConcept.equals(instance.conceptId)) {
+                if (!latestConceptSnapshot.isVersionOfConcept.equals(instance.conceptId)) {
                     throw new SystemError(`latestConceptSnapshot hoort niet bij concept van instantie`);
                 }
 
-                if(!instanceConceptSnapshot.isVersionOfConcept.equals(instance.conceptId)) {
+                if (!instanceConceptSnapshot.isVersionOfConcept.equals(instance.conceptId)) {
                     throw new SystemError(`concept snapshot van instantie hoort niet bij concept van instantie`);
                 }
 
                 const languageForLatestConceptSnapshot = this._selectConceptLanguageDomainService.selectAvailableLanguage(latestConceptSnapshot, instance.dutchLanguageVariant === Language.INFORMAL);
                 const languageForInstanceConceptSnapshot = this._selectConceptLanguageDomainService.selectAvailableLanguage(instanceConceptSnapshot, instance.dutchLanguageVariant === Language.INFORMAL);
 
+                const currentComparisonSources: ComparisonSource[] = this.findComparisonSources(instance, instanceConceptSnapshot);
+                const latestComparisonSources: ComparisonSource[] = this.findComparisonSources(instance, latestConceptSnapshot);
+
                 meta = [
                     ...meta,
                     ...(this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(latestConceptSnapshot.transformLanguage(languageForLatestConceptSnapshot, instance.dutchLanguageVariant))),
                     ...(this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(instanceConceptSnapshot.transformLanguage(languageForInstanceConceptSnapshot, instance.dutchLanguageVariant))),
+                    ...(this._semanticFormsMapper.comparisonSourceAsTurtleFormat(currentComparisonSources, "current")),
+                    ...(this._semanticFormsMapper.comparisonSourceAsTurtleFormat(latestComparisonSources, "latest")),
                 ];
             }
         }
@@ -173,6 +180,15 @@ export class FormApplicationService {
             }
         }
         return errors;
+    }
+
+    private findComparisonSources(instance: Instance, conceptSnapshot: ConceptSnapshot): ComparisonSource[] {
+        return [
+            {
+                instanceSourceIri: instance.id,
+                conceptSnapshotSourceIri: conceptSnapshot.id
+            }
+        ];
     }
 }
 
