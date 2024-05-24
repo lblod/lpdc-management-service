@@ -1343,3 +1343,18 @@ test('transform language for minimal concept snapshot', () => {
             .build());
 
 });
+
+test('sanitized keywords', () => {
+    const aConceptSnapshot = aMinimalConceptSnapshot()
+        .withKeywords(
+            [
+                LanguageString.ofValueInLanguage('nl', Language.NL),
+                LanguageString.ofValueInLanguage('nl-formal', Language.FORMAL),
+                LanguageString.ofValueInLanguage('nl-informal', Language.INFORMAL),
+                LanguageString.ofValueInLanguage('nl-generated-informal', Language.GENERATED_INFORMAL),
+                LanguageString.ofValueInLanguage('nl-generated-formal', Language.GENERATED_FORMAL),
+            ])
+        .build();
+
+    expect(aConceptSnapshot.keywords).toEqual([LanguageString.ofValueInLanguage('nl', Language.NL)]);
+});

@@ -33,7 +33,11 @@ import {aFullCostForInstance} from "../domain/cost-test-builder";
 import {aFullFinancialAdvantageForInstance} from "../domain/financial-advantage-test-builder";
 import {aFullLegalResourceForInstance} from "../domain/legal-resource-test-builder";
 import {aFullContactPointForInstance} from "../domain/contact-point-test-builder";
-import {aFullConceptSnapshot, aMinimalConceptSnapshot} from "../domain/concept-snapshot-test-builder";
+import {
+    aFullConceptSnapshot,
+    aMinimalConceptSnapshot,
+    ConceptSnapshotTestBuilder
+} from "../domain/concept-snapshot-test-builder";
 import {ConceptSnapshotSparqlTestRepository} from "../../driven/persistence/concept-snapshot-sparql-test-repository";
 import {ConceptSnapshotSparqlRepository} from "../../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {SystemError} from "../../../src/core/domain/shared/lpdc-error";
@@ -235,9 +239,23 @@ describe('Form application service tests', () => {
 
                 const conceptSnapshot = aFullConceptSnapshot()
                     .withIsVersionOfConcept(concept.id)
+                    .withTitle(
+                        LanguageString.of(
+                            ConceptSnapshotTestBuilder.TITLE_NL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_FORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL,
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL))
                     .build();
                 const latestConceptSnapshot = aFullConceptSnapshot()
                     .withIsVersionOfConcept(concept.id)
+                    .withTitle(
+                        LanguageString.of(
+                            ConceptSnapshotTestBuilder.TITLE_NL + 'latest',
+                            ConceptSnapshotTestBuilder.TITLE_NL_FORMAL + 'latest',
+                            ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL + 'latest',
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL + 'latest',
+                            ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL + 'latest'))
                     .build();
 
                 await conceptSnapshotRepository.save(conceptSnapshot);
@@ -269,7 +287,17 @@ describe('Form application service tests', () => {
 
                 expect(form).toEqual('formdefinition');
                 expect(meta).toContain(`<${conceptSnapshot.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`);
+                expect(meta).toContain(`<${conceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nl-formal"@nl-be-x-formal`);
+                expect(meta).not.toContain(`<${conceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nl"@nl`);
+                expect(meta).not.toContain(`<${conceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nl-informal"@nl-be-x-informal`);
+                expect(meta).not.toContain(`<${conceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nl-generated-formal"@nl-be-x-generated-formal`);
+                expect(meta).not.toContain(`<${conceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nl-generated-informal"@nl-be-x-generated-informal`);
                 expect(meta).toContain(`<${latestConceptSnapshot.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`);
+                expect(meta).toContain(`<${latestConceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nl-formallatest"@nl-be-x-formal`);
+                expect(meta).not.toContain(`<${latestConceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nllatest"@nl`);
+                expect(meta).not.toContain(`<${latestConceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nl-informallatest"@nl-be-x-informal`);
+                expect(meta).not.toContain(`<${latestConceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nl-generated-formallatest"@nl-be-x-generated-formal`);
+                expect(meta).not.toContain(`<${latestConceptSnapshot.id}> <http://purl.org/dc/terms/title> "Concept Snapshot Title - nl-generated-informallatest"@nl-be-x-generated-informal`);
                 expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
                 expect(source).toContain(`<${instance.id}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .`);
                 expect(serviceUri).toEqual(instance.id.value);

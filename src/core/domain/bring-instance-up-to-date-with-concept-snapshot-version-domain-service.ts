@@ -36,7 +36,8 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
 
         const instanceInStatusOntwerp = instance.status === InstanceStatusType.VERSTUURD ? instance.reopen() : instance;
 
-        const conceptSnapshotInInstanceLanguage = conceptSnapshot.transformLanguage(conceptSnapshotLanguage, instanceLanguage);
+        const conceptSnapshotInInstanceLanguage = conceptSnapshot
+            .transformLanguage(conceptSnapshotLanguage, instanceLanguage);
 
         const instanceMergedWithConceptSnapshot = InstanceBuilder.from(instanceInStatusOntwerp)
             .withTitle(conceptSnapshotInInstanceLanguage.title)
@@ -54,8 +55,7 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
             .withExecutingAuthorityLevels(conceptSnapshotInInstanceLanguage.executingAuthorityLevels)
             .withPublicationMedia(conceptSnapshotInInstanceLanguage.publicationMedia)
             .withYourEuropeCategories(conceptSnapshotInInstanceLanguage.yourEuropeCategories)
-            //TODO LPDC-1171: extract a method to sanitize the keywords ? and reuse on a few places; or put this on LangaugeString ?
-            .withKeywords(conceptSnapshotInInstanceLanguage.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)))
+            .withKeywords(conceptSnapshotInInstanceLanguage.keywords)
             .withRequirements(conceptSnapshotInInstanceLanguage.requirements.map(req => req.transformWithNewId()))
             .withProcedures(conceptSnapshotInInstanceLanguage.procedures.map(proc => proc.transformWithNewId()))
             .withCosts(conceptSnapshotInInstanceLanguage.costs.map(co => co.transformWithNewId()))

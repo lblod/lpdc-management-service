@@ -14,6 +14,7 @@ import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-
 import {ConceptSnapshotRepository} from "../port/driven/persistence/concept-snapshot-repository";
 import {uniq} from "lodash";
 import {SystemError} from "../domain/shared/lpdc-error";
+import {Language} from "../domain/language";
 
 export class FormApplicationService {
 
@@ -105,9 +106,6 @@ export class FormApplicationService {
                     throw new SystemError(`latestConceptSnapshotId mag niet ontbreken`);
                 }
 
-                //TODO LPDC-1171: use:   this._selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice); to get the language from the concept snapshot (for each)
-                //TODO LPDC-1171: take the instance language (dutch langauge variant), and do a transformLanguage on concept-snapshot => and put this into the output.
-
                 const latestConceptSnapshot = await this._conceptSnapshotRepository.findById(latestConceptSnapshotId);
                 const instanceConceptSnapshot = await this._conceptSnapshotRepository.findById(instance.conceptSnapshotId);
 
@@ -119,10 +117,13 @@ export class FormApplicationService {
                     throw new SystemError(`concept snapshot van instantie hoort niet bij concept van instantie`);
                 }
 
+                const languageForLatestConceptSnapshot = this._selectConceptLanguageDomainService.selectAvailableLanguage(latestConceptSnapshot, instance.dutchLanguageVariant === Language.INFORMAL);
+                const languageForInstanceConceptSnapshot = this._selectConceptLanguageDomainService.selectAvailableLanguage(instanceConceptSnapshot, instance.dutchLanguageVariant === Language.INFORMAL);
+
                 meta = [
                     ...meta,
-                    ...(this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(latestConceptSnapshot)),
-                    ...(this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(instanceConceptSnapshot)),
+                    ...(this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(latestConceptSnapshot.transformLanguage(languageForLatestConceptSnapshot, instance.dutchLanguageVariant))),
+                    ...(this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(instanceConceptSnapshot.transformLanguage(languageForInstanceConceptSnapshot, instance.dutchLanguageVariant))),
                 ];
             }
         }

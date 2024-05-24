@@ -13,7 +13,6 @@ import {Logger} from "../../../platform/logger";
 import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
 } from "./ensure-linked-authorities-exist-as-code-list-domain-service";
-import {Language} from "./language";
 
 export class ConceptSnapshotToConceptMergerDomainService {
 
@@ -123,7 +122,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.executingAuthorities,
             conceptSnapshot.publicationMedia,
             conceptSnapshot.yourEuropeCategories,
-            conceptSnapshot.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)),
+            conceptSnapshot.keywords,
             conceptSnapshot.requirements.map(req => req.transformWithNewId()),
             conceptSnapshot.procedures.map(proc => proc.transformWithNewId()),
             conceptSnapshot.websites.map(ws => ws.transformWithNewId()),
@@ -159,7 +158,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
             conceptSnapshot.executingAuthorities,
             conceptSnapshot.publicationMedia,
             conceptSnapshot.yourEuropeCategories,
-            conceptSnapshot.keywords.filter(keyword => !!keyword.getLanguageValue(Language.NL)),
+            conceptSnapshot.keywords,
             conceptSnapshot.requirements.map(req => req.transformWithNewId()),
             conceptSnapshot.procedures.map(proc => proc.transformWithNewId()),
             conceptSnapshot.websites.map(ws => ws.transformWithNewId()),
