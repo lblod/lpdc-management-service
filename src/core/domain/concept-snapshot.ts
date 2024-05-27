@@ -314,9 +314,9 @@ export class ConceptSnapshot {
             !isEqual(value.executingAuthorities, other.executingAuthorities));
 
         functionallyChanged.set("gerelateerd (eigenschappen)",
+            !isEqual(value.keywords, other.keywords) ||
             !isEqual(value.publicationMedia, other.publicationMedia) ||
-            !isEqual(value.yourEuropeCategories, other.yourEuropeCategories) ||
-            !isEqual(value.keywords, other.keywords));
+            !isEqual(value.yourEuropeCategories, other.yourEuropeCategories));
 
         functionallyChanged.set("gearchiveerd", !isEqual(value.isArchived, other.isArchived));
 
