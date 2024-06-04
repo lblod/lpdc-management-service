@@ -26,7 +26,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
 
     async findById(instanceSnapshotGraph: Iri, id: Iri): Promise<InstanceSnapshot> {
         this.errorIfNoInstanceSnapshotGraph(instanceSnapshotGraph);
-        //TODO LPDC-981: verify instanceSnapshotGraph starts with prefix
+
         const quads = await this.fetcher.fetch(
             instanceSnapshotGraph,
             id,

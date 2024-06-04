@@ -9,7 +9,7 @@ import {
     ConceptSnapshotTestBuilder
 } from "./concept-snapshot-test-builder";
 import {buildBestuurseenheidIri, buildConceptIri, buildInstanceIri} from "./iri-test-builder";
-import {sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {NS} from "../../../src/driven/persistence/namespaces";
@@ -1206,28 +1206,34 @@ describe('merges a new concept snapshot into a concept', () => {
             await bestuurseenheidRepository.save(anotherBestuurseenheid);
 
             const instanceId = buildInstanceIri(uuid());
+            const previousDateModified = new Date('2024-06-01');
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
                     `${sparqlEscapeUri(instanceId)} a lpdcExt:InstancePublicService`,
-                    `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
+                    `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`,
+                    `${sparqlEscapeUri(instanceId)} schema:dateModified ${sparqlEscapeDateTime(previousDateModified)}`,
                 ],
                 [
                     PREFIX.lpdcExt,
                     PREFIX.dct,
+                    PREFIX.schema,
                 ],
             );
 
             const anotherInstanceId = buildInstanceIri(uuid());
+
             await directDatabaseAccess.insertData(
                 anotherBestuurseenheid.userGraph().value,
                 [
                     `${sparqlEscapeUri(anotherInstanceId)} a lpdcExt:InstancePublicService`,
-                    `${sparqlEscapeUri(anotherInstanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
+                    `${sparqlEscapeUri(anotherInstanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`,
+                    `${sparqlEscapeUri(anotherInstanceId)} schema:dateModified ${sparqlEscapeDateTime(previousDateModified)}`,
                 ],
                 [
                     PREFIX.lpdcExt,
                     PREFIX.dct,
+                    PREFIX.schema,
                 ],
             );
 
@@ -1248,29 +1254,39 @@ describe('merges a new concept snapshot into a concept', () => {
             const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(updatedConcept.id).toEqual(isVersionOfConceptId);
 
-            const reviewStatusForConceptInGraph = (be: Bestuurseenheid) => `           
+            const reviewStatusAndDateModifiedForConceptInGraph = (be: Bestuurseenheid) => `           
                 ${PREFIX.lpdcExt}
                 ${PREFIX.dct}
                 ${PREFIX.ext}
-                SELECT ?reviewStatus WHERE {
+                ${PREFIX.schema}
+                
+                SELECT ?reviewStatus ?dateModified WHERE {
                     GRAPH ${sparqlEscapeUri(be.userGraph())} {
                         ?instanceId a lpdcExt:InstancePublicService ;
                             dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
-                            ext:reviewStatus ?reviewStatus .
+                            ext:reviewStatus ?reviewStatus;
+                            schema:dateModified ?dateModified .
                     }
                 }
             `;
-            const reviewStatusResultForInstanceOfBestuurseenheid = await directDatabaseAccess.list(reviewStatusForConceptInGraph(bestuurseenheid));
-            expect(reviewStatusResultForInstanceOfBestuurseenheid.length).toEqual(1);
+            const reviewStatusAndDateModifiedResultForInstanceOfBestuurseenheid = await directDatabaseAccess.list(reviewStatusAndDateModifiedForConceptInGraph(bestuurseenheid));
+            expect(reviewStatusAndDateModifiedResultForInstanceOfBestuurseenheid.length).toEqual(1);
 
-            const reviewStatusForInstanceOfBestuurseenheid = reviewStatusResultForInstanceOfBestuurseenheid[0]['reviewStatus'].value;
+            const reviewStatusForInstanceOfBestuurseenheid = reviewStatusAndDateModifiedResultForInstanceOfBestuurseenheid[0]['reviewStatus'].value;
             expect(reviewStatusForInstanceOfBestuurseenheid).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD).value);
 
-            const reviewStatusResultForInstanceOfAnotherBestuurseenheid = await directDatabaseAccess.list(reviewStatusForConceptInGraph(anotherBestuurseenheid));
+            const dateModifiedForInstanceOfBestuurseenheid = reviewStatusAndDateModifiedResultForInstanceOfBestuurseenheid[0]['dateModified'].value;
+            expect(dateModifiedForInstanceOfBestuurseenheid).not.toEqual(previousDateModified.toISOString());
+
+            const reviewStatusResultForInstanceOfAnotherBestuurseenheid = await directDatabaseAccess.list(reviewStatusAndDateModifiedForConceptInGraph(anotherBestuurseenheid));
             expect(reviewStatusResultForInstanceOfAnotherBestuurseenheid.length).toEqual(1);
 
             const reviewStatusForInstanceOfAnotherBestuurseenheid = reviewStatusResultForInstanceOfAnotherBestuurseenheid[0]['reviewStatus'].value;
             expect(reviewStatusForInstanceOfAnotherBestuurseenheid).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD).value);
+
+            const dateModifiedForInstanceOfAnotherBestuurseenheid = reviewStatusResultForInstanceOfAnotherBestuurseenheid[0]['dateModified'].value;
+            expect(dateModifiedForInstanceOfAnotherBestuurseenheid).not.toEqual(previousDateModified.toISOString());
+
         }, 20000);
 
         test('Does not updates instance review status to updated for each linked instance if concept is not FunctionallyModified', async () => {
@@ -1360,15 +1376,20 @@ describe('merges a new concept snapshot into a concept', () => {
             await bestuurseenheidRepository.save(bestuurseenheid);
 
             const instanceId = buildInstanceIri(uuid());
+
+            const previousDateModified = new Date('2024-06-01');
+
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
                     `${sparqlEscapeUri(instanceId)} a lpdcExt:InstancePublicService`,
-                    `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
+                    `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`,
+                    `${sparqlEscapeUri(instanceId)} schema:dateModified ${sparqlEscapeDateTime(previousDateModified)}`
                 ],
                 [
                     PREFIX.lpdcExt,
                     PREFIX.dct,
+                    PREFIX.schema,
                 ],
             );
 
@@ -1386,25 +1407,31 @@ describe('merges a new concept snapshot into a concept', () => {
             const updatedConcept = await conceptRepository.findById(isVersionOfConceptId);
             expect(updatedConcept.id).toEqual(isVersionOfConceptId);
 
-            const reviewStatusForConceptInGraph = (be: Bestuurseenheid) => `           
+            const reviewStatusAndDateModifiedForConceptInGraph = (be: Bestuurseenheid) => `           
                 ${PREFIX.lpdcExt}
                 ${PREFIX.dct}
                 ${PREFIX.ext}
-                SELECT ?reviewStatus WHERE {
+                ${PREFIX.schema}
+                
+                SELECT ?reviewStatus ?dateModified WHERE {
                     GRAPH ${sparqlEscapeUri(be.userGraph())} {
                         ?instanceId a lpdcExt:InstancePublicService ;
                             dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
-                            ext:reviewStatus ?reviewStatus .
+                            ext:reviewStatus ?reviewStatus ; 
+                            schema:dateModified ?dateModified .
                     }
                 }
             `;
-            const reviewStatusResultForInstance = await directDatabaseAccess.list(reviewStatusForConceptInGraph(bestuurseenheid));
-            expect(reviewStatusResultForInstance.length).toEqual(1);
+            const reviewStatusAndDateModifiedResultForInstance = await directDatabaseAccess.list(reviewStatusAndDateModifiedForConceptInGraph(bestuurseenheid));
+            expect(reviewStatusAndDateModifiedResultForInstance.length).toEqual(1);
 
-            const reviewStatusForInstance = reviewStatusResultForInstance[0]['reviewStatus'].value;
+            const reviewStatusForInstance = reviewStatusAndDateModifiedResultForInstance[0]['reviewStatus'].value;
             expect(reviewStatusForInstance).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEARCHIVEERD).value);
 
-        }, 20000);
+            const dateModifiedForInstance = reviewStatusAndDateModifiedResultForInstance[0]['dateModified'].value;
+            expect(dateModifiedForInstance).not.toEqual(previousDateModified.toISOString());
+
+        });
 
         test('Updates instance review status to Concept gewijzigd for each linked instance if concept is archived and then unarchived', async () => {
             const isVersionOfConceptId = buildConceptIri(uuid());
@@ -1429,15 +1456,18 @@ describe('merges a new concept snapshot into a concept', () => {
             await bestuurseenheidRepository.save(bestuurseenheid);
 
             const instanceId = buildInstanceIri(uuid());
+            const previousDateModified = new Date('2024-06-01');
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
                     `${sparqlEscapeUri(instanceId)} a lpdcExt:InstancePublicService`,
-                    `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`
+                    `${sparqlEscapeUri(instanceId)} dct:source ${sparqlEscapeUri(isVersionOfConceptId)}`,
+                    `${sparqlEscapeUri(instanceId)} schema:dateModified ${sparqlEscapeDateTime(previousDateModified)}`
                 ],
                 [
                     PREFIX.lpdcExt,
                     PREFIX.dct,
+                    PREFIX.schema,
                 ],
             );
 
@@ -1480,25 +1510,31 @@ describe('merges a new concept snapshot into a concept', () => {
 
             await merger.merge(unarchivedConceptSnapshot.id);
 
-            const reviewStatusForConceptInGraphAfterUnarchive = (be: Bestuurseenheid) => `           
+            const reviewStatusAndDateModifiedForConceptInGraphAfterUnarchive = (be: Bestuurseenheid) => `           
                 ${PREFIX.lpdcExt}
                 ${PREFIX.dct}
                 ${PREFIX.ext}
-                SELECT ?reviewStatus WHERE {
+                ${PREFIX.schema}
+                
+                SELECT ?reviewStatus ?dateModified WHERE {
                     GRAPH ${sparqlEscapeUri(be.userGraph())} {
                         ?instanceId a lpdcExt:InstancePublicService ;
                             dct:source ${sparqlEscapeUri(isVersionOfConceptId)} ;
-                            ext:reviewStatus ?reviewStatus .
+                            ext:reviewStatus ?reviewStatus;
+                            schema:dateModified ?dateModified .
                     }
                 }
             `;
-            const reviewStatusResultForInstanceAfterUnarchive = await directDatabaseAccess.list(reviewStatusForConceptInGraphAfterUnarchive(bestuurseenheid));
-            expect(reviewStatusResultForInstanceAfterUnarchive.length).toEqual(1);
+            const reviewStatusAndDateModifiedResultForInstanceAfterUnarchive = await directDatabaseAccess.list(reviewStatusAndDateModifiedForConceptInGraphAfterUnarchive(bestuurseenheid));
+            expect(reviewStatusAndDateModifiedResultForInstanceAfterUnarchive.length).toEqual(1);
 
-            const reviewStatusForInstanceAfterUnarchive = reviewStatusResultForInstanceAfterUnarchive[0]['reviewStatus'].value;
+            const reviewStatusForInstanceAfterUnarchive = reviewStatusAndDateModifiedResultForInstanceAfterUnarchive[0]['reviewStatus'].value;
             expect(reviewStatusForInstanceAfterUnarchive).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD).value);
 
-        }, 20000);
+            const dateModifiedForInstanceAfterUnarchive = reviewStatusAndDateModifiedResultForInstanceAfterUnarchive[0]['dateModified'].value;
+            expect(dateModifiedForInstanceAfterUnarchive).not.toEqual(previousDateModified.toISOString());
+
+        });
 
     });
 
