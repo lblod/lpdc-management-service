@@ -321,15 +321,15 @@ export class QuadsToDomainMapper {
         }
     }
 
-    private startDate(id: Iri): FormatPreservingDate | undefined {
+    startDate(id: Iri): FormatPreservingDate | undefined {
         return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('startDate')));
     }
 
-    private endDate(id: Iri): FormatPreservingDate | undefined {
+    endDate(id: Iri): FormatPreservingDate | undefined {
         return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('endDate')));
     }
 
-    private productType(id: Iri): ProductType | undefined {
+    productType(id: Iri): ProductType | undefined {
         return this.asEnum(ProductType, NS.dvc.type, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.dct('type')));
     }
 
@@ -361,15 +361,15 @@ export class QuadsToDomainMapper {
         return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.pav('createdBy')));
     }
 
-    private targetAudiences(id: Iri): TargetAudienceType[] {
+    targetAudiences(id: Iri): TargetAudienceType[] {
         return this.asEnums(TargetAudienceType, NS.dvc.doelgroep, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('targetAudience')));
     }
 
-    private themes(id: Iri): ThemeType[] {
+    themes(id: Iri): ThemeType[] {
         return this.asEnums(ThemeType, NS.dvc.thema, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('thematicArea')));
     }
 
-    private competentAuthorityLevels(id: Iri): CompetentAuthorityLevelType[] {
+    competentAuthorityLevels(id: Iri): CompetentAuthorityLevelType[] {
         return this.asEnums(CompetentAuthorityLevelType, NS.dvc.bevoegdBestuursniveau, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('competentAuthorityLevel')));
     }
 
@@ -377,7 +377,7 @@ export class QuadsToDomainMapper {
         return this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.m8g('hasCompetentAuthority')));
     }
 
-    private executingAuthorityLevels(id: Iri): ExecutingAuthorityLevelType[] {
+    executingAuthorityLevels(id: Iri): ExecutingAuthorityLevelType[] {
         return this.asEnums(ExecutingAuthorityLevelType, NS.dvc.uitvoerendBestuursniveau, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('executingAuthorityLevel')));
     }
 
@@ -385,11 +385,11 @@ export class QuadsToDomainMapper {
         return this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('hasExecutingAuthority')));
     }
 
-    private publicationMedia(id: Iri): PublicationMediumType[] {
+    publicationMedia(id: Iri): PublicationMediumType[] {
         return this.asEnums(PublicationMediumType, NS.dvc.publicatieKanaal, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('publicationMedium')));
     }
 
-    private yourEuropeCategories(id: Iri): YourEuropeCategoryType[] {
+    yourEuropeCategories(id: Iri): YourEuropeCategoryType[] {
         return this.asEnums(YourEuropeCategoryType, NS.dvc.yourEuropeCategorie, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.lpdcExt('yourEuropeCategory')));
     }
 
@@ -448,7 +448,7 @@ export class QuadsToDomainMapper {
         return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.dct('isVersionOf')));
     }
 
-    private dateCreated(id: Iri): FormatPreservingDate | undefined {
+    dateCreated(id: Iri): FormatPreservingDate | undefined {
         return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('dateCreated')));
     }
 
@@ -468,7 +468,7 @@ export class QuadsToDomainMapper {
         return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.prov('generatedAtTime')));
     }
 
-    private productId(id: Iri): string | undefined {
+    productId(id: Iri): string | undefined {
         return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('productID'));
     }
 
@@ -514,7 +514,7 @@ export class QuadsToDomainMapper {
         return this.asEnum(InstancePublicationStatusType, NS.concepts.publicationStatus, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.schema('publication')));
     }
 
-    private spatials(id: Iri): Iri[] {
+    spatials(id: Iri): Iri[] {
         return this.asIris(this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dct('spatial')));
     }
 
@@ -675,7 +675,7 @@ export class QuadsToDomainMapper {
         return this.sort(legalResources);
     }
 
-    private conceptId(id: Iri): Iri | undefined {
+    conceptId(id: Iri): Iri | undefined {
         return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.dct('source')));
     }
 
@@ -687,7 +687,7 @@ export class QuadsToDomainMapper {
         return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.ext('hasVersionedSource')));
     }
 
-    private languages(id: Iri): LanguageType[] {
+    languages(id: Iri): LanguageType[] {
         return this.asEnums(LanguageType, NS.pera.languageType, this.storeAccess.statements(this.asNamedOrBlankNode(id), NS.dct('language')));
     }
 
