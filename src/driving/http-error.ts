@@ -1,5 +1,11 @@
 import {uuid} from "../../mu-helper";
-import {ConcurrentUpdateError, InvariantError, NotFoundError, SystemError} from "../core/domain/shared/lpdc-error";
+import {
+    ConcurrentUpdateError,
+    ForbiddenError,
+    InvariantError,
+    NotFoundError,
+    SystemError
+} from "../core/domain/shared/lpdc-error";
 
 export abstract class HttpError extends Error {
     public readonly status: number;
@@ -45,8 +51,8 @@ export class Unauthorized extends HttpError {
 }
 
 export class Forbidden extends HttpError {
-    constructor(message = 'Toegang geweigerd. U heeft geen rechten voor deze actie.') {
-        super(403, message, undefined);
+    constructor(message = 'Toegang geweigerd. U heeft geen rechten voor deze actie.', forbiddenError: ForbiddenError = undefined) {
+        super(403, forbiddenError?.message ? forbiddenError.message : message, forbiddenError);
     }
 }
 

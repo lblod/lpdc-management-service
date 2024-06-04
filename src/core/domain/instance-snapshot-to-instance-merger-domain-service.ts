@@ -3,7 +3,7 @@ import {Iri} from "./shared/iri";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {InstanceSnapshot} from "./instance-snapshot";
 import {Instance} from "./instance";
-import {uuid} from "../../../mu-helper";
+import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {InstancePublicationStatusType, InstanceStatusType} from "./types";
 import {ContactPoint, ContactPointBuilder} from "./contact-point";
@@ -20,6 +20,10 @@ import {
 } from "./ensure-linked-authorities-exist-as-code-list-domain-service";
 import {DeleteInstanceDomainService} from "./delete-instance-domain-service";
 import {lastPartAfter} from "./shared/string-helper";
+import {
+    InstanceSnapshotProcessingAuthorizationRepository
+} from "../port/driven/persistence/instance-snapshot-processing-authorization-repository";
+import {ForbiddenError} from "./shared/lpdc-error";
 
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
@@ -28,6 +32,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
     private readonly _deleteInstanceDomainService: DeleteInstanceDomainService;
     private readonly _ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService;
+    private readonly _instanceSnapshotProcessingAuthorizationRepository: InstanceSnapshotProcessingAuthorizationRepository;
     private readonly _logger: Logger = new Logger('InstanceSnapshotToInstanceMergerDomainService');
 
     constructor(
@@ -37,6 +42,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository,
         deleteInstanceDomainService: DeleteInstanceDomainService,
         ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService,
+        instanceSnapshotProcessingAuthorizationRepository: InstanceSnapshotProcessingAuthorizationRepository,
         logger?: Logger) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
@@ -44,10 +50,16 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
         this._deleteInstanceDomainService = deleteInstanceDomainService;
         this._ensureLinkedAuthoritiesExistAsCodeListDomainService = ensureLinkedAuthoritiesExistAsCodeListDomainService;
+        this._instanceSnapshotProcessingAuthorizationRepository = instanceSnapshotProcessingAuthorizationRepository;
         this._logger = logger ?? this._logger;
     }
 
     async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotGraph: Iri, instanceSnapshotId: Iri) {
+
+        if(!await this._instanceSnapshotProcessingAuthorizationRepository.canPublishInstancesToGraph(bestuurseenheid, instanceSnapshotGraph)) {
+            throw new ForbiddenError(`Bestuur ${sparqlEscapeUri(bestuurseenheid.id)} niet toegelaten voor instance snapshot graph ${sparqlEscapeUri(instanceSnapshotGraph)}.`);
+        }
+
         const instanceSnapshot = await this._instanceSnapshotRepository.findById(instanceSnapshotGraph, instanceSnapshotId);
 
         const hasNewerProcessedInstanceSnapshot = await this._instanceSnapshotRepository.hasNewerProcessedInstanceSnapshot(instanceSnapshotGraph, instanceSnapshot);

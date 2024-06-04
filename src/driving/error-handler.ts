@@ -1,7 +1,8 @@
 import {NextFunction, Request, Response} from "express";
-import {BadRequest, Conflict, HttpError, InternalServerError, NotFound} from "./http-error";
+import {BadRequest, Conflict, Forbidden, HttpError, InternalServerError, NotFound} from "./http-error";
 import {
     ConcurrentUpdateError,
+    ForbiddenError,
     InvariantError,
     LpdcError,
     NotFoundError,
@@ -41,6 +42,9 @@ class ErrorHandler {
         }
         if (error instanceof ConcurrentUpdateError) {
             return new Conflict(error);
+        }
+        if(error instanceof ForbiddenError) {
+            return new Forbidden(undefined, error);
         }
         if (error instanceof SystemError) {
             return new InternalServerError(error);

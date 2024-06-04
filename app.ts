@@ -69,6 +69,9 @@ import {
     InstanceInformalLanguageStringsFetcherIpdc
 } from "./src/driven/external/instance-informal-language-strings-fetcher-ipdc";
 import {ConceptSnapshot} from "./src/core/domain/concept-snapshot";
+import {
+    InstanceSnapshotProcessingAuthorizationSparqlRepository
+} from "./src/driven/persistence/instance-snapshot-processing-authorization-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -92,6 +95,7 @@ const formDefinitionRepository = new FormDefinitionFileRepository();
 const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository();
 const semanticFormsMapper = new SemanticFormsMapperImpl();
 const instanceSnapshotRepository = new InstanceSnapshotSparqlRepository();
+const instanceSnapshotProcessingAuthorizationRepository = new InstanceSnapshotProcessingAuthorizationSparqlRepository();
 
 const linkedAuthorityCodeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(
     bestuurseenheidRegistrationCodeFetcher,
@@ -156,6 +160,7 @@ const updateInstanceApplicationService = new UpdateInstanceApplicationService(
     semanticFormsMapper
 );
 
+
 const instanceSnapshotToInstanceMergerDomainService = new InstanceSnapshotToInstanceMergerDomainService(
     instanceSnapshotRepository,
     instanceRepository,
@@ -163,6 +168,7 @@ const instanceSnapshotToInstanceMergerDomainService = new InstanceSnapshotToInst
     conceptDisplayConfigurationRepository,
     deleteInstanceDomainService,
     linkedAuthorityCodeListDomainService,
+    instanceSnapshotProcessingAuthorizationRepository,
 );
 
 const instanceSnapshotProcessorApplicationService = new InstanceSnapshotProcessorApplicationService(

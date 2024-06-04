@@ -27,12 +27,15 @@ import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-insta
 import {aFullConcept} from "../domain/concept-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
+import {
+    InstanceSnapshotProcessingAuthorizationSparqlTestRepository
+} from "../../driven/persistence/instance-snapshot-processing-authorization-sparql-test-repository";
 
 
 describe('InstanceSnapshotProcessorApplicationService', () => {
 
     beforeEach(async () => {
-       await instanceSnapshotRepository.clearAllInstanceSnapshotGraphs();
+        await instanceSnapshotRepository.clearAllInstanceSnapshotGraphs();
     });
 
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
@@ -47,7 +50,15 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     };
     const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
     const linkedAuthoritiesDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
-    const instanceSnapshotMerger = new InstanceSnapshotToInstanceMergerDomainService(instanceSnapshotRepository, instanceRepository, conceptRepository, conceptDisplayConfigurationRepository, deleteInstanceDomainService, linkedAuthoritiesDomainService);
+    const instanceSnapshotProcessingAuthorizationRepository = new InstanceSnapshotProcessingAuthorizationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceSnapshotMerger = new InstanceSnapshotToInstanceMergerDomainService(
+        instanceSnapshotRepository,
+        instanceRepository,
+        conceptRepository,
+        conceptDisplayConfigurationRepository,
+        deleteInstanceDomainService,
+        linkedAuthoritiesDomainService,
+        instanceSnapshotProcessingAuthorizationRepository);
     const instanceSnapshotProcessor = new InstanceSnapshotProcessorApplicationService(instanceSnapshotRepository, instanceSnapshotMerger, bestuurseenheidRepository);
 
     test('Should retry unsuccessful merges', async () => {
@@ -58,7 +69,7 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         await conceptRepository.save(concept);
         await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
-        const instanceSnapshot  = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z')).withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
+        const instanceSnapshot = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z')).withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
         const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
         await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
@@ -72,6 +83,8 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
                 `${sparqlEscapeUri(invalidInstanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
                 `${sparqlEscapeUri(invalidInstanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${FormatPreservingDate.of('2024-01-15T00:00:00.672Z').value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
             ]);
+
+        await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
         await instanceSnapshotProcessor.process();
 
@@ -95,21 +108,21 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
         const instanceId = buildInstanceIri(uuid());
-        const instanceSnapshot1  = aFullInstanceSnapshot()
+        const instanceSnapshot1 = aFullInstanceSnapshot()
             .withTitle(LanguageString.of(undefined, undefined, 'snapshot 1'))
             .withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
             .withCreatedBy(bestuurseenheid.id)
             .withIsVersionOfInstance(instanceId)
             .withConceptId(concept.id)
             .build();
-        const instanceSnapshot2  = aFullInstanceSnapshot()
+        const instanceSnapshot2 = aFullInstanceSnapshot()
             .withTitle(LanguageString.of(undefined, undefined, 'snapshot 2'))
             .withGeneratedAtTime(FormatPreservingDate.of('2024-01-17T00:00:00.672Z'))
             .withCreatedBy(bestuurseenheid.id)
             .withIsVersionOfInstance(instanceId)
             .withConceptId(concept.id)
             .build();
-        const instanceSnapshot3  = aFullInstanceSnapshot()
+        const instanceSnapshot3 = aFullInstanceSnapshot()
             .withTitle(LanguageString.of(undefined, undefined, 'snapshot 3'))
             .withGeneratedAtTime(FormatPreservingDate.of('2024-01-18T00:00:00.672Z'))
             .withCreatedBy(bestuurseenheid.id)
@@ -122,6 +135,8 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot2);
         await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot1);
         await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot3);
+
+        await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
         await instanceSnapshotProcessor.process();
 

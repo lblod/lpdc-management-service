@@ -30,6 +30,12 @@ export class ConcurrentUpdateError extends LpdcError {
     }
 }
 
+export class ForbiddenError extends LpdcError {
+    constructor(message: string = 'Toegang geweigerd. U heeft geen rechten voor deze actie.') {
+        super(message);
+    }
+}
+
 export class SystemError extends LpdcError {
     constructor(message: string = 'Er is een serverfout opgetreden. Probeer het later opnieuw of neem contact op indien het probleem aanhoudt. Onze excuses voor het ongemak.') {
         super(message);
