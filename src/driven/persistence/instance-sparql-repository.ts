@@ -264,19 +264,24 @@ export class InstanceSparqlRepository implements InstanceRepository {
     }
 
     async syncNeedsConversionFromFormalToInformal(bestuurseenheid: Bestuurseenheid, chosenType: ChosenFormType) {
+        const now = new Date();
+
         const query = `
         ${PREFIX.lpdcExt}
         WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
         
         DELETE {
-           ?instance lpdcExt:needsConversionFromFormalToInformal """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>.
+           ?instance lpdcExt:needsConversionFromFormalToInformal """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>;
+                     <${NS.schema('dateModified').value}> ?previousDateModified.
         }
         INSERT { 
-            ?instance lpdcExt:needsConversionFromFormalToInformal """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>.     
+            ?instance lpdcExt:needsConversionFromFormalToInformal """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>;
+                    <${NS.schema('dateModified').value}> ${sparqlEscapeDateTime(now)}.     
         }     
         WHERE {
-            ?instance a lpdcExt:InstancePublicService.
-            ?instance lpdcExt:dutchLanguageVariant ?variant.
+            ?instance a lpdcExt:InstancePublicService;
+                   lpdcExt:dutchLanguageVariant ?variant;
+                   <${NS.schema('dateModified').value}> ?previousDateModified .
             FILTER (?variant != "nl-be-x-informal" && CONCAT("nl-be-x-", "${chosenType}") = "nl-be-x-informal")
         }
            

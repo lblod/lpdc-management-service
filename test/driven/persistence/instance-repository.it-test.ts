@@ -486,18 +486,24 @@ describe('InstanceRepository', () => {
             const actualInformalInstance = await repository.findById(bestuurseenheid, informalInstance.id);
             const actualNlInstance = await repository.findById(bestuurseenheid, nlInstance.id);
 
-            const actualformalInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, formalInstanceForOtherBestuurseenheid.id);
+            const actualFormalInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, formalInstanceForOtherBestuurseenheid.id);
             const actualInformalInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, informalInstanceForOtherBestuurseenheid.id);
             const actualNlInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, nlInstanceForOtherBestuurseenheid.id);
 
 
-            expect(actualInformalInstance.needsConversionFromFormalToInformal).toBeFalse();
             expect(actualFormalInstance.needsConversionFromFormalToInformal).toBeTrue();
+            expect(actualFormalInstance.dateModified).not.toEqual(InstanceTestBuilder.DATE_MODIFIED);
+            expect(actualInformalInstance.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualInformalInstance.dateModified).toEqual(InstanceTestBuilder.DATE_MODIFIED);
             expect(actualNlInstance.needsConversionFromFormalToInformal).toBeTrue();
+            expect(actualNlInstance.dateModified).not.toEqual(InstanceTestBuilder.DATE_MODIFIED);
 
-            expect(actualformalInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualFormalInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualFormalInstanceForOtherBestuurseenheid.dateModified).toEqual(InstanceTestBuilder.DATE_MODIFIED);
             expect(actualInformalInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualInformalInstanceForOtherBestuurseenheid.dateModified).toEqual(InstanceTestBuilder.DATE_MODIFIED);
             expect(actualNlInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualNlInstanceForOtherBestuurseenheid.dateModified).toEqual(InstanceTestBuilder.DATE_MODIFIED);
         });
 
         test('given formal, nl  and informal instance, when choose formal, then needsConversionFromFormalToInformal remains false', async () => {
@@ -528,18 +534,23 @@ describe('InstanceRepository', () => {
             const actualInformalInstance = await repository.findById(bestuurseenheid, informalInstance.id);
             const actualNlInstance = await repository.findById(bestuurseenheid, nlInstance.id);
 
-            const actualformalInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, formalInstanceForOtherBestuurseenheid.id);
+            const actualFormalInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, formalInstanceForOtherBestuurseenheid.id);
             const actualInformalInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, informalInstanceForOtherBestuurseenheid.id);
             const actualNlInstanceForOtherBestuurseenheid = await repository.findById(anotherBestuurseenheid, nlInstanceForOtherBestuurseenheid.id);
 
-
-            expect(actualInformalInstance.needsConversionFromFormalToInformal).toBeFalse();
             expect(actualFormalInstance.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualFormalInstance.dateModified).toEqual(InstanceTestBuilder.DATE_MODIFIED);
+            expect(actualInformalInstance.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualInformalInstance.dateModified).toEqual(InstanceTestBuilder.DATE_MODIFIED);
             expect(actualNlInstance.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualNlInstance.dateModified).toEqual(InstanceTestBuilder.DATE_MODIFIED);
 
-            expect(actualformalInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualFormalInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualFormalInstanceForOtherBestuurseenheid.dateModified).toEqual(InstanceTestBuilder.DATE_MODIFIED);
             expect(actualInformalInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualInformalInstanceForOtherBestuurseenheid.dateModified).toEqual(InstanceTestBuilder.DATE_MODIFIED);
             expect(actualNlInstanceForOtherBestuurseenheid.needsConversionFromFormalToInformal).toBeFalse();
+            expect(actualNlInstanceForOtherBestuurseenheid.dateModified).toEqual(InstanceTestBuilder.DATE_MODIFIED);
         });
 
         test('when no triple exists for NeedsConversionFromFormalToInformal sync still inserts true triple', async () => {
@@ -564,6 +575,7 @@ describe('InstanceRepository', () => {
             const actualInstance = await repository.findById(bestuurseenheid, instanceId);
 
             expect(actualInstance.needsConversionFromFormalToInformal).toEqual(true);
+            expect(actualInstance.dateModified).not.toEqual(InstanceTestBuilder.DATE_MODIFIED);
         });
     });
 
