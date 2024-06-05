@@ -18,14 +18,18 @@ import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-
 import {NS} from "../../src/driven/persistence/namespaces";
 import {uuid} from "../../mu-helper";
 import fs from "fs";
+import {FormatPreservingDate} from "../../src/core/domain/format-preserving-date";
 
 const sparqlurl = process.env.SPARQL_URL;
 const ipdcApiEndpoint = process.env.IPDC_API_ENDPOINT;
 const ipdcApiKey = process.env.IPDC_API_KEY;
 
+const instanceIri = new Iri('http://data.lblod.info/id/public-service/1ba9cd8f-6592-4edd-805b-833dc63d2a94');
+const instanceUuid = last(instanceIri.value.split('/'));
 const bestuurseenheidId = new Iri('http://data.lblod.info/id/bestuurseenheden/23d04e951dabc6c108803eac7e8faf08c639ba6984d1cda170f09fbd8a511855');
 const graphId = new Iri("http://mu.semte.ch/graphs/organizations/23d04e951dabc6c108803eac7e8faf08c639ba6984d1cda170f09fbd8a511855/LoketLB-LPDCGebruiker");
 const choseForm = Language.INFORMAL;
+
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository(sparqlurl);
 const conceptRepository = new ConceptSparqlRepository(sparqlurl);
 const domainToQuadsMapper = new DomainToQuadsMapper(graphId);
@@ -33,7 +37,7 @@ const domainToQuadsMapper = new DomainToQuadsMapper(graphId);
 async function fetchIpdcInstance() {
     const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
 
-    const jsonInstance = await fetchInstance(new Iri('http://data.lblod.info/id/public-service/1ba9cd8f-6592-4edd-805b-833dc63d2a94'), "1ba9cd8f-6592-4edd-805b-833dc63d2a94");
+    const jsonInstance = await fetchInstance(instanceIri, instanceUuid);
     jsonInstance['@context'] = await fetchContext(jsonInstance['@context']);
     const instance = await mapInstance(JSON.stringify(jsonInstance), bestuurseenheid, choseForm);
     const quads = domainToQuadsMapper.instanceToQuads(instance);
@@ -114,51 +118,49 @@ async function mapInstance(jsonLdData: string, bestuurseenheid: Bestuurseenheid,
 
 
 async function toInstance(mapper: QuadsToDomainMapper, chosenLanguage: Language, bestuurseenheid: Bestuurseenheid): Promise<Instance> {
-    const id = new Iri('http://data.lblod.info/id/public-service/1ba9cd8f-6592-4edd-805b-833dc63d2a94');
-    const uuid = last(id.value.split('/'));
-    const concept = await conceptRepository.findById(mapper.conceptId(id));
+    const concept = await conceptRepository.findById(mapper.conceptId(instanceIri));
     return new InstanceBuilder()
-        .withId(id)
-        .withUuid(uuid)
+        .withId(instanceIri)
+        .withUuid(instanceUuid)
         .withCreatedBy(bestuurseenheid.id)
-        .withTitle(mapper.title(id)?.transformLanguage(Language.NL, chosenLanguage))
-        .withDescription(mapper.description(id)?.transformLanguage(Language.NL, chosenLanguage))
-        .withAdditionalDescription(mapper.additionalDescription(id)?.transformLanguage(Language.NL, chosenLanguage))
-        .withException(mapper.exception(id)?.transformLanguage(Language.NL, chosenLanguage))
-        .withRegulation(mapper.regulation(id)?.transformLanguage(Language.NL, chosenLanguage))
-        .withStartDate(mapper.startDate(id))
-        .withEndDate(mapper.endDate(id))
-        .withType(mapper.productType(id))
-        .withTargetAudiences(mapper.targetAudiences(id))
-        .withThemes(mapper.themes(id))
-        .withCompetentAuthorityLevels(mapper.competentAuthorityLevels(id))
+        .withTitle(mapper.title(instanceIri)?.transformLanguage(Language.NL, chosenLanguage))
+        .withDescription(mapper.description(instanceIri)?.transformLanguage(Language.NL, chosenLanguage))
+        .withAdditionalDescription(mapper.additionalDescription(instanceIri)?.transformLanguage(Language.NL, chosenLanguage))
+        .withException(mapper.exception(instanceIri)?.transformLanguage(Language.NL, chosenLanguage))
+        .withRegulation(mapper.regulation(instanceIri)?.transformLanguage(Language.NL, chosenLanguage))
+        .withStartDate(mapper.startDate(instanceIri))
+        .withEndDate(mapper.endDate(instanceIri))
+        .withType(mapper.productType(instanceIri))
+        .withTargetAudiences(mapper.targetAudiences(instanceIri))
+        .withThemes(mapper.themes(instanceIri))
+        .withCompetentAuthorityLevels(mapper.competentAuthorityLevels(instanceIri))
         .withCompetentAuthorities([bestuurseenheidId])
-        .withExecutingAuthorityLevels(mapper.executingAuthorityLevels(id))
+        .withExecutingAuthorityLevels(mapper.executingAuthorityLevels(instanceIri))
         .withExecutingAuthorities([bestuurseenheidId])
-        .withPublicationMedia(mapper.publicationMedia(id))
-        .withYourEuropeCategories(mapper.yourEuropeCategories(id))
-        .withKeywords(mapper.keywords(id))
-        .withRequirements(mapper.requirements(id).map(req => req.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
-        .withProcedures(mapper.procedures(id).map(pr => pr.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
-        .withWebsites(mapper.websites(id).map(w => w.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
-        .withCosts(mapper.costs(id).map(co => co.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
-        .withFinancialAdvantages(mapper.financialAdvantages(id).map(fa => fa.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
-        .withContactPoints(mapper.contactPoints(id))
+        .withPublicationMedia(mapper.publicationMedia(instanceIri))
+        .withYourEuropeCategories(mapper.yourEuropeCategories(instanceIri))
+        .withKeywords(mapper.keywords(instanceIri))
+        .withRequirements(mapper.requirements(instanceIri).map(req => req.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
+        .withProcedures(mapper.procedures(instanceIri).map(pr => pr.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
+        .withWebsites(mapper.websites(instanceIri).map(w => w.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
+        .withCosts(mapper.costs(instanceIri).map(co => co.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
+        .withFinancialAdvantages(mapper.financialAdvantages(instanceIri).map(fa => fa.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
+        .withContactPoints(mapper.contactPoints(instanceIri))
         .withConceptId(concept.id)
         .withConceptSnapshotId(concept.latestConceptSnapshot)
-        .withProductId(mapper.productId(id))
-        .withLanguages(mapper.languages(id))
+        .withProductId(concept.productId)
+        .withLanguages(mapper.languages(instanceIri))
         .withDutchLanguageVariant(chosenLanguage)
         .withNeedsConversionFromFormalToInformal(false)
-        .withDateCreated(mapper.dateCreated(id))
-        .withDateModified(mapper.dateModified(id))
-        .withDateSent(undefined)
+        .withDateCreated(mapper.dateCreated(instanceIri))
+        .withDateModified(FormatPreservingDate.now())
+        .withDateSent(FormatPreservingDate.now())
         .withDatePublished(undefined)
-        .withStatus(InstanceStatusType.ONTWERP)
+        .withStatus(InstanceStatusType.VERSTUURD)
         .withReviewStatus(undefined)
         .withPublicationStatus(undefined)
-        .withSpatials(mapper.spatials(id))
-        .withLegalResources(mapper.legalResources(id))
+        .withSpatials(mapper.spatials(instanceIri))
+        .withLegalResources(mapper.legalResources(instanceIri))
         .withDutchLanguageVariant(Language.INFORMAL)
         .build();
 }
