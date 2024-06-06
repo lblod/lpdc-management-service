@@ -3,6 +3,6 @@ import {Iri} from "../../../domain/shared/iri";
 
 export interface InstanceSnapshotProcessingAuthorizationRepository {
 
-    canPublishInstancesToGraph(bestuurseenheid: Bestuurseenheid, instanceSnapshotGraph: Iri): Promise<boolean>;
+    canPublishInstanceToGraph(bestuurseenheid: Bestuurseenheid, instanceSnapshotGraph: Iri): Promise<boolean>;
 
 }

@@ -19,14 +19,14 @@ describe('InstanceSnapshotProcessingAuthorizationRepository', () => {
         await instanceSnapshotRepository.clearAllInstanceSnapshotGraphs();
     });
 
-    describe('canPublishInstancesToGraph', () => {
+    describe('canPublishInstanceToGraph', () => {
 
         test('can not publish when no entries', async () => {
             const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
             const bestuurseenheid = aBestuurseenheid().build();
 
-            const actual = await repository.canPublishInstancesToGraph(bestuurseenheid, instanceSnapshotGraph);
+            const actual = await repository.canPublishInstanceToGraph(bestuurseenheid, instanceSnapshotGraph);
             expect(actual).toBeFalse();
         });
 
@@ -38,10 +38,10 @@ describe('InstanceSnapshotProcessingAuthorizationRepository', () => {
             await directDatabaseAccess.insertData(
                 INSTANCE_SNAPHOT_LDES_AUTHORIZATION_GRAPH,
                 [
-                    `${sparqlEscapeUri(bestuurseenheid.id)} <http://data.lblod.info/vocabularies/lpdc/canPublishInstancesToGraph> ${sparqlEscapeUri(instanceSnapshotGraph)}`,
+                    `${sparqlEscapeUri(bestuurseenheid.id)} <http://data.lblod.info/vocabularies/lpdc/canPublishInstanceToGraph> ${sparqlEscapeUri(instanceSnapshotGraph)}`,
                 ]);
 
-            const actual = await repository.canPublishInstancesToGraph(bestuurseenheid, instanceSnapshotGraph);
+            const actual = await repository.canPublishInstanceToGraph(bestuurseenheid, instanceSnapshotGraph);
             expect(actual).toBeTrue();
         });
 
@@ -54,10 +54,10 @@ describe('InstanceSnapshotProcessingAuthorizationRepository', () => {
             await directDatabaseAccess.insertData(
                 INSTANCE_SNAPHOT_LDES_AUTHORIZATION_GRAPH,
                 [
-                    `${sparqlEscapeUri(bestuurseenheid.id)} <http://data.lblod.info/vocabularies/lpdc/canPublishInstancesToGraph> ${sparqlEscapeUri(instanceSnapshotGraph)}`,
+                    `${sparqlEscapeUri(bestuurseenheid.id)} <http://data.lblod.info/vocabularies/lpdc/canPublishInstanceToGraph> ${sparqlEscapeUri(instanceSnapshotGraph)}`,
                 ]);
 
-            const actual = await repository.canPublishInstancesToGraph(bestuurseenheid, anotherInstanceSnapshotGraph);
+            const actual = await repository.canPublishInstanceToGraph(bestuurseenheid, anotherInstanceSnapshotGraph);
             expect(actual).toBeFalse();
         });
 
@@ -70,10 +70,10 @@ describe('InstanceSnapshotProcessingAuthorizationRepository', () => {
             await directDatabaseAccess.insertData(
                 INSTANCE_SNAPHOT_LDES_AUTHORIZATION_GRAPH,
                 [
-                    `${sparqlEscapeUri(bestuurseenheid.id)} <http://data.lblod.info/vocabularies/lpdc/canPublishInstancesToGraph> ${sparqlEscapeUri(instanceSnapshotGraph)}`,
+                    `${sparqlEscapeUri(bestuurseenheid.id)} <http://data.lblod.info/vocabularies/lpdc/canPublishInstanceToGraph> ${sparqlEscapeUri(instanceSnapshotGraph)}`,
                 ]);
 
-            const actual = await repository.canPublishInstancesToGraph(anotherBestuurseenheid, instanceSnapshotGraph);
+            const actual = await repository.canPublishInstanceToGraph(anotherBestuurseenheid, instanceSnapshotGraph);
             expect(actual).toBeFalse();
         });
 
@@ -88,7 +88,7 @@ describe('InstanceSnapshotProcessingAuthorizationRepository', () => {
                     `${sparqlEscapeUri(bestuurseenheid.id)} <ex:analyze-string> ${sparqlEscapeUri(instanceSnapshotGraph)}`,
                 ]);
 
-            const actual = await repository.canPublishInstancesToGraph(bestuurseenheid, instanceSnapshotGraph);
+            const actual = await repository.canPublishInstanceToGraph(bestuurseenheid, instanceSnapshotGraph);
             expect(actual).toBeFalse();
         });
 

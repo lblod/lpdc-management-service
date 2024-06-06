@@ -56,7 +56,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
     async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotGraph: Iri, instanceSnapshotId: Iri) {
 
-        if(!await this._instanceSnapshotProcessingAuthorizationRepository.canPublishInstancesToGraph(bestuurseenheid, instanceSnapshotGraph)) {
+        if(!await this._instanceSnapshotProcessingAuthorizationRepository.canPublishInstanceToGraph(bestuurseenheid, instanceSnapshotGraph)) {
             throw new ForbiddenError(`Bestuur ${sparqlEscapeUri(bestuurseenheid.id)} niet toegelaten voor instance snapshot graph ${sparqlEscapeUri(instanceSnapshotGraph)}.`);
         }
 

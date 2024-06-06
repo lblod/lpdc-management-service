@@ -15,13 +15,13 @@ export class InstanceSnapshotProcessingAuthorizationSparqlRepository implements 
         this.querying = new SparqlQuerying(endpoint);
     }
 
-    async canPublishInstancesToGraph(bestuurseenheid: Bestuurseenheid, instanceSnapshotGraph: Iri): Promise<boolean> {
+    async canPublishInstanceToGraph(bestuurseenheid: Bestuurseenheid, instanceSnapshotGraph: Iri): Promise<boolean> {
         const query = `
             ${PREFIX.lpdc}
         
         ASK {
             GRAPH ${sparqlEscapeUri(INSTANCE_SNAPHOT_LDES_AUTHORIZATION_GRAPH)} {
-                ${sparqlEscapeUri(bestuurseenheid.id)} lpdc:canPublishInstancesToGraph ${sparqlEscapeUri(instanceSnapshotGraph)}.
+                ${sparqlEscapeUri(bestuurseenheid.id)} lpdc:canPublishInstanceToGraph ${sparqlEscapeUri(instanceSnapshotGraph)}.
             }
         }`;
         return this.querying.ask(query);

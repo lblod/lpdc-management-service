@@ -20,7 +20,7 @@ export class InstanceSnapshotProcessingAuthorizationSparqlTestRepository extends
         await this.directDatabaseAccess.insertData(
             INSTANCE_SNAPHOT_LDES_AUTHORIZATION_GRAPH,
             [
-                `${sparqlEscapeUri(bestuurseenheid.id)} <http://data.lblod.info/vocabularies/lpdc/canPublishInstancesToGraph> ${sparqlEscapeUri(instanceSnapshotGraph)}`,
+                `${sparqlEscapeUri(bestuurseenheid.id)} <http://data.lblod.info/vocabularies/lpdc/canPublishInstanceToGraph> ${sparqlEscapeUri(instanceSnapshotGraph)}`,
             ]);
     }
 
