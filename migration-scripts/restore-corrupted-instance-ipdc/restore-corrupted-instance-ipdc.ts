@@ -161,7 +161,6 @@ async function toInstance(mapper: QuadsToDomainMapper, chosenLanguage: Language,
         .withPublicationStatus(undefined)
         .withSpatials(mapper.spatials(instanceIri))
         .withLegalResources(mapper.legalResources(instanceIri))
-        .withDutchLanguageVariant(Language.INFORMAL)
         .build();
 }
 
