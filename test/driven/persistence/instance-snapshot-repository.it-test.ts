@@ -580,7 +580,7 @@ describe('InstanceSnapshotRepository', () => {
         });
 
         for (const type of Object.values(ProductType)) {
-            test(`Product type ${type} can be mapped`, async () => {
+            test(`Producttype ${type} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
                 const instanceSnapshot = aMinimalInstanceSnapshot()
                     .withCreatedBy(bestuurseenheid.id)
@@ -597,7 +597,7 @@ describe('InstanceSnapshotRepository', () => {
             });
         }
 
-        test('Unknown Product Type can not be mapped', async () => {
+        test('Unknown ProductType can not be mapped', async () => {
             const instanceSnapshotIri = buildInstanceSnapshotIri(uuid());
 
             const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));

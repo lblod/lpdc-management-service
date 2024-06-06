@@ -2536,7 +2536,7 @@ describe('ConceptSnapshotRepository', () => {
         });
 
         for (const type of Object.values(ProductType)) {
-            test(`Product type ${type} can be mapped`, async () => {
+            test(`Producttype ${type} can be mapped`, async () => {
                 const conceptSnapshot = aMinimalConceptSnapshot().withType(type).build();
                 await repository.save(conceptSnapshot);
 
@@ -2546,7 +2546,7 @@ describe('ConceptSnapshotRepository', () => {
             });
         }
 
-        test('Unknown Product Type can not be mapped', async () => {
+        test('Unknown ProductType can not be mapped', async () => {
             const conceptSnapshotId = buildConceptSnapshotIri(uuid());
 
             await directDatabaseAccess.insertData(

@@ -1125,7 +1125,7 @@ describe('InstanceRepository', () => {
         });
 
         for (const type of Object.values(ProductType)) {
-            test(`Product type ${type} can be mapped`, async () => {
+            test(`Producttype ${type} can be mapped`, async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
                 const instance = aMinimalInstance()
                     .withCreatedBy(bestuurseenheid.id)
@@ -1140,7 +1140,7 @@ describe('InstanceRepository', () => {
             });
         }
 
-        test('Unknown Product Type can not be mapped', async () => {
+        test('Unknown ProductType can not be mapped', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instanceIri = buildInstanceIri(uuid());
 
