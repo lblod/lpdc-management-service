@@ -176,6 +176,29 @@ describe('InstanceRepository', () => {
             expect(actualInstance).toEqual(dbInstance);
         });
 
+        test('should not error when modified date of old instance is the same as in db, but exactly on the second', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const dbInstance = aFullInstance()
+                .withCreatedBy(bestuurseenheid.id)
+                .withDateModified(FormatPreservingDate.of('2023-10-30T00:00:00.000Z'))
+                .withTitle(LanguageString.of('', undefined, uuid()))
+                .build();
+            await repository.save(bestuurseenheid, dbInstance);
+
+            const oldInstance = InstanceBuilder.from(dbInstance)
+                .withDateModified(FormatPreservingDate.of('2023-10-30T00:00:00.000Z'))
+                .build();
+
+            const newInstance = InstanceBuilder.from(dbInstance)
+                .build();
+
+            await repository.update(bestuurseenheid, newInstance, oldInstance.dateModified);
+
+            const actualInstance = await repository.findById(bestuurseenheid, newInstance.id);
+            expect(actualInstance.dateModified).not.toEqual(dbInstance.dateModified);
+            expect(actualInstance.title).toEqual(dbInstance.title);
+        });
+
         test('should throw error when version undefined', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const dbInstance = aFullInstance()

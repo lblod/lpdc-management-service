@@ -83,7 +83,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         requiredValue(instanceVersion, "Instantie versie");
         const oldInstance = await this.findById(bestuurseenheid, instance.id);
 
-        if (instanceVersion.value != oldInstance.dateModified.value) {
+        if (FormatPreservingDate.isFunctionallyChanged(instanceVersion, oldInstance.dateModified)) {
             throw new ConcurrentUpdateError("De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in");
         }
         const newInstance = InstanceBuilder.from(instance).withDateModified(FormatPreservingDate.now()).build();

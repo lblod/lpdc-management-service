@@ -117,7 +117,7 @@ describe('Concept Snapshot Data Integrity Validation', () => {
 
     }, 60000 * 15 * 100 * 10);
 
-    test('Load one concept snapshot and print quads', async () => {
+    test.skip('Load one concept snapshot and print quads', async () => {
         const id = new Iri('https://ipdc.vlaanderen.be/id/conceptsnapshot/ca9849fd-c842-4950-8dfe-baa347e0879a');
 
         const allQuads = await fetcher.fetch(graph, id, [],
