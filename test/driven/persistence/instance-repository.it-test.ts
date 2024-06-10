@@ -181,7 +181,7 @@ describe('InstanceRepository', () => {
             const dbInstance = aFullInstance()
                 .withCreatedBy(bestuurseenheid.id)
                 .withDateModified(FormatPreservingDate.of('2023-10-30T00:00:00.000Z'))
-                .withTitle(LanguageString.of('', undefined, uuid()))
+                .withTitle(LanguageString.ofValueInLanguage(uuid(), Language.FORMAL))
                 .build();
             await repository.save(bestuurseenheid, dbInstance);
 
