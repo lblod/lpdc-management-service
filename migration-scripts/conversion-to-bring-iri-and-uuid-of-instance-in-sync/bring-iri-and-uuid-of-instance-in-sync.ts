@@ -89,7 +89,7 @@ async function main() {
                 if (!uuidsForInstance.extractedFromIdFound
                     && !uuidsForInstance.asValueFound
                     && instance.datePublished) {
-                    throw new Error(`instantie ${instance.id} is verstuurd (date published present), but cannot be found in ipdc ...`);
+                    throw new Error(`instantie ${instance.id} is verzonden (date published present), but cannot be found in ipdc ...`);
                 }
 
             }

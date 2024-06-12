@@ -136,7 +136,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
             expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
             expect(instanceAfterMerge.datePublished).toEqual(undefined);
-            expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERSTUURD);
+            expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
             expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
             expect(instanceAfterMerge.publicationStatus).toEqual(undefined);
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -373,7 +373,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
             expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
             expect(instanceAfterMerge.datePublished).toEqual(undefined);
-            expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERSTUURD);
+            expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
             expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
             expect(instanceAfterMerge.publicationStatus).toEqual(undefined);
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -613,7 +613,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.dateModified).toEqual(FormatPreservingDate.now());
                 expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
                 expect(instanceAfterMerge.datePublished).toEqual(instance.datePublished);
-                expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERSTUURD);
+                expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
                 expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
                 expect(instanceAfterMerge.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
                 expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -854,7 +854,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.dateModified).toEqual(FormatPreservingDate.now());
                 expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
                 expect(instanceAfterMerge.datePublished).toEqual(instance.datePublished);
-                expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERSTUURD);
+                expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
                 expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
                 expect(instanceAfterMerge.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
                 expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);

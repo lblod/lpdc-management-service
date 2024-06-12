@@ -504,10 +504,10 @@ describe('constructing', () => {
 
     });
 
-    test('When status is verstuurd and dateSent is undefined should throw error', () => {
-        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.VERSTUURD).withDateSent(undefined);
+    test('When status is verzonden and dateSent is undefined should throw error', () => {
+        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.VERZONDEN).withDateSent(undefined);
 
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'dateSent moet aanwezig zijn wanneer status gelijk is aan verstuurd ');
+        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'dateSent moet aanwezig zijn wanneer status gelijk is aan verzonden ');
 
     });
 
@@ -854,7 +854,7 @@ describe('reopen', () => {
 
     test('should update status', () => {
         const instance = aFullInstance()
-            .withStatus(InstanceStatusType.VERSTUURD)
+            .withStatus(InstanceStatusType.VERZONDEN)
             .build();
 
         const updatedInstance = instance.reopen();
@@ -874,7 +874,7 @@ describe('reopen', () => {
 
     test('When instance publication state is published then publication state should be set to Te herpubliceren', () => {
         const instance = aFullInstance()
-            .withStatus(InstanceStatusType.VERSTUURD)
+            .withStatus(InstanceStatusType.VERZONDEN)
             .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
             .build();
 
@@ -886,9 +886,9 @@ describe('reopen', () => {
             .build());
     });
 
-    test('when publication status was verstuurd but never published', () => {
+    test('when publication status was verzonden but never published', () => {
         const instance = aFullInstance()
-            .withStatus(InstanceStatusType.VERSTUURD)
+            .withStatus(InstanceStatusType.VERZONDEN)
             .build();
 
         const updatedInstance = instance.reopen();
@@ -902,7 +902,7 @@ describe('reopen', () => {
     test('when publication status te-herpubliceren, and previously published', () => {
         const datePublished = FormatPreservingDate.now();
         const instance = aFullInstance()
-            .withStatus(InstanceStatusType.VERSTUURD)
+            .withStatus(InstanceStatusType.VERZONDEN)
             .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
             .withDatePublished(datePublished)
             .build();
@@ -919,7 +919,7 @@ describe('reopen', () => {
     test('when publication status gepubliceerd', () => {
         const datePublished = FormatPreservingDate.now();
         const instance = aFullInstance()
-            .withStatus(InstanceStatusType.VERSTUURD)
+            .withStatus(InstanceStatusType.VERZONDEN)
             .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
             .withDatePublished(datePublished)
             .build();
@@ -992,17 +992,17 @@ describe('publish', () => {
         const updatedInstance = instance.publish();
 
         expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
-            .withStatus(InstanceStatusType.VERSTUURD)
+            .withStatus(InstanceStatusType.VERZONDEN)
             .withDateSent(FormatPreservingDate.now())
             .build());
     });
 
-    test('should throw error when instance status is Verstuurd', () => {
+    test('should throw error when instance status is Verzonden', () => {
         const instance = aFullInstance()
-            .withStatus(InstanceStatusType.VERSTUURD)
+            .withStatus(InstanceStatusType.VERZONDEN)
             .build();
 
-        expect(() => instance.publish()).toThrowWithMessage(InvariantError, 'Instantie heeft reeds status verstuurd');
+        expect(() => instance.publish()).toThrowWithMessage(InvariantError, 'Instantie heeft reeds status verzonden');
     });
 
 });
@@ -1022,7 +1022,7 @@ describe('transformToInformal', () => {
         const instance = aMinimalInstance()
             .withDateSent(FormatPreservingDate.now())
             .withDatePublished(FormatPreservingDate.now())
-            .withStatus(InstanceStatusType.VERSTUURD)
+            .withStatus(InstanceStatusType.VERZONDEN)
             .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
             .withNeedsConversionFromFormalToInformal(false)
             .build();
@@ -1032,7 +1032,7 @@ describe('transformToInformal', () => {
 
     test('should transform all languageStrings from nl or nl-be-x-formal to nl-be-x-informal', () => {
         const instance = aFullInstance()
-            .withStatus(InstanceStatusType.VERSTUURD)
+            .withStatus(InstanceStatusType.VERZONDEN)
             .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
             .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
             .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))

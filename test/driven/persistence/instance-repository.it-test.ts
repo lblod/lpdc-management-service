@@ -231,7 +231,7 @@ describe('InstanceRepository', () => {
                     .withCreatedBy(bestuurseenheid.id)
                     .withDateCreated(instanceDateCreated)
                     .withDateModified(instanceDateModified)
-                    .withStatus(InstanceStatusType.VERSTUURD)
+                    .withStatus(InstanceStatusType.VERZONDEN)
                     .withDateSent(FormatPreservingDate.now())
                     .build();
 
@@ -264,7 +264,7 @@ describe('InstanceRepository', () => {
                     .withCreatedBy(bestuurseenheid.id)
                     .withDateCreated(instanceDateCreated)
                     .withDateModified(instanceDateModified)
-                    .withStatus(InstanceStatusType.VERSTUURD)
+                    .withStatus(InstanceStatusType.VERZONDEN)
                     .withDutchLanguageVariant(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT)
                     .withDateSent(FormatPreservingDate.now())
                     .build();
@@ -300,7 +300,7 @@ describe('InstanceRepository', () => {
                     .withCreatedBy(bestuurseenheid.id)
                     .withDateCreated(instanceDateCreated)
                     .withDateModified(instanceDateModified)
-                    .withStatus(InstanceStatusType.VERSTUURD)
+                    .withStatus(InstanceStatusType.VERZONDEN)
                     .withDutchLanguageVariant(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT)
                     .withDateSent(FormatPreservingDate.now())
                     .build();
@@ -652,7 +652,7 @@ describe('InstanceRepository', () => {
                     .withId(instanceId)
                     .withUuid(instanceUUID)
                     .withCreatedBy(bestuurseenheid.id)
-                    .withStatus(InstanceStatusType.VERSTUURD)
+                    .withStatus(InstanceStatusType.VERZONDEN)
                     .withSpatials(
                         [
                             buildNutsCodeIri(45700),
@@ -854,7 +854,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/dateSent> """${InstanceTestBuilder.DATE_SENT.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/datePublished> """${InstanceTestBuilder.DATE_PUBLISHED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verstuurd>`,
+                    `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verzonden>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/reviewStatus> <http://lblod.data.gift/concepts/review-status/concept-gewijzigd>`,
                     `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>`,
                     `<${instanceId}> <http://purl.org/dc/terms/spatial> <${instance.spatials[0].value}>`,

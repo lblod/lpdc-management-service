@@ -166,7 +166,7 @@ export class Instance {
         this._needsConversionFromFormalToInformal = requiredValue(needsConversionFromFormalToInformal, 'needsConversionFromFormalToInformal');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
-        this._dateSent = requireShouldBePresentWhenOtherValueEquals(dateSent, 'dateSent', InstanceStatusType.VERSTUURD, status, 'status');
+        this._dateSent = requireShouldBePresentWhenOtherValueEquals(dateSent, 'dateSent', InstanceStatusType.VERZONDEN, status, 'status');
         this._datePublished = requiredCanOnlyBePresentIfOtherValuePresent(datePublished, 'datePublished', dateSent, 'dateSent');
         this._status = requiredValue(status, 'status');
         this._reviewStatus = requiredCanOnlyBePresentIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId, 'concept');
@@ -451,11 +451,11 @@ export class Instance {
     }
 
     publish(): Instance {
-        if (this.status === InstanceStatusType.VERSTUURD) {
-            throw new InvariantError('Instantie heeft reeds status verstuurd');
+        if (this.status === InstanceStatusType.VERZONDEN) {
+            throw new InvariantError('Instantie heeft reeds status verzonden');
         }
         return InstanceBuilder.from(this)
-            .withStatus(InstanceStatusType.VERSTUURD)
+            .withStatus(InstanceStatusType.VERZONDEN)
             .withDateSent(FormatPreservingDate.now())
             .build();
     }

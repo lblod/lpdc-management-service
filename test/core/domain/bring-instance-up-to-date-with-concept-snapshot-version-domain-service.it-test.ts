@@ -483,7 +483,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             expect(actualInstance).toEqual(expectedInstance);
         });
 
-        test('should reopen instance if verstuurd', async () => {
+        test('should reopen instance if verzonden', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const conceptId = buildConceptIri(uuid());
             const conceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
@@ -496,7 +496,7 @@ describe('Bring instance up to date with concept snapshot version domain service
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
                 .withReviewStatus(undefined)
-                .withStatus(InstanceStatusType.VERSTUURD)
+                .withStatus(InstanceStatusType.VERZONDEN)
                 .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
                 .build();
             const newConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();

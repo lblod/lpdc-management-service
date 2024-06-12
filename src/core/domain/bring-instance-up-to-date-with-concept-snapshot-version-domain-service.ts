@@ -34,7 +34,7 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
         const instanceLanguage = instance.dutchLanguageVariant;
         const conceptSnapshotLanguage = this._selectConceptLanguageDomainService.selectAvailableLanguage(conceptSnapshot, instanceLanguage === Language.INFORMAL);
 
-        const instanceInStatusOntwerp = instance.status === InstanceStatusType.VERSTUURD ? instance.reopen() : instance;
+        const instanceInStatusOntwerp = instance.status === InstanceStatusType.VERZONDEN ? instance.reopen() : instance;
 
         const conceptSnapshotInInstanceLanguage = conceptSnapshot
             .transformLanguage(conceptSnapshotLanguage, instanceLanguage);

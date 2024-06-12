@@ -156,7 +156,7 @@ async function toInstance(mapper: QuadsToDomainMapper, chosenLanguage: Language,
         .withDateModified(FormatPreservingDate.now())
         .withDateSent(FormatPreservingDate.now())
         .withDatePublished(undefined)
-        .withStatus(InstanceStatusType.VERSTUURD)
+        .withStatus(InstanceStatusType.VERZONDEN)
         .withReviewStatus(undefined)
         .withPublicationStatus(undefined)
         .withSpatials(mapper.spatials(instanceIri))

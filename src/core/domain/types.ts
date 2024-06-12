@@ -193,7 +193,7 @@ export enum ConceptTagType {
 
 export enum InstanceStatusType {
     ONTWERP = 'ontwerp',
-    VERSTUURD = 'verstuurd',
+    VERZONDEN = 'verzonden',
 }
 
 export enum InstanceReviewStatusType {
