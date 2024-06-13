@@ -47,6 +47,9 @@ export class ConceptSparqlRepository implements ConceptRepository {
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
                 NS.besluit('Bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
+                NS.lpdcExt('InstancePublicService').value,
+                NS.lpdcExt('InstancePublicServiceSnapshot').value,
+                NS.lpdcExt('ConceptualPublicServiceSnapshot').value,
             ]);
         const mapper = new QuadsToDomainMapper(quads, new Iri(CONCEPT_GRAPH), new LoggingDoubleQuadReporter(new Logger('Concept-QuadsToDomainLogger')));
 

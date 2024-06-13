@@ -55,6 +55,9 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
                 NS.besluit('Bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
+                NS.lpdcExt('InstancePublicService').value,
+                NS.lpdcExt('ConceptualPublicService').value,
+                NS.lpdcExt('ConceptualPublicServiceSnapshot').value,
             ]);
 
         const mapper = new QuadsToDomainMapper(quads, instanceSnapshotGraph, this.doubleQuadReporter);

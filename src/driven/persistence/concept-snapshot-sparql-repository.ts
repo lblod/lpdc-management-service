@@ -31,6 +31,9 @@ export class ConceptSnapshotSparqlRepository implements ConceptSnapshotRepositor
                 NS.lpdcExt('ConceptDisplayConfiguration').value,
                 NS.besluit('Bestuurseenheid').value,
                 NS.m8g('PublicOrganisation').value,
+                NS.lpdcExt('InstancePublicService').value,
+                NS.lpdcExt('InstancePublicServiceSnapshot').value,
+                NS.lpdcExt('ConceptualPublicService').value,
             ]);
 
         const mapper = new QuadsToDomainMapper(quads, ldesDataGraph, new LoggingDoubleQuadReporter(new Logger('ConceptSnapshot-QuadsToDomainLogger')));
