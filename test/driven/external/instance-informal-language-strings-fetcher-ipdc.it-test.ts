@@ -274,7 +274,7 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
     .withDateCreated(FormatPreservingDate.of("2024-04-24T14:01:09.807Z"))
     .withDateModified(FormatPreservingDate.of("2024-04-24T14:09:32.778Z"))
     .withDateSent(FormatPreservingDate.of("2024-04-24T14:09:45.773Z"))
-    .withDatePublished(FormatPreservingDate.of("2024-04-24T14:10:00.72350311Z"))
+    .withDatePublished(FormatPreservingDate.of("2024-04-24T14:10:00.7235031Z"))
     .withStatus(InstanceStatusType.VERZONDEN)
     .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD).build();
 

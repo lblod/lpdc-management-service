@@ -8,6 +8,7 @@ describe('format preserving date', () => {
     test('preserves format exactly', () => {
        expect(FormatPreservingDate.of('2027-09-16T00:00:00Z').value).toEqual('2027-09-16T00:00:00Z');
        expect(FormatPreservingDate.of('2023-09-12T20:00:20.564313Z').value).toEqual('2023-09-12T20:00:20.564313Z');
+       expect(FormatPreservingDate.of('2023-09-12T20:00:20.564313234Z').value).toEqual('2023-09-12T20:00:20.564313234Z');
        expect(FormatPreservingDate.of('2023-09-12T20:00:20.564Z').value).toEqual('2023-09-12T20:00:20.564Z');
        expect(FormatPreservingDate.of('2023-09-12T00:00:00Z').value).toEqual('2023-09-12T00:00:00Z');
     });
@@ -55,7 +56,13 @@ describe('format preserving date', () => {
 
     test('throws exception on invalid format', () => {
         expect(() => FormatPreservingDate.of('abc')).toThrowWithMessage(InvariantError, 'value komt niet overeen met het patroon');
+        expect(() => FormatPreservingDate.of('2027-09-16')).toThrowWithMessage(InvariantError, 'value komt niet overeen met het patroon');
         expect(() => FormatPreservingDate.of('2027-09-16Z')).toThrowWithMessage(InvariantError, 'value komt niet overeen met het patroon');
+        expect(() => FormatPreservingDate.of('2027-09-16T00:00:00')).toThrowWithMessage(InvariantError, 'value komt niet overeen met het patroon');
+        expect(() => FormatPreservingDate.of('2027-09-16T20:00:20.0')).toThrowWithMessage(InvariantError, 'value komt niet overeen met het patroon');
+        expect(() => FormatPreservingDate.of('2027-09-16T20:00:20.000')).toThrowWithMessage(InvariantError, 'value komt niet overeen met het patroon');
+        expect(() => FormatPreservingDate.of('2027-09-16T20:00:20.000000')).toThrowWithMessage(InvariantError, 'value komt niet overeen met het patroon');
+        expect(() => FormatPreservingDate.of('2027-09-16T20:00:20.000000000')).toThrowWithMessage(InvariantError, 'value komt niet overeen met het patroon');
 
     });
 

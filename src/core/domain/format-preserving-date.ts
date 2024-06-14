@@ -3,7 +3,7 @@ import {Invariant} from "./shared/invariant";
 
 export class FormatPreservingDate {
 
-    private static readonly iso8601Regex = /^(\d{4}-\d{2}-\d{2})(T(\d{2}:\d{2}:\d{2})(\.\d{1,9})?(Z|[+-]\d{2}:\d{2})?)?$/;
+    private static readonly iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|\.\dZ|\.\d{2}Z|\.\d{3}Z|\.\d{6,9}Z)$/;
 
 
     private readonly _value: string;

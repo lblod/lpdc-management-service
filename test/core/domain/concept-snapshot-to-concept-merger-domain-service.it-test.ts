@@ -364,8 +364,8 @@ describe('merges a new concept snapshot into a concept', () => {
             const conceptSnapshot =
                 aFullConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withStartDate(FormatPreservingDate.of('2019-07-13T00:00:00'))
-                    .withEndDate(FormatPreservingDate.of('2023-12-03T00:00:00'))
+                    .withStartDate(FormatPreservingDate.of('2019-07-13T00:00:00Z'))
+                    .withEndDate(FormatPreservingDate.of('2023-12-03T00:00:00Z'))
                     .withType(ProductType.ADVIESBEGELEIDING)
                     .withTargetAudiences([TargetAudienceType.BURGER, TargetAudienceType.VLAAMSEOVERHEID, TargetAudienceType.ORGANISATIE])
                     .withThemes([ThemeType.CULTUURSPORTVRIJETIJD, ThemeType.MOBILITEITOPENBAREWERKEN, ThemeType.WELZIJNGEZONDHEID])
@@ -376,7 +376,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withPublicationMedia([PublicationMediumType.YOUREUROPE])
                     .withYourEuropeCategories([YourEuropeCategoryType.BEDRIJFINSOLVENTIELIQUIDATIE, YourEuropeCategoryType.PROCEDUREPENSIONERING, YourEuropeCategoryType.GOEDERENRECYCLAGE])
                     .withKeywords([LanguageString.of('buitenland'), LanguageString.of('ambulante activiteit'), LanguageString.of('levensloos')])
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .withConceptTags([ConceptTagType.YOUREUROPEVERPLICHT])
                     .withLegalResources([anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(1).build(), anotherFullLegalResourceForConceptSnapshot(uuid()).withOrder(2).build()])
                     .build();
@@ -394,8 +394,8 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withAdditionalDescription(suffixUnique(conceptSnapshot.additionalDescription))
                     .withException(suffixUnique(conceptSnapshot.exception))
                     .withRegulation(suffixUnique(conceptSnapshot.regulation))
-                    .withStartDate(FormatPreservingDate.of('2024-01-06T00:00:00'))
-                    .withEndDate(FormatPreservingDate.of('2025-04-17T00:00:00'))
+                    .withStartDate(FormatPreservingDate.of('2024-01-06T00:00:00Z'))
+                    .withEndDate(FormatPreservingDate.of('2025-04-17T00:00:00Z'))
                     .withType(ProductType.FINANCIEELVOORDEEL)
                     .withTargetAudiences([TargetAudienceType.ONDERNEMING, TargetAudienceType.VERENIGING])
                     .withThemes([ThemeType.BOUWENWONEN, ThemeType.ONDERWIJSWETENSCHAP, ThemeType.MILIEUENERGIE])
@@ -466,7 +466,7 @@ describe('merges a new concept snapshot into a concept', () => {
                                 .build()
                         ])
                     .withProductId(conceptSnapshot.productId + uuid())
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .withConceptTags([ConceptTagType.YOUREUROPEAANBEVOLEN])
                     .withLegalResources(
                         [
@@ -689,7 +689,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withTitle(title)
                     .withDescription(description)
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -702,7 +702,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withTitle(title)
                     .withDescription(description)
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
@@ -750,7 +750,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -761,7 +761,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const updatedConceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
@@ -781,7 +781,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -809,7 +809,7 @@ describe('merges a new concept snapshot into a concept', () => {
                             ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_FORMAL,
                             ConceptSnapshotTestBuilder.TITLE_NL_GENERATED_INFORMAL))
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -821,7 +821,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withTitle(suffixUnique(conceptSnapshot.title))
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
@@ -840,7 +840,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withTitle(suffixUnique(conceptSnapshot.title))
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(anotherOldUpdatedConceptSnapshot);
@@ -862,7 +862,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withIsArchived(true)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -875,7 +875,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withIsArchived(true)
                     .withCosts([aFullCost().build()])
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
@@ -896,7 +896,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withIsArchived(true)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -909,7 +909,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withIsArchived(true)
                     .withCosts([aFullCost().build()])
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(archivedConceptSnapshot);
@@ -923,7 +923,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withIsArchived(false)
                     .withCosts([aFullCost().build()])
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-12T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-12T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(unarchivedConceptSnapshot);
@@ -943,7 +943,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const conceptSnapshot =
                 aFullConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -955,7 +955,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withTitle(suffixUnique(conceptSnapshot.title))
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
@@ -976,7 +976,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withTitle(suffixUnique(updatedConceptSnapshot.title))
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-18T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-18T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(secondTimeUpdatedConceptSnapshot);
@@ -997,7 +997,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withTitle(suffixUnique(updatedConceptSnapshot.title))
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T12:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T12:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(thirdTimeButOlderUpdatedConceptSnapshot);
@@ -1018,7 +1018,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withTitle(suffixUnique(secondTimeUpdatedConceptSnapshot.title))
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-19T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-19T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(fourthTimeUpdatedConceptSnapshot);
@@ -1043,7 +1043,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withKeywords([LanguageString.of('keyword')])
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -1055,7 +1055,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aMinimalConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withTitle(suffixUnique(conceptSnapshot.title))
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .withKeywords([LanguageString.of(undefined, 'formal keyword')])
                     .build();
 
@@ -1182,7 +1182,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withTitle(title)
                     .withDescription(description)
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -1242,7 +1242,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .withTitle(title)
                     .withDescription(description)
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .build();
 
             await insertAllConceptSchemeLinksToGoOverGraphBoundaryVerifyConceptSchemesOfEnums(updatedConceptSnapshot);
@@ -1294,7 +1294,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const conceptSnapshot =
                 aFullConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -1327,7 +1327,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const updatedConceptSnapshot =
                 aFullConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .build();
 
             await conceptSnapshotRepository.save(updatedConceptSnapshot);
@@ -1358,7 +1358,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const conceptSnapshot =
                 aFullConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -1397,7 +1397,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aFullConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withIsArchived(true)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .build();
 
             await conceptSnapshotRepository.save(updatedConceptSnapshot);
@@ -1438,7 +1438,7 @@ describe('merges a new concept snapshot into a concept', () => {
             const conceptSnapshot =
                 aFullConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-10T00:00:00Z'))
                     .build();
             await conceptSnapshotRepository.save(conceptSnapshot);
 
@@ -1475,7 +1475,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aFullConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withIsArchived(true)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-11T00:00:00Z'))
                     .build();
 
             await conceptSnapshotRepository.save(archivedConceptSnapshot);
@@ -1503,7 +1503,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 aFullConceptSnapshot()
                     .withIsVersionOfConcept(isVersionOfConceptId)
                     .withIsArchived(false)
-                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-12T00:00:00'))
+                    .withGeneratedAtTime(FormatPreservingDate.of('2023-12-12T00:00:00Z'))
                     .build();
 
             await conceptSnapshotRepository.save(unarchivedConceptSnapshot);
