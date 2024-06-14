@@ -455,6 +455,9 @@ export class Instance {
                 throw new InvariantError('Minstens één van de adresgegevens is niet geldig');
             }
         }
+        if(this._forMunicipalityMerger) {
+            throw new InvariantError('Een product of dienst bestemd voor een fusiegemeente kan nog niet worden verzonden naar de Vlaamse overheid');
+        }
     }
 
     publish(): Instance {

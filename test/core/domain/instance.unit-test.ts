@@ -984,6 +984,14 @@ describe('validateForPublish', () => {
         expect(() => instance.validateForPublish(true)).not.toThrow();
     });
 
+    test('When instance is forMunicipalityMerger, instance is invalid', () => {
+       const instance = aFullInstance()
+           .withForMunicipalityMerger(true)
+           .build();
+
+        expect(() => instance.validateForPublish(false)).toThrowWithMessage(InvariantError, 'Een product of dienst bestemd voor een fusiegemeente kan nog niet worden verzonden naar de Vlaamse overheid');
+    });
+
 });
 
 describe('publish', () => {
