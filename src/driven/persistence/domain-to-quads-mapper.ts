@@ -157,6 +157,7 @@ export class DomainToQuadsMapper {
             this.publicationStatus(instance.id, instance.publicationStatus),
             ...this.spatials(instance.id, instance.spatials),
             ...this.legalResources(instance.id, instance.legalResources),
+            this.forMunicipalityMerger(instance.id, instance.forMunicipalityMerger),
         ].filter(t => t !== undefined);
     }
 
@@ -480,6 +481,10 @@ export class DomainToQuadsMapper {
 
     private needsConversionFromFormalToInformal(id: Iri, needsConversionFromFormalToInformal: boolean): Statement {
         return this.buildQuad(namedNode(id.value), NS.lpdcExt('needsConversionFromFormalToInformal'), literal(needsConversionFromFormalToInformal.toString(), NS.xsd('boolean')));
+    }
+
+    private forMunicipalityMerger(id: Iri, forMunicipalityMerger: boolean): Statement {
+        return this.buildQuad(namedNode(id.value), NS.lpdcExt('forMunicipalityMerger'), literal(forMunicipalityMerger.toString(), NS.xsd('boolean')));
     }
 
     private verwijstNaar(id: Iri, verwijstNaar: Iri | undefined): Statement | undefined {

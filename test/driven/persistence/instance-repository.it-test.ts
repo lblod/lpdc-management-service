@@ -604,6 +604,18 @@ describe('InstanceRepository', () => {
 
     describe('Verify ontology and mapping', () => {
 
+        test('verify saved instance is same as loaded', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance()
+                .withNeedsConversionFromFormalToInformal(true)
+                .withForMunicipalityMerger(true)
+                .build();
+
+            await repository.save(bestuurseenheid, instance);
+            const savedInstance = await repository.findById(bestuurseenheid, instance.id);
+            expect(instance).toEqual(savedInstance);
+        });
+
         test('Verify minimal mapping', async () => {
             const instanceUUID = uuid();
             const instanceId = buildInstanceIri(instanceUUID);
