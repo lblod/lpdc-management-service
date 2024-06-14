@@ -667,6 +667,10 @@ describe('constructing', () => {
         });
     });
 
+    test('undefined forMunicipalityMerger throws error', () => {
+        expect(() => aFullInstance().withForMunicipalityMerger(undefined).build()).toThrowWithMessage(InvariantError, 'forMunicipalityMerger mag niet ontbreken');
+    });
+
 });
 
 describe('validateLanguages', () => {

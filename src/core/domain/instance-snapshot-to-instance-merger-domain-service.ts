@@ -151,7 +151,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             undefined,
             undefined,
             instanceSnapshot.spatials,
-            instanceSnapshot.legalResources.map(lr => lr.transformWithNewId())
+            instanceSnapshot.legalResources.map(lr => lr.transformWithNewId()),
+            false,
         );
         instance.validateForPublish(false);
         return instance;
@@ -200,6 +201,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instance.datePublished ? InstancePublicationStatusType.TE_HERPUBLICEREN : undefined,
             instanceSnapshot.spatials,
             instanceSnapshot.legalResources.map(lr => lr.transformWithNewId()),
+            false,
         );
         mergedInstance.validateForPublish(false);
         return mergedInstance;

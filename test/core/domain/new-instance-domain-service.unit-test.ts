@@ -74,6 +74,7 @@ describe('Creating a new Instance domain service', () => {
                 .withSpatials([spatial1, spatial2])
                 .withCompetentAuthorities([bestuurseenheid.id])
                 .withExecutingAuthorities([bestuurseenheid.id])
+                .withForMunicipalityMerger(false)
                 .build();
         expect(createdInstance).toEqual(expectedInstance);
         expect(reloadedInstance).toEqual(expectedInstance);
@@ -109,6 +110,7 @@ describe('Creating a new Instance domain service', () => {
                 .withSpatials([spatial1, spatial2])
                 .withCompetentAuthorities([bestuurseenheid.id])
                 .withExecutingAuthorities([bestuurseenheid.id])
+                .withForMunicipalityMerger(false)
                 .build();
         expect(createdInstance).toEqual(expectedInstance);
         expect(reloadedInstance).toEqual(expectedInstance);
@@ -324,6 +326,7 @@ describe('Creating a new Instance domain service', () => {
                         .withOrder(2)
                         .build(),
                 ])
+                .withForMunicipalityMerger(false)
                 .build();
 
         expect(createdInstance).toEqual(expectedInstance);
@@ -583,6 +586,7 @@ describe('Creating a new Instance domain service', () => {
                         .withOrder(2)
                         .build(),
                 ])
+                .withForMunicipalityMerger(false)
                 .build();
 
         expect(createdInstance).toEqual(expectedInstance);
@@ -806,6 +810,7 @@ describe('Creating a new Instance domain service', () => {
                         .withOrder(2)
                         .build(),
                 ])
+                .withForMunicipalityMerger(false)
                 .build();
 
         expect(createdInstance).toEqual(expectedInstance);

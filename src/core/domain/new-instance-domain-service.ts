@@ -83,6 +83,7 @@ export class NewInstanceDomainService {
                 undefined,
                 bestuurseenheid.spatials,
                 [],
+                false
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);
@@ -143,6 +144,7 @@ export class NewInstanceDomainService {
                 undefined,
                 bestuurseenheid.spatials,
                 concept.legalResources.map(lr => lr.transformLanguage(conceptLanguage, dutchLanguageVariant).transformWithNewId()),
+                false,
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);

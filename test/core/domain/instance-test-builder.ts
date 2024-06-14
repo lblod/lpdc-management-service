@@ -48,7 +48,8 @@ export function aMinimalInstance(): InstanceBuilder {
         .withDateModified(InstanceTestBuilder.DATE_MODIFIED)
         .withDutchLanguageVariant(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT)
         .withNeedsConversionFromFormalToInformal(InstanceTestBuilder.NEEDS_CONVERSION_FROM_FORMAL_TO_INFORMAL)
-        .withStatus(InstanceTestBuilder.STATUS);
+        .withStatus(InstanceTestBuilder.STATUS)
+        .withForMunicipalityMerger(InstanceTestBuilder.FOR_MUNICIPALITY_MERGER);
 }
 
 export function aFullInstance(): InstanceBuilder {
@@ -102,7 +103,8 @@ export function aFullInstance(): InstanceBuilder {
         .withReviewStatus(InstanceTestBuilder.REVIEW_STATUS)
         .withPublicationStatus(InstanceTestBuilder.PUBLICATION_STATUS)
         .withSpatials(InstanceTestBuilder.SPATIALS)
-        .withLegalResources(InstanceTestBuilder.LEGAL_RESOURCES);
+        .withLegalResources(InstanceTestBuilder.LEGAL_RESOURCES)
+        .withForMunicipalityMerger(InstanceTestBuilder.FOR_MUNICIPALITY_MERGER);
 }
 
 export class InstanceTestBuilder {
@@ -186,6 +188,8 @@ export class InstanceTestBuilder {
     public static readonly PUBLICATION_STATUS = InstancePublicationStatusType.TE_HERPUBLICEREN;
 
     public static readonly LEGAL_RESOURCES = [aFullLegalResourceForInstance().withOrder(1).build(), anotherFullLegalResourceForInstance(uuid()).withOrder(2).build()];
+
+    public static readonly FOR_MUNICIPALITY_MERGER = false;
 
 }
 

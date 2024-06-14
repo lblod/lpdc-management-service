@@ -307,7 +307,8 @@ export class QuadsToDomainMapper {
             this.instanceReviewStatusType(id),
             this.instancePublicationStatusType(id),
             this.spatials(id),
-            this.legalResources(id)
+            this.legalResources(id),
+            this.forMunicipalityMerger(id)
         );
     }
 
@@ -697,6 +698,10 @@ export class QuadsToDomainMapper {
 
     needsConversionFromFormalToInformal(id: Iri): boolean {
         return this.parseBoolean(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.lpdcExt('needsConversionFromFormalToInformal'))?.object as Literal);
+    }
+
+    forMunicipalityMerger(id: Iri): boolean {
+        return this.parseBoolean(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.lpdcExt('forMunicipalityMerger'))?.object as Literal);
     }
 
     private asFormatPreservingDate(aValue: string | undefined): FormatPreservingDate | undefined {

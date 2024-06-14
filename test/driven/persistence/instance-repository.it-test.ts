@@ -621,6 +621,7 @@ describe('InstanceRepository', () => {
                     .withDutchLanguageVariant(Language.INFORMAL)
                     .withNeedsConversionFromFormalToInformal(true)
                     .withStatus(InstanceStatusType.ONTWERP)
+                    .withForMunicipalityMerger(true)
                     .build();
 
             await directDatabaseAccess.insertData(
@@ -634,6 +635,7 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.INFORMAL}"""`,
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#forMunicipalityMerger> """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                 ]);
 
 
@@ -875,6 +877,8 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://purl.org/dc/terms/description> """${InstanceTestBuilder.LEGAL_RESOURCES[1].description.nlFormal}"""@nl-BE-x-formal`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://schema.org/url> """${InstanceTestBuilder.LEGAL_RESOURCES[1].url}"""`,
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
+
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#forMunicipalityMerger> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                 ]);
 
             const actualInstance = await repository.findById(bestuurseenheid, instanceId);

@@ -78,6 +78,7 @@ export class Instance {
     private readonly _publicationStatus: InstancePublicationStatusType | undefined;
     private readonly _spatials: Iri[];
     private readonly _legalResources: LegalResource[];
+    private readonly _forMunicipalityMerger: boolean;
 
     constructor(id: Iri,
                 uuid: string,
@@ -119,7 +120,8 @@ export class Instance {
                 reviewStatus: InstanceReviewStatusType,
                 publicationStatus: InstancePublicationStatusType,
                 spatials: Iri[],
-                legalResources: LegalResource[]
+                legalResources: LegalResource[],
+                forMunicipalityMerger: boolean
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -175,6 +177,7 @@ export class Instance {
         this._spatials = requireNoDuplicates(asSortedArray(spatials, Iri.compare), 'spatials');
         this._legalResources = [...legalResources].map(LegalResource.forInstance);
         requireNoDuplicates(this.legalResources.map(lr => lr.order), 'legal resources > order');
+        this._forMunicipalityMerger = requiredValue(forMunicipalityMerger, 'forMunicipalityMerger');
         this.validateLanguages();
         this.validateStatuses();
     }
@@ -407,6 +410,10 @@ export class Instance {
         return [...this._legalResources];
     }
 
+    get forMunicipalityMerger(): boolean {
+        return this._forMunicipalityMerger;
+    }
+
     transformToInformal(): Instance {
         if (this._dutchLanguageVariant == Language.INFORMAL) {
             throw new InvariantError('Instantie is reeds in de je-vorm');
@@ -504,6 +511,7 @@ export class InstanceBuilder {
     private publicationStatus: InstancePublicationStatusType;
     private spatials: Iri[] = [];
     private legalResources: LegalResource[] = [];
+    private forMunicipalityMerger: boolean;
 
     public static from(instance: Instance): InstanceBuilder {
         return new InstanceBuilder()
@@ -547,7 +555,8 @@ export class InstanceBuilder {
             .withReviewStatus(instance.reviewStatus)
             .withPublicationStatus(instance.publicationStatus)
             .withSpatials(instance.spatials)
-            .withLegalResources(instance.legalResources);
+            .withLegalResources(instance.legalResources)
+            .withForMunicipalityMerger(instance.forMunicipalityMerger);
     }
 
     public withId(id: Iri): InstanceBuilder {
@@ -755,6 +764,11 @@ export class InstanceBuilder {
         return this;
     }
 
+    public withForMunicipalityMerger(forMunicipalityMerger: boolean): InstanceBuilder {
+        this.forMunicipalityMerger = forMunicipalityMerger;
+        return this;
+    }
+
     public build(): Instance {
         return new Instance(
             this.id,
@@ -797,7 +811,8 @@ export class InstanceBuilder {
             this.reviewStatus,
             this.publicationStatus,
             this.spatials,
-            this.legalResources
+            this.legalResources,
+            this.forMunicipalityMerger,
         );
     }
 }

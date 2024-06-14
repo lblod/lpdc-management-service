@@ -276,7 +276,9 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
     .withDateSent(FormatPreservingDate.of("2024-04-24T14:09:45.773Z"))
     .withDatePublished(FormatPreservingDate.of("2024-04-24T14:10:00.72350311Z"))
     .withStatus(InstanceStatusType.VERZONDEN)
-    .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD).build();
+    .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+    .withForMunicipalityMerger(false)
+    .build();
 
 describe('Instance informal language strings fetcher ipdc', () => {
 
