@@ -230,7 +230,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         const newUuid = uuid();
         return Address.reconstitute(
             AddressBuilder.buildIri(newUuid),
-            newUuid, address.gemeentenaam,
+            newUuid,
+            address.gemeentenaam,
             address.land,
             address.huisnummer,
             address.busnummer,

@@ -8,7 +8,7 @@ export interface ConceptDisplayConfigurationRepository {
 
     findByConceptId(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<ConceptDisplayConfiguration>;
 
-    syncInstantiatedFlag(bestuurseeneheid: Bestuurseenheid, conceptId: Iri): Promise<void>;
+    syncInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void>;
 
     removeConceptIsNewFlag(bestuurseenheid: Bestuurseenheid, conceptDisplayConfigurationId: Iri): Promise<void>;
 
