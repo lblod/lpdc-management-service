@@ -272,6 +272,10 @@ app.put('/public-services/:instanceId/publish', async function (req, res, next):
     return await publishInstance(req, res).catch(next);
 });
 
+app.post('/public-services/:instanceId/copy', async function (req, res, next): Promise<any> {
+    return await copyInstance(req, res).catch(next);
+});
+
 app.use('/conceptual-public-services/', async (req, res, next) => {
     await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(next);
 });
@@ -545,6 +549,26 @@ async function publishInstance(req: Request, res: Response) {
 
     await instanceRepository.update(bestuurseenheid, instance.publish(), instanceVersion);
     return res.sendStatus(200);
+}
+
+async function copyInstance(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+    const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+    //TODO LPDC-1057: extract and use the is for municipality merger
+    const newInstance = await newInstanceDomainService.copyFrom(bestuurseenheid, instance);
+
+    return res.status(201).json({
+        data: {
+            "type": "public-service",
+            "id": newInstance.uuid,
+            "uri": newInstance.id.value
+        }
+    });
 }
 
 async function getDutchLanguageVersionForConcept(req: Request, res: Response) {
