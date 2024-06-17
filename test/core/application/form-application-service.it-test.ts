@@ -310,6 +310,32 @@ describe('Form application service tests', () => {
                 expect(serviceUri).toEqual(instance.id.value);
             });
 
+            test('load form with boolean values as 0 and 1', async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const instance = aMinimalInstance()
+                    .withNeedsConversionFromFormalToInformal(false)
+                    .withForMunicipalityMerger(true)
+                    .build();
+
+                await instanceRepository.save(bestuurseenheid, instance);
+
+                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+
+                const {
+                    form,
+                    source,
+                    serviceUri
+                } = await formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, undefined, FormType.INHOUD);
+
+                expect(form).toEqual('formdefinition');
+                expect(source).toEqual(semanticFormsMapper.instanceAsTurtleFormat(bestuurseenheid, instance).join("\r\n"));
+                expect(source).toContain(`<${instance.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#forMunicipalityMerger> "1"^^<http://www.w3.org/2001/XMLSchema#boolean> .`);
+                expect(source).toContain(`<${instance.id}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> "0"^^<http://www.w3.org/2001/XMLSchema#boolean> .`);
+                expect(serviceUri).toEqual(instance.id.value);
+            });
+
             test('meta data contains comparison sources for instance with concept and review status', async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
                 await bestuurseenheidRepository.save(bestuurseenheid);

@@ -173,6 +173,31 @@ pub:${instance.uuid}\n
 
     });
 
+    test('Can update an instance with boolean value', async () => {
+        const bestuurseenheid = aBestuurseenheid().build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const instance = await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+
+        await updateInstanceApplicationService.update(
+            bestuurseenheid,
+            instance.id,
+            instance.dateModified,
+            `@prefix : <#>.
+             @prefix lpdcExt: <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#>.
+             @prefix pub: <http://data.lblod.info/id/public-service/>.
+             pub:${instance.uuid} lpdcExt:forMunicipalityMerger false.`,
+            `@prefix : <#>.
+             @prefix lpdcExt: <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#>.
+             @prefix pub: <http://data.lblod.info/id/public-service/>.
+             pub:${instance.uuid} lpdcExt:forMunicipalityMerger true.`,
+        );
+
+        const updatedInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+
+        expect(updatedInstance.forMunicipalityMerger).toBeTrue();
+    });
+
     test('should throw ConcurrentUpdateError, when not updating the latest instance version', async () => {
         const bestuurseenheid =
             aBestuurseenheid()
