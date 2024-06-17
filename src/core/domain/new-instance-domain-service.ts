@@ -1,6 +1,6 @@
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {Bestuurseenheid} from "./bestuurseenheid";
-import {Instance} from "./instance";
+import {Instance, InstanceBuilder} from "./instance";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {ChosenFormType, InstanceStatusType} from "./types";
@@ -14,6 +14,7 @@ import {
     ConceptDisplayConfigurationRepository
 } from "../port/driven/persistence/concept-display-configuration-repository";
 import {SelectConceptLanguageDomainService} from "./select-concept-language-domain-service";
+import {LanguageString} from "./language-string";
 
 export class NewInstanceDomainService {
 
@@ -151,6 +152,34 @@ export class NewInstanceDomainService {
         await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
 
         return newInstance;
+    }
+
+    public async copyFrom(bestuurseenheid: Bestuurseenheid, instanceToCopy: Instance): Promise<Instance> {
+        const instanceUuid = uuid();
+        const instanceId = new Iri(`http://data.lblod.info/id/public-service/${instanceUuid}`);
+
+        const copiedInstance = InstanceBuilder.from(instanceToCopy)
+            .withId(instanceId)
+            .withUuid(instanceUuid)
+            .withTitle(LanguageString.ofValueInLanguage(`Kopie van ${instanceToCopy?.title?.getLanguageValue(instanceToCopy.dutchLanguageVariant) || ''}`, instanceToCopy.dutchLanguageVariant))
+            .withDateCreated(FormatPreservingDate.now())
+            .withDateModified(FormatPreservingDate.now())
+            .withRequirements(instanceToCopy.requirements.map(req => req.transformWithNewId()))
+            .withProcedures(instanceToCopy.procedures.map(proc => proc.transformWithNewId()))
+            .withWebsites(instanceToCopy.websites.map(ws => ws.transformWithNewId()))
+            .withCosts(instanceToCopy.costs.map(c => c.transformWithNewId()))
+            .withFinancialAdvantages(instanceToCopy.financialAdvantages.map(fa => fa.transformWithNewId()))
+            .withContactPoints(instanceToCopy.contactPoints.map(fa => fa.transformWithNewId()))
+            .withStatus(InstanceStatusType.ONTWERP)
+            .withDateSent(undefined)
+            .withPublicationStatus(undefined)
+            .withDatePublished(undefined)
+            .withLegalResources(instanceToCopy.legalResources.map(lr => lr.transformWithNewId()))
+            .build();
+
+        await this._instanceRepository.save(bestuurseenheid, copiedInstance);
+
+        return copiedInstance;
     }
 
     private toDutchLanguageVariant(chosenForm: ChosenFormType | undefined): Language {

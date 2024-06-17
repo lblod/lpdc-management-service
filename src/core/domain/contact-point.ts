@@ -1,6 +1,7 @@
 import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
 import {Address} from "./address";
+import {uuid} from "../../../mu-helper";
 
 export class ContactPoint {
 
@@ -99,6 +100,14 @@ export class ContactPoint {
         return this._address;
     }
 
+    transformWithNewId(): ContactPoint {
+        const uniqueId = uuid();
+        return ContactPointBuilder.from(this)
+            .withId(ContactPointBuilder.buildIri(uniqueId))
+            .withUuid(uniqueId)
+            .withAddress(this._address?.transformWithNewId())
+            .build();
+    }
 }
 
 export class ContactPointBuilder {
@@ -115,6 +124,18 @@ export class ContactPointBuilder {
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/contact-point/${uniqueId}`);
+    }
+
+    static from(contactPoint: ContactPoint): ContactPointBuilder {
+        return new ContactPointBuilder()
+            .withId(contactPoint.id)
+            .withUuid(contactPoint.uuid)
+            .withUrl(contactPoint.url)
+            .withEmail(contactPoint.email)
+            .withTelephone(contactPoint.telephone)
+            .withOpeningHours(contactPoint.openingHours)
+            .withAddress(contactPoint.address)
+            .withOrder(contactPoint.order);
     }
 
     public withId(id: Iri): ContactPointBuilder {

@@ -1,7 +1,7 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {aFullContactPointForInstance} from "./contact-point-test-builder";
 import {aFullAddressForInstance} from "./address-test-builder";
-import {ContactPoint} from "../../../src/core/domain/contact-point";
+import {ContactPoint, ContactPointBuilder} from "../../../src/core/domain/contact-point";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('constructing', () => {
@@ -74,6 +74,11 @@ describe('constructing', () => {
 
         });
 
+    });
+
+    test('copies in builder', () => {
+       const aContactPoint = aFullContactPointForInstance().build();
+       expect(ContactPointBuilder.from(aContactPoint).build()).toEqual(aContactPoint);
     });
 
 });

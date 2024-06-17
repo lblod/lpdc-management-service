@@ -2,6 +2,7 @@ import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
 import {LanguageString} from "./language-string";
 import {Language} from "./language";
+import {uuid} from "../../../mu-helper";
 
 
 export class Address {
@@ -109,6 +110,14 @@ export class Address {
         return !!this.verwijstNaar;
     }
 
+    transformWithNewId(): Address {
+        const uniqueId = uuid();
+        return AddressBuilder.from(this)
+            .withId(AddressBuilder.buildIri(uniqueId))
+            .withUuid(uniqueId)
+            .build();
+    }
+
 }
 
 export class AddressBuilder {
@@ -124,6 +133,19 @@ export class AddressBuilder {
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/address/${uniqueId}`);
+    }
+
+    static from(address: Address): AddressBuilder {
+        return new AddressBuilder()
+            .withId(address.id)
+            .withUuid(address.uuid)
+            .withGemeentenaam(address.gemeentenaam)
+            .withLand(address.land)
+            .withHuisnummer(address.huisnummer)
+            .withBusnummer(address.busnummer)
+            .withPostcode(address.postcode)
+            .withStraatnaam(address.straatnaam)
+            .withVerwijstNaar(address.verwijstNaar);
     }
 
     public withId(id: Iri): AddressBuilder {

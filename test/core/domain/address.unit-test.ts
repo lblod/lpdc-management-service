@@ -1,7 +1,7 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {aFullAddressForInstance, aFullAddressForInstanceSnapshot} from "./address-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {Address} from "../../../src/core/domain/address";
+import {Address, AddressBuilder} from "../../../src/core/domain/address";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('constructing', () => {
@@ -133,6 +133,11 @@ describe('constructing', () => {
             });
         });
 
+    });
+
+    test('copy in builder', () => {
+       const address = aFullAddressForInstance().build();
+       expect(AddressBuilder.from(address).build()).toEqual(address);
     });
 
 });
