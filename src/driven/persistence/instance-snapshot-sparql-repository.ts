@@ -76,7 +76,7 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
                 FILTER(STRSTARTS(STR(?instanceSnapshotGraph), "${INSTANCE_SNAPHOT_LDES_GRAPH()}"))
                 FILTER NOT EXISTS {
                     GRAPH ?instanceSnapshotGraph {
-                        <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ?instanceSnapshotIri .
+                        <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ?instanceSnapshotIri .                      
                     }
                 }
             } ORDER BY ?generatedAtTime

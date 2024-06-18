@@ -136,7 +136,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.websites.map(ws => ws.transformWithNewId()),
             instanceSnapshot.costs.map(c => c.transformWithNewId()),
             instanceSnapshot.financialAdvantages.map(fa => fa.transformWithNewId()),
-            this.copyContactPoints(instanceSnapshot.contactPoints),
+            this.copyContactPoints(instanceSnapshot.contactPoints), //TODO LPDC-1102: use transformWithNewId method, remove local methods
             concept?.id,
             concept?.latestConceptSnapshot,
             concept?.productId,
@@ -186,7 +186,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.websites.map(ws => ws.transformWithNewId()),
             instanceSnapshot.costs.map(c => c.transformWithNewId()),
             instanceSnapshot.financialAdvantages.map(fa => fa.transformWithNewId()),
-            this.copyContactPoints(instanceSnapshot.contactPoints),
+            this.copyContactPoints(instanceSnapshot.contactPoints), //TODO LPDC-1102: use transformWithNewId method, remove local methods
             concept?.id,
             concept?.latestConceptSnapshot,
             concept?.productId,
