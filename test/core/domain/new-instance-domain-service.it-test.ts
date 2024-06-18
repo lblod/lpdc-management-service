@@ -1164,6 +1164,7 @@ describe('Creating a new Instance domain service', () => {
                     _order: 2
                 })]));
             expect(copiedInstance.forMunicipalityMerger).toBeFalse();
+            expect(copiedInstance.copyOf).toEqual(instance.id);
         });
 
         test('Copy instance, when instance is a minimal instance', async () => {
@@ -1223,6 +1224,7 @@ describe('Creating a new Instance domain service', () => {
             expect(copiedInstance.spatials).toEqual(instance.spatials);
             expect(copiedInstance.legalResources).toEqual(instance.legalResources);
             expect(copiedInstance.forMunicipalityMerger).toBeFalse();
+            expect(copiedInstance.copyOf).toEqual(instance.id);
         });
 
         test('Copy instance clears statuses', async () => {
@@ -1251,6 +1253,7 @@ describe('Creating a new Instance domain service', () => {
             expect(copiedInstance.dateSent).toBeUndefined();
             expect(copiedInstance.publicationStatus).toBeUndefined();
             expect(copiedInstance.datePublished).toBeUndefined();
+            expect(copiedInstance.copyOf).toEqual(instance.id);
         });
 
         test('for municipality merger is required', async () => {
@@ -1295,6 +1298,7 @@ describe('Creating a new Instance domain service', () => {
             expect(copiedInstance.competentAuthorities).toEqual(instance.competentAuthorities);
             expect(copiedInstance.spatials).toBeEmpty();
             expect(copiedInstance.forMunicipalityMerger).toBeTrue();
+            expect(copiedInstance.copyOf).toEqual(instance.id);
         });
 
         test('copy instance for municipality merger, competent authority level also Lokaal', async () => {
@@ -1326,6 +1330,7 @@ describe('Creating a new Instance domain service', () => {
             expect(copiedInstance.competentAuthorities).toBeEmpty();
             expect(copiedInstance.spatials).toBeEmpty();
             expect(copiedInstance.forMunicipalityMerger).toBeTrue();
+            expect(copiedInstance.copyOf).toEqual(instance.id);
         });
 
     });

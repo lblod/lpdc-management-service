@@ -79,6 +79,7 @@ export class Instance {
     private readonly _spatials: Iri[];
     private readonly _legalResources: LegalResource[];
     private readonly _forMunicipalityMerger: boolean;
+    private readonly _copyOf: Iri | undefined;
 
     constructor(id: Iri,
                 uuid: string,
@@ -121,7 +122,8 @@ export class Instance {
                 publicationStatus: InstancePublicationStatusType,
                 spatials: Iri[],
                 legalResources: LegalResource[],
-                forMunicipalityMerger: boolean
+                forMunicipalityMerger: boolean,
+                copyOf: Iri | undefined,
     ) {
         this._id = requiredValue(id, 'id');
         this._uuid = requiredValue(uuid, 'uuid');
@@ -178,6 +180,7 @@ export class Instance {
         this._legalResources = [...legalResources].map(LegalResource.forInstance);
         requireNoDuplicates(this.legalResources.map(lr => lr.order), 'legal resources > order');
         this._forMunicipalityMerger = requiredValue(forMunicipalityMerger, 'forMunicipalityMerger');
+        this._copyOf = copyOf;
         this.validateLanguages();
         this.validateStatuses();
     }
@@ -414,6 +417,10 @@ export class Instance {
         return this._forMunicipalityMerger;
     }
 
+    get copyOf(): Iri | undefined {
+        return this._copyOf;
+    }
+
     transformToInformal(): Instance {
         if (this._dutchLanguageVariant == Language.INFORMAL) {
             throw new InvariantError('Instantie is reeds in de je-vorm');
@@ -515,6 +522,7 @@ export class InstanceBuilder {
     private spatials: Iri[] = [];
     private legalResources: LegalResource[] = [];
     private forMunicipalityMerger: boolean;
+    private copyOf: Iri | undefined;
 
     public static from(instance: Instance): InstanceBuilder {
         return new InstanceBuilder()
@@ -559,7 +567,8 @@ export class InstanceBuilder {
             .withPublicationStatus(instance.publicationStatus)
             .withSpatials(instance.spatials)
             .withLegalResources(instance.legalResources)
-            .withForMunicipalityMerger(instance.forMunicipalityMerger);
+            .withForMunicipalityMerger(instance.forMunicipalityMerger)
+            .withCopyOf(instance.copyOf);
     }
 
     public withId(id: Iri): InstanceBuilder {
@@ -772,6 +781,11 @@ export class InstanceBuilder {
         return this;
     }
 
+    public withCopyOf(copyOf: Iri): InstanceBuilder {
+        this.copyOf = copyOf;
+        return this;
+    }
+
     public build(): Instance {
         return new Instance(
             this.id,
@@ -816,6 +830,7 @@ export class InstanceBuilder {
             this.spatials,
             this.legalResources,
             this.forMunicipalityMerger,
+            this.copyOf,
         );
     }
 }

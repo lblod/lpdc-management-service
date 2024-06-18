@@ -85,7 +85,8 @@ export class NewInstanceDomainService {
                 undefined,
                 bestuurseenheid.spatials,
                 [],
-                false
+                false,
+                undefined
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);
@@ -147,6 +148,7 @@ export class NewInstanceDomainService {
                 bestuurseenheid.spatials,
                 concept.legalResources.map(lr => lr.transformLanguage(conceptLanguage, dutchLanguageVariant).transformWithNewId()),
                 false,
+                undefined
             );
 
         await this._instanceRepository.save(bestuurseenheid, newInstance);
@@ -187,6 +189,7 @@ export class NewInstanceDomainService {
             .withExecutingAuthorities(forMunicipalityMerger ? [] : instanceToCopy.executingAuthorities)
             .withCompetentAuthorities(forMunicipalityMerger && hasCompetentAuthorityLevelLokaal ? [] : instanceToCopy.competentAuthorities)
             .withForMunicipalityMerger(forMunicipalityMerger)
+            .withCopyOf(instanceToCopy.id)
             .build();
 
         await this._instanceRepository.save(bestuurseenheid, copiedInstance);

@@ -672,7 +672,7 @@ describe('InstanceRepository', () => {
                             buildNutsCodeIri(45700),
                             buildNutsCodeIri(52000),
                             buildNutsCodeIri(98786)]
-                    )
+                    ).withCopyOf(buildInstanceIri(uuid()))
                     .build();
 
 
@@ -891,6 +891,7 @@ describe('InstanceRepository', () => {
                     `<${InstanceTestBuilder.LEGAL_RESOURCES[1].id}> <http://www.w3.org/ns/shacl#order> """2"""^^<http://www.w3.org/2001/XMLSchema#integer>`,
 
                     `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#forMunicipalityMerger> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
+                    `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#copyOf> <${instance.copyOf.value}>`,
                 ]);
 
             const actualInstance = await repository.findById(bestuurseenheid, instanceId);

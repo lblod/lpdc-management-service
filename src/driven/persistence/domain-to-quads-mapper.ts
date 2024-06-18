@@ -158,6 +158,7 @@ export class DomainToQuadsMapper {
             ...this.spatials(instance.id, instance.spatials),
             ...this.legalResources(instance.id, instance.legalResources),
             this.forMunicipalityMerger(instance.id, instance.forMunicipalityMerger),
+            instance.copyOf ? this.buildQuad(namedNode(instance.id.value), NS.lpdcExt('copyOf'), namedNode(instance.copyOf.value)) : undefined,
         ].filter(t => t !== undefined);
     }
 

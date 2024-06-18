@@ -153,6 +153,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.spatials,
             instanceSnapshot.legalResources.map(lr => lr.transformWithNewId()),
             false,
+            undefined,
         );
         instance.validateForPublish(false);
         return instance;
@@ -202,6 +203,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.spatials,
             instanceSnapshot.legalResources.map(lr => lr.transformWithNewId()),
             false,
+            instance.copyOf
         );
         mergedInstance.validateForPublish(false);
         return mergedInstance;
