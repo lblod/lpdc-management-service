@@ -553,14 +553,14 @@ async function publishInstance(req: Request, res: Response) {
 
 async function copyInstance(req: Request, res: Response) {
     const instanceIdRequestParam = req.params.instanceId;
+    const forMunicipalityMerger: boolean = req.body.forMunicipalityMerger;
 
     const instanceId = new Iri(instanceIdRequestParam);
     const session: Session = req['session'];
     const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
 
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
-    //TODO LPDC-1057: extract and use the is for municipality merger
-    const newInstance = await newInstanceDomainService.copyFrom(bestuurseenheid, instance);
+    const newInstance = await newInstanceDomainService.copyFrom(bestuurseenheid, instance, forMunicipalityMerger);
 
     return res.status(201).json({
         data: {

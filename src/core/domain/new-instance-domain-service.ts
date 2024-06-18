@@ -3,7 +3,7 @@ import {Bestuurseenheid} from "./bestuurseenheid";
 import {Instance, InstanceBuilder} from "./instance";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "./format-preserving-date";
-import {ChosenFormType, InstanceStatusType} from "./types";
+import {ChosenFormType, CompetentAuthorityLevelType, InstanceStatusType} from "./types";
 import {Iri} from "./shared/iri";
 import {Concept} from "./concept";
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
@@ -15,6 +15,7 @@ import {
 } from "../port/driven/persistence/concept-display-configuration-repository";
 import {SelectConceptLanguageDomainService} from "./select-concept-language-domain-service";
 import {LanguageString} from "./language-string";
+import {InvariantError} from "./shared/lpdc-error";
 
 export class NewInstanceDomainService {
 
@@ -154,9 +155,16 @@ export class NewInstanceDomainService {
         return newInstance;
     }
 
-    public async copyFrom(bestuurseenheid: Bestuurseenheid, instanceToCopy: Instance): Promise<Instance> {
+    public async copyFrom(bestuurseenheid: Bestuurseenheid, instanceToCopy: Instance, forMunicipalityMerger: boolean): Promise<Instance> {
+
+        if(forMunicipalityMerger === undefined) {
+            throw new InvariantError(`'forMunicipalityMerger' mag niet ontbreken`);
+        }
+
         const instanceUuid = uuid();
         const instanceId = new Iri(`http://data.lblod.info/id/public-service/${instanceUuid}`);
+
+        const hasCompetentAuthorityLevelLokaal = instanceToCopy.competentAuthorityLevels.includes(CompetentAuthorityLevelType.LOKAAL);
 
         const copiedInstance = InstanceBuilder.from(instanceToCopy)
             .withId(instanceId)
@@ -175,6 +183,10 @@ export class NewInstanceDomainService {
             .withPublicationStatus(undefined)
             .withDatePublished(undefined)
             .withLegalResources(instanceToCopy.legalResources.map(lr => lr.transformWithNewId()))
+            .withSpatials(forMunicipalityMerger ? [] : instanceToCopy.spatials)
+            .withExecutingAuthorities(forMunicipalityMerger ? [] : instanceToCopy.executingAuthorities)
+            .withCompetentAuthorities(forMunicipalityMerger && hasCompetentAuthorityLevelLokaal ? [] : instanceToCopy.competentAuthorities)
+            .withForMunicipalityMerger(forMunicipalityMerger)
             .build();
 
         await this._instanceRepository.save(bestuurseenheid, copiedInstance);
