@@ -132,7 +132,7 @@ describe('constructing', () => {
     });
 
     test('Undefined isVersionOfInstance throws error', () => {
-        expect(() => aFullInstanceSnapshot().withIsVersionOfInstance(undefined).build()).toThrowWithMessage(InvariantError, 'isVersionOfInstance mag niet ontbreken');
+        expect(() => aFullInstanceSnapshot().withIsVersionOfInstance(undefined).build()).toThrowWithMessage(InvariantError, 'isVersionOf mag niet ontbreken');
     });
 
     describe('dateCreated', () => {

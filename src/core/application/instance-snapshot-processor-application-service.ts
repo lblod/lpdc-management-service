@@ -1,39 +1,36 @@
-import {InstanceSnapshotRepository} from "../port/driven/persistence/instance-snapshot-repository";
 import {
     InstanceSnapshotToInstanceMergerDomainService
 } from "../domain/instance-snapshot-to-instance-merger-domain-service";
-import {BestuurseenheidRepository} from "../port/driven/persistence/bestuurseenheid-repository";
 import {Logger} from "../../../platform/logger";
+import {VersionedLdesSnapshotRepository} from "../port/driven/persistence/versioned-ldes-snapshot-repository";
+import {Iri} from "../domain/shared/iri";
 
 export class InstanceSnapshotProcessorApplicationService {
 
-    private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
     private readonly _instanceSnapshotToInstanceMerger: InstanceSnapshotToInstanceMergerDomainService;
-    private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
+    private readonly _versionedLdesSnapshotRepository: VersionedLdesSnapshotRepository;
     private readonly _logger: Logger = new Logger('InstanceSnapshotProcessor');
 
-    constructor(instanceSnapshotRepository: InstanceSnapshotRepository,
-                instanceSnapshotToInstanceMerger: InstanceSnapshotToInstanceMergerDomainService,
-                bestuurseenheidRepository: BestuurseenheidRepository,
+    constructor(instanceSnapshotToInstanceMerger: InstanceSnapshotToInstanceMergerDomainService,
+                versionedLdesSnapshotRepository: VersionedLdesSnapshotRepository,
                 logger?: Logger) {
-        this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceSnapshotToInstanceMerger = instanceSnapshotToInstanceMerger;
-        this._bestuurseenheidRepository = bestuurseenheidRepository;
-        if(logger) {
+        this._versionedLdesSnapshotRepository = versionedLdesSnapshotRepository;
+        if (logger) {
             this._logger = logger;
         }
     }
 
     async process() {
-        const toProcessInstanceSnapshots = await this._instanceSnapshotRepository.findToProcessInstanceSnapshots();
+        //TODO LPDC-1002: ask type to repo
+        const toProcessInstanceSnapshots = await this._versionedLdesSnapshotRepository.findToProcessSnapshots(new Iri('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot'));
 
-        for (const {bestuurseenheidId, instanceSnapshotGraph, instanceSnapshotId} of toProcessInstanceSnapshots) {
+        for (const {snapshotGraph, snapshotId} of toProcessInstanceSnapshots) {
             try {
-                const bestuurseenheid = await this._bestuurseenheidRepository.findById(bestuurseenheidId);
-                await this._instanceSnapshotToInstanceMerger.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshotId);
-                await this._instanceSnapshotRepository.addToProcessedInstanceSnapshots(instanceSnapshotGraph, instanceSnapshotId);
+                await this._instanceSnapshotToInstanceMerger.merge(snapshotGraph, snapshotId, this._versionedLdesSnapshotRepository);
+                await this._versionedLdesSnapshotRepository.addToSuccessfullyProcessedSnapshots(snapshotGraph, snapshotId);
             } catch (e) {
-                this._logger.error(`Could not process ${instanceSnapshotId}`, e);
+                this._logger.error(`Could not process ${snapshotId}`, e);
             }
         }
     }

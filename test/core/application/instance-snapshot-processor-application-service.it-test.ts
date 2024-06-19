@@ -31,6 +31,9 @@ import {
     InstanceSnapshotProcessingAuthorizationSparqlTestRepository
 } from "../../driven/persistence/instance-snapshot-processing-authorization-sparql-test-repository";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
+import {
+    VersionedLdesSnapshotSparqlRepository
+} from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 
 
 describe('InstanceSnapshotProcessorApplicationService', () => {
@@ -59,8 +62,10 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         conceptDisplayConfigurationRepository,
         deleteInstanceDomainService,
         linkedAuthoritiesDomainService,
-        instanceSnapshotProcessingAuthorizationRepository);
-    const instanceSnapshotProcessor = new InstanceSnapshotProcessorApplicationService(instanceSnapshotRepository, instanceSnapshotMerger, bestuurseenheidRepository);
+        instanceSnapshotProcessingAuthorizationRepository,
+        bestuurseenheidRepository);
+    const versionedLdesSnapshotRepository = new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceSnapshotProcessor = new InstanceSnapshotProcessorApplicationService(instanceSnapshotMerger, versionedLdesSnapshotRepository);
 
     test('Should retry unsuccessful merges', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
@@ -89,12 +94,11 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
 
         await instanceSnapshotProcessor.process();
 
-        const snapshots = await instanceSnapshotRepository.findToProcessInstanceSnapshots();
+        const snapshots = await versionedLdesSnapshotRepository.findToProcessSnapshots(new Iri('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot'));
         expect(snapshots).toEqual([
             {
-                bestuurseenheidId: bestuurseenheid.id,
-                instanceSnapshotGraph: instanceSnapshotGraph,
-                instanceSnapshotId: invalidInstanceSnapshotId
+                snapshotGraph: instanceSnapshotGraph,
+                snapshotId: invalidInstanceSnapshotId
             }
         ]);
 

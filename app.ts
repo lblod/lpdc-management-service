@@ -72,6 +72,9 @@ import {ConceptSnapshot} from "./src/core/domain/concept-snapshot";
 import {
     InstanceSnapshotProcessingAuthorizationSparqlRepository
 } from "./src/driven/persistence/instance-snapshot-processing-authorization-sparql-repository";
+import {
+    VersionedLdesSnapshotSparqlRepository
+} from "./src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -96,6 +99,7 @@ const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(
 const semanticFormsMapper = new SemanticFormsMapperImpl();
 const instanceSnapshotRepository = new InstanceSnapshotSparqlRepository();
 const instanceSnapshotProcessingAuthorizationRepository = new InstanceSnapshotProcessingAuthorizationSparqlRepository();
+const versionedLdesSnapshotRepository = new VersionedLdesSnapshotSparqlRepository();
 
 const linkedAuthorityCodeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(
     bestuurseenheidRegistrationCodeFetcher,
@@ -169,12 +173,12 @@ const instanceSnapshotToInstanceMergerDomainService = new InstanceSnapshotToInst
     deleteInstanceDomainService,
     linkedAuthorityCodeListDomainService,
     instanceSnapshotProcessingAuthorizationRepository,
+    bestuurseenheidRepository
 );
 
 const instanceSnapshotProcessorApplicationService = new InstanceSnapshotProcessorApplicationService(
-    instanceSnapshotRepository,
     instanceSnapshotToInstanceMergerDomainService,
-    bestuurseenheidRepository,
+    versionedLdesSnapshotRepository,
 );
 
 const newFormalInformalChoiceAndSyncInstanceDomainService = new NewFormalInformalChoiceDomainService(

@@ -166,7 +166,7 @@ export class DomainToQuadsMapper {
         return [
             this.rdfType(instanceSnapshot.id, NS.lpdcExt('InstancePublicServiceSnapshot')),
             this.bestuurseenheidId(instanceSnapshot.id, instanceSnapshot.createdBy),
-            this.isVersionOf(instanceSnapshot.id, instanceSnapshot.isVersionOfInstance),
+            this.isVersionOf(instanceSnapshot.id, instanceSnapshot.isVersionOf),
             this.conceptId(instanceSnapshot.id, instanceSnapshot.conceptId),
             ...this.title(instanceSnapshot.id, instanceSnapshot.title),
             ...this.description(instanceSnapshot.id, instanceSnapshot.description),

@@ -44,6 +44,9 @@ import {Language} from "../../../src/core/domain/language";
 import {
     InstanceSnapshotProcessingAuthorizationSparqlTestRepository
 } from "../../driven/persistence/instance-snapshot-processing-authorization-sparql-test-repository";
+import {
+    VersionedLdesSnapshotSparqlRepository
+} from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
@@ -72,8 +75,10 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         conceptDisplayConfigurationRepository,
         deleteInstanceDomainService,
         ensureLinkedAuthoritiesExistAsCodeListDomainService,
-        instanceSnapshotProcessingAuthorizationRepository
+        instanceSnapshotProcessingAuthorizationRepository,
+        bestuurseenheidRepository,
     );
+    const versionedLdesSnapshotRepository = new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
     beforeAll(() => setFixedTime());
@@ -92,15 +97,15 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceExists).toEqual(false);
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
+            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
             expect(instanceAfterMerge.uuid).toBeDefined();
             expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
             expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
@@ -155,15 +160,15 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceExists).toEqual(false);
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
+            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
             expect(instanceAfterMerge.uuid).toBeDefined();
             expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
             expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
@@ -421,14 +426,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceExists).toEqual(false);
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
             expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
             expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
@@ -458,14 +463,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceExists).toEqual(false);
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
             expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
             expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.FORMAL);
@@ -484,12 +489,12 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceExists).toEqual(false);
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
             const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             expect(conceptDisplayConfiguration.conceptIsNew).toEqual(false);
@@ -511,7 +516,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await expect(() => mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id))
+            await expect(() => mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository))
                 .rejects.toThrowWithMessage(InvariantError, 'Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
         });
 
@@ -529,7 +534,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await expect(mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id)).resolves.not.toThrow();
+            await expect(mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository)).resolves.not.toThrow();
         });
 
         test('unauthorized merging of bestuurseenheid for instance snapshot graph throws ForbiddenError', async () => {
@@ -544,7 +549,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            await expect(() => mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id)).rejects.toThrowWithMessage(ForbiddenError, `Bestuur <${bestuurseenheid.id}> niet toegelaten voor instance snapshot graph <${instanceSnapshotGraph}>.`);
+            await expect(() => mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository)).rejects.toThrowWithMessage(ForbiddenError, `Bestuur <${bestuurseenheid.id}> niet toegelaten voor instance snapshot graph <${instanceSnapshotGraph}>.`);
         });
 
     });
@@ -566,16 +571,16 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
                 expect(instanceExists).toEqual(true);
 
                 await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-                await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+                await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-                const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+                const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
 
-                expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
+                expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
                 expect(instanceAfterMerge.id).toEqual(instance.id);
                 expect(instanceAfterMerge.uuid).toEqual(instance.uuid);
                 expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
@@ -641,15 +646,15 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
                 expect(instanceExists).toEqual(true);
 
                 await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-                await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+                await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-                const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-                expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
+                const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
+                expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
                 expect(instanceAfterMerge.id).toEqual(instance.id);
                 expect(instanceAfterMerge.uuid).toEqual(instance.uuid);
                 expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
@@ -899,14 +904,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
                 expect(instanceExists).toEqual(true);
 
                 await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-                await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+                await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-                expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
+                expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeFalsy();
 
                 const query = `
             SELECT ?s ?p ?o WHERE {
@@ -946,14 +951,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
                 expect(instanceExists).toEqual(true);
 
                 await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-                await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+                await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-                expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
+                expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeFalsy();
 
                 const query = `
             SELECT ?s ?p ?o WHERE {
@@ -995,12 +1000,12 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
                 await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
 
-                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
                 expect(instanceExists).toEqual(true);
 
                 await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-                await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+                await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
                 const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
                 expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
             });
@@ -1029,12 +1034,12 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
             await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept2.id);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceExists).toEqual(true);
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
             const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
             expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
@@ -1084,14 +1089,14 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshotForOtherInstance.id);
-            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(instanceSnapshotGraph, instanceSnapshotForOtherInstance.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshotForOtherInstance.id, versionedLdesSnapshotRepository);
+            await versionedLdesSnapshotRepository.addToSuccessfullyProcessedSnapshots(instanceSnapshotGraph, instanceSnapshotForOtherInstance.id);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, secondInstanceSnapshot.id);
-            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(instanceSnapshotGraph, secondInstanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, secondInstanceSnapshot.id, versionedLdesSnapshotRepository);
+            await versionedLdesSnapshotRepository.addToSuccessfullyProcessedSnapshots(instanceSnapshotGraph, secondInstanceSnapshot.id);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, firstInstanceSnapshot.id);
-            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(instanceSnapshotGraph, firstInstanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, firstInstanceSnapshot.id, versionedLdesSnapshotRepository);
+            await versionedLdesSnapshotRepository.addToSuccessfullyProcessedSnapshots(instanceSnapshotGraph, firstInstanceSnapshot.id);
 
             const actual = await instanceRepository.findById(bestuurseenheid, instanceId);
             expect(actual.title).toEqual(secondInstanceSnapshot.title);
@@ -1118,7 +1123,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await expect(() => mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id))
+            await expect(() => mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository))
                 .rejects.toThrowWithMessage(InvariantError, 'Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn');
         });
 
@@ -1142,7 +1147,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await expect(mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id)).resolves.not.toThrow();
+            await expect(mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository)).resolves.not.toThrow();
         });
 
         test('Given a instanceSnapshot with formal languageStrings, then instance is merged with formal dutchLanguageVersion', async () => {
@@ -1168,16 +1173,16 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceExists).toEqual(true);
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
 
-            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
+            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
             expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
             expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
             expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.FORMAL);
@@ -1206,16 +1211,16 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceExists).toEqual(true);
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
 
-            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
+            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
             expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
             expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
             expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
@@ -1256,16 +1261,16 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf);
             expect(instanceExists).toEqual(true);
 
             await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-            await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
 
-            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
+            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
             expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
             expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
             expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.INFORMAL);
@@ -1302,17 +1307,17 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
         await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-        await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+        await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-        expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeTruthy();
+        expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeTruthy();
         const quadsBeforeAfterRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
 
         expect(quadsBeforeAfterRecreate).toEqual(expect.not.arrayContaining([
             quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
         ]));
 
-        const instanceRecreated = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-        expect(instanceRecreated.id).toEqual(instanceSnapshot.isVersionOfInstance);
+        const instanceRecreated = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
+        expect(instanceRecreated.id).toEqual(instanceSnapshot.isVersionOf);
     });
 
     test('Given a deletedInstance, when receiving a new archive snapshot, update tombstone', async () => {
@@ -1344,9 +1349,9 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
         await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-        await mergerDomainService.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+        await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
-        expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
+        expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeFalsy();
         const quadsBeforeAfterArchivingAgain = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
 
         expect(quadsBeforeAfterArchivingAgain).toEqual(expect.arrayContaining([
@@ -1373,6 +1378,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             deleteInstanceDomainService,
             codeListDomainService,
             instanceSnapshotProcessingAuthorizationRepository,
+            bestuurseenheidRepository
         );
 
         await directDatabaseAccess.insertData(
@@ -1389,6 +1395,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         const executingAuthorityWithoutCodeList = buildBestuurseenheidIri(uuid());
         const bestuurseenheid = aBestuurseenheid().build();
 
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
         const isVersionOfInstanceId = buildConceptIri(uuid());
         const instanceSnapshot =
             aMinimalInstanceSnapshot()
@@ -1403,7 +1411,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
         await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
 
-        await merger.merge(bestuurseenheid, instanceSnapshotGraph, instanceSnapshot.id);
+        await merger.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
         const createdInstance = await instanceRepository.findById(bestuurseenheid, isVersionOfInstanceId);
         expect(createdInstance.id).toEqual(isVersionOfInstanceId);

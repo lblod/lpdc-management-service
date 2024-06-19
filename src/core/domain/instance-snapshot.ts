@@ -28,10 +28,10 @@ import {instanceLanguages, Language} from "./language";
 import {LegalResource} from "./legal-resource";
 import {InvariantError} from "./shared/lpdc-error";
 import {uniq} from "lodash";
+import {VersionedLdesSnapshot} from "./versioned-ldes-snapshot";
 
-export class InstanceSnapshot {
+export class InstanceSnapshot extends VersionedLdesSnapshot {
 
-    private readonly _id: Iri;
     private readonly _createdBy: Iri;
     private readonly _title: LanguageString | undefined;
     private readonly _description: LanguageString | undefined;
@@ -58,10 +58,8 @@ export class InstanceSnapshot {
     private readonly _contactPoints: ContactPoint[];
     private readonly _conceptId: Iri | undefined;
     private readonly _languages: LanguageType[];
-    private readonly _isVersionOfInstance: Iri;
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
-    private readonly _generatedAtTime: FormatPreservingDate;
     private readonly _isArchived: boolean;
     private readonly _spatials: Iri[];
     private readonly _legalResources: LegalResource[];
@@ -101,7 +99,7 @@ export class InstanceSnapshot {
                 spatials: Iri[],
                 legalResources: LegalResource[]
     ) {
-        this._id = requiredValue(id, 'id');
+        super(id, generatedAtTime, isVersionOfInstance);
         this._createdBy = requiredValue(createdBy, 'createdBy');
         this._title = requiredValue(title, 'title');
         this._description = requiredValue(description, 'description');
@@ -137,10 +135,8 @@ export class InstanceSnapshot {
         requireNoDuplicates(this._contactPoints.map(cp => cp.order), 'contact points > order');
         this._conceptId = conceptId;
         this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
-        this._isVersionOfInstance = requiredValue(isVersionOfInstance, 'isVersionOfInstance');
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
-        this._generatedAtTime = requiredValue(generatedAtTime, 'generatedAtTime');
         this._isArchived = requiredValue(isArchived, 'isArchived');
         this._spatials = requireNoDuplicates(asSortedArray(spatials, Iri.compare), 'spatials');
         requiredAtLeastOneValuePresent(this._spatials, 'spatials');
@@ -187,10 +183,6 @@ export class InstanceSnapshot {
             this._exception,
             this._regulation,
         ];
-    }
-
-    get id(): Iri {
-        return this._id;
     }
 
     get createdBy(): Iri {
@@ -297,20 +289,12 @@ export class InstanceSnapshot {
         return [...this._languages];
     }
 
-    get isVersionOfInstance(): Iri {
-        return this._isVersionOfInstance;
-    }
-
     get dateCreated(): FormatPreservingDate {
         return this._dateCreated;
     }
 
     get dateModified(): FormatPreservingDate {
         return this._dateModified;
-    }
-
-    get generatedAtTime(): FormatPreservingDate {
-        return this._generatedAtTime;
     }
 
     get isArchived(): boolean {

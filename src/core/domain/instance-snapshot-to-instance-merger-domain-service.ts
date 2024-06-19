@@ -22,6 +22,12 @@ import {
     InstanceSnapshotProcessingAuthorizationRepository
 } from "../port/driven/persistence/instance-snapshot-processing-authorization-repository";
 import {ForbiddenError} from "./shared/lpdc-error";
+import {BestuurseenheidRepository} from "../port/driven/persistence/bestuurseenheid-repository";
+import {VersionedLdesSnapshot} from "./versioned-ldes-snapshot";
+
+export interface NewerProcessedSnapshotPredicate {
+    hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: Iri): Promise<boolean>;
+}
 
 export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _instanceSnapshotRepository: InstanceSnapshotRepository;
@@ -31,6 +37,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _deleteInstanceDomainService: DeleteInstanceDomainService;
     private readonly _ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService;
     private readonly _instanceSnapshotProcessingAuthorizationRepository: InstanceSnapshotProcessingAuthorizationRepository;
+    private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
     private readonly _logger: Logger = new Logger('InstanceSnapshotToInstanceMergerDomainService');
 
     constructor(
@@ -41,6 +48,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         deleteInstanceDomainService: DeleteInstanceDomainService,
         ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService,
         instanceSnapshotProcessingAuthorizationRepository: InstanceSnapshotProcessingAuthorizationRepository,
+        bestuurseenheidRepository: BestuurseenheidRepository,
+
         logger?: Logger) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
@@ -49,36 +58,35 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         this._deleteInstanceDomainService = deleteInstanceDomainService;
         this._ensureLinkedAuthoritiesExistAsCodeListDomainService = ensureLinkedAuthoritiesExistAsCodeListDomainService;
         this._instanceSnapshotProcessingAuthorizationRepository = instanceSnapshotProcessingAuthorizationRepository;
+        this._bestuurseenheidRepository = bestuurseenheidRepository;
         this._logger = logger ?? this._logger;
     }
 
-    async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotGraph: Iri, instanceSnapshotId: Iri) {
+    async merge(instanceSnapshotGraph: Iri, instanceSnapshotId: Iri, newProcessedSnapshotPredicate: NewerProcessedSnapshotPredicate) {
+        const instanceSnapshot = await this._instanceSnapshotRepository.findById(instanceSnapshotGraph, instanceSnapshotId);
+        const bestuurseenheid = await this._bestuurseenheidRepository.findById(instanceSnapshot.createdBy);
 
         if (!await this._instanceSnapshotProcessingAuthorizationRepository.canPublishInstanceToGraph(bestuurseenheid, instanceSnapshotGraph)) {
             throw new ForbiddenError(`Bestuur ${sparqlEscapeUri(bestuurseenheid.id)} niet toegelaten voor instance snapshot graph ${sparqlEscapeUri(instanceSnapshotGraph)}.`);
         }
 
-        const instanceSnapshot = await this._instanceSnapshotRepository.findById(instanceSnapshotGraph, instanceSnapshotId);
-
-        const hasNewerProcessedInstanceSnapshot = await this._instanceSnapshotRepository.hasNewerProcessedInstanceSnapshot(instanceSnapshotGraph, instanceSnapshot);
-
-        if (hasNewerProcessedInstanceSnapshot) {
-            this._logger.log(`The versioned resource <${instanceSnapshotId}> is an older version, or already processed, of service <${instanceSnapshot.isVersionOfInstance}>`);
+        if (await newProcessedSnapshotPredicate.hasNewerProcessedSnapshot(instanceSnapshotGraph, instanceSnapshot, new Iri('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot'))) {
+            this._logger.log(`The versioned resource <${instanceSnapshotId}> is an older version, or already processed, of service <${instanceSnapshot.isVersionOf}>`);
         } else {
-            const instanceId = instanceSnapshot.isVersionOfInstance;
+            const instanceId = instanceSnapshot.isVersionOf;
             const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceId);
             const concept: Concept | undefined = await this.getConceptIfSpecified(instanceSnapshot.conceptId);
 
-            this._logger.log(`New versioned resource found: ${instanceSnapshotId} of service ${instanceSnapshot.isVersionOfInstance}`);
+            this._logger.log(`New versioned resource found: ${instanceSnapshotId} of service ${instanceSnapshot.isVersionOf}`);
 
             if (!isExistingInstance && !instanceSnapshot.isArchived) {
                 await this.createNewInstance(bestuurseenheid, instanceSnapshot, concept);
             } else if (isExistingInstance && !instanceSnapshot.isArchived) {
-                const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+                const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
                 await this.updateInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
 
             } else if (isExistingInstance && instanceSnapshot.isArchived) {
-                await this._deleteInstanceDomainService.delete(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
+                await this._deleteInstanceDomainService.delete(bestuurseenheid, instanceSnapshot.isVersionOf);
             }
         }
         await this._ensureLinkedAuthoritiesExistAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...instanceSnapshot.competentAuthorities, ...instanceSnapshot.executingAuthorities]);
@@ -109,8 +117,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
     private asNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
         const instance = new Instance(
-            instanceSnapshot.isVersionOfInstance,
-            lastPartAfter(instanceSnapshot.isVersionOfInstance.value, '/'),
+            instanceSnapshot.isVersionOf,
+            lastPartAfter(instanceSnapshot.isVersionOf.value, '/'),
             bestuurseenheid.id,
             instanceSnapshot.title,
             instanceSnapshot.description,
@@ -159,7 +167,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
     private asMergedInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, instance: Instance, concept: Concept | undefined) {
         const mergedInstance = new Instance(
-            instanceSnapshot.isVersionOfInstance,
+            instanceSnapshot.isVersionOf,
             instance.uuid,
             bestuurseenheid.id,
             instanceSnapshot.title,

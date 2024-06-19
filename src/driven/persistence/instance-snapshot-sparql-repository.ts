@@ -65,68 +65,6 @@ export class InstanceSnapshotSparqlRepository implements InstanceSnapshotReposit
         return mapper.instanceSnapshot(id);
     }
 
-    async findToProcessInstanceSnapshots(): Promise<{ bestuurseenheidId: Iri, instanceSnapshotGraph: Iri, instanceSnapshotId: Iri }[]> {
-        const query = `
-            SELECT ?instanceSnapshotIri ?createdBy ?instanceSnapshotGraph WHERE {
-                GRAPH ?instanceSnapshotGraph {
-                     ?instanceSnapshotIri a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> .
-                     ?instanceSnapshotIri <http://purl.org/pav/createdBy> ?createdBy .
-                     ?instanceSnapshotIri <http://www.w3.org/ns/prov#generatedAtTime> ?generatedAtTime .
-                }
-                FILTER(STRSTARTS(STR(?instanceSnapshotGraph), "${INSTANCE_SNAPHOT_LDES_GRAPH()}"))
-                FILTER NOT EXISTS {
-                    GRAPH ?instanceSnapshotGraph {
-                        <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ?instanceSnapshotIri .                      
-                    }
-                }
-            } ORDER BY ?generatedAtTime
-        `;
-
-        const result = await this.querying.list(query);
-
-        return result.map(item => ({
-            bestuurseenheidId: new Iri(item['createdBy'].value),
-            instanceSnapshotGraph: new Iri(item['instanceSnapshotGraph'].value),
-            instanceSnapshotId: new Iri(item['instanceSnapshotIri'].value)
-        }));
-    }
-
-    async addToProcessedInstanceSnapshots(instanceSnapshotGraph: Iri, instanceSnapshotId: Iri): Promise<void> {
-        this.errorIfNoInstanceSnapshotGraph(instanceSnapshotGraph);
-        const query = `
-            INSERT DATA {
-                GRAPH ${sparqlEscapeUri(instanceSnapshotGraph)} {
-                    <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ${sparqlEscapeUri(instanceSnapshotId)} .
-                }
-            }
-        `;
-        await this.querying.insert(query);
-    }
-
-    async hasNewerProcessedInstanceSnapshot(instanceSnapshotGraph: Iri, instanceSnapshot: InstanceSnapshot): Promise<boolean> {
-        this.errorIfNoInstanceSnapshotGraph(instanceSnapshotGraph);
-        const query = `
-            ASK WHERE {
-                GRAPH ${sparqlEscapeUri(instanceSnapshotGraph)} {
-                       ?instanceSnapshotIri a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot> .
-                       ?instanceSnapshotIri <http://www.w3.org/ns/prov#generatedAtTime> ?generatedAtTime .
-                       ?instanceSnapshotIri <http://purl.org/dc/terms/isVersionOf> ?instance.
-
-               FILTER (?generatedAtTime > "${instanceSnapshot.generatedAtTime.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime>)
-               FILTER (?instanceSnapshotIri != ${sparqlEscapeUri(instanceSnapshot.id)})
-               FILTER (?instance = ${sparqlEscapeUri(instanceSnapshot.isVersionOfInstance)})
-               FILTER EXISTS {
-                    GRAPH ${sparqlEscapeUri(instanceSnapshotGraph)} {
-                            <http://mu.semte.ch/lpdc/instancesnapshots-ldes-data> <http://mu.semte.ch/vocabularies/ext/processed> ?instanceSnapshotIri .
-                    }
-               }
-            }
-            }
-        `;
-
-        return this.querying.ask(query);
-    }
-
     errorIfNoInstanceSnapshotGraph(instanceSnapshotGraph: Iri): void {
         if(!instanceSnapshotGraph.value.startsWith(INSTANCE_SNAPHOT_LDES_GRAPH())) {
             throw new SystemError(`Kan Instance Snapshots niet opzoeken in graph <${instanceSnapshotGraph.value}>`);
