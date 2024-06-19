@@ -21,7 +21,7 @@ import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
-import {buildBestuurseenheidIri, buildConceptIri, buildInstanceIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildConceptIri} from "./iri-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {
     ConceptDisplayConfigurationSparqlRepository
@@ -36,7 +36,7 @@ import {
 } from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
 import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
-import {Instance} from "../../../src/core/domain/instance";
+import {Instance, InstanceBuilder} from "../../../src/core/domain/instance";
 import {ForbiddenError, InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 import {aFullContactPointForInstance} from "./contact-point-test-builder";
 import {aFullAddressForInstance} from "./address-test-builder";
@@ -624,7 +624,11 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 const bestuurseenheid = aBestuurseenheid().build();
                 await bestuurseenheidRepository.save(bestuurseenheid);
 
-                const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+                const instance = aFullInstance()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withCopyOf(InstanceBuilder.buildIri(uuid()))
+                    .withForMunicipalityMerger(true)
+                    .build();
                 await instanceRepository.save(bestuurseenheid, instance);
                 await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
 
@@ -876,6 +880,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                         _order: instanceSnapshot.legalResources[1].order,
                     })
                 ]));
+                expect(instanceAfterMerge.forMunicipalityMerger).toBeFalse();
+                expect(instanceAfterMerge.copyOf).toBeUndefined();
             });
         });
 
@@ -1044,8 +1050,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             const concept = aFullConcept().build();
             await conceptRepository.save(concept);
             await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
-            const instanceId = buildInstanceIri(uuid());
-            const otherInstanceId = buildInstanceIri(uuid());
+            const instanceId = InstanceBuilder.buildIri(uuid());
+            const otherInstanceId = InstanceBuilder.buildIri(uuid());
 
             const instanceSnapshotForOtherInstance = aFullInstanceSnapshot()
                 .withTitle(LanguageString.of(undefined, undefined, 'other snapshot'))

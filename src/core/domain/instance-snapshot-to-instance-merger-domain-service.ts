@@ -3,11 +3,9 @@ import {Iri} from "./shared/iri";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {InstanceSnapshot} from "./instance-snapshot";
 import {Instance} from "./instance";
-import {sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {sparqlEscapeUri} from "../../../mu-helper";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {InstancePublicationStatusType, InstanceStatusType} from "./types";
-import {ContactPoint, ContactPointBuilder} from "./contact-point";
-import {Address, AddressBuilder} from "./address";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 import {Concept} from "./concept";
@@ -56,7 +54,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
     async merge(bestuurseenheid: Bestuurseenheid, instanceSnapshotGraph: Iri, instanceSnapshotId: Iri) {
 
-        if(!await this._instanceSnapshotProcessingAuthorizationRepository.canPublishInstanceToGraph(bestuurseenheid, instanceSnapshotGraph)) {
+        if (!await this._instanceSnapshotProcessingAuthorizationRepository.canPublishInstanceToGraph(bestuurseenheid, instanceSnapshotGraph)) {
             throw new ForbiddenError(`Bestuur ${sparqlEscapeUri(bestuurseenheid.id)} niet toegelaten voor instance snapshot graph ${sparqlEscapeUri(instanceSnapshotGraph)}.`);
         }
 
@@ -136,7 +134,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.websites.map(ws => ws.transformWithNewId()),
             instanceSnapshot.costs.map(c => c.transformWithNewId()),
             instanceSnapshot.financialAdvantages.map(fa => fa.transformWithNewId()),
-            this.copyContactPoints(instanceSnapshot.contactPoints), //TODO LPDC-1102: use transformWithNewId method, remove local methods
+            instanceSnapshot.contactPoints.map(cp => cp.transformWithNewId()),
             concept?.id,
             concept?.latestConceptSnapshot,
             concept?.productId,
@@ -186,7 +184,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.websites.map(ws => ws.transformWithNewId()),
             instanceSnapshot.costs.map(c => c.transformWithNewId()),
             instanceSnapshot.financialAdvantages.map(fa => fa.transformWithNewId()),
-            this.copyContactPoints(instanceSnapshot.contactPoints), //TODO LPDC-1102: use transformWithNewId method, remove local methods
+            instanceSnapshot.contactPoints.map(cp => cp.transformWithNewId()),
             concept?.id,
             concept?.latestConceptSnapshot,
             concept?.productId,
@@ -203,43 +201,10 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.spatials,
             instanceSnapshot.legalResources.map(lr => lr.transformWithNewId()),
             false,
-            instance.copyOf
+            undefined,
         );
         mergedInstance.validateForPublish(false);
         return mergedInstance;
-    }
-
-    private copyContactPoints(contactPoints: ContactPoint[]) {
-        return contactPoints.map(cp => {
-                const newUuid = uuid();
-                return ContactPoint.reconstitute(
-                    ContactPointBuilder.buildIri(newUuid),
-                    newUuid,
-                    cp.url,
-                    cp.email,
-                    cp.telephone,
-                    cp.openingHours,
-                    cp.order,
-                    this.copyAddress(cp.address));
-            }
-        );
-    }
-
-    private copyAddress(address: Address | undefined): Address | undefined {
-        if (!address) {
-            return undefined;
-        }
-        const newUuid = uuid();
-        return Address.reconstitute(
-            AddressBuilder.buildIri(newUuid),
-            newUuid,
-            address.gemeentenaam,
-            address.land,
-            address.huisnummer,
-            address.busnummer,
-            address.postcode,
-            address.straatnaam,
-            address.verwijstNaar);
     }
 
     private async getConceptIfSpecified(conceptId: Iri | undefined): Promise<Concept | undefined> {

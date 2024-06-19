@@ -1,7 +1,7 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
-import {buildConceptIri, buildInstanceIri, buildInstanceSnapshotIri} from "../../core/domain/iri-test-builder";
+import {buildConceptIri, buildInstanceSnapshotIri} from "../../core/domain/iri-test-builder";
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {
     aFullInstanceSnapshot,
@@ -26,6 +26,7 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import {NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {INSTANCE_SNAPHOT_LDES_GRAPH, PUBLIC_GRAPH} from "../../../config";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 
 describe('InstanceSnapshotRepository', () => {
 
@@ -251,7 +252,7 @@ describe('InstanceSnapshotRepository', () => {
 
         test('Verify minimal mapping', async () => {
             const instanceUUID = uuid();
-            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceId = InstanceBuilder.buildIri(instanceUUID);
             const instanceSnapshotUUID = uuid();
             const instanceSnapshotId = buildInstanceSnapshotIri(instanceSnapshotUUID);
             const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
@@ -301,7 +302,7 @@ describe('InstanceSnapshotRepository', () => {
 
         test('Verify full mapping', async () => {
             const instanceUUID = uuid();
-            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceId = InstanceBuilder.buildIri(instanceUUID);
             const instanceSnapshotUUID = uuid();
             const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
@@ -513,7 +514,7 @@ describe('InstanceSnapshotRepository', () => {
 
         test('Verify minimal mapping with unknown languages', async () => {
             const instanceUUID = uuid();
-            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceId = InstanceBuilder.buildIri(instanceUUID);
             const instanceSnapshotUUID = uuid();
 
             const instanceSnapshotId = buildInstanceSnapshotIri(instanceSnapshotUUID);
@@ -828,7 +829,7 @@ describe('InstanceSnapshotRepository', () => {
         describe('isArchived', () => {
 
             test('Absent isArchived maps to false', async () => {
-                const instanceId = buildInstanceIri(uuid());
+                const instanceId = InstanceBuilder.buildIri(uuid());
 
                 const bestuurseenheid = aBestuurseenheid().build();
 
@@ -858,7 +859,7 @@ describe('InstanceSnapshotRepository', () => {
             });
 
             test('Present, but false isArchived maps to false', async () => {
-                const instanceId = buildInstanceIri(uuid());
+                const instanceId = InstanceBuilder.buildIri(uuid());
 
                 const bestuurseenheid = aBestuurseenheid().build();
 
@@ -889,7 +890,7 @@ describe('InstanceSnapshotRepository', () => {
             });
 
             test('Present, and true, isArchived maps to true', async () => {
-                const instanceId = buildInstanceIri(uuid());
+                const instanceId = InstanceBuilder.buildIri(uuid());
 
                 const bestuurseenheid = aBestuurseenheid().build();
 

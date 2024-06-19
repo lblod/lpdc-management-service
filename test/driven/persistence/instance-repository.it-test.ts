@@ -4,12 +4,7 @@ import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
-import {
-    buildConceptIri,
-    buildConceptSnapshotIri,
-    buildInstanceIri,
-    buildNutsCodeIri,
-} from "../../core/domain/iri-test-builder";
+import {buildConceptIri, buildConceptSnapshotIri, buildNutsCodeIri,} from "../../core/domain/iri-test-builder";
 import {
     ChosenFormType,
     CompetentAuthorityLevelType,
@@ -114,7 +109,7 @@ describe('InstanceRepository', () => {
             const instance = aMinimalInstance().withCreatedBy(bestuurseenheid.id).build();
             await repository.save(bestuurseenheid, instance);
 
-            const nonExistentInstanceId = buildInstanceIri('thisiddoesnotexist');
+            const nonExistentInstanceId = InstanceBuilder.buildIri('thisiddoesnotexist');
 
             await expect(repository.findById(bestuurseenheid, nonExistentInstanceId)).rejects.toThrowWithMessage(NotFoundError, `Kan <http://data.lblod.info/id/public-service/thisiddoesnotexist> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> in graph <http://mu.semte.ch/graphs/organizations/${bestuurseenheid.uuid}/LoketLB-LPDCGebruiker>`);
         });
@@ -219,7 +214,7 @@ describe('InstanceRepository', () => {
 
         test('if exists as tombstone (but no publication info), deletes tombstone, and inserts new instance data', async () => {
             const instanceUUID = uuid();
-            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceId = InstanceBuilder.buildIri(instanceUUID);
             const bestuurseenheid = aBestuurseenheid().build();
             const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
             const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
@@ -252,7 +247,7 @@ describe('InstanceRepository', () => {
 
         test('if exists as tombstone (but te herpubliceren), deletes tombstone, and inserts new instance data', async () => {
             const instanceUUID = uuid();
-            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceId = InstanceBuilder.buildIri(instanceUUID);
             const bestuurseenheid = aBestuurseenheid().build();
             const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
             const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
@@ -288,7 +283,7 @@ describe('InstanceRepository', () => {
 
         test('if exists as tombstone (but gepubliceerd), deletes tombstone, and inserts new instance data', async () => {
             const instanceUUID = uuid();
-            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceId = InstanceBuilder.buildIri(instanceUUID);
             const bestuurseenheid = aBestuurseenheid().build();
             const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
             const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
@@ -409,7 +404,7 @@ describe('InstanceRepository', () => {
             const instance = aMinimalInstance().withCreatedBy(bestuurseenheid.id).build();
             await repository.save(bestuurseenheid, instance);
 
-            const nonExistentInstanceId = buildInstanceIri('thisiddoesnotexist');
+            const nonExistentInstanceId = InstanceBuilder.buildIri('thisiddoesnotexist');
 
             await expect(repository.delete(bestuurseenheid, nonExistentInstanceId)).rejects.toThrowWithMessage(NotFoundError,
                 `Kan <${nonExistentInstanceId}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> in graph <${bestuurseenheid.userGraph()}>`
@@ -579,7 +574,7 @@ describe('InstanceRepository', () => {
         test('when no triple exists for NeedsConversionFromFormalToInformal sync still inserts true triple', async () => {
             const instanceUUID = uuid();
             const bestuurseenheid = aBestuurseenheid().build();
-            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceId = InstanceBuilder.buildIri(instanceUUID);
 
             await directDatabaseAccess.insertData(
                 `${bestuurseenheid.userGraph()}`,
@@ -618,7 +613,7 @@ describe('InstanceRepository', () => {
 
         test('Verify minimal mapping', async () => {
             const instanceUUID = uuid();
-            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceId = InstanceBuilder.buildIri(instanceUUID);
             const bestuurseenheid = aBestuurseenheid().build();
             const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
             const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
@@ -658,7 +653,7 @@ describe('InstanceRepository', () => {
 
         test('Verify full mapping', async () => {
             const instanceUUID = uuid();
-            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceId = InstanceBuilder.buildIri(instanceUUID);
             const bestuurseenheid = aBestuurseenheid().build();
 
             const instance =
@@ -672,7 +667,7 @@ describe('InstanceRepository', () => {
                             buildNutsCodeIri(45700),
                             buildNutsCodeIri(52000),
                             buildNutsCodeIri(98786)]
-                    ).withCopyOf(buildInstanceIri(uuid()))
+                    ).withCopyOf(InstanceBuilder.buildIri(uuid()))
                     .build();
 
 
@@ -903,7 +898,7 @@ describe('InstanceRepository', () => {
             const bestuurseenheid = aBestuurseenheid().build();
 
             const instanceUuid = uuid();
-            const instanceId = buildInstanceIri(instanceUuid);
+            const instanceId = InstanceBuilder.buildIri(instanceUuid);
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -924,7 +919,7 @@ describe('InstanceRepository', () => {
         test('Verify minimal mappings - non-existing language as dutch language should throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
 
-            const instanceId = buildInstanceIri(uuid());
+            const instanceId = InstanceBuilder.buildIri(uuid());
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -947,7 +942,7 @@ describe('InstanceRepository', () => {
             const bestuurseenheid = aBestuurseenheid().build();
 
             const instanceUuid = uuid();
-            const instanceId = buildInstanceIri(instanceUuid);
+            const instanceId = InstanceBuilder.buildIri(instanceUuid);
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -1100,7 +1095,7 @@ describe('InstanceRepository', () => {
 
         test('absent needsConversionFromFormalToInformal, maps to false', async () => {
             const instanceUUID = uuid();
-            const instanceId = buildInstanceIri(instanceUUID);
+            const instanceId = InstanceBuilder.buildIri(instanceUUID);
             const bestuurseenheid = aBestuurseenheid().build();
             const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
             const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
@@ -1148,7 +1143,7 @@ describe('InstanceRepository', () => {
         }
 
         test('Unknown Instance Status Type can not be mapped', async () => {
-            const instanceId = buildInstanceIri(uuid());
+            const instanceId = InstanceBuilder.buildIri(uuid());
 
             const bestuurseenheid = aBestuurseenheid().build();
 
@@ -1182,7 +1177,7 @@ describe('InstanceRepository', () => {
 
         test('Unknown ProductType can not be mapped', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const instanceIri = buildInstanceIri(uuid());
+            const instanceIri = InstanceBuilder.buildIri(uuid());
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -1208,7 +1203,7 @@ describe('InstanceRepository', () => {
 
         test('Unknown Target Audience Type can not be mapped', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const instanceIri = buildInstanceIri(uuid());
+            const instanceIri = InstanceBuilder.buildIri(uuid());
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -1232,7 +1227,7 @@ describe('InstanceRepository', () => {
         }
 
         test('Unknown Theme type can not be mapped', async () => {
-            const instanceIri = buildInstanceIri(uuid());
+            const instanceIri = InstanceBuilder.buildIri(uuid());
             const bestuurseenheid = aBestuurseenheid().build();
 
             await directDatabaseAccess.insertData(
@@ -1258,7 +1253,7 @@ describe('InstanceRepository', () => {
 
         test('Unknown Competent Authority Level type can not be mapped', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const instanceIri = buildInstanceIri(uuid());
+            const instanceIri = InstanceBuilder.buildIri(uuid());
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -1283,7 +1278,7 @@ describe('InstanceRepository', () => {
 
         test('Unknown ExecutingAuthorityLevelType can not be mapped', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const instanceIri = buildInstanceIri(uuid());
+            const instanceIri = InstanceBuilder.buildIri(uuid());
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -1308,7 +1303,7 @@ describe('InstanceRepository', () => {
 
         test('Unknown PublicationMediumType can not be mapped', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const instanceId = buildInstanceIri(uuid());
+            const instanceId = InstanceBuilder.buildIri(uuid());
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -1333,7 +1328,7 @@ describe('InstanceRepository', () => {
 
         test('Unknown YourEuropeCategoryType can not be mapped', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const instanceId = buildInstanceIri(uuid());
+            const instanceId = InstanceBuilder.buildIri(uuid());
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -1358,7 +1353,7 @@ describe('InstanceRepository', () => {
 
         test('Unknown LanguageType can not be mapped', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const instanceId = buildInstanceIri(uuid());
+            const instanceId = InstanceBuilder.buildIri(uuid());
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,

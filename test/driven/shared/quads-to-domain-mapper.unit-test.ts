@@ -1,6 +1,6 @@
 import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../../../src/driven/shared/quads-to-domain-mapper";
 import {literal, namedNode, quad} from "rdflib";
-import {buildBestuurseenheidIri, buildInstanceIri} from "../../core/domain/iri-test-builder";
+import {buildBestuurseenheidIri} from "../../core/domain/iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {CONCEPT_GRAPH} from "../../../config";
@@ -11,6 +11,7 @@ import {Language} from "../../../src/core/domain/language";
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
 import {InvariantError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 
 describe('quads to domain mapper', () => {
 
@@ -24,7 +25,7 @@ describe('quads to domain mapper', () => {
 
         test('No data integrity issues results in no logging', () => {
             const instanceUuid = uuid();
-            const instanceId = buildInstanceIri(instanceUuid);
+            const instanceId = InstanceBuilder.buildIri(instanceUuid);
             const subject = namedNode(instanceId.value);
             const graph = namedNode(CONCEPT_GRAPH);
 
@@ -48,7 +49,7 @@ describe('quads to domain mapper', () => {
 
         test('unique value contains more than one triple', () => {
             const instanceUuid = uuid();
-            const instanceId = buildInstanceIri(instanceUuid);
+            const instanceId = InstanceBuilder.buildIri(instanceUuid);
             const subject = namedNode(instanceId.value);
             const graph = namedNode(CONCEPT_GRAPH);
             const uuid2 = uuid();
@@ -73,7 +74,7 @@ describe('quads to domain mapper', () => {
 
         test('unique statement contains more than one triple', () => {
             const instanceUuid = uuid();
-            const instanceId = buildInstanceIri(instanceUuid);
+            const instanceId = InstanceBuilder.buildIri(instanceUuid);
             const subject = namedNode(instanceId.value);
             const graph = namedNode(CONCEPT_GRAPH);
             const createdByIri1 = buildBestuurseenheidIri(uuid()).value;
@@ -99,7 +100,7 @@ describe('quads to domain mapper', () => {
 
         test('language string contains more than one triple for same language', () => {
             const instanceUuid = uuid();
-            const instanceId = buildInstanceIri(instanceUuid);
+            const instanceId = InstanceBuilder.buildIri(instanceUuid);
             const subject = namedNode(instanceId.value);
             const graph = namedNode(CONCEPT_GRAPH);
 
@@ -127,7 +128,7 @@ describe('quads to domain mapper', () => {
 
     describe('sort', () => {
         const instanceUuid = uuid();
-        const instanceId = buildInstanceIri(instanceUuid);
+        const instanceId = InstanceBuilder.buildIri(instanceUuid);
         const bestuurseenheid = aBestuurseenheid().build();
         const cost1 = aMinimalCostForInstance().build();
         const subjectCost1 = namedNode(cost1.id.value);

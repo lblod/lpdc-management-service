@@ -24,7 +24,7 @@ const sparqlurl = process.env.SPARQL_URL;
 const ipdcApiEndpoint = process.env.IPDC_API_ENDPOINT;
 const ipdcApiKey = process.env.IPDC_API_KEY;
 
-const instanceIri = new Iri('http://data.lblod.info/id/public-service/1ba9cd8f-6592-4edd-805b-833dc63d2a94');
+const instanceIri = InstanceBuilder.buildIri('1ba9cd8f-6592-4edd-805b-833dc63d2a94');
 const instanceUuid = last(instanceIri.value.split('/'));
 const bestuurseenheidId = new Iri('http://data.lblod.info/id/bestuurseenheden/23d04e951dabc6c108803eac7e8faf08c639ba6984d1cda170f09fbd8a511855');
 const graphId = new Iri("http://mu.semte.ch/graphs/organizations/23d04e951dabc6c108803eac7e8faf08c639ba6984d1cda170f09fbd8a511855/LoketLB-LPDCGebruiker");

@@ -22,7 +22,6 @@ import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
 import {
     InstanceInformalLanguageStringsFetcherIpdc
 } from "../../../src/driven/external/instance-informal-language-strings-fetcher-ipdc";
-import {Iri} from "../../../src/core/domain/shared/iri";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {uuid as uuidv4} from "../../../mu-helper";
 import {aFullEvidenceForInstance} from "./evidence-test-builder";
@@ -273,7 +272,7 @@ describe('Convert Instance To Informal Domain Service', () => {
         test('When instance dutchLanguageVersion already is informal, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
-            const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
+            const id = InstanceBuilder.buildIri(uuid);
 
             const instance = aFullInstance()
                 .withId(id)

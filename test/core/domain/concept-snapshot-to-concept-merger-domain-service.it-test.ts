@@ -8,7 +8,7 @@ import {
     aMinimalConceptSnapshot,
     ConceptSnapshotTestBuilder
 } from "./concept-snapshot-test-builder";
-import {buildBestuurseenheidIri, buildConceptIri, buildInstanceIri} from "./iri-test-builder";
+import {buildBestuurseenheidIri, buildConceptIri} from "./iri-test-builder";
 import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
@@ -49,6 +49,7 @@ import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
 } from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
 import {anotherFullLegalResourceForConceptSnapshot} from "./legal-resource-test-builder";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 
 describe('merges a new concept snapshot into a concept', () => {
 
@@ -1205,7 +1206,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await bestuurseenheidRepository.save(anotherBestuurseenheid);
 
-            const instanceId = buildInstanceIri(uuid());
+            const instanceId = InstanceBuilder.buildIri(uuid());
             const previousDateModified = new Date('2024-06-01');
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -1221,7 +1222,7 @@ describe('merges a new concept snapshot into a concept', () => {
                 ],
             );
 
-            const anotherInstanceId = buildInstanceIri(uuid());
+            const anotherInstanceId = InstanceBuilder.buildIri(uuid());
 
             await directDatabaseAccess.insertData(
                 anotherBestuurseenheid.userGraph().value,
@@ -1311,7 +1312,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
-            const instanceId = buildInstanceIri(uuid());
+            const instanceId = InstanceBuilder.buildIri(uuid());
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
@@ -1375,7 +1376,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
-            const instanceId = buildInstanceIri(uuid());
+            const instanceId = InstanceBuilder.buildIri(uuid());
 
             const previousDateModified = new Date('2024-06-01');
 
@@ -1455,7 +1456,7 @@ describe('merges a new concept snapshot into a concept', () => {
                     .build();
             await bestuurseenheidRepository.save(bestuurseenheid);
 
-            const instanceId = buildInstanceIri(uuid());
+            const instanceId = InstanceBuilder.buildIri(uuid());
             const previousDateModified = new Date('2024-06-01');
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,

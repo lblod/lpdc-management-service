@@ -14,7 +14,7 @@ import {aFullInstanceSnapshot} from "../domain/instance-snapshot-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 import {sparqlEscapeUri, uuid} from "../../../mu-helper";
-import {buildInstanceIri, buildInstanceSnapshotIri} from "../domain/iri-test-builder";
+import {buildInstanceSnapshotIri} from "../domain/iri-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {
     ConceptDisplayConfigurationSparqlTestRepository
@@ -30,6 +30,7 @@ import {INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
 import {
     InstanceSnapshotProcessingAuthorizationSparqlTestRepository
 } from "../../driven/persistence/instance-snapshot-processing-authorization-sparql-test-repository";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 
 
 describe('InstanceSnapshotProcessorApplicationService', () => {
@@ -107,7 +108,7 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         await conceptRepository.save(concept);
         await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
 
-        const instanceId = buildInstanceIri(uuid());
+        const instanceId = InstanceBuilder.buildIri(uuid());
         const instanceSnapshot1 = aFullInstanceSnapshot()
             .withTitle(LanguageString.of(undefined, undefined, 'snapshot 1'))
             .withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))

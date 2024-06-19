@@ -4,7 +4,6 @@ import {
     buildBestuurseenheidIri,
     buildConceptIri,
     buildConceptSnapshotIri,
-    buildInstanceIri,
     buildNutsCodeIri,
     randomNumber
 } from "./iri-test-builder";
@@ -41,7 +40,7 @@ import {Language} from "../../../src/core/domain/language";
 export function aMinimalInstance(): InstanceBuilder {
     const uniqueId = uuid();
     return new InstanceBuilder()
-        .withId(buildInstanceIri(uniqueId))
+        .withId(InstanceBuilder.buildIri(uniqueId))
         .withUuid(uniqueId)
         .withCreatedBy(buildBestuurseenheidIri(uuid()))
         .withDateCreated(InstanceTestBuilder.DATE_CREATED)

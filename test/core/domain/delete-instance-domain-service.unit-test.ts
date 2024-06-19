@@ -1,6 +1,5 @@
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
-import {buildInstanceIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
@@ -16,6 +15,7 @@ import {
 } from "../../driven/persistence/concept-display-configuration-sparql-test-repository";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {NotFoundError} from "../../../src/core/domain/shared/lpdc-error";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 
 describe('Deleting a new Instance domain service', () => {
 
@@ -42,7 +42,7 @@ describe('Deleting a new Instance domain service', () => {
         const anotherInstanceUUID = uuid();
         const anotherInstance =
             aMinimalInstance()
-                .withId(buildInstanceIri(anotherInstanceUUID))
+                .withId(InstanceBuilder.buildIri(anotherInstanceUUID))
                 .withUuid(anotherInstanceUUID)
                 .withCreatedBy(bestuurseenheid.id)
                 .withConceptId(concept.id)
@@ -71,7 +71,7 @@ describe('Deleting a new Instance domain service', () => {
 
     test('if instance does not exists, throw error', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
-        const nonExistingInstanceId = buildInstanceIri(uuid());
+        const nonExistingInstanceId = InstanceBuilder.buildIri(uuid());
         const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
         await instanceRepository.save(bestuurseenheid, instance);
 

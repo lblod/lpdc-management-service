@@ -524,6 +524,10 @@ export class InstanceBuilder {
     private forMunicipalityMerger: boolean;
     private copyOf: Iri | undefined;
 
+    static buildIri(uniqueId: string): Iri {
+        return new Iri(`http://data.lblod.info/id/public-service/${uniqueId}`);
+    }
+
     public static from(instance: Instance): InstanceBuilder {
         return new InstanceBuilder()
             .withId(instance.id)

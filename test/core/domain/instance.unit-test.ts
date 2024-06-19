@@ -1,13 +1,7 @@
 import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "./instance-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {
-    buildConceptIri,
-    buildConceptSnapshotIri,
-    buildInstanceIri,
-    buildNutsCodeIri,
-    buildVerwijstNaarIri
-} from "./iri-test-builder";
+import {buildConceptIri, buildConceptSnapshotIri, buildNutsCodeIri, buildVerwijstNaarIri} from "./iri-test-builder";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
@@ -85,7 +79,7 @@ describe('constructing', () => {
 
     test('uuid not matching the uuid part of the iri throws error', () => {
         const uuidIri = uuid();
-        expect(() => aFullInstance().withId(buildInstanceIri(uuidIri)).withUuid(uuid()).build()).toThrowWithMessage(InvariantError, `uuid moet gelijk zijn aan een van de volgende waardes: ${uuidIri}`);
+        expect(() => aFullInstance().withId(InstanceBuilder.buildIri(uuidIri)).withUuid(uuid()).build()).toThrowWithMessage(InvariantError, `uuid moet gelijk zijn aan een van de volgende waardes: ${uuidIri}`);
     });
 
     test('TargetAudience with duplicates throws error', () => {

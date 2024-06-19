@@ -36,10 +36,6 @@ export function buildWerkingsgebiedenIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/werkingsgebieden/${uniqueId}`);
 }
 
-export function buildInstanceIri(uniqueId: string): Iri {
-    return new Iri(`http://data.lblod.info/id/public-service/${uniqueId}`);
-}
-
 export function buildInstanceSnapshotIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/public-service-snapshot/${uniqueId}`);
 }

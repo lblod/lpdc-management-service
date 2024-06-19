@@ -22,7 +22,6 @@ import {uuid} from "../../../mu-helper";
 import {
     buildBestuurseenheidIri,
     buildConceptIri,
-    buildInstanceIri,
     buildInstanceSnapshotIri,
     buildNutsCodeIri,
 } from "./iri-test-builder";
@@ -48,13 +47,14 @@ import {
     aFullLegalResourceForInstanceSnapshot,
     anotherFullLegalResourceForInstanceSnapshot
 } from "./legal-resource-test-builder";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
     const uniqueId = uuid();
     return new InstanceSnapshotTestBuilder()
         .withId(buildInstanceSnapshotIri(uniqueId))
         .withCreatedBy(buildBestuurseenheidIri(uuid()))
-        .withIsVersionOfInstance(buildInstanceIri(uuid()))
+        .withIsVersionOfInstance(InstanceBuilder.buildIri(uuid()))
         .withTitle(
             LanguageString.of(
                 undefined,

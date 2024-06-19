@@ -30,7 +30,7 @@ import {GraphType, ObjectType, PredicateType, SubjectType} from "rdflib/lib/type
 
 const bestuurseenheid = aBestuurseenheid().build();
 const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
-const id = new Iri(`http://data.lblod.info/id/public-service/${uuid}`);
+const id = InstanceBuilder.buildIri(uuid);
 export const instancePublishedOnIpdcTni = new InstanceBuilder()
     .withId(id)
     .withUuid(uuid)
@@ -236,7 +236,7 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
     ])
     .withLegalResources([
         new LegalResourceBuilder()
-            .withId(new Iri("http://data.lblod.info/id/public-service/17f01e3a-3d4a-4492-8989-b0c9e17ff990"))
+            .withId(new Iri("http://data.lblod.info/id/legal-resource/17f01e3a-3d4a-4492-8989-b0c9e17ff990"))
             .withUuid("17f01e3a-3d4a-4492-8989-b0c9e17ff990")
             .withTitle(LanguageString.of(
                     undefined,
@@ -253,7 +253,7 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
             .build()
         ,
         new LegalResourceBuilder()
-            .withId(new Iri("http://data.lblod.info/id/public-service/75d1ef7f-d31c-4432-8f64-7a5bd4756db3"))
+            .withId(new Iri("http://data.lblod.info/id/legal-resource/75d1ef7f-d31c-4432-8f64-7a5bd4756db3"))
             .withUuid("75d1ef7f-d31c-4432-8f64-7a5bd4756db3")
             .withTitle(LanguageString.of(
                     undefined,
@@ -484,7 +484,7 @@ describe('Instance informal language strings fetcher ipdc', () => {
         ])
         .withLegalResources([
             new LegalResourceBuilder()
-                .withId(new Iri("http://data.lblod.info/id/public-service/17f01e3a-3d4a-4492-8989-b0c9e17ff990"))
+                .withId(new Iri("http://data.lblod.info/id/legal-resource/17f01e3a-3d4a-4492-8989-b0c9e17ff990"))
                 .withUuid("17f01e3a-3d4a-4492-8989-b0c9e17ff990")
                 .withTitle(LanguageString.of(
                         undefined,
@@ -501,7 +501,7 @@ describe('Instance informal language strings fetcher ipdc', () => {
                 .build()
             ,
             new LegalResourceBuilder()
-                .withId(new Iri("http://data.lblod.info/id/public-service/75d1ef7f-d31c-4432-8f64-7a5bd4756db3"))
+                .withId(new Iri("http://data.lblod.info/id/legal-resource/75d1ef7f-d31c-4432-8f64-7a5bd4756db3"))
                 .withUuid("75d1ef7f-d31c-4432-8f64-7a5bd4756db3")
                 .withTitle(LanguageString.of(
                         undefined,

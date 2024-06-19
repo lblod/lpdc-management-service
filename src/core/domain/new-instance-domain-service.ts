@@ -4,7 +4,6 @@ import {Instance, InstanceBuilder} from "./instance";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {ChosenFormType, CompetentAuthorityLevelType, InstanceStatusType} from "./types";
-import {Iri} from "./shared/iri";
 import {Concept} from "./concept";
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
 import {Language} from "./language";
@@ -36,7 +35,7 @@ export class NewInstanceDomainService {
 
     public async createNewEmpty(bestuurseenheid: Bestuurseenheid): Promise<Instance> {
         const instanceUuid = uuid();
-        const instanceId = new Iri(`http://data.lblod.info/id/public-service/${instanceUuid}`);
+        const instanceId = InstanceBuilder.buildIri(instanceUuid);
 
         const now = FormatPreservingDate.of(new Date().toISOString());
         const formalInformalChoice = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
@@ -96,7 +95,7 @@ export class NewInstanceDomainService {
 
     public async createNewFromConcept(bestuurseenheid: Bestuurseenheid, concept: Concept): Promise<Instance> {
         const instanceUuid = uuid();
-        const instanceId = new Iri(`http://data.lblod.info/id/public-service/${instanceUuid}`);
+        const instanceId = InstanceBuilder.buildIri(instanceUuid);
         const now = FormatPreservingDate.of(new Date().toISOString());
 
         const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
@@ -164,7 +163,7 @@ export class NewInstanceDomainService {
         }
 
         const instanceUuid = uuid();
-        const instanceId = new Iri(`http://data.lblod.info/id/public-service/${instanceUuid}`);
+        const instanceId = InstanceBuilder.buildIri(instanceUuid);
 
         const hasCompetentAuthorityLevelLokaal = instanceToCopy.competentAuthorityLevels.includes(CompetentAuthorityLevelType.LOKAAL);
 

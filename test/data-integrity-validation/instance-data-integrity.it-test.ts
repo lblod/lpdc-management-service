@@ -18,7 +18,7 @@ import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-spar
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {DoubleQuadReporter} from "../../src/driven/shared/quads-to-domain-mapper";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
-import {Instance} from "../../src/core/domain/instance";
+import {Instance, InstanceBuilder} from "../../src/core/domain/instance";
 import {
     FormalInformalChoiceSparqlRepository
 } from "../../src/driven/persistence/formal-informal-choice-sparql-repository";
@@ -245,7 +245,7 @@ describe('Instance Data Integrity Validation', () => {
     test.skip('Find all triples for instance', async () => {
         const bestuurseenheidId = new Iri("http://data.lblod.info/id/bestuurseenheden/0916618d3560fe5a168ef536c25ffaddb15ef6ce43105d3ed20df38615803c77");
         const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
-        const instanceId = new Iri("http://data.lblod.info/id/public-service/38c47504-7e2c-4290-a2fb-778b7f5ca05c");
+        const instanceId = InstanceBuilder.buildIri('38c47504-7e2c-4290-a2fb-778b7f5ca05c');
         const triples = await getInstanceTriples(endPoint, bestuurseenheid.userGraph(), instanceId);
         console.log(triples);
 
