@@ -1207,7 +1207,7 @@ describe('merges a new concept snapshot into a concept', () => {
             await bestuurseenheidRepository.save(anotherBestuurseenheid);
 
             const instanceId = InstanceBuilder.buildIri(uuid());
-            const previousDateModified = new Date('2024-06-01');
+            const previousDateModified = new Date('2024-06-01T12:54:54.005');
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
@@ -1277,7 +1277,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(reviewStatusForInstanceOfBestuurseenheid).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD).value);
 
             const dateModifiedForInstanceOfBestuurseenheid = reviewStatusAndDateModifiedResultForInstanceOfBestuurseenheid[0]['dateModified'].value;
-            expect(dateModifiedForInstanceOfBestuurseenheid).not.toEqual(previousDateModified.toISOString());
+            expect(dateModifiedForInstanceOfBestuurseenheid).toEqual(previousDateModified.toISOString());
 
             const reviewStatusResultForInstanceOfAnotherBestuurseenheid = await directDatabaseAccess.list(reviewStatusAndDateModifiedForConceptInGraph(anotherBestuurseenheid));
             expect(reviewStatusResultForInstanceOfAnotherBestuurseenheid.length).toEqual(1);
@@ -1286,7 +1286,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(reviewStatusForInstanceOfAnotherBestuurseenheid).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD).value);
 
             const dateModifiedForInstanceOfAnotherBestuurseenheid = reviewStatusResultForInstanceOfAnotherBestuurseenheid[0]['dateModified'].value;
-            expect(dateModifiedForInstanceOfAnotherBestuurseenheid).not.toEqual(previousDateModified.toISOString());
+            expect(dateModifiedForInstanceOfAnotherBestuurseenheid).toEqual(previousDateModified.toISOString());
 
         }, 20000);
 
@@ -1378,7 +1378,7 @@ describe('merges a new concept snapshot into a concept', () => {
 
             const instanceId = InstanceBuilder.buildIri(uuid());
 
-            const previousDateModified = new Date('2024-06-01');
+            const previousDateModified = new Date('2024-06-01T12:54:54.004');
 
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
@@ -1430,7 +1430,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(reviewStatusForInstance).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEARCHIVEERD).value);
 
             const dateModifiedForInstance = reviewStatusAndDateModifiedResultForInstance[0]['dateModified'].value;
-            expect(dateModifiedForInstance).not.toEqual(previousDateModified.toISOString());
+            expect(dateModifiedForInstance).toEqual(previousDateModified.toISOString());
 
         });
 
@@ -1457,7 +1457,7 @@ describe('merges a new concept snapshot into a concept', () => {
             await bestuurseenheidRepository.save(bestuurseenheid);
 
             const instanceId = InstanceBuilder.buildIri(uuid());
-            const previousDateModified = new Date('2024-06-01');
+            const previousDateModified = new Date('2024-06-01T12:54:54.003');
             await directDatabaseAccess.insertData(
                 bestuurseenheid.userGraph().value,
                 [
@@ -1533,7 +1533,7 @@ describe('merges a new concept snapshot into a concept', () => {
             expect(reviewStatusForInstanceAfterUnarchive).toEqual(NS.concepts.reviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD).value);
 
             const dateModifiedForInstanceAfterUnarchive = reviewStatusAndDateModifiedResultForInstanceAfterUnarchive[0]['dateModified'].value;
-            expect(dateModifiedForInstanceAfterUnarchive).not.toEqual(previousDateModified.toISOString());
+            expect(dateModifiedForInstanceAfterUnarchive).toEqual(previousDateModified.toISOString());
 
         });
 
