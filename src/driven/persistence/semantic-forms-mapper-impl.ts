@@ -46,11 +46,17 @@ export class SemanticFormsMapperImpl implements SemanticFormsMapper {
     }
 
     conceptAsTurtleFormat(concept: Concept): string[] {
-        return new DomainToQuadsMapper(new Iri(CONCEPT_GRAPH)).conceptToQuads(concept).map(s => s.toNT());
+        return new DomainToQuadsMapper(new Iri(CONCEPT_GRAPH))
+            .conceptToQuads(concept)
+            .map(q => this.parseBooleanQuad(q))
+            .map(s => s.toNT());
     }
 
     conceptSnapshotAsTurtleFormat(conceptSnapshot: ConceptSnapshot): string[] {
-        return new DomainToQuadsMapper(new Iri(CONCEPT_SNAPSHOT_LDES_GRAPH)).conceptSnapshotToQuads(conceptSnapshot).map(s => s.toNT());
+        return new DomainToQuadsMapper(new Iri(CONCEPT_SNAPSHOT_LDES_GRAPH))
+            .conceptSnapshotToQuads(conceptSnapshot)
+            .map(q => this.parseBooleanQuad(q))
+            .map(s => s.toNT());
     }
 
     comparisonSourceAsTurtleFormat(comparisonSources: ComparisonSource[], type: "current" | "latest"): string[] {
