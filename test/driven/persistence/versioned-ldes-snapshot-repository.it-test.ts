@@ -20,6 +20,14 @@ describe('VersionedLdesSnapshotRepository', () => {
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const repository = new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
 
+    beforeAll(() => {
+        setFixedTime();
+    });
+
+    afterAll(() => {
+        restoreRealTime();
+    });
+
     beforeEach(async () => {
        await instanceSnapshotRepository.clearAllInstanceSnapshotGraphs();
     });
@@ -117,15 +125,7 @@ describe('VersionedLdesSnapshotRepository', () => {
 
     describe('addToSuccessfullyProcessedSnapshots', () => {
 
-        beforeEach(() => {
-            setFixedTime();
-        });
-
-        afterEach(() => {
-            restoreRealTime();
-        });
-
-        test('should add to processedSnapshot to given graph', async () => {
+        test('should add to processedSnapshot with status success to given graph', async () => {
             const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
             const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
 
@@ -138,6 +138,32 @@ describe('VersionedLdesSnapshotRepository', () => {
                         ?markerId <http://mu.semte.ch/vocabularies/ext/processedSnapshot> ${sparqlEscapeUri(instanceSnapshotId)} .
                         ?markerId <http://schema.org/dateCreated> ?dateCreated.
                         ?markerId <http://schema.org/status> "success" .
+                    }
+                } 
+            `;
+            const result = await directDatabaseAccess.list(query);
+            expect(result[0]['graph']?.value).toEqual(instanceSnapshotGraph.value);
+            expect(result[0]['markerId']?.value).toBeDefined();
+            expect(result[0]['dateCreated']?.value).toEqual(FormatPreservingDate.now().value);
+        });
+
+    });
+
+    describe('addToFailedProcessedSnapshots', () => {
+
+        test('should add to processedSnapshot with status failed to given graph', async () => {
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
+
+            await repository.addToFailedProcessedSnapshots(instanceSnapshotGraph, instanceSnapshotId);
+
+            const query = `
+                SELECT ?graph ?markerId ?dateCreated WHERE {
+                    GRAPH ?graph {
+                        ?markerId a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#VersionedLdesSnapshotProcessedMarker> .
+                        ?markerId <http://mu.semte.ch/vocabularies/ext/processedSnapshot> ${sparqlEscapeUri(instanceSnapshotId)} .
+                        ?markerId <http://schema.org/dateCreated> ?dateCreated.
+                        ?markerId <http://schema.org/status> "failed" .
                     }
                 } 
             `;

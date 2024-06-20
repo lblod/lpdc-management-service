@@ -51,6 +51,16 @@ export class VersionedLdesSnapshotSparqlRepository implements VersionedLdesSnaps
         ], );
     }
 
+    async addToFailedProcessedSnapshots(snapshotGraph: Iri, snapshotId: Iri): Promise<void> {
+        const markerId = new Iri(`http://data.lblod.info/id/versioned-ldes-snapshot-processed-marker/${uuid()}`);
+        await this.directDatabaseAccess.insertData(snapshotGraph.value, [
+            `${sparqlEscapeUri(markerId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#VersionedLdesSnapshotProcessedMarker>`,
+            `${sparqlEscapeUri(markerId)} <http://mu.semte.ch/vocabularies/ext/processedSnapshot> ${sparqlEscapeUri(snapshotId)}`,
+            `${sparqlEscapeUri(markerId)} <http://schema.org/dateCreated> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+            `${sparqlEscapeUri(markerId)} <http://schema.org/status> "failed"`,
+        ], );
+    }
+
     async hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: Iri): Promise<boolean> {
         const query = `
             ASK WHERE {
