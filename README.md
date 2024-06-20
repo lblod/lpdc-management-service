@@ -51,7 +51,6 @@ services:
     image: lblod/lpdc-management-service:0.xx.0
     environment:
       MU_SPARQL_ENDPOINT: 'http://database:8890/sparql'
-      MU_APPLICATION_GRAPH: "http://mu.semte.ch/application"
 ```
 ## Release a new version
 We use [release-it](https://github.com/release-it/release-it/tree/main) to make a new release.

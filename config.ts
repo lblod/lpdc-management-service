@@ -1,5 +1,3 @@
-const APPLICATION_GRAPH = process.env.MU_APPLICATION_GRAPH;
-
 const PUBLIC_GRAPH = 'http://mu.semte.ch/graphs/public';
 
 const CONCEPT_SNAPSHOT_LDES_GRAPH = 'http://mu.semte.ch/graphs/lpdc/conceptsnapshots-ldes-data/ipdc';
@@ -102,7 +100,6 @@ export {
     CONCEPT_SNAPSHOT_LDES_GRAPH,
     INSTANCE_SNAPHOT_LDES_GRAPH,
     INSTANCE_SNAPHOT_LDES_AUTHORIZATION_GRAPH,
-    APPLICATION_GRAPH,
     USER_SESSIONS_GRAPH,
     PREFIXES,
     PREFIX,
