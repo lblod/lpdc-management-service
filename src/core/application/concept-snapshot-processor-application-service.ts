@@ -33,13 +33,13 @@ export class ConceptSnapshotProcessorApplicationService {
                     await this._versionedLdesSnapshotRepository.addToSuccessfullyProcessedSnapshots(snapshotGraph, snapshotId);
                 }, {
                     retries: 9,
-                    delay: 200,
+                    delay: 500,
                     backoff: "FIXED",
-                    logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`),
+                    logger: (msg: string) => console.log(`Failed <${snapshotId}> of <${snapshotGraph}> , but retrying [${msg}]`),
                 });
             } catch (e) {
                 this._logger.error(`Could not process ${snapshotId}`, e);
-                await this._versionedLdesSnapshotRepository.addToFailedProcessedSnapshots(snapshotGraph, snapshotId);
+                await this._versionedLdesSnapshotRepository.addToFailedProcessedSnapshots(snapshotGraph, snapshotId, e.message);
             }
         }
     }
