@@ -81,7 +81,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         await this.querying.insert(query);
     }
 
-    async update(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
+    async update(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, dontUpdateDateModified: boolean = false): Promise<void> {
 
         requiredValue(instanceVersion, "Instantie versie");
         const oldInstance = await this.findById(bestuurseenheid, instance.id);
@@ -89,8 +89,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
         if (FormatPreservingDate.isFunctionallyChanged(instanceVersion, oldInstance.dateModified)) {
             throw new ConcurrentUpdateError("De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in");
         }
-        const newInstance = InstanceBuilder.from(instance).withDateModified(FormatPreservingDate.now()).build();
 
+        const newInstance = dontUpdateDateModified ? instance : InstanceBuilder.from(instance).withDateModified(FormatPreservingDate.now()).build();
 
         const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(oldInstance).map(s => s.toNT());
         const newTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(newInstance).map(s => s.toNT());
