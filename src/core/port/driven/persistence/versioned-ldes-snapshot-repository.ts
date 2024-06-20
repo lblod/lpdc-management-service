@@ -11,7 +11,7 @@ export interface VersionedLdesSnapshotRepository {
 
     addToSuccessfullyProcessedSnapshots(snapshotGraph: Iri, snapshotId: Iri): Promise<void>;
 
-    addToFailedProcessedSnapshots(snapshotGraph: Iri, snapshotId: Iri): Promise<void>;
+    addToFailedProcessedSnapshots(snapshotGraph: Iri, snapshotId: Iri, errorMessage: string): Promise<void>;
 
     hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: Iri): Promise<boolean>;
 }

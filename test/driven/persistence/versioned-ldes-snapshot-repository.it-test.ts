@@ -155,7 +155,7 @@ describe('VersionedLdesSnapshotRepository', () => {
             const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
             const instanceSnapshotId = buildInstanceSnapshotIri(uuid());
 
-            await repository.addToFailedProcessedSnapshots(instanceSnapshotGraph, instanceSnapshotId);
+            await repository.addToFailedProcessedSnapshots(instanceSnapshotGraph, instanceSnapshotId, 'error message received and to be saved');
 
             const query = `
                 SELECT ?graph ?markerId ?dateCreated WHERE {
@@ -164,6 +164,7 @@ describe('VersionedLdesSnapshotRepository', () => {
                         ?markerId <http://mu.semte.ch/vocabularies/ext/processedSnapshot> ${sparqlEscapeUri(instanceSnapshotId)} .
                         ?markerId <http://schema.org/dateCreated> ?dateCreated.
                         ?markerId <http://schema.org/status> "failed" .
+                        ?markerId <http://schema.org/error> "error message received and to be saved" .
                     }
                 } 
             `;

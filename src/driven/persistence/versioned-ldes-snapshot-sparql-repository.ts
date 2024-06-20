@@ -1,7 +1,7 @@
 import {Iri} from "../../core/domain/shared/iri";
 import {VersionedLdesSnapshot} from "../../core/domain/versioned-ldes-snapshot";
 import {VersionedLdesSnapshotRepository} from "../../core/port/driven/persistence/versioned-ldes-snapshot-repository";
-import {sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {sparqlEscapeString, sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {SparqlQuerying} from "./sparql-querying";
 import {DirectDatabaseAccess} from "../../../test/driven/persistence/direct-database-access";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
@@ -51,13 +51,14 @@ export class VersionedLdesSnapshotSparqlRepository implements VersionedLdesSnaps
         ], );
     }
 
-    async addToFailedProcessedSnapshots(snapshotGraph: Iri, snapshotId: Iri): Promise<void> {
+    async addToFailedProcessedSnapshots(snapshotGraph: Iri, snapshotId: Iri, errorMessage: string): Promise<void> {
         const markerId = new Iri(`http://data.lblod.info/id/versioned-ldes-snapshot-processed-marker/${uuid()}`);
         await this.directDatabaseAccess.insertData(snapshotGraph.value, [
             `${sparqlEscapeUri(markerId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#VersionedLdesSnapshotProcessedMarker>`,
             `${sparqlEscapeUri(markerId)} <http://mu.semte.ch/vocabularies/ext/processedSnapshot> ${sparqlEscapeUri(snapshotId)}`,
             `${sparqlEscapeUri(markerId)} <http://schema.org/dateCreated> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
             `${sparqlEscapeUri(markerId)} <http://schema.org/status> "failed"`,
+            `${sparqlEscapeUri(markerId)} <http://schema.org/error> ${sparqlEscapeString(errorMessage)}`,
         ], );
     }
 

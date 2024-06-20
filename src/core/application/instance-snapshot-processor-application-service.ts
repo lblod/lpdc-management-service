@@ -38,8 +38,8 @@ export class InstanceSnapshotProcessorApplicationService {
                     logger: (msg: string) => console.log(`Failed <${snapshotId}> of <${snapshotGraph}> , but retrying [${msg}]`),
                 });
             } catch (e) {
-                this._logger.error(`Could not process ${snapshotId}`, e);
-                await this._versionedLdesSnapshotRepository.addToFailedProcessedSnapshots(snapshotGraph, snapshotId);
+                this._logger.error(`Could not process <${snapshotId}>`, e);
+                await this._versionedLdesSnapshotRepository.addToFailedProcessedSnapshots(snapshotGraph, snapshotId, e.message);
             }
         }
     }
