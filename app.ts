@@ -9,7 +9,6 @@ import {
 } from './config';
 import {ProcessingQueue} from './lib/processing-queue';
 import {contactPointOptions} from "./lib/contactPointOptions";
-import {fetchMunicipalities, fetchStreets, findAddressMatch} from "./lib/address";
 import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "./src/driven/persistence/concept-snapshot-sparql-repository";
@@ -75,6 +74,7 @@ import {
 import {
     VersionedLdesSnapshotSparqlRepository
 } from "./src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
+import {AdressenRegisterLookup} from "./src/driven/external/adressen-register-lookup";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -189,6 +189,8 @@ const newFormalInformalChoiceAndSyncInstanceDomainService = new NewFormalInforma
 const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc(IPDC_API_ENDPOINT, IPDC_API_KEY);
 
 const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
+
+const addressLookup = new AdressenRegisterLookup();
 
 app.get('/', function (_req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -662,18 +664,18 @@ async function getContactPointOptions(req: Request, res: Response) {
 }
 
 async function getMunicipalities(req: Request, res: Response) {
-    const municipalities = await fetchMunicipalities(req.query.search as string);
+    const municipalities = await addressLookup.fetchMunicipalities(req.query.search as string);
     return res.json(municipalities);
 }
 
 async function getStreets(req: Request, res: Response) {
-    const streets = await fetchStreets(req.query.municipality as string, req.query.search as string);
+    const streets = await addressLookup.fetchStreets(req.query.municipality as string, req.query.search as string);
     return res.json(streets);
 }
 
 async function validateAddress(req: Request, res: Response) {
 
-    const address = await findAddressMatch(
+    const address = await addressLookup.findAddressMatch(
         req.query.municipality as string,
         req.query.street as string,
         req.query.houseNumber as string,
