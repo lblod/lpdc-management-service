@@ -13,8 +13,7 @@ import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
 import {aFullInstanceSnapshot} from "../domain/instance-snapshot-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
-import {sparqlEscapeUri, uuid} from "../../../mu-helper";
-import {buildInstanceSnapshotIri} from "../domain/iri-test-builder";
+import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {
     ConceptDisplayConfigurationSparqlTestRepository
@@ -34,6 +33,7 @@ import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {
     VersionedLdesSnapshotSparqlRepository
 } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
+import spyOn = jest.spyOn;
 
 
 describe('InstanceSnapshotProcessorApplicationService', () => {
@@ -42,7 +42,6 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         await instanceSnapshotRepository.clearAllInstanceSnapshotGraphs();
     });
 
-    const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -67,42 +66,33 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     const versionedLdesSnapshotRepository = new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceSnapshotProcessor = new InstanceSnapshotProcessorApplicationService(instanceSnapshotMerger, versionedLdesSnapshotRepository);
 
-    test('Should retry unsuccessful merges', async () => {
-        const bestuurseenheid = aBestuurseenheid().build();
-        await bestuurseenheidRepository.save(bestuurseenheid);
+    describe('retry merge', () => {
 
-        const concept = aFullConcept().build();
-        await conceptRepository.save(concept);
-        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
+        let spy;
 
-        const instanceSnapshot = aFullInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z')).withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-        const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+        beforeEach(() => {
+            spy = spyOn(instanceSnapshotMerger, "merge").mockRejectedValue({message: 'Some error'});
+        });
 
-        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
-        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instanceSnapshot.conceptId);
+        afterEach(() => {
+            spy.mockRestore();
+        });
 
-        const invalidInstanceSnapshotId = buildInstanceSnapshotIri(uuid());
-        await directDatabaseAccess.insertData(
-            instanceSnapshotGraph.value,
-            [
-                `${sparqlEscapeUri(invalidInstanceSnapshotId)} a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot>`,
-                `${sparqlEscapeUri(invalidInstanceSnapshotId)} <http://purl.org/pav/createdBy> ${sparqlEscapeUri(bestuurseenheid.id)}`,
-                `${sparqlEscapeUri(invalidInstanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${FormatPreservingDate.of('2024-01-15T00:00:00.672Z').value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-            ]);
+        test('Should retry unsuccessful merges', async () => {
+            const instanceSnapshot = aFullInstanceSnapshot().build();
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
 
-        await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
+            const instanceSnapshotProcessor = new InstanceSnapshotProcessorApplicationService(instanceSnapshotMerger, versionedLdesSnapshotRepository);
 
-        await instanceSnapshotProcessor.process();
-
-        const snapshots = await versionedLdesSnapshotRepository.findToProcessSnapshots(new Iri('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot'));
-        expect(snapshots).toEqual([
-            {
-                snapshotGraph: instanceSnapshotGraph,
-                snapshotId: invalidInstanceSnapshotId
-            }
-        ]);
-
+            await instanceSnapshotProcessor.process();
+            expect(spy).toHaveBeenCalledTimes(10);
+            await instanceSnapshotProcessor.process();
+            expect(spy).toHaveBeenCalledTimes(10); //spy is no extra times called
+        });
     });
+
+
 
     test('merge instanceSnapshots with same instance in correct order', async () => {
         const bestuurseenheid = aBestuurseenheid().build();

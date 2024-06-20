@@ -4,6 +4,7 @@ import {
 import {Logger} from "../../../platform/logger";
 import {VersionedLdesSnapshotRepository} from "../port/driven/persistence/versioned-ldes-snapshot-repository";
 import {Iri} from "../domain/shared/iri";
+import {retry} from "ts-retry-promise";
 
 export class InstanceSnapshotProcessorApplicationService {
 
@@ -27,10 +28,18 @@ export class InstanceSnapshotProcessorApplicationService {
 
         for (const {snapshotGraph, snapshotId} of toProcessInstanceSnapshots) {
             try {
-                await this._instanceSnapshotToInstanceMerger.merge(snapshotGraph, snapshotId, this._versionedLdesSnapshotRepository);
-                await this._versionedLdesSnapshotRepository.addToSuccessfullyProcessedSnapshots(snapshotGraph, snapshotId);
+                await retry(async () => {
+                    await this._instanceSnapshotToInstanceMerger.merge(snapshotGraph, snapshotId, this._versionedLdesSnapshotRepository);
+                    await this._versionedLdesSnapshotRepository.addToSuccessfullyProcessedSnapshots(snapshotGraph, snapshotId);
+                }, {
+                    retries: 9,
+                    delay: 200,
+                    backoff: "FIXED",
+                    logger: (msg: string) => console.log(`Failed, but retrying [${msg}]`),
+                });
             } catch (e) {
                 this._logger.error(`Could not process ${snapshotId}`, e);
+                await this._versionedLdesSnapshotRepository.addToFailedProcessedSnapshots(snapshotGraph, snapshotId);
             }
         }
     }
