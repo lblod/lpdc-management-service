@@ -1,19 +1,16 @@
 import {createApp} from './mu-helper';
 import bodyparser from 'body-parser';
 import {
-    CONCEPT_SNAPSHOT_LDES_GRAPH,
+    CONCEPT_SNAPSHOT_PROCESSING_CRON_PATTERN,
     INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN,
     IPDC_API_ENDPOINT,
-    IPDC_API_KEY,
-    LOG_INCOMING_DELTA
+    IPDC_API_KEY
 } from './config';
-import {ProcessingQueue} from './lib/processing-queue';
 import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "./src/driven/persistence/concept-snapshot-sparql-repository";
 import {ConceptSparqlRepository} from "./src/driven/persistence/concept-sparql-repository";
 import {Iri} from "./src/core/domain/shared/iri";
-import {flatten} from "lodash";
 import {
     ConceptSnapshotToConceptMergerDomainService
 } from "./src/core/domain/concept-snapshot-to-concept-merger-domain-service";
@@ -75,8 +72,10 @@ import {
 } from "./src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 import {AdressenRegisterLookup} from "./src/driven/external/adressen-register-lookup";
 import {ContactInfoOptionsSparqlRepository} from "./src/driven/persistence/contact-info-options-sparql-repository";
+import {
+    ConceptSnapshotProcessorApplicationService
+} from "./src/core/application/concept-snapshot-processor-application-service";
 
-const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
 //      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
@@ -115,6 +114,10 @@ const conceptSnapshotToConceptMergerDomainService =
         instanceRepository,
     );
 
+const conceptSnapshotProcessorApplicationService = new ConceptSnapshotProcessorApplicationService(
+    conceptSnapshotToConceptMergerDomainService,
+    versionedLdesSnapshotRepository,
+);
 const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
 
 const newInstanceDomainService =
@@ -197,31 +200,6 @@ const contactInfoOptionsRepository = new ContactInfoOptionsSparqlRepository();
 app.get('/', function (_req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
     res.send(message);
-});
-
-app.post('/delta', async function (req, res): Promise<void> {
-    try {
-        const delta = req.body;
-
-        if (LOG_INCOMING_DELTA)
-            console.log(`Receiving delta ${JSON.stringify(delta)}`);
-
-        LdesPostProcessingQueue
-            .addJob(async () => {
-                const newConceptSnapshotIds: Iri[] = flatten(delta.map(changeSet => changeSet.inserts))
-                    .filter((t: any) => t?.graph.value === CONCEPT_SNAPSHOT_LDES_GRAPH && t?.subject?.value && t?.predicate.value == 'http://purl.org/dc/terms/isVersionOf')
-                    .map((delta: any) => new Iri(delta.subject.value));
-                for (const newConceptSnapshotId of newConceptSnapshotIds) {
-                    await conceptSnapshotToConceptMergerDomainService.merge(newConceptSnapshotId);
-                }
-            });
-
-        res.status(202).send();
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send();
-    }
 });
 
 app.use('/public-services/', async (req, res, next) => {
@@ -714,6 +692,24 @@ new CronJob(
         instanceSnapshotProcessorApplicationService.process()
             .catch((e) => console.error(`instance-snapshot-processor failed`, e))
             .finally(() => instanceSnapshotProcessorTaskIsRunning = false);
+    }, // onTick
+    null, // onComplete
+    true, // start
+    'Europe/Brussels' // timeZone
+);
+
+let conceptSnapshotProcessorTaskIsRunning = false;
+new CronJob(
+    CONCEPT_SNAPSHOT_PROCESSING_CRON_PATTERN, // cronTime
+    () => {
+        if (conceptSnapshotProcessorTaskIsRunning) {
+            console.log("concept-snapshot-processor already running - skipping");
+            return;
+        }
+        conceptSnapshotProcessorTaskIsRunning = true;
+        conceptSnapshotProcessorApplicationService.process()
+            .catch((e) => console.error(`concept-snapshot-processor failed`, e))
+            .finally(() => conceptSnapshotProcessorTaskIsRunning = false);
     }, // onTick
     null, // onComplete
     true, // start
