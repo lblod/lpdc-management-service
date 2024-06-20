@@ -8,7 +8,6 @@ import {
     LOG_INCOMING_DELTA
 } from './config';
 import {ProcessingQueue} from './lib/processing-queue';
-import {contactPointOptions} from "./lib/contactPointOptions";
 import {SessionSparqlRepository} from "./src/driven/persistence/session-sparql-repository";
 import {BestuurseenheidSparqlRepository} from "./src/driven/persistence/bestuurseenheid-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "./src/driven/persistence/concept-snapshot-sparql-repository";
@@ -75,6 +74,7 @@ import {
     VersionedLdesSnapshotSparqlRepository
 } from "./src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 import {AdressenRegisterLookup} from "./src/driven/external/adressen-register-lookup";
+import {ContactInfoOptionsSparqlRepository} from "./src/driven/persistence/contact-info-options-sparql-repository";
 
 const LdesPostProcessingQueue = new ProcessingQueue('LdesPostProcessingQueue');
 
@@ -191,6 +191,8 @@ const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStrin
 const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
 
 const addressLookup = new AdressenRegisterLookup();
+
+const contactInfoOptionsRepository = new ContactInfoOptionsSparqlRepository();
 
 app.get('/', function (_req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -659,7 +661,10 @@ async function getFormalInformalChoice(req: Request, res: Response) {
 }
 
 async function getContactPointOptions(req: Request, res: Response) {
-    const result = await contactPointOptions(req.params.fieldName);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+    const result = await contactInfoOptionsRepository.contactPointOptions(bestuurseenheid, req.params.fieldName);
     return res.json(result);
 }
 

@@ -37,7 +37,7 @@ export function anotherFullContactPointForInstance(): ContactPointBuilder {
         .withUrl(ContactPointTestBuilder.ANOTHER_URL)
         .withEmail(ContactPointTestBuilder.ANOTHER_EMAIL)
         .withTelephone(ContactPointTestBuilder.ANOTHER_TELEPHONE)
-        .withOpeningHours(ContactPointTestBuilder.OPENING_HOURS)
+        .withOpeningHours(ContactPointTestBuilder.ANOTHER_OPENING_HOURS)
         .withOrder(2)
         .withAddress(ContactPointTestBuilder.ANOTHER_ADDRESS_FOR_INSTANCE);
 }
@@ -72,5 +72,6 @@ export class ContactPointTestBuilder {
     public static readonly ANOTHER_ADDRESS_FOR_INSTANCE_SNAPSHOT = anotherFullAddressForInstanceSnapshot().build();
     public static readonly URL = 'https://leuven.be';
     public static readonly ANOTHER_URL = 'https://gent.be';
+    public static readonly ANOTHER_OPENING_HOURS = 'Everyday from 09:00 - 19:00';
 
 }
