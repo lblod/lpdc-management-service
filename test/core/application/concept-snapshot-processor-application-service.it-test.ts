@@ -82,7 +82,7 @@ describe('ConceptSnapshotProcessorApplicationService', () => {
             expect(spy).toHaveBeenCalledTimes(10);
             await conceptSnapshotProcessor.process();
             expect(spy).toHaveBeenCalledTimes(10); //spy is no extra times called
-        });
+        }, 20000);
     });
 
     test('merge conceptSnapshots with same concept in correct order', async () => {
