@@ -6,7 +6,6 @@ import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recur
 import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {Logger} from "../../../platform/logger";
 import {NS} from "./namespaces";
-import {sparqlEscapeUri} from "../../../mu-helper";
 import {INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
 import {SystemError} from "../../core/domain/shared/lpdc-error";
 
