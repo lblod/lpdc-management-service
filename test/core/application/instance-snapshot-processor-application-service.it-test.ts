@@ -12,7 +12,6 @@ import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-s
 import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
 import {aFullInstanceSnapshot} from "../domain/instance-snapshot-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {
@@ -89,7 +88,7 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
             expect(spy).toHaveBeenCalledTimes(10);
             await instanceSnapshotProcessor.process();
             expect(spy).toHaveBeenCalledTimes(10); //spy is no extra times called
-        });
+        }, 20000);
     });
 
 

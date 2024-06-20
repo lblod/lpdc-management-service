@@ -702,11 +702,18 @@ async function compareSnapshots(req: Request, res: Response) {
     }
 }
 
+let instanceSnapshotProcessorTaskIsRunning = false;
 new CronJob(
     INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN, // cronTime
     () => {
+        if (instanceSnapshotProcessorTaskIsRunning) {
+            console.log("instance-snapshot-processor already running - skipping");
+            return;
+        }
+        instanceSnapshotProcessorTaskIsRunning = true;
         instanceSnapshotProcessorApplicationService.process()
-            .catch((reason) => console.error(`instance-snapshot-processing failed ${reason}`));
+            .catch((e) => console.error(`instance-snapshot-processor failed`, e))
+            .finally(() => instanceSnapshotProcessorTaskIsRunning = false);
     }, // onTick
     null, // onComplete
     true, // start
