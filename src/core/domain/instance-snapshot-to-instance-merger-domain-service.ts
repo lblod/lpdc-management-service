@@ -85,7 +85,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             } else if (isExistingInstance && !instanceSnapshot.isArchived) {
                 const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
                 await this.updateInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
-
             } else if (isExistingInstance && instanceSnapshot.isArchived) {
                 await this._deleteInstanceDomainService.delete(bestuurseenheid, instanceSnapshot.isVersionOf);
             }

@@ -51,8 +51,9 @@ export class ConceptSnapshotToConceptMergerDomainService {
             const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedConceptSnapshots.map(iri => iri.value).includes(newConceptSnapshot.id.value);
 
             if (newConceptSnapshotAlreadyLinkedToConcept) {
-                //TODO LPDC-1002: when doing idempotent implementation, we still need to execute next steps ... (instance review status, ensure concept display configs),
                 this._logger.log(`The versioned resource <${conceptSnapshotId}> is already processed on service <${conceptId}>`);
+
+                await this._ensureLinkedAuthoritiesExistsAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...newConceptSnapshot.competentAuthorities, ...newConceptSnapshot.executingAuthorities]);
 
                 return;
             }
@@ -62,6 +63,8 @@ export class ConceptSnapshotToConceptMergerDomainService {
                 this._logger.log(`The versioned resource <${conceptSnapshotId}> is an older version of service <${conceptId}>`);
                 const updatedConcept = this.addAsPreviousConceptSnapshot(newConceptSnapshot, concept);
                 await this._conceptRepository.update(updatedConcept, concept);
+
+                await this._ensureLinkedAuthoritiesExistsAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...newConceptSnapshot.competentAuthorities, ...newConceptSnapshot.executingAuthorities]);
 
                 return;
             }
@@ -79,9 +82,9 @@ export class ConceptSnapshotToConceptMergerDomainService {
                 await this._conceptRepository.update(updatedConcept, concept);
             }
 
-            await this._ensureLinkedAuthoritiesExistsAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...newConceptSnapshot.competentAuthorities, ...newConceptSnapshot.executingAuthorities]);
-
             await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptSnapshotFunctionallyChanged, newConceptSnapshot.isArchived);
+
+            await this._ensureLinkedAuthoritiesExistsAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...newConceptSnapshot.competentAuthorities, ...newConceptSnapshot.executingAuthorities]);
 
             await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
 
