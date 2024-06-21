@@ -680,38 +680,25 @@ async function compareSnapshots(req: Request, res: Response) {
     }
 }
 
-let instanceSnapshotProcessorTaskIsRunning = false;
-new CronJob(
-    INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN, // cronTime
-    () => {
-        if (instanceSnapshotProcessorTaskIsRunning) {
-            console.log("instance-snapshot-processor already running - skipping");
-            return;
-        }
-        instanceSnapshotProcessorTaskIsRunning = true;
-        instanceSnapshotProcessorApplicationService.process()
-            .catch((e) => console.error(`instance-snapshot-processor failed`, e))
-            .finally(() => instanceSnapshotProcessorTaskIsRunning = false);
-    }, // onTick
-    null, // onComplete
-    true, // start
-    'Europe/Brussels' // timeZone
-);
+startProcessingTask('instance-snapshot-processor', () => instanceSnapshotProcessorApplicationService.process(), INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN);
+startProcessingTask('concept-snapshot-processor', () => conceptSnapshotProcessorApplicationService.process(), CONCEPT_SNAPSHOT_PROCESSING_CRON_PATTERN);
 
-let conceptSnapshotProcessorTaskIsRunning = false;
-new CronJob(
-    CONCEPT_SNAPSHOT_PROCESSING_CRON_PATTERN, // cronTime
-    () => {
-        if (conceptSnapshotProcessorTaskIsRunning) {
-            console.log("concept-snapshot-processor already running - skipping");
-            return;
-        }
-        conceptSnapshotProcessorTaskIsRunning = true;
-        conceptSnapshotProcessorApplicationService.process()
-            .catch((e) => console.error(`concept-snapshot-processor failed`, e))
-            .finally(() => conceptSnapshotProcessorTaskIsRunning = false);
-    }, // onTick
-    null, // onComplete
-    true, // start
-    'Europe/Brussels' // timeZone
-);
+function startProcessingTask(description: string, task: () => Promise<void>, cronPattern: string) {
+    let taskIsRunning = false;
+    new CronJob(
+        cronPattern, // cronTime
+        () => {
+            if (taskIsRunning) {
+                console.log(`${description} already running - skipping`);
+                return;
+            }
+            taskIsRunning = true;
+            task()
+                .catch((e) => console.error(`${description} failed`, e))
+                .finally(() => taskIsRunning = false);
+        }, // onTick
+        null, // onComplete
+        true, // start
+        'Europe/Brussels' // timeZone
+    );
+}
