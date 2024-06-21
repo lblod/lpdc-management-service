@@ -4,7 +4,6 @@ import {
 } from "../../../src/core/application/validate-instance-for-publish-application-service";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {SelectConceptLanguageDomainService} from "../../../src/core/domain/select-concept-language-domain-service";
 import {SemanticFormsMapperImpl} from "../../../src/driven/persistence/semantic-forms-mapper-impl";
 import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
@@ -18,6 +17,7 @@ import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "../../../src/driven/persistence/concept-snapshot-sparql-repository";
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 
 
 describe('ValidateInstanceForPublishApplicationService', () => {
@@ -26,7 +26,7 @@ describe('ValidateInstanceForPublishApplicationService', () => {
 
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
         const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
-        const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+        const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = new FormDefinitionFileRepository();
         const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);

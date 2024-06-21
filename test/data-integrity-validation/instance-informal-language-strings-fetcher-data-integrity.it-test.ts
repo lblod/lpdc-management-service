@@ -9,16 +9,15 @@ import {
 } from "../../src/driven/external/instance-informal-language-strings-fetcher-ipdc";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import fs from "fs";
-import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 import {sortedUniq} from "lodash";
 import {Language} from "../../src/core/domain/language";
-import {InstancePublicationStatusType} from "../../src/core/domain/types";
 import {wait} from "ts-retry-promise";
+import {InstanceSparqlTestRepository} from "../driven/persistence/instance-sparql-test-repository";
 
 const endPoint = END2END_TEST_SPARQL_ENDPOINT;
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
-const instanceRepository = new InstanceSparqlRepository(endPoint);
+const instanceRepository = new InstanceSparqlTestRepository(endPoint);
 const ipdcFetcher = new InstanceInformalLanguageStringsFetcherIpdc('https://api.ipdc.vlaanderen.be', process.env.IPDC_API_KEY);
 
 describe('Instance informal language strings fetcher', () => {
@@ -47,7 +46,7 @@ describe('Instance informal language strings fetcher', () => {
                     if (
                         instance.dutchLanguageVariant != Language.INFORMAL &&
                         instance.needsConversionFromFormalToInformal &&
-                        instance.publicationStatus == InstancePublicationStatusType.GEPUBLICEERD) {
+                        instance.isLastVersionPublishedInIPDC()) {
 
                         transformedInstances += 1;
                         await ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, instance);

@@ -158,7 +158,6 @@ async function toInstance(mapper: QuadsToDomainMapper, chosenLanguage: Language,
         .withDatePublished(undefined)
         .withStatus(InstanceStatusType.VERZONDEN)
         .withReviewStatus(undefined)
-        .withPublicationStatus(undefined)
         .withSpatials(mapper.spatials(instanceIri))
         .withLegalResources(mapper.legalResources(instanceIri))
         .build();

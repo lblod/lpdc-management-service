@@ -7,14 +7,12 @@ import {
     aMinimalConceptSnapshot,
     ConceptSnapshotTestBuilder
 } from "./concept-snapshot-test-builder";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {aFullConcept} from "./concept-test-builder";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {
     ChosenFormType,
-    InstancePublicationStatusType,
     InstanceReviewStatusType,
     InstanceStatusType,
     PublicationMediumType
@@ -46,11 +44,12 @@ import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-adva
 import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {anotherFullLegalResourceForConceptSnapshot} from "./legal-resource-test-builder";
 import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 
 
 describe('Bring instance up to date with concept snapshot version domain service ', () => {
 
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -497,7 +496,6 @@ describe('Bring instance up to date with concept snapshot version domain service
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
                 .withReviewStatus(undefined)
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
                 .build();
             const newConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -512,7 +510,6 @@ describe('Bring instance up to date with concept snapshot version domain service
             expect(actualInstance.reviewStatus).toBeUndefined();
             expect(actualInstance.dateModified).toEqual(FormatPreservingDate.now());
             expect(actualInstance.status).toEqual(InstanceStatusType.ONTWERP);
-            expect(actualInstance.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
         });
 
         test('should remain in ontwerp if in status ontwerp', async () => {
@@ -529,7 +526,6 @@ describe('Bring instance up to date with concept snapshot version domain service
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
                 .withReviewStatus(undefined)
                 .withStatus(InstanceStatusType.ONTWERP)
-                .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
                 .build();
             const newConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -544,7 +540,6 @@ describe('Bring instance up to date with concept snapshot version domain service
             expect(actualInstance.reviewStatus).toBeUndefined();
             expect(actualInstance.dateModified).toEqual(FormatPreservingDate.now());
             expect(actualInstance.status).toEqual(InstanceStatusType.ONTWERP);
-            expect(actualInstance.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
         });
 
         test('should update conceptSnapshot on instance', async () => {

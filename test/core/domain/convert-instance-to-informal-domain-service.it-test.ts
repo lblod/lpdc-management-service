@@ -4,10 +4,9 @@ import {Language} from "../../../src/core/domain/language";
 import {
     ConvertInstanceToInformalDomainService
 } from "../../../src/core/domain/convert-instance-to-informal-domain-service";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {TEST_SPARQL_ENDPOINT, TNI_IPDC_AUTHENTICATION_KEY, TNI_IPDC_ENDPOINT} from "../../test.config";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
-import {ChosenFormType, InstancePublicationStatusType, InstanceStatusType} from "../../../src/core/domain/types";
+import {ChosenFormType, InstanceStatusType} from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {aFullRequirementForInstance} from "./requirement-test-builder";
@@ -30,16 +29,22 @@ import {
     instancePublishedOnIpdcTni
 } from "../../driven/external/instance-informal-language-strings-fetcher-ipdc.it-test";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
+import moment from 'moment';
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 
 describe('Convert Instance To Informal Domain Service', () => {
 
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc(TNI_IPDC_ENDPOINT, TNI_IPDC_AUTHENTICATION_KEY);
     const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
 
     describe('Confirm instance already informal', () => {
-        beforeAll(() => setFixedTime());
+        let now = undefined;
+
+        beforeAll(() => {
+            now = setFixedTime();
+        });
         afterAll(() => restoreRealTime());
 
         test('When instance dutchLanguageVersion already is informal, then throw error', async () => {
@@ -48,8 +53,7 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withTitle(LanguageString.of(undefined, undefined, 'titel informal'))
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.now())
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.now())
+                .withDatePublished(FormatPreservingDate.of(moment(now).add(100).toISOString()))
                 .withDutchLanguageVariant(Language.INFORMAL)
                 .build();
 
@@ -64,7 +68,6 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(undefined)
                 .withDatePublished(undefined)
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
@@ -80,8 +83,8 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.now())
+                .withDateSent(FormatPreservingDate.now())
+                .withDatePublished(FormatPreservingDate.of(moment(now).add(100).toISOString()))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .build();
@@ -97,8 +100,8 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.now())
+                .withDateSent(FormatPreservingDate.now())
+                .withDatePublished(FormatPreservingDate.of(moment(now).add(100).toISOString()))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .build();
@@ -111,8 +114,8 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.now())
+                .withDateSent(FormatPreservingDate.now())
+                .withDatePublished(FormatPreservingDate.of(moment(now).add(100).toISOString()))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .build();
@@ -128,9 +131,8 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.872Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .withRequirements([
@@ -207,9 +209,8 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
@@ -228,9 +229,8 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
@@ -249,9 +249,8 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
@@ -279,9 +278,8 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withUuid(uuid)
                 .withCreatedBy(bestuurseenheid.id)
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .withRequirements([
@@ -304,7 +302,7 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(undefined)
+                .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
                 .withDatePublished(undefined)
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
@@ -314,14 +312,15 @@ describe('Convert Instance To Informal Domain Service', () => {
 
             await expect(() => convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified))
                 .rejects.toThrowWithMessage(InvariantError, 'Instantie moet gepubliceerd zijn');
+            //TODO LPDC-1236: add test if last version not published ...
         });
 
         test('When bestuurseenheid chose formal, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.now())
+                .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .build();
@@ -337,8 +336,8 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.now())
+                .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .build();
@@ -352,8 +351,8 @@ describe('Convert Instance To Informal Domain Service', () => {
             const instance = InstanceBuilder.from(instancePublishedOnIpdcTni)
                 .withCreatedBy(bestuurseenheid.id)
                 .withStatus(InstanceStatusType.VERZONDEN)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                .withDatePublished(FormatPreservingDate.now())
+                .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .withDateModified(FormatPreservingDate.of("2024-04-24T14:09:32.778Z"))
@@ -373,9 +372,8 @@ describe('Convert Instance To Informal Domain Service', () => {
                 InstanceBuilder.from(instancePublishedOnIpdcTni)
                     .withCreatedBy(bestuurseenheid.id)
                     .withStatus(InstanceStatusType.VERZONDEN)
-                    .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-                    .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
                     .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+                    .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                     .withDateModified(FormatPreservingDate.of("2024-04-24T14:09:32.778Z"))
                     .withDutchLanguageVariant(Language.FORMAL)
                     .withNeedsConversionFromFormalToInformal(true)
@@ -390,7 +388,6 @@ describe('Convert Instance To Informal Domain Service', () => {
 
             const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
             expect(actualInstance.status).toEqual(InstanceStatusType.ONTWERP);
-            expect(actualInstance.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
             expect(actualInstance.needsConversionFromFormalToInformal).toBeFalse();
             expect(actualInstance.dutchLanguageVariant).toEqual(Language.INFORMAL);
         });

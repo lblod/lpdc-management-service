@@ -3,7 +3,7 @@ import {Instance} from "./instance";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
-import {ChosenFormType, InstancePublicationStatusType} from "./types";
+import {ChosenFormType} from "./types";
 import {InvariantError} from "./shared/lpdc-error";
 import {
     InstanceInformalLanguageStringsFetcher
@@ -27,7 +27,7 @@ export class ConvertInstanceToInformalDomainService {
 
     async confirmInstanceIsAlreadyInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
         await this.errorIfBestuurDidNotChooseInformal(bestuurseenheid);
-        this.errorIfInstanceNotGepubliceerd(instance);
+        this.errorIfLastVersionOfInstanceNotPublishedInIPDC(instance);
 
         const updatedInstance = instance
             .reopen()
@@ -39,7 +39,7 @@ export class ConvertInstanceToInformalDomainService {
 
     async convertInstanceToInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
         await this.errorIfBestuurDidNotChooseInformal(bestuurseenheid);
-        this.errorIfInstanceNotGepubliceerd(instance);
+        this.errorIfLastVersionOfInstanceNotPublishedInIPDC(instance);
         this.errorInstanceReedsInformal(instance);
 
         const updatedInstance =
@@ -56,8 +56,8 @@ export class ConvertInstanceToInformalDomainService {
         }
     }
 
-    private errorIfInstanceNotGepubliceerd(instance: Instance) {
-        if (instance.publicationStatus !== InstancePublicationStatusType.GEPUBLICEERD) {
+    private errorIfLastVersionOfInstanceNotPublishedInIPDC(instance: Instance) {
+        if (!instance.isLastVersionPublishedInIPDC()) {
             throw new InvariantError('Instantie moet gepubliceerd zijn');
         }
     }

@@ -81,7 +81,6 @@ export class NewInstanceDomainService {
                 undefined,
                 InstanceStatusType.ONTWERP,
                 undefined,
-                undefined,
                 bestuurseenheid.spatials,
                 [],
                 false,
@@ -143,7 +142,6 @@ export class NewInstanceDomainService {
                 undefined,
                 InstanceStatusType.ONTWERP,
                 undefined,
-                undefined,
                 bestuurseenheid.spatials,
                 concept.legalResources.map(lr => lr.transformLanguage(conceptLanguage, dutchLanguageVariant).transformWithNewId()),
                 false,
@@ -181,7 +179,6 @@ export class NewInstanceDomainService {
             .withContactPoints(instanceToCopy.contactPoints.map(fa => fa.transformWithNewId()))
             .withStatus(InstanceStatusType.ONTWERP)
             .withDateSent(undefined)
-            .withPublicationStatus(undefined)
             .withDatePublished(undefined)
             .withLegalResources(instanceToCopy.legalResources.map(lr => lr.transformWithNewId()))
             .withSpatials(forMunicipalityMerger ? [] : instanceToCopy.spatials)

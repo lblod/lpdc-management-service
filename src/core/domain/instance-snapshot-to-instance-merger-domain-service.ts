@@ -5,7 +5,7 @@ import {InstanceSnapshot} from "./instance-snapshot";
 import {Instance} from "./instance";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {Bestuurseenheid} from "./bestuurseenheid";
-import {InstancePublicationStatusType, InstanceStatusType} from "./types";
+import {InstanceStatusType} from "./types";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 import {Concept} from "./concept";
@@ -155,7 +155,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             undefined,
             InstanceStatusType.VERZONDEN,
             undefined,
-            undefined,
             instanceSnapshot.spatials,
             instanceSnapshot.legalResources.map(lr => lr.transformWithNewId()),
             false,
@@ -205,7 +204,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instance.datePublished,
             InstanceStatusType.VERZONDEN,
             undefined,
-            instance.datePublished ? InstancePublicationStatusType.TE_HERPUBLICEREN : undefined,
             instanceSnapshot.spatials,
             instanceSnapshot.legalResources.map(lr => lr.transformWithNewId()),
             false,

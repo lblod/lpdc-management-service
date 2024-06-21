@@ -7,16 +7,16 @@ import {
     aMinimalContactPointForInstance,
     anotherFullContactPointForInstance
 } from "../../core/domain/contact-point-test-builder";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {
     ContactInfoOptionsSparqlRepository
 } from "../../../src/driven/persistence/contact-info-options-sparql-repository";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {InstanceSparqlTestRepository} from "./instance-sparql-test-repository";
 
 describe('contact info options repository', () => {
 
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const repository = new ContactInfoOptionsSparqlRepository(TEST_SPARQL_ENDPOINT);
 
     test('can query contact info options', async () => {

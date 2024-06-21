@@ -10,8 +10,7 @@ import {InstanceSnapshotSparqlTestRepository} from "../../driven/persistence/ins
 import {
     InstanceSnapshotToInstanceMergerDomainService
 } from "../../../src/core/domain/instance-snapshot-to-instance-merger-domain-service";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {InstancePublicationStatusType, InstanceStatusType} from "../../../src/core/domain/types";
+import {InstanceStatusType} from "../../../src/core/domain/types";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
@@ -47,6 +46,7 @@ import {
 import {
     VersionedLdesSnapshotSparqlRepository
 } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
@@ -58,7 +58,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRegistrationCodeFetcher = {
         fetchOrgRegistryCodelistEntry: jest.fn().mockReturnValue(Promise.resolve({}))
@@ -143,7 +143,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.datePublished).toEqual(undefined);
             expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
             expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
-            expect(instanceAfterMerge.publicationStatus).toEqual(undefined);
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
             expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
         });
@@ -380,7 +379,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.datePublished).toEqual(undefined);
             expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
             expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
-            expect(instanceAfterMerge.publicationStatus).toEqual(undefined);
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
             expect(instanceAfterMerge.legalResources).toEqual(expect.arrayContaining([
                 expect.objectContaining({
@@ -620,7 +618,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.datePublished).toEqual(instance.datePublished);
                 expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
                 expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
-                expect(instanceAfterMerge.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
                 expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
                 expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
             });
@@ -865,7 +862,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.datePublished).toEqual(instance.datePublished);
                 expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
                 expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
-                expect(instanceAfterMerge.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
                 expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
                 expect(instanceAfterMerge.legalResources).toEqual(expect.arrayContaining([
                     expect.objectContaining({

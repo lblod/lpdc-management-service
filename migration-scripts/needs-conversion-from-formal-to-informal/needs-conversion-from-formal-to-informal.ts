@@ -7,19 +7,19 @@ import {sparqlEscapeUri} from "../../mu-helper";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {Instance} from "../../src/core/domain/instance";
-import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 import {ChosenFormType} from "../../src/core/domain/types";
 import {Language} from "../../src/core/domain/language";
 import fs from "fs";
 import {
     FormalInformalChoiceSparqlRepository
 } from "../../src/driven/persistence/formal-informal-choice-sparql-repository";
+import {InstanceSparqlTestRepository} from "../../test/driven/persistence/instance-sparql-test-repository";
 
 const endPoint = process.env.SPARQL_URL;
 
 const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
-const instanceRepository = new InstanceSparqlRepository(endPoint);
+const instanceRepository = new InstanceSparqlTestRepository(endPoint);
 const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(endPoint);
 
 

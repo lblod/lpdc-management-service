@@ -7,7 +7,7 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {Language} from "../../../src/core/domain/language";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {InstancePublicationStatusType, InstanceStatusType} from "../../../src/core/domain/types";
+import {InstanceStatusType} from "../../../src/core/domain/types";
 import {RequirementBuilder} from "../../../src/core/domain/requirement";
 import {EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {ProcedureBuilder} from "../../../src/core/domain/procedure";
@@ -276,7 +276,6 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
     .withDateSent(FormatPreservingDate.of("2024-04-24T14:09:45.773Z"))
     .withDatePublished(FormatPreservingDate.of("2024-04-24T14:10:00.72350311Z"))
     .withStatus(InstanceStatusType.VERZONDEN)
-    .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
     .withForMunicipalityMerger(false)
     .build();
 

@@ -12,7 +12,6 @@ import {FormatPreservingDate} from "./format-preserving-date";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
-    InstancePublicationStatusType,
     InstanceReviewStatusType,
     InstanceStatusType,
     LanguageType,
@@ -75,7 +74,6 @@ export class Instance {
     private readonly _datePublished: FormatPreservingDate | undefined;
     private readonly _status: InstanceStatusType;
     private readonly _reviewStatus: InstanceReviewStatusType | undefined;
-    private readonly _publicationStatus: InstancePublicationStatusType | undefined;
     private readonly _spatials: Iri[];
     private readonly _legalResources: LegalResource[];
     private readonly _forMunicipalityMerger: boolean;
@@ -119,7 +117,6 @@ export class Instance {
                 datePublished: FormatPreservingDate | undefined,
                 status: InstanceStatusType,
                 reviewStatus: InstanceReviewStatusType,
-                publicationStatus: InstancePublicationStatusType,
                 spatials: Iri[],
                 legalResources: LegalResource[],
                 forMunicipalityMerger: boolean,
@@ -174,28 +171,20 @@ export class Instance {
         this._datePublished = requiredCanOnlyBePresentIfOtherValuePresent(datePublished, 'datePublished', dateSent, 'dateSent');
         this._status = requiredValue(status, 'status');
         this._reviewStatus = requiredCanOnlyBePresentIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId, 'concept');
-        this._publicationStatus = publicationStatus;
-        requireAllPresentOrAllAbsent([datePublished, publicationStatus], 'datePublished and publicationStatus');
         this._spatials = requireNoDuplicates(asSortedArray(spatials, Iri.compare), 'spatials');
         this._legalResources = [...legalResources].map(LegalResource.forInstance);
         requireNoDuplicates(this.legalResources.map(lr => lr.order), 'legal resources > order');
         this._forMunicipalityMerger = requiredValue(forMunicipalityMerger, 'forMunicipalityMerger');
         this._copyOf = copyOf;
         this.validateLanguages();
-        this.validateStatuses();
     }
 
     reopen(): Instance {
         if (this.status === InstanceStatusType.ONTWERP) {
             throw new InvariantError('Instantie is al in status ontwerp');
         }
-        const newPublicationStatus = this.publicationStatus === InstancePublicationStatusType.GEPUBLICEERD ?
-            InstancePublicationStatusType.TE_HERPUBLICEREN
-            : this.publicationStatus;
-
         return InstanceBuilder.from(this)
             .withStatus(InstanceStatusType.ONTWERP)
-            .withPublicationStatus(newPublicationStatus)
             .build();
     }
 
@@ -239,13 +228,6 @@ export class Instance {
 
         if (calculatedInstanceLanguages.length != 0 && calculatedInstanceLanguages[0] != this.dutchLanguageVariant) {
             throw new InvariantError('DutchLanguageVariant verschilt van de calculatedInstanceLanguages');
-        }
-    }
-
-
-    private validateStatuses(): void {
-        if (this.status === InstanceStatusType.ONTWERP && (this.publicationStatus != InstancePublicationStatusType.TE_HERPUBLICEREN && this.publicationStatus != undefined)) {
-            throw new InvariantError('Instantie kan niet in ontwerp staan en gepubliceerd zijn');
         }
     }
 
@@ -401,10 +383,6 @@ export class Instance {
         return this._reviewStatus;
     }
 
-    get publicationStatus(): InstancePublicationStatusType {
-        return this._publicationStatus;
-    }
-
     get spatials(): Iri[] {
         return [...this._spatials];
     }
@@ -462,7 +440,7 @@ export class Instance {
                 throw new InvariantError('Minstens één van de adresgegevens is niet geldig');
             }
         }
-        if(this._forMunicipalityMerger) {
+        if (this._forMunicipalityMerger) {
             throw new InvariantError('Een product of dienst bestemd voor een fusiegemeente kan nog niet worden verzonden naar de Vlaamse overheid');
         }
     }
@@ -475,6 +453,17 @@ export class Instance {
             .withStatus(InstanceStatusType.VERZONDEN)
             .withDateSent(FormatPreservingDate.now())
             .build();
+    }
+
+    isPublishedInIPDC(): boolean {
+        return this._datePublished !== undefined;
+    }
+
+    isLastVersionPublishedInIPDC(): boolean {
+        if(this.dateSent && this.datePublished) {
+            return this.dateSent.before(this.datePublished);
+        }
+        return false;
     }
 
 }
@@ -518,7 +507,6 @@ export class InstanceBuilder {
     private datePublished: FormatPreservingDate | undefined;
     private status: InstanceStatusType;
     private reviewStatus: InstanceReviewStatusType;
-    private publicationStatus: InstancePublicationStatusType;
     private spatials: Iri[] = [];
     private legalResources: LegalResource[] = [];
     private forMunicipalityMerger: boolean;
@@ -568,7 +556,6 @@ export class InstanceBuilder {
             .withDatePublished(instance.datePublished)
             .withStatus(instance.status)
             .withReviewStatus(instance.reviewStatus)
-            .withPublicationStatus(instance.publicationStatus)
             .withSpatials(instance.spatials)
             .withLegalResources(instance.legalResources)
             .withForMunicipalityMerger(instance.forMunicipalityMerger)
@@ -766,15 +753,11 @@ export class InstanceBuilder {
         return this;
     }
 
-    public withPublicationStatus(publicationStatus: InstancePublicationStatusType) {
-        this.publicationStatus = publicationStatus;
-        return this;
-    }
-
     public withSpatials(spatials: Iri[]): InstanceBuilder {
         this.spatials = spatials;
         return this;
     }
+
     public withLegalResources(legalResources: LegalResource[]): InstanceBuilder {
         this.legalResources = legalResources;
         return this;
@@ -830,7 +813,6 @@ export class InstanceBuilder {
             this.datePublished,
             this.status,
             this.reviewStatus,
-            this.publicationStatus,
             this.spatials,
             this.legalResources,
             this.forMunicipalityMerger,

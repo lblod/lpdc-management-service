@@ -6,15 +6,15 @@ import {
     BestuurseenheidSparqlTestRepository
 } from "../../test/driven/persistence/bestuurseenheid-sparql-test-repository";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
-import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 import {Instance} from "../../src/core/domain/instance";
 import {NotFoundError, SystemError} from "../../src/core/domain/shared/lpdc-error";
 import {wait} from "ts-retry-promise";
 import fs from "fs";
+import {InstanceSparqlTestRepository} from "../../test/driven/persistence/instance-sparql-test-repository";
 
 const sparqlUrl = process.env.SPARQL_URL;
 
-const instanceRepository = new InstanceSparqlRepository(sparqlUrl);
+const instanceRepository = new InstanceSparqlTestRepository(sparqlUrl);
 const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(sparqlUrl);
 const directDatabaseAccess = new DirectDatabaseAccess(sparqlUrl);
 

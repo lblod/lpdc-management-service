@@ -6,7 +6,6 @@ import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuur
 import {Iri} from "../../src/core/domain/shared/iri";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import fs from "fs";
-import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 import {sortedUniq} from "lodash";
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
@@ -14,13 +13,14 @@ import {
     BringInstanceUpToDateWithConceptSnapshotVersionDomainService
 } from "../../src/core/domain/bring-instance-up-to-date-with-concept-snapshot-version-domain-service";
 import {SelectConceptLanguageDomainService} from "../../src/core/domain/select-concept-language-domain-service";
+import {InstanceSparqlTestRepository} from "../driven/persistence/instance-sparql-test-repository";
 
 const endPoint = END2END_TEST_SPARQL_ENDPOINT;
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
 const conceptRepository = new ConceptSparqlRepository(endPoint);
 const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
-const instanceRepository = new InstanceSparqlRepository(endPoint);
+const instanceRepository = new InstanceSparqlTestRepository(endPoint);
 const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
 const bringInstanceUpToDateWithConceptSnapshotVersionDomainService = new BringInstanceUpToDateWithConceptSnapshotVersionDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository, selectConceptLanguageDomainService);
 

@@ -6,7 +6,6 @@ import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
-    InstancePublicationStatusType,
     InstanceReviewStatusType,
     InstanceStatusType,
     LanguageType,
@@ -47,6 +46,7 @@ import {
     LegalResourceTestBuilder
 } from "./legal-resource-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import moment from 'moment';
 
 beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
@@ -509,28 +509,10 @@ describe('constructing', () => {
         const instanceTestBuilder = aFullInstance()
             .withStatus(InstanceStatusType.ONTWERP)
             .withDateSent(undefined)
-            .withDatePublished(undefined)
-            .withPublicationStatus(undefined);
+            .withDatePublished(undefined);
 
         expect(() => instanceTestBuilder.build()).not.toThrow();
 
-    });
-
-    test('When status is ontwerp and publicationStatus is different from undefined or te-herpubliceren then throw error', () => {
-        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.ONTWERP).withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD);
-
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'Instantie kan niet in ontwerp staan en gepubliceerd zijn');
-
-    });
-    test('When status is ontwerp and is undefined not throw error', () => {
-        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.ONTWERP).withPublicationStatus(undefined).withDatePublished(undefined);
-
-        expect(() => instanceTestBuilder.build()).not.toThrow();
-    });
-    test('When status is ontwerp and is te-herpubliceren not throw error', () => {
-        const instanceTestBuilder = aFullInstance().withStatus(InstanceStatusType.ONTWERP).withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN);
-
-        expect(() => instanceTestBuilder.build()).not.toThrow();
     });
 
     test('When datePublished is present and dateSent is undefined should throw error', () => {
@@ -870,20 +852,6 @@ describe('reopen', () => {
         expect(() => instance.reopen()).toThrowWithMessage(InvariantError, 'Instantie is al in status ontwerp');
     });
 
-    test('When instance publication state is published then publication state should be set to Te herpubliceren', () => {
-        const instance = aFullInstance()
-            .withStatus(InstanceStatusType.VERZONDEN)
-            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-            .build();
-
-        const updatedInstance = instance.reopen();
-
-        expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
-            .withStatus(InstanceStatusType.ONTWERP)
-            .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
-            .build());
-    });
-
     test('when publication status was verzonden but never published', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.VERZONDEN)
@@ -897,39 +865,6 @@ describe('reopen', () => {
     });
 
 
-    test('when publication status te-herpubliceren, and previously published', () => {
-        const datePublished = FormatPreservingDate.now();
-        const instance = aFullInstance()
-            .withStatus(InstanceStatusType.VERZONDEN)
-            .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
-            .withDatePublished(datePublished)
-            .build();
-
-        const updatedInstance = instance.reopen();
-
-        expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
-            .withStatus(InstanceStatusType.ONTWERP)
-            .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
-            .withDatePublished(datePublished)
-            .build());
-    });
-
-    test('when publication status gepubliceerd', () => {
-        const datePublished = FormatPreservingDate.now();
-        const instance = aFullInstance()
-            .withStatus(InstanceStatusType.VERZONDEN)
-            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-            .withDatePublished(datePublished)
-            .build();
-
-        const updatedInstance = instance.reopen();
-
-        expect(updatedInstance).toEqual(InstanceBuilder.from(instance)
-            .withStatus(InstanceStatusType.ONTWERP)
-            .withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)
-            .withDatePublished(datePublished)
-            .build());
-    });
 });
 
 describe('validateForPublish', () => {
@@ -1027,9 +962,8 @@ describe('transformToInformal', () => {
     test('should throw error when instance needConversionFromFormalToInformal', () => {
         const instance = aMinimalInstance()
             .withDateSent(FormatPreservingDate.now())
-            .withDatePublished(FormatPreservingDate.now())
+            .withDatePublished(FormatPreservingDate.of(moment(new Date()).add(100).toISOString()))
             .withStatus(InstanceStatusType.VERZONDEN)
-            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
             .withNeedsConversionFromFormalToInformal(false)
             .build();
 
@@ -1039,7 +973,6 @@ describe('transformToInformal', () => {
     test('should transform all languageStrings from nl or nl-be-x-formal to nl-be-x-informal', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.VERZONDEN)
-            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
             .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
             .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
             .withDutchLanguageVariant(Language.FORMAL)
@@ -1141,4 +1074,48 @@ describe('builder', () => {
         expect(fromInstance).toEqual(instance);
 
     });
+});
+
+test('isPublishedInIPDC', () => {
+    expect(aMinimalInstance()
+        .withStatus(InstanceStatusType.VERZONDEN)
+        .withDateSent(FormatPreservingDate.now())
+        .withDatePublished(undefined)
+        .build()
+        .isPublishedInIPDC()).toBeFalse();
+    expect(aMinimalInstance()
+        .withStatus(InstanceStatusType.VERZONDEN)
+        .withDateSent(FormatPreservingDate.now())
+        .withDatePublished(FormatPreservingDate.now())
+        .build()
+        .isPublishedInIPDC()).toBeTrue();
+
+});
+
+test('isLastVersionPublishedInIPDC', () => {
+    expect(aMinimalInstance()
+        .withStatus(InstanceStatusType.ONTWERP)
+        .withDateSent(undefined)
+        .withDatePublished(undefined)
+        .build()
+        .isLastVersionPublishedInIPDC()).toBeFalse();
+    expect(aMinimalInstance()
+        .withStatus(InstanceStatusType.VERZONDEN)
+        .withDateSent(FormatPreservingDate.now())
+        .withDatePublished(undefined)
+        .build()
+        .isLastVersionPublishedInIPDC()).toBeFalse();
+    expect(aMinimalInstance()
+        .withStatus(InstanceStatusType.VERZONDEN)
+        .withDateSent(FormatPreservingDate.of('2023-10-03T20:10:45.242928Z'))
+        .withDatePublished(FormatPreservingDate.of('2023-10-03T20:10:45.600Z'))
+        .build()
+        .isLastVersionPublishedInIPDC()).toBeTrue();
+    expect(aMinimalInstance()
+        .withStatus(InstanceStatusType.VERZONDEN)
+        .withDateSent(FormatPreservingDate.of('2023-10-03T20:10:45.600Z'))
+        .withDatePublished(FormatPreservingDate.of('2023-10-03T20:10:45.242928Z'))
+        .build()
+        .isLastVersionPublishedInIPDC()).toBeFalse();
+
 });

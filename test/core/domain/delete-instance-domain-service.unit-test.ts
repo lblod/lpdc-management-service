@@ -1,4 +1,3 @@
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
 import {uuid} from "../../../mu-helper";
 import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
@@ -16,10 +15,11 @@ import {
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {NotFoundError} from "../../../src/core/domain/shared/lpdc-error";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 
 describe('Deleting a new Instance domain service', () => {
 
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationSparqlRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationSparqlTestRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);

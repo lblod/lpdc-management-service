@@ -61,7 +61,6 @@ export function extractAllConceptCodesForInstance(domainToQuadsMapper: DomainToQ
         ...domainToQuadsMapper.languages(instance.id, instance.languages).map(objectAsIri),
         ...[domainToQuadsMapper.instanceStatus(instance.id, instance.status)].map(objectAsIri),
         ...(instance.reviewStatus ? [domainToQuadsMapper.reviewStatus(instance.id, instance.reviewStatus)].map(objectAsIri): []),
-        ...(instance.publicationStatus ? [domainToQuadsMapper.publicationStatus(instance.id, instance.publicationStatus)].map(objectAsIri): []),
         ...instance.spatials,
     ];
 }

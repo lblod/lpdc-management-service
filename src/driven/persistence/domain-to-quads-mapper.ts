@@ -12,7 +12,6 @@ import {
     CompetentAuthorityLevelType,
     ConceptTagType,
     ExecutingAuthorityLevelType,
-    InstancePublicationStatusType,
     InstanceReviewStatusType,
     InstanceStatusType,
     LanguageType,
@@ -151,10 +150,8 @@ export class DomainToQuadsMapper {
             this.dateCreated(instance.id, instance.dateCreated),
             this.dateModified(instance.id, instance.dateModified),
             instance.dateSent ? this.buildQuad(namedNode(instance.id.value), NS.schema('dateSent'), literal(instance.dateSent.value, NS.xsd('dateTime'))) : undefined,
-            instance.datePublished ? this.buildQuad(namedNode(instance.id.value), NS.schema('datePublished'), literal(instance.datePublished.value, NS.xsd('dateTime'))) : undefined,
             this.instanceStatus(instance.id, instance.status),
             this.reviewStatus(instance.id, instance.reviewStatus),
-            this.publicationStatus(instance.id, instance.publicationStatus),
             ...this.spatials(instance.id, instance.spatials),
             ...this.legalResources(instance.id, instance.legalResources),
             this.forMunicipalityMerger(instance.id, instance.forMunicipalityMerger),
@@ -314,10 +311,6 @@ export class DomainToQuadsMapper {
 
     reviewStatus(id: Iri, value: InstanceReviewStatusType | undefined): Statement | undefined {
         return value ? this.buildQuad(namedNode(id.value), NS.ext('reviewStatus'), namedNode(this.enumToIri(value, NS.concepts.reviewStatus).value)) : undefined;
-    }
-
-    publicationStatus(id: Iri, value: InstancePublicationStatusType | undefined): Statement | undefined {
-        return value ? this.buildQuad(namedNode(id.value), NS.schema('publication'), namedNode(this.enumToIri(value, NS.concepts.publicationStatus).value)) : undefined;
     }
 
     private latestConceptSnapshot(id: Iri, value: Iri): Statement {

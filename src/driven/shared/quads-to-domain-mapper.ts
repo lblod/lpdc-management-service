@@ -16,7 +16,6 @@ import {
     CompetentAuthorityLevelType,
     ConceptTagType,
     ExecutingAuthorityLevelType,
-    InstancePublicationStatusType,
     InstanceReviewStatusType,
     InstanceStatusType,
     LanguageType,
@@ -305,7 +304,6 @@ export class QuadsToDomainMapper {
             this.datePublished(id),
             this.instanceStatusType(id),
             this.instanceReviewStatusType(id),
-            this.instancePublicationStatusType(id),
             this.spatials(id),
             this.legalResources(id),
             this.forMunicipalityMerger(id),
@@ -510,10 +508,6 @@ export class QuadsToDomainMapper {
 
     private instanceReviewStatusType(id: Iri): InstanceReviewStatusType | undefined {
         return this.asEnum(InstanceReviewStatusType, NS.concepts.reviewStatus, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.ext('reviewStatus')));
-    }
-
-    instancePublicationStatusType(id: Iri): InstancePublicationStatusType | undefined {
-        return this.asEnum(InstancePublicationStatusType, NS.concepts.publicationStatus, this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.schema('publication')));
     }
 
     spatials(id: Iri): Iri[] {

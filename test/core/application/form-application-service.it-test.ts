@@ -18,7 +18,6 @@ import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/best
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {aFullInstance, aMinimalInstance} from "../domain/instance-test-builder";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {SemanticFormsMapperImpl} from "../../../src/driven/persistence/semantic-forms-mapper-impl";
 import {FormDefinitionFileRepository} from "../../../src/driven/persistence/form-definition-file-repository";
 import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
@@ -50,6 +49,7 @@ import {SystemError} from "../../../src/core/domain/shared/lpdc-error";
 import {buildConceptIri} from "../domain/iri-test-builder";
 import {uuid} from "../../../mu-helper";
 import {NS} from "../../../src/driven/persistence/namespaces";
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 
 describe('Form application service tests', () => {
 
@@ -57,7 +57,7 @@ describe('Form application service tests', () => {
 
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
         const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
-        const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+        const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = mock<FormDefinitionRepository>();
         const codeRepository = mock<CodeRepository>();
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -150,7 +150,7 @@ describe('Form application service tests', () => {
 
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
         const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-        const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+        const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = mock<FormDefinitionRepository>();
         const codeRepository = mock<CodeRepository>();
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -793,7 +793,7 @@ describe('Form application service tests', () => {
 
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
         const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
-        const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+        const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = new FormDefinitionFileRepository();
         const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);

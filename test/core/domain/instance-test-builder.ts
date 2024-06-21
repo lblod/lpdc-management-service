@@ -12,7 +12,6 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import {
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
-    InstancePublicationStatusType,
     InstanceReviewStatusType,
     InstanceStatusType,
     LanguageType,
@@ -100,7 +99,6 @@ export function aFullInstance(): InstanceBuilder {
         .withDateSent(InstanceTestBuilder.DATE_SENT)
         .withDatePublished(InstanceTestBuilder.DATE_PUBLISHED)
         .withReviewStatus(InstanceTestBuilder.REVIEW_STATUS)
-        .withPublicationStatus(InstanceTestBuilder.PUBLICATION_STATUS)
         .withSpatials(InstanceTestBuilder.SPATIALS)
         .withLegalResources(InstanceTestBuilder.LEGAL_RESOURCES)
         .withForMunicipalityMerger(InstanceTestBuilder.FOR_MUNICIPALITY_MERGER);
@@ -184,7 +182,6 @@ export class InstanceTestBuilder {
     public static readonly PRODUCT_ID = "5468";
 
     public static readonly REVIEW_STATUS = InstanceReviewStatusType.CONCEPT_GEWIJZIGD;
-    public static readonly PUBLICATION_STATUS = InstancePublicationStatusType.TE_HERPUBLICEREN;
 
     public static readonly LEGAL_RESOURCES = [aFullLegalResourceForInstance().withOrder(1).build(), anotherFullLegalResourceForInstance(uuid()).withOrder(2).build()];
 

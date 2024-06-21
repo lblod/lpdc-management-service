@@ -9,7 +9,6 @@ import {
     ChosenFormType,
     CompetentAuthorityLevelType,
     ExecutingAuthorityLevelType,
-    InstancePublicationStatusType,
     InstanceStatusType,
     LanguageType,
     ProductType,
@@ -37,7 +36,6 @@ import {literal, namedNode, quad} from "rdflib";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {aMinimalLegalResourceForInstance} from "../../core/domain/legal-resource-test-builder";
 import {
@@ -50,10 +48,11 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
 import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial-advantage-test-builder";
 import {instanceLanguages, Language} from "../../../src/core/domain/language";
+import {InstanceSparqlTestRepository} from "./instance-sparql-test-repository";
 
 describe('InstanceRepository', () => {
 
-    const repository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const repository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
@@ -288,6 +287,7 @@ describe('InstanceRepository', () => {
             const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
             const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
 
+            const instanceTombstonePublishedDate = FormatPreservingDate.now();
             const instance =
                 aMinimalInstance()
                     .withId(instanceId)
@@ -307,14 +307,14 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <https://www.w3.org/ns/activitystreams#deleted> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
                     `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/gepubliceerd>`,
-                    `<${instanceId}> <http://schema.org/datePublished> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${instanceId}> <http://schema.org/datePublished> """${instanceTombstonePublishedDate.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                 ]);
 
             await repository.recreate(bestuurseenheid, instance);
 
             const actualInstance = await repository.findById(bestuurseenheid, instanceId);
 
-            expect(actualInstance).toEqual(instance);
+            expect(actualInstance).toEqual(InstanceBuilder.from(instance).withDatePublished(instanceTombstonePublishedDate).build());
 
         });
 
@@ -322,10 +322,10 @@ describe('InstanceRepository', () => {
 
     describe('delete', () => {
 
-        test('if exists with publicationStatus te-herpubliceren, Removes all triples related to the instance and create tombstone triples and publicationStatus te-herpubliceren ', async () => {
+        test('if exists with datePublished, Removes all triples related to the instance and create tombstone triples', async () => {
 
             const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance().withPublicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN).build();
+            const instance = aFullInstance().build();
 
             await repository.save(bestuurseenheid, instance);
             await repository.delete(bestuurseenheid, instance.id);
@@ -348,15 +348,13 @@ describe('InstanceRepository', () => {
                 quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
             ]));
         });
 
-        test('if exists without publicationStatus, Removes all triples related to the instance and does not create tombstone triples ', async () => {
+        test('if exists without datePublished, Removes all triples related to the instance and does not create tombstone triples ', async () => {
 
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withPublicationStatus(undefined)
                 .withDatePublished(undefined)
                 .build();
 
@@ -382,7 +380,6 @@ describe('InstanceRepository', () => {
         test('Only the requested instance is deleted', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withPublicationStatus(undefined)
                 .withDatePublished(undefined)
                 .build();
             const anotherInstance = aMinimalInstance().build();

@@ -1,4 +1,3 @@
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {NewInstanceDomainService} from "../../../src/core/domain/new-instance-domain-service";
 import {
@@ -19,6 +18,7 @@ import {
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {ConcurrentUpdateError} from "../../../src/core/domain/shared/lpdc-error";
 import {SelectConceptLanguageDomainService} from "../../../src/core/domain/select-concept-language-domain-service";
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 
 describe('Update Instance Application Service tests', () => {
 
@@ -28,7 +28,7 @@ describe('Update Instance Application Service tests', () => {
 
     //Note: the update instance application service is directly tied to semantic forms ... so the tests use low level turtle format ...
 
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();

@@ -1,14 +1,8 @@
 import {NewInstanceDomainService} from "../../../src/core/domain/new-instance-domain-service";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {buildBestuurseenheidIri, buildNutsCodeIri} from "./iri-test-builder";
 import {uuid} from "../../../mu-helper";
-import {
-    ChosenFormType,
-    CompetentAuthorityLevelType,
-    InstancePublicationStatusType,
-    InstanceStatusType
-} from "../../../src/core/domain/types";
+import {ChosenFormType, CompetentAuthorityLevelType, InstanceStatusType} from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {aFullConcept, aMinimalConcept} from "./concept-test-builder";
@@ -38,13 +32,14 @@ import {SelectConceptLanguageDomainService} from "../../../src/core/domain/selec
 import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "./instance-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 
 describe('Creating a new Instance domain service', () => {
 
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceTestRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -324,7 +319,6 @@ describe('Creating a new Instance domain service', () => {
                     .withProductId(concept.productId)
                     .withLanguages([])
                     .withReviewStatus(undefined)
-                    .withPublicationStatus(undefined)
                     .withLegalResources([
                         new LegalResourceBuilder()
                             .withId(createdInstance.legalResources[0].id)
@@ -584,7 +578,6 @@ describe('Creating a new Instance domain service', () => {
                     .withProductId(concept.productId)
                     .withLanguages([])
                     .withReviewStatus(undefined)
-                    .withPublicationStatus(undefined)
                     .withLegalResources([
                         new LegalResourceBuilder()
                             .withId(createdInstance.legalResources[0].id)
@@ -808,7 +801,6 @@ describe('Creating a new Instance domain service', () => {
                     .withProductId(concept.productId)
                     .withLanguages([])
                     .withReviewStatus(undefined)
-                    .withPublicationStatus(undefined)
                     .withLegalResources([
                         new LegalResourceBuilder()
                             .withId(createdInstance.legalResources[0].id)
@@ -1144,7 +1136,6 @@ describe('Creating a new Instance domain service', () => {
             expect(copiedInstance.datePublished).toBeUndefined();
             expect(copiedInstance.status).toEqual(InstanceStatusType.ONTWERP);
             expect(copiedInstance.reviewStatus).toEqual(instance.reviewStatus);
-            expect(copiedInstance.publicationStatus).toBeUndefined();
             expect(copiedInstance.spatials).toEqual(instance.spatials);
             expect(copiedInstance.legalResources).toEqual(expect.arrayContaining([
                 expect.objectContaining({
@@ -1220,7 +1211,6 @@ describe('Creating a new Instance domain service', () => {
             expect(copiedInstance.datePublished).toBeUndefined();
             expect(copiedInstance.status).toEqual(InstanceStatusType.ONTWERP);
             expect(copiedInstance.reviewStatus).toEqual(instance.reviewStatus);
-            expect(copiedInstance.publicationStatus).toBeUndefined();
             expect(copiedInstance.spatials).toEqual(instance.spatials);
             expect(copiedInstance.legalResources).toEqual(instance.legalResources);
             expect(copiedInstance.forMunicipalityMerger).toBeFalse();
@@ -1234,7 +1224,6 @@ describe('Creating a new Instance domain service', () => {
             const instance = aMinimalInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(InstanceTestBuilder.DATE_SENT)
-                .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
                 .withDatePublished(InstanceTestBuilder.DATE_PUBLISHED)
                 .withCreatedBy(bestuurseenheid.id).build();
 
@@ -1251,7 +1240,6 @@ describe('Creating a new Instance domain service', () => {
             expect(copiedInstance.createdBy).toEqual(instance.createdBy);
             expect(copiedInstance.status).toEqual(InstanceStatusType.ONTWERP);
             expect(copiedInstance.dateSent).toBeUndefined();
-            expect(copiedInstance.publicationStatus).toBeUndefined();
             expect(copiedInstance.datePublished).toBeUndefined();
             expect(copiedInstance.copyOf).toEqual(instance.id);
         });

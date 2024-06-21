@@ -9,7 +9,7 @@ import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {NS} from "./namespaces";
-import {ChosenFormType, InstancePublicationStatusType, InstanceReviewStatusType} from "../../core/domain/types";
+import {ChosenFormType, InstanceReviewStatusType} from "../../core/domain/types";
 import {Logger} from "../../../platform/logger";
 import {literal} from "rdflib";
 import {isEqual} from "lodash";
@@ -127,27 +127,14 @@ export class InstanceSparqlRepository implements InstanceRepository {
     async delete(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<void> {
         const instance = await this.findById(bestuurseenheid, id);
         if (instance != undefined) {
-            const publicationStatus = instance.publicationStatus;
+            const instanceWasPublishedInIPDC = instance.isPublishedInIPDC();
 
             const triples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
             const now = new Date();
-            let query: string;
 
-            if (publicationStatus === undefined) {
-                query = `
-
-                    DELETE
-                    DATA FROM
-                    ${sparqlEscapeUri(bestuurseenheid.userGraph())}
-                    {
-                    ${triples.join("\n")}
-                    };
-                `;
-
-                await this.querying.delete(query);
-            } else {
-                query = `
+            if (instanceWasPublishedInIPDC) {
+                const query = `
                 ${PREFIX.as}
                 ${PREFIX.lpdcExt}
                 ${PREFIX.schema}
@@ -158,15 +145,23 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 }
                 INSERT {
                     ${sparqlEscapeUri(instance.id)} a as:Tombstone;
-                    as:formerType lpdcExt:InstancePublicService;
-                    as:deleted ${sparqlEscapeDateTime(now)};
-                    schema:publication ${NS.concepts.publicationStatus(InstancePublicationStatusType.TE_HERPUBLICEREN)} .
+                        as:formerType lpdcExt:InstancePublicService;
+                        as:deleted ${sparqlEscapeDateTime(now)}.
                 }`;
-
                 await this.querying.deleteInsert(query);
+            } else {
+                const query = `
+
+                    DELETE
+                    DATA FROM
+                    ${sparqlEscapeUri(bestuurseenheid.userGraph())}
+                    {
+                    ${triples.join("\n")}
+                    };
+                `;
+
+                await this.querying.delete(query);
             }
-
-
         }
     }
 
@@ -244,8 +239,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 ${sparqlEscapeUri(instance.id)} a as:Tombstone.
                 ${sparqlEscapeUri(instance.id)} as:formerType lpdcExt:InstancePublicService.
                 ${sparqlEscapeUri(instance.id)} as:deleted ?deleteTime.
-                ${sparqlEscapeUri(instance.id)} schema:publication ?publicationStatus.
-                ${sparqlEscapeUri(instance.id)} schema:datePublished ?datePublished.
         }            
         INSERT { 
                 ${quads.join("\n")}        
@@ -253,8 +246,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
         WHERE {
                ${sparqlEscapeUri(instance.id)} a as:Tombstone.
                ${sparqlEscapeUri(instance.id)} as:deleted ?deleteTime.
-               OPTIONAL { ${sparqlEscapeUri(instance.id)} schema:publication ?publicationStatus. }.
-               OPTIONAL { ${sparqlEscapeUri(instance.id)} schema:datePublished ?datePublished. }.
         }
             
         `;

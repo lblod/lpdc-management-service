@@ -6,7 +6,6 @@ import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {
     InstanceSnapshotToInstanceMergerDomainService
 } from "../../../src/core/domain/instance-snapshot-to-instance-merger-domain-service";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
@@ -32,6 +31,7 @@ import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {
     VersionedLdesSnapshotSparqlRepository
 } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 import spyOn = jest.spyOn;
 
 
@@ -42,7 +42,7 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     });
 
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
