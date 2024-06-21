@@ -42,55 +42,50 @@ export class ConceptSnapshotToConceptMergerDomainService {
     }
 
     async merge(conceptSnapshotId: Iri) {
-        try {
-            const newConceptSnapshot = await this._conceptSnapshotRepository.findById(conceptSnapshotId);
-            const conceptId = newConceptSnapshot.isVersionOfConcept;
-            const conceptExists = await this._conceptRepository.exists(conceptId);
-            const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
+        const newConceptSnapshot = await this._conceptSnapshotRepository.findById(conceptSnapshotId);
+        const conceptId = newConceptSnapshot.isVersionOfConcept;
+        const conceptExists = await this._conceptRepository.exists(conceptId);
+        const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
 
-            const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedConceptSnapshots.map(iri => iri.value).includes(newConceptSnapshot.id.value);
+        const newConceptSnapshotAlreadyLinkedToConcept = concept?.appliedConceptSnapshots.map(iri => iri.value).includes(newConceptSnapshot.id.value);
 
-            if (newConceptSnapshotAlreadyLinkedToConcept) {
-                this._logger.log(`The versioned resource <${conceptSnapshotId}> is already processed on service <${conceptId}>`);
-
-                await this._ensureLinkedAuthoritiesExistsAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...newConceptSnapshot.competentAuthorities, ...newConceptSnapshot.executingAuthorities]);
-
-                return;
-            }
-
-            const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
-            if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
-                this._logger.log(`The versioned resource <${conceptSnapshotId}> is an older version of service <${conceptId}>`);
-                const updatedConcept = this.addAsPreviousConceptSnapshot(newConceptSnapshot, concept);
-                await this._conceptRepository.update(updatedConcept, concept);
-
-                await this._ensureLinkedAuthoritiesExistsAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...newConceptSnapshot.competentAuthorities, ...newConceptSnapshot.executingAuthorities]);
-
-                return;
-            }
-
-            this._logger.log(`New versioned resource found: ${conceptSnapshotId} of service ${conceptId}`);
-
-            const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
-            const isConceptSnapshotFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
-
-            if (!conceptExists) {
-                const newConcept = this.asNewConcept(newConceptSnapshot);
-                await this._conceptRepository.save(newConcept);
-            } else {
-                const updatedConcept = this.asMergedConcept(newConceptSnapshot, concept, isConceptSnapshotFunctionallyChanged);
-                await this._conceptRepository.update(updatedConcept, concept);
-            }
-
-            await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptSnapshotFunctionallyChanged, newConceptSnapshot.isArchived);
+        if (newConceptSnapshotAlreadyLinkedToConcept) {
+            this._logger.log(`The versioned resource <${conceptSnapshotId}> is already processed on service <${conceptId}>`);
 
             await this._ensureLinkedAuthoritiesExistsAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...newConceptSnapshot.competentAuthorities, ...newConceptSnapshot.executingAuthorities]);
 
-            await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
-
-        } catch (e) {
-            this._logger.error(`Error processing: ${JSON.stringify(conceptSnapshotId)}`, e);
+            return;
         }
+
+        const isNewerSnapshotThanAllPreviouslyApplied = await this.isNewerSnapshotThanAllPreviouslyApplied(newConceptSnapshot, concept);
+        if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
+            this._logger.log(`The versioned resource <${conceptSnapshotId}> is an older version of service <${conceptId}>`);
+            const updatedConcept = this.addAsPreviousConceptSnapshot(newConceptSnapshot, concept);
+            await this._conceptRepository.update(updatedConcept, concept);
+
+            await this._ensureLinkedAuthoritiesExistsAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...newConceptSnapshot.competentAuthorities, ...newConceptSnapshot.executingAuthorities]);
+
+            return;
+        }
+
+        this._logger.log(`New versioned resource found: ${conceptSnapshotId} of service ${conceptId}`);
+
+        const currentConceptSnapshotId: Iri | undefined = concept?.latestConceptSnapshot;
+        const isConceptSnapshotFunctionallyChanged = await this.isConceptChanged(newConceptSnapshot, currentConceptSnapshotId);
+
+        if (!conceptExists) {
+            const newConcept = this.asNewConcept(newConceptSnapshot);
+            await this._conceptRepository.save(newConcept);
+        } else {
+            const updatedConcept = this.asMergedConcept(newConceptSnapshot, concept, isConceptSnapshotFunctionallyChanged);
+            await this._conceptRepository.update(updatedConcept, concept);
+        }
+
+        await this._instanceRepository.updateReviewStatusesForInstances(conceptId, isConceptSnapshotFunctionallyChanged, newConceptSnapshot.isArchived);
+
+        await this._ensureLinkedAuthoritiesExistsAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...newConceptSnapshot.competentAuthorities, ...newConceptSnapshot.executingAuthorities]);
+
+        await this._conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId);
     }
 
     private async isNewerSnapshotThanAllPreviouslyApplied(conceptSnapshot: ConceptSnapshot, concept: Concept | undefined): Promise<boolean> {
