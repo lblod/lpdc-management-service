@@ -46,7 +46,6 @@ export class Bestuurseenheid {
         return [...this._spatials];
     }
 
-    //TODO LPDC-1002: this is not part of the domain, it should be moved to the persistence adapter
     userGraph(): Iri {
         return new Iri(`http://mu.semte.ch/graphs/organizations/${this.uuid}/${SessionRoleType.LOKETLB_LPDCGEBRUIKER}`);
     }
