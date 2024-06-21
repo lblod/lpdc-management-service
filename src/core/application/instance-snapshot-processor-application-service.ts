@@ -2,8 +2,10 @@ import {
     InstanceSnapshotToInstanceMergerDomainService
 } from "../domain/instance-snapshot-to-instance-merger-domain-service";
 import {Logger} from "../../../platform/logger";
-import {VersionedLdesSnapshotRepository} from "../port/driven/persistence/versioned-ldes-snapshot-repository";
-import {Iri} from "../domain/shared/iri";
+import {
+    SnapshotType,
+    VersionedLdesSnapshotRepository
+} from "../port/driven/persistence/versioned-ldes-snapshot-repository";
 import {retry} from "ts-retry-promise";
 
 export class InstanceSnapshotProcessorApplicationService {
@@ -23,8 +25,7 @@ export class InstanceSnapshotProcessorApplicationService {
     }
 
     async process() {
-        //TODO LPDC-1002: ask type to repo
-        const toProcessInstanceSnapshots = await this._versionedLdesSnapshotRepository.findToProcessSnapshots(new Iri('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot'));
+        const toProcessInstanceSnapshots = await this._versionedLdesSnapshotRepository.findToProcessSnapshots(SnapshotType.INSTANCE_SNAPSHOT);
 
         for (const {snapshotGraph, snapshotId} of toProcessInstanceSnapshots) {
             try {

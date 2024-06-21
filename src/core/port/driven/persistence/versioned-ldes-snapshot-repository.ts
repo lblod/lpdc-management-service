@@ -4,7 +4,7 @@ import {VersionedLdesSnapshot} from "../../../domain/versioned-ldes-snapshot";
 
 export interface VersionedLdesSnapshotRepository {
 
-    findToProcessSnapshots(snapshotType: Iri): Promise<{
+    findToProcessSnapshots(snapshotType: SnapshotType): Promise<{
         snapshotGraph: Iri,
         snapshotId: Iri
     }[]>;
@@ -13,5 +13,10 @@ export interface VersionedLdesSnapshotRepository {
 
     addToFailedProcessedSnapshots(snapshotGraph: Iri, snapshotId: Iri, errorMessage: string): Promise<void>;
 
-    hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: Iri): Promise<boolean>;
+    hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: SnapshotType): Promise<boolean>;
+}
+
+export enum SnapshotType {
+    INSTANCE_SNAPSHOT = 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot',
+    CONCEPT_SNAPSHOT = 'https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot'
 }

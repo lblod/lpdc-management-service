@@ -12,6 +12,7 @@ import {
 } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
+import {SnapshotType} from "../../../src/core/port/driven/persistence/versioned-ldes-snapshot-repository";
 
 
 describe('VersionedLdesSnapshotRepository', () => {
@@ -46,7 +47,7 @@ describe('VersionedLdesSnapshotRepository', () => {
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot2);
             await instanceSnapshotRepository.save(anotherInstanceSnapshotGraph, instanceSnapshotOtherBestuurseenheid);
 
-            const actual = await repository.findToProcessSnapshots(new Iri('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot'));
+            const actual = await repository.findToProcessSnapshots(SnapshotType.INSTANCE_SNAPSHOT);
             expect(actual).toEqual([
                 {
                     snapshotId: instanceSnapshot1.id,
@@ -78,7 +79,7 @@ describe('VersionedLdesSnapshotRepository', () => {
 
             await repository.addToSuccessfullyProcessedSnapshots(instanceSnapshotGraph, instanceSnapshot2.id);
 
-            const actual = await repository.findToProcessSnapshots(new Iri('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot'));
+            const actual = await repository.findToProcessSnapshots(SnapshotType.INSTANCE_SNAPSHOT);
             expect(actual).toEqual([
                 {
                     snapshotId: instanceSnapshot1.id,
@@ -103,7 +104,7 @@ describe('VersionedLdesSnapshotRepository', () => {
             await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot2);
             await instanceSnapshotRepository.save(anotherInstanceSnapshotGraph, instanceSnapshotOtherBestuurseenheid);
 
-            const actual = await repository.findToProcessSnapshots(new Iri('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot'));
+            const actual = await repository.findToProcessSnapshots(SnapshotType.INSTANCE_SNAPSHOT);
             expect(actual).toEqual([
                 {
                     snapshotId: instanceSnapshot1.id,

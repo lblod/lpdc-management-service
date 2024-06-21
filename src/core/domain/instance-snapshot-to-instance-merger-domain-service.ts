@@ -24,9 +24,10 @@ import {
 import {ForbiddenError} from "./shared/lpdc-error";
 import {BestuurseenheidRepository} from "../port/driven/persistence/bestuurseenheid-repository";
 import {VersionedLdesSnapshot} from "./versioned-ldes-snapshot";
+import {SnapshotType} from "../port/driven/persistence/versioned-ldes-snapshot-repository";
 
 export interface NewerProcessedSnapshotPredicate {
-    hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: Iri): Promise<boolean>;
+    hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: SnapshotType): Promise<boolean>;
 }
 
 export class InstanceSnapshotToInstanceMergerDomainService {
@@ -70,7 +71,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             throw new ForbiddenError(`Bestuur ${sparqlEscapeUri(bestuurseenheid.id)} niet toegelaten voor instance snapshot graph ${sparqlEscapeUri(instanceSnapshotGraph)}.`);
         }
 
-        if (await newProcessedSnapshotPredicate.hasNewerProcessedSnapshot(instanceSnapshotGraph, instanceSnapshot, new Iri('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicServiceSnapshot'))) {
+        if (await newProcessedSnapshotPredicate.hasNewerProcessedSnapshot(instanceSnapshotGraph, instanceSnapshot, SnapshotType.INSTANCE_SNAPSHOT)) {
             this._logger.log(`The versioned resource <${instanceSnapshotId}> is an older version, or already processed, of service <${instanceSnapshot.isVersionOf}>`);
         } else {
             const instanceId = instanceSnapshot.isVersionOf;

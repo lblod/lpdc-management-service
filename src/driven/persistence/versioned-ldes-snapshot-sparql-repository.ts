@@ -1,6 +1,9 @@
 import {Iri} from "../../core/domain/shared/iri";
 import {VersionedLdesSnapshot} from "../../core/domain/versioned-ldes-snapshot";
-import {VersionedLdesSnapshotRepository} from "../../core/port/driven/persistence/versioned-ldes-snapshot-repository";
+import {
+    SnapshotType,
+    VersionedLdesSnapshotRepository
+} from "../../core/port/driven/persistence/versioned-ldes-snapshot-repository";
 import {sparqlEscapeString, sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {SparqlQuerying} from "./sparql-querying";
 import {DirectDatabaseAccess} from "../../../test/driven/persistence/direct-database-access";
@@ -17,7 +20,7 @@ export class VersionedLdesSnapshotSparqlRepository implements VersionedLdesSnaps
         this.querying = new SparqlQuerying(endpoint);
     }
 
-    async findToProcessSnapshots(snapshotType: Iri): Promise<{ snapshotGraph: Iri; snapshotId: Iri; }[]> {
+    async findToProcessSnapshots(snapshotType: SnapshotType): Promise<{ snapshotGraph: Iri; snapshotId: Iri; }[]> {
         const query = `
             SELECT ?snapshotGraph ?snapshotIri WHERE {
                 GRAPH ?snapshotGraph {
@@ -62,7 +65,7 @@ export class VersionedLdesSnapshotSparqlRepository implements VersionedLdesSnaps
         ], );
     }
 
-    async hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: Iri): Promise<boolean> {
+    async hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: SnapshotType): Promise<boolean> {
         const query = `
             ASK WHERE {
                 GRAPH ${sparqlEscapeUri(snapshotGraph)} {

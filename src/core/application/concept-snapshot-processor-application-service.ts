@@ -1,6 +1,8 @@
 import {ConceptSnapshotToConceptMergerDomainService} from "../domain/concept-snapshot-to-concept-merger-domain-service";
-import {VersionedLdesSnapshotRepository} from "../port/driven/persistence/versioned-ldes-snapshot-repository";
-import {Iri} from "../domain/shared/iri";
+import {
+    SnapshotType,
+    VersionedLdesSnapshotRepository
+} from "../port/driven/persistence/versioned-ldes-snapshot-repository";
 import {Logger} from "../../../platform/logger";
 import {retry} from "ts-retry-promise";
 
@@ -24,7 +26,7 @@ export class ConceptSnapshotProcessorApplicationService {
     }
 
     async process() {
-        const toProcessSnapshots = await this._versionedLdesSnapshotRepository.findToProcessSnapshots(new Iri('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot'));
+        const toProcessSnapshots = await this._versionedLdesSnapshotRepository.findToProcessSnapshots(SnapshotType.CONCEPT_SNAPSHOT);
 
         for (const {snapshotGraph, snapshotId} of toProcessSnapshots) {
             try {
