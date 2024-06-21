@@ -1,4 +1,3 @@
-import {CONCEPT_SNAPSHOT_LDES_GRAPH} from "../../../config";
 import {
     ConceptSnapshotToConceptMergerDomainService
 } from "../../../src/core/domain/concept-snapshot-to-concept-merger-domain-service";
@@ -24,13 +23,11 @@ import {aFullConcept} from "../domain/concept-test-builder";
 import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {buildConceptIri} from "../domain/iri-test-builder";
-import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
-import spyOn = jest.spyOn;
 import {LanguageString} from "../../../src/core/domain/language-string";
+import spyOn = jest.spyOn;
 
 describe('ConceptSnapshotProcessorApplicationService', () => {
 
-    const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -57,7 +54,7 @@ describe('ConceptSnapshotProcessorApplicationService', () => {
     );
 
     beforeEach(async () => {
-        await directDatabaseAccess.clearGraph(CONCEPT_SNAPSHOT_LDES_GRAPH);
+        await conceptSnapshotRepository.clearConceptSnapshotGraph();
     });
 
     describe('retry merge', () => {

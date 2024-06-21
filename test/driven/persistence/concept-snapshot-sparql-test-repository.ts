@@ -23,4 +23,17 @@ export class ConceptSnapshotSparqlTestRepository extends ConceptSnapshotSparqlRe
             ]);
     }
 
+    async clearConceptSnapshotGraph(): Promise<void> {
+        const query = `
+            ASK WHERE {
+                GRAPH <${CONCEPT_SNAPSHOT_LDES_GRAPH}> {
+                    ?s ?p ?o
+                }
+            }`;
+        const graphExists = await this.querying.ask(query);
+        if (graphExists) {
+            await this.directDatabaseAccess.clearGraph(CONCEPT_SNAPSHOT_LDES_GRAPH);
+        }
+    }
+
 }
