@@ -5,14 +5,32 @@ import {Language} from "../../core/domain/language";
 
 export class FormDefinitionFileRepository implements FormDefinitionRepository {
 
-    public loadFormDefinition(formType: FormType, language: Language): string {
-        const form = fs.readFileSync(`./src/driven/persistence/forms/${formType}/form.ttl`, 'utf8');
-        return this.adjustLanguageOfForm(form, language);
+    contactpoint = 'CONTACTPOINT';
+    municipalityMerger = 'MUNICIPALITY_MERGER_FILTER';
+    language = "FORMAL_INFORMAL_LANGUAGE";
+
+    public loadInstanceFormDefinition(formType: FormType, language: Language): string {
+        let form = this.readForm(formType);
+        form = this.replaceInForm(form, this.contactpoint, 'form:includes ext:contactpointsL;');
+        form = this.replaceInForm(form, this.municipalityMerger, 'form:includes ext:forMunicipalityMergerF.');
+        form = this.replaceInForm(form, this.language, language);
+        return form;
     }
 
-    private adjustLanguageOfForm(form: string, newLanguage: Language): string {
-        return form.replaceAll(`form:language "<FORMAL_INFORMAL_LANGUAGE>"`, `form:language "${newLanguage}"`);
+    public loadConceptFormDefinition(formType: FormType, language: Language): string {
+        let form = this.readForm(formType);
+        form = this.replaceInForm(form, this.contactpoint, '');
+        form = this.replaceInForm(form, this.municipalityMerger, '.');
+        form = this.replaceInForm(form, this.language, language);
+        return form;
     }
 
+    private readForm(formType: string): string {
+        return fs.readFileSync(`./src/driven/persistence/forms/${formType}/form.ttl`, 'utf8');
+    }
+
+    private replaceInForm(form, field: string, value: string) {
+        return form.replaceAll(`<${field}>`, value);
+    }
 
 }

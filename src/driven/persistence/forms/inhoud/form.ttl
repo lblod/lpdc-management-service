@@ -40,7 +40,7 @@ ext:form a form:Form, form:TopLevelForm ;
     form:includes ext:regulationitleF;
     form:includes ext:headerLegalResource ;
     form:includes ext:legalResourceL;
-    form:includes ext:contactpointsL;
+    <CONTACTPOINT>
     form:includes ext:websitesHeading;
     form:includes ext:websitesL.
 

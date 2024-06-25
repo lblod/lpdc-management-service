@@ -3,6 +3,8 @@ import {Language} from "../../../domain/language";
 
 export interface FormDefinitionRepository {
 
-    loadFormDefinition(formType: FormType, language: Language): string;
+    loadInstanceFormDefinition(formType: FormType, language: Language): string;
+
+    loadConceptFormDefinition(formType: FormType, language: Language): string;
 
 }

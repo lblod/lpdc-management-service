@@ -88,7 +88,7 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.INFORMAL).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadConceptFormDefinition.calledWith(FormType.INHOUD, Language.INFORMAL).mockReturnValue('formdefinition');
 
             const {
                 form,
@@ -126,7 +126,7 @@ describe('Form application service tests', () => {
                     .build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-            formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
+            formDefinitionRepository.loadConceptFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
             codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
 
             const {
@@ -176,7 +176,7 @@ describe('Form application service tests', () => {
                         .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
                 const {
                     form,
@@ -220,7 +220,7 @@ describe('Form application service tests', () => {
                         .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
                 const {
                     form,
@@ -283,7 +283,7 @@ describe('Form application service tests', () => {
                         .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
                 const {
                     form,
@@ -321,7 +321,7 @@ describe('Form application service tests', () => {
 
                 await instanceRepository.save(bestuurseenheid, instance);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
                 const {
                     form,
@@ -367,7 +367,7 @@ describe('Form application service tests', () => {
                     .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
                 const {
                     form,
@@ -454,7 +454,7 @@ describe('Form application service tests', () => {
                     .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
                 const {
                     form,
@@ -538,7 +538,7 @@ describe('Form application service tests', () => {
                         .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
                 await expect(formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, undefined, FormType.INHOUD)).rejects.toThrowWithMessage(SystemError, 'latestConceptSnapshotId mag niet ontbreken');
             });
@@ -576,7 +576,7 @@ describe('Form application service tests', () => {
                         .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
                 await expect(formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, latestConceptSnapshot.id, FormType.INHOUD)).rejects.toThrowWithMessage(SystemError, 'latestConceptSnapshot hoort niet bij concept van instantie');
             });
@@ -614,7 +614,7 @@ describe('Form application service tests', () => {
                         .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.INHOUD, Language.FORMAL).mockReturnValue('formdefinition');
 
                 await expect(formApplicationService.loadInstanceForm(bestuurseenheid, instance.id, latestConceptSnapshot.id, FormType.INHOUD)).rejects.toThrowWithMessage(SystemError, 'concept snapshot van instantie hoort niet bij concept van instantie');
             });
@@ -651,7 +651,7 @@ describe('Form application service tests', () => {
                         .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
                 codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
 
                 const {
@@ -705,7 +705,7 @@ describe('Form application service tests', () => {
                         .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
                 codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
 
                 const {
@@ -765,7 +765,7 @@ describe('Form application service tests', () => {
                         .build();
                 await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
-                formDefinitionRepository.loadFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
+                formDefinitionRepository.loadInstanceFormDefinition.calledWith(FormType.EIGENSCHAPPEN, Language.INFORMAL).mockReturnValue('formdefinition');
                 codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat.mockReturnValue(Promise.resolve(['org1 a concept.', 'org2 a concept.']));
 
                 const {

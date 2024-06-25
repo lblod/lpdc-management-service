@@ -62,7 +62,7 @@ export class FormApplicationService {
         const formalInformalChoice = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
         const languageForForm = this._selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(concept, formalInformalChoice);
 
-        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, languageForForm);
+        const formDefinition = this._formDefinitionRepository.loadConceptFormDefinition(formType, languageForForm);
 
         const tailoredSchemes = formType === FormType.EIGENSCHAPPEN ? await this._codeRepository.loadIPDCOrganisatiesTailoredInTurtleFormat() : [];
 
@@ -92,7 +92,7 @@ export class FormApplicationService {
 
         const instance = await this._instanceRepository.findById(bestuurseenheid, instanceId);
 
-        const formDefinition = this._formDefinitionRepository.loadFormDefinition(formType, instance.dutchLanguageVariant);
+        const formDefinition = this._formDefinitionRepository.loadInstanceFormDefinition(formType, instance.dutchLanguageVariant);
 
         let meta = [];
         if (loadMetaData) {
