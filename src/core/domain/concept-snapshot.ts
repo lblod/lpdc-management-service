@@ -21,10 +21,10 @@ import {
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {LegalResource} from "./legal-resource";
 import {Language} from "./language";
+import {VersionedLdesSnapshot} from "./versioned-ldes-snapshot";
 
-export class ConceptSnapshot {
+export class ConceptSnapshot extends VersionedLdesSnapshot {
 
-    private readonly _id: Iri;
     private readonly _title: LanguageString;
     private readonly _description: LanguageString;
     private readonly _additionalDescription: LanguageString | undefined;
@@ -47,10 +47,8 @@ export class ConceptSnapshot {
     private readonly _websites: Website[];
     private readonly _costs: Cost[];
     private readonly _financialAdvantages: FinancialAdvantage[];
-    private readonly _isVersionOfConcept: Iri | undefined;
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
-    private readonly _generatedAtTime: FormatPreservingDate;
     private readonly _productId: string;
     private readonly _conceptTags: ConceptTagType[];
     private readonly _isArchived: boolean;
@@ -88,7 +86,7 @@ export class ConceptSnapshot {
                 isArchived: boolean,
                 legalResources: LegalResource[],
     ) {
-        this._id = requiredValue(id, 'id');
+        super(id, generatedAtTime, isVersionOfConcept);
         requiredValue(title, 'title');
         this._title = title;
         requiredValue(description, 'description');
@@ -118,10 +116,8 @@ export class ConceptSnapshot {
         requireNoDuplicates(this._costs.map(c => c.order), 'costs > order');
         this._financialAdvantages = [...financialAdvantages].map(FinancialAdvantage.forConceptSnapshot);
         requireNoDuplicates(this._financialAdvantages.map(fa => fa.order), 'financial advantages > order');
-        this._isVersionOfConcept = isVersionOfConcept;
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
-        this._generatedAtTime = requiredValue(generatedAtTime, 'generatedAtTime');
         this._productId = requiredValue(productId, 'productId');
         this._conceptTags = requireNoDuplicates(asSortedArray(conceptTags), 'conceptTags');
         this._isArchived = requiredValue(isArchived, 'isArchived');
@@ -131,10 +127,6 @@ export class ConceptSnapshot {
 
     get definedLanguages(): Language[] {
         return [...this._title.definedLanguages];
-    }
-
-    get id(): Iri {
-        return this._id;
     }
 
     get title(): LanguageString {
@@ -225,20 +217,12 @@ export class ConceptSnapshot {
         return [...this._financialAdvantages];
     }
 
-    get isVersionOfConcept(): Iri | undefined {
-        return this._isVersionOfConcept;
-    }
-
     get dateCreated(): FormatPreservingDate {
         return this._dateCreated;
     }
 
     get dateModified(): FormatPreservingDate {
         return this._dateModified;
-    }
-
-    get generatedAtTime(): FormatPreservingDate {
-        return this._generatedAtTime;
     }
 
     get identifier(): string | undefined {
@@ -386,7 +370,7 @@ export class ConceptSnapshotBuilder {
             .withWebsites(conceptSnapshot.websites)
             .withCosts(conceptSnapshot.costs)
             .withFinancialAdvantages(conceptSnapshot.financialAdvantages)
-            .withIsVersionOfConcept(conceptSnapshot.isVersionOfConcept)
+            .withIsVersionOfConcept(conceptSnapshot.isVersionOf)
             .withDateCreated(conceptSnapshot.dateCreated)
             .withDateModified(conceptSnapshot.dateModified)
             .withGeneratedAtTime(conceptSnapshot.generatedAtTime)

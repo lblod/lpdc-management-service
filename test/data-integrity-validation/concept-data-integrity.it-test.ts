@@ -138,17 +138,17 @@ describe('Concept Data Integrity Validation', () => {
                     if (alsoLoadRelatedConceptSnapshots) {
                         const latestConceptSnapshot = await snapshotRepository.findById(conceptForId.latestConceptSnapshot);
                         expect(latestConceptSnapshot.id).toEqual(conceptForId.latestConceptSnapshot);
-                        expect(latestConceptSnapshot.isVersionOfConcept).toEqual(id);
+                        expect(latestConceptSnapshot.isVersionOf).toEqual(id);
 
                     for (const eachPreviousConceptSnapshotId of conceptForId.previousConceptSnapshots) {
                         const previousConceptSnapshot = await snapshotRepository.findById(eachPreviousConceptSnapshotId);
                         expect(previousConceptSnapshot.id).toEqual(eachPreviousConceptSnapshotId);
-                        expect(previousConceptSnapshot.isVersionOfConcept).toEqual(id);
+                        expect(previousConceptSnapshot.isVersionOf).toEqual(id);
                     }
 
                     const latestFunctionallyChangedConceptSnapshot = await snapshotRepository.findById((conceptForId.latestFunctionallyChangedConceptSnapshot));
                     expect(latestFunctionallyChangedConceptSnapshot.id).toEqual(conceptForId.latestFunctionallyChangedConceptSnapshot);
-                    expect(latestFunctionallyChangedConceptSnapshot.isVersionOfConcept).toEqual(id);
+                    expect(latestFunctionallyChangedConceptSnapshot.isVersionOf).toEqual(id);
 
                     validateThatConceptDataIsInSyncWithLatestConceptSnapshot(conceptForId, latestConceptSnapshot, latestFunctionallyChangedConceptSnapshot);
                 }

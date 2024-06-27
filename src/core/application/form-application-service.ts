@@ -113,11 +113,11 @@ export class FormApplicationService {
                 const latestConceptSnapshot = await this._conceptSnapshotRepository.findById(latestConceptSnapshotId);
                 const instanceConceptSnapshot = await this._conceptSnapshotRepository.findById(instance.conceptSnapshotId);
 
-                if (!latestConceptSnapshot.isVersionOfConcept.equals(instance.conceptId)) {
+                if (!latestConceptSnapshot.isVersionOf.equals(instance.conceptId)) {
                     throw new SystemError(`latestConceptSnapshot hoort niet bij concept van instantie`);
                 }
 
-                if (!instanceConceptSnapshot.isVersionOfConcept.equals(instance.conceptId)) {
+                if (!instanceConceptSnapshot.isVersionOf.equals(instance.conceptId)) {
                     throw new SystemError(`concept snapshot van instantie hoort niet bij concept van instantie`);
                 }
 

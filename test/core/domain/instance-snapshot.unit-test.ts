@@ -131,7 +131,7 @@ describe('constructing', () => {
             .toThrowWithMessage(InvariantError, 'languages mag geen duplicaten bevatten');
     });
 
-    test('Undefined isVersionOfInstance throws error', () => {
+    test('Undefined isVersionOf throws error', () => {
         expect(() => aFullInstanceSnapshot().withIsVersionOfInstance(undefined).build()).toThrowWithMessage(InvariantError, 'isVersionOf mag niet ontbreken');
     });
 

@@ -102,7 +102,7 @@ export class DomainToQuadsMapper {
             ...this.websites(conceptSnapshot.id, NS.rdfs('seeAlso'), conceptSnapshot.websites),
             ...this.costs(conceptSnapshot.id, conceptSnapshot.costs),
             ...this.financialAdvantages(conceptSnapshot.id, conceptSnapshot.financialAdvantages),
-            this.isVersionOf(conceptSnapshot.id, conceptSnapshot.isVersionOfConcept),
+            this.isVersionOf(conceptSnapshot.id, conceptSnapshot.isVersionOf),
             this.dateCreated(conceptSnapshot.id, conceptSnapshot.dateCreated),
             this.dateModified(conceptSnapshot.id, conceptSnapshot.dateModified),
             this.generatedAtTime(conceptSnapshot.id, conceptSnapshot.generatedAtTime),

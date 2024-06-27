@@ -88,7 +88,7 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
     }
 
     private errorIfConceptSnapshotDoesNotBelongToConcept(concept: Concept, conceptSnapshot: ConceptSnapshot): void {
-        if (!conceptSnapshot.isVersionOfConcept.equals(concept.id)) {
+        if (!conceptSnapshot.isVersionOf.equals(concept.id)) {
             throw new InvariantError('BijgewerktTot: concept snapshot hoort niet bij het concept gekoppeld aan de instantie');
         }
     }

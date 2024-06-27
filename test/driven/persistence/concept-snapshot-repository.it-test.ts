@@ -1,6 +1,6 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
-import {uuid} from "../../../mu-helper";
+import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {
     aFullConceptSnapshot,
     aMinimalConceptSnapshot,
@@ -121,7 +121,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
-
+            const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
@@ -132,6 +132,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withDateCreated(conceptSnapshotDateCreated)
                     .withDateModified(conceptSnapshotDateModified)
                     .withGeneratedAtTime(conceptSnapshotGeneratedAtTime)
+                    .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                     .build();
 
             await directDatabaseAccess.insertData(
@@ -144,7 +145,8 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
+                    `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                 ]);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
@@ -160,7 +162,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
-
+            const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
@@ -173,6 +175,7 @@ describe('ConceptSnapshotRepository', () => {
                     .withDateCreated(conceptSnapshotDateCreated)
                     .withDateModified(conceptSnapshotDateModified)
                     .withGeneratedAtTime(conceptSnapshotGeneratedAtTime)
+                    .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                     .build();
 
             await directDatabaseAccess.insertData(
@@ -186,7 +189,8 @@ describe('ConceptSnapshotRepository', () => {
                     `<${conceptSnapshotId}> <http://schema.org/dateCreated> """${conceptSnapshotDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <http://schema.org/dateModified> """${conceptSnapshotDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${conceptSnapshotId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isArchived> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
-                    `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`
+                    `<${conceptSnapshotId}> <http://www.w3.org/ns/prov#generatedAtTime> """${conceptSnapshotGeneratedAtTime.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                 ]);
 
             const actualConceptSnapshot = await repository.findById(conceptSnapshotId);
@@ -206,6 +210,7 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT}>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_NL}"""@NL`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_NL_FORMAL}"""@nl-BE-x-formal`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_NL_INFORMAL}"""@nl-BE-x-informal`,
@@ -869,6 +874,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
+            const conceptSnapshotIsVersionOfConcept = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
 
             const requirementId = RequirementBuilder.buildIri(uuid());
@@ -878,6 +884,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
+                    .withIsVersionOfConcept(conceptSnapshotIsVersionOfConcept)
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
@@ -895,6 +902,7 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOfConcept.value}>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -922,6 +930,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
+            const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
 
             const requirementId = RequirementBuilder.buildIri(uuid());
@@ -934,6 +943,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
+                    .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
@@ -956,6 +966,7 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                     `<${conceptSnapshotId}> <http://vocab.belgif.be/ns/publicservice#hasRequirement> <${requirementId}>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
@@ -987,7 +998,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
-
+            const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
             const procedureId = ProcedureBuilder.buildIri(uuid());
             const procedureTitle = aMinimalLanguageString(ProcedureTestBuilder.TITLE).build();
@@ -996,6 +1007,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
+                    .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
@@ -1014,6 +1026,7 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1042,7 +1055,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshotDateCreated = ConceptSnapshotTestBuilder.DATE_CREATED;
             const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
             const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
-
+            const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
             const procedureId = ProcedureBuilder.buildIri(uuid());
             const procedureTitle = aMinimalLanguageString(ProcedureTestBuilder.TITLE).build();
@@ -1054,6 +1067,7 @@ describe('ConceptSnapshotRepository', () => {
             const conceptSnapshot =
                 aMinimalConceptSnapshot()
                     .withId(conceptSnapshotId)
+                    .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                     .withTitle(conceptSnapshotTitle)
                     .withDescription(conceptSnapshotDescription)
                     .withProductId(conceptSnapshotProductId)
@@ -1074,6 +1088,7 @@ describe('ConceptSnapshotRepository', () => {
             await directDatabaseAccess.insertData(
                 CONCEPT_SNAPSHOT_LDES_GRAPH,
                 [`<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                    `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                     `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1112,11 +1127,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withOrder(2).build();
                         const conceptSnapshotNotRetainedWebsiteId = WebsiteBuilder.buildIri(uuid());
-
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1130,6 +1146,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1179,10 +1196,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withDescription(undefined).withOrder(2).build();
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1196,6 +1215,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1230,11 +1250,13 @@ describe('ConceptSnapshotRepository', () => {
                     const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
                     const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                     const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withOrder(2).build();
+                    const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                     await directDatabaseAccess.insertData(
                         CONCEPT_SNAPSHOT_LDES_GRAPH,
                         [
                             `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                            `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                             `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                             `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                             `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1274,10 +1296,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withOrder(2).build();
                         const conceptSnapshotProcedure = anotherFullProcedure().withOrder(1).withWebsites([conceptSnapshotRetainedWebsite]).build();
                         const conceptSnapshotNotRetainedWebsiteId = WebsiteBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1291,6 +1315,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1360,10 +1385,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withOrder(2).build();
                         const conceptSnapshotProcedure = anotherFullProcedure().withOrder(1).withWebsites([conceptSnapshotRetainedWebsite]).build();
                         const conceptSnapshotNotRetainedProcedureId = ProcedureBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1377,6 +1404,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1441,10 +1469,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withOrder(2).build();
                         const conceptSnapshotProcedure = anotherFullProcedure().withOrder(1).withWebsites([conceptSnapshotRetainedWebsite]).build();
                         const conceptSnapshotNotRetainedProcedureId = ProcedureBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1458,6 +1488,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1522,10 +1553,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotRetainedWebsite = anotherFullWebsite(uuid()).withOrder(2).build();
                         const conceptSnapshotProcedure = anotherFullProcedure().withOrder(1).withWebsites([conceptSnapshotRetainedWebsite]).build();
                         const conceptSnapshotNotRetainedProcedureId = ProcedureBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1539,6 +1572,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1599,11 +1633,13 @@ describe('ConceptSnapshotRepository', () => {
                     const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
                     const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                     const conceptSnapshotProcedureId = ProcedureBuilder.buildIri(uuid());
+                    const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                     await directDatabaseAccess.insertData(
                         CONCEPT_SNAPSHOT_LDES_GRAPH,
                         [
                             `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                            `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                             `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                             `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                             `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1634,10 +1670,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotRequirement = anotherFullRequirement().withOrder(2).build();
                         const conceptSnapshotNotRetainedRequirementId = RequirementBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1651,6 +1689,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1712,10 +1751,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotRequirement = anotherFullRequirement().withOrder(2).build();
                         const conceptSnapshotNotRetainedRequirementId = RequirementBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1729,6 +1770,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1790,10 +1832,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotRequirement = anotherFullRequirement().withOrder(2).build();
                         const conceptSnapshotNotRetainedRequirementId = RequirementBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1807,6 +1851,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1864,11 +1909,13 @@ describe('ConceptSnapshotRepository', () => {
                     const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
                     const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                     const conceptSnapshotRequirementId = RequirementBuilder.buildIri(uuid());
+                    const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                     await directDatabaseAccess.insertData(
                         CONCEPT_SNAPSHOT_LDES_GRAPH,
                         [
                             `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                            `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                             `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                             `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                             `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1898,10 +1945,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotRequirement = anotherFullRequirement().withEvidence(undefined).withOrder(2).build();
                         const conceptSnapshotNotRetainedEvidenceId = EvidenceBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1915,6 +1964,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -1962,10 +2012,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotRequirement = anotherFullRequirement().withEvidence(undefined).withOrder(2).build();
                         const conceptSnapshotNotRetainedEvidenceId = EvidenceBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -1979,6 +2031,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -2025,10 +2078,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotRequirement = anotherFullRequirement().withEvidence(undefined).withOrder(2).build();
                         const conceptSnapshotNotRetainedEvidenceId = EvidenceBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -2042,6 +2097,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -2089,10 +2145,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotCost = anotherFullCost().withOrder(2).build();
                         const conceptSnapshotNotRetainedCostId = CostBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -2106,6 +2164,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -2155,10 +2214,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotCost = anotherFullCost().withOrder(2).build();
                         const conceptSnapshotNotRetainedCostId = CostBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -2172,6 +2233,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -2221,10 +2283,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotCost = anotherFullCost().withOrder(2).build();
                         const conceptSnapshotNotRetainedCostId = CostBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -2238,6 +2302,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -2283,11 +2348,13 @@ describe('ConceptSnapshotRepository', () => {
                     const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
                     const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                     const conceptSnapshotCostId = CostBuilder.buildIri(uuid());
+                    const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                     await directDatabaseAccess.insertData(
                         CONCEPT_SNAPSHOT_LDES_GRAPH,
                         [
                             `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                            `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                             `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                             `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                             `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -2317,10 +2384,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotFinancialAdvantage = anotherFullFinancialAdvantage().withOrder(2).build();
                         const conceptSnapshotNotRetainedFinancialAdvantageId = CostBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -2334,6 +2403,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -2383,10 +2453,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotFinancialAdvantage = anotherFullFinancialAdvantage().withOrder(2).build();
                         const conceptSnapshotNotRetainedFinancialAdvantageId = CostBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -2400,6 +2472,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -2449,10 +2522,12 @@ describe('ConceptSnapshotRepository', () => {
                         const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                         const conceptSnapshotFinancialAdvantage = anotherFullFinancialAdvantage().withOrder(2).build();
                         const conceptSnapshotNotRetainedFinancialAdvantageId = CostBuilder.buildIri(uuid());
+                        const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                         const conceptSnapshot =
                             aMinimalConceptSnapshot()
                                 .withId(conceptSnapshotId)
+                                .withIsVersionOfConcept(conceptSnapshotIsVersionOf)
                                 .withTitle(conceptSnapshotTitle)
                                 .withDescription(conceptSnapshotDescription)
                                 .withProductId(conceptSnapshotProductId)
@@ -2466,6 +2541,7 @@ describe('ConceptSnapshotRepository', () => {
                             CONCEPT_SNAPSHOT_LDES_GRAPH,
                             [
                                 `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                                `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                                 `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -2511,11 +2587,13 @@ describe('ConceptSnapshotRepository', () => {
                     const conceptSnapshotDateModified = ConceptSnapshotTestBuilder.DATE_MODIFIED;
                     const conceptSnapshotGeneratedAtTime = ConceptSnapshotTestBuilder.GENERATED_AT_TIME;
                     const conceptSnapshotFinancialAdvantageId = FinancialAdvantageBuilder.buildIri(uuid());
+                    const conceptSnapshotIsVersionOf = ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT;
 
                     await directDatabaseAccess.insertData(
                         CONCEPT_SNAPSHOT_LDES_GRAPH,
                         [
                             `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                            `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${conceptSnapshotIsVersionOf.value}>`,
                             `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${conceptSnapshotTitle.nl}"""@nl`,
                             `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${conceptSnapshotDescription.nl}"""@nl`,
                             `<${conceptSnapshotId}> <http://schema.org/productID> """${conceptSnapshotProductId}"""`,
@@ -2705,6 +2783,7 @@ describe('ConceptSnapshotRepository', () => {
                     CONCEPT_SNAPSHOT_LDES_GRAPH,
                     [
                         `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                        `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT}>`,
                         `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_NL}"""@nl`,
                         `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${ConceptSnapshotTestBuilder.DESCRIPTION_NL}"""@nl`,
                         `<${conceptSnapshotId}> <http://schema.org/productID> """${ConceptSnapshotTestBuilder.PRODUCT_ID}"""`,
@@ -2726,7 +2805,9 @@ describe('ConceptSnapshotRepository', () => {
                 await directDatabaseAccess.insertData(
                     CONCEPT_SNAPSHOT_LDES_GRAPH,
                     [
+                        `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT}>`,
                         `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                        `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT}>`,
                         `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_NL}"""@nl`,
                         `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${ConceptSnapshotTestBuilder.DESCRIPTION_NL}"""@nl`,
                         `<${conceptSnapshotId}> <http://schema.org/productID> """${ConceptSnapshotTestBuilder.PRODUCT_ID}"""`,
@@ -2748,6 +2829,7 @@ describe('ConceptSnapshotRepository', () => {
                     CONCEPT_SNAPSHOT_LDES_GRAPH,
                     [
                         `<${conceptSnapshotId}> a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicServiceSnapshot>`,
+                        `<${conceptSnapshotId}> <http://purl.org/dc/terms/isVersionOf> <${ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT}>`,
                         `<${conceptSnapshotId}> <http://purl.org/dc/terms/title> """${ConceptSnapshotTestBuilder.TITLE_NL}"""@nl`,
                         `<${conceptSnapshotId}> <http://purl.org/dc/terms/description> """${ConceptSnapshotTestBuilder.DESCRIPTION_NL}"""@nl`,
                         `<${conceptSnapshotId}> <http://schema.org/productID> """${ConceptSnapshotTestBuilder.PRODUCT_ID}"""`,

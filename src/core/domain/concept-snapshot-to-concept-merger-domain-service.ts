@@ -43,7 +43,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
 
     async merge(conceptSnapshotId: Iri) {
         const newConceptSnapshot = await this._conceptSnapshotRepository.findById(conceptSnapshotId);
-        const conceptId = newConceptSnapshot.isVersionOfConcept;
+        const conceptId = newConceptSnapshot.isVersionOf;
         const conceptExists = await this._conceptRepository.exists(conceptId);
         const concept: Concept | undefined = conceptExists ? await this._conceptRepository.findById(conceptId) : undefined;
 
@@ -102,7 +102,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
 
     private asNewConcept(conceptSnapshot: ConceptSnapshot,): Concept {
         return new Concept(
-            conceptSnapshot.isVersionOfConcept,
+            conceptSnapshot.isVersionOf,
             uuid(),
             conceptSnapshot.title,
             conceptSnapshot.description,

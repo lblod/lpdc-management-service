@@ -32,7 +32,8 @@ export function aMinimalConceptSnapshot(): ConceptSnapshotBuilder {
         .withDateCreated(ConceptSnapshotTestBuilder.DATE_CREATED)
         .withDateModified(ConceptSnapshotTestBuilder.DATE_MODIFIED)
         .withGeneratedAtTime(ConceptSnapshotTestBuilder.GENERATED_AT_TIME)
-        .withIsArchived(false);
+        .withIsArchived(false)
+        .withIsVersionOfConcept(ConceptSnapshotTestBuilder.IS_VERSION_OF_CONCEPT);
 }
 
 export function aFullConceptSnapshot(): ConceptSnapshotBuilder {
