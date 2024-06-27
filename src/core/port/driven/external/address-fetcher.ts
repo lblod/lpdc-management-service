@@ -1,5 +1,5 @@
 
-export interface AddressLookup {
+export interface AddressFetcher {
 
     fetchMunicipalities(searchString: string): Promise<string[]>;
 

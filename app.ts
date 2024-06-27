@@ -70,7 +70,7 @@ import {
 import {
     VersionedLdesSnapshotSparqlRepository
 } from "./src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
-import {AdressenRegisterLookup} from "./src/driven/external/adressen-register-lookup";
+import {AdressenRegisterFetcher} from "./src/driven/external/adressen-register-fetcher";
 import {ContactInfoOptionsSparqlRepository} from "./src/driven/persistence/contact-info-options-sparql-repository";
 import {
     ConceptSnapshotProcessorApplicationService
@@ -193,7 +193,7 @@ const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStrin
 
 const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
 
-const addressLookup = new AdressenRegisterLookup();
+const addressFetcher = new AdressenRegisterFetcher();
 
 const contactInfoOptionsRepository = new ContactInfoOptionsSparqlRepository();
 
@@ -647,18 +647,18 @@ async function getContactPointOptions(req: Request, res: Response) {
 }
 
 async function getMunicipalities(req: Request, res: Response) {
-    const municipalities = await addressLookup.fetchMunicipalities(req.query.search as string);
+    const municipalities = await addressFetcher.fetchMunicipalities(req.query.search as string);
     return res.json(municipalities);
 }
 
 async function getStreets(req: Request, res: Response) {
-    const streets = await addressLookup.fetchStreets(req.query.municipality as string, req.query.search as string);
+    const streets = await addressFetcher.fetchStreets(req.query.municipality as string, req.query.search as string);
     return res.json(streets);
 }
 
 async function validateAddress(req: Request, res: Response) {
 
-    const address = await addressLookup.findAddressMatch(
+    const address = await addressFetcher.findAddressMatch(
         req.query.municipality as string,
         req.query.street as string,
         req.query.houseNumber as string,

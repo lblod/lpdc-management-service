@@ -1,8 +1,8 @@
-import {AddressDto, AddressLookup} from "../../core/port/driven/external/address-lookup";
+import {AddressDto, AddressFetcher} from "../../core/port/driven/external/address-fetcher";
 import {InvariantError, NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
 import {ADRESSEN_REGISTER_API_KEY} from "../../../config";
 
-export class AdressenRegisterLookup implements AddressLookup {
+export class AdressenRegisterFetcher implements AddressFetcher {
 
     async fetchMunicipalities(searchString: string): Promise<string[]> {
         const queryParams = new URLSearchParams({
