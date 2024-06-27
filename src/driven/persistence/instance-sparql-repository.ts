@@ -127,11 +127,16 @@ export class InstanceSparqlRepository implements InstanceRepository {
     async delete(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<void> {
         const instance = await this.findById(bestuurseenheid, id);
         if (instance != undefined) {
+
+            //TODO LPDC-1236: use dateSent instead
             const instanceWasPublishedInIPDC = instance.isPublishedInIPDC();
 
             const triples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
             const now = new Date();
+
+            //TODO LPDC-1236: create a new id for the tombstone,
+            //TODO LPDC-1236: add a version of -> instance
 
             if (instanceWasPublishedInIPDC) {
                 const query = `
@@ -226,6 +231,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         return this.querying.ask(query);
     }
 
+    //TODO LPDC-1236: remove recreate ; we can use save a new one...
     async recreate(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void> {
         const quads = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 

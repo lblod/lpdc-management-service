@@ -533,6 +533,8 @@ async function publishInstance(req: Request, res: Response) {
 
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
 
+    //TODO LPDC-1236: create new domain object PublishedInstance -> from (instance)
+    //TODO LPDC-1236: await this._publishedInstanceRepository.save(bestuurseenheid, publishedInstance);
     await instanceRepository.update(bestuurseenheid, instance.publish(), instanceVersion);
     return res.sendStatus(200);
 }

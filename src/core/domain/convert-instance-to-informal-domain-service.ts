@@ -34,6 +34,9 @@ export class ConvertInstanceToInformalDomainService {
             .transformToInformal()
             .publish();
 
+        //TODO LPDC-1236: create new domain object PublishedInstance -> from (instance)
+        //TODO LPDC-1236: await this._publishedInstanceRepository.save(bestuurseenheid, publishedInstance);
+
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);
     }
 
@@ -57,6 +60,7 @@ export class ConvertInstanceToInformalDomainService {
     }
 
     private errorIfLastVersionOfInstanceNotPublishedInIPDC(instance: Instance) {
+        // TODO LPDC-1236: Query if publishedInstanceSnapshot exists with same sent date as instance && datePublished exists
         if (!instance.isLastVersionPublishedInIPDC()) {
             throw new InvariantError('Instantie moet gepubliceerd zijn');
         }
