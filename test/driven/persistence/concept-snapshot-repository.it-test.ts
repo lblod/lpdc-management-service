@@ -1,6 +1,6 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
-import {sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {uuid} from "../../../mu-helper";
 import {
     aFullConceptSnapshot,
     aMinimalConceptSnapshot,
