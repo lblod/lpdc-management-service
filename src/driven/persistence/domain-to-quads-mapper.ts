@@ -32,6 +32,7 @@ import {Address} from "../../core/domain/address";
 import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
 import {LegalResource} from "../../core/domain/legal-resource";
 import {Language} from "../../core/domain/language";
+import {PublishedInstance} from "../../core/domain/published-instance";
 
 export class DomainToQuadsMapper {
     private readonly graphId;
@@ -117,7 +118,7 @@ export class DomainToQuadsMapper {
         return [
             this.rdfType(instance.id, NS.lpdcExt('InstancePublicService')),
             instance.uuid ? this.buildQuad(namedNode(instance.id.value), NS.mu('uuid'), literal(instance.uuid)) : undefined,
-            this.bestuurseenheidId(instance.id, instance.createdBy),
+            this.createdBy(instance.id, instance.createdBy),
             ...this.title(instance.id, instance.title),
             ...this.description(instance.id, instance.description),
             ...this.additionalDescription(instance.id, instance.additionalDescription),
@@ -162,7 +163,7 @@ export class DomainToQuadsMapper {
     public instanceSnapshotToQuads(instanceSnapshot: InstanceSnapshot): Statement[] {
         return [
             this.rdfType(instanceSnapshot.id, NS.lpdcExt('InstancePublicServiceSnapshot')),
-            this.bestuurseenheidId(instanceSnapshot.id, instanceSnapshot.createdBy),
+            this.createdBy(instanceSnapshot.id, instanceSnapshot.createdBy),
             this.isVersionOf(instanceSnapshot.id, instanceSnapshot.isVersionOf),
             this.conceptId(instanceSnapshot.id, instanceSnapshot.conceptId),
             ...this.title(instanceSnapshot.id, instanceSnapshot.title),
@@ -195,6 +196,45 @@ export class DomainToQuadsMapper {
             ...this.costs(instanceSnapshot.id, instanceSnapshot.costs),
             ...this.financialAdvantages(instanceSnapshot.id, instanceSnapshot.financialAdvantages),
             ...this.contactPoints(instanceSnapshot.id, instanceSnapshot.contactPoints),
+        ].filter(t => t !== undefined);
+    }
+
+    public publishedInstanceToQuads(publishedInstance: PublishedInstance): Statement[] {
+        return [
+            this.rdfType(publishedInstance.id, NS.lpdcExt('PublishedInstancePublicServiceSnapshot')),
+            this.generatedAtTime(publishedInstance.id, publishedInstance.generatedAtTime),
+            this.isVersionOf(publishedInstance.id, publishedInstance.isVersionOf),
+            publishedInstance.uuid ? this.buildQuad(namedNode(publishedInstance.id.value), NS.mu('uuid'), literal(publishedInstance.uuid)) : undefined,
+            this.createdBy(publishedInstance.id, publishedInstance.createdBy),
+            ...this.title(publishedInstance.id, publishedInstance.title),
+            ...this.description(publishedInstance.id, publishedInstance.description),
+            ...this.additionalDescription(publishedInstance.id, publishedInstance.additionalDescription),
+            ...this.exception(publishedInstance.id, publishedInstance.exception),
+            ...this.regulation(publishedInstance.id, publishedInstance.regulation),
+            this.startDate(publishedInstance.id, publishedInstance.startDate),
+            this.endDate(publishedInstance.id, publishedInstance.endDate),
+            this.type(publishedInstance.id, publishedInstance.type),
+            ...this.targetAudiences(publishedInstance.id, publishedInstance.targetAudiences),
+            ...this.themes(publishedInstance.id, publishedInstance.themes),
+            ...this.competentAuthorityLevels(publishedInstance.id, publishedInstance.competentAuthorityLevels),
+            ...this.competentAuthorities(publishedInstance.id, publishedInstance.competentAuthorities),
+            ...this.executingAuthorityLevels(publishedInstance.id, publishedInstance.executingAuthorityLevels),
+            ...this.executingAuthorities(publishedInstance.id, publishedInstance.executingAuthorities),
+            ...this.publicationMedia(publishedInstance.id, publishedInstance.publicationMedia),
+            ...this.yourEuropeCategories(publishedInstance.id, publishedInstance.yourEuropeCategories),
+            ...this.keywords(publishedInstance.id, publishedInstance.keywords),
+            ...this.requirements(publishedInstance.id, publishedInstance.requirements),
+            ...this.procedures(publishedInstance.id, publishedInstance.procedures),
+            ...this.websites(publishedInstance.id, NS.rdfs('seeAlso'), publishedInstance.websites),
+            ...this.costs(publishedInstance.id, publishedInstance.costs),
+            ...this.financialAdvantages(publishedInstance.id, publishedInstance.financialAdvantages),
+            ...this.contactPoints(publishedInstance.id, publishedInstance.contactPoints),
+            this.conceptId(publishedInstance.id, publishedInstance.conceptId),
+            ...this.languages(publishedInstance.id, publishedInstance.languages),
+            this.dateCreated(publishedInstance.id, publishedInstance.dateCreated),
+            this.dateModified(publishedInstance.id, publishedInstance.dateModified),
+            ...this.spatials(publishedInstance.id, publishedInstance.spatials),
+            ...this.legalResources(publishedInstance.id, publishedInstance.legalResources),
         ].filter(t => t !== undefined);
     }
 
@@ -232,7 +272,7 @@ export class DomainToQuadsMapper {
         return value ? this.buildQuad(namedNode(id.value), NS.dct('type'), namedNode(this.enumToIri(value, NS.dvc.type).value)) : undefined;
     }
 
-    private bestuurseenheidId(id: Iri, value: Iri): Statement {
+    private createdBy(id: Iri, value: Iri): Statement {
         return this.buildQuad(namedNode(id.value), NS.pav('createdBy'), namedNode(value.value));
     }
 

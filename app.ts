@@ -75,6 +75,8 @@ import {ContactInfoOptionsSparqlRepository} from "./src/driven/persistence/conta
 import {
     ConceptSnapshotProcessorApplicationService
 } from "./src/core/application/concept-snapshot-processor-application-service";
+import {PublishedInstanceSparqlRepository} from "./src/driven/persistence/published-instance-sparql-repository";
+import {PublishedInstanceBuilder} from "./src/core/domain/published-instance";
 
 
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
@@ -196,6 +198,8 @@ const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDoma
 const addressFetcher = new AdressenRegisterFetcher();
 
 const contactInfoOptionsRepository = new ContactInfoOptionsSparqlRepository();
+
+const publishedInstanceRepository = new PublishedInstanceSparqlRepository();
 
 app.get('/', function (_req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;
@@ -533,9 +537,10 @@ async function publishInstance(req: Request, res: Response) {
 
     const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
 
-    //TODO LPDC-1236: create new domain object PublishedInstance -> from (instance)
-    //TODO LPDC-1236: await this._publishedInstanceRepository.save(bestuurseenheid, publishedInstance);
-    await instanceRepository.update(bestuurseenheid, instance.publish(), instanceVersion);
+    const publishedInstance = instance.publish();
+    await instanceRepository.update(bestuurseenheid, publishedInstance, instanceVersion);
+    //TODO LPDC-1236: if this save fails -> add to data integrity report ... + fix this ... (if you don't find a published instance with a generated at  = date sent => then do this insert again; think we should ignore the verzonden , concept status)
+    await publishedInstanceRepository.save(bestuurseenheid, PublishedInstanceBuilder.from(publishedInstance));
     return res.sendStatus(200);
 }
 

@@ -2,7 +2,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {InstanceRepository} from "../../core/port/driven/persistence/instance-repository";
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX} from "../../../config";
-import {sparqlEscapeDateTime, sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {Instance, InstanceBuilder} from "../../core/domain/instance";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
@@ -16,6 +16,7 @@ import {isEqual} from "lodash";
 import {ConcurrentUpdateError, SystemError} from "../../core/domain/shared/lpdc-error";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 import {requiredValue} from "../../core/domain/shared/invariant";
+import {PublishedInstanceBuilder} from "../../core/domain/published-instance";
 
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
@@ -128,30 +129,32 @@ export class InstanceSparqlRepository implements InstanceRepository {
         const instance = await this.findById(bestuurseenheid, id);
         if (instance != undefined) {
 
-            //TODO LPDC-1236: use dateSent instead
-            const instanceWasPublishedInIPDC = instance.isPublishedInIPDC();
-
             const triples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
             const now = new Date();
 
-            //TODO LPDC-1236: create a new id for the tombstone,
-            //TODO LPDC-1236: add a version of -> instance
+            if (instance.dateSent !== undefined) {
 
-            if (instanceWasPublishedInIPDC) {
+                const uniqueId = uuid();
+                const tombstoneId = PublishedInstanceBuilder.buildIri(uniqueId);
+
                 const query = `
                 ${PREFIX.as}
                 ${PREFIX.lpdcExt}
                 ${PREFIX.schema}
+                ${PREFIX.dct}
+                ${PREFIX.prov}
                 
                 WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
                 DELETE {            
                     ${triples.join("\n")}
                 }
                 INSERT {
-                    ${sparqlEscapeUri(instance.id)} a as:Tombstone;
+                    ${sparqlEscapeUri(tombstoneId)} a as:Tombstone;
                         as:formerType lpdcExt:InstancePublicService;
-                        as:deleted ${sparqlEscapeDateTime(now)}.
+                        dct:isVersionOf ${sparqlEscapeUri(instance.id)};
+                        as:deleted ${sparqlEscapeDateTime(now)};
+                        prov:generatedAtTime ${sparqlEscapeDateTime(now)}.
                 }`;
                 await this.querying.deleteInsert(query);
             } else {
