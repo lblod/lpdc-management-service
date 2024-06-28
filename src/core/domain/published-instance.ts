@@ -25,7 +25,7 @@ export class PublishedInstance {
 
     private readonly _id: Iri;
     private readonly _generatedAtTime: FormatPreservingDate;
-    private readonly _isVersionOf: Iri;
+    private readonly _isPublishedVersionOf: Iri;
     private readonly _uuid: string;
     private readonly _createdBy: Iri;
     private readonly _title: LanguageString;
@@ -62,7 +62,7 @@ export class PublishedInstance {
     //TODO LPDC-1236: constructor validation
     constructor(id: Iri,
                 generatedAtTime: FormatPreservingDate,
-                isVersionOf: Iri,
+                isPublishedVersionOf: Iri,
                 uuid: string,
                 createdBy: Iri,
                 title: LanguageString,
@@ -97,7 +97,7 @@ export class PublishedInstance {
                 ) {
         this._id = id;
         this._generatedAtTime = generatedAtTime;
-        this._isVersionOf = isVersionOf;
+        this._isPublishedVersionOf = isPublishedVersionOf;
         this._uuid = uuid;
         this._createdBy = createdBy;
         this._title = title;
@@ -140,8 +140,8 @@ export class PublishedInstance {
         return this._generatedAtTime;
     }
 
-    get isVersionOf(): Iri {
-        return this._isVersionOf;
+    get isPublishedVersionOf(): Iri {
+        return this._isPublishedVersionOf;
     }
 
     get uuid(): string {

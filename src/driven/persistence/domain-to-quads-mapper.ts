@@ -203,7 +203,7 @@ export class DomainToQuadsMapper {
         return [
             this.rdfType(publishedInstance.id, NS.lpdcExt('PublishedInstancePublicServiceSnapshot')),
             this.generatedAtTime(publishedInstance.id, publishedInstance.generatedAtTime),
-            this.isVersionOf(publishedInstance.id, publishedInstance.isVersionOf),
+            this.isPublishedVersionOf(publishedInstance.id, publishedInstance.isPublishedVersionOf),
             publishedInstance.uuid ? this.buildQuad(namedNode(publishedInstance.id.value), NS.mu('uuid'), literal(publishedInstance.uuid)) : undefined,
             this.createdBy(publishedInstance.id, publishedInstance.createdBy),
             ...this.title(publishedInstance.id, publishedInstance.title),
@@ -501,6 +501,9 @@ export class DomainToQuadsMapper {
         return anIri ? this.buildQuad(namedNode(id.value), NS.dct('isVersionOf'), namedNode(anIri.value)) : undefined;
     }
 
+    private isPublishedVersionOf(id: Iri, anIri: Iri | undefined): Statement | undefined {
+        return anIri ? this.buildQuad(namedNode(id.value), NS.lpdcExt('isPublishedVersionOf'), namedNode(anIri.value)) : undefined;
+    }
     private conceptSnapshotId(id: Iri, versionedSource: Iri | undefined): Statement | undefined {
         return versionedSource ? this.buildQuad(namedNode(id.value), NS.ext('hasVersionedSource'), namedNode(versionedSource.value)) : undefined;
     }

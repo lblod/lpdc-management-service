@@ -12,7 +12,7 @@ export interface InstanceRepository {
 
     update(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, dontUpdateDateModified?: boolean): Promise<void>;
 
-    delete(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<void>;
+    delete(bestuurseenheid: Bestuurseenheid, id: Iri, deletionTime?: FormatPreservingDate): Promise<void>;
 
     updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void>;
 

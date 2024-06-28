@@ -4,6 +4,7 @@ import {
 } from "../port/driven/persistence/concept-display-configuration-repository";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {Iri} from "./shared/iri";
+import {FormatPreservingDate} from "./format-preserving-date";
 
 export class DeleteInstanceDomainService {
     private readonly _instanceRepository: InstanceRepository;
@@ -15,9 +16,9 @@ export class DeleteInstanceDomainService {
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
     }
 
-    public async delete(bestuurseenheid: Bestuurseenheid, instanceId: Iri) {
+    public async delete(bestuurseenheid: Bestuurseenheid, instanceId: Iri, deletionTime?: FormatPreservingDate) {
         const instance = await this._instanceRepository.findById(bestuurseenheid, instanceId);
-        await this._instanceRepository.delete(bestuurseenheid, instance.id);
+        await this._instanceRepository.delete(bestuurseenheid, instance.id, deletionTime);
 
         if (instance.conceptId !== undefined) {
             await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instance.conceptId);

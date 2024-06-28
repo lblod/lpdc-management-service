@@ -101,6 +101,7 @@ const semanticFormsMapper = new SemanticFormsMapperImpl();
 const instanceSnapshotRepository = new InstanceSnapshotSparqlRepository();
 const instanceSnapshotProcessingAuthorizationRepository = new InstanceSnapshotProcessingAuthorizationSparqlRepository();
 const versionedLdesSnapshotRepository = new VersionedLdesSnapshotSparqlRepository();
+const publishedInstanceRepository = new PublishedInstanceSparqlRepository();
 
 const linkedAuthorityCodeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(
     bestuurseenheidRegistrationCodeFetcher,
@@ -178,7 +179,8 @@ const instanceSnapshotToInstanceMergerDomainService = new InstanceSnapshotToInst
     deleteInstanceDomainService,
     linkedAuthorityCodeListDomainService,
     instanceSnapshotProcessingAuthorizationRepository,
-    bestuurseenheidRepository
+    bestuurseenheidRepository,
+    publishedInstanceRepository,
 );
 
 const instanceSnapshotProcessorApplicationService = new InstanceSnapshotProcessorApplicationService(
@@ -193,13 +195,16 @@ const newFormalInformalChoiceAndSyncInstanceDomainService = new NewFormalInforma
 
 const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc(IPDC_API_ENDPOINT, IPDC_API_KEY);
 
-const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(instanceRepository, formalInformalChoiceRepository, instanceInformalLanguageStringsFetcher);
+const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(
+    instanceRepository,
+    formalInformalChoiceRepository,
+    instanceInformalLanguageStringsFetcher,
+    publishedInstanceRepository);
 
 const addressFetcher = new AdressenRegisterFetcher();
 
 const contactInfoOptionsRepository = new ContactInfoOptionsSparqlRepository();
 
-const publishedInstanceRepository = new PublishedInstanceSparqlRepository();
 
 app.get('/', function (_req, res): void {
     const message = `Hey there, you have reached the lpdc-management-service! Seems like I'm doing just fine, have a nice day! :)`;

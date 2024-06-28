@@ -6,7 +6,6 @@ import {Instance} from "./instance";
 import {sparqlEscapeUri} from "../../../mu-helper";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {InstanceStatusType} from "./types";
-import {FormatPreservingDate} from "./format-preserving-date";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";
 import {Concept} from "./concept";
 import {Logger} from "../../../platform/logger";
@@ -25,6 +24,8 @@ import {ForbiddenError} from "./shared/lpdc-error";
 import {BestuurseenheidRepository} from "../port/driven/persistence/bestuurseenheid-repository";
 import {VersionedLdesSnapshot} from "./versioned-ldes-snapshot";
 import {SnapshotType} from "../port/driven/persistence/versioned-ldes-snapshot-repository";
+import {PublishedInstanceBuilder} from "./published-instance";
+import {PublishedInstanceRepository} from "../port/driven/persistence/published-instance-repository";
 
 export interface NewerProcessedSnapshotPredicate {
     hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: SnapshotType): Promise<boolean>;
@@ -39,6 +40,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService;
     private readonly _instanceSnapshotProcessingAuthorizationRepository: InstanceSnapshotProcessingAuthorizationRepository;
     private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
+    private readonly _publishedInstanceRepository: PublishedInstanceRepository;
     private readonly _logger: Logger = new Logger('InstanceSnapshotToInstanceMergerDomainService');
 
     constructor(
@@ -50,7 +52,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService,
         instanceSnapshotProcessingAuthorizationRepository: InstanceSnapshotProcessingAuthorizationRepository,
         bestuurseenheidRepository: BestuurseenheidRepository,
-
+        publishedInstanceRepository: PublishedInstanceRepository,
         logger?: Logger) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
@@ -60,6 +62,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         this._ensureLinkedAuthoritiesExistAsCodeListDomainService = ensureLinkedAuthoritiesExistAsCodeListDomainService;
         this._instanceSnapshotProcessingAuthorizationRepository = instanceSnapshotProcessingAuthorizationRepository;
         this._bestuurseenheidRepository = bestuurseenheidRepository;
+        this._publishedInstanceRepository = publishedInstanceRepository;
         this._logger = logger ?? this._logger;
     }
 
@@ -73,6 +76,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
         if (await newProcessedSnapshotPredicate.hasNewerProcessedSnapshot(instanceSnapshotGraph, instanceSnapshot, SnapshotType.INSTANCE_SNAPSHOT)) {
             this._logger.log(`The versioned resource <${instanceSnapshotId}> is an older version, or already processed, of service <${instanceSnapshot.isVersionOf}>`);
+            //TODO LPDC-1236: verify, but we don't need a published instance?
         } else {
             const instanceId = instanceSnapshot.isVersionOf;
             const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceId);
@@ -86,15 +90,19 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                 const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
                 await this.updateInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
             } else if (isExistingInstance && instanceSnapshot.isArchived) {
-                await this._deleteInstanceDomainService.delete(bestuurseenheid, instanceSnapshot.isVersionOf);
+                //TODO LPDC-1236: test passed along generatedAt (deletion time)
+                await this._deleteInstanceDomainService.delete(bestuurseenheid, instanceSnapshot.isVersionOf, instanceSnapshot.generatedAtTime);
             }
         }
         await this._ensureLinkedAuthoritiesExistAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList([...instanceSnapshot.competentAuthorities, ...instanceSnapshot.executingAuthorities]);
     }
 
     private async updateInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, oldInstance: Instance, concept: Concept) {
-        const newInstance = this.asMergedInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
-        await this._instanceRepository.update(bestuurseenheid, newInstance, oldInstance.dateModified, true);
+        const updatedInstance = this.asMergedInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
+        await this._instanceRepository.update(bestuurseenheid, updatedInstance, oldInstance.dateModified, true);
+
+        //TODO LPDC_1236: test behaviour
+        await this._publishedInstanceRepository.save(bestuurseenheid, PublishedInstanceBuilder.from(updatedInstance));
 
         if (oldInstance.conceptId) {
             await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, oldInstance.conceptId);
@@ -104,11 +112,13 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         }
     }
 
+    //TODO LPDC-1236: test new behaviour
     private async createNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
         const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
-        const isDeleted = await this._instanceRepository.isDeleted(bestuurseenheid, instance.id);
+        await this._instanceRepository.save(bestuurseenheid, instance);
 
-        isDeleted ? await this._instanceRepository.recreate(bestuurseenheid, instance) : await this._instanceRepository.save(bestuurseenheid, instance);
+        //TODO LPDC_1236: test behaviour
+        await this._publishedInstanceRepository.save(bestuurseenheid, PublishedInstanceBuilder.from(instance));
 
         if (instanceSnapshot.conceptId) {
             await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instanceSnapshot.conceptId);
@@ -151,7 +161,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             false,
             instanceSnapshot.dateCreated,
             instanceSnapshot.dateModified,
-            FormatPreservingDate.now(),
+            instanceSnapshot.generatedAtTime, //TODO LPDC-1236: verify and test
             undefined,
             InstanceStatusType.VERZONDEN,
             undefined,
@@ -200,7 +210,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             false,
             instanceSnapshot.dateCreated,
             instanceSnapshot.dateModified,
-            FormatPreservingDate.now(),
+            instanceSnapshot.generatedAtTime,
             instance.datePublished,
             InstanceStatusType.VERZONDEN,
             undefined,

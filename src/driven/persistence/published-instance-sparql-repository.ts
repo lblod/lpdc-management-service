@@ -13,6 +13,7 @@ export class PublishedInstanceSparqlRepository implements PublishedInstanceRepos
         this.querying = new SparqlQuerying(endpoint);
     }
 
+    //TODO LPDC-1236: add a migration program in lpdc-management to add one for each verzonden instance, taking into account the datePublished
     async save(bestuurseenheid: Bestuurseenheid, publishedInstance: PublishedInstance): Promise<void> {
         const quads = new DomainToQuadsMapper(bestuurseenheid.userGraph()).publishedInstanceToQuads(publishedInstance).map(s => s.toNT());
 

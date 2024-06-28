@@ -9,20 +9,25 @@ import {
     InstanceInformalLanguageStringsFetcher
 } from "../port/driven/external/instance-informal-language-strings-fetcher";
 import {Language} from "./language";
+import {PublishedInstanceBuilder} from "./published-instance";
+import {PublishedInstanceRepository} from "../port/driven/persistence/published-instance-repository";
 
 export class ConvertInstanceToInformalDomainService {
 
     private readonly _instanceRepository: InstanceRepository;
     private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
     private readonly _instanceInformalLanguageStringsFetcher: InstanceInformalLanguageStringsFetcher;
+    private readonly _publishedInstanceRepository: PublishedInstanceRepository;
 
     constructor(
         instanceRepository: InstanceRepository,
         formalInformalChoiceRepository: FormalInformalChoiceRepository,
-        instanceInformalLanguageStringsFetcher: InstanceInformalLanguageStringsFetcher) {
+        instanceInformalLanguageStringsFetcher: InstanceInformalLanguageStringsFetcher,
+        publishedInstanceRepository: PublishedInstanceRepository) {
         this._instanceRepository = instanceRepository;
         this._formalInformalChoiceRepository = formalInformalChoiceRepository;
         this._instanceInformalLanguageStringsFetcher = instanceInformalLanguageStringsFetcher;
+        this._publishedInstanceRepository = publishedInstanceRepository;
     }
 
     async confirmInstanceIsAlreadyInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
@@ -34,10 +39,10 @@ export class ConvertInstanceToInformalDomainService {
             .transformToInformal()
             .publish();
 
-        //TODO LPDC-1236: create new domain object PublishedInstance -> from (instance)
-        //TODO LPDC-1236: await this._publishedInstanceRepository.save(bestuurseenheid, publishedInstance);
-
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, instanceVersion);
+
+        //TODO LPDC_1236: test behaviour
+        await this._publishedInstanceRepository.save(bestuurseenheid, PublishedInstanceBuilder.from(updatedInstance));
     }
 
     async convertInstanceToInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {

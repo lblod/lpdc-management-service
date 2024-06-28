@@ -125,13 +125,16 @@ export class InstanceSparqlRepository implements InstanceRepository {
         });
     }
 
-    async delete(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<void> {
+    //TODO LPDC-1236: verify deletion time parameter
+    async delete(bestuurseenheid: Bestuurseenheid, id: Iri, deletionTime?: FormatPreservingDate): Promise<void> {
         const instance = await this.findById(bestuurseenheid, id);
         if (instance != undefined) {
 
             const triples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
 
-            const now = new Date();
+            if (deletionTime === undefined) {
+                deletionTime = FormatPreservingDate.now();
+            }
 
             if (instance.dateSent !== undefined) {
 
@@ -152,9 +155,9 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 INSERT {
                     ${sparqlEscapeUri(tombstoneId)} a as:Tombstone;
                         as:formerType lpdcExt:InstancePublicService;
-                        dct:isVersionOf ${sparqlEscapeUri(instance.id)};
-                        as:deleted ${sparqlEscapeDateTime(now)};
-                        prov:generatedAtTime ${sparqlEscapeDateTime(now)}.
+                        lpdcExt:isPublishedVersionOf ${sparqlEscapeUri(instance.id)};
+                        as:deleted ${sparqlEscapeDateTime(deletionTime.value)};
+                        prov:generatedAtTime ${sparqlEscapeDateTime(deletionTime.value)}.
                 }`;
                 await this.querying.deleteInsert(query);
             } else {
@@ -222,6 +225,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         return this.querying.ask(query);
     }
 
+    //TODO LPDC-1236: can remove method
     async isDeleted(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean> {
         const query = `
             ${PREFIX.as}

@@ -71,6 +71,7 @@ export class Instance {
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _dateSent: FormatPreservingDate | undefined;
+    //TODO LPDC-1236: remove datePublished entirely
     private readonly _datePublished: FormatPreservingDate | undefined;
     private readonly _status: InstanceStatusType;
     private readonly _reviewStatus: InstanceReviewStatusType | undefined;

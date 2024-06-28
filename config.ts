@@ -52,7 +52,7 @@ const PREFIX = {
     sh: 'PREFIX sh: <http://www.w3.org/ns/shacl#>',
     ex: 'PREFIX ex: <http://example.com/ns#>',
     nutss: 'PREFIX nutss: <http://data.europa.eu/nuts/scheme/>',
-    prov: 'PREFIX prov: <http://www.w3.org/ns/prov#/>',
+    prov: 'PREFIX prov: <http://www.w3.org/ns/prov#>',
 };
 
 export {
