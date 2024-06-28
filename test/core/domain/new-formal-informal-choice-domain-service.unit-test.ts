@@ -8,11 +8,11 @@ import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/best
 import {aMinimalInstance} from "./instance-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {ChosenFormType} from "../../../src/core/domain/types";
-import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 describe('new formal informal choice and sync needsConversionFromFormalInformalOnInstance domain service', () => {
     const formalInformalChoiceSparqlRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const instanceSparqlRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceSparqlRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const newFormalInformalChoiceAndSyncInstanceDomainService = new NewFormalInformalChoiceDomainService(formalInformalChoiceSparqlRepository, instanceSparqlRepository);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
 

@@ -20,14 +20,14 @@ import {SemanticFormsMapperImpl} from "../../src/driven/persistence/semantic-for
 import {FormDefinitionFileRepository} from "../../src/driven/persistence/form-definition-file-repository";
 import {CodeSparqlRepository} from "../../src/driven/persistence/code-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "../../src/driven/persistence/concept-snapshot-sparql-repository";
-import {InstanceSparqlTestRepository} from "../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 
 const endPoint = END2END_TEST_SPARQL_ENDPOINT;
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
 const conceptRepository = new ConceptSparqlRepository(endPoint);
-const conceptSnapshotRepository= new ConceptSnapshotSparqlRepository(endPoint);
-const instanceRepository = new InstanceSparqlTestRepository(endPoint);
+const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
+const instanceRepository = new InstanceSparqlRepository(endPoint);
 const formDefinitionRepository = new FormDefinitionFileRepository();
 const codeRepository = new CodeSparqlRepository(endPoint);
 const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(endPoint);

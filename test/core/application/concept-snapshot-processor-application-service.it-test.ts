@@ -23,7 +23,7 @@ import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {buildConceptIri} from "../domain/iri-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import spyOn = jest.spyOn;
 
 describe('ConceptSnapshotProcessorApplicationService', () => {
@@ -39,7 +39,7 @@ describe('ConceptSnapshotProcessorApplicationService', () => {
         bestuurseenheidRegistrationCodeFetcher,
         codeRepository
     );
-    const instanceSnapshotRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceSnapshotRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptSnapshotMerger = new ConceptSnapshotToConceptMergerDomainService(
         conceptSnapshotRepository,
         conceptRepository,

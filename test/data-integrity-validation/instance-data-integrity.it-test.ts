@@ -25,7 +25,7 @@ import {ChosenFormType} from "../../src/core/domain/types";
 import {Language} from "../../src/core/domain/language";
 import {sanitizeBooleans} from "./helpers/query-helpers";
 import {ConceptCodeValidator, extractAllConceptCodesForInstance} from "./helpers/concept-code.validator";
-import {InstanceSparqlTestRepository} from "../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 
 class DoubleQuadReporterCapture implements DoubleQuadReporter {
 
@@ -144,7 +144,7 @@ describe('Instance Data Integrity Validation', () => {
                     for (const instanceId of randomizedInstanceIds) {
                         try {
                             const doubleQuadReporterCapture = new DoubleQuadReporterCapture(bestuurseenheid);
-                            const repository = new InstanceSparqlTestRepository(endPoint, doubleQuadReporterCapture);
+                            const repository = new InstanceSparqlRepository(endPoint, doubleQuadReporterCapture);
 
                             const id = new Iri(instanceId['id'].value);
                             const instance = await repository.findById(bestuurseenheid, id);
@@ -249,7 +249,7 @@ describe('Instance Data Integrity Validation', () => {
         const triples = await getInstanceTriples(endPoint, bestuurseenheid.userGraph(), instanceId);
         console.log(triples);
 
-        const repository = new InstanceSparqlTestRepository(endPoint);
+        const repository = new InstanceSparqlRepository(endPoint);
         const instance = await repository.findById(bestuurseenheid, instanceId);
         instance.id;
         const domainToTriplesMapper = new DomainToQuadsMapper(bestuurseenheid.userGraph());

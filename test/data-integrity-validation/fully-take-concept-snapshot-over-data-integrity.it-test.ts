@@ -13,14 +13,14 @@ import {
     BringInstanceUpToDateWithConceptSnapshotVersionDomainService
 } from "../../src/core/domain/bring-instance-up-to-date-with-concept-snapshot-version-domain-service";
 import {SelectConceptLanguageDomainService} from "../../src/core/domain/select-concept-language-domain-service";
-import {InstanceSparqlTestRepository} from "../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 
 const endPoint = END2END_TEST_SPARQL_ENDPOINT;
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
 const conceptRepository = new ConceptSparqlRepository(endPoint);
 const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
-const instanceRepository = new InstanceSparqlTestRepository(endPoint);
+const instanceRepository = new InstanceSparqlRepository(endPoint);
 const selectConceptLanguageDomainService = new SelectConceptLanguageDomainService();
 const bringInstanceUpToDateWithConceptSnapshotVersionDomainService = new BringInstanceUpToDateWithConceptSnapshotVersionDomainService(instanceRepository, conceptRepository, conceptSnapshotRepository, selectConceptLanguageDomainService);
 

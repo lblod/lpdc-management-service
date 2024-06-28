@@ -46,7 +46,8 @@ import {
 import {
     VersionedLdesSnapshotSparqlRepository
 } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
-import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+import {PublishedInstanceSparqlRepository} from "../../../src/driven/persistence/published-instance-sparql-repository";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
@@ -58,7 +59,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRegistrationCodeFetcher = {
         fetchOrgRegistryCodelistEntry: jest.fn().mockReturnValue(Promise.resolve({}))
@@ -68,6 +69,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
     const deleteInstanceDomainService = new DeleteInstanceDomainService(instanceRepository, conceptDisplayConfigurationRepository);
     const instanceSnapshotProcessingAuthorizationRepository = new InstanceSnapshotProcessingAuthorizationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const publishedInstanceRepository = new PublishedInstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const mergerDomainService = new InstanceSnapshotToInstanceMergerDomainService(
         instanceSnapshotRepository,
         instanceRepository,
@@ -77,6 +79,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         ensureLinkedAuthoritiesExistAsCodeListDomainService,
         instanceSnapshotProcessingAuthorizationRepository,
         bestuurseenheidRepository,
+        publishedInstanceRepository,
     );
     const versionedLdesSnapshotRepository = new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
@@ -140,7 +143,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
             expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
             expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
-            expect(instanceAfterMerge.datePublished).toEqual(undefined);
             expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
             expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -376,7 +378,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
             expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
             expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
-            expect(instanceAfterMerge.datePublished).toEqual(undefined);
             expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
             expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -615,7 +616,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
                 expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
                 expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
-                expect(instanceAfterMerge.datePublished).toEqual(instance.datePublished);
                 expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
                 expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
                 expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -859,7 +859,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
                 expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
                 expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
-                expect(instanceAfterMerge.datePublished).toEqual(instance.datePublished);
                 expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
                 expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
                 expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -1370,7 +1369,8 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             deleteInstanceDomainService,
             codeListDomainService,
             instanceSnapshotProcessingAuthorizationRepository,
-            bestuurseenheidRepository
+            bestuurseenheidRepository,
+            publishedInstanceRepository,
         );
 
         await directDatabaseAccess.insertData(

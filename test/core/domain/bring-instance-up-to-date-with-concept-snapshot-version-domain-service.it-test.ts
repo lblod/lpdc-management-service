@@ -44,12 +44,12 @@ import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-adva
 import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
 import {anotherFullLegalResourceForConceptSnapshot} from "./legal-resource-test-builder";
 import {aFormalInformalChoice} from "./formal-informal-choice-test-builder";
-import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 
 describe('Bring instance up to date with concept snapshot version domain service ', () => {
 
-    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptSnapshotRepository = new ConceptSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);

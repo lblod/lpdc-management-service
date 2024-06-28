@@ -129,7 +129,11 @@ function sparqlEscapeDate(value) {
 }
 
 function sparqlEscapeDateTime(value) {
-    return '"' + new Date(value).toISOString() + '"^^xsd:dateTime';
+    if(typeof value === 'string') {
+        return '"' + value + '"^^xsd:dateTime';
+    } else {
+        return '"' + value.toISOString() + '"^^xsd:dateTime';
+    }
 }
 
 function sparqlEscapeBool(value) {

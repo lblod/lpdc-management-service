@@ -16,13 +16,13 @@ export class DeleteInstanceDomainService {
         this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
     }
 
-    public async delete(bestuurseenheid: Bestuurseenheid, instanceId: Iri, deletionTime?: FormatPreservingDate) {
+    public async delete(bestuurseenheid: Bestuurseenheid, instanceId: Iri, deletionTime?: FormatPreservingDate): Promise<Iri | undefined> {
         const instance = await this._instanceRepository.findById(bestuurseenheid, instanceId);
-        await this._instanceRepository.delete(bestuurseenheid, instance.id, deletionTime);
+        const tombstoneIdOrUndefined = await this._instanceRepository.delete(bestuurseenheid, instance.id, deletionTime);
 
         if (instance.conceptId !== undefined) {
             await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instance.conceptId);
         }
-
+        return tombstoneIdOrUndefined;
     }
 }

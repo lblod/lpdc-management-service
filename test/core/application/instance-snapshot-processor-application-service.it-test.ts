@@ -31,7 +31,8 @@ import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {
     VersionedLdesSnapshotSparqlRepository
 } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
-import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+import {PublishedInstanceSparqlRepository} from "../../../src/driven/persistence/published-instance-sparql-repository";
 import spyOn = jest.spyOn;
 
 
@@ -42,7 +43,7 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     });
 
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -53,6 +54,7 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
     const linkedAuthoritiesDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
     const instanceSnapshotProcessingAuthorizationRepository = new InstanceSnapshotProcessingAuthorizationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const publishedInstanceRepository = new PublishedInstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceSnapshotMerger = new InstanceSnapshotToInstanceMergerDomainService(
         instanceSnapshotRepository,
         instanceRepository,
@@ -61,7 +63,8 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         deleteInstanceDomainService,
         linkedAuthoritiesDomainService,
         instanceSnapshotProcessingAuthorizationRepository,
-        bestuurseenheidRepository);
+        bestuurseenheidRepository,
+        publishedInstanceRepository);
     const versionedLdesSnapshotRepository = new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceSnapshotProcessor = new InstanceSnapshotProcessorApplicationService(instanceSnapshotMerger, versionedLdesSnapshotRepository);
 
@@ -90,7 +93,6 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
             expect(spy).toHaveBeenCalledTimes(10); //spy is no extra times called
         }, 20000);
     });
-
 
 
     test('merge instanceSnapshots with same instance in correct order', async () => {

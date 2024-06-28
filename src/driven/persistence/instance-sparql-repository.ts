@@ -125,8 +125,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         });
     }
 
-    //TODO LPDC-1236: verify deletion time parameter
-    async delete(bestuurseenheid: Bestuurseenheid, id: Iri, deletionTime?: FormatPreservingDate): Promise<void> {
+    async delete(bestuurseenheid: Bestuurseenheid, id: Iri, deletionTime?: FormatPreservingDate): Promise<Iri | undefined> {
         const instance = await this.findById(bestuurseenheid, id);
         if (instance != undefined) {
 
@@ -136,7 +135,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 deletionTime = FormatPreservingDate.now();
             }
 
-            if (instance.dateSent !== undefined) {
+            if (instance.dateSent !== undefined ||
+                await this.wasTombstoneCreatedBefore(bestuurseenheid, id)) {
 
                 const uniqueId = uuid();
                 const tombstoneId = PublishedInstanceBuilder.buildIri(uniqueId);
@@ -160,6 +160,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
                         prov:generatedAtTime ${sparqlEscapeDateTime(deletionTime.value)}.
                 }`;
                 await this.querying.deleteInsert(query);
+
+                return tombstoneId;
             } else {
                 const query = `
 
@@ -172,8 +174,26 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 `;
 
                 await this.querying.delete(query);
+
+                return undefined;
             }
         }
+    }
+
+    private async wasTombstoneCreatedBefore(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean> {
+        const query = `
+            ${PREFIX.as}
+            ${PREFIX.lpdcExt}
+            
+            ASK WHERE {
+                GRAPH <${bestuurseenheid.userGraph()}> {
+                    ?anyId a as:Tombstone;
+                            as:formerType lpdcExt:InstancePublicService;
+                            lpdcExt:isPublishedVersionOf ${sparqlEscapeUri(instanceId)}.
+                }
+            }
+        `;
+        return this.querying.ask(query);
     }
 
     async updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void> {
@@ -225,46 +245,6 @@ export class InstanceSparqlRepository implements InstanceRepository {
         return this.querying.ask(query);
     }
 
-    //TODO LPDC-1236: can remove method
-    async isDeleted(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean> {
-        const query = `
-            ${PREFIX.as}
-            ASK WHERE {
-                GRAPH <${bestuurseenheid.userGraph()}> {
-                    ${sparqlEscapeUri(instanceId)} a as:Tombstone .
-                }
-            }
-        `;
-        return this.querying.ask(query);
-    }
-
-    //TODO LPDC-1236: remove recreate ; we can use save a new one...
-    async recreate(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void> {
-        const quads = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
-
-        const query = `
-        ${PREFIX.as}
-        ${PREFIX.lpdcExt}
-        ${PREFIX.rdf}
-        ${PREFIX.schema}
-        WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
-        DELETE {
-                ${sparqlEscapeUri(instance.id)} a as:Tombstone.
-                ${sparqlEscapeUri(instance.id)} as:formerType lpdcExt:InstancePublicService.
-                ${sparqlEscapeUri(instance.id)} as:deleted ?deleteTime.
-        }            
-        INSERT { 
-                ${quads.join("\n")}        
-        }     
-        WHERE {
-               ${sparqlEscapeUri(instance.id)} a as:Tombstone.
-               ${sparqlEscapeUri(instance.id)} as:deleted ?deleteTime.
-        }
-            
-        `;
-        await this.querying.deleteInsert(query);
-    }
-
     async syncNeedsConversionFromFormalToInformal(bestuurseenheid: Bestuurseenheid, chosenType: ChosenFormType) {
         const now = new Date();
 
@@ -278,7 +258,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         }
         INSERT { 
             ?instance lpdcExt:needsConversionFromFormalToInformal """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>;
-                    <${NS.schema('dateModified').value}> ${sparqlEscapeDateTime(now)}.     
+                    <${NS.schema('dateModified').value}> ${sparqlEscapeDateTime(now.toISOString())}.     
         }     
         WHERE {
             ?instance a lpdcExt:InstancePublicService;

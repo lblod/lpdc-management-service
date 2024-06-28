@@ -48,11 +48,12 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
 import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial-advantage-test-builder";
 import {instanceLanguages, Language} from "../../../src/core/domain/language";
-import {InstanceSparqlTestRepository} from "./instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+import {Iri} from "../../../src/core/domain/shared/iri";
 
 describe('InstanceRepository', () => {
 
-    const repository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const repository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
@@ -209,132 +210,24 @@ describe('InstanceRepository', () => {
         });
     });
 
-    describe('recreate', () => {
-
-        test('if exists as tombstone (but no publication info), deletes tombstone, and inserts new instance data', async () => {
-            const instanceUUID = uuid();
-            const instanceId = InstanceBuilder.buildIri(instanceUUID);
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
-            const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
-
-            const instance =
-                aMinimalInstance()
-                    .withId(instanceId)
-                    .withUuid(instanceUUID)
-                    .withCreatedBy(bestuurseenheid.id)
-                    .withDateCreated(instanceDateCreated)
-                    .withDateModified(instanceDateModified)
-                    .withStatus(InstanceStatusType.VERZONDEN)
-                    .withDateSent(FormatPreservingDate.now())
-                    .build();
-
-            await directDatabaseAccess.insertData(
-                `${bestuurseenheid.userGraph()}`,
-                [
-                    `<${instanceId}> a <https://www.w3.org/ns/activitystreams#Tombstone>`,
-                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#deleted> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
-                ]);
-
-            await repository.recreate(bestuurseenheid, instance);
-
-            const actualInstance = await repository.findById(bestuurseenheid, instanceId);
-
-            expect(actualInstance).toEqual(instance);
-        });
-
-        test('if exists as tombstone (but te herpubliceren), deletes tombstone, and inserts new instance data', async () => {
-            const instanceUUID = uuid();
-            const instanceId = InstanceBuilder.buildIri(instanceUUID);
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
-            const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
-
-            const instance =
-                aMinimalInstance()
-                    .withId(instanceId)
-                    .withUuid(instanceUUID)
-                    .withCreatedBy(bestuurseenheid.id)
-                    .withDateCreated(instanceDateCreated)
-                    .withDateModified(instanceDateModified)
-                    .withStatus(InstanceStatusType.VERZONDEN)
-                    .withDutchLanguageVariant(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT)
-                    .withDateSent(FormatPreservingDate.now())
-                    .build();
-
-            await directDatabaseAccess.insertData(
-                `${bestuurseenheid.userGraph()}`,
-                [
-                    `<${instanceId}> a <https://www.w3.org/ns/activitystreams#Tombstone>`,
-                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#deleted> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
-                    `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>`,
-                ]);
-
-            await repository.recreate(bestuurseenheid, instance);
-
-            const actualInstance = await repository.findById(bestuurseenheid, instanceId);
-
-            expect(actualInstance).toEqual(instance);
-
-        });
-
-        test('if exists as tombstone (but gepubliceerd), deletes tombstone, and inserts new instance data', async () => {
-            const instanceUUID = uuid();
-            const instanceId = InstanceBuilder.buildIri(instanceUUID);
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
-            const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
-
-            const instanceTombstonePublishedDate = FormatPreservingDate.now();
-            const instance =
-                aMinimalInstance()
-                    .withId(instanceId)
-                    .withUuid(instanceUUID)
-                    .withCreatedBy(bestuurseenheid.id)
-                    .withDateCreated(instanceDateCreated)
-                    .withDateModified(instanceDateModified)
-                    .withStatus(InstanceStatusType.VERZONDEN)
-                    .withDutchLanguageVariant(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT)
-                    .withDateSent(FormatPreservingDate.now())
-                    .build();
-
-            await directDatabaseAccess.insertData(
-                `${bestuurseenheid.userGraph()}`,
-                [
-                    `<${instanceId}> a <https://www.w3.org/ns/activitystreams#Tombstone>`,
-                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#deleted> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${instanceId}> <https://www.w3.org/ns/activitystreams#formerType> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`,
-                    `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/gepubliceerd>`,
-                    `<${instanceId}> <http://schema.org/datePublished> """${instanceTombstonePublishedDate.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                ]);
-
-            await repository.recreate(bestuurseenheid, instance);
-
-            const actualInstance = await repository.findById(bestuurseenheid, instanceId);
-
-            expect(actualInstance).toEqual(InstanceBuilder.from(instance).withDatePublished(instanceTombstonePublishedDate).build());
-
-        });
-
-    });
-
     describe('delete', () => {
 
-        test('if exists with datePublished, Removes all triples related to the instance and create tombstone triples', async () => {
+        test('if exists with dateSent, Removes all triples related to the instance and create tombstone triples', async () => {
 
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance().build();
 
             await repository.save(bestuurseenheid, instance);
-            await repository.delete(bestuurseenheid, instance.id);
+            const tombstoneId = await repository.delete(bestuurseenheid, instance.id);
+
+            const instanceExists = await repository.exists(bestuurseenheid, instance.id);
+            expect(instanceExists).toBeFalse();
 
             const query = `
             SELECT ?s ?p ?o WHERE {
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                     VALUES ?s {
-                        <${instance.id.value}>
+                        <${tombstoneId.value}>
                     }
                     ?s ?p ?o
                 }
@@ -343,23 +236,65 @@ describe('InstanceRepository', () => {
             const queryResult = await directDatabaseAccess.list(query);
             const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
 
-            expect(quads).toHaveLength(4);
+            expect(quads).toHaveLength(5);
             expect(quads).toEqual(expect.arrayContaining([
-                quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(tombstoneId.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(tombstoneId.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(tombstoneId.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(tombstoneId.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(tombstoneId.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
             ]));
         });
 
-        test('if exists without datePublished, Removes all triples related to the instance and does not create tombstone triples ', async () => {
+        test('if exists with dateSent, Removes all triples related to the instance and create tombstone triples using provided deletionDate', async () => {
+
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance().build();
+
+            await repository.save(bestuurseenheid, instance);
+            const tombstoneId = await repository.delete(bestuurseenheid, instance.id, FormatPreservingDate.of('2025-08-21T00:00:00.456545Z'));
+
+            const instanceExists = await repository.exists(bestuurseenheid, instance.id);
+            expect(instanceExists).toBeFalse();
+
+            const query = `
+            SELECT ?s ?p ?o WHERE {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    VALUES ?s {
+                        <${tombstoneId.value}>
+                    }
+                    ?s ?p ?o
+                }
+            }
+        `;
+            const queryResult = await directDatabaseAccess.list(query);
+            const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
+
+            expect(quads).toHaveLength(5);
+            expect(quads).toEqual(expect.arrayContaining([
+                quad(namedNode(tombstoneId.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(tombstoneId.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.of('2025-08-21T00:00:00.456545Z').value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(tombstoneId.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(FormatPreservingDate.of('2025-08-21T00:00:00.456545Z').value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(tombstoneId.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(tombstoneId.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+            ]));
+        });
+
+        test('if exists without dateSent, Removes all triples related to the instance and does not create tombstone triples ', async () => {
 
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withDatePublished(undefined)
+                .withDateSent(undefined)
                 .build();
 
             await repository.save(bestuurseenheid, instance);
-            await repository.delete(bestuurseenheid, instance.id);
+            const tombstoneId = await repository.delete(bestuurseenheid, instance.id);
+
+            expect(tombstoneId).toBeUndefined();
+
+            const instanceExists = await repository.exists(bestuurseenheid, instance.id);
+            expect(instanceExists).toBeFalse();
+
 
             const query = `
             SELECT ?s ?p ?o WHERE {
@@ -380,7 +315,7 @@ describe('InstanceRepository', () => {
         test('Only the requested instance is deleted', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
-                .withDatePublished(undefined)
+                .withDateSent(undefined)
                 .build();
             const anotherInstance = aMinimalInstance().build();
 
@@ -422,7 +357,56 @@ describe('InstanceRepository', () => {
             );
 
             expect(await repository.findById(anotherBestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
+        });
 
+        test('if a tombstone was once created, create a new tombstone, even if datesent is not set', async () => {
+
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance().withDateSent(FormatPreservingDate.now()).withStatus(InstanceStatusType.VERZONDEN).build();
+
+            await repository.save(bestuurseenheid, instance);
+            const initialTombstoneId = await repository.delete(bestuurseenheid, instance.id);
+
+            const instanceExists = await repository.exists(bestuurseenheid, instance.id);
+            expect(instanceExists).toBeFalse();
+
+            const query = (tombstoneId: Iri): string => `
+            SELECT ?s ?p ?o WHERE {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    VALUES ?s {
+                        <${tombstoneId.value}>
+                    }
+                    ?s ?p ?o
+                }
+            }
+        `;
+            let queryResult = await directDatabaseAccess.list(query(initialTombstoneId));
+            let quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
+
+            expect(quads).toHaveLength(5);
+
+            const recreatedInstance = InstanceBuilder.from(instance).withDateSent(undefined).withStatus(InstanceStatusType.ONTWERP).build();
+            await repository.save(bestuurseenheid, recreatedInstance);
+
+            let recreatedInstanceExists = await repository.exists(bestuurseenheid, recreatedInstance.id);
+            expect(recreatedInstanceExists).toBeTrue();
+
+            expect(recreatedInstance.id).toEqual(instance.id);
+
+            const nextTombstoneId = await repository.delete(bestuurseenheid, recreatedInstance.id);
+
+            recreatedInstanceExists = await repository.exists(bestuurseenheid, recreatedInstance.id);
+            expect(recreatedInstanceExists).toBeFalse();
+
+            queryResult = await directDatabaseAccess.list(query(initialTombstoneId));
+            quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
+
+            expect(quads).toHaveLength(5);
+
+            queryResult = await directDatabaseAccess.list(query(nextTombstoneId));
+            quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
+
+            expect(quads).toHaveLength(5);
 
         });
     });
@@ -445,26 +429,6 @@ describe('InstanceRepository', () => {
 
             const actual = await repository.exists(bestuurseenheid, instance.id);
 
-            expect(actual).toEqual(false);
-        });
-    });
-
-    describe('isDeleted', () => {
-        test('When is deleted, then return true ', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance().build();
-            await repository.save(bestuurseenheid, instance);
-            await repository.delete(bestuurseenheid, instance.id);
-
-            const actual = await repository.isDeleted(bestuurseenheid, instance.id);
-            expect(actual).toEqual(true);
-        });
-        test('When is not deleted, then return false', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aFullInstance().build();
-            await repository.save(bestuurseenheid, instance);
-
-            const actual = await repository.isDeleted(bestuurseenheid, instance.id);
             expect(actual).toEqual(false);
         });
     });
@@ -859,7 +823,6 @@ describe('InstanceRepository', () => {
                     `<${instanceId}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://schema.org/dateSent> """${InstanceTestBuilder.DATE_SENT.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
-                    `<${instanceId}> <http://schema.org/datePublished> """${InstanceTestBuilder.DATE_PUBLISHED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
                     `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verzonden>`,
                     `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/reviewStatus> <http://lblod.data.gift/concepts/review-status/concept-gewijzigd>`,
                     `<${instanceId}> <http://schema.org/publication> <http://lblod.data.gift/concepts/publication-status/te-herpubliceren>`,

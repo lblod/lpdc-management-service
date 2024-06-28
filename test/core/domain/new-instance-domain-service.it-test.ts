@@ -32,14 +32,14 @@ import {SelectConceptLanguageDomainService} from "../../../src/core/domain/selec
 import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "./instance-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
-import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 describe('Creating a new Instance domain service', () => {
 
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceTestRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -1132,8 +1132,6 @@ describe('Creating a new Instance domain service', () => {
             expect(copiedInstance.dateCreated).toEqual(FormatPreservingDate.now());
             expect(copiedInstance.dateModified).toEqual(FormatPreservingDate.now());
             expect(copiedInstance.dateSent).toBeUndefined();
-            expect(copiedInstance.datePublished).toBeUndefined();
-            expect(copiedInstance.datePublished).toBeUndefined();
             expect(copiedInstance.status).toEqual(InstanceStatusType.ONTWERP);
             expect(copiedInstance.reviewStatus).toEqual(instance.reviewStatus);
             expect(copiedInstance.spatials).toEqual(instance.spatials);
@@ -1207,8 +1205,6 @@ describe('Creating a new Instance domain service', () => {
             expect(copiedInstance.dateCreated).toEqual(FormatPreservingDate.now());
             expect(copiedInstance.dateModified).toEqual(FormatPreservingDate.now());
             expect(copiedInstance.dateSent).toBeUndefined();
-            expect(copiedInstance.datePublished).toBeUndefined();
-            expect(copiedInstance.datePublished).toBeUndefined();
             expect(copiedInstance.status).toEqual(InstanceStatusType.ONTWERP);
             expect(copiedInstance.reviewStatus).toEqual(instance.reviewStatus);
             expect(copiedInstance.spatials).toEqual(instance.spatials);
@@ -1224,7 +1220,6 @@ describe('Creating a new Instance domain service', () => {
             const instance = aMinimalInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(InstanceTestBuilder.DATE_SENT)
-                .withDatePublished(InstanceTestBuilder.DATE_PUBLISHED)
                 .withCreatedBy(bestuurseenheid.id).build();
 
             await bestuurseenheidRepository.save(bestuurseenheid);
@@ -1240,7 +1235,6 @@ describe('Creating a new Instance domain service', () => {
             expect(copiedInstance.createdBy).toEqual(instance.createdBy);
             expect(copiedInstance.status).toEqual(InstanceStatusType.ONTWERP);
             expect(copiedInstance.dateSent).toBeUndefined();
-            expect(copiedInstance.datePublished).toBeUndefined();
             expect(copiedInstance.copyOf).toEqual(instance.id);
         });
 

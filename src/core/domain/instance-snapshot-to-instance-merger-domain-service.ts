@@ -76,7 +76,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
 
         if (await newProcessedSnapshotPredicate.hasNewerProcessedSnapshot(instanceSnapshotGraph, instanceSnapshot, SnapshotType.INSTANCE_SNAPSHOT)) {
             this._logger.log(`The versioned resource <${instanceSnapshotId}> is an older version, or already processed, of service <${instanceSnapshot.isVersionOf}>`);
-            //TODO LPDC-1236: verify, but we don't need a published instance?
         } else {
             const instanceId = instanceSnapshot.isVersionOf;
             const isExistingInstance = await this._instanceRepository.exists(bestuurseenheid, instanceId);
@@ -90,7 +89,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                 const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
                 await this.updateInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
             } else if (isExistingInstance && instanceSnapshot.isArchived) {
-                //TODO LPDC-1236: test passed along generatedAt (deletion time)
+                //TODO LPDC-1236: test tombstone -> recreated -> tombstone -> recreated ...
                 await this._deleteInstanceDomainService.delete(bestuurseenheid, instanceSnapshot.isVersionOf, instanceSnapshot.generatedAtTime);
             }
         }

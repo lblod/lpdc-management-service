@@ -14,12 +14,12 @@ import {InstanceReviewStatusType} from "../../../src/core/domain/types";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
-import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 
 describe('LinkConceptToInstanceDomainService', () => {
 
-    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const linkConceptToInstanceDomainService = new LinkConceptToInstanceDomainService(instanceRepository, conceptRepository, conceptDisplayConfigurationRepository);

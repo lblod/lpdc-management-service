@@ -12,15 +12,11 @@ export interface InstanceRepository {
 
     update(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, dontUpdateDateModified?: boolean): Promise<void>;
 
-    delete(bestuurseenheid: Bestuurseenheid, id: Iri, deletionTime?: FormatPreservingDate): Promise<void>;
+    delete(bestuurseenheid: Bestuurseenheid, id: Iri, deletionTime?: FormatPreservingDate): Promise<Iri | undefined>;
 
     updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void>;
 
     exists(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean>;
-
-    isDeleted(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean>;
-
-    recreate(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void>;
 
     syncNeedsConversionFromFormalToInformal(bestuurseenheid: Bestuurseenheid, choosenType: ChosenFormType): Promise<void>
 

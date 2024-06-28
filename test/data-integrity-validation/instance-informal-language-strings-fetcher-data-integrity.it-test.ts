@@ -12,12 +12,12 @@ import fs from "fs";
 import {sortedUniq} from "lodash";
 import {Language} from "../../src/core/domain/language";
 import {wait} from "ts-retry-promise";
-import {InstanceSparqlTestRepository} from "../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 
 const endPoint = END2END_TEST_SPARQL_ENDPOINT;
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(endPoint);
-const instanceRepository = new InstanceSparqlTestRepository(endPoint);
+const instanceRepository = new InstanceSparqlRepository(endPoint);
 const ipdcFetcher = new InstanceInformalLanguageStringsFetcherIpdc('https://api.ipdc.vlaanderen.be', process.env.IPDC_API_KEY);
 
 describe('Instance informal language strings fetcher', () => {
@@ -45,8 +45,9 @@ describe('Instance informal language strings fetcher', () => {
 
                     if (
                         instance.dutchLanguageVariant != Language.INFORMAL &&
-                        instance.needsConversionFromFormalToInformal &&
-                        instance.isLastVersionPublishedInIPDC()) {
+                        instance.needsConversionFromFormalToInformal
+                        //TODO LPDC-1236: implement using repository call (published-instnace-repository)
+                        /*instance.isLastVersionPublishedInIPDC()*/) {
 
                         transformedInstances += 1;
                         await ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, instance);

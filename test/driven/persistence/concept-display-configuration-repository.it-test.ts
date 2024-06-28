@@ -16,7 +16,7 @@ import {aFullConcept} from "../../core/domain/concept-test-builder";
 import {aFullInstance} from "../../core/domain/instance-test-builder";
 import {ConceptDisplayConfigurationBuilder} from "../../../src/core/domain/concept-display-configuration";
 import {NotFoundError, SystemError} from "../../../src/core/domain/shared/lpdc-error";
-import {InstanceSparqlTestRepository} from "./instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 describe('ConceptDisplayConfigurationRepository', () => {
 
@@ -24,7 +24,7 @@ describe('ConceptDisplayConfigurationRepository', () => {
     const repository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
 
     describe('findById', () => {
 

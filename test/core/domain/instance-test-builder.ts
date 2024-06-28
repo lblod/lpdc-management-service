@@ -97,7 +97,6 @@ export function aFullInstance(): InstanceBuilder {
         .withDutchLanguageVariant(InstanceTestBuilder.DUTCH_LANGUAGE_VARIANT)
         .withNeedsConversionFromFormalToInformal(InstanceTestBuilder.NEEDS_CONVERSION_FROM_FORMAL_TO_INFORMAL)
         .withDateSent(InstanceTestBuilder.DATE_SENT)
-        .withDatePublished(InstanceTestBuilder.DATE_PUBLISHED)
         .withReviewStatus(InstanceTestBuilder.REVIEW_STATUS)
         .withSpatials(InstanceTestBuilder.SPATIALS)
         .withLegalResources(InstanceTestBuilder.LEGAL_RESOURCES)
@@ -118,7 +117,6 @@ export class InstanceTestBuilder {
     public static readonly DATE_MODIFIED = FormatPreservingDate.of('2023-10-02T20:00:20.242928Z');
 
     public static readonly DATE_SENT = FormatPreservingDate.of('2023-10-03T20:10:45.242928Z');
-    public static readonly DATE_PUBLISHED = FormatPreservingDate.of('2023-10-03T21:01:23.242928Z');
 
     public static readonly STATUS = InstanceStatusType.ONTWERP;
 

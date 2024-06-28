@@ -15,11 +15,11 @@ import {
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
 import {NotFoundError} from "../../../src/core/domain/shared/lpdc-error";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
-import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 describe('Deleting a new Instance domain service', () => {
 
-    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationSparqlRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
     const conceptDisplayConfigurationSparqlTestRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -53,7 +53,6 @@ describe('Deleting a new Instance domain service', () => {
         await instanceRepository.save(bestuurseenheid, instance);
         await instanceRepository.save(bestuurseenheid, anotherInstance);
 
-
         const conceptualDisplayConfiguration = aFullConceptDisplayConfiguration()
             .withConceptId(concept.id)
             .withBestuurseenheidId(bestuurseenheid.id)
@@ -61,11 +60,12 @@ describe('Deleting a new Instance domain service', () => {
             .withConceptIsInstantiated(true).build();
         await conceptDisplayConfigurationSparqlTestRepository.save(bestuurseenheid, conceptualDisplayConfiguration);
 
-
-        await deleteInstanceDomainService.delete(bestuurseenheid, instanceId);
+        const tombstoneId = await deleteInstanceDomainService.delete(bestuurseenheid, instanceId);
 
         await expect(instanceRepository.findById(bestuurseenheid, instance.id)).rejects.toThrowWithMessage(NotFoundError,
-            `Kan <${instanceId}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>, maar wel gevonden met type <https://www.w3.org/ns/activitystreams#Tombstone> in graph <${bestuurseenheid.userGraph()}>`);
+            `Kan <${instanceId}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> in graph <${bestuurseenheid.userGraph()}>`);
+        await expect(instanceRepository.findById(bestuurseenheid, tombstoneId)).rejects.toThrowWithMessage(NotFoundError,
+            `Kan <${tombstoneId}> niet vinden voor type <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>, maar wel gevonden met type <https://www.w3.org/ns/activitystreams#Tombstone> in graph <${bestuurseenheid.userGraph()}>`);
         expect(await instanceRepository.findById(bestuurseenheid, anotherInstance.id)).toEqual(anotherInstance);
     });
 

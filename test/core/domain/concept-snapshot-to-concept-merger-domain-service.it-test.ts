@@ -49,7 +49,7 @@ import {
 } from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
 import {anotherFullLegalResourceForConceptSnapshot} from "./legal-resource-test-builder";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
-import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 describe('merges a new concept snapshot into a concept', () => {
 
@@ -64,7 +64,7 @@ describe('merges a new concept snapshot into a concept', () => {
     };
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
     const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
 
     const ensureLinkedAuthoritiesExistAsCodeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
 

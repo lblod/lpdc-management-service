@@ -46,7 +46,6 @@ import {
     LegalResourceTestBuilder
 } from "./legal-resource-test-builder";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
-import moment from 'moment';
 
 beforeAll(() => setFixedTime());
 afterAll(() => restoreRealTime());
@@ -508,17 +507,10 @@ describe('constructing', () => {
     test('When status is ontwerp and dateSent is undefined should not throw error', () => {
         const instanceTestBuilder = aFullInstance()
             .withStatus(InstanceStatusType.ONTWERP)
-            .withDateSent(undefined)
-            .withDatePublished(undefined);
+            .withDateSent(undefined);
 
         expect(() => instanceTestBuilder.build()).not.toThrow();
 
-    });
-
-    test('When datePublished is present and dateSent is undefined should throw error', () => {
-        const instanceTestBuilder = aFullInstance().withDateSent(undefined).withDatePublished(InstanceTestBuilder.DATE_PUBLISHED);
-
-        expect(() => instanceTestBuilder.build()).toThrowWithMessage(InvariantError, 'datePublished kan alleen aanwezig zijn wanneer dateSent aanwezig is');
     });
 
     test('conceptId, conceptSnapshotId and productId not all defined or all undefined should throw error', () => {
@@ -962,7 +954,6 @@ describe('transformToInformal', () => {
     test('should throw error when instance needConversionFromFormalToInformal', () => {
         const instance = aMinimalInstance()
             .withDateSent(FormatPreservingDate.now())
-            .withDatePublished(FormatPreservingDate.of(moment(new Date()).add(100).toISOString()))
             .withStatus(InstanceStatusType.VERZONDEN)
             .withNeedsConversionFromFormalToInformal(false)
             .build();
@@ -973,7 +964,6 @@ describe('transformToInformal', () => {
     test('should transform all languageStrings from nl or nl-be-x-formal to nl-be-x-informal', () => {
         const instance = aFullInstance()
             .withStatus(InstanceStatusType.VERZONDEN)
-            .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
             .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
             .withDutchLanguageVariant(Language.FORMAL)
             .withNeedsConversionFromFormalToInformal(true)
@@ -1074,48 +1064,4 @@ describe('builder', () => {
         expect(fromInstance).toEqual(instance);
 
     });
-});
-
-test('isPublishedInIPDC', () => {
-    expect(aMinimalInstance()
-        .withStatus(InstanceStatusType.VERZONDEN)
-        .withDateSent(FormatPreservingDate.now())
-        .withDatePublished(undefined)
-        .build()
-        .isPublishedInIPDC()).toBeFalse();
-    expect(aMinimalInstance()
-        .withStatus(InstanceStatusType.VERZONDEN)
-        .withDateSent(FormatPreservingDate.now())
-        .withDatePublished(FormatPreservingDate.now())
-        .build()
-        .isPublishedInIPDC()).toBeTrue();
-
-});
-
-test('isLastVersionPublishedInIPDC', () => {
-    expect(aMinimalInstance()
-        .withStatus(InstanceStatusType.ONTWERP)
-        .withDateSent(undefined)
-        .withDatePublished(undefined)
-        .build()
-        .isLastVersionPublishedInIPDC()).toBeFalse();
-    expect(aMinimalInstance()
-        .withStatus(InstanceStatusType.VERZONDEN)
-        .withDateSent(FormatPreservingDate.now())
-        .withDatePublished(undefined)
-        .build()
-        .isLastVersionPublishedInIPDC()).toBeFalse();
-    expect(aMinimalInstance()
-        .withStatus(InstanceStatusType.VERZONDEN)
-        .withDateSent(FormatPreservingDate.of('2023-10-03T20:10:45.242928Z'))
-        .withDatePublished(FormatPreservingDate.of('2023-10-03T20:10:45.600Z'))
-        .build()
-        .isLastVersionPublishedInIPDC()).toBeTrue();
-    expect(aMinimalInstance()
-        .withStatus(InstanceStatusType.VERZONDEN)
-        .withDateSent(FormatPreservingDate.of('2023-10-03T20:10:45.600Z'))
-        .withDatePublished(FormatPreservingDate.of('2023-10-03T20:10:45.242928Z'))
-        .build()
-        .isLastVersionPublishedInIPDC()).toBeFalse();
-
 });

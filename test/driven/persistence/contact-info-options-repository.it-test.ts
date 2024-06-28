@@ -11,12 +11,12 @@ import {
     ContactInfoOptionsSparqlRepository
 } from "../../../src/driven/persistence/contact-info-options-sparql-repository";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
-import {InstanceSparqlTestRepository} from "./instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 describe('contact info options repository', () => {
 
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const repository = new ContactInfoOptionsSparqlRepository(TEST_SPARQL_ENDPOINT);
 
     test('can query contact info options', async () => {

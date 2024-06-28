@@ -17,7 +17,7 @@ import {
     FormalInformalChoiceSparqlRepository
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {ConceptSnapshotSparqlRepository} from "../../../src/driven/persistence/concept-snapshot-sparql-repository";
-import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
+import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 
 
 describe('ValidateInstanceForPublishApplicationService', () => {
@@ -26,7 +26,7 @@ describe('ValidateInstanceForPublishApplicationService', () => {
 
         const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
         const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
-        const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+        const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formDefinitionRepository = new FormDefinitionFileRepository();
         const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
         const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
