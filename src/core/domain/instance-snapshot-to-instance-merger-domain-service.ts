@@ -162,7 +162,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.dateCreated,
             instanceSnapshot.dateModified,
             instanceSnapshot.generatedAtTime, //TODO LPDC-1236: verify and test
-            undefined,
             InstanceStatusType.VERZONDEN,
             undefined,
             instanceSnapshot.spatials,
@@ -211,7 +210,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             instanceSnapshot.dateCreated,
             instanceSnapshot.dateModified,
             instanceSnapshot.generatedAtTime,
-            instance.datePublished,
             InstanceStatusType.VERZONDEN,
             undefined,
             instanceSnapshot.spatials,

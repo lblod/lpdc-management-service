@@ -71,8 +71,6 @@ export class Instance {
     private readonly _dateCreated: FormatPreservingDate;
     private readonly _dateModified: FormatPreservingDate;
     private readonly _dateSent: FormatPreservingDate | undefined;
-    //TODO LPDC-1236: remove datePublished entirely
-    private readonly _datePublished: FormatPreservingDate | undefined;
     private readonly _status: InstanceStatusType;
     private readonly _reviewStatus: InstanceReviewStatusType | undefined;
     private readonly _spatials: Iri[];
@@ -115,7 +113,6 @@ export class Instance {
                 dateCreated: FormatPreservingDate,
                 dateModified: FormatPreservingDate,
                 dateSent: FormatPreservingDate | undefined,
-                datePublished: FormatPreservingDate | undefined,
                 status: InstanceStatusType,
                 reviewStatus: InstanceReviewStatusType,
                 spatials: Iri[],
@@ -169,7 +166,6 @@ export class Instance {
         this._dateCreated = requiredValue(dateCreated, 'dateCreated');
         this._dateModified = requiredValue(dateModified, 'dateModified');
         this._dateSent = requireShouldBePresentWhenOtherValueEquals(dateSent, 'dateSent', InstanceStatusType.VERZONDEN, status, 'status');
-        this._datePublished = requiredCanOnlyBePresentIfOtherValuePresent(datePublished, 'datePublished', dateSent, 'dateSent');
         this._status = requiredValue(status, 'status');
         this._reviewStatus = requiredCanOnlyBePresentIfOtherValuePresent(reviewStatus, 'reviewStatus', conceptId, 'concept');
         this._spatials = requireNoDuplicates(asSortedArray(spatials, Iri.compare), 'spatials');
@@ -372,10 +368,6 @@ export class Instance {
         return this._dateSent;
     }
 
-    get datePublished(): FormatPreservingDate | undefined {
-        return this._datePublished;
-    }
-
     get status(): InstanceStatusType {
         return this._status;
     }
@@ -456,17 +448,6 @@ export class Instance {
             .build();
     }
 
-    isPublishedInIPDC(): boolean {
-        return this._datePublished !== undefined;
-    }
-
-    isLastVersionPublishedInIPDC(): boolean {
-        if(this.dateSent && this.datePublished) {
-            return this.dateSent.before(this.datePublished);
-        }
-        return false;
-    }
-
 }
 
 export class InstanceBuilder {
@@ -505,7 +486,6 @@ export class InstanceBuilder {
     private dateCreated: FormatPreservingDate;
     private dateModified: FormatPreservingDate;
     private dateSent: FormatPreservingDate | undefined;
-    private datePublished: FormatPreservingDate | undefined;
     private status: InstanceStatusType;
     private reviewStatus: InstanceReviewStatusType;
     private spatials: Iri[] = [];
@@ -554,7 +534,6 @@ export class InstanceBuilder {
             .withDateCreated(instance.dateCreated)
             .withDateModified(instance.dateModified)
             .withDateSent(instance.dateSent)
-            .withDatePublished(instance.datePublished)
             .withStatus(instance.status)
             .withReviewStatus(instance.reviewStatus)
             .withSpatials(instance.spatials)
@@ -739,11 +718,6 @@ export class InstanceBuilder {
         return this;
     }
 
-    public withDatePublished(datePublished: FormatPreservingDate): InstanceBuilder {
-        this.datePublished = datePublished;
-        return this;
-    }
-
     public withStatus(status: InstanceStatusType): InstanceBuilder {
         this.status = status;
         return this;
@@ -811,7 +785,6 @@ export class InstanceBuilder {
             this.dateCreated,
             this.dateModified,
             this.dateSent,
-            this.datePublished,
             this.status,
             this.reviewStatus,
             this.spatials,

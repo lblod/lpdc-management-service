@@ -65,10 +65,10 @@ export class ConvertInstanceToInformalDomainService {
     }
 
     private errorIfLastVersionOfInstanceNotPublishedInIPDC(instance: Instance) {
-        // TODO LPDC-1236: Query if publishedInstanceSnapshot exists with same sent date as instance && datePublished exists
-        if (!instance.isLastVersionPublishedInIPDC()) {
+        // TODO LPDC-1236: Query if publishedInstanceSnapshot exists with same sent date as instance && datePublished exists -> ask to repository ...
+        /*if (!instance.isLastVersionPublishedInIPDC()) {
             throw new InvariantError('Instantie moet gepubliceerd zijn');
-        }
+        }*/
     }
 
     private errorInstanceReedsInformal(instance: Instance) {

@@ -78,7 +78,6 @@ export class NewInstanceDomainService {
                 now,
                 now,
                 undefined,
-                undefined,
                 InstanceStatusType.ONTWERP,
                 undefined,
                 bestuurseenheid.spatials,
@@ -139,7 +138,6 @@ export class NewInstanceDomainService {
                 now,
                 now,
                 undefined,
-                undefined,
                 InstanceStatusType.ONTWERP,
                 undefined,
                 bestuurseenheid.spatials,
@@ -179,7 +177,6 @@ export class NewInstanceDomainService {
             .withContactPoints(instanceToCopy.contactPoints.map(fa => fa.transformWithNewId()))
             .withStatus(InstanceStatusType.ONTWERP)
             .withDateSent(undefined)
-            .withDatePublished(undefined)
             .withLegalResources(instanceToCopy.legalResources.map(lr => lr.transformWithNewId()))
             .withSpatials(forMunicipalityMerger ? [] : instanceToCopy.spatials)
             .withExecutingAuthorities(forMunicipalityMerger ? [] : instanceToCopy.executingAuthorities)

@@ -301,7 +301,6 @@ export class QuadsToDomainMapper {
             this.dateCreated(id),
             this.dateModified(id),
             this.dateSent(id),
-            this.datePublished(id),
             this.instanceStatusType(id),
             this.instanceReviewStatusType(id),
             this.spatials(id),
@@ -458,10 +457,6 @@ export class QuadsToDomainMapper {
 
     private dateSent(id: Iri): FormatPreservingDate | undefined {
         return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('dateSent')));
-    }
-
-    private datePublished(id: Iri): FormatPreservingDate | undefined {
-        return this.asFormatPreservingDate(this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.schema('datePublished')));
     }
 
     private generatedAtTime(id: Iri): FormatPreservingDate | undefined {
