@@ -142,7 +142,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.needsConversionFromFormalToInformal).toBeFalse();
             expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
             expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
-            expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
+            expect(instanceAfterMerge.dateSent).toEqual(InstanceSnapshotTestBuilder.GENERATED_AT_TIME);
             expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
             expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -377,7 +377,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             expect(instanceAfterMerge.needsConversionFromFormalToInformal).toBeFalse();
             expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
             expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
-            expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
+            expect(instanceAfterMerge.dateSent).toEqual(InstanceSnapshotTestBuilder.GENERATED_AT_TIME);
             expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
             expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
             expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -615,7 +615,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
                 expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
-                expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
+                expect(instanceAfterMerge.dateSent).toEqual(InstanceSnapshotTestBuilder.GENERATED_AT_TIME);
                 expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
                 expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
                 expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -858,7 +858,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 expect(instanceAfterMerge.needsConversionFromFormalToInformal).toBeFalse();
                 expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
                 expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
-                expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
+                expect(instanceAfterMerge.dateSent).toEqual(InstanceSnapshotTestBuilder.GENERATED_AT_TIME);
                 expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
                 expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
                 expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
@@ -908,11 +908,15 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeFalsy();
 
+                const tombstoneIds = await getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
+                expect(tombstoneIds.length).toEqual(1);
+                const tombstoneId = tombstoneIds[0];
+
                 const query = `
             SELECT ?s ?p ?o WHERE {
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                     VALUES ?s {
-                        <${instance.id.value}>
+                        <${tombstoneId}>
                     }
                     ?s ?p ?o
                 }
@@ -921,11 +925,13 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 const queryResult = await directDatabaseAccess.list(query);
                 const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
 
-                expect(quads).toHaveLength(4);
+                expect(quads).toHaveLength(5);
                 expect(quads).toEqual(expect.arrayContaining([
-                    quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
                 ]));
             });
 
@@ -954,26 +960,33 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeFalsy();
 
+                const tombstoneIds = await getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
+                expect(tombstoneIds.length).toEqual(1);
+                const tombstoneId = tombstoneIds[0];
+
                 const query = `
-            SELECT ?s ?p ?o WHERE {
-                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                    VALUES ?s {
-                        <${instance.id.value}>
+                    SELECT ?s ?p ?o WHERE {
+                        GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                            VALUES ?s {                         
+                                <${tombstoneId}>
+                            }
+                            ?s ?p ?o
+                        }
                     }
-                    ?s ?p ?o
-                }
-            }
-        `;
+                `;
                 const queryResult = await directDatabaseAccess.list(query);
                 const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
 
-                expect(quads).toHaveLength(4);
+                expect(quads).toHaveLength(5);
                 expect(quads).toEqual(expect.arrayContaining([
-                    quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
                 ]));
             });
+
 
             test('Given concept is removed in instance by new instanceSnapshot, then conceptDisplayConfiguration is updated', async () => {
                 const bestuurseenheid = aBestuurseenheid().build();
@@ -1271,7 +1284,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
     });
 
-    test('Given a deleted Instance, when receiving a new snapshot, recreate the instance and remove tombstone', async () => {
+    test('Given a deleted Instance, when receiving a new snapshot, create the instance and retain the tombstone', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         await bestuurseenheidRepository.save(bestuurseenheid);
 
@@ -1282,15 +1295,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
         const instanceExists = await instanceRepository.exists(bestuurseenheid, instance.id);
         expect(instanceExists).toEqual(false);
-
-        const quadsBeforeRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
-
-        expect(quadsBeforeRecreate).toHaveLength(4);
-        expect(quadsBeforeRecreate).toEqual(expect.arrayContaining([
-            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
-        ]));
 
         const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(false).build();
         const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
@@ -1302,17 +1306,15 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
         expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeTruthy();
-        const quadsBeforeAfterRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
+        const tombstoneIds = await getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
 
-        expect(quadsBeforeAfterRecreate).toEqual(expect.not.arrayContaining([
-            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-        ]));
+        expect(tombstoneIds.length).toEqual(1);
 
         const instanceRecreated = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
         expect(instanceRecreated.id).toEqual(instanceSnapshot.isVersionOf);
     });
 
-    test('Given a deletedInstance, when receiving a new archive snapshot, update tombstone', async () => {
+    test('Given a deletedInstance, when receiving a new archive snapshot, create tombstone', async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         await bestuurseenheidRepository.save(bestuurseenheid);
 
@@ -1324,15 +1326,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         const instanceExists = await instanceRepository.exists(bestuurseenheid, instance.id);
         expect(instanceExists).toEqual(false);
 
-        const quadsBeforeRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
-
-        expect(quadsBeforeRecreate).toHaveLength(4);
-        expect(quadsBeforeRecreate).toEqual(expect.arrayContaining([
-            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
-        ]));
-
         const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
         const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
 
@@ -1343,10 +1336,9 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
         expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeFalsy();
-        const quadsBeforeAfterArchivingAgain = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
+        const tombstonedIds = await getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
 
-        expect(quadsBeforeAfterArchivingAgain).toEqual(expect.arrayContaining([
-            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),]));
+        expect(tombstonedIds.length).toEqual(1);
     });
 
     test('Inserts Code Lists for competent and executing authorities if not existing', async () => {
@@ -1419,17 +1411,17 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
 });
 
-async function getQuadsForInstance(bestuurseenheid: Bestuurseenheid, instance: Instance, directDatabaseAccess: DirectDatabaseAccess) {
-    const query = `
-            SELECT ?s ?p ?o WHERE {
-                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                    VALUES ?s {
-                        <${instance.id.value}>
+async function getTombstoneIds(bestuurseenheid: Bestuurseenheid, instance: Instance, directDatabaseAccess: DirectDatabaseAccess): Promise<string[]> {
+
+    const tombstoneIdQuery = `
+                    SELECT ?tombstoneId WHERE {
+                        GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                            ?tombstoneId a <https://www.w3.org/ns/activitystreams#Tombstone>;
+                                <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf> <${instance.id.value}>.
+                        }
                     }
-                    ?s ?p ?o
-                }
-            }
-        `;
-    const queryResult = await directDatabaseAccess.list(query);
-    return new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
+                 `;
+    const queryResult = await directDatabaseAccess.list(tombstoneIdQuery);
+
+    return queryResult.map(row => row['tombstoneId'].value);
 }
