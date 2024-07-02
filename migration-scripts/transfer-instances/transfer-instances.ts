@@ -18,14 +18,13 @@ const bestuurseenheidRepository = new BestuurseenheidSparqlRepository(endPoint);
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const instanceRepository = new InstanceSparqlRepository(endPoint);
 
-async function main(fromAuthorityId: string, toAuthorityId: string) {
+async function main(fromAuthorityId: string, toAuthorityId: string, onlyForMunicipalityMergerInstances: boolean) {
     const insertQuads = [];
 
     const fromAuthority = await bestuurseenheidRepository.findById(new Iri(fromAuthorityId));
     const toAuthority = await bestuurseenheidRepository.findById(new Iri(toAuthorityId));
     const domainToQuadsMerger = new DomainToQuadsMapper(toAuthority.userGraph());
-
-    const instanceIds = await getAllInstanceIdsForBestuurseenheid(fromAuthority);
+    const instanceIds: Iri[] = onlyForMunicipalityMergerInstances ? await getAllInstanceIdsWithMunicipalityMergerForBestuurseenheid(fromAuthority) : await getAllInstanceIdsForBestuurseenheid(fromAuthority);
 
     console.log(`Instances to transfer: ${instanceIds.length}`);
     for (const instanceId of instanceIds) {
@@ -44,6 +43,20 @@ async function getAllInstanceIdsForBestuurseenheid(bestuurseenheid: Bestuurseenh
             SELECT ?id WHERE {
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                     ?id a lpdcExt:InstancePublicService .
+                }
+            }
+            `;
+    const instanceIds = await directDatabaseAccess.list(query);
+    return instanceIds.map(instanceId => new Iri(instanceId['id'].value));
+}
+
+async function getAllInstanceIdsWithMunicipalityMergerForBestuurseenheid(bestuurseenheid: Bestuurseenheid): Promise<Iri[]> {
+    const query = `
+            ${PREFIX.lpdcExt}
+            SELECT ?id WHERE {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    ?id a lpdcExt:InstancePublicService .
+                    ?id lpdcExt:forMunicipalityMerger """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>
                 }
             }
             `;
@@ -93,4 +106,4 @@ const fromAuthority = pepingen.value;
 const toAuthority = borgloon.value;
 
 
-main(fromAuthority, toAuthority);
+main(fromAuthority, toAuthority, true);
