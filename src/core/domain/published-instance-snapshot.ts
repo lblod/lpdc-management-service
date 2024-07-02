@@ -20,13 +20,13 @@ import {ContactPoint} from "./contact-point";
 import {LegalResource} from "./legal-resource";
 import {Instance} from "./instance";
 import {uuid} from "../../../mu-helper";
+import {requiredValue} from "./shared/invariant";
 
 export class PublishedInstanceSnapshot {
 
     private readonly _id: Iri;
     private readonly _generatedAtTime: FormatPreservingDate;
     private readonly _isPublishedVersionOf: Iri;
-    private readonly _uuid: string;
     private readonly _createdBy: Iri;
     private readonly _title: LanguageString;
     private readonly _description: LanguageString;
@@ -63,7 +63,6 @@ export class PublishedInstanceSnapshot {
     constructor(id: Iri,
                 generatedAtTime: FormatPreservingDate,
                 isPublishedVersionOf: Iri,
-                uuid: string,
                 createdBy: Iri,
                 title: LanguageString,
                 description: LanguageString,
@@ -96,9 +95,8 @@ export class PublishedInstanceSnapshot {
                 legalResources: LegalResource[],
                 ) {
         this._id = id;
-        this._generatedAtTime = generatedAtTime;
-        this._isPublishedVersionOf = isPublishedVersionOf;
-        this._uuid = uuid;
+        this._generatedAtTime = requiredValue(generatedAtTime, 'generatedAtTime');
+        this._isPublishedVersionOf = requiredValue(isPublishedVersionOf, 'isPublishedVersionOf');
         this._createdBy = createdBy;
         this._title = title;
         this._description = description;
@@ -142,10 +140,6 @@ export class PublishedInstanceSnapshot {
 
     get isPublishedVersionOf(): Iri {
         return this._isPublishedVersionOf;
-    }
-
-    get uuid(): string {
-        return this._uuid;
     }
 
     get createdBy(): Iri {
@@ -275,14 +269,12 @@ export class PublishedInstanceSnapshotBuilder {
         return new Iri(`http://data.lblod.info/id/published-public-service/${uniqueId}`);
     }
 
-    //TODO LPDC-1236: test the copy
     public static from(instance: Instance): PublishedInstanceSnapshot {
         const uniqueId = uuid();
         return new PublishedInstanceSnapshot(
             this.buildIri(uniqueId),
             instance.dateSent,
             instance.id,
-            instance.uuid,
             instance.createdBy,
             instance.title,
             instance.description,
@@ -301,18 +293,18 @@ export class PublishedInstanceSnapshotBuilder {
             instance.publicationMedia,
             instance.yourEuropeCategories,
             instance.keywords,
-            instance.requirements.map(req => req.transformWithNewId()),
-            instance.procedures.map(proc => proc.transformWithNewId()),
-            instance.websites.map(ws => ws.transformWithNewId()),
-            instance.costs.map(c => c.transformWithNewId()),
-            instance.financialAdvantages.map(fa => fa.transformWithNewId()),
-            instance.contactPoints.map(cp => cp.transformWithNewId()),
+            instance.requirements.map(req => Requirement.forInstanceSnapshot(req.transformWithNewId())),
+            instance.procedures.map(proc => Procedure.forInstanceSnapshot(proc.transformWithNewId())),
+            instance.websites.map(ws => Website.forInstanceSnapshot(ws.transformWithNewId())),
+            instance.costs.map(c => Cost.forInstanceSnapshot(c.transformWithNewId())),
+            instance.financialAdvantages.map(fa => FinancialAdvantage.forInstanceSnapshot(fa.transformWithNewId())),
+            instance.contactPoints.map(cp => ContactPoint.forInstanceSnapshot(cp.transformWithNewId())),
             instance.conceptId,
             instance.languages,
             instance.dateCreated,
             instance.dateModified,
             instance.spatials,
-            instance.legalResources.map(lr => lr.transformWithNewId())
+            instance.legalResources.map(lr => LegalResource.forInstanceSnapshot(lr.transformWithNewId()))
         );
     }
 

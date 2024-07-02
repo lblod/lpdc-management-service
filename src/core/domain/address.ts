@@ -46,7 +46,17 @@ export class Address {
     }
 
     static forInstanceSnapshot(address: Address) {
-        return address;
+        return new Address(
+            address.id,
+            undefined,
+            address.gemeentenaam,
+            address.land,
+            address.huisnummer,
+            address.busnummer,
+            address.postcode,
+            address.straatnaam,
+            address.verwijstNaar,
+        );
     }
 
     static reconstitute(id: Iri,
