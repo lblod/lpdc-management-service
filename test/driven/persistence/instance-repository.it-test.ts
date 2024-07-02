@@ -50,12 +50,14 @@ import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial
 import {instanceLanguages, Language} from "../../../src/core/domain/language";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {Iri} from "../../../src/core/domain/shared/iri";
+import {PublishedInstanceSparqlTestRepository} from "./published-instance-sparql-test-repository";
 
 describe('InstanceRepository', () => {
 
     const repository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
+    const publishedInstanceTestRepository = new PublishedInstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
 
     beforeAll(() => setFixedTime());
 
@@ -115,6 +117,55 @@ describe('InstanceRepository', () => {
         });
     });
 
+    describe('save', () => {
+
+        test('should save instance', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+
+            await repository.save(bestuurseenheid, instance);
+
+            const actualInstance = await repository.findById(bestuurseenheid, instance.id);
+
+            expect(actualInstance).toEqual(instance);
+        });
+
+        test('should create publishedInstanceSnapshot when instance has status verzonden', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aFullInstance()
+                .withCreatedBy(bestuurseenheid.id)
+                .withStatus(InstanceStatusType.VERZONDEN)
+                .build();
+
+            await repository.save(bestuurseenheid, instance);
+            const publishedInstances = await publishedInstanceTestRepository.findByInstanceId(bestuurseenheid, instance.id);
+            expect(publishedInstances).toHaveLength(1);
+            const publishedInstanceQuads = await publishedInstanceTestRepository.findById(bestuurseenheid, publishedInstances[0]);
+            expect(publishedInstanceQuads).toEqual(expect.arrayContaining([
+                quad(namedNode(publishedInstances[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstances[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+            ]));
+        });
+
+        test('should NOT create publishedInstanceSnapshot when instance has status ontwerp', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aFullInstance()
+                .withCreatedBy(bestuurseenheid.id)
+                .withStatus(InstanceStatusType.ONTWERP)
+                .build();
+
+            await repository.save(bestuurseenheid, instance);
+            const publishedInstances = await publishedInstanceTestRepository.findByInstanceId(bestuurseenheid, instance.id);
+            expect(publishedInstances).toHaveLength(0);
+        });
+    });
+
     describe('update', () => {
 
         test('should update instance', async () => {
@@ -137,6 +188,58 @@ describe('InstanceRepository', () => {
 
 
             expect(actualInstance).toEqual(expectedInstance);
+        });
+
+        test('should create and save published instance when instance has status verzonden', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const oldInstance = aFullInstance()
+                .withCreatedBy(bestuurseenheid.id)
+                .withDateModified(FormatPreservingDate.of('2023-10-20T00:00:00.657Z'))
+                .build();
+            await repository.save(bestuurseenheid, oldInstance);
+
+            const newInstance = InstanceBuilder.from(oldInstance)
+                .withStatus(InstanceStatusType.VERZONDEN)
+                .build();
+
+            await repository.update(bestuurseenheid, newInstance, oldInstance.dateModified);
+
+            const actualInstance = await repository.findById(bestuurseenheid, newInstance.id);
+            const expectedInstance = InstanceBuilder.from(newInstance).withDateModified(FormatPreservingDate.now()).build();
+
+            expect(actualInstance).toEqual(expectedInstance);
+
+            const publishedInstances = await publishedInstanceTestRepository.findByInstanceId(bestuurseenheid, newInstance.id);
+            expect(publishedInstances).toHaveLength(1);
+            const publishedInstanceQuads = await publishedInstanceTestRepository.findById(bestuurseenheid, publishedInstances[0]);
+            expect(publishedInstanceQuads).toEqual(expect.arrayContaining([
+                quad(namedNode(publishedInstances[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstances[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(newInstance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+            ]));
+
+        });
+
+        test('should NOT create published instance when instance has status ontwerp', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const oldInstance = aFullInstance()
+                .withCreatedBy(bestuurseenheid.id)
+                .withDateModified(FormatPreservingDate.of('2023-10-20T00:00:00.657Z'))
+                .build();
+            await repository.save(bestuurseenheid, oldInstance);
+
+            const newInstance = InstanceBuilder.from(oldInstance)
+                .withStatus(InstanceStatusType.ONTWERP)
+                .build();
+
+            await repository.update(bestuurseenheid, newInstance, oldInstance.dateModified);
+
+            const actualInstance = await repository.findById(bestuurseenheid, newInstance.id);
+            const expectedInstance = InstanceBuilder.from(newInstance).withDateModified(FormatPreservingDate.now()).build();
+
+            expect(actualInstance).toEqual(expectedInstance);
+
+            const publishedInstances = await publishedInstanceTestRepository.findByInstanceId(bestuurseenheid, newInstance.id);
+            expect(publishedInstances).toHaveLength(0);
         });
 
         test('should throw error when old instance is equal to new instance', async () => {

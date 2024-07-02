@@ -21,6 +21,7 @@ import {LegalResource} from "./legal-resource";
 import {Instance} from "./instance";
 import {uuid} from "../../../mu-helper";
 
+// TODO LPDC-1236: rename to PublishedInstanceSnapshot
 export class PublishedInstance {
 
     private readonly _id: Iri;

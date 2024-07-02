@@ -9,7 +9,7 @@ import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {NS} from "./namespaces";
-import {ChosenFormType, InstanceReviewStatusType} from "../../core/domain/types";
+import {ChosenFormType, InstanceReviewStatusType, InstanceStatusType} from "../../core/domain/types";
 import {Logger} from "../../../platform/logger";
 import {literal} from "rdflib";
 import {isEqual} from "lodash";
@@ -71,11 +71,15 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
     async save(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void> {
         const quads = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
+        const publishedInstanceSnapshotTriples = instance.status === InstanceStatusType.VERZONDEN
+            ? new DomainToQuadsMapper(bestuurseenheid.userGraph()).publishedInstanceToQuads(PublishedInstanceBuilder.from(instance))
+            : [];
 
         const query = `
             INSERT DATA { 
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                     ${quads.join("\n")}
+                    ${publishedInstanceSnapshotTriples.join("\n")}
                 }
             }
         `;
@@ -101,6 +105,10 @@ export class InstanceSparqlRepository implements InstanceRepository {
             throw new SystemError('Geen wijzigingen');
         }
 
+        const publishedInstanceSnapshotTriples = newInstance.status === InstanceStatusType.VERZONDEN
+            ? new DomainToQuadsMapper(bestuurseenheid.userGraph()).publishedInstanceToQuads(PublishedInstanceBuilder.from(instance))
+            : [];
+
         const query = `
             WITH <${bestuurseenheid.userGraph()}>
             DELETE {
@@ -108,6 +116,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
             }
             INSERT {
                 ${[...newTriples].join('\n')}
+                ${[...publishedInstanceSnapshotTriples].join('\n')}
             }
             WHERE {
                 <${instance.id}> <${NS.schema('dateModified').value}> ${literal(instanceVersion.value, NS.xsd('dateTime')).toNT()} .
