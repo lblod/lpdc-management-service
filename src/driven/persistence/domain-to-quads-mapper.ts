@@ -32,7 +32,7 @@ import {Address} from "../../core/domain/address";
 import {InstanceSnapshot} from "../../core/domain/instance-snapshot";
 import {LegalResource} from "../../core/domain/legal-resource";
 import {Language} from "../../core/domain/language";
-import {PublishedInstance} from "../../core/domain/published-instance";
+import {PublishedInstanceSnapshot} from "../../core/domain/published-instance-snapshot";
 
 export class DomainToQuadsMapper {
     private readonly graphId;
@@ -199,42 +199,42 @@ export class DomainToQuadsMapper {
         ].filter(t => t !== undefined);
     }
 
-    public publishedInstanceToQuads(publishedInstance: PublishedInstance): Statement[] {
+    public publishedInstanceSnapshotToQuads(publishedInstanceSnapshot: PublishedInstanceSnapshot): Statement[] {
         return [
-            this.rdfType(publishedInstance.id, NS.lpdcExt('PublishedInstancePublicServiceSnapshot')),
-            this.generatedAtTime(publishedInstance.id, publishedInstance.generatedAtTime),
-            this.isPublishedVersionOf(publishedInstance.id, publishedInstance.isPublishedVersionOf),
-            publishedInstance.uuid ? this.buildQuad(namedNode(publishedInstance.id.value), NS.mu('uuid'), literal(publishedInstance.uuid)) : undefined,
-            this.createdBy(publishedInstance.id, publishedInstance.createdBy),
-            ...this.title(publishedInstance.id, publishedInstance.title),
-            ...this.description(publishedInstance.id, publishedInstance.description),
-            ...this.additionalDescription(publishedInstance.id, publishedInstance.additionalDescription),
-            ...this.exception(publishedInstance.id, publishedInstance.exception),
-            ...this.regulation(publishedInstance.id, publishedInstance.regulation),
-            this.startDate(publishedInstance.id, publishedInstance.startDate),
-            this.endDate(publishedInstance.id, publishedInstance.endDate),
-            this.type(publishedInstance.id, publishedInstance.type),
-            ...this.targetAudiences(publishedInstance.id, publishedInstance.targetAudiences),
-            ...this.themes(publishedInstance.id, publishedInstance.themes),
-            ...this.competentAuthorityLevels(publishedInstance.id, publishedInstance.competentAuthorityLevels),
-            ...this.competentAuthorities(publishedInstance.id, publishedInstance.competentAuthorities),
-            ...this.executingAuthorityLevels(publishedInstance.id, publishedInstance.executingAuthorityLevels),
-            ...this.executingAuthorities(publishedInstance.id, publishedInstance.executingAuthorities),
-            ...this.publicationMedia(publishedInstance.id, publishedInstance.publicationMedia),
-            ...this.yourEuropeCategories(publishedInstance.id, publishedInstance.yourEuropeCategories),
-            ...this.keywords(publishedInstance.id, publishedInstance.keywords),
-            ...this.requirements(publishedInstance.id, publishedInstance.requirements),
-            ...this.procedures(publishedInstance.id, publishedInstance.procedures),
-            ...this.websites(publishedInstance.id, NS.rdfs('seeAlso'), publishedInstance.websites),
-            ...this.costs(publishedInstance.id, publishedInstance.costs),
-            ...this.financialAdvantages(publishedInstance.id, publishedInstance.financialAdvantages),
-            ...this.contactPoints(publishedInstance.id, publishedInstance.contactPoints),
-            this.conceptId(publishedInstance.id, publishedInstance.conceptId),
-            ...this.languages(publishedInstance.id, publishedInstance.languages),
-            this.dateCreated(publishedInstance.id, publishedInstance.dateCreated),
-            this.dateModified(publishedInstance.id, publishedInstance.dateModified),
-            ...this.spatials(publishedInstance.id, publishedInstance.spatials),
-            ...this.legalResources(publishedInstance.id, publishedInstance.legalResources),
+            this.rdfType(publishedInstanceSnapshot.id, NS.lpdcExt('PublishedInstancePublicServiceSnapshot')),
+            this.generatedAtTime(publishedInstanceSnapshot.id, publishedInstanceSnapshot.generatedAtTime),
+            this.isPublishedVersionOf(publishedInstanceSnapshot.id, publishedInstanceSnapshot.isPublishedVersionOf),
+            publishedInstanceSnapshot.uuid ? this.buildQuad(namedNode(publishedInstanceSnapshot.id.value), NS.mu('uuid'), literal(publishedInstanceSnapshot.uuid)) : undefined,
+            this.createdBy(publishedInstanceSnapshot.id, publishedInstanceSnapshot.createdBy),
+            ...this.title(publishedInstanceSnapshot.id, publishedInstanceSnapshot.title),
+            ...this.description(publishedInstanceSnapshot.id, publishedInstanceSnapshot.description),
+            ...this.additionalDescription(publishedInstanceSnapshot.id, publishedInstanceSnapshot.additionalDescription),
+            ...this.exception(publishedInstanceSnapshot.id, publishedInstanceSnapshot.exception),
+            ...this.regulation(publishedInstanceSnapshot.id, publishedInstanceSnapshot.regulation),
+            this.startDate(publishedInstanceSnapshot.id, publishedInstanceSnapshot.startDate),
+            this.endDate(publishedInstanceSnapshot.id, publishedInstanceSnapshot.endDate),
+            this.type(publishedInstanceSnapshot.id, publishedInstanceSnapshot.type),
+            ...this.targetAudiences(publishedInstanceSnapshot.id, publishedInstanceSnapshot.targetAudiences),
+            ...this.themes(publishedInstanceSnapshot.id, publishedInstanceSnapshot.themes),
+            ...this.competentAuthorityLevels(publishedInstanceSnapshot.id, publishedInstanceSnapshot.competentAuthorityLevels),
+            ...this.competentAuthorities(publishedInstanceSnapshot.id, publishedInstanceSnapshot.competentAuthorities),
+            ...this.executingAuthorityLevels(publishedInstanceSnapshot.id, publishedInstanceSnapshot.executingAuthorityLevels),
+            ...this.executingAuthorities(publishedInstanceSnapshot.id, publishedInstanceSnapshot.executingAuthorities),
+            ...this.publicationMedia(publishedInstanceSnapshot.id, publishedInstanceSnapshot.publicationMedia),
+            ...this.yourEuropeCategories(publishedInstanceSnapshot.id, publishedInstanceSnapshot.yourEuropeCategories),
+            ...this.keywords(publishedInstanceSnapshot.id, publishedInstanceSnapshot.keywords),
+            ...this.requirements(publishedInstanceSnapshot.id, publishedInstanceSnapshot.requirements),
+            ...this.procedures(publishedInstanceSnapshot.id, publishedInstanceSnapshot.procedures),
+            ...this.websites(publishedInstanceSnapshot.id, NS.rdfs('seeAlso'), publishedInstanceSnapshot.websites),
+            ...this.costs(publishedInstanceSnapshot.id, publishedInstanceSnapshot.costs),
+            ...this.financialAdvantages(publishedInstanceSnapshot.id, publishedInstanceSnapshot.financialAdvantages),
+            ...this.contactPoints(publishedInstanceSnapshot.id, publishedInstanceSnapshot.contactPoints),
+            this.conceptId(publishedInstanceSnapshot.id, publishedInstanceSnapshot.conceptId),
+            ...this.languages(publishedInstanceSnapshot.id, publishedInstanceSnapshot.languages),
+            this.dateCreated(publishedInstanceSnapshot.id, publishedInstanceSnapshot.dateCreated),
+            this.dateModified(publishedInstanceSnapshot.id, publishedInstanceSnapshot.dateModified),
+            ...this.spatials(publishedInstanceSnapshot.id, publishedInstanceSnapshot.spatials),
+            ...this.legalResources(publishedInstanceSnapshot.id, publishedInstanceSnapshot.legalResources),
         ].filter(t => t !== undefined);
     }
 

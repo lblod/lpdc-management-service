@@ -50,14 +50,14 @@ import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial
 import {instanceLanguages, Language} from "../../../src/core/domain/language";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {PublishedInstanceSparqlTestRepository} from "./published-instance-sparql-test-repository";
+import {PublishedInstanceSnapshotSparqlTestRepository} from "./published-instance-snapshot-sparql-test-repository";
 
 describe('InstanceRepository', () => {
 
     const repository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
-    const publishedInstanceTestRepository = new PublishedInstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const publishedInstanceSnapshotTestRepository = new PublishedInstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
 
     beforeAll(() => setFixedTime());
 
@@ -142,12 +142,12 @@ describe('InstanceRepository', () => {
                 .build();
 
             await repository.save(bestuurseenheid, instance);
-            const publishedInstances = await publishedInstanceTestRepository.findByInstanceId(bestuurseenheid, instance.id);
-            expect(publishedInstances).toHaveLength(1);
-            const publishedInstanceQuads = await publishedInstanceTestRepository.findById(bestuurseenheid, publishedInstances[0]);
-            expect(publishedInstanceQuads).toEqual(expect.arrayContaining([
-                quad(namedNode(publishedInstances[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(publishedInstances[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+            const publishedInstanceSnapshotIds = await publishedInstanceSnapshotTestRepository.findByInstanceId(bestuurseenheid, instance.id);
+            expect(publishedInstanceSnapshotIds).toHaveLength(1);
+            const publishedInstanceSnapshotQuads = await publishedInstanceSnapshotTestRepository.findById(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+            expect(publishedInstanceSnapshotQuads).toEqual(expect.arrayContaining([
+                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
             ]));
         });
 
@@ -161,8 +161,8 @@ describe('InstanceRepository', () => {
                 .build();
 
             await repository.save(bestuurseenheid, instance);
-            const publishedInstances = await publishedInstanceTestRepository.findByInstanceId(bestuurseenheid, instance.id);
-            expect(publishedInstances).toHaveLength(0);
+            const publishedInstanceSnapshotIds = await publishedInstanceSnapshotTestRepository.findByInstanceId(bestuurseenheid, instance.id);
+            expect(publishedInstanceSnapshotIds).toHaveLength(0);
         });
     });
 
@@ -209,12 +209,12 @@ describe('InstanceRepository', () => {
 
             expect(actualInstance).toEqual(expectedInstance);
 
-            const publishedInstances = await publishedInstanceTestRepository.findByInstanceId(bestuurseenheid, newInstance.id);
-            expect(publishedInstances).toHaveLength(1);
-            const publishedInstanceQuads = await publishedInstanceTestRepository.findById(bestuurseenheid, publishedInstances[0]);
-            expect(publishedInstanceQuads).toEqual(expect.arrayContaining([
-                quad(namedNode(publishedInstances[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(publishedInstances[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(newInstance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+            const publishedInstanceSnapshotIds = await publishedInstanceSnapshotTestRepository.findByInstanceId(bestuurseenheid, newInstance.id);
+            expect(publishedInstanceSnapshotIds).toHaveLength(1);
+            const publishedInstanceSnapshotQuads = await publishedInstanceSnapshotTestRepository.findById(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+            expect(publishedInstanceSnapshotQuads).toEqual(expect.arrayContaining([
+                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(newInstance.id.value), namedNode(bestuurseenheid.userGraph().value)),
             ]));
 
         });
@@ -238,8 +238,8 @@ describe('InstanceRepository', () => {
 
             expect(actualInstance).toEqual(expectedInstance);
 
-            const publishedInstances = await publishedInstanceTestRepository.findByInstanceId(bestuurseenheid, newInstance.id);
-            expect(publishedInstances).toHaveLength(0);
+            const publishedInstanceSnapshotIds = await publishedInstanceSnapshotTestRepository.findByInstanceId(bestuurseenheid, newInstance.id);
+            expect(publishedInstanceSnapshotIds).toHaveLength(0);
         });
 
         test('should throw error when old instance is equal to new instance', async () => {

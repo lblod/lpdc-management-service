@@ -16,7 +16,7 @@ import {isEqual} from "lodash";
 import {ConcurrentUpdateError, SystemError} from "../../core/domain/shared/lpdc-error";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 import {requiredValue} from "../../core/domain/shared/invariant";
-import {PublishedInstanceBuilder} from "../../core/domain/published-instance";
+import {PublishedInstanceSnapshotBuilder} from "../../core/domain/published-instance-snapshot";
 
 export class InstanceSparqlRepository implements InstanceRepository {
     protected readonly querying: SparqlQuerying;
@@ -72,7 +72,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
     async save(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void> {
         const quads = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
         const publishedInstanceSnapshotTriples = instance.status === InstanceStatusType.VERZONDEN
-            ? new DomainToQuadsMapper(bestuurseenheid.userGraph()).publishedInstanceToQuads(PublishedInstanceBuilder.from(instance))
+            ? new DomainToQuadsMapper(bestuurseenheid.userGraph()).publishedInstanceSnapshotToQuads(PublishedInstanceSnapshotBuilder.from(instance))
             : [];
 
         const query = `
@@ -106,7 +106,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         }
 
         const publishedInstanceSnapshotTriples = newInstance.status === InstanceStatusType.VERZONDEN
-            ? new DomainToQuadsMapper(bestuurseenheid.userGraph()).publishedInstanceToQuads(PublishedInstanceBuilder.from(instance))
+            ? new DomainToQuadsMapper(bestuurseenheid.userGraph()).publishedInstanceSnapshotToQuads(PublishedInstanceSnapshotBuilder.from(instance))
             : [];
 
         const query = `
@@ -148,7 +148,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 await this.wasTombstoneCreatedBefore(bestuurseenheid, id)) {
 
                 const uniqueId = uuid();
-                const tombstoneId = PublishedInstanceBuilder.buildIri(uniqueId);
+                const tombstoneId = PublishedInstanceSnapshotBuilder.buildIri(uniqueId);
 
                 const query = `
                 ${PREFIX.as}

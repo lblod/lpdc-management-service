@@ -21,8 +21,7 @@ import {LegalResource} from "./legal-resource";
 import {Instance} from "./instance";
 import {uuid} from "../../../mu-helper";
 
-// TODO LPDC-1236: rename to PublishedInstanceSnapshot
-export class PublishedInstance {
+export class PublishedInstanceSnapshot {
 
     private readonly _id: Iri;
     private readonly _generatedAtTime: FormatPreservingDate;
@@ -270,16 +269,16 @@ export class PublishedInstance {
     }
 }
 
-export class PublishedInstanceBuilder {
+export class PublishedInstanceSnapshotBuilder {
 
     static buildIri(uniqueId: string): Iri {
         return new Iri(`http://data.lblod.info/id/published-public-service/${uniqueId}`);
     }
 
     //TODO LPDC-1236: test the copy
-    public static from(instance: Instance): PublishedInstance {
+    public static from(instance: Instance): PublishedInstanceSnapshot {
         const uniqueId = uuid();
-        return new PublishedInstance(
+        return new PublishedInstanceSnapshot(
             this.buildIri(uniqueId),
             instance.dateSent,
             instance.id,

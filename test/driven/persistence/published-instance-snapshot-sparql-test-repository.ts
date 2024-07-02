@@ -7,7 +7,7 @@ import {
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 
 
-export class PublishedInstanceSparqlTestRepository {
+export class PublishedInstanceSnapshotSparqlTestRepository {
     protected readonly querying: SparqlQuerying;
     protected readonly fetcher: DatastoreToQuadsRecursiveSparqlFetcher;
 
@@ -18,14 +18,14 @@ export class PublishedInstanceSparqlTestRepository {
 
     async findByInstanceId(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<Iri[]> {
         const query = `
-            SELECT ?publishedInstanceIri WHERE {
+            SELECT ?publishedInstanceSnapshotIri WHERE {
                 GRAPH <${bestuurseenheid.userGraph()}> {
-                    ?publishedInstanceIri a ${NS.lpdcExt('PublishedInstancePublicServiceSnapshot')} .
-                    ?publishedInstanceIri ${NS.lpdcExt('isPublishedVersionOf')} <${instanceId}> .
+                    ?publishedInstanceSnapshotIri a ${NS.lpdcExt('PublishedInstancePublicServiceSnapshot')} .
+                    ?publishedInstanceSnapshotIri ${NS.lpdcExt('isPublishedVersionOf')} <${instanceId}> .
                 }
             }
         `;
-        const ids = (await this.querying.list(query)).map(item => item['publishedInstanceIri'].value);
+        const ids = (await this.querying.list(query)).map(item => item['publishedInstanceSnapshotIri'].value);
         return ids.map(id => new Iri(id));
     }
 
