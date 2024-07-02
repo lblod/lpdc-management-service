@@ -204,7 +204,6 @@ export class DomainToQuadsMapper {
             this.rdfType(publishedInstanceSnapshot.id, NS.lpdcExt('PublishedInstancePublicServiceSnapshot')),
             this.generatedAtTime(publishedInstanceSnapshot.id, publishedInstanceSnapshot.generatedAtTime),
             this.isPublishedVersionOf(publishedInstanceSnapshot.id, publishedInstanceSnapshot.isPublishedVersionOf),
-            publishedInstanceSnapshot.uuid ? this.buildQuad(namedNode(publishedInstanceSnapshot.id.value), NS.mu('uuid'), literal(publishedInstanceSnapshot.uuid)) : undefined,
             this.createdBy(publishedInstanceSnapshot.id, publishedInstanceSnapshot.createdBy),
             ...this.title(publishedInstanceSnapshot.id, publishedInstanceSnapshot.title),
             ...this.description(publishedInstanceSnapshot.id, publishedInstanceSnapshot.description),
