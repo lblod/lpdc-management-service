@@ -47,7 +47,6 @@ import {
     VersionedLdesSnapshotSparqlRepository
 } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {PublishedInstanceSparqlRepository} from "../../../src/driven/persistence/published-instance-sparql-repository";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
@@ -69,7 +68,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
     const deleteInstanceDomainService = new DeleteInstanceDomainService(instanceRepository, conceptDisplayConfigurationRepository);
     const instanceSnapshotProcessingAuthorizationRepository = new InstanceSnapshotProcessingAuthorizationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const publishedInstanceRepository = new PublishedInstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const mergerDomainService = new InstanceSnapshotToInstanceMergerDomainService(
         instanceSnapshotRepository,
         instanceRepository,
@@ -79,7 +77,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         ensureLinkedAuthoritiesExistAsCodeListDomainService,
         instanceSnapshotProcessingAuthorizationRepository,
         bestuurseenheidRepository,
-        publishedInstanceRepository,
     );
     const versionedLdesSnapshotRepository = new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
@@ -1362,7 +1359,6 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             codeListDomainService,
             instanceSnapshotProcessingAuthorizationRepository,
             bestuurseenheidRepository,
-            publishedInstanceRepository,
         );
 
         await directDatabaseAccess.insertData(

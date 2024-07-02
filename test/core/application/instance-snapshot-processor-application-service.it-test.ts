@@ -32,7 +32,6 @@ import {
     VersionedLdesSnapshotSparqlRepository
 } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {PublishedInstanceSparqlRepository} from "../../../src/driven/persistence/published-instance-sparql-repository";
 import spyOn = jest.spyOn;
 
 
@@ -54,7 +53,6 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
     const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
     const linkedAuthoritiesDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
     const instanceSnapshotProcessingAuthorizationRepository = new InstanceSnapshotProcessingAuthorizationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const publishedInstanceRepository = new PublishedInstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceSnapshotMerger = new InstanceSnapshotToInstanceMergerDomainService(
         instanceSnapshotRepository,
         instanceRepository,
@@ -63,8 +61,7 @@ describe('InstanceSnapshotProcessorApplicationService', () => {
         deleteInstanceDomainService,
         linkedAuthoritiesDomainService,
         instanceSnapshotProcessingAuthorizationRepository,
-        bestuurseenheidRepository,
-        publishedInstanceRepository);
+        bestuurseenheidRepository);
     const versionedLdesSnapshotRepository = new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceSnapshotProcessor = new InstanceSnapshotProcessorApplicationService(instanceSnapshotMerger, versionedLdesSnapshotRepository);
 

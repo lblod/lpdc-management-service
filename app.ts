@@ -75,8 +75,6 @@ import {ContactInfoOptionsSparqlRepository} from "./src/driven/persistence/conta
 import {
     ConceptSnapshotProcessorApplicationService
 } from "./src/core/application/concept-snapshot-processor-application-service";
-import {PublishedInstanceSparqlRepository} from "./src/driven/persistence/published-instance-sparql-repository";
-import {PublishedInstanceBuilder} from "./src/core/domain/published-instance";
 
 
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
@@ -101,7 +99,6 @@ const semanticFormsMapper = new SemanticFormsMapperImpl();
 const instanceSnapshotRepository = new InstanceSnapshotSparqlRepository();
 const instanceSnapshotProcessingAuthorizationRepository = new InstanceSnapshotProcessingAuthorizationSparqlRepository();
 const versionedLdesSnapshotRepository = new VersionedLdesSnapshotSparqlRepository();
-const publishedInstanceRepository = new PublishedInstanceSparqlRepository();
 
 const linkedAuthorityCodeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(
     bestuurseenheidRegistrationCodeFetcher,
@@ -180,7 +177,6 @@ const instanceSnapshotToInstanceMergerDomainService = new InstanceSnapshotToInst
     linkedAuthorityCodeListDomainService,
     instanceSnapshotProcessingAuthorizationRepository,
     bestuurseenheidRepository,
-    publishedInstanceRepository,
 );
 
 const instanceSnapshotProcessorApplicationService = new InstanceSnapshotProcessorApplicationService(
@@ -198,8 +194,7 @@ const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStrin
 const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(
     instanceRepository,
     formalInformalChoiceRepository,
-    instanceInformalLanguageStringsFetcher,
-    publishedInstanceRepository);
+    instanceInformalLanguageStringsFetcher);
 
 const addressFetcher = new AdressenRegisterFetcher();
 
@@ -544,8 +539,6 @@ async function publishInstance(req: Request, res: Response) {
 
     const publishedInstance = instance.publish();
     await instanceRepository.update(bestuurseenheid, publishedInstance, instanceVersion);
-    //TODO LPDC-1236: if this save fails -> add to data integrity report ... + fix this ... (if you don't find a published instance with a generated at  = date sent => then do this insert again; think we should ignore the verzonden , concept status)
-    await publishedInstanceRepository.save(bestuurseenheid, PublishedInstanceBuilder.from(publishedInstance));
     return res.sendStatus(200);
 }
 

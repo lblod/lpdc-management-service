@@ -24,8 +24,6 @@ import {ForbiddenError} from "./shared/lpdc-error";
 import {BestuurseenheidRepository} from "../port/driven/persistence/bestuurseenheid-repository";
 import {VersionedLdesSnapshot} from "./versioned-ldes-snapshot";
 import {SnapshotType} from "../port/driven/persistence/versioned-ldes-snapshot-repository";
-import {PublishedInstanceBuilder} from "./published-instance";
-import {PublishedInstanceRepository} from "../port/driven/persistence/published-instance-repository";
 
 export interface NewerProcessedSnapshotPredicate {
     hasNewerProcessedSnapshot(snapshotGraph: Iri, snapshot: VersionedLdesSnapshot, snapshotType: SnapshotType): Promise<boolean>;
@@ -40,7 +38,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     private readonly _ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService;
     private readonly _instanceSnapshotProcessingAuthorizationRepository: InstanceSnapshotProcessingAuthorizationRepository;
     private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
-    private readonly _publishedInstanceRepository: PublishedInstanceRepository;
     private readonly _logger: Logger = new Logger('InstanceSnapshotToInstanceMergerDomainService');
 
     constructor(
@@ -52,7 +49,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService,
         instanceSnapshotProcessingAuthorizationRepository: InstanceSnapshotProcessingAuthorizationRepository,
         bestuurseenheidRepository: BestuurseenheidRepository,
-        publishedInstanceRepository: PublishedInstanceRepository,
         logger?: Logger) {
         this._instanceSnapshotRepository = instanceSnapshotRepository;
         this._instanceRepository = instanceRepository;
@@ -62,7 +58,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         this._ensureLinkedAuthoritiesExistAsCodeListDomainService = ensureLinkedAuthoritiesExistAsCodeListDomainService;
         this._instanceSnapshotProcessingAuthorizationRepository = instanceSnapshotProcessingAuthorizationRepository;
         this._bestuurseenheidRepository = bestuurseenheidRepository;
-        this._publishedInstanceRepository = publishedInstanceRepository;
         this._logger = logger ?? this._logger;
     }
 
@@ -100,9 +95,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         const updatedInstance = this.asMergedInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
         await this._instanceRepository.update(bestuurseenheid, updatedInstance, oldInstance.dateModified, true);
 
-        //TODO LPDC_1236: test behaviour
-        await this._publishedInstanceRepository.save(bestuurseenheid, PublishedInstanceBuilder.from(updatedInstance));
-
         if (oldInstance.conceptId) {
             await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, oldInstance.conceptId);
         }
@@ -115,9 +107,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     private async createNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
         const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
         await this._instanceRepository.save(bestuurseenheid, instance);
-
-        //TODO LPDC_1236: test behaviour
-        await this._publishedInstanceRepository.save(bestuurseenheid, PublishedInstanceBuilder.from(instance));
 
         if (instanceSnapshot.conceptId) {
             await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, instanceSnapshot.conceptId);

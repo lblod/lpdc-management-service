@@ -30,19 +30,16 @@ import {
 } from "../../driven/external/instance-informal-language-strings-fetcher-ipdc.it-test";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {PublishedInstanceSparqlRepository} from "../../../src/driven/persistence/published-instance-sparql-repository";
 
 describe('Convert Instance To Informal Domain Service', () => {
 
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const publishedInstanceRepository = new PublishedInstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc(TNI_IPDC_ENDPOINT, TNI_IPDC_AUTHENTICATION_KEY);
     const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(
         instanceRepository,
         formalInformalChoiceRepository,
-        instanceInformalLanguageStringsFetcher,
-        publishedInstanceRepository);
+        instanceInformalLanguageStringsFetcher);
 
     describe('Confirm instance already informal', () => {
         let now = undefined;
