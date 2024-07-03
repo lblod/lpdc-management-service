@@ -160,7 +160,7 @@ describe('Instance Data Integrity Validation', () => {
 
                                 expect(instance.productId).toEqual(concept.productId);
 
-                                // TODO 1038: when conceptSnapshot linked to instance is not same as latestFunctionallyChanged OR A LATER snapshot concept gewijzigd flag should be on
+                                //TODO 1038: when conceptSnapshot linked to instance is not same as latestFunctionallyChanged OR A LATER snapshot concept gewijzigd flag should be on
                                 /*if (!instance.conceptSnapshotId.equals(concept.latestFunctionallyChangedConceptSnapshot)) {
                                     if (concept.isArchived) {
                                         expect(instance.reviewStatus).toEqual(InstanceReviewStatusType.CONCEPT_GEARCHIVEERD);

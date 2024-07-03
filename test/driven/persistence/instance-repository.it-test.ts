@@ -48,16 +48,15 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {aMinimalCostForInstance} from "../../core/domain/cost-test-builder";
 import {aMinimalFinancialAdvantageForInstance} from "../../core/domain/financial-advantage-test-builder";
 import {instanceLanguages, Language} from "../../../src/core/domain/language";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {PublishedInstanceSnapshotSparqlTestRepository} from "./published-instance-snapshot-sparql-test-repository";
+import {PublishedInstanceSnapshotBuilder} from "../../../src/core/domain/published-instance-snapshot";
+import {InstanceSparqlTestRepository} from "./instance-sparql-test-repository";
 
 describe('InstanceRepository', () => {
 
-    const repository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const repository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
-    const publishedInstanceSnapshotTestRepository = new PublishedInstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
 
     beforeAll(() => setFixedTime());
 
@@ -142,9 +141,10 @@ describe('InstanceRepository', () => {
                 .build();
 
             await repository.save(bestuurseenheid, instance);
-            const publishedInstanceSnapshotIds = await publishedInstanceSnapshotTestRepository.findByInstanceId(bestuurseenheid, instance.id);
+            const publishedInstanceSnapshotIds = await repository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, instance);
             expect(publishedInstanceSnapshotIds).toHaveLength(1);
-            const publishedInstanceSnapshotQuads = await publishedInstanceSnapshotTestRepository.findById(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+            const publishedInstanceSnapshotQuads = await repository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+            //TODO LPDC-1236: verify all quads
             expect(publishedInstanceSnapshotQuads).toEqual(expect.arrayContaining([
                 quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
@@ -161,7 +161,7 @@ describe('InstanceRepository', () => {
                 .build();
 
             await repository.save(bestuurseenheid, instance);
-            const publishedInstanceSnapshotIds = await publishedInstanceSnapshotTestRepository.findByInstanceId(bestuurseenheid, instance.id);
+            const publishedInstanceSnapshotIds = await repository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, instance);
             expect(publishedInstanceSnapshotIds).toHaveLength(0);
         });
     });
@@ -209,9 +209,9 @@ describe('InstanceRepository', () => {
 
             expect(actualInstance).toEqual(expectedInstance);
 
-            const publishedInstanceSnapshotIds = await publishedInstanceSnapshotTestRepository.findByInstanceId(bestuurseenheid, newInstance.id);
+            const publishedInstanceSnapshotIds = await repository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, newInstance);
             expect(publishedInstanceSnapshotIds).toHaveLength(1);
-            const publishedInstanceSnapshotQuads = await publishedInstanceSnapshotTestRepository.findById(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+            const publishedInstanceSnapshotQuads = await repository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotIds[0]);
             expect(publishedInstanceSnapshotQuads).toEqual(expect.arrayContaining([
                 quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
                 quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(newInstance.id.value), namedNode(bestuurseenheid.userGraph().value)),
@@ -238,7 +238,7 @@ describe('InstanceRepository', () => {
 
             expect(actualInstance).toEqual(expectedInstance);
 
-            const publishedInstanceSnapshotIds = await publishedInstanceSnapshotTestRepository.findByInstanceId(bestuurseenheid, newInstance.id);
+            const publishedInstanceSnapshotIds = await repository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, newInstance);
             expect(publishedInstanceSnapshotIds).toHaveLength(0);
         });
 
@@ -658,6 +658,79 @@ describe('InstanceRepository', () => {
 
             expect(actualInstance.needsConversionFromFormalToInformal).toEqual(true);
             expect(actualInstance.dateModified).not.toEqual(InstanceTestBuilder.DATE_MODIFIED);
+        });
+    });
+
+    describe('isPublishedToIpdc', () => {
+
+        test('when multiple publishedInstanceSnapshots exists, and latest is published return true', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const sentDate1 = FormatPreservingDate.of('2024-01-16T00:00:00.672Z');
+            const datePublished1 = FormatPreservingDate.of('2024-01-16T00:01:00.672Z');
+            const sentDate2 = FormatPreservingDate.of('2024-01-17T00:00:00.672Z');
+            const datePublished2 = FormatPreservingDate.of('2024-01-17T00:01:00.672Z');
+
+            const instance = aFullInstance()
+                .withStatus(InstanceStatusType.VERZONDEN)
+                .withDateSent(sentDate2)
+                .build();
+
+            const publishedInstanceId1 = PublishedInstanceSnapshotBuilder.buildIri(uuid());
+            const publishedInstanceId2 = PublishedInstanceSnapshotBuilder.buildIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `<${publishedInstanceId1}> a ${NS.lpdcExt('PublishedInstancePublicServiceSnapshot')}`,
+                    `<${publishedInstanceId1}> ${NS.lpdcExt('isPublishedVersionOf')} <${instance.id}> .`,
+                    `<${publishedInstanceId1}> ${NS.prov('generatedAtTime')} "${sentDate1.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .`,
+                    `<${publishedInstanceId1}> ${NS.schema('datePublished')} "${datePublished1.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .`,
+
+                    `<${publishedInstanceId2}> a ${NS.lpdcExt('PublishedInstancePublicServiceSnapshot')}`,
+                    `<${publishedInstanceId2}> ${NS.lpdcExt('isPublishedVersionOf')} <${instance.id}> .`,
+                    `<${publishedInstanceId2}> ${NS.prov('generatedAtTime')} "${sentDate2.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .`,
+                    `<${publishedInstanceId2}> ${NS.schema('datePublished')} "${datePublished2.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .`,
+                ],
+            );
+
+            const actual = await repository.isPublishedToIpdc(bestuurseenheid, instance);
+            expect(actual).toBeTrue();
+        });
+
+        test('when multiple publishedInstanceSnapshots exists, and latest is NOT published return false', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const sentDate1 = FormatPreservingDate.of('2024-01-16T00:00:00.672Z');
+            const datePublished1 = FormatPreservingDate.of('2024-01-16T00:01:00.672Z');
+            const sentDate2 = FormatPreservingDate.of('2024-01-17T00:00:00.672Z');
+
+            const instance = aFullInstance()
+                .withStatus(InstanceStatusType.VERZONDEN)
+                .withDateSent(sentDate2)
+                .build();
+
+            const publishedInstanceId1 = PublishedInstanceSnapshotBuilder.buildIri(uuid());
+            const publishedInstanceId2 = PublishedInstanceSnapshotBuilder.buildIri(uuid());
+
+            await directDatabaseAccess.insertData(
+                bestuurseenheid.userGraph().value,
+                [
+                    `<${publishedInstanceId1}> a ${NS.lpdcExt('PublishedInstancePublicServiceSnapshot')}`,
+                    `<${publishedInstanceId1}> ${NS.lpdcExt('isPublishedVersionOf')} <${instance.id}> .`,
+                    `<${publishedInstanceId1}> ${NS.prov('generatedAtTime')} "${sentDate1.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .`,
+                    `<${publishedInstanceId1}> ${NS.schema('datePublished')} "${datePublished1.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .`,
+
+                    `<${publishedInstanceId2}> a ${NS.lpdcExt('PublishedInstancePublicServiceSnapshot')}`,
+                    `<${publishedInstanceId2}> ${NS.lpdcExt('isPublishedVersionOf')} <${instance.id}> .`,
+                    `<${publishedInstanceId2}> ${NS.prov('generatedAtTime')} "${sentDate2.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .`,
+                ],
+            );
+
+            const actual = await repository.isPublishedToIpdc(bestuurseenheid, instance);
+            expect(actual).toBeFalse();
         });
     });
 

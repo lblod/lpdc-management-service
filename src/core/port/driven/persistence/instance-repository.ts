@@ -20,4 +20,6 @@ export interface InstanceRepository {
 
     syncNeedsConversionFromFormalToInformal(bestuurseenheid: Bestuurseenheid, choosenType: ChosenFormType): Promise<void>
 
+    isPublishedToIpdc(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<boolean>;
+
 }

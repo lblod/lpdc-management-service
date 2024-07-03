@@ -280,4 +280,18 @@ export class InstanceSparqlRepository implements InstanceRepository {
         await this.querying.deleteInsert(query);
 
     }
+
+    async isPublishedToIpdc(bestuurseenheid: Bestuurseenheid, instance: Instance) {
+        const query = `
+            ASK {
+                GRAPH <${bestuurseenheid.userGraph()}> {
+                    ?publishedInstanceSnapshotIri a ${NS.lpdcExt('PublishedInstancePublicServiceSnapshot')} .
+                    ?publishedInstanceSnapshotIri ${NS.lpdcExt('isPublishedVersionOf')} <${instance.id}> .
+                    ?publishedInstanceSnapshotIri ${NS.prov('generatedAtTime')} "${instance.dateSent.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+                    ?publishedInstanceSnapshotIri ${NS.schema('datePublished')} ?datePublished .
+                }
+            }
+        `;
+        return this.querying.ask(query);
+    }
 }

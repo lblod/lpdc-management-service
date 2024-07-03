@@ -270,6 +270,7 @@ export class PublishedInstanceSnapshotBuilder {
     }
 
     public static from(instance: Instance): PublishedInstanceSnapshot {
+        //TODO LPDC-1236: validate instance is published?
         const uniqueId = uuid();
         return new PublishedInstanceSnapshot(
             this.buildIri(uniqueId),

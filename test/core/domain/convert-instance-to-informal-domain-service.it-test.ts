@@ -29,15 +29,15 @@ import {
     instancePublishedOnIpdcTni
 } from "../../driven/external/instance-informal-language-strings-fetcher-ipdc.it-test";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 
 describe('Convert Instance To Informal Domain Service', () => {
 
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceTestRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const instanceInformalLanguageStringsFetcher = new InstanceInformalLanguageStringsFetcherIpdc(TNI_IPDC_ENDPOINT, TNI_IPDC_AUTHENTICATION_KEY);
     const convertInstanceToInformalDomainService = new ConvertInstanceToInformalDomainService(
-        instanceRepository,
+        instanceTestRepository,
         formalInformalChoiceRepository,
         instanceInformalLanguageStringsFetcher);
 
@@ -55,10 +55,9 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withTitle(LanguageString.of(undefined, undefined, 'titel informal'))
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.now())
-                //TODO LPDC-1236: review test?
-                //.withDatePublished(FormatPreservingDate.of(moment(now).add(100).toISOString()))
                 .withDutchLanguageVariant(Language.INFORMAL)
                 .build();
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
@@ -71,10 +70,11 @@ describe('Convert Instance To Informal Domain Service', () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
-                //TODO LPDC-1236: review test?
-                //.withDatePublished(undefined)
+                .withDateSent(FormatPreservingDate.now())
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
+
+            await instanceTestRepository.save(bestuurseenheid, instance, false);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
@@ -88,11 +88,10 @@ describe('Convert Instance To Informal Domain Service', () => {
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.now())
-                //TODO LPDC-1236: review test?
-                //.withDatePublished(FormatPreservingDate.of(moment(now).add(100).toISOString()))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .build();
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.FORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
@@ -106,12 +105,10 @@ describe('Convert Instance To Informal Domain Service', () => {
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.now())
-                //TODO LPDC-1236: review test?
-
-                //.withDatePublished(FormatPreservingDate.of(moment(now).add(100).toISOString()))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .build();
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             await expect(() => convertInstanceToInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified))
                 .rejects.toThrowWithMessage(InvariantError, 'Je moet gekozen hebben voor de je-vorm');
@@ -122,12 +119,10 @@ describe('Convert Instance To Informal Domain Service', () => {
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.now())
-                //TODO LPDC-1236: review test?
-
-                //.withDatePublished(FormatPreservingDate.of(moment(now).add(100).toISOString()))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .build();
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
@@ -141,9 +136,6 @@ describe('Convert Instance To Informal Domain Service', () => {
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                //TODO LPDC-1236: review test?
-
-                //.withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.872Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .withRequirements([
@@ -171,14 +163,14 @@ describe('Convert Instance To Informal Domain Service', () => {
                     aFullLegalResourceForInstance().withOrder(1).build(),
                 ])
                 .build();
-            await instanceRepository.save(bestuurseenheid, instance);
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
             await convertInstanceToInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified);
 
-            const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            const actualInstance = await instanceTestRepository.findById(bestuurseenheid, instance.id);
 
             expect(actualInstance.calculatedInstanceLanguages()).toEqual([Language.INFORMAL]);
             expect(actualInstance.title).toEqual(LanguageString.of(undefined, undefined, 'Instance Title - nl-formal'));
@@ -221,19 +213,17 @@ describe('Convert Instance To Informal Domain Service', () => {
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                //TODO LPDC-1236: review test?
-                //.withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
-            await instanceRepository.save(bestuurseenheid, instance);
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
             await convertInstanceToInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified);
 
-            const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            const actualInstance = await instanceTestRepository.findById(bestuurseenheid, instance.id);
             expect(actualInstance.dutchLanguageVariant).toEqual(Language.INFORMAL);
         });
 
@@ -242,42 +232,37 @@ describe('Convert Instance To Informal Domain Service', () => {
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                //TODO LPDC-1236: review test?
-
-                //.withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
-            await instanceRepository.save(bestuurseenheid, instance);
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
             await convertInstanceToInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified);
 
-            const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            const actualInstance = await instanceTestRepository.findById(bestuurseenheid, instance.id);
             expect(actualInstance.needsConversionFromFormalToInformal).toBeFalse();
         });
 
-        test('confirmInstanceIsAlreadyInformal should set instance to to-republish', async () => {
+        test('confirmInstanceIsAlreadyInformal should set publish instance again', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                //TODO LPDC-1236: review test?
-
-                //.withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
-            await instanceRepository.save(bestuurseenheid, instance);
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
             await convertInstanceToInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified);
 
-            const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            const actualInstance = await instanceTestRepository.findById(bestuurseenheid, instance.id);
+            expect(actualInstance.status).toEqual(InstanceStatusType.VERZONDEN);
             expect(actualInstance.dateSent).toEqual(FormatPreservingDate.now());
         });
     });
@@ -295,9 +280,6 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withCreatedBy(bestuurseenheid.id)
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                //TODO LPDC-1236: review test?
-
-                //.withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(true)
                 .withRequirements([
@@ -308,6 +290,8 @@ describe('Convert Instance To Informal Domain Service', () => {
                 ])
                 .build()
                 .transformToInformal();
+
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
@@ -321,18 +305,16 @@ describe('Convert Instance To Informal Domain Service', () => {
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                //TODO LPDC-1236: review test?
-
-                //.withDatePublished(undefined)
                 .withNeedsConversionFromFormalToInformal(true)
                 .build();
+
+            await instanceTestRepository.save(bestuurseenheid, instance, false);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
             await expect(() => convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified))
                 .rejects.toThrowWithMessage(InvariantError, 'Instantie moet gepubliceerd zijn');
-            //TODO LPDC-1236: add test if last version not published ...
         });
 
         test('When bestuurseenheid chose formal, then throw error', async () => {
@@ -340,12 +322,11 @@ describe('Convert Instance To Informal Domain Service', () => {
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                //TODO LPDC-1236: review test?
-
-                //.withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .build();
+
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.FORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
@@ -359,12 +340,11 @@ describe('Convert Instance To Informal Domain Service', () => {
             const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                //TODO LPDC-1236: review test?
-
-                //.withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .build();
+
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             await expect(() => convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified))
                 .rejects.toThrowWithMessage(InvariantError, 'Je moet gekozen hebben voor de je-vorm');
@@ -376,13 +356,12 @@ describe('Convert Instance To Informal Domain Service', () => {
                 .withCreatedBy(bestuurseenheid.id)
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                //TODO LPDC-1236: review test?
-
-                //.withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                 .withDutchLanguageVariant(Language.FORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .withDateModified(FormatPreservingDate.of("2024-04-24T14:09:32.778Z"))
                 .build();
+
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
@@ -399,22 +378,19 @@ describe('Convert Instance To Informal Domain Service', () => {
                     .withCreatedBy(bestuurseenheid.id)
                     .withStatus(InstanceStatusType.VERZONDEN)
                     .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                    //TODO LPDC-1236: review test?
-
-                    //.withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.882Z'))
                     .withDateModified(FormatPreservingDate.of("2024-04-24T14:09:32.778Z"))
                     .withDutchLanguageVariant(Language.FORMAL)
                     .withNeedsConversionFromFormalToInformal(true)
                     .build();
 
-            await instanceRepository.save(bestuurseenheid, instance);
+            await instanceTestRepository.save(bestuurseenheid, instance);
 
             const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
             await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
 
             await convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified);
 
-            const actualInstance = await instanceRepository.findById(bestuurseenheid, instance.id);
+            const actualInstance = await instanceTestRepository.findById(bestuurseenheid, instance.id);
             expect(actualInstance.status).toEqual(InstanceStatusType.ONTWERP);
             expect(actualInstance.needsConversionFromFormalToInformal).toBeFalse();
             expect(actualInstance.dutchLanguageVariant).toEqual(Language.INFORMAL);

@@ -28,7 +28,7 @@ export class ConvertInstanceToInformalDomainService {
 
     async confirmInstanceIsAlreadyInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
         await this.errorIfBestuurDidNotChooseInformal(bestuurseenheid);
-        this.errorIfLastVersionOfInstanceNotPublishedInIPDC(instance);
+        await this.errorIfLastVersionOfInstanceNotPublishedInIPDC(bestuurseenheid, instance);
 
         const updatedInstance = instance
             .reopen()
@@ -40,7 +40,7 @@ export class ConvertInstanceToInformalDomainService {
 
     async convertInstanceToInformal(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate): Promise<void> {
         await this.errorIfBestuurDidNotChooseInformal(bestuurseenheid);
-        this.errorIfLastVersionOfInstanceNotPublishedInIPDC(instance);
+        await this.errorIfLastVersionOfInstanceNotPublishedInIPDC(bestuurseenheid, instance);
         this.errorInstanceReedsInformal(instance);
 
         const updatedInstance =
@@ -57,11 +57,10 @@ export class ConvertInstanceToInformalDomainService {
         }
     }
 
-    private errorIfLastVersionOfInstanceNotPublishedInIPDC(instance: Instance) {
-        // TODO LPDC-1236: Query if publishedInstanceSnapshot exists with same sent date as instance && datePublished exists -> ask to repository ...
-        /*if (!instance.isLastVersionPublishedInIPDC()) {
+    private async errorIfLastVersionOfInstanceNotPublishedInIPDC(bestuurseenheid: Bestuurseenheid, instance: Instance) {
+        if (!await this._instanceRepository.isPublishedToIpdc(bestuurseenheid, instance)) {
             throw new InvariantError('Instantie moet gepubliceerd zijn');
-        }*/
+        }
     }
 
     private errorInstanceReedsInformal(instance: Instance) {
