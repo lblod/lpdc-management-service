@@ -6,11 +6,16 @@ import {
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {aBestuurseenheid} from "../../../test/core/domain/bestuurseenheid-test-builder";
 import {aFormalInformalChoice} from "../../../test/core/domain/formal-informal-choice-test-builder";
-import {aMinimalInstance} from "../../../test/core/domain/instance-test-builder";
+import {aFullInstance, aMinimalInstance} from "../../../test/core/domain/instance-test-builder";
 import {
     BestuurseenheidSparqlTestRepository
 } from "../../../test/driven/persistence/bestuurseenheid-sparql-test-repository";
-import {ChosenFormType, InstancePublicationStatusType, InstanceStatusType} from "../../../src/core/domain/types";
+import {
+    ChosenFormType,
+    CompetentAuthorityLevelType,
+    InstancePublicationStatusType,
+    InstanceStatusType
+} from "../../../src/core/domain/types";
 import {Language} from "../../../src/core/domain/language";
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
@@ -78,6 +83,45 @@ describe('transfer instance', () => {
         expect(transferredInstance.publicationStatus).toBeUndefined();
     });
 
+    test('copyOf is empty', async () => {
+        const anotherInstance = aFullInstance().withCreatedBy(fromAuthority.id).build();
+        await instanceRepository.save(fromAuthority, anotherInstance);
+
+        const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withCopyOf(anotherInstance.id).build();
+        await instanceRepository.save(fromAuthority, instance);
+        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+
+        expect(transferredInstance.copyOf).toBeUndefined();
+    });
+
+    test('when forMunicipalityMerger is false, clear spatial and executingAuthority', async () => {
+        const instance = aFullInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).build();
+        await instanceRepository.save(fromAuthority, instance);
+        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+
+        expect(instance.spatials).not.toBeEmpty();
+        expect(transferredInstance.spatials).toBeEmpty();
+
+        expect(instance.executingAuthorities).not.toBeEmpty();
+        expect(transferredInstance.executingAuthorities).toBeEmpty();
+    });
+
+    test('when forMunicipalityMerger is false and componentAuthorityLevel is Lokale overheid, clear hadCompetentAuthority ', async () => {
+        const lokaleOverheidInstance = aFullInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.VLAAMS]).build();
+        const europeeseInstance = aFullInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).withCompetentAuthorityLevels([CompetentAuthorityLevelType.EUROPEES]).build();
+        const provincialeInstance = aFullInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).withCompetentAuthorityLevels([CompetentAuthorityLevelType.PROVINCIAAL]).build();
+
+        await instanceRepository.save(fromAuthority, lokaleOverheidInstance);
+        await instanceRepository.save(fromAuthority, europeeseInstance);
+        await instanceRepository.save(fromAuthority, provincialeInstance);
+        const transferredLokaleInstance = await transferInstanceService.transfer(lokaleOverheidInstance.id, fromAuthority.id, toAuthority.id);
+        const transferredEuropeeseInstance = await transferInstanceService.transfer(europeeseInstance.id, fromAuthority.id, toAuthority.id);
+        const transferredProvincialeInstance = await transferInstanceService.transfer(provincialeInstance.id, fromAuthority.id, toAuthority.id);
+
+        expect(transferredLokaleInstance.competentAuthorities).toBeEmpty();
+        expect(transferredEuropeeseInstance.competentAuthorities).not.toBeEmpty();
+        expect(transferredProvincialeInstance.competentAuthorities).not.toBeEmpty();
+    });
 
     describe('needsConversionFromFormalToInformal', () => {
         test('given authority without formalInformalChoice and instance in nl, needsConversion is false', async () => {

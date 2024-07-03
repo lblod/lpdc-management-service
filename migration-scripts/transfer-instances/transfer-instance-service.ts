@@ -33,11 +33,11 @@ export class TransferInstanceService {
         if (toAuthorityChoice === ChosenFormType.FORMAL && instance.dutchLanguageVariant === Language.INFORMAL) {
             throw new InvariantError("transforming informal instance to formal is not possible");
         }
-        return this.copyInstance(toAuthority.id, toAuthorityChoice, instance);
+        return this.transferInstance(toAuthority.id, toAuthorityChoice, instance);
 
     }
 
-    private copyInstance(toAuthorityId: Iri, toAuthorityChoice: ChosenFormType, instanceToCopy: Instance) {
+    private transferInstance(toAuthorityId: Iri, toAuthorityChoice: ChosenFormType, instanceToCopy: Instance) {
         const instanceUuid = uuid();
         const instanceId = InstanceBuilder.buildIri(instanceUuid);
 
@@ -62,11 +62,11 @@ export class TransferInstanceService {
             .withDatePublished(undefined)
             .withNeedsConversionFromFormalToInformal(needsConversionFromFormalToInformal)
             .withLegalResources(instanceToCopy.legalResources.map(lr => lr.transformWithNewId()))
-            .withSpatials(instanceToCopy.forMunicipalityMerger ? [] : instanceToCopy.spatials)
-            .withExecutingAuthorities(instanceToCopy.forMunicipalityMerger ? [] : instanceToCopy.executingAuthorities)
-            .withCompetentAuthorities(instanceToCopy.forMunicipalityMerger && hasCompetentAuthorityLevelLokaal ? [] : instanceToCopy.competentAuthorities)
+            .withSpatials(instanceToCopy.forMunicipalityMerger ? instanceToCopy.spatials : [])
+            .withExecutingAuthorities(instanceToCopy.forMunicipalityMerger ? instanceToCopy.executingAuthorities : [])
+            .withCompetentAuthorities(!instanceToCopy.forMunicipalityMerger && hasCompetentAuthorityLevelLokaal ? [] : instanceToCopy.competentAuthorities)
             .withForMunicipalityMerger(false)
-            .withCopyOf(instanceToCopy.id)
+            .withCopyOf(undefined)
             .build();
     }
 }
