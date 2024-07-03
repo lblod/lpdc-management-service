@@ -9,27 +9,41 @@ import {BestuurseenheidSparqlRepository} from "../../src/driven/persistence/best
 import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
 import {BestuurseenheidTestBuilder} from "../../test/core/domain/bestuurseenheid-test-builder";
 import {Instance, InstanceBuilder} from "../../src/core/domain/instance";
-import {CompetentAuthorityLevelType, InstanceStatusType} from "../../src/core/domain/types";
+import {ChosenFormType, CompetentAuthorityLevelType, InstanceStatusType} from "../../src/core/domain/types";
 import {FormatPreservingDate} from "../../src/core/domain/format-preserving-date";
+import {
+    FormalInformalChoiceSparqlRepository
+} from "../../src/driven/persistence/formal-informal-choice-sparql-repository";
+import {InvariantError} from "../../src/core/domain/shared/lpdc-error";
+import {Language} from "../../src/core/domain/language";
 
 const endPoint = process.env.SPARQL_URL;
-
-const bestuurseenheidRepository = new BestuurseenheidSparqlRepository(endPoint);
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
+const bestuurseenheidRepository = new BestuurseenheidSparqlRepository(endPoint);
 const instanceRepository = new InstanceSparqlRepository(endPoint);
+const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(endPoint);
 
 async function main(fromAuthorityId: string, toAuthorityId: string, onlyForMunicipalityMergerInstances: boolean) {
     const insertQuads = [];
 
     const fromAuthority = await bestuurseenheidRepository.findById(new Iri(fromAuthorityId));
     const toAuthority = await bestuurseenheidRepository.findById(new Iri(toAuthorityId));
+
+    const fromAuthorityChoice = (await formalInformalChoiceRepository.findByBestuurseenheid(fromAuthority))?.chosenForm;
+    const toAuthorityChoice = (await formalInformalChoiceRepository.findByBestuurseenheid(toAuthority))?.chosenForm;
+
     const domainToQuadsMerger = new DomainToQuadsMapper(toAuthority.userGraph());
     const instanceIds: Iri[] = onlyForMunicipalityMergerInstances ? await getAllInstanceIdsWithMunicipalityMergerForBestuurseenheid(fromAuthority) : await getAllInstanceIdsForBestuurseenheid(fromAuthority);
 
     console.log(`Instances to transfer: ${instanceIds.length}`);
     for (const instanceId of instanceIds) {
-        const instance = await instanceRepository.findById(fromAuthority, instanceId);
-        const newInstance = copyInstance(toAuthority.id, instance);
+        const instance: Instance = await instanceRepository.findById(fromAuthority, instanceId);
+        const newInstance: Instance = copyInstance(toAuthority.id, toAuthorityChoice, instance);
+
+        if (toAuthorityChoice === ChosenFormType.FORMAL && fromAuthorityChoice === ChosenFormType.INFORMAL) {
+            throw new InvariantError("transforming instance to formal not possible when initialy informal");
+        }
+
         const quads = domainToQuadsMerger.instanceToQuads(newInstance).map(quad => quad.toCanonical()).join('\n');
         insertQuads.push(quads);
     }
@@ -65,17 +79,17 @@ async function getAllInstanceIdsWithMunicipalityMergerForBestuurseenheid(bestuur
 }
 
 
-function copyInstance(toBestuurseenheid: Iri, instanceToCopy: Instance) {
+function copyInstance(toAuthorityId: Iri, toAuthorityChoice: ChosenFormType, instanceToCopy: Instance) {
     const instanceUuid = uuid();
     const instanceId = InstanceBuilder.buildIri(instanceUuid);
 
     const hasCompetentAuthorityLevelLokaal = instanceToCopy.competentAuthorityLevels.includes(CompetentAuthorityLevelType.LOKAAL);
+    const needsConversionFromFormalToInformal = (toAuthorityChoice === ChosenFormType.INFORMAL && instanceToCopy.dutchLanguageVariant !== Language.INFORMAL);
 
     return InstanceBuilder.from(instanceToCopy)
         .withId(instanceId)
         .withUuid(instanceUuid)
-        .withCreatedBy(toBestuurseenheid)
-        .withTitle(instanceToCopy.title)
+        .withCreatedBy(toAuthorityId)
         .withDateCreated(FormatPreservingDate.now())
         .withDateModified(FormatPreservingDate.now())
         .withRequirements(instanceToCopy.requirements.map(req => req.transformWithNewId()))
@@ -88,6 +102,7 @@ function copyInstance(toBestuurseenheid: Iri, instanceToCopy: Instance) {
         .withDateSent(undefined)
         .withPublicationStatus(undefined)
         .withDatePublished(undefined)
+        .withNeedsConversionFromFormalToInformal(needsConversionFromFormalToInformal)
         .withLegalResources(instanceToCopy.legalResources.map(lr => lr.transformWithNewId()))
         .withSpatials(instanceToCopy.forMunicipalityMerger ? [] : instanceToCopy.spatials)
         .withExecutingAuthorities(instanceToCopy.forMunicipalityMerger ? [] : instanceToCopy.executingAuthorities)
@@ -95,7 +110,6 @@ function copyInstance(toBestuurseenheid: Iri, instanceToCopy: Instance) {
         .withForMunicipalityMerger(false)
         .withCopyOf(instanceToCopy.id)
         .build();
-
 }
 
 const pepingen = BestuurseenheidTestBuilder.PEPINGEN_IRI;
