@@ -20,6 +20,13 @@ import {Language} from "../../../src/core/domain/language";
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {aFullRequirementForInstance} from "../../../test/core/domain/requirement-test-builder";
+import {aFullProcedureForInstance} from "../../../test/core/domain/procedure-test-builder";
+import {aFullWebsiteForInstance} from "../../../test/core/domain/website-test-builder";
+import {aFullCostForInstance} from "../../../test/core/domain/cost-test-builder";
+import {aFullFinancialAdvantageForInstance} from "../../../test/core/domain/financial-advantage-test-builder";
+import {aFullLegalResourceForInstance} from "../../../test/core/domain/legal-resource-test-builder";
+import {aFullContactPointForInstance} from "../../../test/core/domain/contact-point-test-builder";
 
 describe('transfer instance', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -123,6 +130,194 @@ describe('transfer instance', () => {
         expect(transferredProvincialeInstance.competentAuthorities).not.toBeEmpty();
     });
 
+    test('deep copy fields with new uuids', async () => {
+        const instance = aFullInstance()
+            .withCreatedBy(fromAuthority.id)
+            .withStatus(InstanceStatusType.VERZONDEN)
+            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
+            .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+            .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
+            .withDutchLanguageVariant(Language.FORMAL)
+            .withNeedsConversionFromFormalToInformal(true)
+            .withForMunicipalityMerger(true)
+            .withRequirements([
+                aFullRequirementForInstance().withOrder(0).build(),
+                aFullRequirementForInstance().withOrder(1).withEvidence(undefined).build()
+            ])
+            .withProcedures([
+                aFullProcedureForInstance().withOrder(0).build(),
+                aFullProcedureForInstance().withOrder(1).withWebsites([]).build(),
+            ])
+            .withWebsites([
+                aFullWebsiteForInstance().withOrder(0).build(),
+                aFullWebsiteForInstance().withOrder(1).build()
+            ])
+            .withCosts([
+                aFullCostForInstance().withOrder(0).build(),
+                aFullCostForInstance().withOrder(1).build(),
+            ])
+            .withFinancialAdvantages([
+                aFullFinancialAdvantageForInstance().withOrder(0).build(),
+                aFullFinancialAdvantageForInstance().withOrder(1).build(),
+            ])
+            .withContactPoints([
+                aFullContactPointForInstance().withOrder(0).build(),
+                aFullContactPointForInstance().withOrder(1).withAddress(undefined).build()
+            ])
+            .withLegalResources([
+                aFullLegalResourceForInstance().withOrder(0).build(),
+                aFullLegalResourceForInstance().withOrder(1).build(),
+            ])
+            .build();
+
+        await instanceRepository.save(fromAuthority, instance);
+        const updatedInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+
+        expect(updatedInstance.calculatedInstanceLanguages()).toEqual([Language.FORMAL]);
+        expect(updatedInstance.id).not.toEqual(instance.id);
+        expect(updatedInstance.uuid).not.toEqual(instance.uuid);
+        expect(updatedInstance.createdBy).toEqual(toAuthority.id);
+        expect(updatedInstance.title).toEqual(instance.title);
+        expect(updatedInstance.description).toEqual(instance.description);
+        expect(updatedInstance.additionalDescription).toEqual(instance.additionalDescription);
+        expect(updatedInstance.exception).toEqual(instance.exception);
+        expect(updatedInstance.regulation).toEqual(instance.regulation);
+        expect(updatedInstance.startDate).toEqual(instance.startDate);
+        expect(updatedInstance.endDate).toEqual(instance.endDate);
+        expect(updatedInstance.type).toEqual(instance.type);
+        expect(updatedInstance.targetAudiences).toEqual(instance.targetAudiences);
+        expect(updatedInstance.themes).toEqual(instance.themes);
+        expect(updatedInstance.competentAuthorities).toEqual(instance.competentAuthorities);
+        expect(updatedInstance.competentAuthorityLevels).toEqual(instance.competentAuthorityLevels);
+        expect(updatedInstance.executingAuthorities).toEqual(instance.executingAuthorities);
+        expect(updatedInstance.executingAuthorityLevels).toEqual(instance.executingAuthorityLevels);
+        expect(updatedInstance.publicationMedia).toEqual(instance.publicationMedia);
+        expect(updatedInstance.yourEuropeCategories).toEqual(instance.yourEuropeCategories);
+        expect(updatedInstance.keywords).toEqual(instance.keywords);
+
+        expect(updatedInstance.requirements.length).toEqual(instance.requirements.length);
+        expect(updatedInstance.requirements[0].id).not.toEqual(instance.requirements[0].id);
+        expect(updatedInstance.requirements[0].uuid).not.toEqual(instance.requirements[0].uuid);
+        expect(updatedInstance.requirements[0].title).toEqual(instance.requirements[0].title);
+        expect(updatedInstance.requirements[0].description).toEqual(instance.requirements[0].description);
+        expect(updatedInstance.requirements[0].order).toEqual(instance.requirements[0].order);
+        expect(updatedInstance.requirements[0].evidence.id).not.toEqual(instance.requirements[0].evidence.id);
+        expect(updatedInstance.requirements[0].evidence.uuid).not.toEqual(instance.requirements[0].evidence.uuid);
+        expect(updatedInstance.requirements[0].evidence.title).toEqual(instance.requirements[0].evidence.title);
+        expect(updatedInstance.requirements[0].evidence.description).toEqual(instance.requirements[0].evidence.description);
+        expect(updatedInstance.requirements[1].id).not.toEqual(instance.requirements[1].id);
+        expect(updatedInstance.requirements[1].uuid).not.toEqual(instance.requirements[1].uuid);
+        expect(updatedInstance.requirements[1].title).toEqual(instance.requirements[1].title);
+        expect(updatedInstance.requirements[1].description).toEqual(instance.requirements[1].description);
+        expect(updatedInstance.requirements[1].order).toEqual(instance.requirements[1].order);
+        expect(updatedInstance.requirements[1].evidence).toBeUndefined();
+
+        expect(updatedInstance.procedures.length).toEqual(instance.procedures.length);
+        expect(updatedInstance.procedures[0].id).not.toEqual(instance.procedures[0].id);
+        expect(updatedInstance.procedures[0].uuid).not.toEqual(instance.procedures[0].uuid);
+        expect(updatedInstance.procedures[0].title).toEqual(instance.procedures[0].title);
+        expect(updatedInstance.procedures[0].description).toEqual(instance.procedures[0].description);
+        expect(updatedInstance.procedures[0].order).toEqual(instance.procedures[0].order);
+        expect(updatedInstance.procedures[0].websites.length).toEqual(instance.procedures[0].websites.length);
+        expect(updatedInstance.procedures[0].websites[0].id).not.toEqual(instance.procedures[0].websites[0].id);
+        expect(updatedInstance.procedures[0].websites[0].uuid).not.toEqual(instance.procedures[0].websites[0].uuid);
+        expect(updatedInstance.procedures[0].websites[0].title).toEqual(instance.procedures[0].websites[0].title);
+        expect(updatedInstance.procedures[0].websites[0].description).toEqual(updatedInstance.procedures[0].websites[0].description);
+        expect(updatedInstance.procedures[0].websites[0].order).toEqual(updatedInstance.procedures[0].websites[0].order);
+        expect(updatedInstance.procedures[0].websites[0].url).toEqual(updatedInstance.procedures[0].websites[0].url);
+        expect(updatedInstance.procedures.length).toEqual(instance.procedures.length);
+        expect(updatedInstance.procedures[1].id).not.toEqual(instance.procedures[1].id);
+        expect(updatedInstance.procedures[1].uuid).not.toEqual(instance.procedures[1].uuid);
+        expect(updatedInstance.procedures[1].title).toEqual(instance.procedures[1].title);
+        expect(updatedInstance.procedures[1].description).toEqual(instance.procedures[1].description);
+        expect(updatedInstance.procedures[1].order).toEqual(instance.procedures[1].order);
+        expect(updatedInstance.procedures[1].websites).toBeEmpty();
+
+        expect(updatedInstance.websites.length).toEqual(instance.websites.length);
+        expect(updatedInstance.websites[0].id).not.toEqual(instance.websites[0].id);
+        expect(updatedInstance.websites[0].uuid).not.toEqual(instance.websites[0].uuid);
+        expect(updatedInstance.websites[0].title).toEqual(instance.websites[0].title);
+        expect(updatedInstance.websites[0].description).toEqual(updatedInstance.websites[0].description);
+        expect(updatedInstance.websites[0].order).toEqual(updatedInstance.websites[0].order);
+        expect(updatedInstance.websites[0].url).toEqual(updatedInstance.websites[0].url);
+        expect(updatedInstance.websites[1].id).not.toEqual(instance.websites[1].id);
+        expect(updatedInstance.websites[1].uuid).not.toEqual(instance.websites[1].uuid);
+        expect(updatedInstance.websites[1].title).toEqual(instance.websites[1].title);
+        expect(updatedInstance.websites[1].description).toEqual(updatedInstance.websites[1].description);
+        expect(updatedInstance.websites[1].order).toEqual(updatedInstance.websites[1].order);
+        expect(updatedInstance.websites[1].url).toEqual(updatedInstance.websites[1].url);
+
+        expect(updatedInstance.costs.length).toEqual(instance.costs.length);
+        expect(updatedInstance.costs[0].id).not.toEqual(instance.costs[0].id);
+        expect(updatedInstance.costs[0].uuid).not.toEqual(instance.costs[0].uuid);
+        expect(updatedInstance.costs[0].title).toEqual(instance.costs[0].title);
+        expect(updatedInstance.costs[0].description).toEqual(instance.costs[0].description);
+        expect(updatedInstance.costs[0].order).toEqual(instance.costs[0].order);
+        expect(updatedInstance.costs[1].id).not.toEqual(instance.costs[1].id);
+        expect(updatedInstance.costs[1].uuid).not.toEqual(instance.costs[1].uuid);
+        expect(updatedInstance.costs[1].title).toEqual(instance.costs[1].title);
+        expect(updatedInstance.costs[1].description).toEqual(instance.costs[1].description);
+        expect(updatedInstance.costs[1].order).toEqual(instance.costs[1].order);
+
+        expect(updatedInstance.financialAdvantages.length).toEqual(instance.financialAdvantages.length);
+        expect(updatedInstance.financialAdvantages[0].id).not.toEqual(instance.financialAdvantages[0].id);
+        expect(updatedInstance.financialAdvantages[0].uuid).not.toEqual(instance.financialAdvantages[0].uuid);
+        expect(updatedInstance.financialAdvantages[0].title).toEqual(instance.financialAdvantages[0].title);
+        expect(updatedInstance.financialAdvantages[0].description).toEqual(instance.financialAdvantages[0].description);
+        expect(updatedInstance.financialAdvantages[0].order).toEqual(instance.financialAdvantages[0].order);
+        expect(updatedInstance.financialAdvantages[1].id).not.toEqual(instance.financialAdvantages[1].id);
+        expect(updatedInstance.financialAdvantages[1].uuid).not.toEqual(instance.financialAdvantages[1].uuid);
+        expect(updatedInstance.financialAdvantages[1].title).toEqual(instance.financialAdvantages[1].title);
+        expect(updatedInstance.financialAdvantages[1].description).toEqual(instance.financialAdvantages[1].description);
+        expect(updatedInstance.financialAdvantages[1].order).toEqual(instance.financialAdvantages[1].order);
+
+        expect(updatedInstance.contactPoints.length).toEqual(instance.contactPoints.length);
+        expect(updatedInstance.contactPoints[0].id).not.toEqual(instance.contactPoints[0].id);
+        expect(updatedInstance.contactPoints[0].uuid).not.toEqual(instance.contactPoints[0].uuid);
+        expect(updatedInstance.contactPoints[0].url).toEqual(instance.contactPoints[0].url);
+        expect(updatedInstance.contactPoints[0].email).toEqual(instance.contactPoints[0].email);
+        expect(updatedInstance.contactPoints[0].telephone).toEqual(instance.contactPoints[0].telephone);
+        expect(updatedInstance.contactPoints[0].openingHours).toEqual(instance.contactPoints[0].openingHours);
+        expect(updatedInstance.contactPoints[0].order).toEqual(instance.contactPoints[0].order);
+        expect(updatedInstance.contactPoints[0].address.id).not.toEqual(instance.contactPoints[0].address.id);
+        expect(updatedInstance.contactPoints[0].address.uuid).not.toEqual(instance.contactPoints[0].address.uuid);
+        expect(updatedInstance.contactPoints[0].address.gemeentenaam).toEqual(instance.contactPoints[0].address.gemeentenaam);
+        expect(updatedInstance.contactPoints[0].address.land).toEqual(instance.contactPoints[0].address.land);
+        expect(updatedInstance.contactPoints[0].address.huisnummer).toEqual(instance.contactPoints[0].address.huisnummer);
+        expect(updatedInstance.contactPoints[0].address.busnummer).toEqual(instance.contactPoints[0].address.busnummer);
+        expect(updatedInstance.contactPoints[0].address.postcode).toEqual(instance.contactPoints[0].address.postcode);
+        expect(updatedInstance.contactPoints[0].address.straatnaam).toEqual(instance.contactPoints[0].address.straatnaam);
+        expect(updatedInstance.contactPoints[0].address.verwijstNaar).toEqual(instance.contactPoints[0].address.verwijstNaar);
+        expect(updatedInstance.contactPoints[1].id).not.toEqual(instance.contactPoints[1].id);
+        expect(updatedInstance.contactPoints[1].uuid).not.toEqual(instance.contactPoints[1].uuid);
+        expect(updatedInstance.contactPoints[1].url).toEqual(instance.contactPoints[1].url);
+        expect(updatedInstance.contactPoints[1].email).toEqual(instance.contactPoints[1].email);
+        expect(updatedInstance.contactPoints[1].telephone).toEqual(instance.contactPoints[1].telephone);
+        expect(updatedInstance.contactPoints[1].openingHours).toEqual(instance.contactPoints[1].openingHours);
+        expect(updatedInstance.contactPoints[1].order).toEqual(instance.contactPoints[1].order);
+        expect(updatedInstance.contactPoints[1].address).toBeUndefined();
+
+        expect(updatedInstance.conceptId).toEqual(instance.conceptId);
+        expect(updatedInstance.conceptSnapshotId).toEqual(instance.conceptSnapshotId);
+        expect(updatedInstance.productId).toEqual(instance.productId);
+        expect(updatedInstance.languages).toEqual(instance.languages);
+        expect(updatedInstance.dutchLanguageVariant).toEqual(instance.dutchLanguageVariant);
+        expect(updatedInstance.reviewStatus).toEqual(instance.reviewStatus);
+        expect(updatedInstance.reviewStatus).toEqual(instance.reviewStatus);
+
+        expect(updatedInstance.legalResources.length).toEqual(instance.legalResources.length);
+        expect(updatedInstance.legalResources[0].id).not.toEqual(instance.legalResources[0].id);
+        expect(updatedInstance.legalResources[0].uuid).not.toEqual(instance.legalResources[0].uuid);
+        expect(updatedInstance.legalResources[0].title).toEqual(instance.legalResources[0].title);
+        expect(updatedInstance.legalResources[0].description).toEqual(instance.legalResources[0].description);
+        expect(updatedInstance.legalResources[0].order).toEqual(instance.legalResources[0].order);
+        expect(updatedInstance.legalResources[1].id).not.toEqual(instance.legalResources[1].id);
+        expect(updatedInstance.legalResources[1].uuid).not.toEqual(instance.legalResources[1].uuid);
+        expect(updatedInstance.legalResources[1].title).toEqual(instance.legalResources[1].title);
+        expect(updatedInstance.legalResources[1].description).toEqual(instance.legalResources[1].description);
+        expect(updatedInstance.legalResources[1].order).toEqual(instance.legalResources[1].order);
+    });
+    
     describe('needsConversionFromFormalToInformal', () => {
         test('given authority without formalInformalChoice and instance in nl, needsConversion is false', async () => {
             const instance = aMinimalInstance().withDutchLanguageVariant(Language.NL).withCreatedBy(fromAuthority.id).build();
