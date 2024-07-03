@@ -45,9 +45,8 @@ describe('Instance informal language strings fetcher', () => {
 
                     if (
                         instance.dutchLanguageVariant != Language.INFORMAL &&
-                        instance.needsConversionFromFormalToInformal
-                        //TODO LPDC-1236: implement using repository call (published-instnace-repository)
-                        /*instance.isLastVersionPublishedInIPDC()*/) {
+                        instance.needsConversionFromFormalToInformal &&
+                        await instanceRepository.isPublishedToIpdc(bestuurseenheid, instance)) {
 
                         transformedInstances += 1;
                         await ipdcFetcher.fetchInstanceAndMap(bestuurseenheid, instance);

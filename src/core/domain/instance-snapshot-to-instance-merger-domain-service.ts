@@ -103,7 +103,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         }
     }
 
-    //TODO LPDC-1236: test new behaviour
     private async createNewInstance(bestuurseenheid: Bestuurseenheid, instanceSnapshot: InstanceSnapshot, concept: Concept | undefined) {
         const instance = this.asNewInstance(bestuurseenheid, instanceSnapshot, concept);
         await this._instanceRepository.save(bestuurseenheid, instance);
@@ -149,7 +148,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
             false,
             instanceSnapshot.dateCreated,
             instanceSnapshot.dateModified,
-            instanceSnapshot.generatedAtTime, //TODO LPDC-1236: verify and test
+            instanceSnapshot.generatedAtTime,
             InstanceStatusType.VERZONDEN,
             undefined,
             instanceSnapshot.spatials,

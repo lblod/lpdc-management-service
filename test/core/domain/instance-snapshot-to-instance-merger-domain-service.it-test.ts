@@ -46,7 +46,7 @@ import {
 import {
     VersionedLdesSnapshotSparqlRepository
 } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+import {InstanceSparqlTestRepository} from "../../driven/persistence/instance-sparql-test-repository";
 
 describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
@@ -58,7 +58,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
+    const instanceRepository = new InstanceSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
     const bestuurseenheidRegistrationCodeFetcher = {
         fetchOrgRegistryCodelistEntry: jest.fn().mockReturnValue(Promise.resolve({}))
@@ -533,6 +533,33 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await expect(mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository)).resolves.not.toThrow();
         });
 
+        test('published instance is created and saved', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instanceSnapshot = aMinimalInstanceSnapshot()
+                .withCreatedBy(bestuurseenheid.id)
+                .withConceptId(undefined)
+                .build();
+
+            const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+            await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
+            await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
+
+            await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
+
+            const instance = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
+            const publishedInstanceSnapshotIds = await instanceRepository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, instance);
+            expect(publishedInstanceSnapshotIds).toHaveLength(1);
+            const quads = await instanceRepository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+            expect(quads).toIncludeAllMembers([
+                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instanceSnapshot.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instanceSnapshot.isVersionOf.value), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://purl.org/pav/createdBy'), namedNode(instanceSnapshot.createdBy.value), namedNode(bestuurseenheid.userGraph().value)),
+            ]);
+        });
+
         test('unauthorized merging of bestuurseenheid for instance snapshot graph throws ForbiddenError', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
             await bestuurseenheidRepository.save(bestuurseenheid);
@@ -879,6 +906,42 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 ]));
                 expect(instanceAfterMerge.forMunicipalityMerger).toBeFalse();
                 expect(instanceAfterMerge.copyOf).toBeUndefined();
+            });
+
+            test('published instance is created and saved', async () => {
+                const bestuurseenheid = aBestuurseenheid().build();
+                await bestuurseenheidRepository.save(bestuurseenheid);
+
+                const instance = aFullInstance()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withCopyOf(InstanceBuilder.buildIri(uuid()))
+                    .withForMunicipalityMerger(true)
+                    .build();
+                await instanceRepository.save(bestuurseenheid, instance);
+                await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
+
+                const instanceSnapshot = aMinimalInstanceSnapshot()
+                    .withCreatedBy(bestuurseenheid.id)
+                    .withConceptId(undefined)
+                    .withIsVersionOfInstance(instance.id)
+                    .build();
+
+                const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+                await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshot);
+                await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
+
+                await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
+
+                const updatedInstance = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
+                const publishedInstanceSnapshotIds = await instanceRepository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, updatedInstance);
+                expect(publishedInstanceSnapshotIds).toHaveLength(1);
+                const quads = await instanceRepository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+                expect(quads).toIncludeAllMembers([
+                    quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instanceSnapshot.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instanceSnapshot.isVersionOf.value), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://purl.org/pav/createdBy'), namedNode(instanceSnapshot.createdBy.value), namedNode(bestuurseenheid.userGraph().value)),
+                ]);
             });
         });
 

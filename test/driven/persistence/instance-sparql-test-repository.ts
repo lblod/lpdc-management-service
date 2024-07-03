@@ -27,7 +27,7 @@ export class InstanceSparqlTestRepository extends InstanceSparqlRepository {
             const query = `
             INSERT DATA { 
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                    <${publishedInstanceSnapshotId}> <http://schema.org/datePublished> """${FormatPreservingDate.now()}"""^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+                    <${publishedInstanceSnapshotId}> <http://schema.org/datePublished> """${FormatPreservingDate.now().value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime> .
                 }
             }
         `;
