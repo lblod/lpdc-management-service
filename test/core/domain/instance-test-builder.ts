@@ -50,6 +50,22 @@ export function aMinimalInstance(): InstanceBuilder {
         .withForMunicipalityMerger(InstanceTestBuilder.FOR_MUNICIPALITY_MERGER);
 }
 
+export function aMinimalPublishedInstance() {
+    return aMinimalInstance()
+        .withTitle(
+            LanguageString.of(
+                undefined,
+                InstanceTestBuilder.TITLE_NL_FORMAL))
+        .withDescription(
+            LanguageString.of(
+                undefined,
+                InstanceTestBuilder.DESCRIPTION_NL_FORMAL))
+        .withCompetentAuthorities(InstanceTestBuilder.COMPETENT_AUTHORITIES)
+        .withStatus(InstanceStatusType.VERZONDEN)
+        .withDateSent(FormatPreservingDate.now())
+        .withSpatials(InstanceTestBuilder.SPATIALS);
+}
+
 export function aFullInstance(): InstanceBuilder {
     return aMinimalInstance()
         .withTitle(

@@ -1217,7 +1217,7 @@ describe('Creating a new Instance domain service', () => {
             const bestuurseenheid = aBestuurseenheid()
                 .build();
 
-            const instance = aMinimalInstance()
+            const instance = aFullInstance()
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .withDateSent(InstanceTestBuilder.DATE_SENT)
                 .withCreatedBy(bestuurseenheid.id).build();

@@ -1268,7 +1268,7 @@ describe('InstanceRepository', () => {
 
         for (const type of Object.values(InstanceStatusType)) {
             test(`Instance Status type ${type} can be mapped`, async () => {
-                const instance = aMinimalInstance().withStatus(type).withDateSent(InstanceTestBuilder.DATE_SENT).build();
+                const instance = aFullInstance().withStatus(type).withDateSent(InstanceTestBuilder.DATE_SENT).build();
                 const bestuurseenheid = aBestuurseenheid().build();
                 await repository.save(bestuurseenheid, instance);
 

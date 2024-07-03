@@ -20,7 +20,14 @@ import {ContactPoint} from "./contact-point";
 import {LegalResource} from "./legal-resource";
 import {Instance} from "./instance";
 import {uuid} from "../../../mu-helper";
-import {requiredValue} from "./shared/invariant";
+import {
+    requireAtLeastOneValuePresentIfCondition,
+    requiredAtLeastOneValuePresent,
+    requiredValue,
+    requireNoDuplicates
+} from "./shared/invariant";
+import {asSortedArray} from "./shared/collections-helper";
+import {Language} from "./language";
 
 export class PublishedInstanceSnapshot {
 
@@ -58,8 +65,6 @@ export class PublishedInstanceSnapshot {
     private readonly _spatials: Iri[];
     private readonly _legalResources: LegalResource[];
 
-    //TODO LPDC-1236: take safe copies
-    //TODO LPDC-1236: constructor validation
     constructor(id: Iri,
                 generatedAtTime: FormatPreservingDate,
                 isPublishedVersionOf: Iri,
@@ -94,41 +99,51 @@ export class PublishedInstanceSnapshot {
                 spatials: Iri[],
                 legalResources: LegalResource[],
                 ) {
-        this._id = id;
+        this._id = requiredValue(id, 'id');
         this._generatedAtTime = requiredValue(generatedAtTime, 'generatedAtTime');
         this._isPublishedVersionOf = requiredValue(isPublishedVersionOf, 'isPublishedVersionOf');
-        this._createdBy = createdBy;
-        this._title = title;
-        this._description = description;
+        this._createdBy = requiredValue(createdBy, 'createdBy');
+        this._title = requiredValue(title, 'title');
+        this._description = requiredValue(description, 'description');
         this._additionalDescription = additionalDescription;
         this._exception = exception;
         this._regulation = regulation;
         this._startDate = startDate;
         this._endDate = endDate;
         this._type = type;
-        this._targetAudiences = targetAudiences;
-        this._themes = themes;
-        this._competentAuthorityLevels = competentAuthorityLevels;
-        this._competentAuthorities = competentAuthorities;
-        this._executingAuthorityLevels = executingAuthorityLevels;
-        this._executingAuthorities = executingAuthorities;
-        this._publicationMedia = publicationMedia;
-        this._yourEuropeCategories = yourEuropeCategories;
-        this._keywords = keywords;
-        this._requirements = requirements;
-        this._procedures = procedures;
-        this._websites = websites;
-        this._costs = costs;
-        this._financialAdvantages = financialAdvantages;
-        this._contactPoints = contactPoints;
+        this._targetAudiences = requireNoDuplicates(asSortedArray(targetAudiences), 'targetAudiences');
+        this._themes = requireNoDuplicates(asSortedArray(themes), 'themes');
+        this._competentAuthorityLevels = requireNoDuplicates(asSortedArray(competentAuthorityLevels), 'competentAuthorityLevels');
+        this._competentAuthorities = requireNoDuplicates(asSortedArray(competentAuthorities, Iri.compare), 'competentAuthorities');
+        requiredAtLeastOneValuePresent(this._competentAuthorities, 'competentAuthorities');
+        this._executingAuthorityLevels = requireNoDuplicates(asSortedArray(executingAuthorityLevels), 'executingAuthorityLevels');
+        this._executingAuthorities = requireNoDuplicates(asSortedArray(executingAuthorities, Iri.compare), 'executingAuthorities');
+        this._publicationMedia = requireNoDuplicates(asSortedArray(publicationMedia), 'publicationMedia');
+        this._yourEuropeCategories = requireNoDuplicates(asSortedArray(yourEuropeCategories), 'yourEuropeCategories');
+        requireAtLeastOneValuePresentIfCondition(this._yourEuropeCategories, 'yourEuropeCategories', () => publicationMedia.includes(PublicationMediumType.YOUREUROPE));
+        this._keywords = requireNoDuplicates(asSortedArray(keywords, LanguageString.compare), 'keywords');
+        LanguageString.validateUniqueAndCorrectLanguages([Language.NL], ...this._keywords);
+        this._requirements = [...requirements].map(r => Requirement.forInstanceSnapshot(r));
+        requireNoDuplicates(this._requirements.map(r => r.order), 'requirements > order');
+        this._procedures = [...procedures].map(p => Procedure.forInstanceSnapshot(p));
+        requireNoDuplicates(this._procedures.map(r => r.order), 'procedures > order');
+        this._websites = [...websites].map(w => Website.forInstanceSnapshot(w));
+        requireNoDuplicates(this._websites.map(w => w.order), 'websites > order');
+        this._costs = [...costs].map(c => Cost.forInstanceSnapshot(c));
+        requireNoDuplicates(this._costs.map(c => c.order), 'costs > order');
+        this._financialAdvantages = [...financialAdvantages].map(fa => FinancialAdvantage.forInstanceSnapshot(fa));
+        requireNoDuplicates(this._financialAdvantages.map(fa => fa.order), 'financial advantages > order');
+        this._contactPoints = [...contactPoints].map(cp => ContactPoint.forInstanceSnapshot(cp));
+        requireNoDuplicates(this._contactPoints.map(cp => cp.order), 'contact points > order');
         this._conceptId = conceptId;
-        this._languages = languages;
-        this._dateCreated = dateCreated;
-        this._dateModified = dateModified;
-        this._spatials = spatials;
-        this._legalResources = legalResources;
+        this._languages = requireNoDuplicates(asSortedArray(languages), 'languages');
+        this._dateCreated = requiredValue(dateCreated, 'dateCreated');
+        this._dateModified = requiredValue(dateModified, 'dateModified');
+        this._spatials = requireNoDuplicates(asSortedArray(spatials, Iri.compare), 'spatials');
+        requiredAtLeastOneValuePresent(this._spatials, 'spatials');
+        this._legalResources =  [...legalResources].map(LegalResource.forInstanceSnapshot);
+        requireNoDuplicates(this._legalResources.map(lr => lr.order), 'legal resources > order');
     }
-
 
     get id(): Iri {
         return this._id;
@@ -179,63 +194,63 @@ export class PublishedInstanceSnapshot {
     }
 
     get targetAudiences(): TargetAudienceType[] {
-        return this._targetAudiences;
+        return [...this._targetAudiences];
     }
 
     get themes(): ThemeType[] {
-        return this._themes;
+        return [...this._themes];
     }
 
     get competentAuthorityLevels(): CompetentAuthorityLevelType[] {
-        return this._competentAuthorityLevels;
+        return [...this._competentAuthorityLevels];
     }
 
     get competentAuthorities(): Iri[] {
-        return this._competentAuthorities;
+        return [...this._competentAuthorities];
     }
 
     get executingAuthorityLevels(): ExecutingAuthorityLevelType[] {
-        return this._executingAuthorityLevels;
+        return [...this._executingAuthorityLevels];
     }
 
     get executingAuthorities(): Iri[] {
-        return this._executingAuthorities;
+        return [...this._executingAuthorities];
     }
 
     get publicationMedia(): PublicationMediumType[] {
-        return this._publicationMedia;
+        return [...this._publicationMedia];
     }
 
     get yourEuropeCategories(): YourEuropeCategoryType[] {
-        return this._yourEuropeCategories;
+        return [...this._yourEuropeCategories];
     }
 
     get keywords(): LanguageString[] {
-        return this._keywords;
+        return [...this._keywords];
     }
 
     get requirements(): Requirement[] {
-        return this._requirements;
+        return [...this._requirements];
     }
 
     get procedures(): Procedure[] {
-        return this._procedures;
+        return [...this._procedures];
     }
 
     get websites(): Website[] {
-        return this._websites;
+        return [...this._websites];
     }
 
     get costs(): Cost[] {
-        return this._costs;
+        return [...this._costs];
     }
 
     get financialAdvantages(): FinancialAdvantage[] {
-        return this._financialAdvantages;
+        return [...this._financialAdvantages];
     }
 
     get contactPoints(): ContactPoint[] {
-        return this._contactPoints;
+        return [...this._contactPoints];
     }
 
     get conceptId(): Iri | undefined {
@@ -243,7 +258,7 @@ export class PublishedInstanceSnapshot {
     }
 
     get languages(): LanguageType[] {
-        return this._languages;
+        return [...this._languages];
     }
 
     get dateCreated(): FormatPreservingDate {
@@ -255,11 +270,11 @@ export class PublishedInstanceSnapshot {
     }
 
     get spatials(): Iri[] {
-        return this._spatials;
+        return [...this._spatials];
     }
 
     get legalResources(): LegalResource[] {
-        return this._legalResources;
+        return [...this._legalResources];
     }
 }
 
@@ -270,7 +285,6 @@ export class PublishedInstanceSnapshotBuilder {
     }
 
     public static from(instance: Instance): PublishedInstanceSnapshot {
-        //TODO LPDC-1236: validate instance is published?
         const uniqueId = uuid();
         return new PublishedInstanceSnapshot(
             this.buildIri(uniqueId),

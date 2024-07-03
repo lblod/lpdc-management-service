@@ -27,6 +27,7 @@ import {TNI_IPDC_AUTHENTICATION_KEY, TNI_IPDC_ENDPOINT} from "../../test.config"
 import {graph, isLiteral, literal, Literal, parse, quad, Statement} from "rdflib";
 import * as jsonld from 'jsonld';
 import {GraphType, ObjectType, PredicateType, SubjectType} from "rdflib/lib/types";
+import {buildNutsCodeIri} from "../../core/domain/iri-test-builder";
 
 const bestuurseenheid = aBestuurseenheid().build();
 const uuid = 'e8843fda-b3a8-4334-905c-8e49eb12203b';
@@ -58,6 +59,7 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
     )
     .withStartDate(FormatPreservingDate.of("2024-03-12T12:00:00Z"))
     .withEndDate(FormatPreservingDate.of("2024-09-21T12:00:00Z"))
+    .withCompetentAuthorities([bestuurseenheid.id])
     .withRequirements([
         new RequirementBuilder()
             .withId(new Iri("http://data.lblod.info/id/requirement/2e24c02e-0de5-4460-8366-1a76514e0407"))
@@ -276,6 +278,7 @@ export const instancePublishedOnIpdcTni = new InstanceBuilder()
     .withDateSent(FormatPreservingDate.of("2024-04-24T14:09:45.773Z"))
     .withStatus(InstanceStatusType.VERZONDEN)
     .withForMunicipalityMerger(false)
+    .withSpatials([buildNutsCodeIri(1)])
     .build();
 
 describe('Instance informal language strings fetcher ipdc', () => {

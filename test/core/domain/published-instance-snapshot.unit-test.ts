@@ -1,17 +1,577 @@
 import {aFullInstance} from "./instance-test-builder";
 import {PublishedInstanceSnapshotBuilder} from "../../../src/core/domain/published-instance-snapshot";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {
+    CompetentAuthorityLevelType,
+    ExecutingAuthorityLevelType,
+    LanguageType,
+    PublicationMediumType,
+    TargetAudienceType,
+    ThemeType,
+    YourEuropeCategoryType
+} from "../../../src/core/domain/types";
+import {buildBestuurseenheidIri, buildNutsCodeIri} from "./iri-test-builder";
+import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
+import {LanguageString} from "../../../src/core/domain/language-string";
+import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
+import {uuid} from "../../../mu-helper";
+import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
+import {aFullRequirementForInstanceSnapshot, aMinimalRequirementForInstanceSnapshot} from "./requirement-test-builder";
+import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
+import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
+import {aMinimalProcedureForInstanceSnapshot} from "./procedure-test-builder";
+import {aFullPublishedInstanceSnapshot} from "./published-instance-snapshot-test-builder";
+import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
+import {aMinimalInformalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
+import {aMinimalWebsiteForInstanceSnapshot, WebsiteTestBuilder} from "./website-test-builder";
+import {Cost, CostBuilder} from "../../../src/core/domain/cost";
+import {aMinimalCostForInstanceSnapshot, CostTestBuilder} from "./cost-test-builder";
+import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
+import {
+    aMinimalFinancialAdvantageForInstanceSnapshot,
+    FinancialAdvantageTestBuilder
+} from "./financial-advantage-test-builder";
+import {ContactPoint, ContactPointBuilder} from "../../../src/core/domain/contact-point";
+import {aMinimalContactPointForInstanceSnapshot, ContactPointTestBuilder} from "./contact-point-test-builder";
+import {Address, AddressBuilder} from "../../../src/core/domain/address";
+import {AddressTestBuilder} from "./address-test-builder";
+import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
+import {aFullLegalResourceForInstanceSnapshot, LegalResourceTestBuilder} from "./legal-resource-test-builder";
 
 describe('constructing', () => {
 
-    test('undefined generatedAtTime throws error', () => {
-        expect(() => PublishedInstanceSnapshotBuilder.from(aFullInstance().withDateSent(undefined).build()))
-            .toThrowWithMessage(InvariantError, 'generatedAtTime mag niet ontbreken');
+    test('undefined id throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withId(undefined).build()).toThrowWithMessage(InvariantError, 'id mag niet ontbreken');
     });
 
+    describe('generatedAtTime', () => {
+
+        test('Undefined generatedAtTime throws error', () => {
+            expect(() => aFullPublishedInstanceSnapshot().withGeneratedAtTime(undefined).build()).toThrowWithMessage(InvariantError, 'generatedAtTime mag niet ontbreken');
+        });
+
+        test('Blank generatedAtTime throws error', () => {
+            expect(() => aFullPublishedInstanceSnapshot().withGeneratedAtTime(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'generatedAtTime mag niet ontbreken');
+        });
+    });
+
+    test('undefined isPublishedVersionOf throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withIsPublishedVersionOf(undefined).build()).toThrowWithMessage(InvariantError, 'isPublishedVersionOf mag niet ontbreken');
+    });
+
+    test('undefined createdBy throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withCreatedBy(undefined).build()).toThrowWithMessage(InvariantError, 'createdBy mag niet ontbreken');
+    });
+
+    test('undefined title throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withTitle(undefined).build()).toThrowWithMessage(InvariantError, 'title mag niet ontbreken');
+    });
+
+    test('Undefined description throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withDescription(undefined).build()).toThrowWithMessage(InvariantError, 'description mag niet ontbreken');
+    });
+
+    test('TargetAudience with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withTargetAudiences([TargetAudienceType.BURGER, TargetAudienceType.BURGER]).build())
+            .toThrowWithMessage(InvariantError, 'targetAudiences mag geen duplicaten bevatten');
+    });
+
+    test('Themes with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withThemes([ThemeType.WELZIJNGEZONDHEID, ThemeType.WELZIJNGEZONDHEID]).build())
+            .toThrowWithMessage(InvariantError, 'themes mag geen duplicaten bevatten');
+    });
+
+    test('CompetentAuthorityLevels with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.LOKAAL]).build())
+            .toThrowWithMessage(InvariantError, 'competentAuthorityLevels mag geen duplicaten bevatten');
+    });
+
+    test('CompetentAuthorities with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withCompetentAuthorities([buildBestuurseenheidIri('abc'), buildBestuurseenheidIri('abc')]).build())
+            .toThrowWithMessage(InvariantError, 'competentAuthorities mag geen duplicaten bevatten');
+    });
+
+    test('CompetentAuthorities with not at least one value throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withCompetentAuthorities([]).build())
+            .toThrowWithMessage(InvariantError, 'competentAuthorities moet minstens een waarde bevatten');
+    });
+
+    test('ExecutingAuthorityLevels with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withExecutingAuthorityLevels([ExecutingAuthorityLevelType.LOKAAL, ExecutingAuthorityLevelType.LOKAAL]).build())
+            .toThrowWithMessage(InvariantError, 'executingAuthorityLevels mag geen duplicaten bevatten');
+    });
+
+    test('ExecutingAuthorities with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withExecutingAuthorities([BestuurseenheidTestBuilder.PEPINGEN_IRI, BestuurseenheidTestBuilder.PEPINGEN_IRI]).build())
+            .toThrowWithMessage(InvariantError, 'executingAuthorities mag geen duplicaten bevatten');
+    });
+
+    test('PublicationMedia with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withPublicationMedia([PublicationMediumType.YOUREUROPE, PublicationMediumType.YOUREUROPE]).build())
+            .toThrowWithMessage(InvariantError, 'publicationMedia mag geen duplicaten bevatten');
+    });
+
+    test('YourEuropeCategories with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withYourEuropeCategories([YourEuropeCategoryType.BEDRIJF, YourEuropeCategoryType.BEDRIJF]).build())
+            .toThrowWithMessage(InvariantError, 'yourEuropeCategories mag geen duplicaten bevatten');
+    });
+
+    test('YourEuropeCategories with not at least one value throws error when publicationMedia includes yourEurope', () => {
+        expect(() => aFullPublishedInstanceSnapshot()
+            .withPublicationMedia([PublicationMediumType.YOUREUROPE])
+            .withYourEuropeCategories([]).build())
+            .toThrowWithMessage(InvariantError, 'yourEuropeCategories moet minstens een waarde bevatten');
+    });
+
+    test('keywords with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withKeywords([LanguageString.of('overlijden'), LanguageString.of('overlijden')]).build())
+            .toThrowWithMessage(InvariantError, 'keywords mag geen duplicaten bevatten');
+    });
+
+    test('keywords with other nl language throws error', () => {
+        const publishedInstanceSnapshotTestBuilder = aFullPublishedInstanceSnapshot().withKeywords([LanguageString.of(undefined, 'overlijden'), LanguageString.of(undefined, 'geboorte')]);
+        expect(() => publishedInstanceSnapshotTestBuilder.build()).toThrowWithMessage(InvariantError, 'De nl-taal verschilt van nl');
+    });
+
+    test('languages with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withLanguages([LanguageType.ENG, LanguageType.ENG]).build())
+            .toThrowWithMessage(InvariantError, 'languages mag geen duplicaten bevatten');
+    });
+
+    describe('dateCreated', () => {
+
+        test('Undefined dateCreated throws error', () => {
+            expect(() => aFullPublishedInstanceSnapshot().withDateCreated(undefined).build()).toThrowWithMessage(InvariantError, 'dateCreated mag niet ontbreken');
+        });
+
+        test('Blank dateCreated throws error', () => {
+            expect(() => aFullPublishedInstanceSnapshot().withDateCreated(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateCreated mag niet ontbreken');
+        });
+
+    });
+
+    describe('dateModified', () => {
+
+        test('Undefined dateModified throws error', () => {
+            expect(() => aFullPublishedInstanceSnapshot().withDateModified(undefined).build()).toThrowWithMessage(InvariantError, 'dateModified mag niet ontbreken');
+        });
+
+        test('Blank dateModified throws error', () => {
+            expect(() => aFullPublishedInstanceSnapshot().withDateModified(FormatPreservingDate.of('')).build()).toThrowWithMessage(InvariantError, 'dateModified mag niet ontbreken');
+        });
+
+    });
+
+    test('Spatials with duplicates throws error', () => {
+        expect(() => aFullPublishedInstanceSnapshot().withSpatials([buildNutsCodeIri(1), buildNutsCodeIri(1)]).build())
+            .toThrowWithMessage(InvariantError, 'spatials mag geen duplicaten bevatten');
+    });
+
+    describe('requirement', () => {
+
+        test('valid requirement does not throw error', () => {
+            const uuidValue = uuid();
+            const validRequirement = Requirement.reconstitute(
+                RequirementBuilder.buildIri(uuidValue),
+                undefined,
+                LanguageString.of(undefined, undefined, 'title'),
+                LanguageString.of(undefined, undefined, 'omschrijving'),
+                1,
+                undefined
+            );
+
+            expect(() => aFullPublishedInstanceSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
+        });
+
+        test('invalid requirement does throw error', () => {
+            const invalidRequirement = Requirement.reconstitute(
+                RequirementBuilder.buildIri(uuid()),
+                undefined,
+                undefined,
+                undefined,
+                1,
+                undefined
+            );
+
+            expect(() => aFullPublishedInstanceSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
+        });
+
+        test('requirements that dont have unique order throws error', () => {
+            const requirement1 =
+                aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
+            const requirement2 =
+                aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withRequirements([requirement1, requirement2]).build()).toThrowWithMessage(InvariantError, 'requirements > order mag geen duplicaten bevatten');
+        });
+
+        test('requirements that have unique order does not throw error', () => {
+            const requirement1 =
+                aMinimalRequirementForInstanceSnapshot().withOrder(1).build();
+            const requirement2 =
+                aMinimalRequirementForInstanceSnapshot().withOrder(2).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withRequirements([requirement1, requirement2]).build()).not.toThrow();
+        });
+
+        describe('evidence ', () => {
+
+            test('valid evidence does not throw error', () => {
+                const uuidValue = uuid();
+                const validEvidence = Evidence.reconstitute(
+                    EvidenceBuilder.buildIri(uuidValue),
+                    undefined,
+                    LanguageString.of(undefined, undefined, 'title'),
+                    LanguageString.of(undefined, undefined, 'omschrijving')
+                );
+                const validRequirement = aFullRequirementForInstanceSnapshot().withEvidence(validEvidence).build();
+
+                expect(() => aFullPublishedInstanceSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
+            });
+
+            test('invalid evidence does throw error', () => {
+                const uuidValue = uuid();
+                const invalidEvidence = Evidence.reconstitute(
+                    EvidenceBuilder.buildIri(uuidValue),
+                    undefined,
+                    undefined,
+                    undefined
+                );
+                const invalidRequirement = aFullRequirementForInstanceSnapshot().withEvidence(invalidEvidence).build();
+
+                expect(() => aFullPublishedInstanceSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
+            });
+
+        });
+    });
+
+    describe('procedure', () => {
+
+        test('valid procedure does not throw error', () => {
+            const uuidValue = uuid();
+            const validProcedure = Procedure.reconstitute(
+                ProcedureBuilder.buildIri(uuidValue),
+                undefined,
+                LanguageString.of(undefined, undefined, 'title'),
+                LanguageString.of(undefined, undefined, 'omschrijving'),
+                1,
+                []
+            );
+
+            expect(() => aFullPublishedInstanceSnapshot().withProcedures([validProcedure]).build()).not.toThrow();
+        });
+
+        test('invalid procedure does throw error', () => {
+            const invalidProcedure = Procedure.reconstitute(
+                RequirementBuilder.buildIri(uuid()),
+                undefined,
+                undefined,
+                undefined,
+                1,
+                []
+            );
+
+            expect(() => aFullPublishedInstanceSnapshot().withProcedures([invalidProcedure]).build()).toThrow();
+        });
+
+        test('procedures that dont have unique order throws error', () => {
+            const procedure1 =
+                aMinimalProcedureForInstanceSnapshot().withOrder(1).build();
+            const procedure2 =
+                aMinimalProcedureForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withProcedures([procedure1, procedure2]).build()).toThrowWithMessage(InvariantError, 'procedures > order mag geen duplicaten bevatten');
+        });
+
+        test('procedures that have unique order does not throw error', () => {
+            const procedure1 =
+                aMinimalProcedureForInstanceSnapshot().withOrder(1).build();
+            const procedure2 =
+                aMinimalProcedureForInstanceSnapshot().withOrder(2).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withProcedures([procedure1, procedure2]).build()).not.toThrow();
+        });
+
+        describe('evidence ', () => {
+
+            test('valid evidence does not throw error', () => {
+                const uuidValue = uuid();
+                const validEvidence = Evidence.reconstitute(
+                    EvidenceBuilder.buildIri(uuidValue),
+                    undefined,
+                    LanguageString.of(undefined, undefined, 'title'),
+                    LanguageString.of(undefined, undefined, 'omschrijving')
+                );
+                const validRequirement = aFullRequirementForInstanceSnapshot().withEvidence(validEvidence).build();
+
+                expect(() => aFullPublishedInstanceSnapshot().withRequirements([validRequirement]).build()).not.toThrow();
+            });
+
+            test('invalid evidence does throw error', () => {
+                const uuidValue = uuid();
+                const invalidEvidence = Evidence.reconstitute(
+                    EvidenceBuilder.buildIri(uuidValue),
+                    undefined,
+                    undefined,
+                    undefined
+                );
+                const invalidRequirement = aFullRequirementForInstanceSnapshot().withEvidence(invalidEvidence).build();
+
+                expect(() => aFullPublishedInstanceSnapshot().withRequirements([invalidRequirement]).build()).toThrow();
+            });
+
+        });
+    });
+
+    describe('website ', () => {
+
+        test('valid website does not throw error', () => {
+            const uuidValue = uuid();
+            const validWebsite = Website.reconstitute(
+                WebsiteBuilder.buildIri(uuidValue),
+                undefined,
+                aMinimalInformalLanguageString(WebsiteTestBuilder.TITLE).build(),
+                aMinimalInformalLanguageString(WebsiteTestBuilder.DESCRIPTION).build(),
+                1,
+                WebsiteTestBuilder.URL
+            );
+
+            expect(() => aFullPublishedInstanceSnapshot().withWebsites([validWebsite]).build()).not.toThrow();
+        });
+
+        test('invalid website does throw error', () => {
+            const invalidWebsite = Website.reconstitute(WebsiteBuilder.buildIri(uuid()), undefined, undefined, undefined, 1, undefined);
+
+            expect(() => aFullPublishedInstanceSnapshot().withWebsites([invalidWebsite]).build()).toThrow();
+        });
+
+        test('websites that dont have unique order throws error', () => {
+            const website1 =
+                aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
+            const website2 =
+                aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withWebsites([website1, website2]).build()).toThrowWithMessage(InvariantError, 'websites > order mag geen duplicaten bevatten');
+        });
+
+        test('websites that have unique order does not throw error', () => {
+            const website1 =
+                aMinimalWebsiteForInstanceSnapshot().withOrder(1).build();
+            const website2 =
+                aMinimalWebsiteForInstanceSnapshot().withOrder(2).build();
+
+
+            expect(() => aFullPublishedInstanceSnapshot().withWebsites([website1, website2]).build()).not.toThrow();
+        });
+
+    });
+
+    describe('cost ', () => {
+
+        test('valid cost does not throw error', () => {
+            const uuidValue = uuid();
+            const validCost = Cost.reconstitute(
+                CostBuilder.buildIri(uuidValue),
+                undefined,
+                aMinimalInformalLanguageString(CostTestBuilder.TITLE).build(),
+                aMinimalInformalLanguageString(CostTestBuilder.DESCRIPTION).build(),
+                1
+            );
+
+            expect(() => aFullPublishedInstanceSnapshot().withCosts([validCost]).build()).not.toThrow();
+        });
+
+        test('invalid cost does throw error', () => {
+            const invalidCost = Cost.reconstitute(CostBuilder.buildIri(uuid()), undefined, undefined, undefined, 1);
+
+            expect(() => aFullPublishedInstanceSnapshot().withCosts([invalidCost]).build()).toThrow();
+        });
+
+        test('costs that dont have unique order throws error', () => {
+            const cost1 =
+                aMinimalCostForInstanceSnapshot().withOrder(1).build();
+            const cost2 =
+                aMinimalCostForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withCosts([cost1, cost2]).build()).toThrowWithMessage(InvariantError, 'costs > order mag geen duplicaten bevatten');
+        });
+
+        test('costs that have unique order does not throw error', () => {
+            const cost1 =
+                aMinimalCostForInstanceSnapshot().withOrder(1).build();
+            const cost2 =
+                aMinimalCostForInstanceSnapshot().withOrder(2).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withCosts([cost1, cost2]).build()).not.toThrow();
+        });
+
+    });
+
+    describe('financialAdvantage ', () => {
+
+        test('valid financialAdvantage does not throw error', () => {
+            const uuidValue = uuid();
+            const validFinancialAdvantage = FinancialAdvantage.reconstitute(
+                FinancialAdvantageBuilder.buildIri(uuidValue),
+                undefined,
+                aMinimalInformalLanguageString(FinancialAdvantageTestBuilder.TITLE).build(),
+                aMinimalInformalLanguageString(FinancialAdvantageTestBuilder.DESCRIPTION).build(),
+                1
+            );
+
+            expect(() => aFullPublishedInstanceSnapshot().withFinancialAdvantages([validFinancialAdvantage]).build()).not.toThrow();
+        });
+
+        test('invalid financialAdvantage does throw error', () => {
+            const invalidFinancialAdvantage = FinancialAdvantage.reconstitute(FinancialAdvantageBuilder.buildIri(uuid()), undefined, undefined, undefined, 1);
+
+            expect(() => aFullPublishedInstanceSnapshot().withFinancialAdvantages([invalidFinancialAdvantage]).build()).toThrow();
+        });
+
+        test('financial advantages that dont have unique order throws error', () => {
+            const financialAdvantage1 =
+                aMinimalFinancialAdvantageForInstanceSnapshot().withOrder(1).build();
+            const financialAdvantage2 =
+                aMinimalFinancialAdvantageForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build())
+                .toThrowWithMessage(InvariantError, 'financial advantages > order mag geen duplicaten bevatten');
+        });
+
+        test('financial advantages that have unique order does not throw error', () => {
+            const financialAdvantage1 =
+                aMinimalFinancialAdvantageForInstanceSnapshot().withOrder(1).build();
+            const financialAdvantage2 =
+                aMinimalFinancialAdvantageForInstanceSnapshot().withOrder(2).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withFinancialAdvantages([financialAdvantage1, financialAdvantage2]).build()).not.toThrow();
+        });
+    });
+
+    describe('contact points ', () => {
+
+        test('valid contact point does not throw error', () => {
+            const uuidValue = uuid();
+            const validContactPoint = ContactPoint.reconstitute(ContactPointBuilder.buildIri(uuidValue), uuidValue, ContactPointTestBuilder.URL, ContactPointTestBuilder.EMAIL, ContactPointTestBuilder.TELEPHONE, ContactPointTestBuilder.OPENING_HOURS, 1, undefined);
+
+            expect(() => aFullPublishedInstanceSnapshot().withContactPoints([validContactPoint]).build()).not.toThrow();
+        });
+
+        test('invalid contact point does throw error', () => {
+            expect(() => aFullPublishedInstanceSnapshot().withContactPoints([
+                ContactPoint.reconstitute(undefined, undefined, undefined, undefined, undefined, undefined, 1, undefined)]).build()).toThrow();
+        });
+
+        test('contact points that dont have unique order throws error', () => {
+            const contactPoint1 =
+                aMinimalContactPointForInstanceSnapshot().withOrder(1).build();
+            const contactPoint2 =
+                aMinimalContactPointForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withContactPoints([contactPoint1, contactPoint2]).build()).toThrowWithMessage(InvariantError, 'contact points > order mag geen duplicaten bevatten');
+        });
+
+        test('contact points that have unique order does not throw error', () => {
+            const contactPoint1 =
+                aMinimalContactPointForInstanceSnapshot().withOrder(1).build();
+            const contactPoint2 =
+                aMinimalContactPointForInstanceSnapshot().withOrder(2).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withContactPoints([contactPoint1, contactPoint2]).build()).not.toThrow();
+        });
+
+        describe('address', () => {
+
+            test('valid contact point with valid address does not throw error', () => {
+                const uuidValue = uuid();
+                const validContactPoint =
+                    ContactPoint.reconstitute(ContactPointBuilder.buildIri(uuidValue), uuidValue, ContactPointTestBuilder.URL, ContactPointTestBuilder.EMAIL, ContactPointTestBuilder.TELEPHONE, ContactPointTestBuilder.OPENING_HOURS, 1,
+                        Address.reconstitute(
+                            AddressBuilder.buildIri(uuid()), uuid(),
+                            aMinimalLanguageString(AddressTestBuilder.GEMEENTENAAM_NL).build(),
+                            aMinimalLanguageString(AddressTestBuilder.LAND_NL).build(),
+                            AddressTestBuilder.HUISNUMMER,
+                            AddressTestBuilder.BUSNUMMER,
+                            AddressTestBuilder.POSTCODE,
+                            aMinimalLanguageString(AddressTestBuilder.STRAATNAAM_NL).build(),
+                            AddressTestBuilder.VERWIJST_NAAR));
+
+                expect(() => aFullPublishedInstanceSnapshot().withContactPoints([validContactPoint]).build()).not.toThrow();
+            });
+
+            test('valid contact point with invalid address does throw error', () => {
+                const uuidValue = uuid();
+                expect(() => aFullPublishedInstanceSnapshot()
+                    .withContactPoints([
+                        ContactPoint.reconstitute(ContactPointBuilder.buildIri(uuidValue), uuidValue, ContactPointTestBuilder.URL, ContactPointTestBuilder.EMAIL, ContactPointTestBuilder.TELEPHONE, ContactPointTestBuilder.OPENING_HOURS, 1,
+                            Address.reconstitute(
+                                undefined,
+                                undefined,
+                                undefined,
+                                undefined,
+                                undefined,
+                                undefined,
+                                undefined,
+                                undefined,
+                                undefined))]).build()).toThrow();
+            });
+
+        });
+
+    });
+
+    describe('legalResources', () => {
+
+        test('valid legalResource does not throw error', () => {
+            const uuidValue = uuid();
+            const validLegalResource = LegalResource.reconstitute(
+                LegalResourceBuilder.buildIri(uuidValue),
+                undefined,
+                undefined,
+                undefined,
+                LegalResourceTestBuilder.URL,
+                1
+            );
+            expect(() => aFullPublishedInstanceSnapshot().withLegalResources([validLegalResource]).build()).not.toThrow();
+        });
+
+        test('invalid legalResource does throw error', () => {
+            expect(() => aFullPublishedInstanceSnapshot().withLegalResources([LegalResource.reconstitute(
+                LegalResourceBuilder.buildIri(uuid()),
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                0
+            )]).build()).toThrow();
+        });
+
+        test('legalResources that dont have unique order throws error', () => {
+            const legalResource1 =
+                aFullLegalResourceForInstanceSnapshot().withOrder(1).build();
+            const legalResource2 =
+                aFullLegalResourceForInstanceSnapshot().withOrder(1).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withLegalResources([legalResource1, legalResource2]).build()).toThrowWithMessage(InvariantError, 'legal resources > order mag geen duplicaten bevatten');
+        });
+
+        test('legalResource that have unique order does not throw error', () => {
+            const legalResource1 =
+                aFullLegalResourceForInstanceSnapshot().withOrder(1).build();
+            const legalResource2 =
+                aFullLegalResourceForInstanceSnapshot().withOrder(2).build();
+
+            expect(() => aFullPublishedInstanceSnapshot().withLegalResources([legalResource1, legalResource2]).build()).not.toThrow();
+        });
+    });
 });
 
 describe('builder', () => {
+
+    test('from instance without sent date throws error', () => {
+        expect(() => PublishedInstanceSnapshotBuilder.from(aFullInstance().withDateSent(undefined).build()))
+            .toThrowWithMessage(InvariantError, 'generatedAtTime mag niet ontbreken');
+    });
 
     test('from instance, copies all fields and generates new ids', () => {
         const instance = aFullInstance().build();

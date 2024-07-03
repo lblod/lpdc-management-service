@@ -1435,7 +1435,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         expect(await instanceRepository.exists(bestuurseenheid, instance.id)).toBeFalse();
         const tombstoneIdsAfterArchive2 = await instanceRepository.getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
         expect(tombstoneIdsAfterArchive2).toHaveLength(2);
-        const tombstone2Id = tombstoneIdsAfterArchive2.filter(id => id != tombstone1Id)[0];
+        const tombstone2Id = tombstoneIdsAfterArchive2.filter(id => id.value != tombstone1Id.value)[0];
         const tombstoneQuads = await instanceRepository.findTombstone(bestuurseenheid, tombstone2Id);
         expect(tombstoneQuads).toEqual(expect.arrayContaining([
             quad(namedNode(tombstone2Id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),

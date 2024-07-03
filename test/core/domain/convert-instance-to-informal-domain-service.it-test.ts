@@ -1,5 +1,5 @@
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
-import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
+import {aFullInstance, aMinimalInstance, aMinimalPublishedInstance} from "./instance-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {
     ConvertInstanceToInformalDomainService
@@ -51,10 +51,9 @@ describe('Convert Instance To Informal Domain Service', () => {
 
         test('When instance dutchLanguageVersion already is informal, then throw error', async () => {
             const bestuurseenheid = aBestuurseenheid().build();
-            const instance = aMinimalInstance()
-                .withTitle(LanguageString.of(undefined, undefined, 'titel informal'))
-                .withStatus(InstanceStatusType.VERZONDEN)
-                .withDateSent(FormatPreservingDate.now())
+            const instance = aMinimalPublishedInstance()
+                .withTitle(LanguageString.of(undefined, undefined, 'titel'))
+                .withDescription(LanguageString.of(undefined, undefined, 'beschrijving'))
                 .withDutchLanguageVariant(Language.INFORMAL)
                 .build();
             await instanceTestRepository.save(bestuurseenheid, instance);
