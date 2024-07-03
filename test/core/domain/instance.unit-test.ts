@@ -443,12 +443,12 @@ describe('constructing', () => {
                     ContactPoint.reconstitute(ContactPointBuilder.buildIri(uuidValue), uuidValue, ContactPointTestBuilder.URL, ContactPointTestBuilder.EMAIL, ContactPointTestBuilder.TELEPHONE, ContactPointTestBuilder.OPENING_HOURS, 1,
                         Address.reconstitute(
                             AddressBuilder.buildIri(uuid()), uuid(),
-                            aMinimalLanguageString(AddressTestBuilder.GEMEENTENAAM_NL).build(),
-                            aMinimalLanguageString(AddressTestBuilder.LAND_NL).build(),
+                            aMinimalLanguageString(AddressTestBuilder.GEMEENTENAAM).build(),
+                            aMinimalLanguageString(AddressTestBuilder.LAND).build(),
                             AddressTestBuilder.HUISNUMMER,
                             AddressTestBuilder.BUSNUMMER,
                             AddressTestBuilder.POSTCODE,
-                            aMinimalLanguageString(AddressTestBuilder.STRAATNAAM_NL).build(),
+                            aMinimalLanguageString(AddressTestBuilder.STRAATNAAM).build(),
                             AddressTestBuilder.VERWIJST_NAAR));
 
                 expect(() => aFullInstance().withContactPoints([validContactPoint]).build()).not.toThrow();

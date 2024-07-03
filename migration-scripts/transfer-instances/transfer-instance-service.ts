@@ -8,17 +8,23 @@ import {InvariantError} from "../../src/core/domain/shared/lpdc-error";
 import {uuid} from "../../mu-helper";
 import {Language} from "../../src/core/domain/language";
 import {FormatPreservingDate} from "../../src/core/domain/format-preserving-date";
+import {ContactPoint, ContactPointBuilder} from "../../src/core/domain/contact-point";
+import {AddressFetcher} from "../../src/core/port/driven/external/address-fetcher";
+import {AddressBuilder} from "../../src/core/domain/address";
+import {AdressenRegisterFetcher} from "../../src/driven/external/adressen-register-fetcher";
 
 export class TransferInstanceService {
 
     private readonly bestuurseenheidRepository: BestuurseenheidRepository;
     private readonly instanceRepository: InstanceRepository;
     private formalInformalChoiceRepository: FormalInformalChoiceRepository;
+    private adressenFetcher: AddressFetcher;
 
     constructor(bestuurseenheidRepository: BestuurseenheidRepository, instanceRepository: InstanceRepository, formalInformalChoiceRepository: FormalInformalChoiceRepository) {
         this.bestuurseenheidRepository = bestuurseenheidRepository;
         this.instanceRepository = instanceRepository;
         this.formalInformalChoiceRepository = formalInformalChoiceRepository;
+        this.adressenFetcher = new AdressenRegisterFetcher();
     }
 
     async transfer(instanceId: Iri, fromAuthorityId: Iri, toAuthorityId: Iri): Promise<Instance> {
@@ -37,12 +43,15 @@ export class TransferInstanceService {
 
     }
 
-    private transferInstance(toAuthorityId: Iri, toAuthorityChoice: ChosenFormType, instanceToCopy: Instance) {
+    private async transferInstance(toAuthorityId: Iri, toAuthorityChoice: ChosenFormType, instanceToCopy: Instance) {
         const instanceUuid = uuid();
         const instanceId = InstanceBuilder.buildIri(instanceUuid);
 
         const hasCompetentAuthorityLevelLokaal = instanceToCopy.competentAuthorityLevels.includes(CompetentAuthorityLevelType.LOKAAL);
         const needsConversionFromFormalToInformal = (toAuthorityChoice === ChosenFormType.INFORMAL && instanceToCopy.dutchLanguageVariant !== Language.INFORMAL);
+
+        const contactpointsWithUpdatedAddresses = await this.mapAddressesForContactpoints(instanceToCopy.contactPoints);
+
 
         return InstanceBuilder.from(instanceToCopy)
             .withId(instanceId)
@@ -55,7 +64,7 @@ export class TransferInstanceService {
             .withWebsites(instanceToCopy.websites.map(ws => ws.transformWithNewId()))
             .withCosts(instanceToCopy.costs.map(c => c.transformWithNewId()))
             .withFinancialAdvantages(instanceToCopy.financialAdvantages.map(fa => fa.transformWithNewId()))
-            .withContactPoints(instanceToCopy.contactPoints.map(fa => fa.transformWithNewId()))
+            .withContactPoints(contactpointsWithUpdatedAddresses.map(fa => fa.transformWithNewId()))
             .withStatus(InstanceStatusType.ONTWERP)
             .withDateSent(undefined)
             .withPublicationStatus(undefined)
@@ -69,4 +78,27 @@ export class TransferInstanceService {
             .withCopyOf(undefined)
             .build();
     }
+
+    private async mapAddressesForContactpoints(contactPoints: ContactPoint[]): Promise<ContactPoint[]> {
+        const fetchAddressMatch = async (cp: ContactPoint) => {
+            const address = cp.address;
+            if (address) {
+                const match = await this.adressenFetcher.findAddressMatch(
+                    address.gemeentenaam.nl,
+                    address.straatnaam.nl,
+                    address.huisnummer,
+                    address.busnummer
+                );
+                const updatedAddress = AddressBuilder.from(address)
+                    .withPostcode(match['postcode'] ? match['postcode'] : undefined)
+                    .withVerwijstNaar(match['adressenRegisterId'] ? new Iri(match['adressenRegisterId']) : undefined)
+                    .build();
+                return ContactPointBuilder.from(cp).withAddress(updatedAddress).build();
+            }
+            return cp;
+        };
+
+        return await Promise.all(contactPoints.map(fetchAddressMatch));
+    }
+
 }

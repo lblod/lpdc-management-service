@@ -6,7 +6,7 @@ import {
 } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {aBestuurseenheid} from "../../../test/core/domain/bestuurseenheid-test-builder";
 import {aFormalInformalChoice} from "../../../test/core/domain/formal-informal-choice-test-builder";
-import {aFullInstance, aMinimalInstance} from "../../../test/core/domain/instance-test-builder";
+import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "../../../test/core/domain/instance-test-builder";
 import {
     BestuurseenheidSparqlTestRepository
 } from "../../../test/driven/persistence/bestuurseenheid-sparql-test-repository";
@@ -27,6 +27,8 @@ import {aFullCostForInstance} from "../../../test/core/domain/cost-test-builder"
 import {aFullFinancialAdvantageForInstance} from "../../../test/core/domain/financial-advantage-test-builder";
 import {aFullLegalResourceForInstance} from "../../../test/core/domain/legal-resource-test-builder";
 import {aFullContactPointForInstance} from "../../../test/core/domain/contact-point-test-builder";
+import {AddressTestBuilder, aFullAddressForInstance} from "../../../test/core/domain/address-test-builder";
+import {LanguageString} from "../../../src/core/domain/language-string";
 
 describe('transfer instance', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -102,7 +104,7 @@ describe('transfer instance', () => {
     });
 
     test('when forMunicipalityMerger is false, clear spatial and executingAuthority', async () => {
-        const instance = aFullInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).build();
+        const instance = aMinimalInstance().withSpatials(InstanceTestBuilder.SPATIALS).withExecutingAuthorities(InstanceTestBuilder.EXECUTING_AUTHORITIES).withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).build();
         await instanceRepository.save(fromAuthority, instance);
         const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
 
@@ -114,9 +116,9 @@ describe('transfer instance', () => {
     });
 
     test('when forMunicipalityMerger is false and componentAuthorityLevel is Lokale overheid, clear hadCompetentAuthority ', async () => {
-        const lokaleOverheidInstance = aFullInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.VLAAMS]).build();
-        const europeeseInstance = aFullInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).withCompetentAuthorityLevels([CompetentAuthorityLevelType.EUROPEES]).build();
-        const provincialeInstance = aFullInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).withCompetentAuthorityLevels([CompetentAuthorityLevelType.PROVINCIAAL]).build();
+        const lokaleOverheidInstance = aMinimalInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).withCompetentAuthorities(InstanceTestBuilder.COMPETENT_AUTHORITIES).withCompetentAuthorityLevels([CompetentAuthorityLevelType.LOKAAL, CompetentAuthorityLevelType.VLAAMS]).build();
+        const europeeseInstance = aMinimalInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).withCompetentAuthorities(InstanceTestBuilder.COMPETENT_AUTHORITIES).withCompetentAuthorityLevels([CompetentAuthorityLevelType.EUROPEES]).build();
+        const provincialeInstance = aMinimalInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).withCompetentAuthorities(InstanceTestBuilder.COMPETENT_AUTHORITIES).withCompetentAuthorityLevels([CompetentAuthorityLevelType.PROVINCIAAL]).build();
 
         await instanceRepository.save(fromAuthority, lokaleOverheidInstance);
         await instanceRepository.save(fromAuthority, europeeseInstance);
@@ -317,7 +319,7 @@ describe('transfer instance', () => {
         expect(updatedInstance.legalResources[1].description).toEqual(instance.legalResources[1].description);
         expect(updatedInstance.legalResources[1].order).toEqual(instance.legalResources[1].order);
     });
-    
+
     describe('needsConversionFromFormalToInformal', () => {
         test('given authority without formalInformalChoice and instance in nl, needsConversion is false', async () => {
             const instance = aMinimalInstance().withDutchLanguageVariant(Language.NL).withCreatedBy(fromAuthority.id).build();
@@ -382,6 +384,74 @@ describe('transfer instance', () => {
             expect(transferredFormalInstance.needsConversionFromFormalToInformal).toBeTrue();
             expect(transferredNlInstance.needsConversionFromFormalToInformal).toBeTrue();
             expect(transferredInformalInstance.needsConversionFromFormalToInformal).toBeFalse();
+        });
+    });
+
+    describe('addresses', () => {
+        test('save addressId and postcode address exists', async () => {
+            const straatnaam = LanguageString.of("unexistingStreetname");
+            const contactPoint = aFullContactPointForInstance().withAddress(
+                aFullAddressForInstance()
+                    .withStraatnaam(straatnaam)
+                    .withPostcode(undefined)
+                    .withVerwijstNaar(undefined)
+                    .build())
+                .build();
+            const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withContactPoints([contactPoint]).build();
+
+            await instanceRepository.save(fromAuthority, instance);
+            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+
+            expect(transferredInstance.contactPoints[0].address.gemeentenaam.nl).toEqual(AddressTestBuilder.GEMEENTENAAM);
+            expect(transferredInstance.contactPoints[0].address.land.nl).toEqual(AddressTestBuilder.LAND);
+            expect(transferredInstance.contactPoints[0].address.huisnummer).toEqual(AddressTestBuilder.HUISNUMMER);
+            expect(transferredInstance.contactPoints[0].address.busnummer).toEqual(AddressTestBuilder.BUSNUMMER);
+            expect(transferredInstance.contactPoints[0].address.straatnaam).toEqual(straatnaam);
+            expect(transferredInstance.contactPoints[0].address.postcode).toBeUndefined();
+            expect(transferredInstance.contactPoints[0].address.verwijstNaar).toBeUndefined();
+
+        });
+
+        test('given address without verwijstnaar and postcode,  found keep postcode and verwijstNaar empty and fill in the rest when no match found', async () => {
+            const contactPoint = aFullContactPointForInstance().withAddress(aFullAddressForInstance().withPostcode(undefined).withVerwijstNaar(undefined).build()).build();
+            const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withContactPoints([contactPoint]).build();
+
+            await instanceRepository.save(fromAuthority, instance);
+            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+
+            expect(instance.contactPoints[0].address.postcode).toBeUndefined();
+            expect(transferredInstance.contactPoints[0].address.postcode).toEqual(AddressTestBuilder.POSTCODE);
+
+            expect(instance.contactPoints[0].address.verwijstNaar).toBeUndefined();
+            expect(transferredInstance.contactPoints[0].address.verwijstNaar).toEqual(AddressTestBuilder.VERWIJST_NAAR);
+
+            expect(transferredInstance.contactPoints[0].address.gemeentenaam.nl).toEqual(AddressTestBuilder.GEMEENTENAAM);
+            expect(transferredInstance.contactPoints[0].address.land.nl).toEqual(AddressTestBuilder.LAND);
+            expect(transferredInstance.contactPoints[0].address.huisnummer).toEqual(AddressTestBuilder.HUISNUMMER);
+            expect(transferredInstance.contactPoints[0].address.busnummer).toEqual(AddressTestBuilder.BUSNUMMER);
+            expect(transferredInstance.contactPoints[0].address.straatnaam.nl).toEqual(AddressTestBuilder.STRAATNAAM);
+
+        });
+        test('given address with verwijstnaar and postcode, remove postcode and verwijstNaar when no match found', async () => {
+            const straatnaam = LanguageString.of("unexistingStreetname");
+            const contactPoint = aFullContactPointForInstance().withAddress(aFullAddressForInstance().withStraatnaam(straatnaam).build()).build();
+            const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withContactPoints([contactPoint]).build();
+
+            await instanceRepository.save(fromAuthority, instance);
+            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+
+            expect(instance.contactPoints[0].address.postcode).toBeDefined();
+            expect(transferredInstance.contactPoints[0].address.postcode).toBeUndefined();
+
+            expect(instance.contactPoints[0].address.verwijstNaar).toBeDefined();
+            expect(transferredInstance.contactPoints[0].address.verwijstNaar).toBeUndefined();
+
+            expect(transferredInstance.contactPoints[0].address.gemeentenaam.nl).toEqual(AddressTestBuilder.GEMEENTENAAM);
+            expect(transferredInstance.contactPoints[0].address.land.nl).toEqual(AddressTestBuilder.LAND);
+            expect(transferredInstance.contactPoints[0].address.huisnummer).toEqual(AddressTestBuilder.HUISNUMMER);
+            expect(transferredInstance.contactPoints[0].address.busnummer).toEqual(AddressTestBuilder.BUSNUMMER);
+            expect(transferredInstance.contactPoints[0].address.straatnaam).toEqual(straatnaam);
+
         });
     });
 });
