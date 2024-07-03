@@ -549,14 +549,13 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
             await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
             const instance = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
-            const publishedInstanceSnapshotIds = await instanceRepository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, instance);
-            expect(publishedInstanceSnapshotIds).toHaveLength(1);
-            const quads = await instanceRepository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+            const publishedInstanceSnapshotId = await instanceRepository.findPublishedInstanceSnapshotIdForInstance(bestuurseenheid, instance);
+            const quads = await instanceRepository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotId);
             expect(quads).toIncludeAllMembers([
-                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instanceSnapshot.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instanceSnapshot.isVersionOf.value), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://purl.org/pav/createdBy'), namedNode(instanceSnapshot.createdBy.value), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotId.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotId.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instanceSnapshot.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotId.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instanceSnapshot.isVersionOf.value), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotId.value), namedNode('http://purl.org/pav/createdBy'), namedNode(instanceSnapshot.createdBy.value), namedNode(bestuurseenheid.userGraph().value)),
             ]);
         });
 
@@ -933,14 +932,13 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
                 await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
                 const updatedInstance = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
-                const publishedInstanceSnapshotIds = await instanceRepository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, updatedInstance);
-                expect(publishedInstanceSnapshotIds).toHaveLength(1);
-                const quads = await instanceRepository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+                const publishedInstanceSnapshotId = await instanceRepository.findPublishedInstanceSnapshotIdForInstance(bestuurseenheid, updatedInstance);
+                const quads = await instanceRepository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotId);
                 expect(quads).toIncludeAllMembers([
-                    quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instanceSnapshot.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instanceSnapshot.isVersionOf.value), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://purl.org/pav/createdBy'), namedNode(instanceSnapshot.createdBy.value), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(publishedInstanceSnapshotId.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(publishedInstanceSnapshotId.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instanceSnapshot.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(publishedInstanceSnapshotId.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instanceSnapshot.isVersionOf.value), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(publishedInstanceSnapshotId.value), namedNode('http://purl.org/pav/createdBy'), namedNode(instanceSnapshot.createdBy.value), namedNode(bestuurseenheid.userGraph().value)),
                 ]);
             });
         });
@@ -968,30 +966,19 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeFalsy();
 
-                const tombstoneIds = await getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
+                const tombstoneIds = await instanceRepository.getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
                 expect(tombstoneIds.length).toEqual(1);
                 const tombstoneId = tombstoneIds[0];
 
-                const query = `
-            SELECT ?s ?p ?o WHERE {
-                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                    VALUES ?s {
-                        <${tombstoneId}>
-                    }
-                    ?s ?p ?o
-                }
-            }
-        `;
-                const queryResult = await directDatabaseAccess.list(query);
-                const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
+                const quads = await instanceRepository.findTombstone(bestuurseenheid, tombstoneId);
 
                 expect(quads).toHaveLength(5);
                 expect(quads).toEqual(expect.arrayContaining([
-                    quad(namedNode(tombstoneId), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(tombstoneId), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(tombstoneId), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(tombstoneId), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(tombstoneId), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
                 ]));
             });
 
@@ -1020,7 +1007,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeFalsy();
 
-                const tombstoneIds = await getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
+                const tombstoneIds = await instanceRepository.getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
                 expect(tombstoneIds.length).toEqual(1);
                 const tombstoneId = tombstoneIds[0];
 
@@ -1039,11 +1026,11 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
 
                 expect(quads).toHaveLength(5);
                 expect(quads).toEqual(expect.arrayContaining([
-                    quad(namedNode(tombstoneId), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(tombstoneId), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(tombstoneId), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(tombstoneId), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(tombstoneId), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+                    quad(namedNode(tombstoneId.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
                 ]));
             });
 
@@ -1366,7 +1353,7 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
         expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeTruthy();
-        const tombstoneIds = await getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
+        const tombstoneIds = await instanceRepository.getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
 
         expect(tombstoneIds.length).toEqual(1);
 
@@ -1396,9 +1383,79 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
         await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshot.id, versionedLdesSnapshotRepository);
 
         expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOf)).toBeFalsy();
-        const tombstonedIds = await getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
+        const tombstonedIds = await instanceRepository.getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
 
         expect(tombstonedIds.length).toEqual(1);
+    });
+
+    test('Given an instance -> tombstone -> recreate -> tombstone -> recreate', async () => {
+        const bestuurseenheid = aBestuurseenheid().build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+        await instanceRepository.save(bestuurseenheid, instance);
+
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
+        const instanceSnapshotGraph = new Iri(INSTANCE_SNAPHOT_LDES_GRAPH('an-integrating-partner'));
+        const instanceSnapshotArchive1 = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z')).withIsArchived(true).build();
+        const instanceSnapshotRecreate1 = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withGeneratedAtTime(FormatPreservingDate.of('2024-01-17T00:00:00.672Z')).withIsArchived(false).build();
+        const instanceSnapshotArchive2 = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withGeneratedAtTime(FormatPreservingDate.of('2024-01-18T00:00:00.672Z')).withIsArchived(true).build();
+        const instanceSnapshotRecreate2 = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withGeneratedAtTime(FormatPreservingDate.of('2024-01-19T00:00:00.672Z')).withIsArchived(false).build();
+        await instanceSnapshotProcessingAuthorizationRepository.save(bestuurseenheid, instanceSnapshotGraph);
+
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshotArchive1);
+        await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshotArchive1.id, versionedLdesSnapshotRepository);
+        expect(await instanceRepository.exists(bestuurseenheid, instance.id)).toBeFalse();
+        const tombstoneIdsAfterArchive1 = await instanceRepository.getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
+        expect(tombstoneIdsAfterArchive1).toHaveLength(1);
+        const tombstone1Id = tombstoneIdsAfterArchive1[0];
+        const tombstone1Quads = await instanceRepository.findTombstone(bestuurseenheid, tombstone1Id);
+        expect(tombstone1Quads).toEqual(expect.arrayContaining([
+            quad(namedNode(tombstone1Id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(tombstone1Id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(instanceSnapshotArchive1.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(tombstone1Id.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instanceSnapshotArchive1.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(tombstone1Id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(tombstone1Id.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+        ]));
+
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshotRecreate1);
+        await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshotRecreate1.id, versionedLdesSnapshotRepository);
+        const instanceAfterRecreate1 = await instanceRepository.findById(bestuurseenheid, instance.id);
+        const publishedInstanceSnapshotIdAfterRecreate1 = await instanceRepository.findPublishedInstanceSnapshotIdForInstance(bestuurseenheid, instanceAfterRecreate1);
+        const publishedInstanceSnapshotAfterRecreate1 = await instanceRepository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotIdAfterRecreate1);
+        expect(publishedInstanceSnapshotAfterRecreate1).toEqual(expect.arrayContaining([
+            quad(namedNode(publishedInstanceSnapshotIdAfterRecreate1.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(publishedInstanceSnapshotIdAfterRecreate1.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instanceSnapshotRecreate1.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(publishedInstanceSnapshotIdAfterRecreate1.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(publishedInstanceSnapshotIdAfterRecreate1.value), namedNode('http://purl.org/pav/createdBy'), namedNode(bestuurseenheid.id.value), namedNode(bestuurseenheid.userGraph().value)),
+        ]));
+
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshotArchive2);
+        await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshotArchive2.id, versionedLdesSnapshotRepository);
+        expect(await instanceRepository.exists(bestuurseenheid, instance.id)).toBeFalse();
+        const tombstoneIdsAfterArchive2 = await instanceRepository.getTombstoneIds(bestuurseenheid, instance, directDatabaseAccess);
+        expect(tombstoneIdsAfterArchive2).toHaveLength(2);
+        const tombstone2Id = tombstoneIdsAfterArchive2.filter(id => id != tombstone1Id)[0];
+        const tombstoneQuads = await instanceRepository.findTombstone(bestuurseenheid, tombstone2Id);
+        expect(tombstoneQuads).toEqual(expect.arrayContaining([
+            quad(namedNode(tombstone2Id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(tombstone2Id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(instanceSnapshotArchive2.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(tombstone2Id.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instanceSnapshotArchive2.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(tombstone2Id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(tombstone2Id.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+        ]));
+
+        await instanceSnapshotRepository.save(instanceSnapshotGraph, instanceSnapshotRecreate2);
+        await mergerDomainService.merge(instanceSnapshotGraph, instanceSnapshotRecreate2.id, versionedLdesSnapshotRepository);
+        const instanceAfterRecreate2 = await instanceRepository.findById(bestuurseenheid, instance.id);
+        const publishedInstanceSnapshotIdAfterRecreate2 = await instanceRepository.findPublishedInstanceSnapshotIdForInstance(bestuurseenheid, instanceAfterRecreate2);
+        const publishedInstanceSnapshotAfterRecreate2 = await instanceRepository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotIdAfterRecreate2);
+        expect(publishedInstanceSnapshotAfterRecreate2).toEqual(expect.arrayContaining([
+            quad(namedNode(publishedInstanceSnapshotIdAfterRecreate2.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(publishedInstanceSnapshotIdAfterRecreate2.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instanceSnapshotRecreate2.generatedAtTime.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(publishedInstanceSnapshotIdAfterRecreate2.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+            quad(namedNode(publishedInstanceSnapshotIdAfterRecreate2.value), namedNode('http://purl.org/pav/createdBy'), namedNode(bestuurseenheid.id.value), namedNode(bestuurseenheid.userGraph().value)),
+        ]));
     });
 
     test('Inserts Code Lists for competent and executing authorities if not existing', async () => {
@@ -1469,18 +1526,3 @@ describe('instanceSnapshotToInstanceMapperDomainService', () => {
     }, 10000);
 
 });
-
-async function getTombstoneIds(bestuurseenheid: Bestuurseenheid, instance: Instance, directDatabaseAccess: DirectDatabaseAccess): Promise<string[]> {
-
-    const tombstoneIdQuery = `
-                    SELECT ?tombstoneId WHERE {
-                        GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                            ?tombstoneId a <https://www.w3.org/ns/activitystreams#Tombstone>;
-                                <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf> <${instance.id.value}>.
-                        }
-                    }
-                 `;
-    const queryResult = await directDatabaseAccess.list(tombstoneIdQuery);
-
-    return queryResult.map(row => row['tombstoneId'].value);
-}

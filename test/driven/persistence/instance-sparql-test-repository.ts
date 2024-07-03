@@ -8,6 +8,7 @@ import {InstanceStatusType} from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {NS} from "../../../src/driven/persistence/namespaces";
+import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 
 export class InstanceSparqlTestRepository extends InstanceSparqlRepository {
 
@@ -22,7 +23,7 @@ export class InstanceSparqlTestRepository extends InstanceSparqlRepository {
         await super.save(bestuurseenheid, instance);
 
         if (instance.status === InstanceStatusType.VERZONDEN && published) {
-            const publishedInstanceSnapshotId = (await this.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, instance))[0];
+            const publishedInstanceSnapshotId = await this.findPublishedInstanceSnapshotIdForInstance(bestuurseenheid, instance);
 
             const query = `
             INSERT DATA { 
@@ -35,7 +36,37 @@ export class InstanceSparqlTestRepository extends InstanceSparqlRepository {
         }
     }
 
-    async findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<Iri[]> {
+    async getTombstoneIds(bestuurseenheid: Bestuurseenheid, instance: Instance, directDatabaseAccess: DirectDatabaseAccess): Promise<Iri[]> {
+
+        const tombstoneIdQuery = `
+                    SELECT ?tombstoneId WHERE {
+                        GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                            ?tombstoneId a <https://www.w3.org/ns/activitystreams#Tombstone>;
+                                <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf> <${instance.id.value}>.
+                        }
+                    }
+                 `;
+        const queryResult = await directDatabaseAccess.list(tombstoneIdQuery);
+
+        return queryResult.map(row => new Iri(row['tombstoneId'].value));
+    }
+
+    async findTombstone(bestuurseenheid: Bestuurseenheid, tombstoneId: Iri) {
+        const query = `
+            SELECT ?s ?p ?o WHERE {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    VALUES ?s {
+                        <${tombstoneId}>
+                    }
+                    ?s ?p ?o
+                }
+            }
+        `;
+        const queryResult = await this.directDatabaseAccess.list(query);
+        return new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
+    }
+
+    async findPublishedInstanceSnapshotIdForInstance(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<Iri | undefined> {
         const query = `
             SELECT ?publishedInstanceSnapshotIri WHERE {
                 GRAPH <${bestuurseenheid.userGraph()}> {
@@ -45,8 +76,8 @@ export class InstanceSparqlTestRepository extends InstanceSparqlRepository {
                 }
             }
         `;
-        const ids = (await this.querying.list(query)).map(item => item['publishedInstanceSnapshotIri'].value);
-        return ids.map(id => new Iri(id));
+        const result = await this.querying.singleRow(query);
+        return result?.['publishedInstanceSnapshotIri']?.value ? new Iri(result['publishedInstanceSnapshotIri'].value) : undefined;
     }
 
     async findPublishedInstanceSnapshot(bestuurseenheid: Bestuurseenheid, publishedSnapshotId: Iri) {

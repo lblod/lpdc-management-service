@@ -84,7 +84,6 @@ export class InstanceSnapshotToInstanceMergerDomainService {
                 const oldInstance = await this._instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOf);
                 await this.updateInstance(bestuurseenheid, instanceSnapshot, oldInstance, concept);
             } else if (isExistingInstance && instanceSnapshot.isArchived) {
-                //TODO LPDC-1236: test tombstone -> recreated -> tombstone -> recreated ...
                 await this._deleteInstanceDomainService.delete(bestuurseenheid, instanceSnapshot.isVersionOf, instanceSnapshot.generatedAtTime);
             }
         }

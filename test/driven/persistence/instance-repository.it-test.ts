@@ -142,14 +142,13 @@ describe('InstanceRepository', () => {
                 .build();
 
             await repository.save(bestuurseenheid, instance);
-            const publishedInstanceSnapshotIds = await repository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, instance);
-            expect(publishedInstanceSnapshotIds).toHaveLength(1);
-            const publishedInstanceSnapshotQuads = await repository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+            const publishedInstanceSnapshotId = await repository.findPublishedInstanceSnapshotIdForInstance(bestuurseenheid, instance);
+            const publishedInstanceSnapshotQuads = await repository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotId);
             expect(publishedInstanceSnapshotQuads).toEqual(expect.arrayContaining([
-                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instance.dateSent.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://purl.org/pav/createdBy'), namedNode(instance.createdBy.value), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotId.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotId.value), namedNode('http://www.w3.org/ns/prov#generatedAtTime'), literal(instance.dateSent.value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotId.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(instance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotId.value), namedNode('http://purl.org/pav/createdBy'), namedNode(instance.createdBy.value), namedNode(bestuurseenheid.userGraph().value)),
             ]));
         });
 
@@ -163,8 +162,8 @@ describe('InstanceRepository', () => {
                 .build();
 
             await repository.save(bestuurseenheid, instance);
-            const publishedInstanceSnapshotIds = await repository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, instance);
-            expect(publishedInstanceSnapshotIds).toHaveLength(0);
+            const publishedInstanceSnapshotId = await repository.findPublishedInstanceSnapshotIdForInstance(bestuurseenheid, instance);
+            expect(publishedInstanceSnapshotId).toBeUndefined();
         });
     });
 
@@ -211,12 +210,11 @@ describe('InstanceRepository', () => {
 
             expect(actualInstance).toEqual(expectedInstance);
 
-            const publishedInstanceSnapshotIds = await repository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, newInstance);
-            expect(publishedInstanceSnapshotIds).toHaveLength(1);
-            const publishedInstanceSnapshotQuads = await repository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotIds[0]);
+            const publishedInstanceSnapshotId = await repository.findPublishedInstanceSnapshotIdForInstance(bestuurseenheid, newInstance);
+            const publishedInstanceSnapshotQuads = await repository.findPublishedInstanceSnapshot(bestuurseenheid, publishedInstanceSnapshotId);
             expect(publishedInstanceSnapshotQuads).toEqual(expect.arrayContaining([
-                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
-                quad(namedNode(publishedInstanceSnapshotIds[0].value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(newInstance.id.value), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotId.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot'), namedNode(bestuurseenheid.userGraph().value)),
+                quad(namedNode(publishedInstanceSnapshotId.value), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf'), namedNode(newInstance.id.value), namedNode(bestuurseenheid.userGraph().value)),
             ]));
 
         });
@@ -240,8 +238,8 @@ describe('InstanceRepository', () => {
 
             expect(actualInstance).toEqual(expectedInstance);
 
-            const publishedInstanceSnapshotIds = await repository.findPublishedInstanceSnapshotIdsForInstance(bestuurseenheid, newInstance);
-            expect(publishedInstanceSnapshotIds).toHaveLength(0);
+            const publishedInstanceSnapshotId = await repository.findPublishedInstanceSnapshotIdForInstance(bestuurseenheid, newInstance);
+            expect(publishedInstanceSnapshotId).toBeUndefined();
         });
 
         test('should throw error when old instance is equal to new instance', async () => {
