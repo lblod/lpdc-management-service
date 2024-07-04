@@ -50,8 +50,6 @@ async function main() {
 
     fs.writeFileSync(`./migration-results/insertDutchLanguageVariant.ttl`, insertQuads.join('\n'));
     console.log('totalInstances ' + totalInstances);
-
-
 }
 
 async function getAllBestuurseenheden(): Promise<Iri[]> {
