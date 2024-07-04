@@ -29,16 +29,12 @@ import {aFullLegalResourceForInstance} from "../../../../test/core/domain/legal-
 import {aFullContactPointForInstance} from "../../../../test/core/domain/contact-point-test-builder";
 import {AddressTestBuilder, aFullAddressForInstance} from "../../../../test/core/domain/address-test-builder";
 import {LanguageString} from "../../../../src/core/domain/language-string";
-import {
-    ConceptDisplayConfigurationSparqlTestRepository
-} from "../../../../test/driven/persistence/concept-display-configuration-sparql-test-repository";
 import {AdressenRegisterFetcherStub} from "../../adressen-register-fetcher-stub";
 
 describe('transfer instance', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const adressenRegisterFetcher = new AdressenRegisterFetcherStub();
     const transferInstanceService = new TransferInstanceService(bestuurseenheidRepository, instanceRepository, formalInformalChoiceRepository, adressenRegisterFetcher);
     let fromAuthority: Bestuurseenheid;
