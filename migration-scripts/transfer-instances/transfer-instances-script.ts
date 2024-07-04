@@ -75,6 +75,7 @@ const borgloon = BestuurseenheidTestBuilder.BORGLOON_IRI;
 
 const fromAuthority = new Iri(pepingen.value);
 const toAuthority = new Iri(borgloon.value);
+const onlyForMunicipalityMergerInstances: boolean = true;
 
 
-main(fromAuthority, toAuthority, true);
+main(fromAuthority, toAuthority, onlyForMunicipalityMergerInstances);
