@@ -32,7 +32,7 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
     async fetchInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance> {
         const jsonInstance = await this.fetchInstance(initialInstance);
 
-        jsonInstance['@context'] = await this.fetchContext(jsonInstance['@context']);
+        jsonInstance['@context'] = await this.fetchContextsContent(jsonInstance['@context']);
 
         return this.mapInstance(JSON.stringify(jsonInstance), bestuurseenheid, initialInstance);
     }
@@ -102,7 +102,19 @@ export class InstanceInformalLanguageStringsFetcherIpdc implements InstanceInfor
         }
     }
 
-    private async fetchContext(context: string) {
+    private async fetchContextsContent(contexts: string | string[]): Promise<any> {
+        if (typeof contexts === "string") {
+            return await this.fetchContextContent(contexts);
+        } else {
+            let result = {};
+            for (const context of contexts) {
+                result = {...result, ...await this.fetchContextContent(context)};
+            }
+            return result;
+        }
+    }
+
+    private async fetchContextContent(context: string): Promise<any> {
         const response = await fetch(context, {
             headers: {'Accept': 'application/ld+json', 'x-api-key': this.authenticationKey}
         });
