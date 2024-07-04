@@ -732,6 +732,19 @@ describe('InstanceRepository', () => {
             const actual = await repository.isPublishedToIpdc(bestuurseenheid, instance);
             expect(actual).toBeFalse();
         });
+
+        test('when no verzonden instance, return false', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            await bestuurseenheidRepository.save(bestuurseenheid);
+
+            const instance = aFullInstance()
+                .withStatus(InstanceStatusType.ONTWERP)
+                .withDateSent(undefined)
+                .build();
+
+            const actual = await repository.isPublishedToIpdc(bestuurseenheid, instance);
+            expect(actual).toBeFalse();
+        });
     });
 
     describe('Verify ontology and mapping', () => {

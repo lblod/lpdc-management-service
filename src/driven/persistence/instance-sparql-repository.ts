@@ -287,7 +287,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 GRAPH <${bestuurseenheid.userGraph()}> {
                     ?publishedInstanceSnapshotIri a ${NS.lpdcExt('PublishedInstancePublicServiceSnapshot')} .
                     ?publishedInstanceSnapshotIri ${NS.lpdcExt('isPublishedVersionOf')} <${instance.id}> .
-                    ?publishedInstanceSnapshotIri ${NS.prov('generatedAtTime')} "${instance.dateSent.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+                    ?publishedInstanceSnapshotIri ${NS.prov('generatedAtTime')} "${instance.dateSent?.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
                     ?publishedInstanceSnapshotIri ${NS.schema('datePublished')} ?datePublished .
                 }
             }

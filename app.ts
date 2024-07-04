@@ -218,6 +218,10 @@ app.get('/public-services/:instanceId/form/:formId', async function (req, res, n
     return await getInstanceForm(req, res).catch(next);
 });
 
+app.get('/public-services/:instanceId/is-published', async function (req, res, next): Promise<any> {
+    return await isPublished(req, res).catch(next);
+});
+
 app.delete('/public-services/:instanceId', async function (req, res, next): Promise<any> {
     return await removeInstance(req, res).catch(next);
 });
@@ -381,6 +385,18 @@ async function getInstanceForm(req: Request, res: Response) {
 
     const bundle = await formApplicationService.loadInstanceForm(bestuurseenheid, instanceId, latestConceptSnapshotId, formId);
     return res.status(200).json(bundle);
+}
+
+async function isPublished(req: Request, res: Response) {
+    const instanceIdRequestParam = req.params.instanceId;
+
+    const instanceId = new Iri(instanceIdRequestParam);
+    const session: Session = req['session'];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+
+    const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
+    const isPublished = await instanceRepository.isPublishedToIpdc(bestuurseenheid, instance);
+    return res.status(200).json({isPublished});
 }
 
 async function removeInstance(req: Request, res: Response) {
