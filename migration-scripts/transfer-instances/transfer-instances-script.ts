@@ -12,14 +12,16 @@ import {
     FormalInformalChoiceSparqlRepository
 } from "../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {TransferInstanceService} from "./transfer-instance-service";
+import {AdressenRegisterFetcher} from "../../src/driven/external/adressen-register-fetcher";
 
 const endPoint = process.env.SPARQL_URL;
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository(endPoint);
 const instanceRepository = new InstanceSparqlRepository(endPoint);
 const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(endPoint);
+const adressenRegister = new AdressenRegisterFetcher();
 
-const transferInstanceService = new TransferInstanceService(bestuurseenheidRepository, instanceRepository, formalInformalChoiceRepository);
+const transferInstanceService = new TransferInstanceService(bestuurseenheidRepository, instanceRepository, formalInformalChoiceRepository, adressenRegister);
 
 async function main(fromAuthorityId: Iri, toAuthorityId: Iri, onlyForMunicipalityMergerInstances: boolean) {
     const insertQuads = [];
@@ -32,7 +34,7 @@ async function main(fromAuthorityId: Iri, toAuthorityId: Iri, onlyForMunicipalit
     console.log(`Instances to transfer: ${instanceIds.length}`);
     for (const instanceId of instanceIds) {
         const newInstance = await transferInstanceService.transfer(instanceId, fromAuthorityId, toAuthorityId);
-
+        
         const quads = domainToQuadsMerger.instanceToQuads(newInstance).map(quad => quad.toCanonical()).join('\n');
         insertQuads.push(quads);
     }

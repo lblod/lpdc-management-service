@@ -11,20 +11,19 @@ import {FormatPreservingDate} from "../../src/core/domain/format-preserving-date
 import {ContactPoint, ContactPointBuilder} from "../../src/core/domain/contact-point";
 import {AddressFetcher} from "../../src/core/port/driven/external/address-fetcher";
 import {AddressBuilder} from "../../src/core/domain/address";
-import {AdressenRegisterFetcher} from "../../src/driven/external/adressen-register-fetcher";
 
 export class TransferInstanceService {
 
     private readonly bestuurseenheidRepository: BestuurseenheidRepository;
     private readonly instanceRepository: InstanceRepository;
     private formalInformalChoiceRepository: FormalInformalChoiceRepository;
-    private adressenFetcher: AddressFetcher;
+    private addressFetcher: AddressFetcher;
 
-    constructor(bestuurseenheidRepository: BestuurseenheidRepository, instanceRepository: InstanceRepository, formalInformalChoiceRepository: FormalInformalChoiceRepository) {
+    constructor(bestuurseenheidRepository: BestuurseenheidRepository, instanceRepository: InstanceRepository, formalInformalChoiceRepository: FormalInformalChoiceRepository, addressFetcher: AddressFetcher) {
         this.bestuurseenheidRepository = bestuurseenheidRepository;
         this.instanceRepository = instanceRepository;
         this.formalInformalChoiceRepository = formalInformalChoiceRepository;
-        this.adressenFetcher = new AdressenRegisterFetcher();
+        this.addressFetcher = addressFetcher;
     }
 
     async transfer(instanceId: Iri, fromAuthorityId: Iri, toAuthorityId: Iri): Promise<Instance> {
@@ -83,7 +82,7 @@ export class TransferInstanceService {
         const fetchAddressMatch = async (cp: ContactPoint) => {
             const address = cp.address;
             if (address) {
-                const match = await this.adressenFetcher.findAddressMatch(
+                const match = await this.addressFetcher.findAddressMatch(
                     address.gemeentenaam.nl,
                     address.straatnaam.nl,
                     address.huisnummer,

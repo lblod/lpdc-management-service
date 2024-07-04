@@ -1,40 +1,46 @@
-import {TransferInstanceService} from "../../transfer-instances/transfer-instance-service";
-import {TEST_SPARQL_ENDPOINT} from "../../../test/test.config";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
+import {TransferInstanceService} from "../../transfer-instance-service";
+import {TEST_SPARQL_ENDPOINT} from "../../../../test/test.config";
+import {InstanceSparqlRepository} from "../../../../src/driven/persistence/instance-sparql-repository";
 import {
     FormalInformalChoiceSparqlRepository
-} from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
-import {aBestuurseenheid} from "../../../test/core/domain/bestuurseenheid-test-builder";
-import {aFormalInformalChoice} from "../../../test/core/domain/formal-informal-choice-test-builder";
-import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "../../../test/core/domain/instance-test-builder";
+} from "../../../../src/driven/persistence/formal-informal-choice-sparql-repository";
+import {aBestuurseenheid} from "../../../../test/core/domain/bestuurseenheid-test-builder";
+import {aFormalInformalChoice} from "../../../../test/core/domain/formal-informal-choice-test-builder";
+import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "../../../../test/core/domain/instance-test-builder";
 import {
     BestuurseenheidSparqlTestRepository
-} from "../../../test/driven/persistence/bestuurseenheid-sparql-test-repository";
+} from "../../../../test/driven/persistence/bestuurseenheid-sparql-test-repository";
 import {
     ChosenFormType,
     CompetentAuthorityLevelType,
     InstancePublicationStatusType,
     InstanceStatusType
-} from "../../../src/core/domain/types";
-import {Language} from "../../../src/core/domain/language";
-import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
-import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
-import {aFullRequirementForInstance} from "../../../test/core/domain/requirement-test-builder";
-import {aFullProcedureForInstance} from "../../../test/core/domain/procedure-test-builder";
-import {aFullWebsiteForInstance} from "../../../test/core/domain/website-test-builder";
-import {aFullCostForInstance} from "../../../test/core/domain/cost-test-builder";
-import {aFullFinancialAdvantageForInstance} from "../../../test/core/domain/financial-advantage-test-builder";
-import {aFullLegalResourceForInstance} from "../../../test/core/domain/legal-resource-test-builder";
-import {aFullContactPointForInstance} from "../../../test/core/domain/contact-point-test-builder";
-import {AddressTestBuilder, aFullAddressForInstance} from "../../../test/core/domain/address-test-builder";
-import {LanguageString} from "../../../src/core/domain/language-string";
+} from "../../../../src/core/domain/types";
+import {Language} from "../../../../src/core/domain/language";
+import {Bestuurseenheid} from "../../../../src/core/domain/bestuurseenheid";
+import {FormatPreservingDate} from "../../../../src/core/domain/format-preserving-date";
+import {InvariantError} from "../../../../src/core/domain/shared/lpdc-error";
+import {aFullRequirementForInstance} from "../../../../test/core/domain/requirement-test-builder";
+import {aFullProcedureForInstance} from "../../../../test/core/domain/procedure-test-builder";
+import {aFullWebsiteForInstance} from "../../../../test/core/domain/website-test-builder";
+import {aFullCostForInstance} from "../../../../test/core/domain/cost-test-builder";
+import {aFullFinancialAdvantageForInstance} from "../../../../test/core/domain/financial-advantage-test-builder";
+import {aFullLegalResourceForInstance} from "../../../../test/core/domain/legal-resource-test-builder";
+import {aFullContactPointForInstance} from "../../../../test/core/domain/contact-point-test-builder";
+import {AddressTestBuilder, aFullAddressForInstance} from "../../../../test/core/domain/address-test-builder";
+import {LanguageString} from "../../../../src/core/domain/language-string";
+import {
+    ConceptDisplayConfigurationSparqlTestRepository
+} from "../../../../test/driven/persistence/concept-display-configuration-sparql-test-repository";
+import {AdressenRegisterFetcherStub} from "../../adressen-register-fetcher-stub";
 
 describe('transfer instance', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
     const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
     const formalInformalChoiceRepository = new FormalInformalChoiceSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const transferInstanceService = new TransferInstanceService(bestuurseenheidRepository, instanceRepository, formalInformalChoiceRepository);
+    const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+    const adressenRegisterFetcher = new AdressenRegisterFetcherStub();
+    const transferInstanceService = new TransferInstanceService(bestuurseenheidRepository, instanceRepository, formalInformalChoiceRepository, adressenRegisterFetcher);
     let fromAuthority: Bestuurseenheid;
     let toAuthority: Bestuurseenheid;
 
@@ -388,8 +394,8 @@ describe('transfer instance', () => {
     });
 
     describe('addresses', () => {
-        test('save addressId and postcode address exists', async () => {
-            const straatnaam = LanguageString.of("unexistingStreetname");
+        test('given unexisting address, take over fields and keep addressId and postcode empty', async () => {
+            const straatnaam = LanguageString.of(AdressenRegisterFetcherStub.INCORRECT_STREETNAME);
             const contactPoint = aFullContactPointForInstance().withAddress(
                 aFullAddressForInstance()
                     .withStraatnaam(straatnaam)
@@ -433,7 +439,7 @@ describe('transfer instance', () => {
 
         });
         test('given address with verwijstnaar and postcode, remove postcode and verwijstNaar when no match found', async () => {
-            const straatnaam = LanguageString.of("unexistingStreetname");
+            const straatnaam = LanguageString.of(AdressenRegisterFetcherStub.INCORRECT_STREETNAME);
             const contactPoint = aFullContactPointForInstance().withAddress(aFullAddressForInstance().withStraatnaam(straatnaam).build()).build();
             const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withContactPoints([contactPoint]).build();
 
