@@ -77,6 +77,8 @@ async function main() {
         console.log(`total instances processed ` + totalInstancesProcessed);
     }
 
+    console.log('total instances processed ' + totalInstancesProcessed);
+
     const deleteDatePublishedInstances = `
             ${PREFIX.lpdcExt}
             ${PREFIX.schema}
@@ -95,9 +97,66 @@ async function main() {
             `;
     fs.writeFileSync(`./migration-results/${now()}-delete-date-published-instances.sparql`, deleteDatePublishedInstances);
 
-    //TODO LPDC-1236: also fix tombstones in a similar way .
+    let totalTombstonesProcessed = 0;
 
-    console.log('total instances processed ' + totalInstancesProcessed);
+    for (const bestuurseenheidId of bestuurseenhedenIds) {
+        const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
+        const tombstoneIds = await getAllPublishedTombstonesForBestuurseenheid(bestuurseenheid);
+
+        const segmentedBestuurseenheidId = bestuurseenheidId.value.split('/');
+        const uuidExtractedFromBestuurseenheidId = segmentedBestuurseenheidId[segmentedBestuurseenheidId.length - 1];
+
+        const insertQuads = [];
+        const baseFileName = `${now()}-insert-tombstone-instance-snapshots-${uuidExtractedFromBestuurseenheidId}`;
+
+        for (const {id: instanceId, dateDeleted, datePublished} of tombstoneIds) {
+            const segmentedInstanceId = instanceId.value.split('/');
+            const uuidExtractedFromInstanceId = segmentedInstanceId[segmentedInstanceId.length - 1];
+
+            const tombstoneId = PublishedInstanceSnapshotBuilder.buildIri(uuidExtractedFromInstanceId);
+
+            insertQuads.push(`<${tombstoneId.value}> a <https://www.w3.org/ns/activitystreams#Tombstone>.`);
+            insertQuads.push(`<${tombstoneId.value}> <https://www.w3.org/ns/activitystreams#formerType> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.`);
+            insertQuads.push(`<${tombstoneId.value}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf> <${instanceId.value}>.`);
+            insertQuads.push(`<${tombstoneId.value}> <https://www.w3.org/ns/activitystreams#deleted>  ${sparqlEscapeDateTime(dateDeleted.value)} .`);
+            insertQuads.push(`<${tombstoneId.value}> <http://www.w3.org/ns/prov#generatedAtTime>  ${sparqlEscapeDateTime(dateDeleted.value)} .`);
+            insertQuads.push(`<${tombstoneId.value}> <http://schema.org/datePublished>  ${sparqlEscapeDateTime(datePublished.value)} .`);
+
+            totalTombstonesProcessed = totalTombstonesProcessed + 1;
+        }
+
+        if (insertQuads.length > 0) {
+            fs.writeFileSync(`./migration-results/${baseFileName}.sparql`,
+                `INSERT DATA {
+                            GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                                ${insertQuads.join('\n')}
+                            }
+                            }
+                                `);
+        }
+        console.log(`total tombstones processed ` + totalTombstonesProcessed);
+    }
+    console.log(`total tombstones processed ` + totalTombstonesProcessed);
+
+    const deleteTombstoneInstances = `
+            ${PREFIX.as}
+            
+             DELETE {
+                GRAPH ?g {
+                     ?s ?p ?o
+                }
+            }  
+            WHERE {
+                GRAPH ?g {
+                    ?s a as:Tombstone;
+                         ?p ?o
+                }
+            }
+
+            `;
+    fs.writeFileSync(`./migration-results/${now()}-delete-tombstone-instances.sparql`, deleteTombstoneInstances);
+
+
 }
 
 async function getAllBestuurseenheden(): Promise<Iri[]> {
@@ -138,6 +197,31 @@ async function getAllPublishedInstanceIdsForBestuurseenheidWithoutPublishedSnaps
     });
 }
 
+async function getAllPublishedTombstonesForBestuurseenheid(bestuurseenheid: Bestuurseenheid): Promise<TombstoneData[]> {
+    const query = `
+            ${PREFIX.lpdcExt}
+            ${PREFIX.schema}
+            ${PREFIX.as}           
+            
+            SELECT ?id ?dateDeleted ?datePublished WHERE {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    ?id a as:Tombstone;
+                        schema:datePublished ?datePublished;
+                        as:deleted ?dateDeleted;
+                        as:formerType lpdcExt:InstancePublicService.
+                }
+            }
+            `;
+    const results = await directDatabaseAccess.list(query);
+    return results.map(result => {
+        return {
+            id: new Iri(result['id'].value),
+            dateDeleted: FormatPreservingDate.of(result['dateDeleted'].value),
+            datePublished: FormatPreservingDate.of(result['datePublished'].value),
+        };
+    });
+}
+
 function now() {
     const now = new Date();
     return `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}${(now.getHours() + 1).toString().padStart(2, '0')}${(now.getMinutes() + 1).toString().padStart(2, '0')}${(now.getSeconds() + 1).toString().padStart(2, '0')}`;
@@ -147,7 +231,12 @@ function now() {
 type InstanceAndDatePublished = {
     id: Iri,
     datePublished: FormatPreservingDate,
+}
 
+type TombstoneData = {
+    id: Iri,
+    datePublished: FormatPreservingDate,
+    dateDeleted: FormatPreservingDate,
 }
 
 main();
