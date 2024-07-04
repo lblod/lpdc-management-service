@@ -1,6 +1,6 @@
 import {Iri} from "../../src/core/domain/shared/iri";
 import {PREFIX, PUBLIC_GRAPH} from "../../config";
-import {sparqlEscapeDateTime, sparqlEscapeUri} from "../../mu-helper";
+import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "../../mu-helper";
 import {DirectDatabaseAccess} from "../../test/driven/persistence/direct-database-access";
 import {
     BestuurseenheidSparqlTestRepository
@@ -110,10 +110,8 @@ async function main() {
         const baseFileName = `${now()}-insert-tombstone-instance-snapshots-${uuidExtractedFromBestuurseenheidId}`;
 
         for (const {id: instanceId, dateDeleted, datePublished} of tombstoneIds) {
-            const segmentedInstanceId = instanceId.value.split('/');
-            const uuidExtractedFromInstanceId = segmentedInstanceId[segmentedInstanceId.length - 1];
-
-            const tombstoneId = PublishedInstanceSnapshotBuilder.buildIri(uuidExtractedFromInstanceId);
+            const uniqueId = uuid();
+            const tombstoneId = PublishedInstanceSnapshotBuilder.buildIri(uniqueId);
 
             insertQuads.push(`<${tombstoneId.value}> a <https://www.w3.org/ns/activitystreams#Tombstone>.`);
             insertQuads.push(`<${tombstoneId.value}> <https://www.w3.org/ns/activitystreams#formerType> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>.`);
@@ -140,6 +138,7 @@ async function main() {
 
     const deleteTombstoneInstances = `
             ${PREFIX.as}
+            ${PREFIX.lpdcExt}
             
              DELETE {
                 GRAPH ?g {
@@ -149,7 +148,10 @@ async function main() {
             WHERE {
                 GRAPH ?g {
                     ?s a as:Tombstone;
-                         ?p ?o
+                         ?p ?o .
+                    FILTER NOT EXISTS {
+                        ?s lpdcExt:isPublishedVersionOf ?instanceid.
+                    } 
                 }
             }
 
@@ -209,6 +211,9 @@ async function getAllPublishedTombstonesForBestuurseenheid(bestuurseenheid: Best
                         schema:datePublished ?datePublished;
                         as:deleted ?dateDeleted;
                         as:formerType lpdcExt:InstancePublicService.
+                    FILTER NOT EXISTS {
+                        ?id lpdcExt:isPublishedVersionOf ?instanceid.
+                    } 
                 }
             }
             `;
