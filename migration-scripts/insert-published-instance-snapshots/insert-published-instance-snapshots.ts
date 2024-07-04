@@ -34,13 +34,12 @@ async function main() {
         const uuidExtractedFromBestuurseenheidId = segmentedBestuurseenheidId[segmentedBestuurseenheidId.length - 1];
 
         let insertQuads = [];
-        let baseFileName = `${now()}-insert-published-instance-snapshots-${uuidExtractedFromBestuurseenheidId}`;
-        let fileSequenceNumber = 0;
+        const baseFileName = `${now()}-insert-published-instance-snapshots-${uuidExtractedFromBestuurseenheidId}`;
 
         for (const {id: instanceId, datePublished} of instanceIds) {
             const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
 
-            if (instance.dateSent !== undefined
+            if (instance.dateSent
                 && instance.status === InstanceStatusType.VERZONDEN) {
 
                 const publishedInstanceSnapshot = PublishedInstanceSnapshotBuilder.from(instance);
@@ -52,7 +51,7 @@ async function main() {
                 totalInstancesProcessed++;
 
                 if (insertQuads.length > 1000) {
-                    fs.writeFileSync(`./migration-results/${baseFileName}-${fileSequenceNumber}.sparql`,
+                    fs.writeFileSync(`./migration-results/${baseFileName}-${insertQuads.length}.sparql`,
                         `INSERT DATA {
                             GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                                 ${insertQuads.join('\n')}
@@ -60,15 +59,13 @@ async function main() {
                             }
                                 `);
                     insertQuads = [];
-                    baseFileName = `${now()}-insert-published-instance-snapshots-${uuidExtractedFromBestuurseenheidId}`;
-                    fileSequenceNumber = fileSequenceNumber + 1;
                 }
 
             }
         }
 
         if (insertQuads.length > 0) {
-            fs.writeFileSync(`./migration-results/${baseFileName}-${fileSequenceNumber}.sparql`,
+            fs.writeFileSync(`./migration-results/${baseFileName}-${insertQuads.length}.sparql`,
                 `INSERT DATA {
                             GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                                 ${insertQuads.join('\n')}
@@ -80,8 +77,23 @@ async function main() {
         console.log(`total instances processed ` + totalInstancesProcessed);
     }
 
-
-    //TODO: LPDC-1236: write out ONE sparql script that cleans up the date published from all instances (not from tombstones)?; to be run last
+    const deleteDatePublishedInstances = `
+            ${PREFIX.lpdcExt}
+            ${PREFIX.schema}
+            
+             DELETE {
+                GRAPH ?g {
+                    ?id schema:datePublished ?datePublished
+                }
+            }  
+            WHERE {
+                GRAPH ?g {
+                    ?id a lpdcExt:InstancePublicService;
+                        schema:datePublished ?datePublished.                
+                }
+            }
+            `;
+    fs.writeFileSync(`./migration-results/${now()}-delete-date-published-instances.sparql`, deleteDatePublishedInstances);
 
     //TODO LPDC-1236: also fix tombstones in a similar way .
 
