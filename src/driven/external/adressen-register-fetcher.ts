@@ -50,7 +50,7 @@ export class AdressenRegisterFetcher implements AddressFetcher {
         const postcodes = await this.findPostcodesForMunicipalityAndSubMunicipalities(municipality);
         for (const postcode of postcodes) {
             const addressMatch = await this.tryAddressMatch(municipality, postcode, street, houseNumber, busNumber);
-            if (addressMatch && addressMatch['straat'].trim() === street.trim()) {
+            if (addressMatch) {
                 return addressMatch;
             }
         }
