@@ -6,14 +6,18 @@ import {
 } from "../../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import {aBestuurseenheid} from "../../../../test/core/domain/bestuurseenheid-test-builder";
 import {aFormalInformalChoice} from "../../../../test/core/domain/formal-informal-choice-test-builder";
-import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "../../../../test/core/domain/instance-test-builder";
+import {
+    aFullInstance,
+    aMinimalInstance,
+    aMinimalPublishedInstance,
+    InstanceTestBuilder
+} from "../../../../test/core/domain/instance-test-builder";
 import {
     BestuurseenheidSparqlTestRepository
 } from "../../../../test/driven/persistence/bestuurseenheid-sparql-test-repository";
 import {
     ChosenFormType,
     CompetentAuthorityLevelType,
-    InstancePublicationStatusType,
     InstanceStatusType
 } from "../../../../src/core/domain/types";
 import {Language} from "../../../../src/core/domain/language";
@@ -74,24 +78,18 @@ describe('transfer instance', () => {
         expect(transferredInstance.forMunicipalityMerger).toBeFalse();
     });
 
-    test('datePublished and dateSent are empty', async () => {
-        const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withStatus(InstanceStatusType.VERZONDEN).withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD).withDateSent(FormatPreservingDate.now()).withDatePublished(FormatPreservingDate.now()).build();
-        await instanceRepository.save(fromAuthority, instance);
-
-        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
-
-        expect(transferredInstance.datePublished).toBeUndefined();
-        expect(transferredInstance.dateSent).toBeUndefined();
-    });
-
-    test('status is ontwerp and no publicationStatus', async () => {
-        const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withStatus(InstanceStatusType.VERZONDEN).withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD).withDateSent(FormatPreservingDate.now()).withDatePublished(FormatPreservingDate.now()).build();
+    test('status is ontwerp and dateSent are empty', async () => {
+        const instance = aMinimalPublishedInstance()
+            .withCreatedBy(fromAuthority.id)
+            .withStatus(InstanceStatusType.VERZONDEN)
+            .withDateSent(FormatPreservingDate.now())
+            .build();
         await instanceRepository.save(fromAuthority, instance);
 
         const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
 
         expect(transferredInstance.status).toEqual(InstanceStatusType.ONTWERP);
-        expect(transferredInstance.publicationStatus).toBeUndefined();
+        expect(transferredInstance.dateSent).toBeUndefined();
     });
 
     test('copyOf is empty', async () => {
@@ -138,8 +136,6 @@ describe('transfer instance', () => {
         const instance = aFullInstance()
             .withCreatedBy(fromAuthority.id)
             .withStatus(InstanceStatusType.VERZONDEN)
-            .withPublicationStatus(InstancePublicationStatusType.GEPUBLICEERD)
-            .withDatePublished(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
             .withDateSent(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
             .withDutchLanguageVariant(Language.FORMAL)
             .withNeedsConversionFromFormalToInformal(true)

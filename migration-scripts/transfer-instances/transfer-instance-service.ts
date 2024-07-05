@@ -66,8 +66,6 @@ export class TransferInstanceService {
             .withContactPoints(contactpointsWithUpdatedAddresses.map(fa => fa.transformWithNewId()))
             .withStatus(InstanceStatusType.ONTWERP)
             .withDateSent(undefined)
-            .withPublicationStatus(undefined)
-            .withDatePublished(undefined)
             .withNeedsConversionFromFormalToInformal(needsConversionFromFormalToInformal)
             .withLegalResources(instanceToCopy.legalResources.map(lr => lr.transformWithNewId()))
             .withSpatials(instanceToCopy.forMunicipalityMerger ? instanceToCopy.spatials : [])
