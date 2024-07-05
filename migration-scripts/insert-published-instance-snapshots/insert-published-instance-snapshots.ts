@@ -33,6 +33,7 @@ async function main() {
         const segmentedBestuurseenheidId = bestuurseenheidId.value.split('/');
         const uuidExtractedFromBestuurseenheidId = segmentedBestuurseenheidId[segmentedBestuurseenheidId.length - 1];
 
+        let sequenceNumber = 1;
         let insertQuads = [];
         const baseFileName = `${now()}-insert-published-instance-snapshots-${uuidExtractedFromBestuurseenheidId}`;
 
@@ -51,7 +52,7 @@ async function main() {
                 totalInstancesProcessed++;
 
                 if (insertQuads.length > 1000) {
-                    fs.writeFileSync(`./migration-results/${baseFileName}-${insertQuads.length}.sparql`,
+                    fs.writeFileSync(`./migration-results/${baseFileName}-${sequenceNumber}.sparql`,
                         `INSERT DATA {
                             GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                                 ${insertQuads.join('\n')}
@@ -59,13 +60,14 @@ async function main() {
                             }
                                 `);
                     insertQuads = [];
+                    sequenceNumber = sequenceNumber + 1;
                 }
 
             }
         }
 
         if (insertQuads.length > 0) {
-            fs.writeFileSync(`./migration-results/${baseFileName}-${insertQuads.length}.sparql`,
+            fs.writeFileSync(`./migration-results/${baseFileName}-${sequenceNumber}.sparql`,
                 `INSERT DATA {
                             GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                                 ${insertQuads.join('\n')}
