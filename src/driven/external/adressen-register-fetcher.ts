@@ -1,6 +1,7 @@
 import {AddressDto, AddressFetcher} from "../../core/port/driven/external/address-fetcher";
 import {InvariantError, NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
 import {ADRESSEN_REGISTER_API_KEY} from "../../../config";
+import {uniq} from "lodash";
 
 export class AdressenRegisterFetcher implements AddressFetcher {
 
@@ -32,9 +33,9 @@ export class AdressenRegisterFetcher implements AddressFetcher {
 
         if (response.ok) {
             const result = await response.json();
-            return result.adresMatches
+            return uniq(result.adresMatches
                 .map(match => match?.straatnaam?.straatnaam?.geografischeNaam?.spelling)
-                .filter(match => !!match);
+                .filter(match => !!match));
         } else {
             console.error(await response.text());
             throw new SystemError('Er is een fout opgetreden bij het bevragen van het adresregister');
