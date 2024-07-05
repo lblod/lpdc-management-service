@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node -r dotenv/config transfer-instances-script.ts"
+    "transfer-instances": "ts-node -r dotenv/config transfer-instances-script.ts",
+    "archive-instances": "ts-node -r dotenv/config archive-instances-script.ts"
   },
   "dependencies": {
     "dotenv": "^16.3.1"
