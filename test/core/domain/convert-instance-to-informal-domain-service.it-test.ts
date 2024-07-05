@@ -42,10 +42,8 @@ describe('Convert Instance To Informal Domain Service', () => {
         instanceInformalLanguageStringsFetcher);
 
     describe('Confirm instance already informal', () => {
-        let now = undefined;
-
         beforeAll(() => {
-            now = setFixedTime();
+            setFixedTime();
         });
         afterAll(() => restoreRealTime());
 

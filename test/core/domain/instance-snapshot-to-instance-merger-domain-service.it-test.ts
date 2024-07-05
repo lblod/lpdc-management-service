@@ -34,8 +34,7 @@ import {
     EnsureLinkedAuthoritiesExistAsCodeListDomainService
 } from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
 import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";
-import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
-import {Instance, InstanceBuilder} from "../../../src/core/domain/instance";
+import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {ForbiddenError, InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 import {aFullContactPointForInstance} from "./contact-point-test-builder";
 import {aFullAddressForInstance} from "./address-test-builder";
