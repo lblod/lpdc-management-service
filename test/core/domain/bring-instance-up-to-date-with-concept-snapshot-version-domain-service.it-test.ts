@@ -262,7 +262,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             const instance = aFullInstance()
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
-                .withReviewStatus(undefined)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
                 .withDutchLanguageVariant(Language.FORMAL)
                 .build();
             const newConceptSnapshot =
@@ -389,7 +389,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             const instance = aMinimalInstance()
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
-                .withReviewStatus(undefined)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
                 .withDutchLanguageVariant(Language.INFORMAL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .withTitle(LanguageString.ofValueInLanguage('title that needs updating', Language.INFORMAL))
@@ -445,7 +445,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             const instance = aMinimalInstance()
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
-                .withReviewStatus(undefined)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
                 .withDutchLanguageVariant(Language.NL)
                 .withNeedsConversionFromFormalToInformal(false)
                 .withTitle(LanguageString.ofValueInLanguage('title that needs updating', Language.NL))
@@ -494,7 +494,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             const instance = aFullInstance()
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
-                .withReviewStatus(undefined)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
                 .withStatus(InstanceStatusType.VERZONDEN)
                 .build();
             const newConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
@@ -524,7 +524,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             const instance = aFullInstance()
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
-                .withReviewStatus(undefined)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
                 .withStatus(InstanceStatusType.ONTWERP)
                 .build();
             const newConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
@@ -554,7 +554,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             const instance = aFullInstance()
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
-                .withReviewStatus(undefined)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
                 .build();
             const newConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
             await instanceRepository.save(bestuurseenheid, instance);
@@ -669,7 +669,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             const instance = aFullInstance()
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
-                .withReviewStatus(undefined)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
             await conceptRepository.save(concept);
@@ -691,7 +691,7 @@ describe('Bring instance up to date with concept snapshot version domain service
             const instance = aFullInstance()
                 .withConceptId(concept.id)
                 .withConceptSnapshotId(concept.latestConceptSnapshot)
-                .withReviewStatus(undefined)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
                 .build();
             await instanceRepository.save(bestuurseenheid, instance);
             await conceptRepository.save(concept);
@@ -703,7 +703,70 @@ describe('Bring instance up to date with concept snapshot version domain service
             expect(actualInstance).toEqual(instance);
         });
 
+        test('when reviewStatus is different from concept gewijzigd throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const conceptId = buildConceptIri(uuid());
+            const archivedConceptId = buildConceptIri(uuid());
+            const conceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
+            const archivedConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(archivedConceptId).withIsArchived(true).build();
+            const newConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
+            const concept = aFullConcept()
+                .withId(conceptId)
+                .withLatestFunctionallyChangedConceptSnapshot(conceptSnapshot.id)
+                .build();
+
+            const archivedConcept = aFullConcept()
+                .withId(conceptId)
+                .withIsArchived(true)
+                .withLatestFunctionallyChangedConceptSnapshot(archivedConceptSnapshot.id)
+                .build();
+
+
+            const instanceWithoutReviewStatus = aFullInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(conceptSnapshot.id)
+                .withReviewStatus(undefined)
+                .build();
+
+            const instanceWithArchivedConcept = aFullInstance()
+                .withConceptId(archivedConcept.id)
+                .withConceptSnapshotId(archivedConceptSnapshot.id)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEARCHIVEERD)
+                .build();
+
+            await instanceRepository.save(bestuurseenheid, instanceWithoutReviewStatus);
+            await conceptRepository.save(concept);
+            await conceptRepository.save(archivedConcept);
+            await conceptSnapshotRepository.save(conceptSnapshot);
+            await conceptSnapshotRepository.save(archivedConceptSnapshot);
+            await conceptSnapshotRepository.save(newConceptSnapshot);
+
+            await expect(bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instanceWithoutReviewStatus, instanceWithoutReviewStatus.dateModified, newConceptSnapshot)).rejects.toThrowWithMessage(InvariantError, 'De review status is verschillend van concept-gewijzigd');
+            await expect(bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instanceWithArchivedConcept, instanceWithoutReviewStatus.dateModified, newConceptSnapshot)).rejects.toThrowWithMessage(InvariantError, 'De review status is verschillend van concept-gewijzigd');
+        });
+        test('when reviewStatus is different from concept gewijzigd throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const conceptId = buildConceptIri(uuid());
+            const conceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).build();
+            const archivedConceptSnapshot = aFullConceptSnapshot().withIsVersionOfConcept(conceptId).withIsArchived(true).build();
+            const concept = aFullConcept()
+                .withId(conceptId)
+                .withLatestFunctionallyChangedConceptSnapshot(conceptSnapshot.id)
+                .build();
+
+            const instance = aFullInstance()
+                .withConceptId(concept.id)
+                .withConceptSnapshotId(conceptSnapshot.id)
+                .withReviewStatus(InstanceReviewStatusType.CONCEPT_GEWIJZIGD)
+                .build();
+
+            await instanceRepository.save(bestuurseenheid, instance);
+            await conceptRepository.save(concept);
+            await conceptSnapshotRepository.save(conceptSnapshot);
+            await conceptSnapshotRepository.save(archivedConceptSnapshot);
+
+            await expect(bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(bestuurseenheid, instance, instance.dateModified, archivedConceptSnapshot)).rejects.toThrowWithMessage(InvariantError, 'Het conceptsnapshot dat overgenomen wordt mag niet gearchiveerd zijn');
+        });
     });
 
 });
-

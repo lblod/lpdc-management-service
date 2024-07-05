@@ -9,7 +9,7 @@ import {FormatPreservingDate} from "./format-preserving-date";
 import {InvariantError} from "./shared/lpdc-error";
 import {SelectConceptLanguageDomainService} from "./select-concept-language-domain-service";
 import {Language} from "./language";
-import {InstanceStatusType} from "./types";
+import {InstanceReviewStatusType, InstanceStatusType} from "./types";
 
 export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
 
@@ -29,7 +29,15 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
         this._selectConceptLanguageDomainService = selectConceptLanguageDomainService;
     }
 
+
     async fullyTakeConceptSnapshotOver(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
+
+        if (instance.reviewStatus != InstanceReviewStatusType.CONCEPT_GEWIJZIGD) {
+            throw new InvariantError(`De review status is verschillend van ${InstanceReviewStatusType.CONCEPT_GEWIJZIGD}`);
+        }
+        if (conceptSnapshot.isArchived) {
+            throw new InvariantError("Het conceptsnapshot dat overgenomen wordt mag niet gearchiveerd zijn");
+        }
 
         const instanceLanguage = instance.dutchLanguageVariant;
         const conceptSnapshotLanguage = this._selectConceptLanguageDomainService.selectAvailableLanguage(conceptSnapshot, instanceLanguage === Language.INFORMAL);
