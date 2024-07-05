@@ -281,7 +281,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
     }
 
-    async isPublishedToIpdc(bestuurseenheid: Bestuurseenheid, instance: Instance) {
+    async isPublishedToIpdc(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<boolean> {
         const query = `
             ASK {
                 GRAPH <${bestuurseenheid.userGraph()}> {

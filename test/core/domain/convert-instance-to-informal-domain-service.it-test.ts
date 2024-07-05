@@ -1,5 +1,5 @@
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
-import {aFullInstance, aMinimalInstance, aMinimalPublishedInstance} from "./instance-test-builder";
+import {aFullInstance, aMinimalPublishedInstance} from "./instance-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {
     ConvertInstanceToInformalDomainService
@@ -80,6 +80,26 @@ describe('Convert Instance To Informal Domain Service', () => {
 
             await expect(() => convertInstanceToInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instance, instance.dateModified))
                 .rejects.toThrowWithMessage(InvariantError, 'Instantie moet gepubliceerd zijn');
+        });
+
+        test('When instance is not verzonden, then throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance()
+                .withStatus(InstanceStatusType.VERZONDEN)
+                .withDateSent(FormatPreservingDate.now())
+                .withNeedsConversionFromFormalToInformal(true)
+                .build();
+            await instanceTestRepository.save(bestuurseenheid, instance);
+
+            const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            const instanceOntwerp = InstanceBuilder.from(instance)
+                .withStatus(InstanceStatusType.ONTWERP)
+                .build();
+
+            await expect(() => convertInstanceToInformalDomainService.confirmInstanceIsAlreadyInformal(bestuurseenheid, instanceOntwerp, instanceOntwerp.dateModified))
+                .rejects.toThrowWithMessage(InvariantError, 'Instantie is al in status ontwerp');
         });
 
         test('When bestuurseenheid chose formal, then throw error', async () => {
@@ -314,6 +334,26 @@ describe('Convert Instance To Informal Domain Service', () => {
 
             await expect(() => convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instance, instance.dateModified))
                 .rejects.toThrowWithMessage(InvariantError, 'Instantie moet gepubliceerd zijn');
+        });
+
+        test('When instance is not verzonden, then throw error', async () => {
+            const bestuurseenheid = aBestuurseenheid().build();
+            const instance = aFullInstance()
+                .withStatus(InstanceStatusType.VERZONDEN)
+                .withDateSent(FormatPreservingDate.now())
+                .withNeedsConversionFromFormalToInformal(true)
+                .build();
+            await instanceTestRepository.save(bestuurseenheid, instance);
+
+            const formalInformalChoice = aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build();
+            await formalInformalChoiceRepository.save(bestuurseenheid, formalInformalChoice);
+
+            const instanceOntwerp = InstanceBuilder.from(instance)
+                .withStatus(InstanceStatusType.ONTWERP)
+                .build();
+
+            await expect(() => convertInstanceToInformalDomainService.convertInstanceToInformal(bestuurseenheid, instanceOntwerp, instanceOntwerp.dateModified))
+                .rejects.toThrowWithMessage(InvariantError, 'Instantie is al in status ontwerp');
         });
 
         test('When bestuurseenheid chose formal, then throw error', async () => {
