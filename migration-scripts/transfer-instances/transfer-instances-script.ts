@@ -7,7 +7,6 @@ import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sp
 import fs from "fs";
 import {BestuurseenheidSparqlRepository} from "../../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
-import {BestuurseenheidTestBuilder} from "../../test/core/domain/bestuurseenheid-test-builder";
 import {
     FormalInformalChoiceSparqlRepository
 } from "../../src/driven/persistence/formal-informal-choice-sparql-repository";
@@ -69,12 +68,8 @@ async function getAllInstanceIdsWithMunicipalityMergerForBestuurseenheid(bestuur
     return instanceIds.map(instanceId => new Iri(instanceId['id'].value));
 }
 
-const pepingen = BestuurseenheidTestBuilder.PEPINGEN_IRI;
-const borgloon = BestuurseenheidTestBuilder.BORGLOON_IRI;
-
-
-const fromAuthority = new Iri(pepingen.value);
-const toAuthority = new Iri(borgloon.value);
+const fromAuthority = new Iri("");
+const toAuthority = new Iri("");
 const onlyForMunicipalityMergerInstances: boolean = false;
 
 

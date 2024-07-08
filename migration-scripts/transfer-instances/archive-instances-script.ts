@@ -4,7 +4,6 @@ import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sp
 import fs from "fs";
 import {BestuurseenheidSparqlRepository} from "../../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
-import {BestuurseenheidTestBuilder} from "../../test/core/domain/bestuurseenheid-test-builder";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import {PublishedInstanceSnapshotBuilder} from "../../src/core/domain/published-instance-snapshot";
 import {PREFIX} from "../../config";
@@ -92,8 +91,7 @@ function createSparql(bestuurseenheid: Bestuurseenheid, insertQuads, deleteQuads
     fs.writeFileSync(`./migration-results/archive-instances.sparql`, query);
 }
 
-const pepingen = BestuurseenheidTestBuilder.PEPINGEN_IRI;
 
-const bestuurseenheid = new Iri(pepingen.value);
+const bestuurseenheid = new Iri("");
 
 main(bestuurseenheid);
