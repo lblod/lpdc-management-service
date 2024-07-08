@@ -79,10 +79,10 @@ export class TransferInstanceService {
     private async mapAddressesForContactpoints(contactPoints: ContactPoint[]): Promise<ContactPoint[]> {
         const fetchAddressMatch = async (cp: ContactPoint) => {
             const address = cp.address;
-            if (address) {
+            if (address?.gemeentenaam && address?.straatnaam && address?.huisnummer) {
                 const match = await this.addressFetcher.findAddressMatch(
-                    address.gemeentenaam.nl,
-                    address.straatnaam.nl,
+                    address.gemeentenaam?.nl,
+                    address.straatnaam?.nl,
                     address.huisnummer,
                     address.busnummer
                 );
