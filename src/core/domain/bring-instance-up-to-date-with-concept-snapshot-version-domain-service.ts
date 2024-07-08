@@ -32,7 +32,7 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
 
     async fullyTakeConceptSnapshotOver(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
 
-        if (instance.reviewStatus != InstanceReviewStatusType.CONCEPT_GEWIJZIGD) {
+        if (instance.reviewStatus !== InstanceReviewStatusType.CONCEPT_GEWIJZIGD) {
             throw new InvariantError(`De review status is verschillend van ${InstanceReviewStatusType.CONCEPT_GEWIJZIGD}`);
         }
         if (conceptSnapshot.isArchived) {
