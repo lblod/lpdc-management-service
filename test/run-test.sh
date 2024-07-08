@@ -20,6 +20,12 @@ docker compose -p lpdc-management-service-tests down
 
 cd test || exit
 
-echo $exit_code_lint
-echo $exit_code_test
+if [ $exit_code_lint -eq 1 ]; then
+  echo 'Failed due to linting error'
+fi
+
+if [ $exit_code_test -eq 1 ]; then
+  echo 'Failed due to failing test'
+fi
+
 exit $exit_code
