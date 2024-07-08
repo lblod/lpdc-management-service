@@ -7,9 +7,12 @@ import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-
 import {BestuurseenheidTestBuilder} from "../../test/core/domain/bestuurseenheid-test-builder";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import {PublishedInstanceSnapshotBuilder} from "../../src/core/domain/published-instance-snapshot";
+import {PREFIX} from "../../config";
+import {DirectDatabaseAccess} from "../../test/driven/persistence/direct-database-access";
 
 const endPoint = process.env.SPARQL_URL;
 
+const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository(endPoint);
 const instanceRepository = new InstanceSparqlRepository(endPoint);
 
@@ -21,12 +24,12 @@ async function main(bestuurseenheidId: Iri) {
 
     const domainToQuadsMerger = new DomainToQuadsMapper(bestuurseenheid.userGraph());
 
-    const instanceIds: string[] = fs.readFileSync(`migration-results/initial-instances.ttl`, 'utf8').split('\n');
+    const instanceIds: Iri[] = await getAllInstanceIdsForBestuurseenheid(bestuurseenheid);
 
 
     console.log(`Instances to archive: ${instanceIds.length}`);
     for (const instanceId of instanceIds) {
-        const instance = await instanceRepository.findById(bestuurseenheid, new Iri(instanceId));
+        const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
 
         if (instance.dateSent !== undefined) {
             const quads = tombstoneQuads(instance.id.value);
@@ -37,6 +40,19 @@ async function main(bestuurseenheidId: Iri) {
         deleteQuads.push(quads);
     }
     createSparql(bestuurseenheid, insertQuads, deleteQuads);
+}
+
+async function getAllInstanceIdsForBestuurseenheid(bestuurseenheid: Bestuurseenheid): Promise<Iri[]> {
+    const query = `
+            ${PREFIX.lpdcExt}
+            SELECT ?id WHERE {
+                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                    ?id a lpdcExt:InstancePublicService .
+                }
+            }
+            `;
+    const instanceIds = await directDatabaseAccess.list(query);
+    return instanceIds.map(instanceId => new Iri(instanceId['id'].value));
 }
 
 function tombstoneQuads(instanceId: string) {

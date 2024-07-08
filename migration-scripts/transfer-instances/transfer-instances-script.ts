@@ -39,7 +39,6 @@ async function main(fromAuthorityId: Iri, toAuthorityId: Iri, onlyForMunicipalit
         insertQuads.push(quads);
     }
     fs.writeFileSync(`./migration-results/transfer-instances.ttl`, insertQuads.join('\n'));
-    fs.writeFileSync(`./migration-results/initial-instances.ttl`, instanceIds.map(id => id.value).join('\n'));
     console.log("instances done " + insertQuads.length);
 }
 
