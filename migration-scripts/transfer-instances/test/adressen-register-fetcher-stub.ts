@@ -1,6 +1,6 @@
-import {AddressDto, AddressFetcher} from "../../src/core/port/driven/external/address-fetcher";
-import {InvariantError} from "../../src/core/domain/shared/lpdc-error";
-import {AddressTestBuilder} from "../../test/core/domain/address-test-builder";
+import {AddressDto, AddressFetcher} from "../../../src/core/port/driven/external/address-fetcher";
+import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
+import {AddressTestBuilder} from "../../../test/core/domain/address-test-builder";
 
 export class AdressenRegisterFetcherStub implements AddressFetcher {
     public static readonly INCORRECT_STREETNAME = "incorrect streetname";

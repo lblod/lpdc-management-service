@@ -17,6 +17,12 @@
 
 - Upload the generated  [transfer-instances.ttl](migration-results/transfer-instances.ttl)
 
+### Update concept display configurations
+
+Follow the steps
+in [display-configuratie-andere-besturen](https://github.com/lblod/app-lpdc-digitaal-loket/tree/development/migration-scripts/display-configuratie-andere-besturen)
+in app-lpdc-digitaal-loket
+
 ## Archive initial instances
 
 - Execute [archive-instances-script](archive-instances-script.ts)
@@ -27,15 +33,8 @@
 
 - Execute generated [archive-instance](migration-results/archive-instances.sparql)
 
-## Update concept display configurations
+### Update concept display configurations
 
-- Execute
-  the [add-concept-display-configurations](concept-display-configurations/add-concept-display-configurations.sparql) to
-  sync the concept displays
-  configuration
-
-
-- If the authority created an instance from a concept when no display configuration existed, then the data inserted by
-  the script will be wrong.
-  The [fix-concept-display-configurations.sparql](concept-display-configurations/fix-concept-display-configurations.sparql)
-  script will fix this.
+Follow the steps
+in [display-configuratie-andere-besturen](https://github.com/lblod/app-lpdc-digitaal-loket/tree/development/migration-scripts/display-configuratie-andere-besturen)
+in app-lpdc-digitaal-loket

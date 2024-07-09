@@ -32,7 +32,7 @@ async function main(fromAuthorityId: Iri, toAuthorityId: Iri, onlyForMunicipalit
 
     console.log(`Instances to transfer: ${instanceIds.length}`);
     for (const instanceId of instanceIds) {
-        const newInstance = await transferInstanceService.transfer(instanceId, fromAuthorityId, toAuthorityId);
+        const newInstance = await transferInstanceService.transfer(instanceId, fromAuthority, toAuthority);
         
         const quads = domainToQuadsMerger.instanceToQuads(newInstance).map(quad => quad.toCanonical()).join('\n');
         insertQuads.push(quads);

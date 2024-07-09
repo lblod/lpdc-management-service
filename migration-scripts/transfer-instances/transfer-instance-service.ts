@@ -11,6 +11,9 @@ import {FormatPreservingDate} from "../../src/core/domain/format-preserving-date
 import {ContactPoint, ContactPointBuilder} from "../../src/core/domain/contact-point";
 import {AddressFetcher} from "../../src/core/port/driven/external/address-fetcher";
 import {AddressBuilder} from "../../src/core/domain/address";
+import {LanguageString} from "../../src/core/domain/language-string";
+import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
+import {AddressTestBuilder} from "../../test/core/domain/address-test-builder";
 
 export class TransferInstanceService {
 
@@ -26,10 +29,7 @@ export class TransferInstanceService {
         this.addressFetcher = addressFetcher;
     }
 
-    async transfer(instanceId: Iri, fromAuthorityId: Iri, toAuthorityId: Iri): Promise<Instance> {
-
-        const fromAuthority = await this.bestuurseenheidRepository.findById(fromAuthorityId);
-        const toAuthority = await this.bestuurseenheidRepository.findById(toAuthorityId);
+    async transfer(instanceId: Iri, fromAuthority: Bestuurseenheid, toAuthority: Bestuurseenheid): Promise<Instance> {
 
         const toAuthorityChoice = (await this.formalInformalChoiceRepository.findByBestuurseenheid(toAuthority))?.chosenForm;
 
@@ -86,9 +86,11 @@ export class TransferInstanceService {
                     address.huisnummer,
                     address.busnummer
                 );
+                //TODO ADD COUNTRY
                 const updatedAddress = AddressBuilder.from(address)
                     .withPostcode(match['postcode'] ? match['postcode'] : undefined)
                     .withVerwijstNaar(match['adressenRegisterId'] ? new Iri(match['adressenRegisterId']) : undefined)
+                    .withLand(match['adressenRegisterId'] ? LanguageString.of(AddressTestBuilder.LAND) : undefined)
                     .build();
                 return ContactPointBuilder.from(cp).withAddress(updatedAddress).build();
             }

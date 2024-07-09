@@ -17,8 +17,8 @@ const instanceRepository = new InstanceSparqlRepository(endPoint);
 
 
 async function main(bestuurseenheidId: Iri) {
-    const insertQuads = [];
-    const deleteQuads = [];
+    const insertTriples = [];
+    const deleteTriples = [];
     const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
 
     const domainToQuadsMerger = new DomainToQuadsMapper(bestuurseenheid.userGraph());
@@ -31,14 +31,14 @@ async function main(bestuurseenheidId: Iri) {
         const instance = await instanceRepository.findById(bestuurseenheid, instanceId);
 
         if (instance.dateSent !== undefined) {
-            const quads = tombstoneQuads(instance.id.value);
-            insertQuads.push(quads);
+            const triples = tombstoneQuads(instance.id.value);
+            insertTriples.push(triples);
         }
 
-        const quads = domainToQuadsMerger.instanceToQuads(instance).map(quad => quad.toNT()).join('\n');
-        deleteQuads.push(quads);
+        const triplesToDelete = domainToQuadsMerger.instanceToQuads(instance).map(quad => quad.toNT()).join('\n');
+        deleteTriples.push(triplesToDelete);
     }
-    createSparql(bestuurseenheid, insertQuads, deleteQuads);
+    createSparql(bestuurseenheid, insertTriples, deleteTriples);
 }
 
 async function getAllInstanceIdsForBestuurseenheid(bestuurseenheid: Bestuurseenheid): Promise<Iri[]> {
@@ -72,15 +72,15 @@ function tombstoneQuads(instanceId: string) {
     return tombstoneQuads.join(`\n`);
 }
 
-function createSparql(bestuurseenheid: Bestuurseenheid, insertQuads, deleteQuads) {
+function createSparql(bestuurseenheid: Bestuurseenheid, insertTriples: string[], deleteTriples: string[]) {
     const query = `
         
         WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
         DELETE {
-            ${deleteQuads.join("\n")}                        
+            ${deleteTriples.join("\n")}                        
         }            
         INSERT { 
-            ${insertQuads.join("\n")}        
+            ${insertTriples.join("\n")}        
         }     
         WHERE {
             

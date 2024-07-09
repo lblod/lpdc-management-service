@@ -15,11 +15,7 @@ import {
 import {
     BestuurseenheidSparqlTestRepository
 } from "../../../../test/driven/persistence/bestuurseenheid-sparql-test-repository";
-import {
-    ChosenFormType,
-    CompetentAuthorityLevelType,
-    InstanceStatusType
-} from "../../../../src/core/domain/types";
+import {ChosenFormType, CompetentAuthorityLevelType, InstanceStatusType} from "../../../../src/core/domain/types";
 import {Language} from "../../../../src/core/domain/language";
 import {Bestuurseenheid} from "../../../../src/core/domain/bestuurseenheid";
 import {FormatPreservingDate} from "../../../../src/core/domain/format-preserving-date";
@@ -33,7 +29,7 @@ import {aFullLegalResourceForInstance} from "../../../../test/core/domain/legal-
 import {aFullContactPointForInstance} from "../../../../test/core/domain/contact-point-test-builder";
 import {AddressTestBuilder, aFullAddressForInstance} from "../../../../test/core/domain/address-test-builder";
 import {LanguageString} from "../../../../src/core/domain/language-string";
-import {AdressenRegisterFetcherStub} from "../../adressen-register-fetcher-stub";
+import {AdressenRegisterFetcherStub} from "../adressen-register-fetcher-stub";
 
 describe('transfer instance', () => {
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
@@ -55,7 +51,7 @@ describe('transfer instance', () => {
     test('createdBy gets updated', async () => {
         const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).build();
         await instanceRepository.save(fromAuthority, instance);
-        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
         expect(transferredInstance.createdBy).toEqual(toAuthority.id);
 
@@ -64,7 +60,7 @@ describe('transfer instance', () => {
     test('dateCreated and dateModified are updated', async () => {
         const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).build();
         await instanceRepository.save(fromAuthority, instance);
-        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
         expect(instance.dateCreated.before(transferredInstance.dateCreated)).toBeTrue();
         expect(instance.dateModified.before(transferredInstance.dateModified)).toBeTrue();
@@ -73,7 +69,7 @@ describe('transfer instance', () => {
     test('forMunicipalityMerger is false', async () => {
         const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withForMunicipalityMerger(true).build();
         await instanceRepository.save(fromAuthority, instance);
-        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
         expect(transferredInstance.forMunicipalityMerger).toBeFalse();
     });
@@ -86,7 +82,7 @@ describe('transfer instance', () => {
             .build();
         await instanceRepository.save(fromAuthority, instance);
 
-        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
         expect(transferredInstance.status).toEqual(InstanceStatusType.ONTWERP);
         expect(transferredInstance.dateSent).toBeUndefined();
@@ -98,7 +94,7 @@ describe('transfer instance', () => {
 
         const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withCopyOf(anotherInstance.id).build();
         await instanceRepository.save(fromAuthority, instance);
-        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
         expect(transferredInstance.copyOf).toBeUndefined();
     });
@@ -106,7 +102,7 @@ describe('transfer instance', () => {
     test('when forMunicipalityMerger is false, clear spatial and executingAuthority', async () => {
         const instance = aMinimalInstance().withSpatials(InstanceTestBuilder.SPATIALS).withExecutingAuthorities(InstanceTestBuilder.EXECUTING_AUTHORITIES).withCreatedBy(fromAuthority.id).withForMunicipalityMerger(false).build();
         await instanceRepository.save(fromAuthority, instance);
-        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+        const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
         expect(instance.spatials).not.toBeEmpty();
         expect(transferredInstance.spatials).toBeEmpty();
@@ -123,9 +119,9 @@ describe('transfer instance', () => {
         await instanceRepository.save(fromAuthority, lokaleOverheidInstance);
         await instanceRepository.save(fromAuthority, europeeseInstance);
         await instanceRepository.save(fromAuthority, provincialeInstance);
-        const transferredLokaleInstance = await transferInstanceService.transfer(lokaleOverheidInstance.id, fromAuthority.id, toAuthority.id);
-        const transferredEuropeeseInstance = await transferInstanceService.transfer(europeeseInstance.id, fromAuthority.id, toAuthority.id);
-        const transferredProvincialeInstance = await transferInstanceService.transfer(provincialeInstance.id, fromAuthority.id, toAuthority.id);
+        const transferredLokaleInstance = await transferInstanceService.transfer(lokaleOverheidInstance.id, fromAuthority, toAuthority);
+        const transferredEuropeeseInstance = await transferInstanceService.transfer(europeeseInstance.id, fromAuthority, toAuthority);
+        const transferredProvincialeInstance = await transferInstanceService.transfer(provincialeInstance.id, fromAuthority, toAuthority);
 
         expect(transferredLokaleInstance.competentAuthorities).toBeEmpty();
         expect(transferredEuropeeseInstance.competentAuthorities).not.toBeEmpty();
@@ -171,7 +167,7 @@ describe('transfer instance', () => {
             .build();
 
         await instanceRepository.save(fromAuthority, instance);
-        const updatedInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+        const updatedInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
         expect(updatedInstance.calculatedInstanceLanguages()).toEqual([Language.FORMAL]);
         expect(updatedInstance.id).not.toEqual(instance.id);
@@ -323,7 +319,7 @@ describe('transfer instance', () => {
             const instance = aMinimalInstance().withDutchLanguageVariant(Language.NL).withCreatedBy(fromAuthority.id).build();
             await instanceRepository.save(fromAuthority, instance);
 
-            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
             expect(transferredInstance.needsConversionFromFormalToInformal).toEqual(false);
         });
@@ -334,7 +330,7 @@ describe('transfer instance', () => {
             const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withDutchLanguageVariant(Language.FORMAL).build();
             await instanceRepository.save(fromAuthority, instance);
 
-            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
             expect(transferredInstance.needsConversionFromFormalToInformal).toEqual(false);
         });
@@ -346,7 +342,7 @@ describe('transfer instance', () => {
 
             await instanceRepository.save(fromAuthority, instance);
 
-            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
             expect(transferredInstance.needsConversionFromFormalToInformal).toEqual(false);
         });
@@ -359,7 +355,7 @@ describe('transfer instance', () => {
 
             await instanceRepository.save(fromAuthority, instance);
 
-            await expect(transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id)).rejects.toThrowWithMessage(InvariantError, "transforming informal instance to formal is not possible");
+            await expect(transferInstanceService.transfer(instance.id, fromAuthority, toAuthority)).rejects.toThrowWithMessage(InvariantError, "transforming informal instance to formal is not possible");
         });
 
         test('given authority with informal formalInformalChoice and non-informal instance, sets needsConversionFromFormalToInformal to true', async () => {
@@ -375,9 +371,9 @@ describe('transfer instance', () => {
             await instanceRepository.save(fromAuthority, informalInstance);
 
 
-            const transferredFormalInstance = await transferInstanceService.transfer(formalInstance.id, fromAuthority.id, toAuthority.id);
-            const transferredNlInstance = await transferInstanceService.transfer(nlInstance.id, fromAuthority.id, toAuthority.id);
-            const transferredInformalInstance = await transferInstanceService.transfer(informalInstance.id, fromAuthority.id, toAuthority.id);
+            const transferredFormalInstance = await transferInstanceService.transfer(formalInstance.id, fromAuthority, toAuthority);
+            const transferredNlInstance = await transferInstanceService.transfer(nlInstance.id, fromAuthority, toAuthority);
+            const transferredInformalInstance = await transferInstanceService.transfer(informalInstance.id, fromAuthority, toAuthority);
 
             expect(transferredFormalInstance.needsConversionFromFormalToInformal).toBeTrue();
             expect(transferredNlInstance.needsConversionFromFormalToInformal).toBeTrue();
@@ -390,18 +386,20 @@ describe('transfer instance', () => {
             const straatnaam = LanguageString.of(AdressenRegisterFetcherStub.INCORRECT_STREETNAME);
             const contactPoint = aFullContactPointForInstance().withAddress(
                 aFullAddressForInstance()
+                    .withGemeentenaam(LanguageString.of(AddressTestBuilder.GEMEENTENAAM))
                     .withStraatnaam(straatnaam)
                     .withPostcode(undefined)
+                    .withLand(undefined)
                     .withVerwijstNaar(undefined)
                     .build())
                 .build();
             const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withContactPoints([contactPoint]).build();
 
             await instanceRepository.save(fromAuthority, instance);
-            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
             expect(transferredInstance.contactPoints[0].address.gemeentenaam.nl).toEqual(AddressTestBuilder.GEMEENTENAAM);
-            expect(transferredInstance.contactPoints[0].address.land.nl).toEqual(AddressTestBuilder.LAND);
+            expect(transferredInstance.contactPoints[0].address.land).toBeUndefined();
             expect(transferredInstance.contactPoints[0].address.huisnummer).toEqual(AddressTestBuilder.HUISNUMMER);
             expect(transferredInstance.contactPoints[0].address.busnummer).toEqual(AddressTestBuilder.BUSNUMMER);
             expect(transferredInstance.contactPoints[0].address.straatnaam).toEqual(straatnaam);
@@ -411,11 +409,11 @@ describe('transfer instance', () => {
         });
 
         test('given address without verwijstnaar and postcode,  found keep postcode and verwijstNaar empty and fill in the rest when no match found', async () => {
-            const contactPoint = aFullContactPointForInstance().withAddress(aFullAddressForInstance().withPostcode(undefined).withVerwijstNaar(undefined).build()).build();
+            const contactPoint = aFullContactPointForInstance().withAddress(aFullAddressForInstance().withLand(undefined).withPostcode(undefined).withVerwijstNaar(undefined).build()).build();
             const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withContactPoints([contactPoint]).build();
 
             await instanceRepository.save(fromAuthority, instance);
-            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
             expect(instance.contactPoints[0].address.postcode).toBeUndefined();
             expect(transferredInstance.contactPoints[0].address.postcode).toEqual(AddressTestBuilder.POSTCODE);
@@ -423,8 +421,10 @@ describe('transfer instance', () => {
             expect(instance.contactPoints[0].address.verwijstNaar).toBeUndefined();
             expect(transferredInstance.contactPoints[0].address.verwijstNaar).toEqual(AddressTestBuilder.VERWIJST_NAAR);
 
+            expect(instance.contactPoints[0].address.verwijstNaar).toBeUndefined();
+            expect(transferredInstance.contactPoints[0].address.land).toEqual(LanguageString.of(AddressTestBuilder.LAND));
+
             expect(transferredInstance.contactPoints[0].address.gemeentenaam.nl).toEqual(AddressTestBuilder.GEMEENTENAAM);
-            expect(transferredInstance.contactPoints[0].address.land.nl).toEqual(AddressTestBuilder.LAND);
             expect(transferredInstance.contactPoints[0].address.huisnummer).toEqual(AddressTestBuilder.HUISNUMMER);
             expect(transferredInstance.contactPoints[0].address.busnummer).toEqual(AddressTestBuilder.BUSNUMMER);
             expect(transferredInstance.contactPoints[0].address.straatnaam.nl).toEqual(AddressTestBuilder.STRAATNAAM);
@@ -436,16 +436,16 @@ describe('transfer instance', () => {
             const instance = aMinimalInstance().withCreatedBy(fromAuthority.id).withContactPoints([contactPoint]).build();
 
             await instanceRepository.save(fromAuthority, instance);
-            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority.id, toAuthority.id);
+            const transferredInstance = await transferInstanceService.transfer(instance.id, fromAuthority, toAuthority);
 
             expect(instance.contactPoints[0].address.postcode).toBeDefined();
             expect(transferredInstance.contactPoints[0].address.postcode).toBeUndefined();
 
             expect(instance.contactPoints[0].address.verwijstNaar).toBeDefined();
             expect(transferredInstance.contactPoints[0].address.verwijstNaar).toBeUndefined();
+            expect(transferredInstance.contactPoints[0].address.land).toBeUndefined();
 
             expect(transferredInstance.contactPoints[0].address.gemeentenaam.nl).toEqual(AddressTestBuilder.GEMEENTENAAM);
-            expect(transferredInstance.contactPoints[0].address.land.nl).toEqual(AddressTestBuilder.LAND);
             expect(transferredInstance.contactPoints[0].address.huisnummer).toEqual(AddressTestBuilder.HUISNUMMER);
             expect(transferredInstance.contactPoints[0].address.busnummer).toEqual(AddressTestBuilder.BUSNUMMER);
             expect(transferredInstance.contactPoints[0].address.straatnaam).toEqual(straatnaam);
