@@ -3,7 +3,7 @@ import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
 
 
-export class VersionedLdesSnapshot {
+export abstract class VersionedLdesSnapshot {
 
     private readonly _id: Iri;
     private readonly _generatedAtTime: FormatPreservingDate;
