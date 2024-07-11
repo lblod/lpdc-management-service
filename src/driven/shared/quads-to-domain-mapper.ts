@@ -356,7 +356,7 @@ export class QuadsToDomainMapper {
         return this.storeAccess.uniqueValue(this.asNamedOrBlankNode(id), NS.mu('uuid'));
     }
 
-    private createdBy(id: Iri): Iri | undefined {
+    createdBy(id: Iri): Iri | undefined {
         return this.asIri(this.storeAccess.uniqueStatement(this.asNamedOrBlankNode(id), NS.pav('createdBy')));
     }
 

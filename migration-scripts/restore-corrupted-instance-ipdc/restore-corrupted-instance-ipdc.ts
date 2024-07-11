@@ -12,36 +12,59 @@ import {
 import {graph, isBlankNode, isLiteral, Literal, NamedNode, parse, Statement} from "rdflib";
 import {Logger} from "../../platform/logger";
 import {InstanceStatusType} from "../../src/core/domain/types";
-import {last, uniq} from "lodash";
+import {uniq} from "lodash";
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
 import {NS} from "../../src/driven/persistence/namespaces";
-import {uuid} from "../../mu-helper";
+import {sparqlEscapeUri, uuid} from "../../mu-helper";
 import fs from "fs";
 import {FormatPreservingDate} from "../../src/core/domain/format-preserving-date";
+import {PublishedInstanceSnapshotBuilder} from "../../src/core/domain/published-instance-snapshot";
+import {AdressenRegisterFetcher} from "../../src/driven/external/adressen-register-fetcher";
+import {Address, AddressBuilder} from "../../src/core/domain/address";
+import {ContactPoint, ContactPointBuilder} from "../../src/core/domain/contact-point";
+import {
+    DatastoreToQuadsRecursiveSparqlFetcher
+} from "../../src/driven/persistence/datastore-to-quads-recursive-sparql-fetcher";
 
 const sparqlurl = process.env.SPARQL_URL;
 const ipdcApiEndpoint = process.env.IPDC_API_ENDPOINT;
 const ipdcApiKey = process.env.IPDC_API_KEY;
 
-const instanceIri = InstanceBuilder.buildIri('1ba9cd8f-6592-4edd-805b-833dc63d2a94');
-const instanceUuid = last(instanceIri.value.split('/'));
-const bestuurseenheidId = new Iri('http://data.lblod.info/id/bestuurseenheden/23d04e951dabc6c108803eac7e8faf08c639ba6984d1cda170f09fbd8a511855');
-const graphId = new Iri("http://mu.semte.ch/graphs/organizations/23d04e951dabc6c108803eac7e8faf08c639ba6984d1cda170f09fbd8a511855/LoketLB-LPDCGebruiker");
-const choseForm = Language.INFORMAL;
+// VARIABLES TO SET
+const instanceUuid = '7bfbb658-acdc-400b-addb-616d051f2ac6';
+const instanceIri = InstanceBuilder.buildIri(instanceUuid);
+const bestuurseenheidId = new Iri('http://data.lblod.info/id/bestuurseenheden/f4a187c72e551b9d7745e3b8602b11f12ce0fd5399c7f8aebbd4f8f42dc9c028');
+const graphId = new Iri("http://mu.semte.ch/graphs/organizations/f4a187c72e551b9d7745e3b8602b11f12ce0fd5399c7f8aebbd4f8f42dc9c028/LoketLB-LPDCGebruiker");
+const choseForm = Language.FORMAL;
 
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository(sparqlurl);
 const conceptRepository = new ConceptSparqlRepository(sparqlurl);
+const fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(sparqlurl);
 const domainToQuadsMapper = new DomainToQuadsMapper(graphId);
+const addressFetcher = new AdressenRegisterFetcher();
 
 async function fetchIpdcInstance() {
     const bestuurseenheid = await bestuurseenheidRepository.findById(bestuurseenheidId);
 
+    const oldInstancequads = await fetchExistingTriples(bestuurseenheid, instanceIri);
+
+
+    fs.writeFileSync(`./migration-results/delete-corrupted-instance-${instanceUuid}.sparql`,
+        `DELETE DATA {
+                    GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                        ${oldInstancequads.map(quad => (quad as Statement).toNT()).join('\n')}
+                    }
+               }`);
+
     const jsonInstance = await fetchInstance(instanceIri, instanceUuid);
     jsonInstance['@context'] = await fetchContext(jsonInstance['@context']);
     const instance = await mapInstance(JSON.stringify(jsonInstance), bestuurseenheid, choseForm);
-    const quads = domainToQuadsMapper.instanceToQuads(instance);
-    fs.writeFileSync(`./migration-results/restore-corrupted-instance-ipdc.ttl`, quads.map(quad => quad.toCanonical()).join('\n'));
+    const publishedInstanceSnapshot = PublishedInstanceSnapshotBuilder.from(instance);
+    const instanceQuads = domainToQuadsMapper.instanceToQuads(instance);
+    const publishedInstanceQuads = domainToQuadsMapper.publishedInstanceSnapshotToQuads(publishedInstanceSnapshot);
+    const quads = [...instanceQuads, ...publishedInstanceQuads];
+    fs.writeFileSync(`./migration-results/restore-corrupted-instance-ipdc-${instanceUuid}.ttl`, quads.map(quad => quad.toCanonical()).join('\n'));
 }
 
 async function fetchInstance(id: Iri, uuid: string) {
@@ -98,12 +121,15 @@ async function mapInstance(jsonLdData: string, bestuurseenheid: Bestuurseenheid,
             }
 
             const doubleQuadReporter: DoubleQuadReporter = new LoggingDoubleQuadReporter(new Logger('Instance-QuadsToDomainLogger'));
+            // filter out other language versions and keep only nl version, nl contains the original language.
             const quads: Statement[] = kb.statementsMatching().filter(quad => {
                 if (isLiteral(quad.object) && (quad.object as Literal).language) {
                     return (quad.object as Literal).language == 'nl';
                 }
                 return true;
             });
+
+            // add uuid triples
             const uuids = uniq(quads
                 .filter(quad => isBlankNode(quad.subject))
                 .map(quad => quad.subject))
@@ -119,6 +145,13 @@ async function mapInstance(jsonLdData: string, bestuurseenheid: Bestuurseenheid,
 
 async function toInstance(mapper: QuadsToDomainMapper, chosenLanguage: Language, bestuurseenheid: Bestuurseenheid): Promise<Instance> {
     const concept = await conceptRepository.findById(mapper.conceptId(instanceIri));
+    if (!mapper.createdBy(instanceIri).equals(bestuurseenheid.id)) {
+        throw new Error(`createdby (${mapper.createdBy(instanceIri)}) from ipdc does not match bestuurseenheid ${bestuurseenheid.id}`);
+    }
+
+    const contactPoints = await mapContactpoints(mapper.contactPoints(instanceIri));
+
+
     return new InstanceBuilder()
         .withId(instanceIri)
         .withUuid(instanceUuid)
@@ -134,9 +167,9 @@ async function toInstance(mapper: QuadsToDomainMapper, chosenLanguage: Language,
         .withTargetAudiences(mapper.targetAudiences(instanceIri))
         .withThemes(mapper.themes(instanceIri))
         .withCompetentAuthorityLevels(mapper.competentAuthorityLevels(instanceIri))
-        .withCompetentAuthorities([bestuurseenheidId])
+        .withCompetentAuthorities([bestuurseenheidId]) //TODO Watch out IPDC translates to wegwijs iri, manually check this
         .withExecutingAuthorityLevels(mapper.executingAuthorityLevels(instanceIri))
-        .withExecutingAuthorities([bestuurseenheidId])
+        .withExecutingAuthorities([bestuurseenheidId]) //TODO IWatch out IPDC translates to wegwijs iri, manually check this
         .withPublicationMedia(mapper.publicationMedia(instanceIri))
         .withYourEuropeCategories(mapper.yourEuropeCategories(instanceIri))
         .withKeywords(mapper.keywords(instanceIri))
@@ -145,7 +178,7 @@ async function toInstance(mapper: QuadsToDomainMapper, chosenLanguage: Language,
         .withWebsites(mapper.websites(instanceIri).map(w => w.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
         .withCosts(mapper.costs(instanceIri).map(co => co.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
         .withFinancialAdvantages(mapper.financialAdvantages(instanceIri).map(fa => fa.transformLanguage(Language.NL, chosenLanguage).transformWithNewId()))
-        .withContactPoints(mapper.contactPoints(instanceIri))
+        .withContactPoints(contactPoints)
         .withConceptId(concept.id)
         .withConceptSnapshotId(concept.latestConceptSnapshot)
         .withProductId(concept.productId)
@@ -153,13 +186,70 @@ async function toInstance(mapper: QuadsToDomainMapper, chosenLanguage: Language,
         .withDutchLanguageVariant(chosenLanguage)
         .withNeedsConversionFromFormalToInformal(false)
         .withDateCreated(mapper.dateCreated(instanceIri))
-        .withDateModified(FormatPreservingDate.now())
+        .withDateModified(mapper.dateModified(instanceIri))
         .withDateSent(FormatPreservingDate.now())
         .withStatus(InstanceStatusType.VERZONDEN)
         .withReviewStatus(undefined)
         .withSpatials(mapper.spatials(instanceIri))
-        .withLegalResources(mapper.legalResources(instanceIri))
+        .withLegalResources(mapper.legalResources(instanceIri).map(lr => lr.transformLanguage(Language.FORMAL, chosenLanguage).transformWithNewId()))
+        .withForMunicipalityMerger(false)
         .build();
+}
+
+async function mapContactpoints(contactPoints: ContactPoint[]): Promise<ContactPoint[]> {
+    const result = [];
+    for (const cp of contactPoints) {
+        const address = await addAdressId(cp.address);
+        result.push(ContactPointBuilder.from(cp).withAddress(address).build().transformWithNewId());
+    }
+    return result;
+}
+
+async function addAdressId(address: Address): Promise<Address> {
+    const match = await addressFetcher.findAddressMatch(
+        address.gemeentenaam?.nl,
+        address.straatnaam?.nl,
+        address.huisnummer,
+        address.busnummer
+    );
+
+    if (match) {
+        return AddressBuilder.from(address).withVerwijstNaar(new Iri(match['adressenRegisterId'])).build();
+    }
+    return address;
+}
+
+async function fetchExistingTriples(bestuurseenheid: Bestuurseenheid, instanceId: Iri) {
+    return fetcher.fetch(
+        bestuurseenheid.userGraph(),
+        instanceId,
+        [],
+        [
+            NS.lpdcExt('yourEuropeCategory').value,
+            NS.lpdcExt('targetAudience').value,
+            NS.m8g('thematicArea').value,
+            NS.lpdcExt('competentAuthorityLevel').value,
+            NS.m8g('hasCompetentAuthority').value,
+            NS.lpdcExt('executingAuthorityLevel').value,
+            NS.lpdcExt('hasExecutingAuthority').value,
+            NS.lpdcExt('publicationMedium').value,
+            NS.dct("type").value,
+            NS.lpdcExt("conceptTag").value,
+            NS.adms('status').value,
+            NS.ext('hasVersionedSource').value,
+            NS.dct('source').value,
+            NS.dct('spatial').value,
+            NS.pav('createdBy').value,
+        ],
+        [
+            NS.skos('Concept').value,
+            NS.lpdcExt('ConceptDisplayConfiguration').value,
+            NS.besluit('Bestuurseenheid').value,
+            NS.m8g('PublicOrganisation').value,
+            NS.lpdcExt('InstancePublicServiceSnapshot').value,
+            NS.lpdcExt('ConceptualPublicService').value,
+            NS.lpdcExt('ConceptualPublicServiceSnapshot').value,
+        ]);
 }
 
 fetchIpdcInstance();
