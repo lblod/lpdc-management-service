@@ -86,7 +86,6 @@ export class TransferInstanceService {
                     address.huisnummer,
                     address.busnummer
                 );
-                //TODO ADD COUNTRY
                 const updatedAddress = AddressBuilder.from(address)
                     .withPostcode(match['postcode'] ? match['postcode'] : undefined)
                     .withVerwijstNaar(match['adressenRegisterId'] ? new Iri(match['adressenRegisterId']) : undefined)

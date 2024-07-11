@@ -167,9 +167,9 @@ async function toInstance(mapper: QuadsToDomainMapper, chosenLanguage: Language,
         .withTargetAudiences(mapper.targetAudiences(instanceIri))
         .withThemes(mapper.themes(instanceIri))
         .withCompetentAuthorityLevels(mapper.competentAuthorityLevels(instanceIri))
-        .withCompetentAuthorities([bestuurseenheidId]) //TODO Watch out IPDC translates to wegwijs iri, manually check this
+        .withCompetentAuthorities([bestuurseenheidId]) //FIXME Watch out IPDC translates to wegwijs iri, manually check this
         .withExecutingAuthorityLevels(mapper.executingAuthorityLevels(instanceIri))
-        .withExecutingAuthorities([bestuurseenheidId]) //TODO IWatch out IPDC translates to wegwijs iri, manually check this
+        .withExecutingAuthorities([bestuurseenheidId]) //FIXME Watch out IPDC translates to wegwijs iri, manually check this
         .withPublicationMedia(mapper.publicationMedia(instanceIri))
         .withYourEuropeCategories(mapper.yourEuropeCategories(instanceIri))
         .withKeywords(mapper.keywords(instanceIri))
