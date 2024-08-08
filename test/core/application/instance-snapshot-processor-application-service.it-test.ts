@@ -11,7 +11,7 @@ import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-s
 import {aBestuurseenheid} from "../domain/bestuurseenheid-test-builder";
 import {aFullInstanceSnapshot} from "../domain/instance-snapshot-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {
     ConceptDisplayConfigurationSparqlTestRepository

@@ -15,7 +15,7 @@ import {
     YourEuropeCategoryType
 } from "../../../src/core/domain/types";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
 import {aFullRequirementForInstance, aMinimalRequirementForInstance} from "./requirement-test-builder";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";

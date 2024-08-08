@@ -1,5 +1,5 @@
 import {Iri} from "../../core/domain/shared/iri";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 import {SparqlQuerying} from "./sparql-querying";
 import {isNamedNode} from "rdflib";
 import {Quad} from "rdflib/lib/tf-types";

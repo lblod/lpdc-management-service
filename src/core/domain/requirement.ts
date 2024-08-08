@@ -4,7 +4,7 @@ import {zip} from 'lodash';
 import {Evidence} from "./evidence";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 
 export class Requirement {
 

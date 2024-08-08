@@ -4,7 +4,7 @@ import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/co
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {DirectDatabaseAccess} from "./direct-database-access";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {
     buildBestuurseenheidIri,
     buildNutsCodeIri,

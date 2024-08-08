@@ -1,6 +1,6 @@
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {Iri} from "../../../src/core/domain/shared/iri";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 import {DomainToQuadsMapper} from "../../../src/driven/persistence/domain-to-quads-mapper";
 import {Instance} from "../../../src/core/domain/instance";
 import {NamedNode, Statement} from "rdflib";

@@ -1,6 +1,6 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Session, SessionRoleType, SessionRoleTypeOrString} from "../../../src/core/domain/session";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {buildBestuurseenheidIri, buildSessionIri} from "./iri-test-builder";
 
 export function aSession(): SessionTestBuilder {

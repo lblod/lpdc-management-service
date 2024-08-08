@@ -4,7 +4,7 @@ import {PREFIX, PUBLIC_GRAPH} from "../../config";
 import {namedNode, Statement} from "rdflib";
 import {shuffle, sortedUniq, uniq} from "lodash";
 import {Iri} from "../../src/core/domain/shared/iri";
-import {sparqlEscapeUri} from "../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
 import {SparqlQuerying} from "../../src/driven/persistence/sparql-querying";

@@ -5,7 +5,7 @@ import {DirectDatabaseAccess} from "./direct-database-access";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 import {INSTANCE_SNAPHOT_LDES_AUTHORIZATION_GRAPH} from "../../../config";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 
 export class InstanceSnapshotProcessingAuthorizationSparqlTestRepository extends InstanceSnapshotProcessingAuthorizationSparqlRepository {
 

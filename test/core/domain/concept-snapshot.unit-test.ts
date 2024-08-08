@@ -1,5 +1,5 @@
 import {ConceptSnapshot, ConceptSnapshotBuilder} from "../../../src/core/domain/concept-snapshot";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {
     aFullConceptSnapshot,
     aMinimalConceptSnapshot,

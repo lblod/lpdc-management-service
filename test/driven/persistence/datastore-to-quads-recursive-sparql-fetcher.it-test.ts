@@ -1,6 +1,6 @@
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
-import {sparqlEscapeDate, sparqlEscapeDateTime, sparqlEscapeInt, uuid} from "../../../mu-helper";
+import {sparqlEscapeDate, sparqlEscapeDateTime, sparqlEscapeInt, uuid} from "mu";
 import {PREFIX} from "../../../config";
 import {
     DatastoreToQuadsRecursiveSparqlFetcher

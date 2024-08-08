@@ -1,7 +1,7 @@
 import {NewInstanceDomainService} from "../../../src/core/domain/new-instance-domain-service";
 import {aBestuurseenheid, BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {buildBestuurseenheidIri, buildNutsCodeIri} from "./iri-test-builder";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {ChosenFormType, CompetentAuthorityLevelType, InstanceStatusType} from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";

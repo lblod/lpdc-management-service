@@ -3,7 +3,7 @@ import {requiredValue} from "./shared/invariant";
 import {zip} from "lodash";
 import {LanguageString} from "./language-string";
 import {Language} from "./language";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 
 export class LegalResource {
 

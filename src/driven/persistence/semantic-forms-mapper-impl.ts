@@ -9,7 +9,7 @@ import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from
 import {Logger} from "../../../platform/logger";
 import {Quad} from "rdflib/lib/tf-types";
 import {graph, literal, Literal, namedNode, parse, quad, Statement} from 'rdflib';
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {ConceptSnapshot} from "../../core/domain/concept-snapshot";
 import {NS} from "./namespaces";
 

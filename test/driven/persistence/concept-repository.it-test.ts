@@ -1,6 +1,6 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {aFullConcept, aMinimalConcept, ConceptTestBuilder} from "../../core/domain/concept-test-builder";
 import {CONCEPT_GRAPH, PREFIX} from "../../../config";
 import {NS} from "../../../src/driven/persistence/namespaces";

@@ -1,7 +1,7 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
-import {sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {sparqlEscapeUri, uuid} from "mu";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
 import {Iri} from "../../../src/core/domain/shared/iri";

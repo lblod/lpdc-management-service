@@ -1,6 +1,6 @@
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {CostBuilder} from "../../../src/core/domain/cost";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {aMinimalInformalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
 
 

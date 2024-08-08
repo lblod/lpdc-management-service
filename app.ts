@@ -1,4 +1,4 @@
-import {createApp} from './mu-helper';
+import {createApp} from 'mu';
 import bodyparser from 'body-parser';
 import {
     CONCEPT_SNAPSHOT_PROCESSING_CRON_PATTERN,

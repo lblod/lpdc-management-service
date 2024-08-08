@@ -22,7 +22,7 @@ import {
     InstanceInformalLanguageStringsFetcherIpdc
 } from "../../../src/driven/external/instance-informal-language-strings-fetcher-ipdc";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";
-import {uuid as uuidv4} from "../../../mu-helper";
+import {uuid as uuidv4} from "mu";
 import {aFullEvidenceForInstance} from "./evidence-test-builder";
 import {aFullLegalResourceForInstance} from "./legal-resource-test-builder";
 import {

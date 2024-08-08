@@ -3,7 +3,7 @@ import {DirectDatabaseAccess} from "./direct-database-access";
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {aFormalInformalChoice} from "../../core/domain/formal-informal-choice-test-builder";
 import {buildBestuurseenheidIri} from "../../core/domain/iri-test-builder";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {PREFIX} from "../../../config";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";

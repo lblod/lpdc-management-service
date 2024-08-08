@@ -3,7 +3,7 @@ import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuur
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../config";
 import {Iri} from "../../src/core/domain/shared/iri";
-import {sparqlEscapeUri} from "../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 
 describe('Bestuurseenheid Data Integrity Validation', () => {
 

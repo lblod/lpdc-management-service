@@ -1,4 +1,4 @@
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {ConceptSnapshotBuilder} from "../../../src/core/domain/concept-snapshot";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";

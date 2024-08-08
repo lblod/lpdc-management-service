@@ -1,6 +1,6 @@
 import {aBestuurseenheid} from "../../../../test/core/domain/bestuurseenheid-test-builder";
 import {aFullInstance} from "../../../../test/core/domain/instance-test-builder";
-import {sparqlEscapeUri} from "../../../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 import {SparqlQuerying} from "../../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";
 import {FormatPreservingDate} from "../../../../src/core/domain/format-preserving-date";

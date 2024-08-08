@@ -2,7 +2,7 @@ import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {BestuurseenheidSparqlTestRepository} from "../driven/persistence/bestuurseenheid-sparql-test-repository";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../config";
-import {sparqlEscapeUri} from "../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {
     FormalInformalChoiceSparqlRepository

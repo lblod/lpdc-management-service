@@ -6,7 +6,7 @@ import {
     ConceptDisplayConfigurationSparqlTestRepository
 } from "../driven/persistence/concept-display-configuration-sparql-test-repository";
 import {Iri} from "../../src/core/domain/shared/iri";
-import {sparqlEscapeUri} from "../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 
 describe('Concept Display Configuration Data Integrity Validation', () => {
 

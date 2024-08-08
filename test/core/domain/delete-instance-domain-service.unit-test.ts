@@ -1,5 +1,5 @@
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";

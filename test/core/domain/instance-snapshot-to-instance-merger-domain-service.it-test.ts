@@ -16,7 +16,7 @@ import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-d
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {aFullConcept} from "./concept-test-builder";
 import {aFullInstance, aMinimalInstance} from "./instance-test-builder";
-import {sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {sparqlEscapeUri, uuid} from "mu";
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
 import {literal, namedNode, quad} from "rdflib";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";

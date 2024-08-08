@@ -2,7 +2,7 @@ import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 import {Instance} from "../../../src/core/domain/instance";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 import {DoubleQuadReporter} from "../../../src/driven/shared/quads-to-domain-mapper";
 import {InstanceStatusType} from "../../../src/core/domain/types";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";

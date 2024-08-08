@@ -3,7 +3,7 @@ import {Iri} from "./shared/iri";
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {InstanceSnapshot} from "./instance-snapshot";
 import {Instance} from "./instance";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {InstanceStatusType} from "./types";
 import {ConceptRepository} from "../port/driven/persistence/concept-repository";

@@ -2,7 +2,7 @@ import {LanguageString} from "../../../src/core/domain/language-string";
 import {aFullConcept, ConceptTestBuilder} from "./concept-test-builder";
 import {Language} from "../../../src/core/domain/language";
 import {buildConceptSnapshotIri} from "./iri-test-builder";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {aMinimalCostForConcept, CostTestBuilder} from "./cost-test-builder";
 import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {aMinimalLanguageString} from "./language-string-test-builder";

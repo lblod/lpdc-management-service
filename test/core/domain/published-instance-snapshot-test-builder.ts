@@ -24,7 +24,7 @@ import {ContactPoint} from "../../../src/core/domain/contact-point";
 import {LegalResource} from "../../../src/core/domain/legal-resource";
 import {InstanceBuilder} from "../../../src/core/domain/instance";
 import {buildBestuurseenheidIri, buildConceptIri, buildNutsCodeIri} from "./iri-test-builder";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {
     aFullLegalResourceForInstanceSnapshot,

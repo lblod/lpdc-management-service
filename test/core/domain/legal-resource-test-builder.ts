@@ -1,5 +1,5 @@
 import {LegalResourceBuilder} from "../../../src/core/domain/legal-resource";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {buildCodexVlaanderenIri} from "./iri-test-builder";
 

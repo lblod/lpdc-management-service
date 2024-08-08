@@ -16,7 +16,7 @@ import {uniq} from "lodash";
 import {ConceptSparqlRepository} from "../../src/driven/persistence/concept-sparql-repository";
 import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
 import {NS} from "../../src/driven/persistence/namespaces";
-import {sparqlEscapeUri, uuid} from "../../mu-helper";
+import {sparqlEscapeUri, uuid} from "mu";
 import fs from "fs";
 import {FormatPreservingDate} from "../../src/core/domain/format-preserving-date";
 import {PublishedInstanceSnapshotBuilder} from "../../src/core/domain/published-instance-snapshot";

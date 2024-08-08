@@ -1,4 +1,4 @@
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {buildBestuurseenheidIri, buildConceptDisplayConfigurationIri, buildConceptIri} from "./iri-test-builder";
 import {ConceptDisplayConfigurationBuilder} from "../../../src/core/domain/concept-display-configuration";
 

@@ -1,7 +1,7 @@
 import {SessionSparqlRepository} from "../../../src/driven/persistence/session-sparql-repository";
 import {Session} from "../../../src/core/domain/session";
 import {PREFIX, USER_SESSIONS_GRAPH} from "../../../config";
-import {sparqlEscapeString, sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeString, sparqlEscapeUri} from "mu";
 import {DirectDatabaseAccess} from "./direct-database-access";
 
 export class SessionSparqlTestRepository extends SessionSparqlRepository {

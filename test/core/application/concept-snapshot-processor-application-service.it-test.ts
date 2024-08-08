@@ -19,7 +19,7 @@ import {
     VersionedLdesSnapshotSparqlRepository
 } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 import {aFullConcept} from "../domain/concept-test-builder";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {buildConceptIri} from "../domain/iri-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";

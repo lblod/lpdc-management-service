@@ -7,7 +7,7 @@ import {
     buildNutsCodeIri,
     randomNumber
 } from "./iri-test-builder";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {
     CompetentAuthorityLevelType,

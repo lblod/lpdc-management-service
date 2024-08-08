@@ -19,7 +19,7 @@ import {FinancialAdvantage} from "./financial-advantage";
 import {ContactPoint} from "./contact-point";
 import {LegalResource} from "./legal-resource";
 import {Instance} from "./instance";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {
     requireAtLeastOneValuePresentIfCondition,
     requiredAtLeastOneValuePresent,

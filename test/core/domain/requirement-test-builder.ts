@@ -1,4 +1,4 @@
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {RequirementBuilder} from "../../../src/core/domain/requirement";
 import {

@@ -4,7 +4,7 @@ import {
     SnapshotType,
     VersionedLdesSnapshotRepository
 } from "../../core/port/driven/persistence/versioned-ldes-snapshot-repository";
-import {sparqlEscapeString, sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {sparqlEscapeString, sparqlEscapeUri, uuid} from "mu";
 import {SparqlQuerying} from "./sparql-querying";
 import {DirectDatabaseAccess} from "../../../test/driven/persistence/direct-database-access";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";

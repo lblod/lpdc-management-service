@@ -5,7 +5,7 @@ import {InstanceRepository} from "../../src/core/port/driven/persistence/instanc
 import {FormalInformalChoiceRepository} from "../../src/core/port/driven/persistence/formal-informal-choice-repository";
 import {ChosenFormType, CompetentAuthorityLevelType, InstanceStatusType} from "../../src/core/domain/types";
 import {InvariantError} from "../../src/core/domain/shared/lpdc-error";
-import {uuid} from "../../mu-helper";
+import {uuid} from "mu";
 import {Language} from "../../src/core/domain/language";
 import {FormatPreservingDate} from "../../src/core/domain/format-preserving-date";
 import {ContactPoint, ContactPointBuilder} from "../../src/core/domain/contact-point";

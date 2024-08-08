@@ -3,7 +3,7 @@ import {LanguageString} from "./language-string";
 import {zip} from "lodash";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 
 export class FinancialAdvantage {
 

@@ -1,7 +1,7 @@
 import {CodeRepository, CodeSchema} from "../../core/port/driven/persistence/code-repository";
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
-import {sparqlEscapeString, sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {sparqlEscapeString, sparqlEscapeUri, uuid} from "mu";
 import {Iri} from "../../core/domain/shared/iri";
 import {NS} from "./namespaces";
 import {extractResultsFromAllSettled} from "../../../platform/promises";

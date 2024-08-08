@@ -1,7 +1,7 @@
 import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../../../src/driven/shared/quads-to-domain-mapper";
 import {literal, namedNode, quad} from "rdflib";
 import {buildBestuurseenheidIri} from "../../core/domain/iri-test-builder";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {CONCEPT_GRAPH} from "../../../config";
 import {Logger} from "../../../platform/logger";

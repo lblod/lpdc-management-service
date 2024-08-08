@@ -1,7 +1,7 @@
 import {BestuurseenheidRepository} from "../../core/port/driven/persistence/bestuurseenheid-repository";
 import {Iri} from "../../core/domain/shared/iri";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode,} from "../../core/domain/bestuurseenheid";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {extractResultsFromAllSettled} from "../../../platform/promises";

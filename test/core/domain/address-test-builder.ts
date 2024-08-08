@@ -1,4 +1,4 @@
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {AddressBuilder} from "../../../src/core/domain/address";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {buildVerwijstNaarIri} from "./iri-test-builder";

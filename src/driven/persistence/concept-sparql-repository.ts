@@ -6,7 +6,7 @@ import {Concept} from "../../core/domain/concept";
 import {CONCEPT_GRAPH, PREFIX} from "../../../config";
 import {LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
 import {NS} from "./namespaces";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
 import {Logger} from "../../../platform/logger";
 import {isEqual} from "lodash";

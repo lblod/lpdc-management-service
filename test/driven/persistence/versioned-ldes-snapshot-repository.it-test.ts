@@ -4,7 +4,7 @@ import {INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
 import {aFullInstanceSnapshot} from "../../core/domain/instance-snapshot-test-builder";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {buildInstanceSnapshotIri} from "../../core/domain/iri-test-builder";
-import {sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {sparqlEscapeUri, uuid} from "mu";
 import {InstanceSnapshotSparqlTestRepository} from "./instance-snapshot-sparql-test-repository";
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {

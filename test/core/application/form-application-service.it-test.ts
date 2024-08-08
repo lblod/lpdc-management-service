@@ -47,7 +47,7 @@ import {ConceptSnapshotSparqlTestRepository} from "../../driven/persistence/conc
 import {ConceptSnapshotSparqlRepository} from "../../../src/driven/persistence/concept-snapshot-sparql-repository";
 import {SystemError} from "../../../src/core/domain/shared/lpdc-error";
 import {buildConceptIri} from "../domain/iri-test-builder";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {NS} from "../../../src/driven/persistence/namespaces";
 import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
 

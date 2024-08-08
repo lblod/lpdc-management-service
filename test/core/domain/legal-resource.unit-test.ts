@@ -10,7 +10,7 @@ import {LegalResource, LegalResourceBuilder} from "../../../src/core/domain/lega
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 
 
 describe('forConceptSnapshot', () => {

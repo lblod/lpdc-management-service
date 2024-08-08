@@ -4,7 +4,7 @@ import {zip} from "lodash";
 import {Website} from "./website";
 import {requiredValue, requireNoDuplicates} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 
 export class Procedure {
 

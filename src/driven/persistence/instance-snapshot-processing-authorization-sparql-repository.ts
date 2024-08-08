@@ -5,7 +5,7 @@ import {
 } from "../../core/port/driven/persistence/instance-snapshot-processing-authorization-repository";
 import {SparqlQuerying} from "./sparql-querying";
 import {INSTANCE_SNAPHOT_LDES_AUTHORIZATION_GRAPH, PREFIX} from "../../../config";
-import {sparqlEscapeUri} from "../../../mu-helper";
+import {sparqlEscapeUri} from "mu";
 
 export class InstanceSnapshotProcessingAuthorizationSparqlRepository implements InstanceSnapshotProcessingAuthorizationRepository {
 

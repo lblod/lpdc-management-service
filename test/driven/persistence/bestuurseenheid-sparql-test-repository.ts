@@ -4,7 +4,7 @@ import {
 } from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
-import {sparqlEscapeString, sparqlEscapeUri, uuid} from "../../../mu-helper";
+import {sparqlEscapeString, sparqlEscapeUri, uuid} from "mu";
 import {buildWerkingsgebiedenIri} from "../../core/domain/iri-test-builder";
 import {NotFoundError} from "../../../src/core/domain/shared/lpdc-error";
 

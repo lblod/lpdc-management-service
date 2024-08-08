@@ -9,7 +9,7 @@ import {FinancialAdvantage, FinancialAdvantageBuilder} from "../../../src/core/d
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {uuid} from "../../../mu-helper";
+import {uuid} from "mu";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('forConcept', () => {
