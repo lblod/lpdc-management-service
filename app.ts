@@ -76,6 +76,12 @@ import {
     ConceptSnapshotProcessorApplicationService
 } from "./src/core/application/concept-snapshot-processor-application-service";
 
+
+//TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
+//      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
+//      send its data as such.
+const app: Application = createApp();
+
 const bodySizeLimit = process.env.MAX_BODY_SIZE || '5Mb';
 app.use(bodyparser.json({limit: bodySizeLimit}));
 
