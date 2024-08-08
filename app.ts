@@ -722,3 +722,4 @@ function startProcessingTask(description: string, task: () => Promise<void>, cro
         true, // start
         'Europe/Brussels' // timeZone
     );
+}
