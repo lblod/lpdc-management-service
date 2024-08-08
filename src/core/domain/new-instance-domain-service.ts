@@ -1,7 +1,7 @@
 import {InstanceRepository} from "../port/driven/persistence/instance-repository";
 import {Bestuurseenheid} from "./bestuurseenheid";
 import {Instance, InstanceBuilder} from "./instance";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "./format-preserving-date";
 import {ChosenFormType, CompetentAuthorityLevelType, InstanceStatusType} from "./types";
 import {Concept} from "./concept";

@@ -6,7 +6,7 @@ import {
     RequirementTestBuilder
 } from "./requirement-test-builder";
 import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";
 import {
     aFullEvidenceForInstance,

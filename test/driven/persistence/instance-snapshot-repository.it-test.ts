@@ -1,6 +1,6 @@
 import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {DirectDatabaseAccess} from "./direct-database-access";
-import {sparqlEscapeUri, uuid} from "mu";
+import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {buildConceptIri, buildInstanceSnapshotIri} from "../../core/domain/iri-test-builder";
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {

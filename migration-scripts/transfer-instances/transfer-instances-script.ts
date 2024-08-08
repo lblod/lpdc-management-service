@@ -1,6 +1,6 @@
 import {DirectDatabaseAccess} from "../../test/driven/persistence/direct-database-access";
 import {PREFIX} from "../../config";
-import {sparqlEscapeUri} from "mu";
+import {sparqlEscapeUri} from "../../mu-helper";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";

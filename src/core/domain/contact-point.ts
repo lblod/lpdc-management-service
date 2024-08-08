@@ -1,7 +1,7 @@
 import {Iri} from "./shared/iri";
 import {requiredValue} from "./shared/invariant";
 import {Address} from "./address";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 
 export class ContactPoint {
 

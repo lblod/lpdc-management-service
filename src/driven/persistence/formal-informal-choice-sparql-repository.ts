@@ -3,7 +3,7 @@ import {FormalInformalChoice} from "../../core/domain/formal-informal-choice";
 import {FormalInformalChoiceRepository} from "../../core/port/driven/persistence/formal-informal-choice-repository";
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX} from "../../../config";
-import {sparqlEscapeDateTime, sparqlEscapeString, sparqlEscapeUri} from "mu";
+import {sparqlEscapeDateTime, sparqlEscapeString, sparqlEscapeUri} from "../../../mu-helper";
 import {Iri} from "../../core/domain/shared/iri";
 import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
 import {ChosenFormType} from "../../core/domain/types";

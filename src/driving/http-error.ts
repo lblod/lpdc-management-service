@@ -1,4 +1,4 @@
-import {uuid} from "mu";
+import {uuid} from "../../mu-helper";
 import {
     ConcurrentUpdateError,
     ForbiddenError,

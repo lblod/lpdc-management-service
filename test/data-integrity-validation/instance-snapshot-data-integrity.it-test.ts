@@ -2,7 +2,7 @@ import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {InstanceSnapshotSparqlTestRepository} from "../driven/persistence/instance-snapshot-sparql-test-repository";
 import {INSTANCE_SNAPHOT_LDES_GRAPH, PREFIX} from "../../config";
-import {sparqlEscapeUri} from "mu";
+import {sparqlEscapeUri} from "../../mu-helper";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {DomainToQuadsMapper} from "../../src/driven/persistence/domain-to-quads-mapper";
 import {isLiteral, namedNode, Statement} from "rdflib";

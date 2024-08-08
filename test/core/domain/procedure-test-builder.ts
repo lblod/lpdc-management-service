@@ -1,4 +1,4 @@
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {ProcedureBuilder} from "../../../src/core/domain/procedure";
 import {

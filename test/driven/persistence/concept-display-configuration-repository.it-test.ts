@@ -8,7 +8,7 @@ import {
     buildConceptDisplayConfigurationIri,
     buildConceptIri
 } from "../../core/domain/iri-test-builder";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {PREFIX} from "../../../config";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";

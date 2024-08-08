@@ -4,7 +4,7 @@ import {Bestuurseenheid} from "./bestuurseenheid";
 import {buildFormalInformalChoiceIri, FormalInformalChoice} from "./formal-informal-choice";
 import {ChosenFormType} from "./types";
 import {FormatPreservingDate} from "./format-preserving-date";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 
 export class NewFormalInformalChoiceDomainService {
     private readonly _instanceRepository: InstanceRepository;

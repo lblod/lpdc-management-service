@@ -2,7 +2,7 @@ import {authenticateAndAuthorizeRequest} from "../../src/driving/sessions";
 import {SessionSparqlTestRepository} from "../driven/persistence/session-sparql-test-repository";
 import {TEST_SPARQL_ENDPOINT} from "../test.config";
 import {buildSessionIri} from "../core/domain/iri-test-builder";
-import {uuid} from "mu";
+import {uuid} from "../../mu-helper";
 import {aSession} from "../core/domain/session-test-builder";
 import {Forbidden, Unauthorized} from "../../src/driving/http-error";
 

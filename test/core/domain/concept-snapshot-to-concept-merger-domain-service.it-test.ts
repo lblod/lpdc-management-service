@@ -9,7 +9,7 @@ import {
     ConceptSnapshotTestBuilder
 } from "./concept-snapshot-test-builder";
 import {buildBestuurseenheidIri, buildConceptIri} from "./iri-test-builder";
-import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "mu";
+import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../../config";
 import {NS} from "../../../src/driven/persistence/namespaces";

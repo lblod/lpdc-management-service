@@ -1,7 +1,7 @@
 import {SessionSparqlRepository} from "../../src/driven/persistence/session-sparql-repository";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {USER_SESSIONS_GRAPH} from "../../config";
-import {sparqlEscapeUri} from "mu";
+import {sparqlEscapeUri} from "../../mu-helper";
 import {DirectDatabaseAccess} from "../driven/persistence/direct-database-access";
 import {END2END_TEST_SPARQL_ENDPOINT} from "../test.config";
 

@@ -2,7 +2,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {InstanceRepository} from "../../core/port/driven/persistence/instance-repository";
 import {SparqlQuerying} from "./sparql-querying";
 import {PREFIX} from "../../../config";
-import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "mu";
+import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {Instance, InstanceBuilder} from "../../core/domain/instance";
 import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
 import {DomainToQuadsMapper} from "./domain-to-quads-mapper";

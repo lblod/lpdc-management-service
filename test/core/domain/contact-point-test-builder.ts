@@ -1,4 +1,4 @@
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {ContactPointBuilder} from "../../../src/core/domain/contact-point";
 import {
     aFullAddressForInstance,

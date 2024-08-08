@@ -9,7 +9,7 @@ import {Cost, CostBuilder} from "../../../src/core/domain/cost";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Language} from "../../../src/core/domain/language";
 import {LanguageString} from "../../../src/core/domain/language-string";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 
 describe('forConcept', () => {

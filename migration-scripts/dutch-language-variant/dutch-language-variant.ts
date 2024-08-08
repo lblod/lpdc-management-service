@@ -3,7 +3,7 @@ import {
 } from "../../test/driven/persistence/bestuurseenheid-sparql-test-repository";
 import {DirectDatabaseAccess} from "../../test/driven/persistence/direct-database-access";
 import {PREFIX, PUBLIC_GRAPH} from "../../config";
-import {sparqlEscapeUri} from "mu";
+import {sparqlEscapeUri} from "../../mu-helper";
 import {Bestuurseenheid} from "../../src/core/domain/bestuurseenheid";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {Instance} from "../../src/core/domain/instance";

@@ -1,6 +1,6 @@
 import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
 import {buildNutsCodeIri} from "./iri-test-builder";

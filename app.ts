@@ -1,4 +1,4 @@
-import {app} from 'mu';
+import {createApp} from './mu-helper';
 import bodyparser from 'body-parser';
 import {
     CONCEPT_SNAPSHOT_PROCESSING_CRON_PATTERN,
@@ -716,4 +716,3 @@ function startProcessingTask(description: string, task: () => Promise<void>, cro
         true, // start
         'Europe/Brussels' // timeZone
     );
-}

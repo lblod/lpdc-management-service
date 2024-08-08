@@ -8,7 +8,7 @@ import {
 } from "./procedure-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Procedure, ProcedureBuilder} from "../../../src/core/domain/procedure";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {aMinimalLanguageString} from "./language-string-test-builder";
 import {Website, WebsiteBuilder} from "../../../src/core/domain/website";
 import {

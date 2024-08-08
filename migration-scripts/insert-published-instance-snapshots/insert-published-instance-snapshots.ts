@@ -1,6 +1,6 @@
 import {Iri} from "../../src/core/domain/shared/iri";
 import {PREFIX, PUBLIC_GRAPH} from "../../config";
-import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "mu";
+import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "../../mu-helper";
 import {DirectDatabaseAccess} from "../../test/driven/persistence/direct-database-access";
 import {
     BestuurseenheidSparqlTestRepository

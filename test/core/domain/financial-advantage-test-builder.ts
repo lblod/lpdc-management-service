@@ -1,6 +1,6 @@
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {FinancialAdvantageBuilder} from "../../../src/core/domain/financial-advantage";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {aMinimalInformalLanguageString, aMinimalLanguageString} from "./language-string-test-builder";
 
 export function aMinimalFinancialAdvantageForConceptSnapshot(): FinancialAdvantageBuilder {

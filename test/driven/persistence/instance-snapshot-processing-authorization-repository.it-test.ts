@@ -6,7 +6,7 @@ import {
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {INSTANCE_SNAPHOT_LDES_AUTHORIZATION_GRAPH, INSTANCE_SNAPHOT_LDES_GRAPH} from "../../../config";
-import {sparqlEscapeUri} from "mu";
+import {sparqlEscapeUri} from "../../../mu-helper";
 import {InstanceSnapshotSparqlTestRepository} from "./instance-snapshot-sparql-test-repository";
 
 describe('InstanceSnapshotProcessingAuthorizationRepository', () => {

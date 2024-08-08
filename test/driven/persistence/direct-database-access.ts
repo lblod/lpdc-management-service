@@ -1,5 +1,5 @@
 import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
-import {sparqlEscapeUri} from "mu";
+import {sparqlEscapeUri} from "../../../mu-helper";
 
 export class DirectDatabaseAccess {
 

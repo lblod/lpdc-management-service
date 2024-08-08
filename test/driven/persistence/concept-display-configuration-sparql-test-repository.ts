@@ -3,7 +3,7 @@ import {
 } from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
 import {ConceptDisplayConfiguration} from "../../../src/core/domain/concept-display-configuration";
 import {PREFIX} from "../../../config";
-import {sparqlEscapeString, sparqlEscapeUri} from "mu";
+import {sparqlEscapeString, sparqlEscapeUri} from "../../../mu-helper";
 import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
 import {Iri} from "../../../src/core/domain/shared/iri";
 

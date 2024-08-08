@@ -12,7 +12,7 @@ import {
 import {BestuurseenheidTestBuilder} from "./bestuurseenheid-test-builder";
 import {LanguageString} from "../../../src/core/domain/language-string";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {Requirement, RequirementBuilder} from "../../../src/core/domain/requirement";
 import {aFullRequirementForInstanceSnapshot, aMinimalRequirementForInstanceSnapshot} from "./requirement-test-builder";
 import {Evidence, EvidenceBuilder} from "../../../src/core/domain/evidence";

@@ -18,7 +18,7 @@ import {Cost} from "../../../src/core/domain/cost";
 import {FinancialAdvantage} from "../../../src/core/domain/financial-advantage";
 import {ContactPoint} from "../../../src/core/domain/contact-point";
 import {InstanceSnapshot} from "../../../src/core/domain/instance-snapshot";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {
     buildBestuurseenheidIri,
     buildConceptIri,

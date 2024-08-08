@@ -19,7 +19,7 @@ import {
 } from "../../../src/core/domain/types";
 import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
 import {buildConceptIri} from "./iri-test-builder";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
 import {ConceptSnapshotSparqlTestRepository} from "../../driven/persistence/concept-snapshot-sparql-test-repository";
 import {restoreRealTime, setFixedTime} from "../../fixed-time";

@@ -2,7 +2,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {SessionRepository} from "../../core/port/driven/persistence/session-repository";
 import {Session} from "../../core/domain/session";
 import {SparqlQuerying} from "./sparql-querying";
-import {sparqlEscapeUri} from "mu";
+import {sparqlEscapeUri} from "../../../mu-helper";
 import {PREFIX, USER_SESSIONS_GRAPH} from "../../../config";
 import {NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
 import {uniq} from "lodash";

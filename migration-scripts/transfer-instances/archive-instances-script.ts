@@ -1,4 +1,4 @@
-import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "mu";
+import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "../../mu-helper";
 import {Iri} from "../../src/core/domain/shared/iri";
 import {InstanceSparqlRepository} from "../../src/driven/persistence/instance-sparql-repository";
 import fs from "fs";

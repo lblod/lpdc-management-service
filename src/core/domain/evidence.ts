@@ -2,7 +2,7 @@ import {Iri} from "./shared/iri";
 import {LanguageString} from "./language-string";
 import {requiredValue} from "./shared/invariant";
 import {instanceLanguages, Language} from "./language";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 
 export class Evidence {
 

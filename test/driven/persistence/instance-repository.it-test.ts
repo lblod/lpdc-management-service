@@ -2,7 +2,7 @@ import {TEST_SPARQL_ENDPOINT} from "../../test.config";
 import {aFullInstance, aMinimalInstance, InstanceTestBuilder} from "../../core/domain/instance-test-builder";
 import {BestuurseenheidSparqlTestRepository} from "./bestuurseenheid-sparql-test-repository";
 import {aBestuurseenheid} from "../../core/domain/bestuurseenheid-test-builder";
-import {sparqlEscapeUri, uuid} from "mu";
+import {sparqlEscapeUri, uuid} from "../../../mu-helper";
 import {DirectDatabaseAccess} from "./direct-database-access";
 import {buildConceptIri, buildConceptSnapshotIri, buildNutsCodeIri,} from "../../core/domain/iri-test-builder";
 import {

@@ -13,7 +13,7 @@ import {
     DatastoreToQuadsRecursiveSparqlFetcher
 } from "../../src/driven/persistence/datastore-to-quads-recursive-sparql-fetcher";
 import {NS} from "../../src/driven/persistence/namespaces";
-import {sparqlEscapeUri} from "mu";
+import {sparqlEscapeUri} from "../../mu-helper";
 import {Concept} from "../../src/core/domain/concept";
 import {ConceptSnapshot} from "../../src/core/domain/concept-snapshot";
 import {LanguageString} from "../../src/core/domain/language-string";

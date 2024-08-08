@@ -3,7 +3,7 @@ import {sortBy} from "lodash";
 import {InvariantError} from "../../core/domain/shared/lpdc-error";
 import {SparqlQuerying} from "./sparql-querying";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
-import {sparqlEscapeUri} from "mu";
+import {sparqlEscapeUri} from "../../../mu-helper";
 import {requiredValue} from "../../core/domain/shared/invariant";
 
 export class ContactInfoOptionsSparqlRepository implements ContactInfoOptionsRepository {

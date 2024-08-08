@@ -6,7 +6,7 @@ import {Iri} from "../../core/domain/shared/iri";
 import {SparqlQuerying} from "./sparql-querying";
 import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
 import {PREFIX} from "../../../config";
-import {sparqlEscapeUri} from "mu";
+import {sparqlEscapeUri} from "../../../mu-helper";
 import {NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
 
 export class ConceptDisplayConfigurationSparqlRepository implements ConceptDisplayConfigurationRepository {

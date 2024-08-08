@@ -1,6 +1,6 @@
 import {Iri} from "../../../src/core/domain/shared/iri";
 import {Bestuurseenheid, BestuurseenheidClassificatieCode} from "../../../src/core/domain/bestuurseenheid";
-import {uuid} from "mu";
+import {uuid} from "../../../mu-helper";
 import {buildBestuurseenheidIri, buildNutsCodeIri, randomNumber} from "./iri-test-builder";
 
 export function aBestuurseenheid(): BestuurseenheidTestBuilder {
