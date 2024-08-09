@@ -59,7 +59,8 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
             .withTargetAudiences(conceptSnapshotInInstanceLanguage.targetAudiences)
             .withThemes(conceptSnapshotInInstanceLanguage.themes)
             .withCompetentAuthorityLevels(conceptSnapshotInInstanceLanguage.competentAuthorityLevels)
-            .withCompetentAuthorities(conceptSnapshotInInstanceLanguage.competentAuthorities)
+            // Do not blindly merge Competent Authorities. Field from concept can be empty, making the required form field invalid.
+            //.withCompetentAuthorities(conceptSnapshotInInstanceLanguage.competentAuthorities)
             .withExecutingAuthorityLevels(conceptSnapshotInInstanceLanguage.executingAuthorityLevels)
             .withPublicationMedia(conceptSnapshotInInstanceLanguage.publicationMedia)
             .withYourEuropeCategories(conceptSnapshotInInstanceLanguage.yourEuropeCategories)
