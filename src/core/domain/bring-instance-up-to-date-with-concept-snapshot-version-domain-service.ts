@@ -9,7 +9,7 @@ import {FormatPreservingDate} from "./format-preserving-date";
 import {InvariantError} from "./shared/lpdc-error";
 import {SelectConceptLanguageDomainService} from "./select-concept-language-domain-service";
 import {Language} from "./language";
-import {InstanceReviewStatusType, InstanceStatusType} from "./types";
+import {InstanceReviewStatusType, InstanceStatusType, CompetentAuthorityLevelType} from "./types";
 
 export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
 
@@ -47,7 +47,10 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
         const conceptSnapshotInInstanceLanguage = conceptSnapshot
             .transformLanguage(conceptSnapshotLanguage, instanceLanguage);
 
-        const instanceMergedWithConceptSnapshot = InstanceBuilder.from(instanceInStatusOntwerp)
+        const hasCompetentAuthorityLevelLokaal = instanceInStatusOntwerp.competentAuthorityLevels.includes(CompetentAuthorityLevelType.LOKAAL);
+        const newCompetentAuthorityFilledIn = conceptSnapshotInInstanceLanguage.competentAuthorities.length > 0;
+
+        const instanceMergedWithConceptSnapshotBuilder = InstanceBuilder.from(instanceInStatusOntwerp)
             .withTitle(conceptSnapshotInInstanceLanguage.title)
             .withDescription(conceptSnapshotInInstanceLanguage.description)
             .withAdditionalDescription(conceptSnapshotInInstanceLanguage.additionalDescription)
@@ -59,7 +62,6 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
             .withTargetAudiences(conceptSnapshotInInstanceLanguage.targetAudiences)
             .withThemes(conceptSnapshotInInstanceLanguage.themes)
             .withCompetentAuthorityLevels(conceptSnapshotInInstanceLanguage.competentAuthorityLevels)
-            .withCompetentAuthorities(conceptSnapshotInInstanceLanguage.competentAuthorities)
             .withExecutingAuthorityLevels(conceptSnapshotInInstanceLanguage.executingAuthorityLevels)
             .withPublicationMedia(conceptSnapshotInInstanceLanguage.publicationMedia)
             .withYourEuropeCategories(conceptSnapshotInInstanceLanguage.yourEuropeCategories)
@@ -69,11 +71,15 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
             .withCosts(conceptSnapshotInInstanceLanguage.costs.map(co => co.transformWithNewId()))
             .withFinancialAdvantages(conceptSnapshotInInstanceLanguage.financialAdvantages.map(fa => fa.transformWithNewId()))
             .withLegalResources(conceptSnapshotInInstanceLanguage.legalResources.map(lr => lr.transformWithNewId()))
-            .withProductId(conceptSnapshotInInstanceLanguage.productId)
-            .build();
+            .withProductId(conceptSnapshotInInstanceLanguage.productId);
+
+        if (!hasCompetentAuthorityLevelLokaal && newCompetentAuthorityFilledIn) {
+            instanceMergedWithConceptSnapshotBuilder.withCompetentAuthorities(conceptSnapshotInInstanceLanguage.competentAuthorities);
+        }
+
+        const instanceMergedWithConceptSnapshot = instanceMergedWithConceptSnapshotBuilder.build();
 
         await this.confirmUpToDateTill(bestuurseenheid, instanceMergedWithConceptSnapshot, instanceVersion, conceptSnapshot);
-
     }
 
     async confirmUpToDateTill(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, conceptSnapshot: ConceptSnapshot): Promise<void> {
