@@ -225,7 +225,7 @@ ext:authorityPg a form:PropertyGroup;
       sh:path dct:spatial ;
       form:options  """
                      {
-                       "conceptScheme":"http://data.europa.eu/nuts/scheme/2021",
+                       "conceptScheme":"http://data.europa.eu/nuts/scheme/2024",
                        "multiple": true
                      }
                     """ ;
