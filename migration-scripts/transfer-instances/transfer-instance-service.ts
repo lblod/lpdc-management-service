@@ -6,6 +6,7 @@ import { FormalInformalChoiceRepository } from "../../src/core/port/driven/persi
 import {
   ChosenFormType,
   CompetentAuthorityLevelType,
+  ExecutingAuthorityLevelType,
   InstanceStatusType,
 } from "../../src/core/domain/types";
 import { InvariantError } from "../../src/core/domain/shared/lpdc-error";
@@ -44,6 +45,7 @@ export class TransferInstanceService {
     instanceId: Iri,
     fromAuthority: Bestuurseenheid,
     toAuthority: Bestuurseenheid,
+    copySpatial: boolean,
   ): Promise<Instance> {
     const toAuthorityChoice = (
       await this.formalInformalChoiceRepository.findByBestuurseenheid(
@@ -64,27 +66,41 @@ export class TransferInstanceService {
         "transforming informal instance to formal is not possible",
       );
     }
-    return this.transferInstance(toAuthority.id, toAuthorityChoice, instance);
+    return this.transferInstance(
+      fromAuthority.id,
+      toAuthority.id,
+      toAuthorityChoice,
+      instance,
+      copySpatial,
+    );
   }
 
   private async transferInstance(
+    fromAuthorityId: Iri,
     toAuthorityId: Iri,
     toAuthorityChoice: ChosenFormType,
     instanceToCopy: Instance,
+    copySpatial: boolean,
   ) {
     const instanceUuid = uuid();
     const instanceId = InstanceBuilder.buildIri(instanceUuid);
 
-    const hasCompetentAuthorityLevelLokaal =
+    const hasCompetentAuthorityLevelLocal =
       instanceToCopy.competentAuthorityLevels.includes(
         CompetentAuthorityLevelType.LOKAAL,
+      );
+    const hasExecutingAuthorityLevelLocal =
+      instanceToCopy.executingAuthorityLevels.includes(
+        ExecutingAuthorityLevelType.LOKAAL,
       );
     const needsConversionFromFormalToInformal =
       toAuthorityChoice === ChosenFormType.INFORMAL &&
       instanceToCopy.dutchLanguageVariant !== Language.INFORMAL;
 
-    const contactpointsWithUpdatedAddresses =
-      await this.mapAddressesForContactpoints(instanceToCopy.contactPoints);
+    // Note: just copy existing addresses, as address register will only update
+    // 16/12/2024
+    const contactpointsWithUpdatedAddresses = instanceToCopy.contactPoints;
+    // await this.mapAddressesForContactpoints(instanceToCopy.contactPoints);
 
     return InstanceBuilder.from(instanceToCopy)
       .withId(instanceId)
@@ -116,22 +132,22 @@ export class TransferInstanceService {
       .withLegalResources(
         instanceToCopy.legalResources.map((lr) => lr.transformWithNewId()),
       )
-
-      .withSpatials(
-        instanceToCopy.forMunicipalityMerger ? instanceToCopy.spatials : [],
+      .withCompetentAuthorities(
+        instanceToCopy.competentAuthorities.map((authorityId) =>
+          authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
+        ),
       )
       .withExecutingAuthorities(
-        instanceToCopy.forMunicipalityMerger
-          ? instanceToCopy.executingAuthorities
+        instanceToCopy.executingAuthorities.map((authorityId) =>
+          authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
+        ),
+      )
+      .withSpatials(
+        copySpatial || instanceToCopy.forMunicipalityMerger
+          ? instanceToCopy.spatials
           : [],
       )
-      .withCompetentAuthorities(
-        !instanceToCopy.forMunicipalityMerger &&
-          hasCompetentAuthorityLevelLokaal
-          ? []
-          : instanceToCopy.competentAuthorities,
-      )
-      .withForMunicipalityMerger(false)
+      .withForMunicipalityMerger(true)
       .withCopyOf(undefined)
       .build();
   }
