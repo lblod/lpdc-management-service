@@ -526,11 +526,6 @@ export class Instance {
   }
 
   validateForPublish(checkAddress: boolean): void {
-    if (this._forMunicipalityMerger) {
-      throw new InvariantError(
-        "Een product of dienst bestemd voor een fusiegemeente kan nog niet worden verzonden naar de Vlaamse overheid",
-      );
-    }
     if (
       !isEqual(this.title.notBlankLanguages, this.description.notBlankLanguages)
     ) {
@@ -543,6 +538,7 @@ export class Instance {
         .flatMap((cp) => cp.address)
         .filter((address) => !!address)
         .every((address) => address.isValid());
+
       if (!allAddressesValid) {
         throw new InvariantError(
           "Minstens één van de adresgegevens is niet geldig",
