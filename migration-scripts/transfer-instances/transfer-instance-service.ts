@@ -85,14 +85,6 @@ export class TransferInstanceService {
     const instanceUuid = uuid();
     const instanceId = InstanceBuilder.buildIri(instanceUuid);
 
-    const hasCompetentAuthorityLevelLocal =
-      instanceToCopy.competentAuthorityLevels.includes(
-        CompetentAuthorityLevelType.LOKAAL,
-      );
-    const hasExecutingAuthorityLevelLocal =
-      instanceToCopy.executingAuthorityLevels.includes(
-        ExecutingAuthorityLevelType.LOKAAL,
-      );
     const needsConversionFromFormalToInformal =
       toAuthorityChoice === ChosenFormType.INFORMAL &&
       instanceToCopy.dutchLanguageVariant !== Language.INFORMAL;
