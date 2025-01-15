@@ -121,8 +121,8 @@ function disableMergerLabelForOriginalInstances(
   const mergerLabelPredicate =
     "<https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#forMunicipalityMerger>";
 
-  let deleteTriples = [];
-  let insertTriples = [];
+  const deleteTriples = [];
+  const insertTriples = [];
 
   for (const instanceId of instanceIds) {
     deleteTriples.push(
@@ -133,7 +133,7 @@ function disableMergerLabelForOriginalInstances(
     );
   }
 
-  let query: string = `
+  const query: string = `
   DELETE DATA {
     GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
       ${deleteTriples.join("\n")}

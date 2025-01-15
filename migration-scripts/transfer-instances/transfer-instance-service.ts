@@ -5,8 +5,6 @@ import { InstanceRepository } from "../../src/core/port/driven/persistence/insta
 import { FormalInformalChoiceRepository } from "../../src/core/port/driven/persistence/formal-informal-choice-repository";
 import {
   ChosenFormType,
-  CompetentAuthorityLevelType,
-  ExecutingAuthorityLevelType,
   InstanceStatusType,
 } from "../../src/core/domain/types";
 import { InvariantError } from "../../src/core/domain/shared/lpdc-error";

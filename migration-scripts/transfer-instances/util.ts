@@ -15,7 +15,7 @@ function normalizeLabel(label: string) {
 }
 
 function generateFilenamePrefix(): string {
-  let date = new Date();
+  const date = new Date();
   return `${date.getFullYear()}${addLeadingZero(date.getMonth() + 1)}${addLeadingZero(date.getDate())}${addLeadingZero(date.getHours())}${addLeadingZero(date.getMinutes())}${addLeadingZero(date.getSeconds())}`;
 }
 

@@ -13,7 +13,6 @@ import {
 import { BestuurseenheidSparqlTestRepository } from "../../../../test/driven/persistence/bestuurseenheid-sparql-test-repository";
 import {
   ChosenFormType,
-  CompetentAuthorityLevelType,
   InstanceStatusType,
 } from "../../../../src/core/domain/types";
 import { Language } from "../../../../src/core/domain/language";
