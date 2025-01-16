@@ -2,6 +2,7 @@ import { Iri } from "../../../src/core/domain/shared/iri";
 import {
   Bestuurseenheid,
   BestuurseenheidClassificatieCode,
+  BestuurseenheidStatusCode,
 } from "../../../src/core/domain/bestuurseenheid";
 import { uuid } from "../../../mu-helper";
 import {
@@ -17,6 +18,7 @@ export function aBestuurseenheid(): BestuurseenheidTestBuilder {
     .withUuid(bestuurseenheidUuid)
     .withPrefLabel("Aarschot")
     .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+    .withStatus(BestuurseenheidStatusCode.ACTIVE)
     .withSpatials([
       BestuurseenheidTestBuilder.SPATIAL_1_IRI,
       BestuurseenheidTestBuilder.SPATIAL_2_IRI,
@@ -51,6 +53,7 @@ export class BestuurseenheidTestBuilder {
   private uuid: string;
   private prefLabel: string;
   private classificatieCode: BestuurseenheidClassificatieCode;
+  private status: BestuurseenheidStatusCode;
   private spatials: Iri[];
 
   public withId(id: Iri): BestuurseenheidTestBuilder {
@@ -75,6 +78,13 @@ export class BestuurseenheidTestBuilder {
     return this;
   }
 
+  public withStatus(
+    status: BestuurseenheidStatusCode,
+  ): BestuurseenheidTestBuilder {
+    this.status = status;
+    return this;
+  }
+
   public withSpatials(spatials: Iri[]): BestuurseenheidTestBuilder {
     this.spatials = spatials;
     return this;
@@ -86,6 +96,7 @@ export class BestuurseenheidTestBuilder {
       this.uuid,
       this.prefLabel,
       this.classificatieCode,
+      this.status,
       this.spatials,
     );
   }

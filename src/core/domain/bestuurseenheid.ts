@@ -14,6 +14,7 @@ export class Bestuurseenheid {
   private readonly _classificatieCode:
     | BestuurseenheidClassificatieCode
     | undefined;
+  private readonly _status: BestuurseenheidStatusCode | undefined;
   private readonly _spatials: Iri[];
 
   constructor(
@@ -21,6 +22,7 @@ export class Bestuurseenheid {
     uuid: string,
     prefLabel: string,
     classificatieCode: BestuurseenheidClassificatieCode | undefined,
+    status: BestuurseenheidStatusCode | undefined,
     spatials: Iri[],
   ) {
     this._id = requiredValue(id, "id");
@@ -29,6 +31,7 @@ export class Bestuurseenheid {
     this._classificatieCode = id.equals(Bestuurseenheid.abb)
       ? classificatieCode
       : requiredValue(classificatieCode, "classificatieCode");
+    this._status = status;
     this._spatials = requireNoDuplicates(
       asSortedArray(spatials, Iri.compare),
       "spatials",
@@ -49,6 +52,10 @@ export class Bestuurseenheid {
 
   get classificatieCode(): BestuurseenheidClassificatieCode | undefined {
     return this._classificatieCode;
+  }
+
+  get status(): BestuurseenheidStatusCode | undefined {
+    return this._status;
   }
 
   get spatials(): Iri[] {
@@ -83,4 +90,10 @@ export enum BestuurseenheidClassificatieCode {
   WELZIJNSVERENIGING = "Welzijnsvereniging",
   OCMW_VERENIGING = "OCMW vereniging",
   VLAAMSE_GEMEENSCHAPSCOMMISSIE = "Vlaamse gemeenschapscommissie",
+}
+
+export enum BestuurseenheidStatusCode {
+  ACTIVE = "Actief",
+  INACTIVE = "Niet actief",
+  IN_FORMATION = "In oprichting",
 }

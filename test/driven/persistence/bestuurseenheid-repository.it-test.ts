@@ -1,8 +1,12 @@
 import { TEST_SPARQL_ENDPOINT } from "../../test.config";
-import { BestuurseenheidClassificatieCodeUri } from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
+import {
+  BestuurseenheidClassificatieCodeUri,
+  BestuurseenheidStatusCodeUri,
+} from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {
   Bestuurseenheid,
   BestuurseenheidClassificatieCode,
+  BestuurseenheidStatusCode,
 } from "../../../src/core/domain/bestuurseenheid";
 import { aBestuurseenheid } from "../../core/domain/bestuurseenheid-test-builder";
 import { BestuurseenheidSparqlTestRepository } from "./bestuurseenheid-sparql-test-repository";
@@ -54,7 +58,7 @@ describe("BestuurseenheidRepository", () => {
       );
     });
 
-    test("When bestuurseenheid abb exists with id, then return bestuurseenheid", async () => {
+    test("When bestuurseenheid ABB exists with id, then return bestuurseenheid", async () => {
       const bestuurseenheid = aBestuurseenheid()
         .withId(Bestuurseenheid.abb)
         .withUuid("141d9d6b-54af-4d17-b313-8d1c30bc3f5b")
@@ -95,6 +99,7 @@ describe("BestuurseenheidRepository", () => {
         .withUuid(bestuurseenheidUuid)
         .withPrefLabel("preferred label")
         .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .withStatus(BestuurseenheidStatusCode.ACTIVE)
         .withSpatials([spatial1Id, spatial2Id, spatial3Id, spatial4Id])
         .build();
 
@@ -103,6 +108,7 @@ describe("BestuurseenheidRepository", () => {
         `<${bestuurseenheidId}> <http://mu.semte.ch/vocabularies/core/uuid> """${bestuurseenheidUuid}"""`,
         `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
         `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
+        `<${bestuurseenheidId}> <http://www.w3.org/ns/regorg#orgStatus> <http://lblod.data.gift/concepts/63cc561de9188d64ba5840a42ae8f0d6>`,
         `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#werkingsgebied> <${werkingsgebied1Id}>`,
         `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#werkingsgebied> <${werkingsgebied2Id}>`,
         `<${werkingsgebied1Id}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial1Id}>`,
@@ -151,6 +157,7 @@ describe("BestuurseenheidRepository", () => {
         `<${bestuurseenheidId}> <http://mu.semte.ch/vocabularies/core/uuid> """${bestuurseenheidUuid}"""`,
         `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
         `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
+        `<${bestuurseenheidId}> <http://www.w3.org/ns/regorg#orgStatus> <http://lblod.data.gift/concepts/63cc561de9188d64ba5840a42ae8f0d6>`,
       ]);
 
       const actualBestuurseenheid =
@@ -174,6 +181,7 @@ describe("BestuurseenheidRepository", () => {
         `<${bestuurseenheidId}> <http://mu.semte.ch/vocabularies/core/uuid> """${bestuurseenheidUuid}"""`,
         `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
         `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
+        `<${bestuurseenheidId}> <http://www.w3.org/ns/regorg#orgStatus> <http://lblod.data.gift/concepts/63cc561de9188d64ba5840a42ae8f0d6>`,
         `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#werkingsgebied> <${werkingsgebied1Id}>`,
         `<${werkingsgebied1Id}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial1Id}>`,
       ]);
@@ -182,6 +190,39 @@ describe("BestuurseenheidRepository", () => {
         await repository.findById(bestuurseenheidId);
 
       expect(actualBestuurseenheid.spatials).toEqual([]);
+    });
+
+    test("an administrative unit without a status is correctly returned", async () => {
+      const bestuurseenheidUuid = uuid();
+      const bestuurseenheidId = new Iri(
+        `http://data.lblod.info/id/bestuurseenheden/${bestuurseenheidUuid}`,
+      );
+      const werkingsgebied = buildWerkingsgebiedenIri(uuid());
+      const spatial = buildNutsCodeIri(randomNumber(20000, 29999));
+
+      const bestuurseenheid = aBestuurseenheid()
+        .withId(bestuurseenheidId)
+        .withUuid(bestuurseenheidUuid)
+        .withPrefLabel("preferred label")
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .withStatus(undefined)
+        .withSpatials([spatial])
+        .build();
+
+      await directDatabaseAccess.insertData(PUBLIC_GRAPH, [
+        `<${bestuurseenheidId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
+        `<${bestuurseenheidId}> <http://mu.semte.ch/vocabularies/core/uuid> """${bestuurseenheidUuid}"""`,
+        `<${bestuurseenheidId}> <http://www.w3.org/2004/02/skos/core#prefLabel> """preferred label"""`,
+        `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#classificatie> <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>`,
+        `<${bestuurseenheidId}> <http://data.vlaanderen.be/ns/besluit#werkingsgebied> <${werkingsgebied}>`,
+        `<${werkingsgebied}> <http://www.w3.org/2004/02/skos/core#exactMatch> <${spatial}>`,
+        `<${spatial}> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.europa.eu/nuts/scheme/2024>`,
+      ]);
+
+      const actualBestuurseenheid =
+        await repository.findById(bestuurseenheidId);
+
+      expect(actualBestuurseenheid).toEqual(bestuurseenheid);
     });
   });
 
@@ -249,6 +290,35 @@ describe("BestuurseenheidRepository", () => {
         NotFoundError,
         `Geen classificatiecode gevonden voor: ${nonExistingClassificationUri}`,
       );
+    });
+  });
+
+  describe("mapStatusUriToCode", () => {
+    test("should correctly map all known status URIs a code", () => {
+      const statusUris = Object.keys(BestuurseenheidStatusCodeUri);
+
+      statusUris.forEach((code) =>
+        expect(
+          repository.mapStatusUriToCode(BestuurseenheidStatusCodeUri[code]),
+        ).toEqual(BestuurseenheidStatusCode[code]),
+      );
+    });
+
+    test("should throw an error for an unknown status URI", () => {
+      const invalidStatusUri = "invalidStatus" as BestuurseenheidStatusCodeUri;
+      expect(() =>
+        repository.mapStatusUriToCode(invalidStatusUri),
+      ).toThrowWithMessage(
+        NotFoundError,
+        `Geen statuscode gevonden voor: ${invalidStatusUri}`,
+      );
+    });
+
+    test("the enums for status URIs and codes should contains elements for the same keys", async () => {
+      const statusUriKeys = Object.keys(BestuurseenheidStatusCodeUri);
+      const statusCodeKeys = Object.keys(BestuurseenheidStatusCode);
+
+      expect(statusUriKeys).toEqual(statusCodeKeys);
     });
   });
 });

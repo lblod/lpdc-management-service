@@ -1,10 +1,12 @@
 import {
   BestuurseenheidClassificatieCodeUri,
   BestuurseenheidSparqlRepository,
+  BestuurseenheidStatusCodeUri,
 } from "../../../src/driven/persistence/bestuurseenheid-sparql-repository";
 import {
   Bestuurseenheid,
   BestuurseenheidClassificatieCode,
+  BestuurseenheidStatusCode,
 } from "../../../src/core/domain/bestuurseenheid";
 import { PREFIX, PUBLIC_GRAPH } from "../../../config";
 import { sparqlEscapeString, sparqlEscapeUri, uuid } from "../../../mu-helper";
@@ -21,6 +23,8 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
       bestuurseenheid.classificatieCode,
     );
 
+    const statusUri = this.mapStatusCodeToUri(bestuurseenheid.status);
+
     const werkingsgebiedenSpatials = bestuurseenheid.spatials.map((sp) => [
       sp,
       buildWerkingsgebiedenIri(uuid()),
@@ -32,13 +36,15 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
             ${PREFIX.mu}
             ${PREFIX.skos}
             ${PREFIX.nutss}
-            
-            INSERT DATA { 
+            ${PREFIX.regorg}
+
+            INSERT DATA {
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                     ${sparqlEscapeUri(bestuurseenheid.id)} a besluit:Bestuurseenheid .
                     ${sparqlEscapeUri(bestuurseenheid.id)} skos:prefLabel ${sparqlEscapeString(bestuurseenheid.prefLabel)} .
                     ${classificatieUri ? `${sparqlEscapeUri(bestuurseenheid.id)} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .` : ""}
                     ${sparqlEscapeUri(bestuurseenheid.id)} mu:uuid ${sparqlEscapeString(bestuurseenheid.uuid)} .
+                    ${sparqlEscapeUri(bestuurseenheid.id)} regorg:orgStatus ${sparqlEscapeUri(statusUri)} .
                     ${werkingsgebiedenSpatials
                       .flatMap((wgs) => [
                         `${sparqlEscapeUri(bestuurseenheid.id)} besluit:werkingsgebied ${sparqlEscapeUri(wgs[1])}`,
@@ -72,5 +78,19 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
       );
     }
     return classificatieCodeUri;
+  }
+
+  mapStatusCodeToUri(
+    status: BestuurseenheidStatusCode,
+  ): BestuurseenheidStatusCodeUri {
+    if (!status) {
+      return undefined;
+    }
+
+    const key: string | undefined = Object.keys(BestuurseenheidStatusCode).find(
+      (key) => BestuurseenheidStatusCode[key] === status,
+    );
+
+    return BestuurseenheidStatusCodeUri[key];
   }
 }

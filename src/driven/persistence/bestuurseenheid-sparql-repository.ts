@@ -3,6 +3,7 @@ import { Iri } from "../../core/domain/shared/iri";
 import {
   Bestuurseenheid,
   BestuurseenheidClassificatieCode,
+  BestuurseenheidStatusCode,
 } from "../../core/domain/bestuurseenheid";
 import { sparqlEscapeUri } from "../../../mu-helper";
 import { SparqlQuerying } from "./sparql-querying";
@@ -24,7 +25,9 @@ export class BestuurseenheidSparqlRepository
             ${PREFIX.skos}
             ${PREFIX.besluit}
             ${PREFIX.mu}
-            SELECT ?id ?uuid ?prefLabel ?classificatieUri WHERE {
+            ${PREFIX.regorg}
+            SELECT ?id ?uuid ?prefLabel ?classificatieUri ?statusUri
+            WHERE {
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                     VALUES ?id {
                         ${sparqlEscapeUri(id)}
@@ -34,7 +37,10 @@ export class BestuurseenheidSparqlRepository
                     ?id skos:prefLabel ?prefLabel .
                     OPTIONAL {
                         ?id besluit:classificatie ?classificatieUri .
-                    } 
+                    }
+                    OPTIONAL {
+                        ?id regorg:orgStatus ?statusUri .
+                    }
                 }
             }
         `;
@@ -48,7 +54,7 @@ export class BestuurseenheidSparqlRepository
                   ?werkingsgebiedId skos:exactMatch ?spatialId.
                   ?spatialId skos:inScheme nutss:2024
                 }
-            }        
+            }
         `;
 
     const [bestuurseenheidQueryResult, resultSpatials] =
@@ -68,6 +74,7 @@ export class BestuurseenheidSparqlRepository
       this.mapBestuurseenheidClassificatieUriToCode(
         bestuurseenheidQueryResult["classificatieUri"]?.value,
       ),
+      this.mapStatusUriToCode(bestuurseenheidQueryResult["statusUri"]?.value),
       (resultSpatials as Promise<unknown>[]).map(
         (r) => new Iri(r["spatialId"].value),
       ),
@@ -97,6 +104,25 @@ export class BestuurseenheidSparqlRepository
     }
     return classificatieCode;
   }
+
+  mapStatusUriToCode(
+    statusUri: BestuurseenheidStatusCodeUri | undefined,
+  ): BestuurseenheidStatusCode {
+    if (!statusUri) {
+      return undefined;
+    }
+
+    const key: string | undefined = Object.keys(
+      BestuurseenheidStatusCodeUri,
+    ).find((key) => BestuurseenheidStatusCodeUri[key] === statusUri);
+
+    const statusCode = BestuurseenheidStatusCode[key];
+    if (!statusCode) {
+      throw new NotFoundError(`Geen statuscode gevonden voor: ${statusUri}`);
+    }
+
+    return statusCode;
+  }
 }
 
 export enum BestuurseenheidClassificatieCodeUri {
@@ -120,4 +146,10 @@ export enum BestuurseenheidClassificatieCodeUri {
   WELZIJNSVERENIGING = "http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/e8294b73-87c9-4fa2-9441-1937350763c9",
   OCMW_VERENIGING = "http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/cc4e2d67-603b-4784-9b61-e50bac1ec089",
   VLAAMSE_GEMEENSCHAPSCOMMISSIE = "http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/d90c511e-f827-488c-84ba-432c8f69561c",
+}
+
+export enum BestuurseenheidStatusCodeUri {
+  ACTIVE = "http://lblod.data.gift/concepts/63cc561de9188d64ba5840a42ae8f0d6",
+  INACTIVE = "http://lblod.data.gift/concepts/d02c4e12bf88d2fdf5123b07f29c9311",
+  IN_FORMATION = "http://lblod.data.gift/concepts/abf4fee82019f88cf122f986830621ab",
 }

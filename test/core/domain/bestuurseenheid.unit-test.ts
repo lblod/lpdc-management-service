@@ -2,6 +2,7 @@ import { aBestuurseenheid } from "./bestuurseenheid-test-builder";
 import {
   Bestuurseenheid,
   BestuurseenheidClassificatieCode,
+  BestuurseenheidStatusCode,
 } from "../../../src/core/domain/bestuurseenheid";
 import { uuid } from "../../../mu-helper";
 import { Iri } from "../../../src/core/domain/shared/iri";
@@ -16,6 +17,7 @@ test("Undefined id throws error", () => {
         uuid(),
         "Pepingen",
         BestuurseenheidClassificatieCode.GEMEENTE,
+        BestuurseenheidStatusCode.ACTIVE,
         [],
       ),
   ).toThrowWithMessage(InvariantError, "id mag niet ontbreken");
@@ -29,6 +31,7 @@ test("Invalid iri id throws error", () => {
         uuid(),
         "Pepingen",
         BestuurseenheidClassificatieCode.GEMEENTE,
+        BestuurseenheidStatusCode.ACTIVE,
         [],
       ),
   ).toThrowWithMessage(InvariantError, "iri mag niet leeg zijn");
@@ -42,6 +45,7 @@ test("Undefined uuid throws error", () => {
         undefined,
         "Pepingen",
         BestuurseenheidClassificatieCode.GEMEENTE,
+        BestuurseenheidStatusCode.ACTIVE,
         [],
       ),
   ).toThrowWithMessage(InvariantError, "uuid mag niet ontbreken");
@@ -55,6 +59,7 @@ test("Undefined prefLabel throws error", () => {
         uuid(),
         undefined,
         BestuurseenheidClassificatieCode.GEMEENTE,
+        BestuurseenheidStatusCode.ACTIVE,
         [],
       ),
   ).toThrowWithMessage(InvariantError, "prefLabel mag niet ontbreken");
@@ -68,6 +73,7 @@ test("Undefined classificatieCode throws error", () => {
         uuid(),
         "prefLabel",
         undefined,
+        BestuurseenheidStatusCode.ACTIVE,
         [],
       ),
   ).toThrowWithMessage(InvariantError, "classificatieCode mag niet ontbreken");
@@ -79,6 +85,20 @@ test("Undefined classificatieCode does not throw error for ABB", () => {
       Bestuurseenheid.abb,
       uuid(),
       "prefLabel",
+      undefined,
+      BestuurseenheidStatusCode.ACTIVE,
+      [],
+    ),
+  ).not.toBeUndefined();
+});
+
+test("Undefined status does not throw an error", () => {
+  expect(
+    new Bestuurseenheid(
+      new Iri("http://anIri"),
+      uuid(),
+      "prefLabel",
+      BestuurseenheidClassificatieCode.GEMEENTE,
       undefined,
       [],
     ),
