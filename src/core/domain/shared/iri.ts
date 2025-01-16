@@ -1,25 +1,28 @@
-import {Invariant} from "./invariant";
+import { Invariant } from "./invariant";
 
 export class Iri {
+  constructor(private _value: string) {
+    const invariant = Invariant.require(_value, "iri");
+    invariant.to(
+      invariant.notBeAbsent(),
+      invariant.notBeBlank(),
+      invariant.startsWith("http://", "https://", "_:"),
+    );
+  }
 
-    constructor(private _value: string) {
-        const invariant = Invariant.require(_value, 'iri');
-        invariant.to(invariant.notBeAbsent(), invariant.notBeBlank(), invariant.startsWith('http://', 'https://', '_:'));
-    }
+  get value(): string {
+    return this._value;
+  }
 
-    get value(): string {
-        return this._value;
-    }
+  toString(): string {
+    return this.value;
+  }
 
-    toString(): string {
-        return this.value;
-    }
+  equals(other: Iri): boolean {
+    return this._value === other.value;
+  }
 
-    equals(other: Iri): boolean {
-        return this._value === other.value;
-    }
-
-    static compare(a: Iri, b: Iri): number {
-        return a.value.localeCompare(b.value);
-    }
+  static compare(a: Iri, b: Iri): number {
+    return a.value.localeCompare(b.value);
+  }
 }

@@ -1,21 +1,23 @@
-import {Iri} from "../../core/domain/shared/iri";
-import {SessionRepository} from "../../core/port/driven/persistence/session-repository";
-import {Session} from "../../core/domain/session";
-import {SparqlQuerying} from "./sparql-querying";
-import {sparqlEscapeUri} from "../../../mu-helper";
-import {PREFIX, USER_SESSIONS_GRAPH} from "../../../config";
-import {NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
-import {uniq} from "lodash";
+import { Iri } from "../../core/domain/shared/iri";
+import { SessionRepository } from "../../core/port/driven/persistence/session-repository";
+import { Session } from "../../core/domain/session";
+import { SparqlQuerying } from "./sparql-querying";
+import { sparqlEscapeUri } from "../../../mu-helper";
+import { PREFIX, USER_SESSIONS_GRAPH } from "../../../config";
+import {
+  NotFoundError,
+  SystemError,
+} from "../../core/domain/shared/lpdc-error";
+import { uniq } from "lodash";
 
 export class SessionSparqlRepository implements SessionRepository {
+  protected readonly querying: SparqlQuerying;
+  constructor(endpoint?: string) {
+    this.querying = new SparqlQuerying(endpoint);
+  }
 
-    protected readonly querying: SparqlQuerying;
-    constructor(endpoint?: string) {
-        this.querying = new SparqlQuerying(endpoint);
-    }
-
-    async findById(id: Iri): Promise<Session> {
-        const query = `
+  async findById(id: Iri): Promise<Session> {
+    const query = `
             ${PREFIX.ext}
             SELECT ?bestuurseenheid ?sessionRole WHERE {
                 GRAPH ${sparqlEscapeUri(USER_SESSIONS_GRAPH)} {
@@ -26,25 +28,29 @@ export class SessionSparqlRepository implements SessionRepository {
                 }
             }
         `;
-        const result = await this.querying.list(query);
+    const result = await this.querying.list(query);
 
-        if (result.length === 0) {
-            throw new NotFoundError(`Geen sessie gevonden voor Iri: ${id}`);
-        }
-
-        if (uniq(result.map(r => r['bestuurseenheid'].value)).length > 1) {
-            throw new SystemError(`Geen geldige sessie gevonden voor Iri: ${id}: bevat meerdere bestuurseenheden`);
-        }
-
-        return new Session(
-            id,
-            new Iri(result[0]['bestuurseenheid'].value),
-            result.map(r => r['sessionRole']?.value).filter(sr => sr !== undefined),
-        );
+    if (result.length === 0) {
+      throw new NotFoundError(`Geen sessie gevonden voor Iri: ${id}`);
     }
 
-    async exists(id: Iri): Promise<boolean> {
-        const query = `
+    if (uniq(result.map((r) => r["bestuurseenheid"].value)).length > 1) {
+      throw new SystemError(
+        `Geen geldige sessie gevonden voor Iri: ${id}: bevat meerdere bestuurseenheden`,
+      );
+    }
+
+    return new Session(
+      id,
+      new Iri(result[0]["bestuurseenheid"].value),
+      result
+        .map((r) => r["sessionRole"]?.value)
+        .filter((sr) => sr !== undefined),
+    );
+  }
+
+  async exists(id: Iri): Promise<boolean> {
+    const query = `
             ${PREFIX.ext}
             ASK WHERE {
                 GRAPH ${sparqlEscapeUri(USER_SESSIONS_GRAPH)} {
@@ -52,6 +58,6 @@ export class SessionSparqlRepository implements SessionRepository {
                 }
             }
         `;
-        return this.querying.ask(query);
-    }
+    return this.querying.ask(query);
+  }
 }

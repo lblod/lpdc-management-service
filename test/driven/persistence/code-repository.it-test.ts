@@ -1,103 +1,107 @@
-import {TEST_SPARQL_ENDPOINT} from "../../test.config";
-import {DirectDatabaseAccess} from "./direct-database-access";
-import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
-import {sparqlEscapeUri, uuid} from "../../../mu-helper";
-import {PREFIX, PUBLIC_GRAPH} from "../../../config";
-import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
-import {Iri} from "../../../src/core/domain/shared/iri";
+import { TEST_SPARQL_ENDPOINT } from "../../test.config";
+import { DirectDatabaseAccess } from "./direct-database-access";
+import { CodeSparqlRepository } from "../../../src/driven/persistence/code-sparql-repository";
+import { sparqlEscapeUri, uuid } from "../../../mu-helper";
+import { PREFIX, PUBLIC_GRAPH } from "../../../config";
+import { CodeSchema } from "../../../src/core/port/driven/persistence/code-repository";
+import { Iri } from "../../../src/core/domain/shared/iri";
 
-describe('Code Repository', () => {
+describe("Code Repository", () => {
+  const repository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
+  const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
-    const repository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
+  describe("exists", () => {
+    test("returns true when code exists for given schema", async () => {
+      const someIri = new Iri(`http://some-iri/${uuid()}`);
 
-    describe('exists', () => {
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `<${someIri}> a skos:Concept`,
+          `<${someIri}> skos:inScheme dvcs:IPDCOrganisaties`,
+        ],
+        [PREFIX.skos, PREFIX.dvcs],
+      );
 
-        test('returns true when code exists for given schema', async () => {
-            const someIri = new Iri(`http://some-iri/${uuid()}`);
-
-            await directDatabaseAccess.insertData(
-                PUBLIC_GRAPH,
-                [`<${someIri}> a skos:Concept`,
-                    `<${someIri}> skos:inScheme dvcs:IPDCOrganisaties`,
-
-                ],
-                [
-                    PREFIX.skos,
-                    PREFIX.dvcs,
-                ]);
-
-            const result = await repository.exists(CodeSchema.IPDCOrganisaties, someIri);
-            expect(result).toBeTruthy();
-        });
-
-        test('returns false when code does not exist for given schema', async () => {
-            const someIri = new Iri(`http://some-iri/${uuid()}`);
-            const anotherIri = new Iri(`http://some-iri/${uuid()}`);
-
-            await directDatabaseAccess.insertData(
-                PUBLIC_GRAPH,
-                [`<${someIri}> a skos:Concept`,
-                    `<${someIri}> skos:inScheme dvcs:IPDCOrganisaties`,
-
-                ],
-                [
-                    PREFIX.skos,
-                    PREFIX.dvcs,
-                ]);
-
-            const result = await repository.exists(CodeSchema.IPDCOrganisaties, anotherIri);
-            expect(result).toBeFalsy();
-
-        });
-
-        test('returns false when iri references another type', async () => {
-            const someIri = new Iri(`http://some-iri/${uuid()}`);
-
-            await directDatabaseAccess.insertData(
-                PUBLIC_GRAPH,
-                [`<${someIri}> a skos:SomeOtherType`,
-                    `<${someIri}> skos:inScheme dvcs:IPDCOrganisaties`,
-
-                ],
-                [
-                    PREFIX.skos,
-                    PREFIX.dvcs,
-                ]);
-
-            const result = await repository.exists(CodeSchema.IPDCOrganisaties, someIri);
-            expect(result).toBeFalsy();
-        });
-
-        test('returns false when code exists for other schema', async () => {
-            const someIri = new Iri(`http://some-iri/${uuid()}`);
-
-            await directDatabaseAccess.insertData(
-                PUBLIC_GRAPH,
-                [`<${someIri}> a skos:Concept`,
-                    `<${someIri}> skos:inScheme dvcs:SomeOtherScheme`,
-
-                ],
-                [
-                    PREFIX.skos,
-                    PREFIX.dvcs,
-                ]);
-
-            const result = await repository.exists(CodeSchema.IPDCOrganisaties, someIri);
-            expect(result).toBeFalsy();
-        });
-
+      const result = await repository.exists(
+        CodeSchema.IPDCOrganisaties,
+        someIri,
+      );
+      expect(result).toBeTruthy();
     });
 
-    describe('save', () => {
+    test("returns false when code does not exist for given schema", async () => {
+      const someIri = new Iri(`http://some-iri/${uuid()}`);
+      const anotherIri = new Iri(`http://some-iri/${uuid()}`);
 
-        test('saves a code from a schema', async () => {
-            const uniqueId = uuid();
-            const someIri = new Iri(`http://some-iri/${uniqueId}`);
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `<${someIri}> a skos:Concept`,
+          `<${someIri}> skos:inScheme dvcs:IPDCOrganisaties`,
+        ],
+        [PREFIX.skos, PREFIX.dvcs],
+      );
 
-            await repository.save(CodeSchema.IPDCOrganisaties, someIri, `preferred label ${uniqueId}`, new Iri(`http://some-see-also-iri/${uniqueId}`));
+      const result = await repository.exists(
+        CodeSchema.IPDCOrganisaties,
+        anotherIri,
+      );
+      expect(result).toBeFalsy();
+    });
 
-            const savedCode = `           
+    test("returns false when iri references another type", async () => {
+      const someIri = new Iri(`http://some-iri/${uuid()}`);
+
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `<${someIri}> a skos:SomeOtherType`,
+          `<${someIri}> skos:inScheme dvcs:IPDCOrganisaties`,
+        ],
+        [PREFIX.skos, PREFIX.dvcs],
+      );
+
+      const result = await repository.exists(
+        CodeSchema.IPDCOrganisaties,
+        someIri,
+      );
+      expect(result).toBeFalsy();
+    });
+
+    test("returns false when code exists for other schema", async () => {
+      const someIri = new Iri(`http://some-iri/${uuid()}`);
+
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `<${someIri}> a skos:Concept`,
+          `<${someIri}> skos:inScheme dvcs:SomeOtherScheme`,
+        ],
+        [PREFIX.skos, PREFIX.dvcs],
+      );
+
+      const result = await repository.exists(
+        CodeSchema.IPDCOrganisaties,
+        someIri,
+      );
+      expect(result).toBeFalsy();
+    });
+  });
+
+  describe("save", () => {
+    test("saves a code from a schema", async () => {
+      const uniqueId = uuid();
+      const someIri = new Iri(`http://some-iri/${uniqueId}`);
+
+      await repository.save(
+        CodeSchema.IPDCOrganisaties,
+        someIri,
+        `preferred label ${uniqueId}`,
+        new Iri(`http://some-see-also-iri/${uniqueId}`),
+      );
+
+      const savedCode = `           
             ${PREFIX.lpdcExt}
             ${PREFIX.mu}
             ${PREFIX.rdfs}            
@@ -112,14 +116,11 @@ describe('Code Repository', () => {
                 }
             }
         `;
-            const codeResult = await directDatabaseAccess.list(savedCode);
-            expect(codeResult.length).toEqual(1);
+      const codeResult = await directDatabaseAccess.list(savedCode);
+      expect(codeResult.length).toEqual(1);
 
-            const uuidFromCode = codeResult[0]['uuid'].value;
-            expect(uuidFromCode).not.toBeUndefined();
-        });
-
+      const uuidFromCode = codeResult[0]["uuid"].value;
+      expect(uuidFromCode).not.toBeUndefined();
     });
-
-
+  });
 });

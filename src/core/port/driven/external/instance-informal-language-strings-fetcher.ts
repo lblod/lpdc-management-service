@@ -1,8 +1,9 @@
-import {Bestuurseenheid} from "../../../domain/bestuurseenheid";
-import {Instance} from "../../../domain/instance";
+import { Bestuurseenheid } from "../../../domain/bestuurseenheid";
+import { Instance } from "../../../domain/instance";
 
 export interface InstanceInformalLanguageStringsFetcher {
-
-    fetchInstanceAndMap(bestuurseenheid: Bestuurseenheid, initialInstance: Instance): Promise<Instance>;
-
+  fetchInstanceAndMap(
+    bestuurseenheid: Bestuurseenheid,
+    initialInstance: Instance,
+  ): Promise<Instance>;
 }

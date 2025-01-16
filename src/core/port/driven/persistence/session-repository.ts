@@ -1,10 +1,8 @@
-import {Iri} from "../../../domain/shared/iri";
-import {Session} from "../../../domain/session";
+import { Iri } from "../../../domain/shared/iri";
+import { Session } from "../../../domain/session";
 
 export interface SessionRepository {
+  findById(id: Iri): Promise<Session>;
 
-    findById(id: Iri): Promise<Session>;
-
-    exists(id: Iri): Promise<boolean>;
-
+  exists(id: Iri): Promise<boolean>;
 }

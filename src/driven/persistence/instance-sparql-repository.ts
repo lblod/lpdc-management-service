@@ -1,81 +1,111 @@
-import {Iri} from "../../core/domain/shared/iri";
-import {InstanceRepository} from "../../core/port/driven/persistence/instance-repository";
-import {SparqlQuerying} from "./sparql-querying";
-import {PREFIX} from "../../../config";
-import {sparqlEscapeDateTime, sparqlEscapeUri, uuid} from "../../../mu-helper";
-import {Instance, InstanceBuilder} from "../../core/domain/instance";
-import {DatastoreToQuadsRecursiveSparqlFetcher} from "./datastore-to-quads-recursive-sparql-fetcher";
-import {DomainToQuadsMapper} from "./domain-to-quads-mapper";
-import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
-import {DoubleQuadReporter, LoggingDoubleQuadReporter, QuadsToDomainMapper} from "../shared/quads-to-domain-mapper";
-import {NS} from "./namespaces";
-import {ChosenFormType, InstanceReviewStatusType, InstanceStatusType} from "../../core/domain/types";
-import {Logger} from "../../../platform/logger";
-import {literal} from "rdflib";
-import {isEqual} from "lodash";
-import {ConcurrentUpdateError, SystemError} from "../../core/domain/shared/lpdc-error";
-import {FormatPreservingDate} from "../../core/domain/format-preserving-date";
-import {requiredValue} from "../../core/domain/shared/invariant";
-import {PublishedInstanceSnapshotBuilder} from "../../core/domain/published-instance-snapshot";
+import { Iri } from "../../core/domain/shared/iri";
+import { InstanceRepository } from "../../core/port/driven/persistence/instance-repository";
+import { SparqlQuerying } from "./sparql-querying";
+import { PREFIX } from "../../../config";
+import {
+  sparqlEscapeDateTime,
+  sparqlEscapeUri,
+  uuid,
+} from "../../../mu-helper";
+import { Instance, InstanceBuilder } from "../../core/domain/instance";
+import { DatastoreToQuadsRecursiveSparqlFetcher } from "./datastore-to-quads-recursive-sparql-fetcher";
+import { DomainToQuadsMapper } from "./domain-to-quads-mapper";
+import { Bestuurseenheid } from "../../core/domain/bestuurseenheid";
+import {
+  DoubleQuadReporter,
+  LoggingDoubleQuadReporter,
+  QuadsToDomainMapper,
+} from "../shared/quads-to-domain-mapper";
+import { NS } from "./namespaces";
+import {
+  ChosenFormType,
+  InstanceReviewStatusType,
+  InstanceStatusType,
+} from "../../core/domain/types";
+import { Logger } from "../../../platform/logger";
+import { literal } from "rdflib";
+import { isEqual } from "lodash";
+import {
+  ConcurrentUpdateError,
+  SystemError,
+} from "../../core/domain/shared/lpdc-error";
+import { FormatPreservingDate } from "../../core/domain/format-preserving-date";
+import { requiredValue } from "../../core/domain/shared/invariant";
+import { PublishedInstanceSnapshotBuilder } from "../../core/domain/published-instance-snapshot";
 
 export class InstanceSparqlRepository implements InstanceRepository {
-    protected readonly querying: SparqlQuerying;
-    protected readonly fetcher: DatastoreToQuadsRecursiveSparqlFetcher;
-    protected doubleQuadReporter: DoubleQuadReporter = new LoggingDoubleQuadReporter(new Logger('Instance-QuadsToDomainLogger'));
+  protected readonly querying: SparqlQuerying;
+  protected readonly fetcher: DatastoreToQuadsRecursiveSparqlFetcher;
+  protected doubleQuadReporter: DoubleQuadReporter =
+    new LoggingDoubleQuadReporter(new Logger("Instance-QuadsToDomainLogger"));
 
-    constructor(endpoint?: string, doubleQuadReporter?: DoubleQuadReporter) {
-        this.querying = new SparqlQuerying(endpoint);
-        this.fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endpoint);
-        if (doubleQuadReporter) {
-            this.doubleQuadReporter = doubleQuadReporter;
-        }
+  constructor(endpoint?: string, doubleQuadReporter?: DoubleQuadReporter) {
+    this.querying = new SparqlQuerying(endpoint);
+    this.fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endpoint);
+    if (doubleQuadReporter) {
+      this.doubleQuadReporter = doubleQuadReporter;
     }
+  }
 
-    async findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<Instance> {
-        const quads = await this.fetcher.fetch(
+  async findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<Instance> {
+    const quads = await this.fetcher.fetch(
+      bestuurseenheid.userGraph(),
+      id,
+      [],
+      [
+        NS.lpdcExt("yourEuropeCategory").value,
+        NS.lpdcExt("targetAudience").value,
+        NS.m8g("thematicArea").value,
+        NS.lpdcExt("competentAuthorityLevel").value,
+        NS.m8g("hasCompetentAuthority").value,
+        NS.lpdcExt("executingAuthorityLevel").value,
+        NS.lpdcExt("hasExecutingAuthority").value,
+        NS.lpdcExt("publicationMedium").value,
+        NS.dct("type").value,
+        NS.lpdcExt("conceptTag").value,
+        NS.adms("status").value,
+        NS.ext("hasVersionedSource").value,
+        NS.dct("source").value,
+        NS.dct("spatial").value,
+        NS.pav("createdBy").value,
+      ],
+      [
+        NS.skos("Concept").value,
+        NS.lpdcExt("ConceptDisplayConfiguration").value,
+        NS.besluit("Bestuurseenheid").value,
+        NS.m8g("PublicOrganisation").value,
+        NS.lpdcExt("InstancePublicServiceSnapshot").value,
+        NS.lpdcExt("ConceptualPublicService").value,
+        NS.lpdcExt("ConceptualPublicServiceSnapshot").value,
+      ],
+    );
+
+    const mapper = new QuadsToDomainMapper(
+      quads,
+      bestuurseenheid.userGraph(),
+      this.doubleQuadReporter,
+    );
+
+    return mapper.instance(id);
+  }
+
+  async save(
+    bestuurseenheid: Bestuurseenheid,
+    instance: Instance,
+  ): Promise<void> {
+    const quads = new DomainToQuadsMapper(bestuurseenheid.userGraph())
+      .instanceToQuads(instance)
+      .map((s) => s.toNT());
+    const publishedInstanceSnapshotTriples =
+      instance.status === InstanceStatusType.VERZONDEN
+        ? new DomainToQuadsMapper(
             bestuurseenheid.userGraph(),
-            id,
-            [],
-            [
-                NS.lpdcExt('yourEuropeCategory').value,
-                NS.lpdcExt('targetAudience').value,
-                NS.m8g('thematicArea').value,
-                NS.lpdcExt('competentAuthorityLevel').value,
-                NS.m8g('hasCompetentAuthority').value,
-                NS.lpdcExt('executingAuthorityLevel').value,
-                NS.lpdcExt('hasExecutingAuthority').value,
-                NS.lpdcExt('publicationMedium').value,
-                NS.dct("type").value,
-                NS.lpdcExt("conceptTag").value,
-                NS.adms('status').value,
-                NS.ext('hasVersionedSource').value,
-                NS.dct('source').value,
-                NS.dct('spatial').value,
-                NS.pav('createdBy').value,
-            ],
-            [
-                NS.skos('Concept').value,
-                NS.lpdcExt('ConceptDisplayConfiguration').value,
-                NS.besluit('Bestuurseenheid').value,
-                NS.m8g('PublicOrganisation').value,
-                NS.lpdcExt('InstancePublicServiceSnapshot').value,
-                NS.lpdcExt('ConceptualPublicService').value,
-                NS.lpdcExt('ConceptualPublicServiceSnapshot').value,
-            ]);
+          ).publishedInstanceSnapshotToQuads(
+            PublishedInstanceSnapshotBuilder.from(instance),
+          )
+        : [];
 
-        const mapper = new QuadsToDomainMapper(quads, bestuurseenheid.userGraph(), this.doubleQuadReporter);
-
-        return mapper.instance(id);
-
-    }
-
-    async save(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<void> {
-        const quads = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
-        const publishedInstanceSnapshotTriples = instance.status === InstanceStatusType.VERZONDEN
-            ? new DomainToQuadsMapper(bestuurseenheid.userGraph()).publishedInstanceSnapshotToQuads(PublishedInstanceSnapshotBuilder.from(instance))
-            : [];
-
-        const query = `
+    const query = `
             INSERT DATA { 
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                     ${quads.join("\n")}
@@ -83,74 +113,109 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 }
             }
         `;
-        await this.querying.insert(query);
+    await this.querying.insert(query);
+  }
+
+  async update(
+    bestuurseenheid: Bestuurseenheid,
+    instance: Instance,
+    instanceVersion: FormatPreservingDate,
+    dontUpdateDateModified: boolean = false,
+  ): Promise<void> {
+    requiredValue(instanceVersion, "Instantie versie");
+    const oldInstance = await this.findById(bestuurseenheid, instance.id);
+
+    if (
+      FormatPreservingDate.isFunctionallyChanged(
+        instanceVersion,
+        oldInstance.dateModified,
+      )
+    ) {
+      throw new ConcurrentUpdateError(
+        "De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in",
+      );
     }
 
-    async update(bestuurseenheid: Bestuurseenheid, instance: Instance, instanceVersion: FormatPreservingDate, dontUpdateDateModified: boolean = false): Promise<void> {
+    const newInstance = dontUpdateDateModified
+      ? instance
+      : InstanceBuilder.from(instance)
+          .withDateModified(FormatPreservingDate.now())
+          .build();
 
-        requiredValue(instanceVersion, "Instantie versie");
-        const oldInstance = await this.findById(bestuurseenheid, instance.id);
+    const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph())
+      .instanceToQuads(oldInstance)
+      .map((s) => s.toNT());
+    const newTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph())
+      .instanceToQuads(newInstance)
+      .map((s) => s.toNT());
 
-        if (FormatPreservingDate.isFunctionallyChanged(instanceVersion, oldInstance.dateModified)) {
-            throw new ConcurrentUpdateError("De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in");
-        }
+    // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
+    if (isEqual(oldTriples, newTriples)) {
+      throw new SystemError("Geen wijzigingen");
+    }
 
-        const newInstance = dontUpdateDateModified ? instance : InstanceBuilder.from(instance).withDateModified(FormatPreservingDate.now()).build();
+    const publishedInstanceSnapshotTriples =
+      newInstance.status === InstanceStatusType.VERZONDEN
+        ? new DomainToQuadsMapper(
+            bestuurseenheid.userGraph(),
+          ).publishedInstanceSnapshotToQuads(
+            PublishedInstanceSnapshotBuilder.from(instance),
+          )
+        : [];
 
-        const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(oldInstance).map(s => s.toNT());
-        const newTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(newInstance).map(s => s.toNT());
-
-        // Virtuoso bug: when triples in delete part and insert part of query are exactly the same, virtuoso will only execute the delete, hence all data will be deleted.
-        if (isEqual(oldTriples, newTriples)) {
-            throw new SystemError('Geen wijzigingen');
-        }
-
-        const publishedInstanceSnapshotTriples = newInstance.status === InstanceStatusType.VERZONDEN
-            ? new DomainToQuadsMapper(bestuurseenheid.userGraph()).publishedInstanceSnapshotToQuads(PublishedInstanceSnapshotBuilder.from(instance))
-            : [];
-
-        const query = `
+    const query = `
             WITH <${bestuurseenheid.userGraph()}>
             DELETE {
-                ${[...oldTriples].join('\n')}
+                ${[...oldTriples].join("\n")}
             }
             INSERT {
-                ${[...newTriples].join('\n')}
-                ${[...publishedInstanceSnapshotTriples].join('\n')}
+                ${[...newTriples].join("\n")}
+                ${[...publishedInstanceSnapshotTriples].join("\n")}
             }
             WHERE {
-                <${instance.id}> <${NS.schema('dateModified').value}> ${literal(instanceVersion.value, NS.xsd('dateTime')).toNT()} .
+                <${instance.id}> <${NS.schema("dateModified").value}> ${literal(instanceVersion.value, NS.xsd("dateTime")).toNT()} .
             }
         `;
 
-        await this.querying.deleteInsert(query, (deleteInsertResults: string[]) => {
+    await this.querying.deleteInsert(query, (deleteInsertResults: string[]) => {
+      if (deleteInsertResults.length != 1) {
+        throw new SystemError("Meer dan 1 graph wordt tegelijk aangepast");
+      }
+      if (
+        deleteInsertResults[0].includes(
+          "delete 0 (or less) and insert 0 (or less) triples",
+        )
+      ) {
+        throw new ConcurrentUpdateError(
+          "De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in",
+        );
+      }
+    });
+  }
 
-            if (deleteInsertResults.length != 1) {
-                throw new SystemError('Meer dan 1 graph wordt tegelijk aangepast');
-            }
-            if (deleteInsertResults[0].includes("delete 0 (or less) and insert 0 (or less) triples")) {
-                throw new ConcurrentUpdateError("De productfiche is gelijktijdig aangepast door een andere gebruiker. Herlaad de pagina en geef je aanpassingen opnieuw in");
-            }
-        });
-    }
+  async delete(
+    bestuurseenheid: Bestuurseenheid,
+    id: Iri,
+    deletionTime?: FormatPreservingDate,
+  ): Promise<Iri | undefined> {
+    const instance = await this.findById(bestuurseenheid, id);
+    if (instance != undefined) {
+      const triples = new DomainToQuadsMapper(bestuurseenheid.userGraph())
+        .instanceToQuads(instance)
+        .map((s) => s.toNT());
 
-    async delete(bestuurseenheid: Bestuurseenheid, id: Iri, deletionTime?: FormatPreservingDate): Promise<Iri | undefined> {
-        const instance = await this.findById(bestuurseenheid, id);
-        if (instance != undefined) {
+      if (deletionTime === undefined) {
+        deletionTime = FormatPreservingDate.now();
+      }
 
-            const triples = new DomainToQuadsMapper(bestuurseenheid.userGraph()).instanceToQuads(instance).map(s => s.toNT());
+      if (
+        instance.dateSent !== undefined ||
+        (await this.wasTombstoneCreatedBefore(bestuurseenheid, id))
+      ) {
+        const uniqueId = uuid();
+        const tombstoneId = PublishedInstanceSnapshotBuilder.buildIri(uniqueId);
 
-            if (deletionTime === undefined) {
-                deletionTime = FormatPreservingDate.now();
-            }
-
-            if (instance.dateSent !== undefined ||
-                await this.wasTombstoneCreatedBefore(bestuurseenheid, id)) {
-
-                const uniqueId = uuid();
-                const tombstoneId = PublishedInstanceSnapshotBuilder.buildIri(uniqueId);
-
-                const query = `
+        const query = `
                 ${PREFIX.as}
                 ${PREFIX.lpdcExt}
                 ${PREFIX.schema}
@@ -168,11 +233,11 @@ export class InstanceSparqlRepository implements InstanceRepository {
                         as:deleted ${sparqlEscapeDateTime(deletionTime.value)};
                         prov:generatedAtTime ${sparqlEscapeDateTime(deletionTime.value)}.
                 }`;
-                await this.querying.deleteInsert(query);
+        await this.querying.deleteInsert(query);
 
-                return tombstoneId;
-            } else {
-                const query = `
+        return tombstoneId;
+      } else {
+        const query = `
 
                     DELETE
                     DATA FROM
@@ -182,15 +247,18 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     };
                 `;
 
-                await this.querying.delete(query);
+        await this.querying.delete(query);
 
-                return undefined;
-            }
-        }
+        return undefined;
+      }
     }
+  }
 
-    private async wasTombstoneCreatedBefore(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean> {
-        const query = `
+  private async wasTombstoneCreatedBefore(
+    bestuurseenheid: Bestuurseenheid,
+    instanceId: Iri,
+  ): Promise<boolean> {
+    const query = `
             ${PREFIX.as}
             ${PREFIX.lpdcExt}
             
@@ -202,19 +270,23 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 }
             }
         `;
-        return this.querying.ask(query);
+    return this.querying.ask(query);
+  }
+
+  async updateReviewStatusesForInstances(
+    conceptId: Iri,
+    isConceptFunctionallyChanged: boolean,
+    isConceptArchived: boolean,
+  ): Promise<void> {
+    let reviewStatus = undefined;
+    if (isConceptArchived) {
+      reviewStatus = InstanceReviewStatusType.CONCEPT_GEARCHIVEERD;
+    } else if (isConceptFunctionallyChanged) {
+      reviewStatus = InstanceReviewStatusType.CONCEPT_GEWIJZIGD;
     }
 
-    async updateReviewStatusesForInstances(conceptId: Iri, isConceptFunctionallyChanged: boolean, isConceptArchived: boolean): Promise<void> {
-        let reviewStatus = undefined;
-        if (isConceptArchived) {
-            reviewStatus = InstanceReviewStatusType.CONCEPT_GEARCHIVEERD;
-        } else if (isConceptFunctionallyChanged) {
-            reviewStatus = InstanceReviewStatusType.CONCEPT_GEWIJZIGD;
-        }
-
-        if (reviewStatus) {
-            const updateReviewStatusesQuery = `
+    if (reviewStatus) {
+      const updateReviewStatusesQuery = `
             ${PREFIX.ext}
             ${PREFIX.lpdcExt}
             ${PREFIX.dct}
@@ -238,12 +310,15 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     }    
                 }
             }`;
-            await this.querying.deleteInsert(updateReviewStatusesQuery);
-        }
+      await this.querying.deleteInsert(updateReviewStatusesQuery);
     }
+  }
 
-    async exists(bestuurseenheid: Bestuurseenheid, instanceId: Iri): Promise<boolean> {
-        const query = `
+  async exists(
+    bestuurseenheid: Bestuurseenheid,
+    instanceId: Iri,
+  ): Promise<boolean> {
+    const query = `
             ${PREFIX.lpdcExt}
             ASK WHERE {
                 GRAPH <${bestuurseenheid.userGraph()}> {
@@ -251,47 +326,52 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 }
             }
         `;
-        return this.querying.ask(query);
-    }
+    return this.querying.ask(query);
+  }
 
-    async syncNeedsConversionFromFormalToInformal(bestuurseenheid: Bestuurseenheid, chosenType: ChosenFormType) {
-        const now = new Date();
+  async syncNeedsConversionFromFormalToInformal(
+    bestuurseenheid: Bestuurseenheid,
+    chosenType: ChosenFormType,
+  ) {
+    const now = new Date();
 
-        const query = `
+    const query = `
         ${PREFIX.lpdcExt}
         WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
         
         DELETE {
            ?instance lpdcExt:needsConversionFromFormalToInformal """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>;
-                     <${NS.schema('dateModified').value}> ?previousDateModified.
+                     <${NS.schema("dateModified").value}> ?previousDateModified.
         }
         INSERT { 
             ?instance lpdcExt:needsConversionFromFormalToInformal """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>;
-                    <${NS.schema('dateModified').value}> ${sparqlEscapeDateTime(now.toISOString())}.     
+                    <${NS.schema("dateModified").value}> ${sparqlEscapeDateTime(now.toISOString())}.     
         }     
         WHERE {
             ?instance a lpdcExt:InstancePublicService;
                    lpdcExt:dutchLanguageVariant ?variant;
-                   <${NS.schema('dateModified').value}> ?previousDateModified .
+                   <${NS.schema("dateModified").value}> ?previousDateModified .
             FILTER (?variant != "nl-be-x-informal" && CONCAT("nl-be-x-", "${chosenType}") = "nl-be-x-informal")
         }
            
         `;
-        await this.querying.deleteInsert(query);
+    await this.querying.deleteInsert(query);
+  }
 
-    }
-
-    async isPublishedToIpdc(bestuurseenheid: Bestuurseenheid, instance: Instance): Promise<boolean> {
-        const query = `
+  async isPublishedToIpdc(
+    bestuurseenheid: Bestuurseenheid,
+    instance: Instance,
+  ): Promise<boolean> {
+    const query = `
             ASK {
                 GRAPH <${bestuurseenheid.userGraph()}> {
-                    ?publishedInstanceSnapshotIri a ${NS.lpdcExt('PublishedInstancePublicServiceSnapshot')} .
-                    ?publishedInstanceSnapshotIri ${NS.lpdcExt('isPublishedVersionOf')} <${instance.id}> .
-                    ?publishedInstanceSnapshotIri ${NS.prov('generatedAtTime')} "${instance.dateSent?.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-                    ?publishedInstanceSnapshotIri ${NS.schema('datePublished')} ?datePublished .
+                    ?publishedInstanceSnapshotIri a ${NS.lpdcExt("PublishedInstancePublicServiceSnapshot")} .
+                    ?publishedInstanceSnapshotIri ${NS.lpdcExt("isPublishedVersionOf")} <${instance.id}> .
+                    ?publishedInstanceSnapshotIri ${NS.prov("generatedAtTime")} "${instance.dateSent?.value}"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+                    ?publishedInstanceSnapshotIri ${NS.schema("datePublished")} ?datePublished .
                 }
             }
         `;
-        return this.querying.ask(query);
-    }
+    return this.querying.ask(query);
+  }
 }

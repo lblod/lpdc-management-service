@@ -1,7 +1,6 @@
 version: "3.7"
 
 services:
-
   virtuoso:
     image: redpencil/virtuoso:1.2.0-rc.1
     environment:
