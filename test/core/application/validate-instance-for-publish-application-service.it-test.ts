@@ -1,10 +1,17 @@
 import { FormApplicationService } from "../../../src/core/application/form-application-service";
-import { ValidateInstanceForPublishApplicationService } from "../../../src/core/application/validate-instance-for-publish-application-service";
+import {
+  INACTIVE_AUTHORITY_ERROR_MESSAGE,
+  ValidateInstanceForPublishApplicationService,
+} from "../../../src/core/application/validate-instance-for-publish-application-service";
 import { ConceptSparqlRepository } from "../../../src/driven/persistence/concept-sparql-repository";
 import { TEST_SPARQL_ENDPOINT } from "../../test.config";
 import { SelectConceptLanguageDomainService } from "../../../src/core/domain/select-concept-language-domain-service";
 import { SemanticFormsMapperImpl } from "../../../src/driven/persistence/semantic-forms-mapper-impl";
-import { aBestuurseenheid } from "../domain/bestuurseenheid-test-builder";
+import {
+  aBestuurseenheid,
+  someCompetentAuthorities,
+  someExecutingAuthorities,
+} from "../domain/bestuurseenheid-test-builder";
 import { aFullInstance } from "../domain/instance-test-builder";
 import { FormDefinitionFileRepository } from "../../../src/driven/persistence/form-definition-file-repository";
 import { CodeSparqlRepository } from "../../../src/driven/persistence/code-sparql-repository";
@@ -14,6 +21,13 @@ import { LanguageString } from "../../../src/core/domain/language-string";
 import { FormalInformalChoiceSparqlRepository } from "../../../src/driven/persistence/formal-informal-choice-sparql-repository";
 import { ConceptSnapshotSparqlRepository } from "../../../src/driven/persistence/concept-snapshot-sparql-repository";
 import { InstanceSparqlRepository } from "../../../src/driven/persistence/instance-sparql-repository";
+import { BestuurseenheidSparqlTestRepository } from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
+import { uuid } from "../../../mu-helper";
+import { buildBestuurseenheidIri } from "../domain/iri-test-builder";
+import {
+  BestuurseenheidClassificatieCode,
+  BestuurseenheidStatusCode,
+} from "../../../src/core/domain/bestuurseenheid";
 
 describe("ValidateInstanceForPublishApplicationService", () => {
   describe("validate", () => {
@@ -22,6 +36,9 @@ describe("ValidateInstanceForPublishApplicationService", () => {
       TEST_SPARQL_ENDPOINT,
     );
     const instanceRepository = new InstanceSparqlRepository(
+      TEST_SPARQL_ENDPOINT,
+    );
+    const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(
       TEST_SPARQL_ENDPOINT,
     );
     const formDefinitionRepository = new FormDefinitionFileRepository();
@@ -46,7 +63,18 @@ describe("ValidateInstanceForPublishApplicationService", () => {
       new ValidateInstanceForPublishApplicationService(
         formApplicationService,
         instanceRepository,
+        bestuurseenheidRepository,
       );
+
+    beforeAll(async () => {
+      someCompetentAuthorities().forEach(
+        async (unit) => await bestuurseenheidRepository.save(unit.build()),
+      );
+
+      someExecutingAuthorities().forEach(
+        async (unit) => await bestuurseenheidRepository.save(unit.build()),
+      );
+    });
 
     test("when valid instance for publish, returns empty array", async () => {
       const bestuurseenheid = aBestuurseenheid().build();
@@ -248,6 +276,353 @@ describe("ValidateInstanceForPublishApplicationService", () => {
             "Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn",
         },
       ]);
+    });
+
+    test("results in no error when a competent authority with status Active is assigned", async () => {
+      const authorityUuid = uuid();
+      const authorityIri = buildBestuurseenheidIri(authorityUuid);
+      const authority = aBestuurseenheid()
+        .withId(authorityIri)
+        .withUuid(authorityUuid)
+        .withPrefLabel("Unit with Active status")
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .withStatus(BestuurseenheidStatusCode.ACTIVE)
+        .build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([authority.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("results in no error when a competent authority with status In formation is assigned", async () => {
+      const authorityUuid = uuid();
+      const authorityIri = buildBestuurseenheidIri(authorityUuid);
+      const authority = aBestuurseenheid()
+        .withId(authorityIri)
+        .withUuid(authorityUuid)
+        .withPrefLabel("Unit with In formation status")
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .withStatus(BestuurseenheidStatusCode.IN_FORMATION)
+        .build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([authority.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("results in no error when an executing authority with status Active is assigned", async () => {
+      const authorityUuid = uuid();
+      const authorityIri = buildBestuurseenheidIri(authorityUuid);
+      const authority = aBestuurseenheid()
+        .withId(authorityIri)
+        .withUuid(authorityUuid)
+        .withPrefLabel("Unit with Active status")
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .withStatus(BestuurseenheidStatusCode.ACTIVE)
+        .build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorities([authority.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("results in no error when an executing authority with status In formation is assigned", async () => {
+      const authorityUuid = uuid();
+      const authorityIri = buildBestuurseenheidIri(authorityUuid);
+      const authority = aBestuurseenheid()
+        .withId(authorityIri)
+        .withUuid(authorityUuid)
+        .withPrefLabel("Unit with In formation status")
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .withStatus(BestuurseenheidStatusCode.IN_FORMATION)
+        .build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorities([authority.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("results in an error when an inactive competent authority is assigned", async () => {
+      const authorityUuid = uuid();
+      const authorityIri = buildBestuurseenheidIri(authorityUuid);
+      const authority = aBestuurseenheid()
+        .withId(authorityIri)
+        .withUuid(authorityUuid)
+        .withPrefLabel("Inactive")
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .withStatus(BestuurseenheidStatusCode.INACTIVE)
+        .build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([authority.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in an error when an inactive executing authority is assigned", async () => {
+      const authorityUuid = uuid();
+      const authorityIri = buildBestuurseenheidIri(authorityUuid);
+      const authority = aBestuurseenheid()
+        .withId(authorityIri)
+        .withUuid(authorityUuid)
+        .withPrefLabel("Inactive")
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .withStatus(BestuurseenheidStatusCode.INACTIVE)
+        .build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorities([authority.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in an error when a competent authority without status is assigned", async () => {
+      const authorityUuid = uuid();
+      const authorityIri = buildBestuurseenheidIri(authorityUuid);
+      const authority = aBestuurseenheid()
+        .withId(authorityIri)
+        .withUuid(authorityUuid)
+        .withPrefLabel("Unit without status")
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .withStatus(undefined)
+        .build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([authority.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in an error when an executing authority without status is assigned", async () => {
+      const authorityUuid = uuid();
+      const authorityIri = buildBestuurseenheidIri(authorityUuid);
+      const authority = aBestuurseenheid()
+        .withId(authorityIri)
+        .withUuid(authorityUuid)
+        .withPrefLabel("Unit without status")
+        .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+        .withStatus(undefined)
+        .build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorities([authority.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in an error when an non-existing competent authority is assigned", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([
+          buildBestuurseenheidIri("ThisOrganisationDoesNotExist"),
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in an error when an non-existing executing authority is assigned", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorities([
+          buildBestuurseenheidIri("ThisOrganisationDoesNotExist"),
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in an error when an inactive competent authority and a non-existing executing authority are assigned", async () => {
+      const inactiveAuthority = anInactiveBestuurseenheid().build();
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([inactiveAuthority.id])
+        .withExecutingAuthorities([
+          buildBestuurseenheidIri("ThisOrganisationDoesNotExist"),
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in an error when a non-existing competent authority and an inactive executing authority are assigned", async () => {
+      const inactiveAuthority = anInactiveBestuurseenheid().build();
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([
+          buildBestuurseenheidIri("ThisOrganisationDoesNotExist"),
+        ])
+        .withExecutingAuthorities([inactiveAuthority.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in an error when a non-existing competent and executing authority are assigned", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([
+          buildBestuurseenheidIri("ThisOrganisationDoesNotExist"),
+        ])
+        .withExecutingAuthorities([
+          buildBestuurseenheidIri("ThisOrganisationDoesNotExist"),
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in no error when no executing authority is assigned", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance().withExecutingAuthorities([]).build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
     });
   });
 });

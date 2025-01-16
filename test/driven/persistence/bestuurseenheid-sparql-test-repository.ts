@@ -44,7 +44,7 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
                     ${sparqlEscapeUri(bestuurseenheid.id)} skos:prefLabel ${sparqlEscapeString(bestuurseenheid.prefLabel)} .
                     ${classificatieUri ? `${sparqlEscapeUri(bestuurseenheid.id)} besluit:classificatie ${sparqlEscapeUri(classificatieUri)} .` : ""}
                     ${sparqlEscapeUri(bestuurseenheid.id)} mu:uuid ${sparqlEscapeString(bestuurseenheid.uuid)} .
-                    ${sparqlEscapeUri(bestuurseenheid.id)} regorg:orgStatus ${sparqlEscapeUri(statusUri)} .
+                    ${statusUri ? `${sparqlEscapeUri(bestuurseenheid.id)} regorg:orgStatus ${sparqlEscapeUri(statusUri)} .` : ""}
                     ${werkingsgebiedenSpatials
                       .flatMap((wgs) => [
                         `${sparqlEscapeUri(bestuurseenheid.id)} besluit:werkingsgebied ${sparqlEscapeUri(wgs[1])}`,

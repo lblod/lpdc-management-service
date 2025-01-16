@@ -130,6 +130,7 @@ const validateInstanceForPublishApplicationService =
   new ValidateInstanceForPublishApplicationService(
     formApplicationService,
     instanceRepository,
+    bestuurseenheidRepository,
   );
 
 const linkConceptToInstanceDomainService =

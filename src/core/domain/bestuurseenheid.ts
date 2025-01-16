@@ -67,6 +67,13 @@ export class Bestuurseenheid {
       `http://mu.semte.ch/graphs/organizations/${this.uuid}/${SessionRoleType.LOKETLB_LPDCGEBRUIKER}`,
     );
   }
+
+  get isValidAuthority(): boolean {
+    return (
+      this._status === BestuurseenheidStatusCode.ACTIVE ||
+      this._status === BestuurseenheidStatusCode.IN_FORMATION
+    );
+  }
 }
 
 export enum BestuurseenheidClassificatieCode {
