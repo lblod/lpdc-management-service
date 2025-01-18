@@ -1,7 +1,7 @@
 import { NotFoundError } from "../../../src/core/domain/shared/lpdc-error";
 import { aSpatial } from "../../core/domain/spatial-test-builder";
 import { TEST_SPARQL_ENDPOINT } from "../../test.config";
-import { SpatialSparqlTestRepository } from "./SpatialSparqlTestRepository";
+import { SpatialSparqlTestRepository } from "./spatial-sparql-test-repository";
 import { Iri } from "../../../src/core/domain/shared/iri";
 
 describe("SpatialRepository", () => {

@@ -25,6 +25,20 @@ export function aBestuurseenheid(): BestuurseenheidTestBuilder {
     ]);
 }
 
+export function anInactiveBestuurseenheid(): BestuurseenheidTestBuilder {
+  const administrativeUnitUuid = uuid();
+  return new BestuurseenheidTestBuilder()
+    .withId(buildBestuurseenheidIri(administrativeUnitUuid))
+    .withUuid(administrativeUnitUuid)
+    .withPrefLabel("Inactive")
+    .withClassificatieCode(BestuurseenheidClassificatieCode.GEMEENTE)
+    .withStatus(BestuurseenheidStatusCode.INACTIVE)
+    .withSpatials([
+      BestuurseenheidTestBuilder.SPATIAL_1_IRI,
+      BestuurseenheidTestBuilder.SPATIAL_2_IRI,
+    ]);
+}
+
 export function someCompetentAuthorities(): BestuurseenheidTestBuilder[] {
   const pepingen = new BestuurseenheidTestBuilder()
     .withId(BestuurseenheidTestBuilder.PEPINGEN_IRI)

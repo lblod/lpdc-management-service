@@ -1,7 +1,8 @@
 import { FormApplicationService } from "../../../src/core/application/form-application-service";
 import {
-  INACTIVE_AUTHORITY_ERROR_MESSAGE,
   ValidateInstanceForPublishApplicationService,
+  INACTIVE_AUTHORITY_ERROR_MESSAGE,
+  EXPIRED_SPATIAL_ERROR_MESSAGE,
 } from "../../../src/core/application/validate-instance-for-publish-application-service";
 import { ConceptSparqlRepository } from "../../../src/driven/persistence/concept-sparql-repository";
 import { TEST_SPARQL_ENDPOINT } from "../../test.config";
@@ -9,6 +10,7 @@ import { SelectConceptLanguageDomainService } from "../../../src/core/domain/sel
 import { SemanticFormsMapperImpl } from "../../../src/driven/persistence/semantic-forms-mapper-impl";
 import {
   aBestuurseenheid,
+  anInactiveBestuurseenheid,
   someCompetentAuthorities,
   someExecutingAuthorities,
 } from "../domain/bestuurseenheid-test-builder";
@@ -23,11 +25,21 @@ import { ConceptSnapshotSparqlRepository } from "../../../src/driven/persistence
 import { InstanceSparqlRepository } from "../../../src/driven/persistence/instance-sparql-repository";
 import { BestuurseenheidSparqlTestRepository } from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import { uuid } from "../../../mu-helper";
-import { buildBestuurseenheidIri } from "../domain/iri-test-builder";
+import {
+  buildBestuurseenheidIri,
+  buildNutsCodeIri,
+} from "../domain/iri-test-builder";
 import {
   BestuurseenheidClassificatieCode,
   BestuurseenheidStatusCode,
 } from "../../../src/core/domain/bestuurseenheid";
+import { SpatialSparqlTestRepository } from "../../driven/persistence/spatial-sparql-test-repository";
+import {
+  SpatialTestBuilder,
+  aSpatial,
+  aSpatialWithFutureEndDate,
+  anExpiredSpatial,
+} from "../domain/spatial-test-builder";
 
 describe("ValidateInstanceForPublishApplicationService", () => {
   describe("validate", () => {
@@ -39,6 +51,9 @@ describe("ValidateInstanceForPublishApplicationService", () => {
       TEST_SPARQL_ENDPOINT,
     );
     const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(
+      TEST_SPARQL_ENDPOINT,
+    );
+    const spatialRepository = new SpatialSparqlTestRepository(
       TEST_SPARQL_ENDPOINT,
     );
     const formDefinitionRepository = new FormDefinitionFileRepository();
@@ -64,6 +79,7 @@ describe("ValidateInstanceForPublishApplicationService", () => {
         formApplicationService,
         instanceRepository,
         bestuurseenheidRepository,
+        spatialRepository,
       );
 
     beforeAll(async () => {
@@ -73,6 +89,19 @@ describe("ValidateInstanceForPublishApplicationService", () => {
 
       someExecutingAuthorities().forEach(
         async (unit) => await bestuurseenheidRepository.save(unit.build()),
+      );
+
+      await spatialRepository.save(
+        aSpatial()
+          .withId(SpatialTestBuilder.OUD_HEVERLEE_SPATIAL_IRI)
+          .withUuid(String(SpatialTestBuilder.OUD_HEVERLEE_SPATIAL_UUID))
+          .build(),
+      );
+      await spatialRepository.save(
+        aSpatial()
+          .withId(SpatialTestBuilder.PEPINGEN_SPATIAL_IRI)
+          .withUuid(String(SpatialTestBuilder.PEPINGEN_SPATIAL_UUID))
+          .build(),
       );
     });
 
@@ -623,6 +652,154 @@ describe("ValidateInstanceForPublishApplicationService", () => {
         );
 
       expect(errorList).toEqual([]);
+    });
+
+    test("results in an error when an expired spatial is assigned", async () => {
+      const expiredSpatial = anExpiredSpatial().build();
+      await spatialRepository.save(expiredSpatial);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withSpatials([expiredSpatial.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([{ message: EXPIRED_SPATIAL_ERROR_MESSAGE }]);
+    });
+
+    test("results in no error when a spatial without end date is assigned", async () => {
+      const spatial = aSpatial().build();
+      await spatialRepository.save(spatial);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance().withSpatials([spatial.id]).build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("results in no error when a spatial with an end date in the future is assigned", async () => {
+      const spatial = aSpatialWithFutureEndDate().build();
+      await spatialRepository.save(spatial);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance().withSpatials([spatial.id]).build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("results in an error when a spatial that does not exist is assigned", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withSpatials([buildNutsCodeIri(1000000)])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([{ message: EXPIRED_SPATIAL_ERROR_MESSAGE }]);
+    });
+
+    test("results in two errors when an inactive competent authority is provided and an expired spatial", async () => {
+      const expiredSpatial = anExpiredSpatial().build();
+      await spatialRepository.save(expiredSpatial);
+
+      const inactiveAuthority = anInactiveBestuurseenheid().build();
+      await bestuurseenheidRepository.save(inactiveAuthority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([inactiveAuthority.id])
+        .withSpatials([expiredSpatial.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+        { message: EXPIRED_SPATIAL_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in two errors when an inactive executing authority is provided and an expired spatial", async () => {
+      const expiredSpatial = anExpiredSpatial().build();
+      await spatialRepository.save(expiredSpatial);
+
+      const inactiveAuthority = anInactiveBestuurseenheid().build();
+      await bestuurseenheidRepository.save(inactiveAuthority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorities([inactiveAuthority.id])
+        .withSpatials([expiredSpatial.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+        { message: EXPIRED_SPATIAL_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("results in two errors when an inactive competent and executing authority is provided as well as an expired spatial", async () => {
+      const expiredSpatial = anExpiredSpatial().build();
+      await spatialRepository.save(expiredSpatial);
+
+      const inactiveAuthority = anInactiveBestuurseenheid().build();
+      await bestuurseenheidRepository.save(inactiveAuthority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([inactiveAuthority.id])
+        .withExecutingAuthorities([inactiveAuthority.id])
+        .withSpatials([expiredSpatial.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+        { message: EXPIRED_SPATIAL_ERROR_MESSAGE },
+      ]);
     });
   });
 });

@@ -17,12 +17,14 @@ import { FormDefinitionFileRepository } from "../../src/driven/persistence/form-
 import { CodeSparqlRepository } from "../../src/driven/persistence/code-sparql-repository";
 import { ConceptSnapshotSparqlRepository } from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import { InstanceSparqlRepository } from "../../src/driven/persistence/instance-sparql-repository";
+import { SpatialSparqlTestRepository } from "../driven/persistence/spatial-sparql-test-repository";
 
 const endPoint = END2END_TEST_SPARQL_ENDPOINT;
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(
   endPoint,
 );
+const spatialRepository = new SpatialSparqlTestRepository(endPoint);
 const conceptRepository = new ConceptSparqlRepository(endPoint);
 const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository(endPoint);
 const instanceRepository = new InstanceSparqlRepository(endPoint);
@@ -49,6 +51,7 @@ const validateInstanceForPublishApplicationService =
     formApplicationService,
     instanceRepository,
     bestuurseenheidRepository,
+    spatialRepository,
   );
 
 describe("Instance publish validation", () => {
