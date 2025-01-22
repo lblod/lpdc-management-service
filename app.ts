@@ -51,6 +51,7 @@ import { VersionedLdesSnapshotSparqlRepository } from "./src/driven/persistence/
 import { AdressenRegisterFetcher } from "./src/driven/external/adressen-register-fetcher";
 import { ContactInfoOptionsSparqlRepository } from "./src/driven/persistence/contact-info-options-sparql-repository";
 import { ConceptSnapshotProcessorApplicationService } from "./src/core/application/concept-snapshot-processor-application-service";
+import { SpatialSparqlRepository } from "./src/driven/persistence/spatial-sparql-repository";
 
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
 //      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
@@ -79,6 +80,7 @@ const instanceSnapshotProcessingAuthorizationRepository =
   new InstanceSnapshotProcessingAuthorizationSparqlRepository();
 const versionedLdesSnapshotRepository =
   new VersionedLdesSnapshotSparqlRepository();
+const spatialRepository = new SpatialSparqlRepository();
 
 const linkedAuthorityCodeListDomainService =
   new EnsureLinkedAuthoritiesExistAsCodeListDomainService(
@@ -130,6 +132,8 @@ const validateInstanceForPublishApplicationService =
   new ValidateInstanceForPublishApplicationService(
     formApplicationService,
     instanceRepository,
+    bestuurseenheidRepository,
+    spatialRepository,
   );
 
 const linkConceptToInstanceDomainService =

@@ -24,6 +24,8 @@ const CONCEPT_SNAPSHOT_PROCESSING_CRON_PATTERN =
 const IPDC_API_ENDPOINT = process.env.IPDC_API_ENDPOINT;
 const IPDC_API_KEY = process.env.IPDC_API_KEY;
 
+const NUTS_VERSION = "http://data.europa.eu/nuts/scheme/2024";
+
 const PREFIX = {
   rdf: "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>",
   skos: "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>",
@@ -61,7 +63,10 @@ const PREFIX = {
   sh: "PREFIX sh: <http://www.w3.org/ns/shacl#>",
   ex: "PREFIX ex: <http://example.com/ns#>",
   nutss: "PREFIX nutss: <http://data.europa.eu/nuts/scheme/>",
+  nuts: "PREFIX nuts: <http://data.europa.eu/nuts/code/>",
   prov: "PREFIX prov: <http://www.w3.org/ns/prov#>",
+  regorg: "PREFIX regorg: <http://www.w3.org/ns/regorg#>",
+  time: "PREFIX time: <http://www.w3.org/2006/time#>",
 };
 
 export {
@@ -78,4 +83,5 @@ export {
   INSTANCE_SNAPSHOT_PROCESSING_CRON_PATTERN,
   IPDC_API_ENDPOINT,
   IPDC_API_KEY,
+  NUTS_VERSION,
 };

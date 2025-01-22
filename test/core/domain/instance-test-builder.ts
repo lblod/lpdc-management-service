@@ -4,8 +4,6 @@ import {
   buildBestuurseenheidIri,
   buildConceptIri,
   buildConceptSnapshotIri,
-  buildNutsCodeIri,
-  randomNumber,
 } from "./iri-test-builder";
 import { uuid } from "../../../mu-helper";
 import { FormatPreservingDate } from "../../../src/core/domain/format-preserving-date";
@@ -55,6 +53,7 @@ import {
   anotherFullLegalResourceForInstance,
 } from "./legal-resource-test-builder";
 import { Language } from "../../../src/core/domain/language";
+import { SpatialTestBuilder } from "./spatial-test-builder";
 
 export function aMinimalInstance(): InstanceBuilder {
   const uniqueId = uuid();
@@ -168,8 +167,8 @@ export class InstanceTestBuilder {
   public static readonly STATUS = InstanceStatusType.ONTWERP;
 
   public static readonly SPATIALS = [
-    buildNutsCodeIri(randomNumber(10000, 19999)),
-    buildNutsCodeIri(randomNumber(20000, 29999)),
+    SpatialTestBuilder.PEPINGEN_SPATIAL_IRI,
+    SpatialTestBuilder.OUD_HEVERLEE_SPATIAL_IRI,
   ];
 
   public static readonly COMPETENT_AUTHORITIES = [
