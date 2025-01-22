@@ -1,4 +1,4 @@
-import { PREFIX, PUBLIC_GRAPH } from "../../../config";
+import { NUTS_VERSION, PREFIX, PUBLIC_GRAPH } from "../../../config";
 import { sparqlEscapeString, sparqlEscapeUri } from "../../../mu-helper";
 import { Spatial } from "../../../src/core/domain/spatial";
 import { SpatialSparqlRepository } from "../../../src/driven/persistence/spatial-sparql-repository";
@@ -15,7 +15,6 @@ export class SpatialSparqlTestRepository extends SpatialSparqlRepository {
 
     const query = `
     ${PREFIX.skos}
-    ${PREFIX.nutss}
     ${PREFIX.time}
     ${PREFIX.mu}
 
@@ -26,8 +25,8 @@ export class SpatialSparqlTestRepository extends SpatialSparqlRepository {
           skos:prefLabel ${sparqlEscapeString(spatial.prefLabel)};
           skos:notation ${sparqlEscapeString(spatial.notation)};
           ${dateString ? `time:hasEnd ${sparqlEscapeString(dateString)};` : ""}
-          skos:inScheme nutss:2024;
-          skos:topConceptOf nutss:2024.
+          skos:inScheme ${sparqlEscapeUri(NUTS_VERSION)};
+          skos:topConceptOf ${sparqlEscapeUri(NUTS_VERSION)}.
       }
     }
 `;

@@ -1,4 +1,4 @@
-import { PREFIX, PUBLIC_GRAPH } from "../../../config";
+import { NUTS_VERSION, PREFIX, PUBLIC_GRAPH } from "../../../config";
 import { extractResultsFromAllSettled } from "../../../platform/promises";
 import { Iri } from "../../core/domain/shared/iri";
 import { SpatialRepository } from "../../core/port/driven/persistence/spatial-repository";
@@ -17,7 +17,6 @@ export class SpatialSparqlRepository implements SpatialRepository {
   async findById(id: Iri): Promise<Spatial> {
     const query = `
       ${PREFIX.skos}
-      ${PREFIX.nutss}
       ${PREFIX.time}
       ${PREFIX.mu}
 
@@ -25,7 +24,7 @@ export class SpatialSparqlRepository implements SpatialRepository {
       WHERE {
         GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
           ?uri a skos:Concept;
-               skos:inScheme nutss:2024;
+               skos:inScheme ${sparqlEscapeUri(NUTS_VERSION)};
                mu:uuid ?uuid;
                skos:prefLabel ?prefLabel;
                skos:notation ?notation.

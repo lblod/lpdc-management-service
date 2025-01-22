@@ -7,7 +7,7 @@ import {
 } from "../../core/domain/bestuurseenheid";
 import { sparqlEscapeUri } from "../../../mu-helper";
 import { SparqlQuerying } from "./sparql-querying";
-import { PREFIX, PUBLIC_GRAPH } from "../../../config";
+import { NUTS_VERSION, PREFIX, PUBLIC_GRAPH } from "../../../config";
 import { extractResultsFromAllSettled } from "../../../platform/promises";
 import { NotFoundError } from "../../core/domain/shared/lpdc-error";
 
@@ -47,12 +47,11 @@ export class BestuurseenheidSparqlRepository
     const spatialsQuery = `
             ${PREFIX.besluit}
             ${PREFIX.skos}
-            ${PREFIX.nutss}
             SELECT DISTINCT ?spatialId WHERE {
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                   ${sparqlEscapeUri(id)} besluit:werkingsgebied ?werkingsgebiedId.
                   ?werkingsgebiedId skos:exactMatch ?spatialId.
-                  ?spatialId skos:inScheme nutss:2024
+                  ?spatialId skos:inScheme ${sparqlEscapeUri(NUTS_VERSION)}.
                 }
             }
         `;

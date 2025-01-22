@@ -8,7 +8,7 @@ import {
   BestuurseenheidClassificatieCode,
   BestuurseenheidStatusCode,
 } from "../../../src/core/domain/bestuurseenheid";
-import { PREFIX, PUBLIC_GRAPH } from "../../../config";
+import { NUTS_VERSION, PREFIX, PUBLIC_GRAPH } from "../../../config";
 import { sparqlEscapeString, sparqlEscapeUri, uuid } from "../../../mu-helper";
 import { buildWerkingsgebiedenIri } from "../../core/domain/iri-test-builder";
 import { NotFoundError } from "../../../src/core/domain/shared/lpdc-error";
@@ -35,7 +35,6 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
             ${PREFIX.besluit}
             ${PREFIX.mu}
             ${PREFIX.skos}
-            ${PREFIX.nutss}
             ${PREFIX.regorg}
 
             INSERT DATA {
@@ -49,7 +48,8 @@ export class BestuurseenheidSparqlTestRepository extends BestuurseenheidSparqlRe
                       .flatMap((wgs) => [
                         `${sparqlEscapeUri(bestuurseenheid.id)} besluit:werkingsgebied ${sparqlEscapeUri(wgs[1])}`,
                         `${sparqlEscapeUri(wgs[1])} skos:exactMatch ${sparqlEscapeUri(wgs[0])}`,
-                        `${sparqlEscapeUri(wgs[0])} skos:inScheme nutss:2024`,
+                        `${sparqlEscapeUri(wgs[0])} skos:inScheme ${sparqlEscapeUri(NUTS_VERSION)}`,
+                        `${sparqlEscapeUri(wgs[0])} skos:topConceptOf ${sparqlEscapeUri(NUTS_VERSION)}`,
                       ])
                       .join(" .\n")} .
                 }
