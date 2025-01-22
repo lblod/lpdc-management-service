@@ -2,11 +2,13 @@ import { FormDefinitionRepository } from "../../core/port/driven/persistence/for
 import fs from "fs";
 import { FormType } from "../../core/domain/types";
 import { Language } from "../../core/domain/language";
+import { NUTS_VERSION } from "../../../config";
 
 export class FormDefinitionFileRepository implements FormDefinitionRepository {
   contactpoint = "CONTACTPOINT";
   municipalityMerger = "MUNICIPALITY_MERGER_FILTER";
   language = "FORMAL_INFORMAL_LANGUAGE";
+  nuts_version = "NUTS_VERSION";
 
   public loadInstanceFormDefinition(
     formType: FormType,
@@ -24,6 +26,7 @@ export class FormDefinitionFileRepository implements FormDefinitionRepository {
       "form:includes ext:forMunicipalityMergerF.",
     );
     form = this.replaceInForm(form, this.language, language);
+    form = this.replaceInForm(form, this.nuts_version, NUTS_VERSION);
     return form;
   }
 
