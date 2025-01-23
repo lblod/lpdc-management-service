@@ -40,6 +40,8 @@ import {
   aSpatialWithFutureEndDate,
   anExpiredSpatial,
 } from "../domain/spatial-test-builder";
+import { Iri } from "../../../src/core/domain/shared/iri";
+import { CodeSchema } from "../../../src/core/port/driven/persistence/code-repository";
 
 describe("ValidateInstanceForPublishApplicationService", () => {
   describe("validate", () => {
@@ -881,6 +883,58 @@ describe("ValidateInstanceForPublishApplicationService", () => {
         { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
         { message: EXPIRED_SPATIAL_ERROR_MESSAGE },
       ]);
+    });
+
+    test("no error thrown when a Wegwijs Vlaanderen concept is assigned as competent authority", async () => {
+      const id = uuid();
+      const iri = new Iri(`http://some-iri/${id}`);
+      const prefLabel = "Some concept code";
+      const seeAlso = new Iri("https://wegwijs.vlaanderen.be");
+
+      await codeRepository.save(
+        CodeSchema.IPDCOrganisaties,
+        iri,
+        prefLabel,
+        seeAlso,
+      );
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance().withCompetentAuthorities([iri]).build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("no error thrown when a Wegwijs Vlaanderen concept is assigned as executing authority", async () => {
+      const id = uuid();
+      const iri = new Iri(`http://some-iri/${id}`);
+      const prefLabel = "Some concept code";
+      const seeAlso = new Iri("https://wegwijs.vlaanderen.be");
+
+      await codeRepository.save(
+        CodeSchema.IPDCOrganisaties,
+        iri,
+        prefLabel,
+        seeAlso,
+      );
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance().withExecutingAuthorities([iri]).build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
     });
   });
 });
