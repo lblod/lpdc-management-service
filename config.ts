@@ -26,6 +26,8 @@ const IPDC_API_KEY = process.env.IPDC_API_KEY;
 
 const NUTS_VERSION = "http://data.europa.eu/nuts/scheme/2024";
 
+const WEGWIJS_URL = "https://wegwijs.vlaanderen.be";
+
 const PREFIX = {
   rdf: "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>",
   skos: "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>",
@@ -84,4 +86,5 @@ export {
   IPDC_API_ENDPOINT,
   IPDC_API_KEY,
   NUTS_VERSION,
+  WEGWIJS_URL,
 };

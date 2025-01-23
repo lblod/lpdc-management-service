@@ -1,3 +1,4 @@
+import { WEGWIJS_URL } from "../../../config";
 import { Iri } from "../../../src/core/domain/shared/iri";
 
 export function buildConceptSnapshotIri(uniqueId: string): Iri {
@@ -44,6 +45,14 @@ export function buildInstanceSnapshotIri(uniqueId: string): Iri {
   return new Iri(
     `http://data.lblod.info/id/public-service-snapshot/${uniqueId}`,
   );
+}
+
+export function buildOvoCodeIri(uniqueId: string): Iri {
+  return new Iri(`https://data.vlaanderen.be/id/organisatie/OVO${uniqueId}`);
+}
+
+export function buildWegwijsIri(): Iri {
+  return new Iri(WEGWIJS_URL);
 }
 
 export function randomNumber(min: number, max: number): number {

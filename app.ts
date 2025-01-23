@@ -134,6 +134,7 @@ const validateInstanceForPublishApplicationService =
     instanceRepository,
     bestuurseenheidRepository,
     spatialRepository,
+    codeRepository,
   );
 
 const linkConceptToInstanceDomainService =

@@ -14,6 +14,12 @@ export class Iri {
     return this._value;
   }
 
+  get isOvoCodeIri(): boolean {
+    return this.value.startsWith(
+      "https://data.vlaanderen.be/id/organisatie/OVO",
+    );
+  }
+
   toString(): string {
     return this.value;
   }

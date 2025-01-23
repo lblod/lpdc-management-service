@@ -14,7 +14,10 @@ import {
   someCompetentAuthorities,
   someExecutingAuthorities,
 } from "../domain/bestuurseenheid-test-builder";
-import { aFullInstance } from "../domain/instance-test-builder";
+import {
+  InstanceTestBuilder,
+  aFullInstance,
+} from "../domain/instance-test-builder";
 import { FormDefinitionFileRepository } from "../../../src/driven/persistence/form-definition-file-repository";
 import { CodeSparqlRepository } from "../../../src/driven/persistence/code-sparql-repository";
 import { aFullContactPointForInstance } from "../domain/contact-point-test-builder";
@@ -27,7 +30,9 @@ import { BestuurseenheidSparqlTestRepository } from "../../driven/persistence/be
 import { uuid } from "../../../mu-helper";
 import {
   buildBestuurseenheidIri,
+  buildOvoCodeIri,
   buildNutsCodeIri,
+  buildWegwijsIri,
 } from "../domain/iri-test-builder";
 import {
   BestuurseenheidClassificatieCode,
@@ -40,7 +45,6 @@ import {
   aSpatialWithFutureEndDate,
   anExpiredSpatial,
 } from "../domain/spatial-test-builder";
-import { Iri } from "../../../src/core/domain/shared/iri";
 import { CodeSchema } from "../../../src/core/port/driven/persistence/code-repository";
 
 describe("ValidateInstanceForPublishApplicationService", () => {
@@ -82,6 +86,7 @@ describe("ValidateInstanceForPublishApplicationService", () => {
         instanceRepository,
         bestuurseenheidRepository,
         spatialRepository,
+        codeRepository,
       );
 
     beforeAll(async () => {
@@ -885,17 +890,13 @@ describe("ValidateInstanceForPublishApplicationService", () => {
       ]);
     });
 
-    test("no error thrown when a Wegwijs Vlaanderen concept is assigned as competent authority", async () => {
-      const id = uuid();
-      const iri = new Iri(`http://some-iri/${id}`);
-      const prefLabel = "Some concept code";
-      const seeAlso = new Iri("https://wegwijs.vlaanderen.be");
-
+    test("results in zero error when an existing concept code is assigned as competent authority", async () => {
+      const iri = buildOvoCodeIri(uuid());
       await codeRepository.save(
         CodeSchema.IPDCOrganisaties,
         iri,
-        prefLabel,
-        seeAlso,
+        "Some concept code",
+        buildWegwijsIri(),
       );
 
       const bestuurseenheid = aBestuurseenheid().build();
@@ -911,17 +912,31 @@ describe("ValidateInstanceForPublishApplicationService", () => {
       expect(errorList).toEqual([]);
     });
 
-    test("no error thrown when a Wegwijs Vlaanderen concept is assigned as executing authority", async () => {
-      const id = uuid();
-      const iri = new Iri(`http://some-iri/${id}`);
-      const prefLabel = "Some concept code";
-      const seeAlso = new Iri("https://wegwijs.vlaanderen.be");
+    test("should return one error message when assigning a non existing concept code as competent authority", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([buildOvoCodeIri("DoesNotExist")])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
 
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("should return zero error messages when an existing concept code is assigned as executing authority", async () => {
+      const iri = buildOvoCodeIri(uuid());
       await codeRepository.save(
         CodeSchema.IPDCOrganisaties,
         iri,
-        prefLabel,
-        seeAlso,
+        "Some concept code",
+        buildWegwijsIri(),
       );
 
       const bestuurseenheid = aBestuurseenheid().build();
@@ -935,6 +950,153 @@ describe("ValidateInstanceForPublishApplicationService", () => {
         );
 
       expect(errorList).toEqual([]);
+    });
+
+    test("should return one error message when assigning a non existing concept code as executing authority", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorities([buildOvoCodeIri("DoesNotExist")])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("should return one error message when assigning a non existing concept code as competent and executing authority", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([buildOvoCodeIri("DoesNotExist")])
+        .withExecutingAuthorities([buildOvoCodeIri("AlsoDoesNotExist")])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("should return zero error messages when instance has only valid and existing authorities", async () => {
+      const iri = buildOvoCodeIri(uuid());
+      await codeRepository.save(
+        CodeSchema.IPDCOrganisaties,
+        iri,
+        "Some concept code",
+        buildWegwijsIri(),
+      );
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([
+          iri,
+          ...InstanceTestBuilder.COMPETENT_AUTHORITIES,
+        ])
+        .withExecutingAuthorities([
+          iri,
+          ...InstanceTestBuilder.EXECUTING_AUTHORITIES,
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("should return two error messages when a non-existing concept is assigned as competent authority and an expired spatial is used", async () => {
+      const expiredSpatial = anExpiredSpatial().build();
+      await spatialRepository.save(expiredSpatial);
+
+      const authority = aBestuurseenheid().withStatus(undefined).build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([buildOvoCodeIri("DoesNotExist")])
+        .withSpatials([expiredSpatial.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+        { message: EXPIRED_SPATIAL_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("should return two error messages when a non-existing concept is assigned as executing authority and an expired spatial is used", async () => {
+      const expiredSpatial = anExpiredSpatial().build();
+      await spatialRepository.save(expiredSpatial);
+
+      const authority = aBestuurseenheid().withStatus(undefined).build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorities([buildOvoCodeIri("DoesNotExist")])
+        .withSpatials([expiredSpatial.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+        { message: EXPIRED_SPATIAL_ERROR_MESSAGE },
+      ]);
+    });
+
+    test("should return two error messages when a non-existing concept is assigned as competent and executing authority, and an expired spatial is used", async () => {
+      const expiredSpatial = anExpiredSpatial().build();
+      await spatialRepository.save(expiredSpatial);
+
+      const authority = aBestuurseenheid().withStatus(undefined).build();
+      await bestuurseenheidRepository.save(authority);
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([buildOvoCodeIri("DoesNotExist")])
+        .withExecutingAuthorities([buildOvoCodeIri("AlsoDoesNotExist")])
+        .withSpatials([expiredSpatial.id])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: INACTIVE_AUTHORITY_ERROR_MESSAGE },
+        { message: EXPIRED_SPATIAL_ERROR_MESSAGE },
+      ]);
     });
   });
 });

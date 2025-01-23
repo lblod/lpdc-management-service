@@ -52,6 +52,7 @@ const validateInstanceForPublishApplicationService =
     instanceRepository,
     bestuurseenheidRepository,
     spatialRepository,
+    codeRepository,
   );
 
 describe("Instance publish validation", () => {
