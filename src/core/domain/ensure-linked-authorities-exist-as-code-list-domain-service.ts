@@ -5,6 +5,7 @@ import {
 import { BestuurseenheidRegistrationCodeFetcher } from "../port/driven/external/bestuurseenheid-registration-code-fetcher";
 import { Iri } from "./shared/iri";
 import { Logger } from "../../../platform/logger";
+import { WEGWIJS_URL } from "../../../config";
 
 export class EnsureLinkedAuthoritiesExistAsCodeListDomainService {
   private readonly _bestuurseenheidRegistrationCodeFetcher: BestuurseenheidRegistrationCodeFetcher;
@@ -51,7 +52,7 @@ export class EnsureLinkedAuthoritiesExistAsCodeListDomainService {
       CodeSchema.IPDCOrganisaties,
       codeListData.uri,
       codeListData.prefLabel,
-      new Iri("https://wegwijs.vlaanderen.be"),
+      new Iri(WEGWIJS_URL),
     );
   }
 }

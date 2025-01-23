@@ -3,7 +3,7 @@ import {
   CodeSchema,
 } from "../../core/port/driven/persistence/code-repository";
 import { SparqlQuerying } from "./sparql-querying";
-import { PREFIX, PUBLIC_GRAPH } from "../../../config";
+import { PREFIX, PUBLIC_GRAPH, WEGWIJS_URL } from "../../../config";
 import { sparqlEscapeString, sparqlEscapeUri, uuid } from "../../../mu-helper";
 import { Iri } from "../../core/domain/shared/iri";
 import { NS } from "./namespaces";
@@ -89,7 +89,7 @@ export class CodeSparqlRepository implements CodeRepository {
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {            
                   ?s a skos:Concept ;
                     skos:inScheme dvcs:IPDCOrganisaties ;
-                    rdfs:seeAlso <https://wegwijs.vlaanderen.be> ;
+                rdfs:seeAlso ${sparqlEscapeUri(WEGWIJS_URL)} ;
                     ?p ?o .
                 }
             }
