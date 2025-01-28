@@ -50,15 +50,15 @@ async function archiveProductInstances(
     );
 
     if (instance.dateSent !== undefined) {
-      const triples = tombstoneQuads(instance.id.value);
-      insertTriples.push(triples);
+      const instanceTriples = tombstoneQuads(instance.id.value);
+      insertTriples.push(instanceTriples);
     }
 
-    const triplesToDelete = domainToQuadsMerger
+    const instanceTriplesToDelete = domainToQuadsMerger
       .instanceToQuads(instance)
       .map((quad) => quad.toNT())
       .join("\n");
-    deleteTriples.push(triplesToDelete);
+    deleteTriples.push(instanceTriplesToDelete);
   }
 
   createSparql(bestuurseenheid, insertTriples, deleteTriples);
@@ -126,27 +126,24 @@ function createSparql(
   insertTriples: string[],
   deleteTriples: string[],
 ) {
-  let query = "";
+  const graphStatement = `GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {`;
+  const deleteHeader = `DELETE DATA {\n  ${graphStatement}`;
+  const insertHeader = `INSERT DATA {\n  ${graphStatement}`;
 
-  if (deleteTriples.length > 0) {
-    query += `DELETE DATA {\n
-    GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {\n
-      ${deleteTriples.join("\n")}
-    }\n
-    }\n`;
-  }
+  let query = [];
 
-  if (deleteTriples.length > 0 && insertTriples.length > 0) {
-    query += ";\n";
-  }
+  // Note: We use separate DELETE (INSERT) queries for each product instance to
+  // be removed (tombstoned). Virtuoso can run out of memory when parsing
+  // queries with a lot triples, separating into multiple queries avoids this
+  // situation. On a local development setup, Virtuoso would crash when deleting
+  // the triples for about 60 product instances or more in a single query.
+  deleteTriples.forEach((instanceTriples) =>
+    query.push(`${deleteHeader}\n${instanceTriples}\n}\n}\n`),
+  );
 
-  if (insertTriples.length > 0) {
-    query += `INSERT DATA {
-    GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {\n
-      ${insertTriples.join("\n")}
-    }\n
-    }`;
-  }
+  insertTriples.forEach((instanceTriples) =>
+    query.push(`${insertHeader}\n${instanceTriples}\n}\n}\n`),
+  );
 
   const filename = buildFilename(
     "archive-instances",
@@ -154,7 +151,10 @@ function createSparql(
   );
 
   if (deleteTriples.length > 0 || insertTriples.length > 0) {
-    fs.writeFileSync(`./migration-results/${filename}.sparql`, query);
+    fs.writeFileSync(
+      `./migration-results/${filename}.sparql`,
+      query.join(";\n"),
+    );
     console.log(`Wrote migration to ${filename}`);
   } else {
     console.log("No triples to delete or insert, no migration written");
