@@ -25,7 +25,9 @@ async function archiveProductInstances(
   const bestuurseenheid =
     await bestuurseenheidRepository.findById(bestuurseenheidId);
 
-  console.log(`Generating archive migration for ${bestuurseenheid.prefLabel}`);
+  console.log(
+    `Generating archive migration for ${bestuurseenheid.prefLabel} (${bestuurseenheid.classificatieCode})`,
+  );
 
   const domainToQuadsMerger = new DomainToQuadsMapper(
     bestuurseenheid.userGraph(),
@@ -37,7 +39,9 @@ async function archiveProductInstances(
       )
     : await getAllInstanceIdsForBestuurseenheid(bestuurseenheid);
 
-  console.log(`Instances to archive: ${instanceIds.length}`);
+  console.log(
+    `Instances to archive for ${bestuurseenheid.prefLabel} (${bestuurseenheid.classificatieCode}): ${instanceIds.length}`,
+  );
 
   for (const instanceId of instanceIds) {
     const instance = await instanceRepository.findById(
@@ -146,7 +150,7 @@ function createSparql(
 
   const filename = buildFilename(
     "archive-instances",
-    bestuurseenheid.prefLabel,
+    bestuurseenheid.prefLabel + "_" + bestuurseenheid.classificatieCode,
   );
 
   if (deleteTriples.length > 0 || insertTriples.length > 0) {
