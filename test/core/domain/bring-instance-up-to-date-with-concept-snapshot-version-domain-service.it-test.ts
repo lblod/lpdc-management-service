@@ -462,8 +462,9 @@ describe("Bring instance up to date with concept snapshot version domain service
           ConceptSnapshotTestBuilder.COMPETENT_AUTHORITY_LEVELS,
         )
         .withCompetentAuthorities([
-          BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI,
-          BestuurseenheidTestBuilder.ASSENEDE_IRI,
+          BestuurseenheidTestBuilder.PEPINGEN_IRI,
+          BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI,
+          BestuurseenheidTestBuilder.BORGLOON_IRI,
         ])
         .withExecutingAuthorityLevels(
           ConceptSnapshotTestBuilder.EXECUTING_AUTHORITY_LEVELS,
