@@ -14,14 +14,14 @@ describe("form definition file repository it tests", () => {
       expect(result).toContain("form:includes ext:contactpointsL");
       expect(result).not.toContain("<CONTACTPOINT>");
     });
-    test("municipality merger toggle is present", () => {
-      const result = repo.loadInstanceFormDefinition(
-        FormType.EIGENSCHAPPEN,
-        Language.INFORMAL,
-      );
-      expect(result).toContain("form:includes ext:forMunicipalityMergerF");
-      expect(result).not.toContain("<MUNICIPALITY_MERGER_FILTER>");
-    });
+    // test("municipality merger toggle is present", () => {
+    //   const result = repo.loadInstanceFormDefinition(
+    //     FormType.EIGENSCHAPPEN,
+    //     Language.INFORMAL,
+    //   );
+    //   expect(result).toContain("form:includes ext:forMunicipalityMergerF");
+    //   expect(result).not.toContain("<MUNICIPALITY_MERGER_FILTER>");
+    // });
 
     for (const language of Object.values(Language)) {
       test(`loads inhoud form in language ${language}`, () => {
@@ -59,14 +59,14 @@ describe("form definition file repository it tests", () => {
       expect(result).not.toContain("form:includes ext:contactpointsL");
       expect(result).not.toContain("<CONTACTPOINT>");
     });
-    test("municipality merger toggle is not present", () => {
-      const result = repo.loadConceptFormDefinition(
-        FormType.EIGENSCHAPPEN,
-        Language.INFORMAL,
-      );
-      expect(result).not.toContain("form:includes ext:forMunicipalityMergerF");
-      expect(result).not.toContain("<MUNICIPALITY_MERGER_FILTER>");
-    });
+    // test("municipality merger toggle is not present", () => {
+    //   const result = repo.loadConceptFormDefinition(
+    //     FormType.EIGENSCHAPPEN,
+    //     Language.INFORMAL,
+    //   );
+    //   expect(result).not.toContain("form:includes ext:forMunicipalityMergerF");
+    //   expect(result).not.toContain("<MUNICIPALITY_MERGER_FILTER>");
+    // });
     for (const language of Object.values(Language)) {
       test(`loads inhoud form in language ${language}`, () => {
         const result = repo.loadConceptFormDefinition(

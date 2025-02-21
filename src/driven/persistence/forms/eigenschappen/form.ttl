@@ -35,8 +35,8 @@ ext:form a form:Form, form:TopLevelForm ;
     form:includes ext:tagsF;
     form:includes ext:startDateF;
     form:hasFieldGroup ext:pubChannelFG ;
-    form:includes ext:endDateF ;
-    <MUNICIPALITY_MERGER_FILTER>
+    form:includes ext:endDateF .
+    # <MUNICIPALITY_MERGER_FILTER>
 
 ##########################################################
 #  property-group: Algemene info
@@ -48,12 +48,12 @@ ext:generalPg a form:PropertyGroup;
    ##########################################################
    # Field: Product of dienst bestemd voor fusiegemeente
    ##########################################################
-   ext:forMunicipalityMergerF a form:Field ;
-      sh:name "Product of dienst bestemd voor fusiegemeente" ;
-      sh:order 1 ;
-      sh:path lpdcExt:forMunicipalityMerger ;
-      form:displayType displayTypes:switch ;
-      sh:group ext:generalPg .
+  #  ext:forMunicipalityMergerF a form:Field ;
+  #     sh:name "Product of dienst bestemd voor fusiegemeente" ;
+  #     sh:order 1 ;
+  #     sh:path lpdcExt:forMunicipalityMerger ;
+  #     form:displayType displayTypes:switch ;
+  #     sh:group ext:generalPg .
 
    ##########################################################
    # Field: geldig vanaf

@@ -6,7 +6,7 @@ import { NUTS_VERSION } from "../../../config";
 
 export class FormDefinitionFileRepository implements FormDefinitionRepository {
   contactpoint = "CONTACTPOINT";
-  municipalityMerger = "MUNICIPALITY_MERGER_FILTER";
+  // municipalityMerger = "MUNICIPALITY_MERGER_FILTER";
   language = "FORMAL_INFORMAL_LANGUAGE";
   nuts_version = "NUTS_VERSION";
 
@@ -20,11 +20,11 @@ export class FormDefinitionFileRepository implements FormDefinitionRepository {
       this.contactpoint,
       "form:includes ext:contactpointsL;",
     );
-    form = this.replaceInForm(
-      form,
-      this.municipalityMerger,
-      "form:includes ext:forMunicipalityMergerF.",
-    );
+    // form = this.replaceInForm(
+    //   form,
+    //   this.municipalityMerger,
+    //   "form:includes ext:forMunicipalityMergerF.",
+    // );
     form = this.replaceInForm(form, this.language, language);
     form = this.replaceInForm(form, this.nuts_version, NUTS_VERSION);
     return form;
@@ -36,7 +36,7 @@ export class FormDefinitionFileRepository implements FormDefinitionRepository {
   ): string {
     let form = this.readForm(formType);
     form = this.replaceInForm(form, this.contactpoint, "");
-    form = this.replaceInForm(form, this.municipalityMerger, ".");
+    // form = this.replaceInForm(form, this.municipalityMerger, ".");
     form = this.replaceInForm(form, this.language, language);
     return form;
   }
