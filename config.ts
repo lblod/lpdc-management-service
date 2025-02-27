@@ -24,6 +24,9 @@ const CONCEPT_SNAPSHOT_PROCESSING_CRON_PATTERN =
 const IPDC_API_ENDPOINT = process.env.IPDC_API_ENDPOINT;
 const IPDC_API_KEY = process.env.IPDC_API_KEY;
 
+const ENABLE_MUNICIPALITY_MERGER_FLAG =
+  (process.env.ENABLE_MUNICIPALITY_MERGER_FLAG ?? "true") === "true";
+
 const NUTS_VERSION = "http://data.europa.eu/nuts/scheme/2024";
 
 const WEGWIJS_URL = "https://wegwijs.vlaanderen.be";
@@ -87,4 +90,5 @@ export {
   IPDC_API_KEY,
   NUTS_VERSION,
   WEGWIJS_URL,
+  ENABLE_MUNICIPALITY_MERGER_FLAG,
 };

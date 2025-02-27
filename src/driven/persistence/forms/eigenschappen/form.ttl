@@ -35,8 +35,8 @@ ext:form a form:Form, form:TopLevelForm ;
     form:includes ext:tagsF;
     form:includes ext:startDateF;
     form:hasFieldGroup ext:pubChannelFG ;
-    form:includes ext:endDateF .
-    # <MUNICIPALITY_MERGER_FILTER>
+    form:includes ext:endDateF ;
+    <MUNICIPALITY_MERGER_FILTER>
 
 ##########################################################
 #  property-group: Algemene info
