@@ -52,6 +52,13 @@ services:
     environment:
       MU_SPARQL_ENDPOINT: 'http://database:8890/sparql'
 ```
+
+## Environment Variables
+
+| Name                              | Description   | Default |
+| --------------------------------- | ------------- | ------- |
+| `ENABLE_MUNICIPALITY_MERGER_FLAG` | Toggle fusies | `false` |
+
 ## Release a new version
 We use [release-it](https://github.com/release-it/release-it/tree/main) to make a new release.
 

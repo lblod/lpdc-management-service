@@ -2,7 +2,7 @@ import { FormDefinitionRepository } from "../../core/port/driven/persistence/for
 import fs from "fs";
 import { FormType } from "../../core/domain/types";
 import { Language } from "../../core/domain/language";
-import { NUTS_VERSION } from "../../../config";
+import { ENABLE_MUNICIPALITY_MERGER_FLAG, NUTS_VERSION } from "../../../config";
 
 export class FormDefinitionFileRepository implements FormDefinitionRepository {
   contactpoint = "CONTACTPOINT";
@@ -20,10 +20,14 @@ export class FormDefinitionFileRepository implements FormDefinitionRepository {
       this.contactpoint,
       "form:includes ext:contactpointsL;",
     );
+
+    const municipalityMergerReplacement = ENABLE_MUNICIPALITY_MERGER_FLAG
+      ? "form:includes ext:forMunicipalityMergerF."
+      : ".";
     form = this.replaceInForm(
       form,
       this.municipalityMerger,
-      "form:includes ext:forMunicipalityMergerF.",
+      municipalityMergerReplacement,
     );
     form = this.replaceInForm(form, this.language, language);
     form = this.replaceInForm(form, this.nuts_version, NUTS_VERSION);
