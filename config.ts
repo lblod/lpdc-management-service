@@ -25,7 +25,7 @@ const IPDC_API_ENDPOINT = process.env.IPDC_API_ENDPOINT;
 const IPDC_API_KEY = process.env.IPDC_API_KEY;
 
 const ENABLE_MUNICIPALITY_MERGER_FLAG =
-  (process.env.ENABLE_MUNICIPALITY_MERGER_FLAG ?? "true") === "true";
+  (process.env.ENABLE_MUNICIPALITY_MERGER_FLAG ?? "false") === "true";
 
 const NUTS_VERSION = "http://data.europa.eu/nuts/scheme/2024";
 
