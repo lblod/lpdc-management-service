@@ -20,9 +20,10 @@ export class FormDefinitionFileRepository implements FormDefinitionRepository {
       this.contactpoint,
       "form:includes ext:contactpointsL;",
     );
+
     const municipalityMergerReplacement = ENABLE_MUNICIPALITY_MERGER_FLAG
-    ? "form:includes ext:forMunicipalityMergerF."
-    : ".";
+      ? "form:includes ext:forMunicipalityMergerF."
+      : ".";
     form = this.replaceInForm(
       form,
       this.municipalityMerger,
