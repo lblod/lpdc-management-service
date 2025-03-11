@@ -11,6 +11,8 @@ export class Bestuurseenheid {
   private readonly _id: Iri;
   private readonly _uuid: string;
   private readonly _prefLabel: string;
+  private readonly _competencyLevel: string;
+  private readonly  _executionLevel: string;
   private readonly _classificatieCode:
     | BestuurseenheidClassificatieCode
     | undefined;
@@ -24,10 +26,14 @@ export class Bestuurseenheid {
     classificatieCode: BestuurseenheidClassificatieCode | undefined,
     status: BestuurseenheidStatusCode | undefined,
     spatials: Iri[],
+    competencyLevel,
+    executionLevel,
   ) {
     this._id = requiredValue(id, "id");
     this._uuid = requiredValue(uuid, "uuid");
     this._prefLabel = requiredValue(prefLabel, "prefLabel");
+    this._competencyLevel = competencyLevel;
+    this._executionLevel = executionLevel;
     this._classificatieCode = id.equals(Bestuurseenheid.abb)
       ? classificatieCode
       : requiredValue(classificatieCode, "classificatieCode");
@@ -48,6 +54,14 @@ export class Bestuurseenheid {
 
   get prefLabel(): string {
     return this._prefLabel;
+  }
+
+  get competencyLevel(): string {
+    return this._competencyLevel;
+  }
+
+  get executionLevel(): string {
+    return this._executionLevel;
   }
 
   get classificatieCode(): BestuurseenheidClassificatieCode | undefined {

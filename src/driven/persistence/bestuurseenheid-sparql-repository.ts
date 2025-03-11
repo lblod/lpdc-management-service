@@ -26,15 +26,18 @@ export class BestuurseenheidSparqlRepository
             ${PREFIX.besluit}
             ${PREFIX.mu}
             ${PREFIX.regorg}
-            SELECT ?id ?uuid ?prefLabel ?classificatieUri ?statusUri
+            ${PREFIX.lpdcExt}
+            SELECT ?id ?uuid ?prefLabel ?classificatieUri ?statusUri ?competencyLevel ?executionLevel
             WHERE {
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                     VALUES ?id {
                         ${sparqlEscapeUri(id)}
                     }
-                    ?id a besluit:Bestuurseenheid .
+                    ?id a skos:Concept .
                     ?id mu:uuid ?uuid .
                     ?id skos:prefLabel ?prefLabel .
+                    ?id lpdcExt:executionLevel ?executionLevel .
+                    ?id lpdcExt:competencyLevel ?competencyLevel .
                     OPTIONAL {
                         ?id besluit:classificatie ?classificatieUri .
                     }
@@ -77,6 +80,9 @@ export class BestuurseenheidSparqlRepository
       (resultSpatials as Promise<unknown>[]).map(
         (r) => new Iri(r["spatialId"].value),
       ),
+      bestuurseenheidQueryResult["competencyLevel"].value,
+      bestuurseenheidQueryResult["executionLevel"].value,
+
     );
   }
 

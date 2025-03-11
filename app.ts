@@ -39,6 +39,7 @@ import errorHandler from "./src/driving/error-handler";
 import { NotFound } from "./src/driving/http-error";
 import { InvariantError } from "./src/core/domain/shared/lpdc-error";
 import { ValidateInstanceForPublishApplicationService } from "./src/core/application/validate-instance-for-publish-application-service";
+import { ValidateInstanceForUpdateApplicationService } from "./src/core/application/validate-instance-for-update-application-service";
 import { ChosenFormType, FormType } from "./src/core/domain/types";
 import { FormatPreservingDate } from "./src/core/domain/format-preserving-date";
 import { FormalInformalChoice } from "./src/core/domain/formal-informal-choice";
@@ -135,6 +136,14 @@ const validateInstanceForPublishApplicationService =
     bestuurseenheidRepository,
     spatialRepository,
     codeRepository,
+  );
+
+const validateInstanceForUpdateApplicationSerivce =
+  new ValidateInstanceForUpdateApplicationService(
+    instanceRepository,
+    bestuurseenheidRepository,
+    semanticFormsMapper,
+    codeRepository
   );
 
 const linkConceptToInstanceDomainService =
@@ -294,6 +303,13 @@ app.put(
   "/public-services/:instanceId/validate-for-publish",
   async function (req, res, next): Promise<any> {
     return await validateForPublish(req, res).catch(next);
+  },
+);
+
+app.put(
+  "/public-services/:instanceId/validate-for-update",
+  async function (req, res, next): Promise<any> {
+    return await validateForUpdate(req, res).catch(next);
   },
 );
 
@@ -710,6 +726,26 @@ async function validateForPublish(req: Request, res: Response) {
   const errors = await validateInstanceForPublishApplicationService.validate(
     instanceId,
     bestuurseenheid,
+  );
+
+  return res.status(200).json(errors);
+}
+
+async function validateForUpdate(req: Request, res: Response) {
+  const instanceIdRequestParam = req.params.instanceId;
+  const delta = req.body;
+
+  const instanceId = new Iri(instanceIdRequestParam);
+  const session: Session = req["session"];
+  const bestuurseenheid = await bestuurseenheidRepository.findById(
+    session.bestuurseenheidId,
+  );
+
+  const errors = await validateInstanceForUpdateApplicationSerivce.validate(
+    bestuurseenheid,
+    instanceId,
+    delta.removals,
+    delta.additions,
   );
 
   return res.status(200).json(errors);
