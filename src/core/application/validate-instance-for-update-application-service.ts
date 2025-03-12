@@ -12,14 +12,14 @@ import { CodeRepository } from '../port/driven/persistence/code-repository';
 
 // A level is selected
 export const EXECUTING_AUTHORITY_MISSING_LEVEL_ERROR = (level: string) =>
-  `1 Ontbrekende uitvoerende bestuursniveau voor uitvoerende organisatie van bestuursniveau '${level}'`;
+  `Ontbrekende uitvoerende bestuursniveau: ${level}`;
 export const EXECUTING_AUTHORITY_MISSING_ORGANISATION_ERROR = (level: string) =>
-  `2 Ontbrekende uitvoerende organisatie voor uitvoerend bestuursniveau '${level}'`;
+  `Ontbrekende uitvoerende organisatie met bestuursniveau: ${level}`;
 
 export const COMPETENT_AUTHORITY_MISSING_LEVEL_ERROR = (level: string) =>
-  `3 Ontbrekende uitvoerende bestuursniveau van bestuursniveau '${level}'`;
+  `Ontbrekende uitvoerende bestuursniveau: ${level}`;
 export const COMPETENT_AUTHORITY_MISSING_ORGANISATION_ERROR = (level: string) =>
-  `4 Ontbrekende uitvoerende organisatie voor uitvoerend bestuursniveau '${level}'`;
+  `Ontbrekende uitvoerende organisatie met bestuursniveau: ${level}`;
 export const EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR = `Vlaamse of federale dienstverlening waar het lokaal bestuur geen uitvoerende rol heeft, wordt door de Vlaamse redacteurs aan IPDC toegevoegd. Je hoeft deze informatie niet zelf aan te maken en te onderhouden in LPDC.`;
 
 enum CompetentAuthorityLevels {
