@@ -130,7 +130,7 @@ function createSparql(
   const deleteHeader = `DELETE DATA {\n  ${graphStatement}`;
   const insertHeader = `INSERT DATA {\n  ${graphStatement}`;
 
-  let query = [];
+  const query = [];
 
   // Note: We use separate DELETE (INSERT) queries for each product instance to
   // be removed (tombstoned). Virtuoso can run out of memory when parsing
