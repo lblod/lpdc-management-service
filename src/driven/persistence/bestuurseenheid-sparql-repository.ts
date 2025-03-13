@@ -10,6 +10,7 @@ import { SparqlQuerying } from "./sparql-querying";
 import { NUTS_VERSION, PREFIX, PUBLIC_GRAPH } from "../../../config";
 import { extractResultsFromAllSettled } from "../../../platform/promises";
 import { NotFoundError } from "../../core/domain/shared/lpdc-error";
+import { CompetentAuthorityLevelType, ExecutingAuthorityLevelType } from '../../core/domain/types';
 
 export class BestuurseenheidSparqlRepository
   implements BestuurseenheidRepository
@@ -80,14 +81,17 @@ export class BestuurseenheidSparqlRepository
       (resultSpatials as Promise<unknown>[]).map(
         (r) => new Iri(r["spatialId"].value),
       ),
-      bestuurseenheidQueryResult["competencyLevel"].value,
-      bestuurseenheidQueryResult["executionLevel"].value,
-
+      this.mapCompetentLevelUriToType(
+        bestuurseenheidQueryResult["competencyLevel"].value,
+      ),
+      this.mapExecutionLevelUriToType(
+        bestuurseenheidQueryResult["executionLevel"].value
+      )
     );
   }
 
   mapBestuurseenheidClassificatieUriToCode(
-    classificatieCodeUri: BestuurseenheidClassificatieCodeUri | undefined,
+    classificatieCodeUri: BestuurseenheidClassificatieCodeUri | undefined
   ): BestuurseenheidClassificatieCode | undefined {
     if (!classificatieCodeUri) {
       return undefined;
@@ -96,8 +100,7 @@ export class BestuurseenheidSparqlRepository
     const key: string | undefined = Object.keys(
       BestuurseenheidClassificatieCodeUri,
     ).find(
-      (key) =>
-        BestuurseenheidClassificatieCodeUri[key] === classificatieCodeUri,
+      (key) => BestuurseenheidClassificatieCodeUri[key] === classificatieCodeUri
     );
 
     const classificatieCode = BestuurseenheidClassificatieCode[key];
@@ -128,6 +131,44 @@ export class BestuurseenheidSparqlRepository
 
     return statusCode;
   }
+
+  mapExecutionLevelUriToType(
+    executionLevelUri: string | undefined
+  ): ExecutingAuthorityLevelType {
+    if (!executionLevelUri) return undefined;
+
+    const key: string | undefined = Object.keys(
+      ExecutingAuthorityLevelUri
+    ).find((key) => ExecutingAuthorityLevelUri[key] === executionLevelUri);
+
+    const executionLevel = ExecutingAuthorityLevelType[key];
+    if (!executionLevel) {
+      throw new NotFoundError(
+        `Geen uitvoerend bestuursniveau gevonden voor: ${executionLevelUri}`
+      );
+    }
+
+    return executionLevel;
+  }
+
+  mapCompetentLevelUriToType(
+    competentLevelUri: string | undefined
+  ): CompetentAuthorityLevelType {
+    if (!competentLevelUri) return undefined;
+
+    const key: string | undefined = Object.keys(
+      CompetentAuthorityLevelUri
+    ).find((key) => CompetentAuthorityLevelUri[key] === competentLevelUri);
+
+    const competentLevel = CompetentAuthorityLevelType[key];
+    if (!competentLevel) {
+      throw new NotFoundError(
+        `Geen bevoegd bestuursniveau gevonden voor: ${competentLevelUri}`
+      );
+    }
+
+    return competentLevel;
+  }
 }
 
 export enum BestuurseenheidClassificatieCodeUri {
@@ -157,4 +198,21 @@ export enum BestuurseenheidStatusCodeUri {
   ACTIVE = "http://lblod.data.gift/concepts/63cc561de9188d64ba5840a42ae8f0d6",
   INACTIVE = "http://lblod.data.gift/concepts/d02c4e12bf88d2fdf5123b07f29c9311",
   IN_FORMATION = "http://lblod.data.gift/concepts/abf4fee82019f88cf122f986830621ab",
+}
+
+export enum ExecutingAuthorityLevelUri {
+  LOKAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Lokaal",
+  FEDERAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Federaal",
+  VLAAMS = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Vlaams",
+  EUROPEES = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Europees",
+  PROVINCIAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Provinciaal",
+  DERDEN = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Derden",
+}
+
+export enum CompetentAuthorityLevelUri {
+  LOKAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Lokaal",
+  FEDERAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Federaal",
+  VLAAMS = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Vlaams",
+  EUROPEES = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Europees",
+  PROVINCIAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Provinciaal",
 }

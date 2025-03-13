@@ -8,6 +8,9 @@ import { sparqlEscapeString, sparqlEscapeUri, uuid } from "../../../mu-helper";
 import { Iri } from "../../core/domain/shared/iri";
 import { NS } from "./namespaces";
 import { extractResultsFromAllSettled } from "../../../platform/promises";
+import { NotFoundError } from '../../core/domain/shared/lpdc-error';
+import { CompetentAuthorityLevelType, ExecutingAuthorityLevelType } from '../../core/domain/types';
+import { CompetentAuthorityLevelUri, ExecutingAuthorityLevelUri } from './bestuurseenheid-sparql-repository';
 
 export class CodeSparqlRepository implements CodeRepository {
   protected readonly querying: SparqlQuerying;
@@ -124,35 +127,62 @@ export class CodeSparqlRepository implements CodeRepository {
     ];
   }
 
-  async getExecutionLevelForOvoCode(iri: Iri): Promise<string | undefined> {
-      const executionLevelQuery = `
+  async getAuthorityLevelForOvoCode(iri: Iri, typeLevel: "executionLevel" | "competencyLevel"): Promise<ExecutingAuthorityLevelType | CompetentAuthorityLevelUri | undefined> {
+    const authorityLevelQuery = `
           ${PREFIX.lpdcExt}
 
-          SELECT ?executionLevel WHERE {
+          SELECT ?${typeLevel} WHERE {
             GRAPH <http://mu.semte.ch/graphs/public> {
-              ${sparqlEscapeUri(iri)} lpdcExt:executionLevel ?executionLevel .
+              ${sparqlEscapeUri(iri)} lpdcExt:${typeLevel} ?${typeLevel} .
             }
           }
           LIMIT 1
       `;
 
-      const result = await this.querying.singleRow(executionLevelQuery);
-      return result["executionLevel"].value;
+    const result = await this.querying.singleRow(authorityLevelQuery);
+    if (typeLevel === 'executionLevel') {
+      return this.mapExecutionLevelUriToType(result[typeLevel].value);
+    } else {
+      return this.mapCompetentLevelUriToType(result[typeLevel].value);
+    }
   }
 
-  async getCompetencyLevelForOvoCode(iri: Iri): Promise<string | undefined> {
-      const competencyLevelQuery = `
-          ${PREFIX.lpdcExt}
+  // FIXME: duplicate of bestuurseenheid-sparql-repository.ts functions, need to consolidate in 1 place
+  mapExecutionLevelUriToType(
+    executionLevelUri: string | undefined
+  ): ExecutingAuthorityLevelType {
+    if (!executionLevelUri) return undefined;
 
-          SELECT ?competencyLevel WHERE {
-            GRAPH <http://mu.semte.ch/graphs/public> {
-              ${sparqlEscapeUri(iri)} lpdcExt:competencyLevel ?competencyLevel .
-            }
-          }
-          LIMIT 1
-      `;
+    const key: string | undefined = Object.keys(
+      ExecutingAuthorityLevelUri
+    ).find((key) => ExecutingAuthorityLevelUri[key] === executionLevelUri);
 
-      const result = await this.querying.singleRow(competencyLevelQuery);
-      return result["competencyLevel"].value;
+    const executionLevel = ExecutingAuthorityLevelType[key];
+    if (!executionLevel) {
+      throw new NotFoundError(
+        `Geen uitvoerend bestuursniveau gevonden voor: ${executionLevelUri}`
+      );
+    }
+
+    return executionLevel;
+  }
+
+  mapCompetentLevelUriToType(
+    competentLevelUri: string | undefined
+  ): CompetentAuthorityLevelUri {
+    if (!competentLevelUri) return undefined;
+
+    const key: string | undefined = Object.keys(
+      CompetentAuthorityLevelUri
+    ).find((key) => CompetentAuthorityLevelUri[key] === competentLevelUri);
+
+    const competentLevel = CompetentAuthorityLevelType[key];
+    if (!competentLevel) {
+      throw new NotFoundError(
+        `Geen bevoegd bestuursniveau gevonden voor: ${competentLevelUri}`
+      );
+    }
+
+    return competentLevel;
   }
 }

@@ -22,24 +22,6 @@ export const COMPETENT_AUTHORITY_MISSING_ORGANISATION_ERROR = (level: string) =>
   `Ontbrekende uitvoerende organisatie met bestuursniveau: ${level}`;
 export const EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR = `Vlaamse of federale dienstverlening waar het lokaal bestuur geen uitvoerende rol heeft, wordt door de Vlaamse redacteurs aan IPDC toegevoegd. Je hoeft deze informatie niet zelf aan te maken en te onderhouden in LPDC.`;
 
-enum CompetentAuthorityLevels {
-  LOKAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Lokaal",
-  FEDERAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Federaal",
-  VLAAMS = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Vlaams",
-  EUROPEES = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Europees",
-  PROVINCIAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Provinciaal",
-}
-
-enum ExecutingAuthorityLevels {
-  LOKAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Lokaal",
-  FEDERAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Federaal",
-  VLAAMS = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Vlaams",
-  EUROPEES = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Europees",
-  PROVINCIAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Provinciaal",
-  DERDEN = "https://productencatalogus.data.vlaanderen.be/id/concept/UitvoerendBestuursniveau/Derden",
-}
-
-
 export class ValidateInstanceForUpdateApplicationService {
   private readonly _instanceRepository: InstanceRepository;
   private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
@@ -105,32 +87,13 @@ export class ValidateInstanceForUpdateApplicationService {
     for(const iri of selectedAuthorities){
       let authorityLevel;
       if(iri.isOvoCodeIri){
-        authorityLevel = await this._codeRepository.getExecutionLevelForOvoCode(iri);
+        authorityLevel = await this._codeRepository.getAuthorityLevelForOvoCode(iri, 'executionLevel');
       } else {
         const adminUnit = await this._bestuurseenheidRepository.findById(iri);
         authorityLevel = adminUnit.executionLevel;
       }
 
-      switch (authorityLevel) {
-        case ExecutingAuthorityLevels.LOKAAL:
-          authorityLevels.add(ExecutingAuthorityLevelType.LOKAAL);
-          break;
-        case ExecutingAuthorityLevels.FEDERAAL:
-          authorityLevels.add(ExecutingAuthorityLevelType.FEDERAAL);
-          break;
-        case ExecutingAuthorityLevels.VLAAMS:
-          authorityLevels.add(ExecutingAuthorityLevelType.VLAAMS);
-          break;
-        case ExecutingAuthorityLevels.EUROPEES:
-          authorityLevels.add(ExecutingAuthorityLevelType.EUROPEES);
-          break;
-        case ExecutingAuthorityLevels.PROVINCIAAL:
-          authorityLevels.add(ExecutingAuthorityLevelType.PROVINCIAAL);
-          break;
-        case ExecutingAuthorityLevels.DERDEN:
-          authorityLevels.add(ExecutingAuthorityLevelType.DERDEN);
-          break;
-      }
+      authorityLevels.add(authorityLevel);
     }
     console.log('execution authority levels:', authorityLevels);
 
@@ -171,29 +134,13 @@ export class ValidateInstanceForUpdateApplicationService {
     for(const iri of selectedAuthorities){
       let authorityLevel;
       if(iri.isOvoCodeIri){
-        authorityLevel = await this._codeRepository.getCompetencyLevelForOvoCode(iri);
+        authorityLevel = await this._codeRepository.getAuthorityLevelForOvoCode(iri, "competencyLevel");
       } else {
         const adminUnit = await this._bestuurseenheidRepository.findById(iri);
         authorityLevel = adminUnit.competencyLevel;
       }
 
-      switch (authorityLevel) {
-        case CompetentAuthorityLevels.LOKAAL:
-          authorityLevels.add(CompetentAuthorityLevelType.LOKAAL);
-          break;
-        case CompetentAuthorityLevels.FEDERAAL:
-          authorityLevels.add(CompetentAuthorityLevelType.FEDERAAL);
-          break;
-        case CompetentAuthorityLevels.VLAAMS:
-          authorityLevels.add(CompetentAuthorityLevelType.VLAAMS);
-          break;
-        case CompetentAuthorityLevels.EUROPEES:
-          authorityLevels.add(CompetentAuthorityLevelType.EUROPEES);
-          break;
-        case CompetentAuthorityLevels.PROVINCIAAL:
-          authorityLevels.add(CompetentAuthorityLevelType.PROVINCIAAL);
-          break;
-      }
+      authorityLevels.add(authorityLevel);
     }
     console.log('Competent authority levels:', authorityLevels);
 
