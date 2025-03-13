@@ -33,7 +33,7 @@ export class BestuurseenheidSparqlRepository
                     VALUES ?id {
                         ${sparqlEscapeUri(id)}
                     }
-                    ?id a skos:Concept .
+                    ?id a besluit:Bestuurseenheid .
                     ?id mu:uuid ?uuid .
                     ?id skos:prefLabel ?prefLabel .
                     ?id lpdcExt:executionLevel ?executionLevel .
