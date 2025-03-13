@@ -144,6 +144,9 @@ export class ValidateInstanceForUpdateApplicationService {
 
     // Check if every selected level has a corresponding org with an equal level
     selectedLevels.forEach((level) => {
+      // Exception: skip when 'derden' is filled in as the level, there doesn't need to be a matching org
+      if(level === ExecutingAuthorityLevelType.DERDEN) return;
+
       if (!authorityLevels.has(level)) {
         // a level is selected with no corresponding organisation
         errors.push({ message: EXECUTING_AUTHORITY_MISSING_ORGANISATION_ERROR(level) });
@@ -152,7 +155,7 @@ export class ValidateInstanceForUpdateApplicationService {
 
     // Check if user has *not* selected lokaal or derden
     if(!selectedLevels.includes(ExecutingAuthorityLevelType.LOKAAL) && !selectedLevels.includes(ExecutingAuthorityLevelType.DERDEN)){
-      errors.push({ message: EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR });
+      errors.push({ message: EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR, isBlocking: true });
     }
 
     return errors;
