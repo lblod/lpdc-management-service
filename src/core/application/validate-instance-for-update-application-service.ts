@@ -6,7 +6,6 @@ import { SemanticFormsMapper } from "../port/driven/persistence/semantic-forms-m
 import { ExecutingAuthorityLevelType } from "../domain/types";
 import { AuthorityLevelRepository } from "../port/driven/persistence/authority-level-repository";
 
-// A level is selected
 export const EXECUTING_AUTHORITY_MISSING_LEVEL_ERROR = (level: string) =>
   `Ontbrekende uitvoerende bestuursniveau: ${level}`;
 export const EXECUTING_AUTHORITY_MISSING_ORGANISATION_ERROR = (level: string) =>
