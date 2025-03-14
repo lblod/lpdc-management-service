@@ -138,8 +138,9 @@ export class ValidateInstanceForUpdateApplicationService {
       }
     });
 
-    // Check if user has *not* selected lokaal or derden (blocking)
+    // if the selectedLevels is filled in, check if user has *not* selected lokaal or derden (blocking)
     if (
+      selectedLevels.length > 0 &&
       !selectedLevels.includes(ExecutingAuthorityLevelType.LOKAAL) &&
       !selectedLevels.includes(ExecutingAuthorityLevelType.DERDEN)
     ) {
