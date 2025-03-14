@@ -2,13 +2,9 @@ import { ValidationError } from "./form-application-service";
 import { Iri } from "../domain/shared/iri";
 import { Bestuurseenheid } from "../domain/bestuurseenheid";
 import { InstanceRepository } from "../port/driven/persistence/instance-repository";
-import { BestuurseenheidRepository } from "../port/driven/persistence/bestuurseenheid-repository";
 import { SemanticFormsMapper } from "../port/driven/persistence/semantic-forms-mapper";
-import {
-  ExecutingAuthorityLevelType,
-  CompetentAuthorityLevelType,
-} from "../domain/types";
-import { CodeRepository } from '../port/driven/persistence/code-repository';
+import { ExecutingAuthorityLevelType } from "../domain/types";
+import { AuthorityLevelRepository } from "../port/driven/persistence/authority-level-repository";
 
 // A level is selected
 export const EXECUTING_AUTHORITY_MISSING_LEVEL_ERROR = (level: string) =>
@@ -24,20 +20,17 @@ export const EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR = `Vlaamse of federal
 
 export class ValidateInstanceForUpdateApplicationService {
   private readonly _instanceRepository: InstanceRepository;
-  private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
   private readonly _semanticFormsMapper: SemanticFormsMapper;
-  private readonly _codeRepository: CodeRepository;
+  private readonly _authorityLevelRepository: AuthorityLevelRepository;
 
   constructor(
     instanceRepository: InstanceRepository,
-    bestuurseenheidRepository: BestuurseenheidRepository,
     semanticFormsMapper: SemanticFormsMapper,
-    codeRepository: CodeRepository
+    authorityLevelRepository: AuthorityLevelRepository
   ) {
     this._instanceRepository = instanceRepository;
-    this._bestuurseenheidRepository = bestuurseenheidRepository;
     this._semanticFormsMapper = semanticFormsMapper;
-    this._codeRepository = codeRepository;
+    this._authorityLevelRepository = authorityLevelRepository;
   }
 
   async validate(
@@ -60,16 +53,21 @@ export class ValidateInstanceForUpdateApplicationService {
     );
 
     // Validate competent authorities
-    const competentAuthorityErrors = await this.validateAuthoritiesCompetentLevelMapping(mergedInstance.competentAuthorityLevels, mergedInstance.competentAuthorities);
-    if (competentAuthorityErrors){
+    const competentAuthorityErrors =
+      await this.validateAuthoritiesCompetentLevelMapping(
+        mergedInstance.competentAuthorityLevels,
+        mergedInstance.competentAuthorities
+      );
+    if (competentAuthorityErrors) {
       errorList.push(...competentAuthorityErrors);
     }
 
     // Validate executing authorities
-    const executingAuthorityErrors = await this.validateAuthoritiesExecutionLevelMapping(
-      mergedInstance.executingAuthorityLevels,
-      mergedInstance.executingAuthorities,
-    );
+    const executingAuthorityErrors =
+      await this.validateAuthoritiesExecutionLevelMapping(
+        mergedInstance.executingAuthorityLevels,
+        mergedInstance.executingAuthorities
+      );
     if (executingAuthorityErrors) {
       errorList.push(...executingAuthorityErrors);
     }
@@ -79,46 +77,77 @@ export class ValidateInstanceForUpdateApplicationService {
 
   private async validateAuthoritiesExecutionLevelMapping(
     selectedLevels: string[],
-    selectedAuthorities: Iri[],
+    selectedAuthorities: Iri[]
   ): Promise<ValidationError[]> {
     const errors: ValidationError[] = [];
     const authorityLevels = new Set<string>();
 
-    for(const iri of selectedAuthorities){
-      let authorityLevel;
-      if(iri.isOvoCodeIri){
-        authorityLevel = await this._codeRepository.getAuthorityLevelForOvoCode(iri, 'executionLevel');
-      } else {
-        const adminUnit = await this._bestuurseenheidRepository.findById(iri);
-        authorityLevel = adminUnit.executionLevel;
-      }
+    // Aggregate levels of selected authorities, if any authorities are selected
+    if (selectedAuthorities.length > 0) {
+      for (const iri of selectedAuthorities) {
+        const authorityLevel =
+          await this._authorityLevelRepository.getAuthorityLevel(
+            iri,
+            "executionLevel"
+          );
 
-      authorityLevels.add(authorityLevel);
+        authorityLevels.add(authorityLevel);
+
+        // Check if we have authorities, but no levels (non-blocking)
+        if (selectedLevels.length === 0) {
+          errors.push({
+            message: EXECUTING_AUTHORITY_MISSING_LEVEL_ERROR(authorityLevel),
+            isBlocking: false,
+          });
+        }
+      }
+      console.log("execution authority levels:", authorityLevels);
     }
-    console.log('execution authority levels:', authorityLevels);
 
-    // Check if every selected org has a corresponding level
-    authorityLevels.forEach((level) => {
-      if (!selectedLevels.includes(level)) {
-        // an organisation is selected, with no corresponding level
-        errors.push({ message: EXECUTING_AUTHORITY_MISSING_LEVEL_ERROR(level) });
-      }
-    });
+    // If both levels and authorities are selected: check if every selected org has a corresponding level
+    if (selectedLevels.length > 0 && selectedAuthorities.length > 0) {
+      authorityLevels.forEach((level) => {
+        if (!selectedLevels.includes(level)) {
+          // an organisation is selected, with no corresponding level
+          errors.push({
+            message: EXECUTING_AUTHORITY_MISSING_LEVEL_ERROR(level),
+            isBlocking: true,
+          });
+        }
+      });
+    }
 
     // Check if every selected level has a corresponding org with an equal level
     selectedLevels.forEach((level) => {
       // Exception: skip when 'derden' is filled in as the level, there doesn't need to be a matching org
-      if(level === ExecutingAuthorityLevelType.DERDEN) return;
+      if (level === ExecutingAuthorityLevelType.DERDEN) return;
 
-      if (!authorityLevels.has(level)) {
-        // a level is selected with no corresponding organisation
-        errors.push({ message: EXECUTING_AUTHORITY_MISSING_ORGANISATION_ERROR(level) });
+      // Check if we have levels, but no authorities (non-blocking)
+      if (selectedAuthorities.length === 0) {
+        errors.push({
+          message: EXECUTING_AUTHORITY_MISSING_ORGANISATION_ERROR(level),
+          isBlocking: false,
+        });
+      } else {
+        if (!authorityLevels.has(level)) {
+          // a level is selected with no corresponding organisation
+          errors.push({
+            message: EXECUTING_AUTHORITY_MISSING_ORGANISATION_ERROR(level),
+            isBlocking: true,
+          });
+        }
       }
     });
 
-    // Check if user has *not* selected lokaal or derden
-    if(!selectedLevels.includes(ExecutingAuthorityLevelType.LOKAAL) && !selectedLevels.includes(ExecutingAuthorityLevelType.DERDEN)){
-      errors.push({ message: EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR, isBlocking: true });
+    // Check if user has *not* selected lokaal or derden (blocking)
+    if (
+      !selectedLevels.includes(ExecutingAuthorityLevelType.LOKAAL) &&
+      !selectedLevels.includes(ExecutingAuthorityLevelType.DERDEN)
+    ) {
+      errors.push({
+        message: EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR,
+        isBlocking: true,
+      });
     }
 
     return errors;
@@ -126,37 +155,62 @@ export class ValidateInstanceForUpdateApplicationService {
 
   private async validateAuthoritiesCompetentLevelMapping(
     selectedLevels: string[],
-    selectedAuthorities: Iri[],
+    selectedAuthorities: Iri[]
   ): Promise<ValidationError[]> {
     const errors: ValidationError[] = [];
     const authorityLevels = new Set<string>();
 
-    for(const iri of selectedAuthorities){
-      let authorityLevel;
-      if(iri.isOvoCodeIri){
-        authorityLevel = await this._codeRepository.getAuthorityLevelForOvoCode(iri, "competencyLevel");
-      } else {
-        const adminUnit = await this._bestuurseenheidRepository.findById(iri);
-        authorityLevel = adminUnit.competencyLevel;
-      }
+    // Aggreggate levels of selected authorities, if any authorities are selected
+    if (selectedAuthorities.length > 0) {
+      for (const iri of selectedAuthorities) {
+        const authorityLevel =
+          await this._authorityLevelRepository.getAuthorityLevel(
+            iri,
+            "competencyLevel"
+          );
 
-      authorityLevels.add(authorityLevel);
+        authorityLevels.add(authorityLevel);
+
+        // Check if we have authorities, but no levels (non-blocking)
+        if (selectedLevels.length === 0) {
+          errors.push({
+            message: COMPETENT_AUTHORITY_MISSING_LEVEL_ERROR(authorityLevel),
+            isBlocking: false,
+          });
+        }
+      }
+      console.log("Competent authority levels:", authorityLevels);
     }
-    console.log('Competent authority levels:', authorityLevels);
 
-    // Check if every selected org has a corresponding level
-    authorityLevels.forEach((level) => {
-      if (!selectedLevels.includes(level)) {
-        // an organisation is selected, with no corresponding level
-        errors.push({ message: COMPETENT_AUTHORITY_MISSING_LEVEL_ERROR(level) });
-      }
-    });
+    // If both levels and authorities are selected: check if every selected org has a corresponding level
+    if (selectedLevels.length > 0 && selectedAuthorities.length > 0) {
+      authorityLevels.forEach((level) => {
+        if (!selectedLevels.includes(level)) {
+          // an organisation is selected, with no corresponding level
+          errors.push({
+            message: COMPETENT_AUTHORITY_MISSING_LEVEL_ERROR(level),
+            isBlocking: true,
+          });
+        }
+      });
+    }
 
     // Check if every selected level has a corresponding org with an equal level
     selectedLevels.forEach((level) => {
-      if (!authorityLevels.has(level)) {
-        // a level is selected with no corresponding organisation
-        errors.push({ message: COMPETENT_AUTHORITY_MISSING_ORGANISATION_ERROR(level) });
+      // Check is we have levels, but no authorities (non-blocking)
+      if (selectedAuthorities.length === 0) {
+        errors.push({
+          message: COMPETENT_AUTHORITY_MISSING_ORGANISATION_ERROR(level),
+          isBlocking: false,
+        });
+      } else {
+        if (!authorityLevels.has(level)) {
+          // a level is selected with no corresponding organisation
+          errors.push({
+            message: COMPETENT_AUTHORITY_MISSING_ORGANISATION_ERROR(level),
+            isBlocking: true,
+          });
+        }
       }
     });
 
