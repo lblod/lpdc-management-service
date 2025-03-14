@@ -53,6 +53,7 @@ import { AdressenRegisterFetcher } from "./src/driven/external/adressen-register
 import { ContactInfoOptionsSparqlRepository } from "./src/driven/persistence/contact-info-options-sparql-repository";
 import { ConceptSnapshotProcessorApplicationService } from "./src/core/application/concept-snapshot-processor-application-service";
 import { SpatialSparqlRepository } from "./src/driven/persistence/spatial-sparql-repository";
+import { AuthorityLevelSparqlRepository } from './src/driven/persistence/authority-level-sparql-repository';
 
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
 //      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
@@ -71,6 +72,7 @@ const conceptDisplayConfigurationRepository =
 const bestuurseenheidRegistrationCodeFetcher =
   new BestuurseenheidRegistrationCodeThroughSubjectPageOrApiFetcher();
 const codeRepository = new CodeSparqlRepository();
+const authorityLevelRepository = new AuthorityLevelSparqlRepository();
 const instanceRepository = new InstanceSparqlRepository();
 const formDefinitionRepository = new FormDefinitionFileRepository();
 const formalInformalChoiceRepository =
@@ -141,9 +143,8 @@ const validateInstanceForPublishApplicationService =
 const validateInstanceForUpdateApplicationSerivce =
   new ValidateInstanceForUpdateApplicationService(
     instanceRepository,
-    bestuurseenheidRepository,
     semanticFormsMapper,
-    codeRepository
+    authorityLevelRepository
   );
 
 const linkConceptToInstanceDomainService =

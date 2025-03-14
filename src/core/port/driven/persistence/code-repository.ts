@@ -11,8 +11,6 @@ export interface CodeRepository {
   ): Promise<void>;
 
   loadIPDCOrganisatiesTailoredInTurtleFormat(): Promise<string[]>;
-
-  getAuthorityLevelForOvoCode(iri: Iri, typeLevel: "executionLevel" | "competencyLevel"): Promise<string | undefined>;
 }
 
 export enum CodeSchema {

@@ -2,7 +2,6 @@ import { Iri } from "./shared/iri";
 import { SessionRoleType } from "./session";
 import { requiredValue, requireNoDuplicates } from "./shared/invariant";
 import { asSortedArray } from "./shared/collections-helper";
-import { CompetentAuthorityLevelType, ExecutingAuthorityLevelType } from './types';
 
 export class Bestuurseenheid {
   public static readonly abb = new Iri(
@@ -12,8 +11,6 @@ export class Bestuurseenheid {
   private readonly _id: Iri;
   private readonly _uuid: string;
   private readonly _prefLabel: string;
-  private readonly _competencyLevel: CompetentAuthorityLevelType;
-  private readonly  _executionLevel: ExecutingAuthorityLevelType;
   private readonly _classificatieCode:
     | BestuurseenheidClassificatieCode
     | undefined;
@@ -27,14 +24,10 @@ export class Bestuurseenheid {
     classificatieCode: BestuurseenheidClassificatieCode | undefined,
     status: BestuurseenheidStatusCode | undefined,
     spatials: Iri[],
-    competencyLevel: CompetentAuthorityLevelType | undefined,
-    executionLevel: ExecutingAuthorityLevelType | undefined,
   ) {
     this._id = requiredValue(id, "id");
     this._uuid = requiredValue(uuid, "uuid");
     this._prefLabel = requiredValue(prefLabel, "prefLabel");
-    this._competencyLevel = competencyLevel;
-    this._executionLevel = executionLevel;
     this._classificatieCode = id.equals(Bestuurseenheid.abb)
       ? classificatieCode
       : requiredValue(classificatieCode, "classificatieCode");
@@ -55,14 +48,6 @@ export class Bestuurseenheid {
 
   get prefLabel(): string {
     return this._prefLabel;
-  }
-
-  get competencyLevel(): CompetentAuthorityLevelType {
-    return this._competencyLevel;
-  }
-
-  get executionLevel(): ExecutingAuthorityLevelType {
-    return this._executionLevel;
   }
 
   get classificatieCode(): BestuurseenheidClassificatieCode | undefined {
