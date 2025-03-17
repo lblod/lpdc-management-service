@@ -92,13 +92,8 @@ export class ValidateInstanceForUpdateApplicationService {
 
         authorityLevels.add(authorityLevel);
 
-        // Check if we have authorities, but no levels (non-blocking)
-        if (selectedLevels.length === 0) {
-          errors.push({
-            message: EXECUTING_AUTHORITY_MISSING_LEVEL_ERROR(authorityLevel),
-            isBlocking: false,
-          });
-        }
+        // Check if we have authorities, but no levels (to be used later, no popup right now to improve UX)
+        // if (selectedLevels.length === 0)
       }
       console.log("execution authority levels:", authorityLevels);
     }
@@ -121,21 +116,16 @@ export class ValidateInstanceForUpdateApplicationService {
       // Exception: skip when 'derden' is filled in as the level, there doesn't need to be a matching org
       if (level === ExecutingAuthorityLevelType.DERDEN) return;
 
-      // Check if we have levels, but no authorities (non-blocking)
-      if (selectedAuthorities.length === 0) {
+      if (selectedAuthorities.length > 0 && !authorityLevels.has(level)) {
+        // a level is selected with no corresponding organisation
         errors.push({
           message: EXECUTING_AUTHORITY_MISSING_ORGANISATION_ERROR(level),
-          isBlocking: false,
+          isBlocking: true,
         });
-      } else {
-        if (!authorityLevels.has(level)) {
-          // a level is selected with no corresponding organisation
-          errors.push({
-            message: EXECUTING_AUTHORITY_MISSING_ORGANISATION_ERROR(level),
-            isBlocking: true,
-          });
-        }
       }
+
+      // Check if we have levels, but no authorities (to be used later, no popup right now to improve UX)
+      // if (selectedAuthorities.length === 0)
     });
 
     // if the selectedLevels is filled in, check if user has *not* selected lokaal or derden (blocking)
@@ -171,13 +161,8 @@ export class ValidateInstanceForUpdateApplicationService {
 
         authorityLevels.add(authorityLevel);
 
-        // Check if we have authorities, but no levels (non-blocking)
-        if (selectedLevels.length === 0) {
-          errors.push({
-            message: COMPETENT_AUTHORITY_MISSING_LEVEL_ERROR(authorityLevel),
-            isBlocking: false,
-          });
-        }
+        // Check if we have authorities, but no levels (to be used later, no popup right now to improve UX)
+        // if (selectedLevels.length === 0)
       }
       console.log("Competent authority levels:", authorityLevels);
     }
@@ -197,21 +182,16 @@ export class ValidateInstanceForUpdateApplicationService {
 
     // Check if every selected level has a corresponding org with an equal level
     selectedLevels.forEach((level) => {
-      // Check is we have levels, but no authorities (non-blocking)
-      if (selectedAuthorities.length === 0) {
+      if (selectedAuthorities.length > 0 && !authorityLevels.has(level)) {
+        // a level is selected with no corresponding organisation
         errors.push({
           message: COMPETENT_AUTHORITY_MISSING_ORGANISATION_ERROR(level),
-          isBlocking: false,
+          isBlocking: true,
         });
-      } else {
-        if (!authorityLevels.has(level)) {
-          // a level is selected with no corresponding organisation
-          errors.push({
-            message: COMPETENT_AUTHORITY_MISSING_ORGANISATION_ERROR(level),
-            isBlocking: true,
-          });
-        }
       }
+
+      // Check is we have levels, but no authorities (to be used later, no popup right now to improve UX)
+      // if (selectedAuthorities.length === 0)
     });
 
     return errors;
