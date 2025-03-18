@@ -1,6 +1,6 @@
 import { ValidationError } from "./form-application-service";
 import { Iri } from "../domain/shared/iri";
-import { Bestuurseenheid } from "../domain/bestuurseenheid";
+import { Bestuurseenheid, BestuurseenheidClassificatieCode } from "../domain/bestuurseenheid";
 import { InstanceRepository } from "../port/driven/persistence/instance-repository";
 import { SemanticFormsMapper } from "../port/driven/persistence/semantic-forms-mapper";
 import { ExecutingAuthorityLevelType } from "../domain/types";
@@ -15,7 +15,8 @@ export const COMPETENT_AUTHORITY_MISSING_LEVEL_ERROR = (level: string) =>
   `Ontbrekende uitvoerende bestuursniveau: ${level}`;
 export const COMPETENT_AUTHORITY_MISSING_ORGANISATION_ERROR = (level: string) =>
   `Ontbrekende uitvoerende organisatie met bestuursniveau: ${level}`;
-export const EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR = `Vlaamse of federale dienstverlening waar het lokaal bestuur geen uitvoerende rol heeft, wordt door de Vlaamse redacteurs aan IPDC toegevoegd. Je hoeft deze informatie niet zelf aan te maken en te onderhouden in LPDC.`;
+export const EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR = `Dienstverlening van bovenlokale overheden kunnen niet worden toegevoegd aan LPDC. Het uitvoerend niveau hoort steeds lokale overheid te bevatten.`;
+export const EXECUTING_AUTHORITY_MISSING_PROVINCIAL_LEVEL_ERROR = `Dienstverlening van bovenlokale overheden kunnen niet worden toegevoegd aan LPDC. Het uitvoerend niveau hoort steeds provinciale overheid te bevatten.`;
 
 export class ValidateInstanceForUpdateApplicationService {
   private readonly _instanceRepository: InstanceRepository;
@@ -65,7 +66,8 @@ export class ValidateInstanceForUpdateApplicationService {
     const executingAuthorityErrors =
       await this.validateAuthoritiesExecutionLevelMapping(
         mergedInstance.executingAuthorityLevels,
-        mergedInstance.executingAuthorities
+        mergedInstance.executingAuthorities,
+        bestuurseenheid
       );
     if (executingAuthorityErrors) {
       errorList.push(...executingAuthorityErrors);
@@ -76,7 +78,8 @@ export class ValidateInstanceForUpdateApplicationService {
 
   private async validateAuthoritiesExecutionLevelMapping(
     selectedLevels: string[],
-    selectedAuthorities: Iri[]
+    selectedAuthorities: Iri[],
+    bestuurseenheid: Bestuurseenheid
   ): Promise<ValidationError[]> {
     const errors: ValidationError[] = [];
     const authorityLevels = new Set<string>();
@@ -128,16 +131,31 @@ export class ValidateInstanceForUpdateApplicationService {
       // if (selectedAuthorities.length === 0)
     });
 
-    // if the selectedLevels is filled in, check if user has *not* selected lokaal or derden (blocking)
-    if (
-      selectedLevels.length > 0 &&
-      !selectedLevels.includes(ExecutingAuthorityLevelType.LOKAAL) &&
-      !selectedLevels.includes(ExecutingAuthorityLevelType.DERDEN)
-    ) {
-      errors.push({
-        message: EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR,
-        isBlocking: true,
-      });
+    // Check if user's bestuurseenheid is Provincie
+    if(bestuurseenheid.classificatieCode === BestuurseenheidClassificatieCode.PROVINCIE){
+      // if the selectedLevels is filled in, check if user has *not* selected provinciaal or derden (blocking)
+      if (
+        selectedLevels.length > 0 &&
+        !selectedLevels.includes(ExecutingAuthorityLevelType.PROVINCIAAL) &&
+        !selectedLevels.includes(ExecutingAuthorityLevelType.DERDEN)
+      ) {
+        errors.push({
+          message: EXECUTING_AUTHORITY_MISSING_PROVINCIAL_LEVEL_ERROR,
+          isBlocking: true,
+        });
+      }
+    } else {
+      // if the selectedLevels is filled in, check if user has *not* selected lokaal or derden (blocking)
+      if (
+        selectedLevels.length > 0 &&
+        !selectedLevels.includes(ExecutingAuthorityLevelType.LOKAAL) &&
+        !selectedLevels.includes(ExecutingAuthorityLevelType.DERDEN)
+      ) {
+        errors.push({
+          message: EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR,
+          isBlocking: true,
+        });
+      }
     }
 
     return errors;

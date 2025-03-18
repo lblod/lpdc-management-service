@@ -140,7 +140,7 @@ const validateInstanceForPublishApplicationService =
     codeRepository,
   );
 
-const validateInstanceForUpdateApplicationSerivce =
+const validateInstanceForUpdateApplicationService =
   new ValidateInstanceForUpdateApplicationService(
     instanceRepository,
     semanticFormsMapper,
@@ -742,7 +742,7 @@ async function validateForUpdate(req: Request, res: Response) {
     session.bestuurseenheidId,
   );
 
-  const errors = await validateInstanceForUpdateApplicationSerivce.validate(
+  const errors = await validateInstanceForUpdateApplicationService.validate(
     bestuurseenheid,
     instanceId,
     delta.removals,
