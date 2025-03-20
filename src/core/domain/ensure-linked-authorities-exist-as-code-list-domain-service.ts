@@ -7,6 +7,11 @@ import { Iri } from "./shared/iri";
 import { Logger } from "../../../platform/logger";
 import { WEGWIJS_URL } from "../../../config";
 
+type CodeListData = {
+  uri?: Iri;
+  prefLabel?: string;
+};
+
 export class EnsureLinkedAuthoritiesExistAsCodeListDomainService {
   private readonly _bestuurseenheidRegistrationCodeFetcher: BestuurseenheidRegistrationCodeFetcher;
   private readonly _codeRepository: CodeRepository;
@@ -23,6 +28,21 @@ export class EnsureLinkedAuthoritiesExistAsCodeListDomainService {
     this._bestuurseenheidRegistrationCodeFetcher =
       bestuurseenheidRegistrationCodeFetcher;
     this._logger = logger ?? this._logger;
+  }
+
+  async getLinkedAuthority(iri: Iri) {
+    return await this._bestuurseenheidRegistrationCodeFetcher.fetchOrgRegistryCodelistEntry(
+      iri.value,
+    );
+  }
+
+  async addAuthoritiesToCodeList(authorities: CodeListData[]) {
+    authorities
+      .filter(
+        (authority) =>
+          authority.uri !== undefined && authority.prefLabel !== undefined,
+      )
+      .forEach(async (authority) => await this.insertCodeListData(authority));
   }
 
   async ensureLinkedAuthoritiesExistAsCodeList(
@@ -44,10 +64,7 @@ export class EnsureLinkedAuthoritiesExistAsCodeListDomainService {
     }
   }
 
-  private async insertCodeListData(codeListData: {
-    uri?: Iri;
-    prefLabel?: string;
-  }): Promise<void> {
+  private async insertCodeListData(codeListData: CodeListData): Promise<void> {
     return this._codeRepository.save(
       CodeSchema.IPDCOrganisaties,
       codeListData.uri,
