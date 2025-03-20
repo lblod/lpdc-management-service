@@ -1,20 +1,17 @@
 import { ValidationError } from "./form-application-service";
 import { Iri } from "../domain/shared/iri";
-import { Bestuurseenheid, BestuurseenheidClassificatieCode } from "../domain/bestuurseenheid";
+import {
+  Bestuurseenheid,
+  BestuurseenheidClassificatieCode,
+} from "../domain/bestuurseenheid";
 import { InstanceRepository } from "../port/driven/persistence/instance-repository";
 import { SemanticFormsMapper } from "../port/driven/persistence/semantic-forms-mapper";
 import { ExecutingAuthorityLevelType } from "../domain/types";
 import { AuthorityLevelRepository } from "../port/driven/persistence/authority-level-repository";
 
-export const EXECUTING_AUTHORITY_MISSING_LEVEL_ERROR = (level: string) =>
-  `Ontbrekende uitvoerende bestuursniveau: ${level}`;
-export const EXECUTING_AUTHORITY_MISSING_ORGANISATION_ERROR = (level: string) =>
-  `Ontbrekende uitvoerende organisatie met bestuursniveau: ${level}`;
+export const EXECUTING_AUTHORITY_MISMATCH_ERROR = `Het uitvoerend bestuursniveau komt niet overeen met de geselecteerde overheid`;
 
-export const COMPETENT_AUTHORITY_MISSING_LEVEL_ERROR = (level: string) =>
-  `Ontbrekende uitvoerende bestuursniveau: ${level}`;
-export const COMPETENT_AUTHORITY_MISSING_ORGANISATION_ERROR = (level: string) =>
-  `Ontbrekende uitvoerende organisatie met bestuursniveau: ${level}`;
+export const COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR = `Het bevoegd bestuursniveau komt niet overeen met de geselecteerde overheid`;
 export const EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR = `Dienstverlening van bovenlokale overheden kunnen niet worden toegevoegd aan LPDC. Het uitvoerend niveau hoort steeds lokale overheid te bevatten.`;
 export const EXECUTING_AUTHORITY_MISSING_PROVINCIAL_LEVEL_ERROR = `Dienstverlening van bovenlokale overheden kunnen niet worden toegevoegd aan LPDC. Het uitvoerend niveau hoort steeds provinciale overheid te bevatten.`;
 
@@ -107,7 +104,7 @@ export class ValidateInstanceForUpdateApplicationService {
         if (!selectedLevels.includes(level)) {
           // an organisation is selected, with no corresponding level
           errors.push({
-            message: EXECUTING_AUTHORITY_MISSING_LEVEL_ERROR(level),
+            message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
             isBlocking: true,
           });
         }
@@ -122,7 +119,7 @@ export class ValidateInstanceForUpdateApplicationService {
       if (selectedAuthorities.length > 0 && !authorityLevels.has(level)) {
         // a level is selected with no corresponding organisation
         errors.push({
-          message: EXECUTING_AUTHORITY_MISSING_ORGANISATION_ERROR(level),
+          message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
           isBlocking: true,
         });
       }
@@ -191,7 +188,7 @@ export class ValidateInstanceForUpdateApplicationService {
         if (!selectedLevels.includes(level)) {
           // an organisation is selected, with no corresponding level
           errors.push({
-            message: COMPETENT_AUTHORITY_MISSING_LEVEL_ERROR(level),
+            message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
             isBlocking: true,
           });
         }
@@ -203,7 +200,7 @@ export class ValidateInstanceForUpdateApplicationService {
       if (selectedAuthorities.length > 0 && !authorityLevels.has(level)) {
         // a level is selected with no corresponding organisation
         errors.push({
-          message: COMPETENT_AUTHORITY_MISSING_ORGANISATION_ERROR(level),
+          message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
           isBlocking: true,
         });
       }
