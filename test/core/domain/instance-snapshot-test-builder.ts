@@ -23,7 +23,6 @@ import {
   buildBestuurseenheidIri,
   buildConceptIri,
   buildInstanceSnapshotIri,
-  buildNutsCodeIri,
 } from "./iri-test-builder";
 import { BestuurseenheidTestBuilder } from "./bestuurseenheid-test-builder";
 import {
@@ -60,6 +59,7 @@ import {
   anotherFullLegalResourceForInstanceSnapshot,
 } from "./legal-resource-test-builder";
 import { InstanceBuilder } from "../../../src/core/domain/instance";
+import { SpatialTestBuilder } from "./spatial-test-builder";
 
 export function aMinimalInstanceSnapshot(): InstanceSnapshotTestBuilder {
   const uniqueId = uuid();
@@ -213,9 +213,9 @@ export class InstanceSnapshotTestBuilder {
     CompetentAuthorityLevelType.VLAAMS,
   ];
   public static readonly COMPETENT_AUTHORITIES = [
-    BestuurseenheidTestBuilder.ASSENEDE_IRI,
     BestuurseenheidTestBuilder.PEPINGEN_IRI,
     BestuurseenheidTestBuilder.HOUTHALEN_HELCHTEREN_IRI,
+    BestuurseenheidTestBuilder.BORGLOON_IRI,
   ];
   public static readonly EXECUTING_AUTHORITY_LEVELS = [
     ExecutingAuthorityLevelType.DERDEN,
@@ -223,7 +223,7 @@ export class InstanceSnapshotTestBuilder {
     ExecutingAuthorityLevelType.FEDERAAL,
   ];
   public static readonly EXECUTING_AUTHORITIES = [
-    BestuurseenheidTestBuilder.BORGLOON_IRI,
+    BestuurseenheidTestBuilder.PEPINGEN_IRI,
     BestuurseenheidTestBuilder.OUD_HEVERLEE_IRI,
   ];
 
@@ -250,9 +250,8 @@ export class InstanceSnapshotTestBuilder {
   ];
 
   public static readonly SPATIALS = [
-    buildNutsCodeIri(45700),
-    buildNutsCodeIri(52000),
-    buildNutsCodeIri(98786),
+    SpatialTestBuilder.PEPINGEN_SPATIAL_IRI,
+    SpatialTestBuilder.OUD_HEVERLEE_SPATIAL_IRI,
   ];
 
   public static readonly LEGAL_RESOURCES = [

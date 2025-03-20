@@ -297,7 +297,6 @@ describe("InstanceSnapshotRepository", () => {
         `${sparqlEscapeUri(instanceSnapshotId)} <http://www.w3.org/ns/prov#generatedAtTime> """${InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.SPATIALS[0].value)}`,
         `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.SPATIALS[1].value)}`,
-        `${sparqlEscapeUri(instanceSnapshotId)} <http://purl.org/dc/terms/spatial> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.SPATIALS[2].value)}`,
 
         `${sparqlEscapeUri(instanceSnapshotId)} <http://data.europa.eu/m8g/hasLegalResource> ${sparqlEscapeUri(InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id)}`,
         `<${InstanceSnapshotTestBuilder.LEGAL_RESOURCES[0].id}> a <http://data.europa.eu/eli/ontology#LegalResource>`,
