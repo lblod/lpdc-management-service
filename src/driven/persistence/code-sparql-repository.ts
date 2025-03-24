@@ -19,7 +19,7 @@ export class CodeSparqlRepository implements CodeRepository {
   async exists(schema: CodeSchema, id: Iri): Promise<boolean> {
     const query = `
         ${PREFIX.skos}
-        
+
         ASK {
             GRAPH ?g {
                 ${sparqlEscapeUri(id)} a skos:Concept;
@@ -67,10 +67,10 @@ export class CodeSparqlRepository implements CodeRepository {
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                   ?bestuurseenheid a besluit:Bestuurseenheid ;
                     skos:prefLabel ?bestuurseenheidLabel .
-            
+
                   ?bestuurseenheid besluit:classificatie ?bestuurseenheidClassificatie .
                   ?bestuurseenheidClassificatie skos:prefLabel ?bestuurseenheidClassificatieLabel .
-            
+
                   BIND(CONCAT(?bestuurseenheidLabel, " (", ?bestuurseenheidClassificatieLabel, ")") as ?newLabel)
                }
             }
@@ -80,13 +80,13 @@ export class CodeSparqlRepository implements CodeRepository {
             ${PREFIX.skos}
             ${PREFIX.dvcs}
             ${PREFIX.rdfs}
-        
+
             CONSTRUCT {
               ?s ?p ?o ;
                 skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored> .
             }
             WHERE {
-                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {            
+                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                   ?s a skos:Concept ;
                     skos:inScheme dvcs:IPDCOrganisaties ;
                 rdfs:seeAlso ${sparqlEscapeUri(WEGWIJS_URL)} ;
