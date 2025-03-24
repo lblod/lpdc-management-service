@@ -21,6 +21,7 @@ import { InstanceBuilder } from "../../../src/core/domain/instance";
 import { VersionedLdesSnapshotSparqlRepository } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 import { InstanceSparqlRepository } from "../../../src/driven/persistence/instance-sparql-repository";
 import spyOn = jest.spyOn;
+import { SpatialSparqlRepository } from "../../../src/driven/persistence/spatial-sparql-repository";
 
 describe("InstanceSnapshotProcessorApplicationService", () => {
   beforeEach(async () => {
@@ -37,6 +38,9 @@ describe("InstanceSnapshotProcessorApplicationService", () => {
   const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
   const conceptDisplayConfigurationRepository =
     new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+
+  const spatialRepository = new SpatialSparqlRepository(TEST_SPARQL_ENDPOINT);
+
   const deleteInstanceDomainService = new DeleteInstanceDomainService(
     instanceRepository,
     conceptDisplayConfigurationRepository,
@@ -66,6 +70,8 @@ describe("InstanceSnapshotProcessorApplicationService", () => {
       linkedAuthoritiesDomainService,
       instanceSnapshotProcessingAuthorizationRepository,
       bestuurseenheidRepository,
+      spatialRepository,
+      codeRepository,
     );
   const versionedLdesSnapshotRepository =
     new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
