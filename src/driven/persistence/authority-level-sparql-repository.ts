@@ -19,7 +19,7 @@ export class AuthorityLevelSparqlRepository
 
   async getAuthorityLevel(iri: Iri, typeLevel: "executionLevel" | "competencyLevel"): Promise<ExecutingAuthorityLevelType | CompetentAuthorityLevelType | undefined> {
     const authorityLevelQuery = `
-          ${PREFIX.lpdcExt}
+          ${PREFIX.lpdc}
 
           SELECT ?${typeLevel} WHERE {
             GRAPH <http://mu.semte.ch/graphs/public> {
