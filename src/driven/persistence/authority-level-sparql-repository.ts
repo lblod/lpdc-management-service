@@ -23,7 +23,7 @@ export class AuthorityLevelSparqlRepository
 
           SELECT ?${typeLevel} WHERE {
             GRAPH <http://mu.semte.ch/graphs/public> {
-              ${sparqlEscapeUri(iri)} lpdcExt:${typeLevel} ?${typeLevel} .
+              ${sparqlEscapeUri(iri)} lpdc:${typeLevel} ?${typeLevel} .
             }
           }
           LIMIT 1
