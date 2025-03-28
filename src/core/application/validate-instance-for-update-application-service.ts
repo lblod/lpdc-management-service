@@ -87,7 +87,7 @@ export class ValidateInstanceForUpdateApplicationService {
         const authorityLevel =
           await this._authorityLevelRepository.getAuthorityLevel(
             iri,
-            "executionLevel"
+            "organisationExecutingLevel"
           );
 
         authorityLevels.add(authorityLevel);
@@ -171,7 +171,7 @@ export class ValidateInstanceForUpdateApplicationService {
         const authorityLevel =
           await this._authorityLevelRepository.getAuthorityLevel(
             iri,
-            "competencyLevel"
+            "organisationCompetencyLevel"
           );
 
         authorityLevels.add(authorityLevel);

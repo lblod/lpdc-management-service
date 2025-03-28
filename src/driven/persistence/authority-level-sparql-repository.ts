@@ -17,7 +17,7 @@ export class AuthorityLevelSparqlRepository
     this.querying = new SparqlQuerying(endpoint);
   }
 
-  async getAuthorityLevel(iri: Iri, typeLevel: "executionLevel" | "competencyLevel"): Promise<ExecutingAuthorityLevelType | CompetentAuthorityLevelType | undefined> {
+  async getAuthorityLevel(iri: Iri, typeLevel: "organisationExecutingLevel" | "organisationCompetencyLevel"): Promise<ExecutingAuthorityLevelType | CompetentAuthorityLevelType | undefined> {
     const authorityLevelQuery = `
           ${PREFIX.lpdc}
 
@@ -30,7 +30,7 @@ export class AuthorityLevelSparqlRepository
       `;
 
     const result = await this.querying.singleRow(authorityLevelQuery);
-    if (typeLevel === 'executionLevel') {
+    if (typeLevel === 'organisationExecutingLevel') {
       return this.mapExecutionLevelUriToType(result[typeLevel].value);
     } else {
       return this.mapCompetentLevelUriToType(result[typeLevel].value);
