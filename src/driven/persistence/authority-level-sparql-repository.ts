@@ -30,6 +30,9 @@ export class AuthorityLevelSparqlRepository
       `;
 
     const result = await this.querying.singleRow(authorityLevelQuery);
+
+    if (!result || !result[typeLevel]) return undefined;
+
     if (typeLevel === 'organizationExecutingLevel') {
       return this.mapExecutionLevelUriToType(result[typeLevel].value);
     } else {

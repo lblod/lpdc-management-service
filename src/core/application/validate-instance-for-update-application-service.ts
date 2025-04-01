@@ -101,6 +101,9 @@ export class ValidateInstanceForUpdateApplicationService {
     // If both levels and authorities are selected: check if every selected org has a corresponding level
     if (selectedLevels.length > 0 && selectedAuthorities.length > 0) {
       authorityLevels.forEach((level) => {
+        // Skip check if no level is found
+        if (level === undefined) return;
+
         if (!selectedLevels.includes(level)) {
           // an organisation is selected, with no corresponding level
           errors.push({
@@ -116,7 +119,7 @@ export class ValidateInstanceForUpdateApplicationService {
       // Exception: skip when 'derden' is filled in as the level, there doesn't need to be a matching org
       if (level === ExecutingAuthorityLevelType.DERDEN) return;
 
-      if (selectedAuthorities.length > 0 && !authorityLevels.has(level)) {
+      if (authorityLevels.size > 0 && !authorityLevels.has(level) && !authorityLevels.has(undefined)) {
         // a level is selected with no corresponding organisation
         errors.push({
           message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
@@ -185,6 +188,9 @@ export class ValidateInstanceForUpdateApplicationService {
     // If both levels and authorities are selected: check if every selected org has a corresponding level
     if (selectedLevels.length > 0 && selectedAuthorities.length > 0) {
       authorityLevels.forEach((level) => {
+        // Skip check if no level is found
+        if (level === undefined) return;
+
         if (!selectedLevels.includes(level)) {
           // an organisation is selected, with no corresponding level
           errors.push({
@@ -197,7 +203,10 @@ export class ValidateInstanceForUpdateApplicationService {
 
     // Check if every selected level has a corresponding org with an equal level
     selectedLevels.forEach((level) => {
-      if (selectedAuthorities.length > 0 && !authorityLevels.has(level)) {
+      if (
+        authorityLevels.size > 0 &&
+        !authorityLevels.has(level) && !authorityLevels.has(undefined)
+      ) {
         // a level is selected with no corresponding organisation
         errors.push({
           message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
