@@ -108,7 +108,6 @@ export class ValidateInstanceForUpdateApplicationService {
           // an organisation is selected, with no corresponding level
           errors.push({
             message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
-            isBlocking: true,
           });
         }
       });
@@ -123,7 +122,6 @@ export class ValidateInstanceForUpdateApplicationService {
         // a level is selected with no corresponding organisation
         errors.push({
           message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
-          isBlocking: true,
         });
       }
 
@@ -141,7 +139,6 @@ export class ValidateInstanceForUpdateApplicationService {
       ) {
         errors.push({
           message: EXECUTING_AUTHORITY_MISSING_PROVINCIAL_LEVEL_ERROR,
-          isBlocking: true,
         });
       }
     } else {
@@ -153,7 +150,6 @@ export class ValidateInstanceForUpdateApplicationService {
       ) {
         errors.push({
           message: EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR,
-          isBlocking: true,
         });
       }
     }
@@ -195,7 +191,6 @@ export class ValidateInstanceForUpdateApplicationService {
           // an organisation is selected, with no corresponding level
           errors.push({
             message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
-            isBlocking: true,
           });
         }
       });
@@ -210,7 +205,6 @@ export class ValidateInstanceForUpdateApplicationService {
         // a level is selected with no corresponding organisation
         errors.push({
           message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
-          isBlocking: true,
         });
       }
 

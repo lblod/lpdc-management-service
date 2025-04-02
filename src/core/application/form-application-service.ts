@@ -332,5 +332,4 @@ type Identifiable = { id: Iri };
 export interface ValidationError {
   formId?: string;
   message: string;
-  isBlocking?: boolean;
 }
