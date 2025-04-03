@@ -106,6 +106,10 @@ export class ValidateInstanceForUpdateApplicationService {
 
         if (!selectedLevels.includes(level)) {
           // an organisation is selected, with no corresponding level
+
+          // If error already exists, skip
+          if(errors.some(e => e.message === EXECUTING_AUTHORITY_MISMATCH_ERROR)) return;
+
           errors.push({
             message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
           });
@@ -120,6 +124,10 @@ export class ValidateInstanceForUpdateApplicationService {
 
       if (authorityLevels.size > 0 && !authorityLevels.has(level) && !authorityLevels.has(undefined)) {
         // a level is selected with no corresponding organisation
+
+        // If error already exists, skip
+        if(errors.some(e => e.message === EXECUTING_AUTHORITY_MISMATCH_ERROR)) return;
+
         errors.push({
           message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
         });
@@ -189,6 +197,10 @@ export class ValidateInstanceForUpdateApplicationService {
 
         if (!selectedLevels.includes(level)) {
           // an organisation is selected, with no corresponding level
+
+          // If error already exists, skip
+          if(errors.some(e => e.message === COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR)) return;
+
           errors.push({
             message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
           });
@@ -203,6 +215,10 @@ export class ValidateInstanceForUpdateApplicationService {
         !authorityLevels.has(level) && !authorityLevels.has(undefined)
       ) {
         // a level is selected with no corresponding organisation
+
+        // If error already exists, skip
+        if(errors.some(e => e.message === COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR)) return;
+
         errors.push({
           message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
         });
