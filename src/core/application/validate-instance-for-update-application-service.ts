@@ -107,31 +107,24 @@ export class ValidateInstanceForUpdateApplicationService {
       }
     }
 
-    // Check if user's bestuurseenheid is Provincie
-    if (
-      bestuurseenheid.classificatieCode ===
-      BestuurseenheidClassificatieCode.PROVINCIE
-    ) {
-      // if the selectedLevels is filled in, check if user has *not* selected provinciaal or derden (blocking)
+    // if the selectedLevels is filled in, check the Lokaal/Provinciaal or Derden validation
+    if (selectedLevels.length > 0) {
+      const isProvince =
+        bestuurseenheid.classificatieCode ===
+        BestuurseenheidClassificatieCode.PROVINCIE;
+      const requiredLevel = isProvince
+        ? ExecutingAuthorityLevelType.PROVINCIAAL
+        : ExecutingAuthorityLevelType.LOKAAL;
+      const errorMessage = isProvince
+        ? EXECUTING_AUTHORITY_MISSING_PROVINCIAL_LEVEL_ERROR
+        : EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR;
+
+      // Check if neither the required level nor DERDEN is selected
       if (
-        selectedLevels.length > 0 &&
-        !selectedLevels.includes(ExecutingAuthorityLevelType.PROVINCIAAL) &&
+        !selectedLevels.includes(requiredLevel) &&
         !selectedLevels.includes(ExecutingAuthorityLevelType.DERDEN)
       ) {
-        errors.push({
-          message: EXECUTING_AUTHORITY_MISSING_PROVINCIAL_LEVEL_ERROR,
-        });
-      }
-    } else {
-      // if the selectedLevels is filled in, check if user has *not* selected lokaal or derden (blocking)
-      if (
-        selectedLevels.length > 0 &&
-        !selectedLevels.includes(ExecutingAuthorityLevelType.LOKAAL) &&
-        !selectedLevels.includes(ExecutingAuthorityLevelType.DERDEN)
-      ) {
-        errors.push({
-          message: EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR,
-        });
+        errors.push({ message: errorMessage });
       }
     }
 
