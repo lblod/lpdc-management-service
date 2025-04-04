@@ -172,7 +172,7 @@ export class ValidateInstanceForUpdateApplicationService {
     const errors: ValidationError[] = [];
     const authorityLevels = new Set<string>();
 
-    // Aggreggate levels of selected authorities, if any authorities are selected
+    // Aggregate levels of selected authorities, if any authorities are selected
     if (selectedAuthorities.length > 0) {
       for (const iri of selectedAuthorities) {
         const authorityLevel =
