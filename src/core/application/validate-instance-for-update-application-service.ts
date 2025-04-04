@@ -193,32 +193,31 @@ export class ValidateInstanceForUpdateApplicationService {
 
         authorityLevels.add(authorityLevel);
       }
-    }
 
-    // If both levels and authorities are selected: check if every selected org has a corresponding level
-    if (selectedLevels.length > 0 && selectedAuthorities.length > 0) {
-      const hasAuthorityWithoutMatchingLevel = Array.from(authorityLevels).some(
-        (level) => {
+      // If both levels and authorities are selected: check if every selected org has a corresponding level
+      if (selectedLevels.length > 0) {
+        const hasAuthorityWithoutMatchingLevel = Array.from(
+          authorityLevels
+        ).some((level) => {
           // Skip check if no level is found
           if (level === undefined) return false;
 
           return !selectedLevels.includes(level);
-        }
-      );
+        });
 
-      if (hasAuthorityWithoutMatchingLevel) {
-        if (authorityType === OrganizationLevelType.EXECUTINGLEVEL) {
-          errors.push({
-            message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
-          });
-        } else if (authorityType === OrganizationLevelType.COMPETENTLEVEL) {
-          errors.push({
-            message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
-          });
+        if (hasAuthorityWithoutMatchingLevel) {
+          if (authorityType === OrganizationLevelType.EXECUTINGLEVEL) {
+            errors.push({
+              message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
+            });
+          } else if (authorityType === OrganizationLevelType.COMPETENTLEVEL) {
+            errors.push({
+              message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
+            });
+          }
         }
       }
     }
-
     return { errors, authorityLevels };
   }
 }
