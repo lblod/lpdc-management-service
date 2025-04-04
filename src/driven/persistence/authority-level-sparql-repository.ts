@@ -4,7 +4,7 @@ import {
   sparqlEscapeUri,
 } from "../../../mu-helper";
 import { Iri } from "../../core/domain/shared/iri";
-import { CompetentAuthorityLevelType, ExecutingAuthorityLevelType } from "../../core/domain/types";
+import { CompetentAuthorityLevelType, ExecutingAuthorityLevelType, OrganizationLevelType } from "../../core/domain/types";
 import { NotFoundError } from "../../core/domain/shared/lpdc-error";
 import { AuthorityLevelRepository } from '../../core/port/driven/persistence/authority-level-repository';
 
@@ -17,7 +17,21 @@ export class AuthorityLevelSparqlRepository
     this.querying = new SparqlQuerying(endpoint);
   }
 
-  async getAuthorityLevel(iri: Iri, typeLevel: "organizationExecutingLevel" | "organizationCompetencyLevel"): Promise<ExecutingAuthorityLevelType | CompetentAuthorityLevelType | undefined> {
+  async getExecutingAuthorityLevel(iri: Iri): Promise<ExecutingAuthorityLevelType | undefined> {
+    const level = await this.getAuthorityLevel(iri, OrganizationLevelType.EXECUTINGLEVEL);
+
+    return this.mapExecutingLevelUriToType(level);
+
+  }
+
+  async getCompetentAuthorityLevel(iri: Iri): Promise<CompetentAuthorityLevelType | undefined> {
+    const level = await this.getAuthorityLevel(iri, OrganizationLevelType.COMPETENTLEVEL);
+
+    return this.mapCompetentLevelUriToType(level);
+
+  }
+
+  private async getAuthorityLevel(iri: Iri, typeLevel: OrganizationLevelType): Promise<string | undefined> {
     const authorityLevelQuery = `
           ${PREFIX.lpdc}
 
@@ -32,31 +46,26 @@ export class AuthorityLevelSparqlRepository
     const result = await this.querying.singleRow(authorityLevelQuery);
 
     if (!result || !result[typeLevel]) return undefined;
-
-    if (typeLevel === 'organizationExecutingLevel') {
-      return this.mapExecutionLevelUriToType(result[typeLevel].value);
-    } else {
-      return this.mapCompetentLevelUriToType(result[typeLevel].value);
-    }
+    return result[typeLevel].value;
   }
 
-  private mapExecutionLevelUriToType(
-    executionLevelUri: string | undefined
+  private mapExecutingLevelUriToType(
+    executingLevelUri: string | undefined
   ): ExecutingAuthorityLevelType {
-    if (!executionLevelUri) return undefined;
+    if (!executingLevelUri) return undefined;
 
     const key: string | undefined = Object.keys(
       ExecutingAuthorityLevelUri
-    ).find((key) => ExecutingAuthorityLevelUri[key] === executionLevelUri);
+    ).find((key) => ExecutingAuthorityLevelUri[key] === executingLevelUri);
 
-    const executionLevel = ExecutingAuthorityLevelType[key];
-    if (!executionLevel) {
+    const executingLevel = ExecutingAuthorityLevelType[key];
+    if (!executingLevel) {
       throw new NotFoundError(
-        `Geen uitvoerend bestuursniveau gevonden voor: ${executionLevelUri}`
+        `Geen uitvoerend bestuursniveau gevonden voor: ${executingLevelUri}`
       );
     }
 
-    return executionLevel;
+    return executingLevel;
   }
 
   private mapCompetentLevelUriToType(

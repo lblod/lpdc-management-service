@@ -6,7 +6,10 @@ import {
 } from "../domain/bestuurseenheid";
 import { InstanceRepository } from "../port/driven/persistence/instance-repository";
 import { SemanticFormsMapper } from "../port/driven/persistence/semantic-forms-mapper";
-import { ExecutingAuthorityLevelType } from "../domain/types";
+import {
+  ExecutingAuthorityLevelType,
+  OrganizationLevelType,
+} from "../domain/types";
 import { AuthorityLevelRepository } from "../port/driven/persistence/authority-level-repository";
 
 export const EXECUTING_AUTHORITY_MISMATCH_ERROR = `Het uitvoerend bestuursniveau komt niet overeen met de geselecteerde overheid`;
@@ -61,7 +64,7 @@ export class ValidateInstanceForUpdateApplicationService {
 
     // Validate executing authorities
     const executingAuthorityErrors =
-      await this.validateAuthoritiesExecutionLevelMapping(
+      await this.validateAuthoritiesExecutingLevelMapping(
         mergedInstance.executingAuthorityLevels,
         mergedInstance.executingAuthorities,
         bestuurseenheid
@@ -73,71 +76,42 @@ export class ValidateInstanceForUpdateApplicationService {
     return errorList;
   }
 
-  private async validateAuthoritiesExecutionLevelMapping(
+  private async validateAuthoritiesExecutingLevelMapping(
     selectedLevels: string[],
     selectedAuthorities: Iri[],
     bestuurseenheid: Bestuurseenheid
   ): Promise<ValidationError[]> {
-    const errors: ValidationError[] = [];
-    const authorityLevels = new Set<string>();
-
-    // Aggregate levels of selected authorities, if any authorities are selected
-    if (selectedAuthorities.length > 0) {
-      for (const iri of selectedAuthorities) {
-        const authorityLevel =
-          await this._authorityLevelRepository.getAuthorityLevel(
-            iri,
-            "organizationExecutingLevel"
-          );
-
-        authorityLevels.add(authorityLevel);
-
-        // Check if we have authorities, but no levels (to be used later, no popup right now to improve UX)
-        // if (selectedLevels.length === 0)
-      }
-    }
-
-    // If both levels and authorities are selected: check if every selected org has a corresponding level
-    if (selectedLevels.length > 0 && selectedAuthorities.length > 0) {
-      authorityLevels.forEach((level) => {
-        // Skip check if no level is found
-        if (level === undefined) return;
-
-        if (!selectedLevels.includes(level)) {
-          // an organisation is selected, with no corresponding level
-
-          // If error already exists, skip
-          if(errors.some(e => e.message === EXECUTING_AUTHORITY_MISMATCH_ERROR)) return;
-
-          errors.push({
-            message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
-          });
-        }
-      });
-    }
+    const { errors, authorityLevels } =
+      await this.validateAuthorityLevelMappingCommon(
+        selectedLevels,
+        selectedAuthorities,
+        OrganizationLevelType.EXECUTINGLEVEL
+      );
 
     // Check if every selected level has a corresponding org with an equal level
-    selectedLevels.forEach((level) => {
-      // Exception: skip when 'derden' is filled in as the level, there doesn't need to be a matching org
-      if (level === ExecutingAuthorityLevelType.DERDEN) return;
+    if (authorityLevels.size > 0 && !authorityLevels.has(undefined)) {
+      const hasLevelWithoutMatchingAuthority = selectedLevels.some((level) => {
+        // Exception: skip when 'derden' is filled in as the level, there doesn't need to be a matching org
+        if (level === ExecutingAuthorityLevelType.DERDEN) return false;
 
-      if (authorityLevels.size > 0 && !authorityLevels.has(level) && !authorityLevels.has(undefined)) {
-        // a level is selected with no corresponding organisation
+        return !authorityLevels.has(level);
+      });
 
-        // If error already exists, skip
-        if(errors.some(e => e.message === EXECUTING_AUTHORITY_MISMATCH_ERROR)) return;
-
+      if (
+        hasLevelWithoutMatchingAuthority &&
+        !errors.some((e) => e.message === EXECUTING_AUTHORITY_MISMATCH_ERROR)
+      ) {
         errors.push({
           message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
         });
       }
-
-      // Check if we have levels, but no authorities (to be used later, no popup right now to improve UX)
-      // if (selectedAuthorities.length === 0)
-    });
+    }
 
     // Check if user's bestuurseenheid is Provincie
-    if(bestuurseenheid.classificatieCode === BestuurseenheidClassificatieCode.PROVINCIE){
+    if (
+      bestuurseenheid.classificatieCode ===
+      BestuurseenheidClassificatieCode.PROVINCIE
+    ) {
       // if the selectedLevels is filled in, check if user has *not* selected provinciaal or derden (blocking)
       if (
         selectedLevels.length > 0 &&
@@ -168,64 +142,90 @@ export class ValidateInstanceForUpdateApplicationService {
     selectedLevels: string[],
     selectedAuthorities: Iri[]
   ): Promise<ValidationError[]> {
+    const { errors, authorityLevels } =
+      await this.validateAuthorityLevelMappingCommon(
+        selectedLevels,
+        selectedAuthorities,
+        OrganizationLevelType.COMPETENTLEVEL
+      );
+
+    // Check if every selected level has a corresponding org with an equal level
+    if (authorityLevels.size > 0 && !authorityLevels.has(undefined)) {
+      const hasLevelWithoutMatchingAuthority = selectedLevels.some((level) => {
+        return !authorityLevels.has(level);
+      });
+
+      if (
+        hasLevelWithoutMatchingAuthority &&
+        !errors.some(
+          (e) => e.message === COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR
+        )
+      ) {
+        errors.push({
+          message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
+        });
+      }
+    }
+
+    return errors;
+  }
+
+  /**
+   * Helper function to validate the common parts of authority level mapping
+   */
+  private async validateAuthorityLevelMappingCommon(
+    selectedLevels: string[],
+    selectedAuthorities: Iri[],
+    authorityType: OrganizationLevelType
+  ): Promise<{ errors: ValidationError[]; authorityLevels: Set<string> }> {
     const errors: ValidationError[] = [];
     const authorityLevels = new Set<string>();
 
     // Aggregate levels of selected authorities, if any authorities are selected
     if (selectedAuthorities.length > 0) {
       for (const iri of selectedAuthorities) {
-        const authorityLevel =
-          await this._authorityLevelRepository.getAuthorityLevel(
-            iri,
-            "organizationCompetencyLevel"
-          );
+        let authorityLevel: string;
+
+        if (authorityType === OrganizationLevelType.EXECUTINGLEVEL) {
+          authorityLevel =
+            await this._authorityLevelRepository.getExecutingAuthorityLevel(
+              iri
+            );
+        } else if (authorityType === OrganizationLevelType.COMPETENTLEVEL) {
+          authorityLevel =
+            await this._authorityLevelRepository.getCompetentAuthorityLevel(
+              iri
+            );
+        }
 
         authorityLevels.add(authorityLevel);
-
-        // Check if we have authorities, but no levels (to be used later, no popup right now to improve UX)
-        // if (selectedLevels.length === 0)
       }
     }
 
     // If both levels and authorities are selected: check if every selected org has a corresponding level
     if (selectedLevels.length > 0 && selectedAuthorities.length > 0) {
-      authorityLevels.forEach((level) => {
-        // Skip check if no level is found
-        if (level === undefined) return;
+      const hasAuthorityWithoutMatchingLevel = Array.from(authorityLevels).some(
+        (level) => {
+          // Skip check if no level is found
+          if (level === undefined) return false;
 
-        if (!selectedLevels.includes(level)) {
-          // an organisation is selected, with no corresponding level
+          return !selectedLevels.includes(level);
+        }
+      );
 
-          // If error already exists, skip
-          if(errors.some(e => e.message === COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR)) return;
-
+      if (hasAuthorityWithoutMatchingLevel) {
+        if (authorityType === OrganizationLevelType.EXECUTINGLEVEL) {
+          errors.push({
+            message: EXECUTING_AUTHORITY_MISMATCH_ERROR,
+          });
+        } else if (authorityType === OrganizationLevelType.COMPETENTLEVEL) {
           errors.push({
             message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
           });
         }
-      });
+      }
     }
 
-    // Check if every selected level has a corresponding org with an equal level
-    selectedLevels.forEach((level) => {
-      if (
-        authorityLevels.size > 0 &&
-        !authorityLevels.has(level) && !authorityLevels.has(undefined)
-      ) {
-        // a level is selected with no corresponding organisation
-
-        // If error already exists, skip
-        if(errors.some(e => e.message === COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR)) return;
-
-        errors.push({
-          message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
-        });
-      }
-
-      // Check is we have levels, but no authorities (to be used later, no popup right now to improve UX)
-      // if (selectedAuthorities.length === 0)
-    });
-
-    return errors;
+    return { errors, authorityLevels };
   }
 }

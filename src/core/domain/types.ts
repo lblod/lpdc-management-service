@@ -28,6 +28,11 @@ export enum ThemeType {
   BOUWENWONEN = "BouwenWonen",
 }
 
+export enum OrganizationLevelType {
+  EXECUTINGLEVEL = "organizationExecutingLevel",
+  COMPETENTLEVEL = "organizationCompetencyLevel",
+}
+
 export enum CompetentAuthorityLevelType {
   EUROPEES = "Europees",
   FEDERAAL = "Federaal",
