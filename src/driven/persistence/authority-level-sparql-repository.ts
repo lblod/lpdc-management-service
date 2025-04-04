@@ -40,7 +40,7 @@ export class AuthorityLevelSparqlRepository
     }
   }
 
-  mapExecutionLevelUriToType(
+  private mapExecutionLevelUriToType(
     executionLevelUri: string | undefined
   ): ExecutingAuthorityLevelType {
     if (!executionLevelUri) return undefined;
@@ -59,7 +59,7 @@ export class AuthorityLevelSparqlRepository
     return executionLevel;
   }
 
-  mapCompetentLevelUriToType(
+  private mapCompetentLevelUriToType(
     competentLevelUri: string | undefined
   ): CompetentAuthorityLevelType {
     if (!competentLevelUri) return undefined;
