@@ -95,7 +95,6 @@ export class ValidateInstanceForUpdateApplicationService {
         // Check if we have authorities, but no levels (to be used later, no popup right now to improve UX)
         // if (selectedLevels.length === 0)
       }
-      console.log("execution authority levels:", authorityLevels);
     }
 
     // If both levels and authorities are selected: check if every selected org has a corresponding level
@@ -186,7 +185,6 @@ export class ValidateInstanceForUpdateApplicationService {
         // Check if we have authorities, but no levels (to be used later, no popup right now to improve UX)
         // if (selectedLevels.length === 0)
       }
-      console.log("Competent authority levels:", authorityLevels);
     }
 
     // If both levels and authorities are selected: check if every selected org has a corresponding level
