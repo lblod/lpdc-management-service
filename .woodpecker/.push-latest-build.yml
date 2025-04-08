@@ -20,5 +20,5 @@ when:
   - event: push
     branch: [development]
 
-depends_on:
-  - test
+# depends_on:
+#   - test
