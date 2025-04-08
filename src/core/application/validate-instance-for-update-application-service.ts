@@ -90,8 +90,6 @@ export class ValidateInstanceForUpdateApplicationService {
     // Check if every selected level has a corresponding org with an equal level
     if (authorityLevels.size > 0 && !authorityLevels.has(undefined)) {
       const hasLevelWithoutMatchingAuthority = selectedLevels.some((level) => {
-        // Exception: skip when 'derden' is filled in as the level, there doesn't need to be a matching org
-        if (level === ExecutingAuthorityLevelType.DERDEN) return false;
 
         return !authorityLevels.has(level);
       });
