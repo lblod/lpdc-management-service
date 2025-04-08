@@ -8,12 +8,12 @@ LPDC Management Service is part of [LPDC - Digitaal loket](https://github.com/lb
 
 ## General
 
-This service manages CRUD for lpdc-ipdc public services and their forms. 
+This service manages CRUD for lpdc-ipdc public services and their forms.
 There are 3 forms: 'content, properties & translation' (represented as tabs in the frontend).
 
 ## Public Services
 
-Public service templates, also called Conceptual Public Services (after this called Template) exist in the database under the type `<https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`. 
+Public service templates, also called Conceptual Public Services (after this called Template) exist in the database under the type `<https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#ConceptualPublicService>`.
 When a user creates a new public service in the frontend, this service will create a new public-service from a template only changing the type to `<https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService>`.
 
 It is also in charge of post-processing the LDES feed coming from IPDC.
@@ -74,4 +74,3 @@ To make sure every developer uses the same node version locally, [asdf](https://
 After installing asdf the node version specified in `.tool-versions` will be used when running the app locally.
 
 # 13. Decision Log
-
