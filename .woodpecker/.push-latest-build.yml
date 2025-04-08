@@ -1,11 +1,14 @@
-pipeline:
+steps:
   build:
     image: woodpeckerci/plugin-docker-buildx
     settings:
       platforms: linux/amd64,linux/arm64
       repo: ${CI_REPO}
       tags: latest
-    secrets: [docker_username, docker_password]
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
   trigger-downstream:
     image: woodpeckerci/plugin-trigger
     settings:
@@ -14,8 +17,8 @@ pipeline:
       token:
         from_secret: woodpecker_token
 when:
-  branch: development
-  event: push
+  - event: push
+    branch: [development]
 
 depends_on:
   - test
