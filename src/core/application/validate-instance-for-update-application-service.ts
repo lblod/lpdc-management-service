@@ -13,8 +13,7 @@ import {
 import { AuthorityLevelRepository } from "../port/driven/persistence/authority-level-repository";
 
 export const EXECUTING_AUTHORITY_MISMATCH_ERROR = `Het uitvoerend bestuursniveau komt niet overeen met de geselecteerde overheid`;
-
-export const COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR = `Het bevoegd bestuursniveau komt niet overeen met de geselecteerde overheid`;
+export const COMPETENT_AUTHORITY_MISMATCH_ERROR = `Het bevoegd bestuursniveau komt niet overeen met de geselecteerde overheid`;
 export const EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR = `Dienstverlening van bovenlokale overheden kunnen niet worden toegevoegd aan LPDC. Het uitvoerend niveau hoort steeds lokale overheid te bevatten.`;
 export const EXECUTING_AUTHORITY_MISSING_PROVINCIAL_LEVEL_ERROR = `Dienstverlening van bovenlokale overheden kunnen niet worden toegevoegd aan LPDC. Het uitvoerend niveau hoort steeds provinciale overheid te bevatten.`;
 
@@ -151,11 +150,11 @@ export class ValidateInstanceForUpdateApplicationService {
       if (
         hasLevelWithoutMatchingAuthority &&
         !errors.some(
-          (e) => e.message === COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR
+          (e) => e.message === COMPETENT_AUTHORITY_MISMATCH_ERROR
         )
       ) {
         errors.push({
-          message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
+          message: COMPETENT_AUTHORITY_MISMATCH_ERROR,
         });
       }
     }
@@ -212,7 +211,7 @@ export class ValidateInstanceForUpdateApplicationService {
             });
           } else if (authorityType === OrganizationLevelType.COMPETENTLEVEL) {
             errors.push({
-              message: COMPETENT_AUTHORITY_MISMATCH_LEVEL_ERROR,
+              message: COMPETENT_AUTHORITY_MISMATCH_ERROR,
             });
           }
         }
