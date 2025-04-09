@@ -159,6 +159,7 @@ export class ValidateInstanceForUpdateApplicationService {
     });
 
     // Check if every selected authority has a matching level selected
+    levelsForSelectedAuthorities = [...new Set(levelsForSelectedAuthorities)];
     const hasAuthorityWithoutMatchingLevel = levelsForSelectedAuthorities.some((level) => {
       if (level === undefined) return false;
 
