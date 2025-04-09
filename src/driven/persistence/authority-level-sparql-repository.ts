@@ -4,7 +4,7 @@ import {
   sparqlEscapeUri,
 } from "../../../mu-helper";
 import { Iri } from "../../core/domain/shared/iri";
-import { CompetentAuthorityLevelType, ExecutingAuthorityLevelType, OrganizationLevelType } from "../../core/domain/types";
+import { CompetentAuthorityLevelType, ExecutingAuthorityLevelType } from "../../core/domain/types";
 import { NotFoundError } from "../../core/domain/shared/lpdc-error";
 import { AuthorityLevelRepository } from '../../core/port/driven/persistence/authority-level-repository';
 
@@ -103,4 +103,10 @@ export enum CompetentAuthorityLevelUri {
   VLAAMS = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Vlaams",
   EUROPEES = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Europees",
   PROVINCIAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Provinciaal",
+}
+
+
+export enum OrganizationLevelType {
+  EXECUTINGLEVEL = "organizationExecutingLevel",
+  COMPETENTLEVEL = "organizationCompetencyLevel",
 }
