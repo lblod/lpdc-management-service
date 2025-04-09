@@ -151,16 +151,17 @@ export class ValidateInstanceForUpdateApplicationService {
 
   private hasInvalidAuthorityLevelMapping(selectedLevels: string[], levelsForSelectedAuthorities: string[]): boolean {
     // Check if every selected level has a matching authority selected with the same level
-    const hasLevelWithoutMatchingAuthority = selectedLevels.some((level) => {
-      // Skip the validation if the selected authorities has an undefined (the authority doesn't have a level yet) or there are no authorities selected
-      if(levelsForSelectedAuthorities.includes(undefined) || levelsForSelectedAuthorities.length === 0) return false;
+    levelsForSelectedAuthorities = levelsForSelectedAuthorities.filter(level => level !== undefined);
 
+    // Skip the validation if there are no authorities selected
+    const hasLevelWithoutMatchingAuthority = (levelsForSelectedAuthorities.length !== 0) && selectedLevels.some((level) => {
       return !levelsForSelectedAuthorities.includes(level);
     });
 
     // Check if every selected authority has a matching level selected
     levelsForSelectedAuthorities = [...new Set(levelsForSelectedAuthorities)];
-    const hasAuthorityWithoutMatchingLevel = levelsForSelectedAuthorities.some((level) => {
+    // Skip the validation if there are no levels selected
+    const hasAuthorityWithoutMatchingLevel = (selectedLevels.length !== 0) && levelsForSelectedAuthorities.some((level) => {
       if (level === undefined) return false;
 
       return !selectedLevels.includes(level);
