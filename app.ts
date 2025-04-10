@@ -177,6 +177,8 @@ const instanceSnapshotToInstanceMergerDomainService =
     linkedAuthorityCodeListDomainService,
     instanceSnapshotProcessingAuthorizationRepository,
     bestuurseenheidRepository,
+    spatialRepository,
+    codeRepository,
   );
 
 const instanceSnapshotProcessorApplicationService =

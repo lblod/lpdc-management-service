@@ -80,6 +80,19 @@ export class BestuurseenheidSparqlRepository
     );
   }
 
+  async exists(id: Iri) {
+    const query = `
+      ${PREFIX.besluit}
+
+      ASK {
+        GRAPH <http://mu.semte.ch/graphs/public> {
+          ${sparqlEscapeUri(id)} a besluit:Bestuurseenheid.
+        }
+      }`;
+
+    return this.querying.ask(query);
+  }
+
   mapBestuurseenheidClassificatieUriToCode(
     classificatieCodeUri: BestuurseenheidClassificatieCodeUri | undefined
   ): BestuurseenheidClassificatieCode | undefined {

@@ -79,6 +79,23 @@ describe("BestuurseenheidRepository", () => {
     });
   });
 
+  describe("exists", () => {
+    test("it returns true when an administrative unit exists for the specified URI", async function () {
+      const unit = aBestuurseenheid().build();
+      await repository.save(unit);
+
+      const result = await repository.exists(unit.id);
+      expect(result).toBeTrue();
+    });
+
+    test("it returns false when an administrative unit exists for the specified URI", async function () {
+      const unit = aBestuurseenheid().build();
+
+      const result = await repository.exists(unit.id);
+      expect(result).toBeFalse();
+    });
+  });
+
   describe("Verify ontology and mapping", () => {
     test("Verify mappings", async () => {
       const bestuurseenheidUuid = uuid();

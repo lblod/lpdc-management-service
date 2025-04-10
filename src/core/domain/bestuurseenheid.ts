@@ -58,6 +58,10 @@ export class Bestuurseenheid {
     return this._status;
   }
 
+  get isActive() {
+    return this.status === BestuurseenheidStatusCode.ACTIVE;
+  }
+
   get spatials(): Iri[] {
     return [...this._spatials];
   }

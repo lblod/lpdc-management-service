@@ -1,4 +1,9 @@
-import { aBestuurseenheid } from "./bestuurseenheid-test-builder";
+import {
+  aBestuurseenheid,
+  anInactiveBestuurseenheid,
+  someCompetentAuthorities,
+  someExecutingAuthorities,
+} from "./bestuurseenheid-test-builder";
 import { BestuurseenheidSparqlTestRepository } from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
 import { TEST_SPARQL_ENDPOINT } from "../../test.config";
 import {
@@ -7,9 +12,16 @@ import {
   InstanceSnapshotTestBuilder,
 } from "./instance-snapshot-test-builder";
 import { InstanceSnapshotSparqlTestRepository } from "../../driven/persistence/instance-snapshot-sparql-test-repository";
-import { InstanceSnapshotToInstanceMergerDomainService } from "../../../src/core/domain/instance-snapshot-to-instance-merger-domain-service";
+import {
+  EXPIRED_SPATIAL_ERROR_MESSAGE,
+  INVALID_AUTHORITY_ERROR_MESSAGE,
+  InstanceSnapshotToInstanceMergerDomainService,
+  INACTIVE_AUTHORITY_ERROR_MESSAGE,
+  INACTIVE_CREATOR_ERROR_MESSAGE,
+  UNKNOWN_CONCEPT_ERROR_MESSAGE,
+  UNKNOWN_CREATOR_ERROR_MESSAGE,
+} from "../../../src/core/domain/instance-snapshot-to-instance-merger-domain-service";
 import { InstanceStatusType } from "../../../src/core/domain/types";
-import { restoreRealTime, setFixedTime } from "../../fixed-time";
 import { FormatPreservingDate } from "../../../src/core/domain/format-preserving-date";
 import { ConceptSparqlRepository } from "../../../src/driven/persistence/concept-sparql-repository";
 import { aFullConcept } from "./concept-test-builder";
@@ -18,7 +30,12 @@ import { sparqlEscapeUri, uuid } from "../../../mu-helper";
 import { SparqlQuerying } from "../../../src/driven/persistence/sparql-querying";
 import { literal, namedNode, quad } from "rdflib";
 import { DirectDatabaseAccess } from "../../driven/persistence/direct-database-access";
-import { buildBestuurseenheidIri, buildConceptIri } from "./iri-test-builder";
+import {
+  buildBestuurseenheidIri,
+  buildConceptIri,
+  buildNutsCodeIri,
+  buildOvoCodeIri,
+} from "./iri-test-builder";
 import { LanguageString } from "../../../src/core/domain/language-string";
 import { ConceptDisplayConfigurationSparqlRepository } from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
 import { Iri } from "../../../src/core/domain/shared/iri";
@@ -36,6 +53,7 @@ import { InstanceBuilder } from "../../../src/core/domain/instance";
 import {
   ForbiddenError,
   InvariantError,
+  InstanceSnapshotValidationError,
 } from "../../../src/core/domain/shared/lpdc-error";
 import { aFullContactPointForInstance } from "./contact-point-test-builder";
 import { aFullAddressForInstance } from "./address-test-builder";
@@ -43,6 +61,12 @@ import { Language } from "../../../src/core/domain/language";
 import { InstanceSnapshotProcessingAuthorizationSparqlTestRepository } from "../../driven/persistence/instance-snapshot-processing-authorization-sparql-test-repository";
 import { VersionedLdesSnapshotSparqlRepository } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
 import { InstanceSparqlTestRepository } from "../../driven/persistence/instance-sparql-test-repository";
+import {
+  SpatialTestBuilder,
+  aSpatial,
+  anExpiredSpatial,
+} from "./spatial-test-builder";
+import { SpatialSparqlTestRepository } from "../../driven/persistence/spatial-sparql-test-repository";
 
 describe("instanceSnapshotToInstanceMapperDomainService", () => {
   beforeEach(async () => {
@@ -62,6 +86,10 @@ describe("instanceSnapshotToInstanceMapperDomainService", () => {
     TEST_SPARQL_ENDPOINT,
   );
   const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+  const spatialRepository = new SpatialSparqlTestRepository(
+    TEST_SPARQL_ENDPOINT,
+  );
+
   const bestuurseenheidRegistrationCodeFetcher = {
     fetchOrgRegistryCodelistEntry: jest
       .fn()
@@ -92,14 +120,63 @@ describe("instanceSnapshotToInstanceMapperDomainService", () => {
     ensureLinkedAuthoritiesExistAsCodeListDomainService,
     instanceSnapshotProcessingAuthorizationRepository,
     bestuurseenheidRepository,
+    spatialRepository,
+    codeRepository,
   );
   const versionedLdesSnapshotRepository =
     new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
   const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
-  beforeAll(() => setFixedTime());
+  beforeAll(async () => {
+    await directDatabaseAccess.insertData(
+      PUBLIC_GRAPH,
+      [
+        `${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)} a skos:ConceptScheme`,
+      ],
+      [PREFIX.skos],
+    );
 
-  afterAll(() => restoreRealTime());
+    someCompetentAuthorities().forEach(async (unit) => {
+      const builtUnit = unit.build();
+      await bestuurseenheidRepository.save(builtUnit);
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `${sparqlEscapeUri(builtUnit.id)} a skos:Concept.`,
+          `${sparqlEscapeUri(builtUnit.id)} skos:inScheme ${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)}.`,
+        ],
+        [PREFIX.skos],
+      );
+      return;
+    });
+
+    someExecutingAuthorities().forEach(async (unit) => {
+      const builtUnit = unit.build();
+      await bestuurseenheidRepository.save(builtUnit);
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `${sparqlEscapeUri(builtUnit.id)} a skos:Concept.`,
+          `${sparqlEscapeUri(builtUnit.id)} skos:inScheme ${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)}.`,
+        ],
+        [PREFIX.skos],
+      );
+      return;
+    });
+
+    await spatialRepository.save(
+      aSpatial()
+        .withId(SpatialTestBuilder.OUD_HEVERLEE_SPATIAL_IRI)
+        .withUuid(String(SpatialTestBuilder.OUD_HEVERLEE_SPATIAL_UUID))
+        .build(),
+    );
+    await spatialRepository.save(
+      aSpatial()
+        .withId(SpatialTestBuilder.PEPINGEN_SPATIAL_IRI)
+        .withUuid(String(SpatialTestBuilder.PEPINGEN_SPATIAL_UUID))
+        .build(),
+    );
+  });
 
   describe("Instance does not exists", () => {
     test("Given a minimalistic instanceSnapshot, then instance is created", async () => {
@@ -257,6 +334,7 @@ describe("instanceSnapshotToInstanceMapperDomainService", () => {
         bestuurseenheid,
         instanceSnapshot.isVersionOf,
       );
+
       expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
       expect(instanceAfterMerge.uuid).toBeDefined();
       expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
@@ -929,6 +1007,478 @@ describe("instanceSnapshotToInstanceMapperDomainService", () => {
       ).rejects.toThrowWithMessage(
         ForbiddenError,
         `Bestuur <${bestuurseenheid.id}> niet toegelaten voor instance snapshot graph <${instanceSnapshotGraph}>.`,
+      );
+    });
+
+    test("throws an error when snapshot is created by an unknown organisation", async function () {
+      const creator = aBestuurseenheid().build();
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        UNKNOWN_CREATOR_ERROR_MESSAGE(instanceSnapshot.id, creator.id),
+      );
+    });
+
+    test("throws an error when snapshot is created by an inactive organisation", async function () {
+      const inactiveCreator = anInactiveBestuurseenheid().build();
+      await bestuurseenheidRepository.save(inactiveCreator);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(inactiveCreator.id)
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        inactiveCreator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INACTIVE_CREATOR_ERROR_MESSAGE(instanceSnapshot.id, inactiveCreator.id),
+      );
+    });
+
+    test("throws an error when authority URI mixes administrative unit and OVO code format", async function () {
+      // NOTE (19/03/2025): This was the case that triggered adding the
+      // additional validations. We received authority URIs of the form
+      // `http://data.lblod.info/id/bestuurseenheden/OVOnnnnnn`.
+      // (See LPDC-1260 ticket)
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const unkownAuthority = buildBestuurseenheidIri("OVO002949");
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withExecutingAuthorities([unkownAuthority])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, unkownAuthority),
+      );
+    });
+
+    test("throws an error when snapshot is linked to a non-existing administrative unit executing authority", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const unkownAuthority = buildBestuurseenheidIri(
+        "this-administrative-unit-does-not-exist",
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withExecutingAuthorities([unkownAuthority])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, unkownAuthority),
+      );
+    });
+
+    test("throws an error when snapshot is linked to a non-existing administrative unit competent authority", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const unkownAuthority = buildBestuurseenheidIri(
+        "this-administrative-unit-does-not-exist",
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withCompetentAuthorities([unkownAuthority])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, unkownAuthority),
+      );
+    });
+
+    test("throws an error when snapshot is linked to an executing authority with an invalid OVO code", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      // Note, OVO numbers are supposed to consist of 6 digits
+      const authorityIri = buildOvoCodeIri("abc");
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withExecutingAuthorities([authorityIri])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, authorityIri),
+      );
+    });
+
+    test("throws an error when snapshot is linked to an competent authority with an invalid OVO code", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      // Note, OVO numbers are supposed to consist of 6 digits
+      const authorityIri = buildOvoCodeIri("abc");
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withCompetentAuthorities([authorityIri])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, authorityIri),
+      );
+    });
+
+    test("throws an error when snapshot is linked to a known and inactive executing authority", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const inactiveAuthority = anInactiveBestuurseenheid().build();
+      await bestuurseenheidRepository.save(inactiveAuthority);
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `${sparqlEscapeUri(inactiveAuthority.id)} a skos:Concept.`,
+          `${sparqlEscapeUri(inactiveAuthority.id)} skos:inScheme ${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)}.`,
+        ],
+        [PREFIX.skos],
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withConceptId(undefined)
+        .withExecutingAuthorities([inactiveAuthority.id])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INACTIVE_AUTHORITY_ERROR_MESSAGE(
+          instanceSnapshot.id,
+          inactiveAuthority.id,
+        ),
+      );
+    });
+
+    test("throws an error when snapshot is linked to a known and inactive competent authority", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const inactiveAuthority = anInactiveBestuurseenheid().build();
+      await bestuurseenheidRepository.save(inactiveAuthority);
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `${sparqlEscapeUri(inactiveAuthority.id)} a skos:Concept.`,
+          `${sparqlEscapeUri(inactiveAuthority.id)} skos:inScheme ${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)}.`,
+        ],
+        [PREFIX.skos],
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withConceptId(undefined)
+        .withCompetentAuthorities([inactiveAuthority.id])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INACTIVE_AUTHORITY_ERROR_MESSAGE(
+          instanceSnapshot.id,
+          inactiveAuthority.id,
+        ),
+      );
+    });
+
+    test("throws an error when snapshot is linked to an unknown concept", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const conceptId = buildConceptIri("unknown-concept");
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withConceptId(conceptId)
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        UNKNOWN_CONCEPT_ERROR_MESSAGE(instanceSnapshot.id, conceptId),
+      );
+    });
+
+    test("throws an error when snapshot is linked to an unknown spatial", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const spatialIri = buildNutsCodeIri(99999999);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withSpatials([spatialIri])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        `No spatial resource found with URI: ${spatialIri}`,
+      );
+    });
+
+    test("throws an error when snapshot is linked to an expired spatial", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const expiredSpatial = anExpiredSpatial().build();
+      await spatialRepository.save(expiredSpatial);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withSpatials([expiredSpatial.id])
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        EXPIRED_SPATIAL_ERROR_MESSAGE(instanceSnapshot.id, [expiredSpatial.id]),
       );
     });
   });
@@ -2769,14 +3319,8 @@ describe("instanceSnapshotToInstanceMapperDomainService", () => {
       codeListDomainService,
       instanceSnapshotProcessingAuthorizationRepository,
       bestuurseenheidRepository,
-    );
-
-    await directDatabaseAccess.insertData(
-      PUBLIC_GRAPH,
-      [
-        `${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)} a skos:ConceptScheme`,
-      ],
-      [PREFIX.skos],
+      spatialRepository,
+      codeRepository,
     );
 
     const competentAuthorityWithoutCodeList = buildBestuurseenheidIri(uuid());

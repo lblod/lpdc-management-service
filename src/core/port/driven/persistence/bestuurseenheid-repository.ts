@@ -3,4 +3,5 @@ import { Bestuurseenheid } from "../../../domain/bestuurseenheid";
 
 export interface BestuurseenheidRepository {
   findById(id: Iri): Promise<Bestuurseenheid>;
+  exists(id: Iri): Promise<boolean>;
 }

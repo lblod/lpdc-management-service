@@ -14,10 +14,47 @@ import { EnsureLinkedAuthoritiesExistAsCodeListDomainService } from "./ensure-li
 import { DeleteInstanceDomainService } from "./delete-instance-domain-service";
 import { lastPartAfter } from "./shared/string-helper";
 import { InstanceSnapshotProcessingAuthorizationRepository } from "../port/driven/persistence/instance-snapshot-processing-authorization-repository";
-import { ForbiddenError } from "./shared/lpdc-error";
+import {
+  ForbiddenError,
+  InstanceSnapshotValidationError,
+  NotFoundError,
+} from "./shared/lpdc-error";
 import { BestuurseenheidRepository } from "../port/driven/persistence/bestuurseenheid-repository";
 import { VersionedLdesSnapshot } from "./versioned-ldes-snapshot";
 import { SnapshotType } from "../port/driven/persistence/versioned-ldes-snapshot-repository";
+import { SpatialRepository } from "../port/driven/persistence/spatial-repository";
+import {
+  CodeRepository,
+  CodeSchema,
+} from "../port/driven/persistence/code-repository";
+import { Spatial } from "./spatial";
+
+const VALIDATION_ERROR_MESSAGE_PREFIX = (snapshot: Iri) =>
+  `De instantiesnapshot ${snapshot.value}`;
+
+export const UNKNOWN_CREATOR_ERROR_MESSAGE = (snapshot: Iri, creator: Iri) =>
+  `${VALIDATION_ERROR_MESSAGE_PREFIX(snapshot)} mag niet aangemaakt zijn door een onbestaand bestuur: ${creator.value}`;
+
+export const INACTIVE_CREATOR_ERROR_MESSAGE = (snapshot: Iri, creator: Iri) =>
+  `${VALIDATION_ERROR_MESSAGE_PREFIX(snapshot)} mag niet aangemaakt zijn door een inactief bestuur: ${creator.value}`;
+
+export const UNKNOWN_CONCEPT_ERROR_MESSAGE = (snapshot: Iri, concept: Iri) =>
+  `${VALIDATION_ERROR_MESSAGE_PREFIX(snapshot)} is gelinkt aan een onbekend concept: ${concept.value}`;
+
+export const INVALID_AUTHORITY_ERROR_MESSAGE = (
+  snapshot: Iri,
+  authority: Iri,
+) =>
+  `${VALIDATION_ERROR_MESSAGE_PREFIX(snapshot)} is gelinkt met een ongeldig bevoegd of uitvoerend bestuur: ${authority.value}`;
+
+export const INACTIVE_AUTHORITY_ERROR_MESSAGE = (
+  snapshot: Iri,
+  authority: Iri,
+) =>
+  `${VALIDATION_ERROR_MESSAGE_PREFIX(snapshot)} is gelinkt met een inactief bevoegd of uitvoerend bestuur: ${authority.value}`;
+
+export const EXPIRED_SPATIAL_ERROR_MESSAGE = (snapshot: Iri, spatials: Iri[]) =>
+  `${VALIDATION_ERROR_MESSAGE_PREFIX(snapshot)} is gelinkt aan inactieve geografische toepassingsgebieden: ${spatials}`;
 
 export interface NewerProcessedSnapshotPredicate {
   hasNewerProcessedSnapshot(
@@ -36,6 +73,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
   private readonly _ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService;
   private readonly _instanceSnapshotProcessingAuthorizationRepository: InstanceSnapshotProcessingAuthorizationRepository;
   private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
+  private readonly _spatialRepository: SpatialRepository;
+  private readonly _codeRepository: CodeRepository;
   private readonly _logger: Logger = new Logger(
     "InstanceSnapshotToInstanceMergerDomainService",
   );
@@ -49,6 +88,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     ensureLinkedAuthoritiesExistAsCodeListDomainService: EnsureLinkedAuthoritiesExistAsCodeListDomainService,
     instanceSnapshotProcessingAuthorizationRepository: InstanceSnapshotProcessingAuthorizationRepository,
     bestuurseenheidRepository: BestuurseenheidRepository,
+    spatialRepository: SpatialRepository,
+    codeRepository: CodeRepository,
     logger?: Logger,
   ) {
     this._instanceSnapshotRepository = instanceSnapshotRepository;
@@ -62,6 +103,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     this._instanceSnapshotProcessingAuthorizationRepository =
       instanceSnapshotProcessingAuthorizationRepository;
     this._bestuurseenheidRepository = bestuurseenheidRepository;
+    this._spatialRepository = spatialRepository;
+    this._codeRepository = codeRepository;
     this._logger = logger ?? this._logger;
   }
 
@@ -74,9 +117,14 @@ export class InstanceSnapshotToInstanceMergerDomainService {
       instanceSnapshotGraph,
       instanceSnapshotId,
     );
-    const bestuurseenheid = await this._bestuurseenheidRepository.findById(
-      instanceSnapshot.createdBy,
-    );
+    const bestuurseenheid =
+      await this.getCreatingOrganization(instanceSnapshot);
+
+    await this.validateLinkedConcept(instanceSnapshot);
+
+    const unknownAuthorities = await this.validateAuthorities(instanceSnapshot);
+
+    await this.validateSpatials(instanceSnapshot);
 
     if (
       !(await this._instanceSnapshotProcessingAuthorizationRepository.canPublishInstanceToGraph(
@@ -105,6 +153,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         bestuurseenheid,
         instanceId,
       );
+
       const concept: Concept | undefined = await this.getConceptIfSpecified(
         instanceSnapshot.conceptId,
       );
@@ -138,12 +187,154 @@ export class InstanceSnapshotToInstanceMergerDomainService {
         );
       }
     }
-    await this._ensureLinkedAuthoritiesExistAsCodeListDomainService.ensureLinkedAuthoritiesExistAsCodeList(
-      [
-        ...instanceSnapshot.competentAuthorities,
-        ...instanceSnapshot.executingAuthorities,
-      ],
-    );
+
+    if (unknownAuthorities.length > 0) {
+      await this._ensureLinkedAuthoritiesExistAsCodeListDomainService.addAuthoritiesToCodeList(
+        unknownAuthorities,
+      );
+    }
+  }
+
+  private async getCreatingOrganization(instanceSnapshot: InstanceSnapshot) {
+    let bestuurseenheid: Bestuurseenheid;
+    try {
+      bestuurseenheid = await this._bestuurseenheidRepository.findById(
+        instanceSnapshot.createdBy,
+      );
+    } catch (e) {
+      if (e instanceof NotFoundError) {
+        throw new InstanceSnapshotValidationError(
+          UNKNOWN_CREATOR_ERROR_MESSAGE(
+            instanceSnapshot.id,
+            instanceSnapshot.createdBy,
+          ),
+        );
+      } else {
+        throw e;
+      }
+    }
+
+    if (bestuurseenheid && !bestuurseenheid.isActive) {
+      throw new InstanceSnapshotValidationError(
+        INACTIVE_CREATOR_ERROR_MESSAGE(instanceSnapshot.id, bestuurseenheid.id),
+      );
+    }
+
+    return bestuurseenheid;
+  }
+
+  private async validateLinkedConcept(instanceSnapshot: InstanceSnapshot) {
+    if (
+      instanceSnapshot.conceptId &&
+      !(await this._conceptRepository.exists(instanceSnapshot.conceptId))
+    ) {
+      throw new InstanceSnapshotValidationError(
+        UNKNOWN_CONCEPT_ERROR_MESSAGE(
+          instanceSnapshot.id,
+          instanceSnapshot.conceptId,
+        ),
+      );
+    }
+  }
+
+  private collectAuthorityUris(instanceSnapshot: InstanceSnapshot) {
+    return [
+      ...new Set(
+        instanceSnapshot.competentAuthorities.concat(
+          instanceSnapshot.executingAuthorities,
+        ),
+      ),
+    ];
+  }
+
+  private async validateKnownAuthority(
+    instanceSnapshot: InstanceSnapshot,
+    authority: Iri,
+  ) {
+    if (authority.isAdministrativeUnitIri) {
+      try {
+        const unit = await this._bestuurseenheidRepository.findById(authority);
+
+        if (!unit.isValidAuthority) {
+          throw new InstanceSnapshotValidationError(
+            INACTIVE_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, authority),
+          );
+        }
+      } catch (e) {
+        if (e instanceof NotFoundError) {
+          throw new InstanceSnapshotValidationError(
+            INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, authority),
+          );
+        } else {
+          throw e;
+        }
+      }
+    }
+  }
+
+  private async validateAuthorities(instanceSnapshot: InstanceSnapshot) {
+    const authorities = this.collectAuthorityUris(instanceSnapshot);
+
+    const unknownAuthorities = [];
+
+    for (const authority of authorities) {
+      if (!authority.isValidAuthorityIri) {
+        throw new InstanceSnapshotValidationError(
+          INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, authority),
+        );
+      }
+
+      const isKnownAuthority = await this._codeRepository.exists(
+        CodeSchema.IPDCOrganisaties,
+        authority,
+      );
+
+      if (isKnownAuthority) {
+        await this.validateKnownAuthority(instanceSnapshot, authority);
+      } else {
+        const fetchedResult =
+          await this._ensureLinkedAuthoritiesExistAsCodeListDomainService.getLinkedAuthority(
+            authority,
+          );
+
+        if (fetchedResult.uri && fetchedResult.prefLabel) {
+          unknownAuthorities.push(fetchedResult);
+        } else {
+          throw new InstanceSnapshotValidationError(
+            INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, authority),
+          );
+        }
+      }
+    }
+
+    return unknownAuthorities;
+  }
+
+  private async validateSpatials(instanceSnapshot: InstanceSnapshot) {
+    let spatials: Spatial[];
+    try {
+      spatials = await Promise.all(
+        instanceSnapshot.spatials.flatMap((iri) =>
+          this._spatialRepository.findById(iri),
+        ),
+      );
+    } catch (e) {
+      if (e instanceof NotFoundError) {
+        throw new InstanceSnapshotValidationError(e.message);
+      } else {
+        throw e;
+      }
+    }
+
+    const expiredSpatialIris = spatials
+      .filter((spatial) => spatial.isExpired)
+      .flatMap((spatial) => spatial.id);
+
+    if (expiredSpatialIris.length > 0) {
+      throw new InstanceSnapshotValidationError(
+        EXPIRED_SPATIAL_ERROR_MESSAGE(instanceSnapshot.id, expiredSpatialIris),
+      );
+    }
   }
 
   private async updateInstance(

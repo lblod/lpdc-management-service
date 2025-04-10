@@ -19,6 +19,14 @@ export class InvariantError extends LpdcError {
   }
 }
 
+export class InstanceSnapshotValidationError extends LpdcError {
+  constructor(
+    message = "De gegevens in de productinstantie snapshot zijn ongeldig.",
+  ) {
+    super(message);
+  }
+}
+
 export class NotFoundError extends LpdcError {
   constructor(
     message: string = "De opgevraagde gegevens werden niet gevonden.",
