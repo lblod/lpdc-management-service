@@ -6,9 +6,7 @@ import {
 } from "../domain/bestuurseenheid";
 import { InstanceRepository } from "../port/driven/persistence/instance-repository";
 import { SemanticFormsMapper } from "../port/driven/persistence/semantic-forms-mapper";
-import {
-  ExecutingAuthorityLevelType,
-} from "../domain/types";
+import { ExecutingAuthorityLevelType } from "../domain/types";
 import { AuthorityLevelRepository } from "../port/driven/persistence/authority-level-repository";
 
 export const EXECUTING_AUTHORITY_MISMATCH_ERROR = `Het uitvoerend bestuursniveau komt niet overeen met de geselecteerde overheid`;
@@ -82,11 +80,13 @@ export class ValidateInstanceForUpdateApplicationService {
     const errors = [];
 
     // 1. Translate the selected executing authorities to their corresponding levels
-    const levelsForSelectedAuthorities = await Promise.all(selectedAuthorities.map(
-      async (iri) => {
-        return await this._authorityLevelRepository.getExecutingAuthorityLevel(iri);
-      }
-    ));
+    const levelsForSelectedAuthorities = await Promise.all(
+      selectedAuthorities.map(async (iri) => {
+        return await this._authorityLevelRepository.getExecutingAuthorityLevel(
+          iri
+        );
+      })
+    );
 
     // 2. Perform the common validation call
     const hasErrors: boolean = this.hasInvalidAuthorityLevelMapping(
@@ -129,11 +129,13 @@ export class ValidateInstanceForUpdateApplicationService {
     const errors = [];
 
     // 1. Translate the selected executing authorities to their corresponding levels
-    const levelsForSelectedAuthorities = await Promise.all(selectedAuthorities.map(
-      async (iri) => {
-        return await this._authorityLevelRepository.getCompetentAuthorityLevel(iri);
-      }
-    ));
+    const levelsForSelectedAuthorities = await Promise.all(
+      selectedAuthorities.map(async (iri) => {
+        return await this._authorityLevelRepository.getCompetentAuthorityLevel(
+          iri
+        );
+      })
+    );
 
     // 2. Perform the common validation call
     const hasErrors: boolean = this.hasInvalidAuthorityLevelMapping(
@@ -145,27 +147,33 @@ export class ValidateInstanceForUpdateApplicationService {
       errors.push({ message: COMPETENT_AUTHORITY_MISMATCH_ERROR });
     }
 
-
     return errors;
   }
 
-  private hasInvalidAuthorityLevelMapping(selectedLevels: string[], levelsForSelectedAuthorities: string[]): boolean {
+  private hasInvalidAuthorityLevelMapping(
+    selectedLevels: string[],
+    levelsForSelectedAuthorities: string[]
+  ): boolean {
     // Check if every selected level has a matching authority selected with the same level
-    levelsForSelectedAuthorities = levelsForSelectedAuthorities.filter(level => level !== undefined);
+    levelsForSelectedAuthorities = levelsForSelectedAuthorities.filter(
+      (level) => level !== undefined
+    );
 
     // Skip the validation if there are no authorities selected
-    const hasLevelWithoutMatchingAuthority = (levelsForSelectedAuthorities.length !== 0) && selectedLevels.some((level) => {
-      return !levelsForSelectedAuthorities.includes(level);
-    });
+    const hasLevelWithoutMatchingAuthority =
+      levelsForSelectedAuthorities.length !== 0 &&
+      selectedLevels.some(
+        (level) => !levelsForSelectedAuthorities.includes(level)
+      );
 
     // Check if every selected authority has a matching level selected
     levelsForSelectedAuthorities = [...new Set(levelsForSelectedAuthorities)];
     // Skip the validation if there are no levels selected
-    const hasAuthorityWithoutMatchingLevel = (selectedLevels.length !== 0) && levelsForSelectedAuthorities.some((level) => {
-      if (level === undefined) return false;
-
-      return !selectedLevels.includes(level);
-    });
+    const hasAuthorityWithoutMatchingLevel =
+      selectedLevels.length !== 0 &&
+      levelsForSelectedAuthorities.some(
+        (level) => !selectedLevels.includes(level)
+      );
 
     return hasLevelWithoutMatchingAuthority || hasAuthorityWithoutMatchingLevel;
   }
