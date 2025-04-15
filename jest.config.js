@@ -5,5 +5,6 @@ module.exports = {
   testMatch: ["**/test/**/*.*-test.ts"],
   globalSetup: "./test/test-setup.ts",
   maxWorkers: 1,
+  setupFiles: ["dotenv/config"],
   setupFilesAfterEnv: ["jest-extended/all"],
 };
