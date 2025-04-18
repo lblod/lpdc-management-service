@@ -42,6 +42,7 @@ export class FormDefinitionFileRepository implements FormDefinitionRepository {
     form = this.replaceInForm(form, this.contactpoint, "");
     form = this.replaceInForm(form, this.municipalityMerger, ".");
     form = this.replaceInForm(form, this.language, language);
+    form = this.replaceInForm(form, this.nuts_version, NUTS_VERSION);
     return form;
   }
 
