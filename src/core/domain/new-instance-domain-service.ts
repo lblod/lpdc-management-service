@@ -17,6 +17,7 @@ import { ConceptDisplayConfigurationRepository } from "../port/driven/persistenc
 import { SelectConceptLanguageDomainService } from "./select-concept-language-domain-service";
 import { LanguageString } from "./language-string";
 import { InvariantError } from "./shared/lpdc-error";
+import { Person } from './person';
 
 export class NewInstanceDomainService {
   private readonly _instanceRepository: InstanceRepository;
@@ -40,6 +41,7 @@ export class NewInstanceDomainService {
 
   public async createNewEmpty(
     bestuurseenheid: Bestuurseenheid,
+    user: Person,
   ): Promise<Instance> {
     const instanceUuid = uuid();
     const instanceId = InstanceBuilder.buildIri(instanceUuid);
@@ -86,8 +88,8 @@ export class NewInstanceDomainService {
       false,
       now,
       now,
-      undefined,
-      undefined,
+      user,
+      user,
       undefined,
       InstanceStatusType.ONTWERP,
       undefined,
@@ -104,6 +106,7 @@ export class NewInstanceDomainService {
 
   public async createNewFromConcept(
     bestuurseenheid: Bestuurseenheid,
+    user: Person,
     concept: Concept,
   ): Promise<Instance> {
     const instanceUuid = uuid();
@@ -191,8 +194,8 @@ export class NewInstanceDomainService {
       false,
       now,
       now,
-      undefined,
-      undefined,
+      user,
+      user,
       undefined,
       InstanceStatusType.ONTWERP,
       undefined,
@@ -217,6 +220,7 @@ export class NewInstanceDomainService {
 
   public async copyFrom(
     bestuurseenheid: Bestuurseenheid,
+    user: Person,
     instanceToCopy: Instance,
     forMunicipalityMerger: boolean,
   ): Promise<Instance> {
@@ -243,6 +247,8 @@ export class NewInstanceDomainService {
       )
       .withDateCreated(FormatPreservingDate.now())
       .withDateModified(FormatPreservingDate.now())
+      .withCreator(user)
+      .withLastModifier(user)
       .withRequirements(
         instanceToCopy.requirements.map((req) => req.transformWithNewId()),
       )

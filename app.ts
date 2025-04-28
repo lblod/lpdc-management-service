@@ -447,6 +447,7 @@ async function createInstance(req: Request, res: Response) {
     const concept = await conceptRepository.findById(conceptId);
     const newInstance = await newInstanceDomainService.createNewFromConcept(
       bestuurseenheid,
+      session.user,
       concept,
     );
     return res.status(201).json({
@@ -458,7 +459,7 @@ async function createInstance(req: Request, res: Response) {
     });
   } else {
     const newInstance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+      await newInstanceDomainService.createNewEmpty(bestuurseenheid, session.user);
     return res.status(201).json({
       data: {
         type: "public-service",
@@ -693,6 +694,7 @@ async function confirmInstanceIsAlreadyInformal(req: Request, res: Response) {
   );
   await convertInstanceToInformalDomainService.confirmInstanceIsAlreadyInformal(
     bestuurseenheid,
+    session.user,
     instance,
     instanceVersion,
   );
@@ -714,6 +716,7 @@ async function convertInstanceToInformal(req: Request, res: Response) {
   );
   await convertInstanceToInformalDomainService.convertInstanceToInformal(
     bestuurseenheid,
+    session.user,
     instance,
     instanceVersion,
   );
@@ -807,6 +810,7 @@ async function copyInstance(req: Request, res: Response) {
   );
   const newInstance = await newInstanceDomainService.copyFrom(
     bestuurseenheid,
+    session.user,
     instance,
     forMunicipalityMerger,
   );
