@@ -33,6 +33,7 @@ import { InstanceSnapshot } from "../../core/domain/instance-snapshot";
 import { LegalResource } from "../../core/domain/legal-resource";
 import { Language } from "../../core/domain/language";
 import { PublishedInstanceSnapshot } from "../../core/domain/published-instance-snapshot";
+import { Person } from '../../core/domain/person';
 
 export class DomainToQuadsMapper {
   private readonly graphId;
@@ -231,6 +232,8 @@ export class DomainToQuadsMapper {
       ),
       this.dateCreated(instance.id, instance.dateCreated),
       this.dateModified(instance.id, instance.dateModified),
+      this.creator(instance.id, instance.creator),
+      this.lastModifier(instance.id, instance.lastModifier),
       instance.dateSent
         ? this.buildQuad(
             namedNode(instance.id.value),
@@ -528,6 +531,26 @@ export class DomainToQuadsMapper {
           namedNode(id.value),
           NS.schema("dateModified"),
           literal(value.value, NS.xsd("dateTime")),
+        )
+      : undefined;
+  }
+
+  private creator(id: Iri, person: Person | undefined) {
+    return person
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.dct("creator"),
+          namedNode(person.id.value),
+        )
+      : undefined;
+  }
+
+  private lastModifier(id: Iri, person: Person | undefined) {
+    return person
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.ext("lastModifiedBy"),
+          namedNode(person.id.value),
         )
       : undefined;
   }

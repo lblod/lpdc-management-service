@@ -3,6 +3,7 @@ import { Instance } from "../../../domain/instance";
 import { Bestuurseenheid } from "../../../domain/bestuurseenheid";
 import { FormatPreservingDate } from "../../../domain/format-preserving-date";
 import { ChosenFormType } from "../../../domain/types";
+import { Person } from '../../../domain/person';
 
 export interface InstanceRepository {
   findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<Instance>;
@@ -11,6 +12,7 @@ export interface InstanceRepository {
 
   update(
     bestuurseenheid: Bestuurseenheid,
+    user: Person,
     instance: Instance,
     instanceVersion: FormatPreservingDate,
     dontUpdateDateModified?: boolean,

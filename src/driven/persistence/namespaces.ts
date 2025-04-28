@@ -21,6 +21,7 @@ export const NS = {
   rdfs: Namespace("http://www.w3.org/2000/01/rdf-schema#"),
   ps: Namespace("http://vocab.belgif.be/ns/publicservice#"),
   xsd: Namespace("http://www.w3.org/2001/XMLSchema#"),
+  foaf: Namespace("http://xmlns.com/foaf/0.1/"),
   prov: Namespace("http://www.w3.org/ns/prov#"),
   ex: Namespace("http://example.com/ns#"),
   skos: Namespace("http://www.w3.org/2004/02/skos/core#"),

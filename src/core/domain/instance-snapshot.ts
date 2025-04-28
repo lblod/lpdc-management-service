@@ -29,6 +29,7 @@ import { LegalResource } from "./legal-resource";
 import { InvariantError } from "./shared/lpdc-error";
 import { uniq } from "lodash";
 import { VersionedLdesSnapshot } from "./versioned-ldes-snapshot";
+import { Person } from './person';
 
 export class InstanceSnapshot extends VersionedLdesSnapshot {
   private readonly _createdBy: Iri;

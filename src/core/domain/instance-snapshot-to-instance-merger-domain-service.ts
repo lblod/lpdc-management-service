@@ -28,6 +28,7 @@ import {
   CodeSchema,
 } from "../port/driven/persistence/code-repository";
 import { Spatial } from "./spatial";
+import { Person } from './person';
 
 const VALIDATION_ERROR_MESSAGE_PREFIX = (snapshot: Iri) =>
   `De instantiesnapshot ${snapshot.value}`;
@@ -351,6 +352,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     );
     await this._instanceRepository.update(
       bestuurseenheid,
+      null, //not relevant here?
       updatedInstance,
       oldInstance.dateModified,
       true,
@@ -430,6 +432,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
       false,
       instanceSnapshot.dateCreated,
       instanceSnapshot.dateModified,
+      null,
+      null,
       instanceSnapshot.generatedAtTime,
       InstanceStatusType.VERZONDEN,
       undefined,
@@ -483,6 +487,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
       false,
       instanceSnapshot.dateCreated,
       instanceSnapshot.dateModified,
+      instance.creator,
+      instance.lastModifier,
       instanceSnapshot.generatedAtTime,
       InstanceStatusType.VERZONDEN,
       undefined,

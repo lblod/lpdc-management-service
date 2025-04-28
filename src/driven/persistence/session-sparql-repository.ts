@@ -9,6 +9,7 @@ import {
   SystemError,
 } from "../../core/domain/shared/lpdc-error";
 import { uniq } from "lodash";
+import { Person } from '../../core/domain/person';
 
 export class SessionSparqlRepository implements SessionRepository {
   protected readonly querying: SparqlQuerying;
@@ -19,13 +20,30 @@ export class SessionSparqlRepository implements SessionRepository {
   async findById(id: Iri): Promise<Session> {
     const query = `
             ${PREFIX.ext}
-            SELECT ?bestuurseenheid ?sessionRole WHERE {
-                GRAPH ${sparqlEscapeUri(USER_SESSIONS_GRAPH)} {
-                    ${sparqlEscapeUri(id)} ext:sessionGroup ?bestuurseenheid .
-                    OPTIONAL {
-                        ${sparqlEscapeUri(id)} ext:sessionRole ?sessionRole .
-                    }
+            ${PREFIX.foaf}
+            ${PREFIX.mu}
+
+            SELECT ?bestuurseenheid ?sessionRole ?persoon ?firstName ?familyName WHERE {
+              GRAPH ${sparqlEscapeUri(USER_SESSIONS_GRAPH)} {
+                ${sparqlEscapeUri(id)} ext:sessionGroup ?bestuurseenheid .
+                OPTIONAL {
+                  ${sparqlEscapeUri(id)} ext:sessionRole ?sessionRole .
                 }
+
+                ${sparqlEscapeUri(id)} <http://mu.semte.ch/vocabularies/session/account> ?account.
+              }
+
+              # Create the organization graph URI based on the bestuurseenheid
+              BIND(IRI(CONCAT("http://mu.semte.ch/graphs/organizations/",
+                          REPLACE(STR(?bestuurseenheid), "http://data.lblod.info/id/bestuurseenheden/", "")))
+                AS ?orgGraph)
+
+              # Look for person information in their organization graph
+              GRAPH ?orgGraph {
+                ?persoon foaf:account ?account .
+                ?persoon foaf:firstName ?firstName;
+                      foaf:familyName ?familyName .
+              }
             }
         `;
     const result = await this.querying.list(query);
@@ -40,9 +58,15 @@ export class SessionSparqlRepository implements SessionRepository {
       );
     }
 
+    const userId = result[0]["persoon"]?.value;
+    const userFirstName = result[0]["firstName"]?.value;
+    const userFamilyName = result[0]["familyName"]?.value;
+    const user = new Person(new Iri(userId), userFirstName, userFamilyName);
+
     return new Session(
       id,
       new Iri(result[0]["bestuurseenheid"].value),
+      user,
       result
         .map((r) => r["sessionRole"]?.value)
         .filter((sr) => sr !== undefined),

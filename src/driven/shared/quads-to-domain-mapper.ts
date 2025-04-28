@@ -48,6 +48,7 @@ import {
   SystemError,
 } from "../../core/domain/shared/lpdc-error";
 import { Language } from "../../core/domain/language";
+import { Person } from '../../core/domain/person';
 
 export interface DoubleQuadReporter {
   report(
@@ -380,6 +381,8 @@ export class QuadsToDomainMapper {
       this.needsConversionFromFormalToInformal(id),
       this.dateCreated(id),
       this.dateModified(id),
+      this.creator(id),
+      this.lastModifier(id),
       this.dateSent(id),
       this.instanceStatusType(id),
       this.instanceReviewStatusType(id),
@@ -673,6 +676,19 @@ export class QuadsToDomainMapper {
     );
   }
 
+  private firstName(id: Iri): string | undefined {
+    return this.storeAccess.uniqueValue(
+      this.asNamedOrBlankNode(id),
+      NS.foaf("firstName"),
+    );
+  }
+  private familyName(id: Iri): string | undefined {
+    return this.storeAccess.uniqueValue(
+      this.asNamedOrBlankNode(id),
+      NS.foaf("familyName"),
+    );
+  }
+
   private isVersionOf(id: Iri): Iri | undefined {
     return this.asIri(
       this.storeAccess.uniqueStatement(
@@ -699,6 +715,39 @@ export class QuadsToDomainMapper {
       ),
     );
   }
+
+  creator(id: Iri): Person | undefined {
+    const statement = this.storeAccess.uniqueStatement(
+      this.asNamedOrBlankNode(id),
+      NS.dct("creator")
+    );
+
+    const userId = this.asIri(statement);
+    if (!userId) return undefined;
+
+    return Person.reconstitute(
+      userId,
+      this.firstName(userId),
+      this.familyName(userId)
+    );
+  }
+
+  lastModifier(id: Iri): Person | undefined {
+    const statement = this.storeAccess.uniqueStatement(
+      this.asNamedOrBlankNode(id),
+      NS.ext("lastModifiedBy")
+    );
+
+    const userId = this.asIri(statement);
+    if (!userId) return undefined;
+
+    return Person.reconstitute(
+      userId,
+      this.firstName(userId),
+      this.familyName(userId)
+    );
+  }
+
 
   private dateSent(id: Iri): FormatPreservingDate | undefined {
     return this.asFormatPreservingDate(

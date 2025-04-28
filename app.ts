@@ -54,6 +54,7 @@ import { ContactInfoOptionsSparqlRepository } from "./src/driven/persistence/con
 import { ConceptSnapshotProcessorApplicationService } from "./src/core/application/concept-snapshot-processor-application-service";
 import { SpatialSparqlRepository } from "./src/driven/persistence/spatial-sparql-repository";
 import { AuthorityLevelSparqlRepository } from './src/driven/persistence/authority-level-sparql-repository';
+import { Person } from './src/core/domain/person';
 
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
 //      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
@@ -538,6 +539,7 @@ async function updateInstance(req: Request, res: Response) {
 
   await updateInstanceApplicationService.update(
     bestuurseenheid,
+    session.user,
     instanceId,
     instanceVersion,
     delta.removals,
@@ -612,6 +614,7 @@ async function reopenInstance(req: Request, res: Response) {
 
   await instanceRepository.update(
     bestuurseenheid,
+    session.user,
     instance.reopen(),
     instanceVersion,
   );
@@ -781,6 +784,7 @@ async function publishInstance(req: Request, res: Response) {
   const publishedInstance = instance.publish();
   await instanceRepository.update(
     bestuurseenheid,
+    session.user,
     publishedInstance,
     instanceVersion,
   );

@@ -173,6 +173,7 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
 
     await this._instanceRepository.update(
       bestuurseenheid,
+      null,
       updatedInstance,
       instanceVersion,
     );
