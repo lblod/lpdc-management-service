@@ -643,6 +643,7 @@ async function confirmUpToDateTill(req: Request, res: Response) {
 
   await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(
     bestuurseenheid,
+    session.user,
     instance,
     instanceVersion,
     conceptSnapshot,
@@ -671,6 +672,7 @@ async function fullyTakeConceptSnapshotOver(req: Request, res: Response) {
 
   await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
     bestuurseenheid,
+    session.user,
     instance,
     instanceVersion,
     conceptSnapshot,
