@@ -568,6 +568,7 @@ async function linkConceptToInstance(req: Request, res: Response) {
 
   await linkConceptToInstanceDomainService.link(
     bestuurseenheid,
+    session.user,
     instance,
     instanceVersion,
     concept,
@@ -591,6 +592,7 @@ async function unlinkConceptFromInstance(req: Request, res: Response) {
 
   await linkConceptToInstanceDomainService.unlink(
     bestuurseenheid,
+    session.user,
     instance,
     instanceVersion,
   );
