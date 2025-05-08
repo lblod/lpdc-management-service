@@ -28,7 +28,6 @@ import {
   CodeSchema,
 } from "../port/driven/persistence/code-repository";
 import { Spatial } from "./spatial";
-import { Person } from './person';
 
 const VALIDATION_ERROR_MESSAGE_PREFIX = (snapshot: Iri) =>
   `De instantiesnapshot ${snapshot.value}`;
