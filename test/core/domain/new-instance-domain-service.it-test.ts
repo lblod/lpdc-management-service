@@ -78,7 +78,7 @@ describe("Creating a new Instance domain service", () => {
         .build();
 
       const createdInstance =
-        await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+        await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
 
       const reloadedInstance = await instanceRepository.findById(
         bestuurseenheid,
@@ -120,7 +120,7 @@ describe("Creating a new Instance domain service", () => {
         aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build(),
       );
       const createdInstance =
-        await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+        await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
 
       const reloadedInstance = await instanceRepository.findById(
         bestuurseenheid,
@@ -173,6 +173,7 @@ describe("Creating a new Instance domain service", () => {
       const createdInstance =
         await newInstanceDomainService.createNewFromConcept(
           bestuurseenheid,
+          undefined,
           concept,
         );
 
@@ -686,6 +687,7 @@ describe("Creating a new Instance domain service", () => {
       const createdInstance =
         await newInstanceDomainService.createNewFromConcept(
           bestuurseenheid,
+          undefined,
           concept,
         );
 
@@ -1099,6 +1101,7 @@ describe("Creating a new Instance domain service", () => {
       const createdInstance =
         await newInstanceDomainService.createNewFromConcept(
           bestuurseenheid,
+          undefined,
           concept,
         );
 
@@ -1566,6 +1569,7 @@ describe("Creating a new Instance domain service", () => {
       const createdInstance =
         await newInstanceDomainService.createNewFromConcept(
           bestuurseenheid,
+          undefined,
           concept,
         );
 
@@ -1612,6 +1616,7 @@ describe("Creating a new Instance domain service", () => {
       const createdInstance =
         await newInstanceDomainService.createNewFromConcept(
           bestuurseenheid,
+          undefined,
           concept,
         );
 
@@ -1657,6 +1662,7 @@ describe("Creating a new Instance domain service", () => {
 
       await newInstanceDomainService.createNewFromConcept(
         bestuurseenheid,
+        undefined,
         concept,
       );
 
@@ -1687,6 +1693,7 @@ describe("Creating a new Instance domain service", () => {
 
       const copiedInstance = await newInstanceDomainService.copyFrom(
         bestuurseenheid,
+        undefined,
         instance,
         false,
       );
@@ -1994,6 +2001,7 @@ describe("Creating a new Instance domain service", () => {
 
       const copiedInstance = await newInstanceDomainService.copyFrom(
         bestuurseenheid,
+        undefined,
         instance,
         false,
       );
@@ -2085,6 +2093,7 @@ describe("Creating a new Instance domain service", () => {
 
       const copiedInstance = await newInstanceDomainService.copyFrom(
         bestuurseenheid,
+        undefined,
         instance,
         false,
       );
@@ -2114,7 +2123,7 @@ describe("Creating a new Instance domain service", () => {
       await instanceRepository.save(bestuurseenheid, instance);
 
       await expect(
-        newInstanceDomainService.copyFrom(bestuurseenheid, instance, undefined),
+        newInstanceDomainService.copyFrom(bestuurseenheid, undefined, instance, undefined),
       ).rejects.toThrowWithMessage(
         InvariantError,
         `'forMunicipalityMerger' mag niet ontbreken`,
@@ -2143,6 +2152,7 @@ describe("Creating a new Instance domain service", () => {
 
       const copiedInstance = await newInstanceDomainService.copyFrom(
         bestuurseenheid,
+        undefined,
         instance,
         true,
       );
@@ -2193,6 +2203,7 @@ describe("Creating a new Instance domain service", () => {
 
       const copiedInstance = await newInstanceDomainService.copyFrom(
         bestuurseenheid,
+        undefined,
         instance,
         true,
       );

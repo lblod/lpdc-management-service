@@ -25,6 +25,10 @@ export function buildBestuurseenheidIri(uniqueId: string): Iri {
   return new Iri(`http://data.lblod.info/id/bestuurseenheden/${uniqueId}`);
 }
 
+export function buildPersonIri(uniqueId: string): Iri {
+  return new Iri(`http://data.lblod.info/id/persoon/${uniqueId}`);
+}
+
 export function buildVerwijstNaarIri(uniqueId: string): Iri {
   return new Iri(`https://data.vlaanderen.be/id/adres/${uniqueId}`);
 }

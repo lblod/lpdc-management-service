@@ -75,6 +75,7 @@ describe("fully take concept snapshot over", () => {
 
             await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
               bestuurseenheid,
+              undefined,
               instance,
               instance.dateModified,
               conceptSnapshot,
@@ -123,7 +124,7 @@ async function getInstancesWithHerzieningNodigForBestuurseenheid(
   const query = `
             ${PREFIX.lpdcExt}
             ${PREFIX.ext}
-           
+
             SELECT ?id WHERE {
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                     ?id a lpdcExt:InstancePublicService .

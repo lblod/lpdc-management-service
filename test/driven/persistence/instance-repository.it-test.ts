@@ -264,6 +264,7 @@ describe("InstanceRepository", () => {
 
       await repository.update(
         bestuurseenheid,
+        undefined,
         newInstance,
         oldInstance.dateModified,
       );
@@ -293,6 +294,7 @@ describe("InstanceRepository", () => {
 
       await repository.update(
         bestuurseenheid,
+        undefined,
         newInstance,
         oldInstance.dateModified,
       );
@@ -353,6 +355,7 @@ describe("InstanceRepository", () => {
 
       await repository.update(
         bestuurseenheid,
+        undefined,
         newInstance,
         oldInstance.dateModified,
       );
@@ -389,6 +392,7 @@ describe("InstanceRepository", () => {
       await expect(() =>
         repository.update(
           bestuurseenheid,
+          undefined,
           newInstance,
           oldInstance.dateModified,
         ),
@@ -412,6 +416,7 @@ describe("InstanceRepository", () => {
       await expect(() =>
         repository.update(
           bestuurseenheid,
+          undefined,
           newInstance,
           oldInstance.dateModified,
         ),
@@ -444,6 +449,7 @@ describe("InstanceRepository", () => {
 
       await repository.update(
         bestuurseenheid,
+        undefined,
         newInstance,
         oldInstance.dateModified,
       );
@@ -467,7 +473,7 @@ describe("InstanceRepository", () => {
       const newInstance = InstanceBuilder.from(dbInstance).build();
 
       await expect(() =>
-        repository.update(bestuurseenheid, newInstance, undefined),
+        repository.update(bestuurseenheid, undefined, newInstance, undefined),
       ).rejects.toThrowWithMessage(
         InvariantError,
         "Instantie versie mag niet ontbreken",
