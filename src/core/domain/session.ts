@@ -5,13 +5,13 @@ import { asSortedArray } from "./shared/collections-helper";
 export class Session {
   private readonly _id: Iri;
   private readonly _bestuurseenheidId: Iri;
-  private readonly _user: Iri;
+  private readonly _userId: Iri;
   private readonly _sessionRoles: SessionRoleTypeOrString[];
 
   constructor(
     id: Iri,
     bestuurseenheidId: Iri,
-    user: Iri,
+    userId: Iri,
     sessionRoles: SessionRoleTypeOrString[],
   ) {
     this._id = requiredValue(id, "id");
@@ -19,9 +19,9 @@ export class Session {
       bestuurseenheidId,
       "bestuurseenheidId",
     );
-    this._user = requiredValue(
-      user,
-      "user",
+    this._userId = requiredValue(
+      userId,
+      "userId",
     );
     this._sessionRoles = requireNoDuplicates(
       asSortedArray(sessionRoles),
@@ -37,8 +37,8 @@ export class Session {
     return this._bestuurseenheidId;
   }
 
-  get user(): Iri {
-    return this._user;
+  get userId(): Iri {
+    return this._userId;
   }
 
   get sessionRoles(): SessionRoleTypeOrString[] {

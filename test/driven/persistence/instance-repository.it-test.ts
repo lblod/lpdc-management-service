@@ -12,6 +12,7 @@ import {
   buildConceptIri,
   buildConceptSnapshotIri,
   buildNutsCodeIri,
+  buildPersonIri,
 } from "../../core/domain/iri-test-builder";
 import {
   ChosenFormType,
@@ -251,6 +252,7 @@ describe("InstanceRepository", () => {
   describe("update", () => {
     test("should update instance", async () => {
       const bestuurseenheid = aBestuurseenheid().build();
+      const user = buildPersonIri(uuid());
       const oldInstance = aFullInstance()
         .withCreatedBy(bestuurseenheid.id)
         .withProductId("80")
@@ -264,7 +266,7 @@ describe("InstanceRepository", () => {
 
       await repository.update(
         bestuurseenheid,
-        undefined,
+        user,
         newInstance,
         oldInstance.dateModified,
       );
@@ -275,6 +277,7 @@ describe("InstanceRepository", () => {
       );
       const expectedInstance = InstanceBuilder.from(newInstance)
         .withDateModified(FormatPreservingDate.now())
+        .withLastModifier(user)
         .build();
 
       expect(actualInstance).toEqual(expectedInstance);
@@ -1232,6 +1235,7 @@ describe("InstanceRepository", () => {
       const bestuurseenheid = aBestuurseenheid().build();
       const instanceDateCreated = InstanceTestBuilder.DATE_CREATED;
       const instanceDateModified = InstanceTestBuilder.DATE_MODIFIED;
+      const user = buildPersonIri(uuid());
 
       const instance = aMinimalInstance()
         .withId(instanceId)
@@ -1239,6 +1243,8 @@ describe("InstanceRepository", () => {
         .withCreatedBy(bestuurseenheid.id)
         .withDateCreated(instanceDateCreated)
         .withDateModified(instanceDateModified)
+        .withCreator(user)
+        .withLastModifier(user)
         .withDutchLanguageVariant(Language.INFORMAL)
         .withNeedsConversionFromFormalToInformal(true)
         .withStatus(InstanceStatusType.ONTWERP)
@@ -1251,6 +1257,8 @@ describe("InstanceRepository", () => {
         `<${instanceId}> <http://mu.semte.ch/vocabularies/core/uuid> """${instanceUUID}"""`,
         `<${instanceId}> <http://schema.org/dateCreated> """${instanceDateCreated.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
         `<${instanceId}> <http://schema.org/dateModified> """${instanceDateModified.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+        `<${instanceId}> <http://purl.org/dc/terms/creator> <${user.value}>`,
+        `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/lastModifiedBy> <${user.value}>`,
         `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> """${Language.INFORMAL}"""`,
         `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
         `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/ontwerp>`,
@@ -1269,11 +1277,14 @@ describe("InstanceRepository", () => {
       const instanceUUID = uuid();
       const instanceId = InstanceBuilder.buildIri(instanceUUID);
       const bestuurseenheid = aBestuurseenheid().build();
+      const user = buildPersonIri(uuid());
 
       const instance = aFullInstance()
         .withId(instanceId)
         .withUuid(instanceUUID)
         .withCreatedBy(bestuurseenheid.id)
+        .withCreator(user)
+        .withLastModifier(user)
         .withStatus(InstanceStatusType.VERZONDEN)
         .withSpatials([
           buildNutsCodeIri(45700),
@@ -1471,6 +1482,8 @@ describe("InstanceRepository", () => {
         `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#needsConversionFromFormalToInformal> """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>`,
         `<${instanceId}> <http://schema.org/dateCreated> """${InstanceTestBuilder.DATE_CREATED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
         `<${instanceId}> <http://schema.org/dateModified> """${InstanceTestBuilder.DATE_MODIFIED.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
+        `<${instanceId}> <http://purl.org/dc/terms/creator> <${user.value}>`,
+        `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/lastModifiedBy> <${user.value}>`,
         `<${instanceId}> <http://schema.org/dateSent> """${InstanceTestBuilder.DATE_SENT.value}"""^^<http://www.w3.org/2001/XMLSchema#dateTime>`,
         `<${instanceId}> <http://www.w3.org/ns/adms#status> <http://lblod.data.gift/concepts/instance-status/verzonden>`,
         `<${instanceId}> <http://mu.semte.ch/vocabularies/ext/reviewStatus> <http://lblod.data.gift/concepts/review-status/concept-gewijzigd>`,

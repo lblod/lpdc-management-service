@@ -446,7 +446,7 @@ async function createInstance(req: Request, res: Response) {
     const concept = await conceptRepository.findById(conceptId);
     const newInstance = await newInstanceDomainService.createNewFromConcept(
       bestuurseenheid,
-      session.user,
+      session.userId,
       concept,
     );
     return res.status(201).json({
@@ -458,7 +458,7 @@ async function createInstance(req: Request, res: Response) {
     });
   } else {
     const newInstance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid, session.user);
+      await newInstanceDomainService.createNewEmpty(bestuurseenheid, session.userId);
     return res.status(201).json({
       data: {
         type: "public-service",
@@ -539,7 +539,7 @@ async function updateInstance(req: Request, res: Response) {
 
   await updateInstanceApplicationService.update(
     bestuurseenheid,
-    session.user,
+    session.userId,
     instanceId,
     instanceVersion,
     delta.removals,
@@ -568,7 +568,7 @@ async function linkConceptToInstance(req: Request, res: Response) {
 
   await linkConceptToInstanceDomainService.link(
     bestuurseenheid,
-    session.user,
+    session.userId,
     instance,
     instanceVersion,
     concept,
@@ -592,7 +592,7 @@ async function unlinkConceptFromInstance(req: Request, res: Response) {
 
   await linkConceptToInstanceDomainService.unlink(
     bestuurseenheid,
-    session.user,
+    session.userId,
     instance,
     instanceVersion,
   );
@@ -616,7 +616,7 @@ async function reopenInstance(req: Request, res: Response) {
 
   await instanceRepository.update(
     bestuurseenheid,
-    session.user,
+    session.userId,
     instance.reopen(),
     instanceVersion,
   );
@@ -644,7 +644,7 @@ async function confirmUpToDateTill(req: Request, res: Response) {
 
   await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(
     bestuurseenheid,
-    session.user,
+    session.userId,
     instance,
     instanceVersion,
     conceptSnapshot,
@@ -673,7 +673,7 @@ async function fullyTakeConceptSnapshotOver(req: Request, res: Response) {
 
   await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
     bestuurseenheid,
-    session.user,
+    session.userId,
     instance,
     instanceVersion,
     conceptSnapshot,
@@ -697,7 +697,7 @@ async function confirmInstanceIsAlreadyInformal(req: Request, res: Response) {
   );
   await convertInstanceToInformalDomainService.confirmInstanceIsAlreadyInformal(
     bestuurseenheid,
-    session.user,
+    session.userId,
     instance,
     instanceVersion,
   );
@@ -719,7 +719,7 @@ async function convertInstanceToInformal(req: Request, res: Response) {
   );
   await convertInstanceToInformalDomainService.convertInstanceToInformal(
     bestuurseenheid,
-    session.user,
+    session.userId,
     instance,
     instanceVersion,
   );
@@ -790,7 +790,7 @@ async function publishInstance(req: Request, res: Response) {
   const publishedInstance = instance.publish();
   await instanceRepository.update(
     bestuurseenheid,
-    session.user,
+    session.userId,
     publishedInstance,
     instanceVersion,
   );
@@ -813,7 +813,7 @@ async function copyInstance(req: Request, res: Response) {
   );
   const newInstance = await newInstanceDomainService.copyFrom(
     bestuurseenheid,
-    session.user,
+    session.userId,
     instance,
     forMunicipalityMerger,
   );
