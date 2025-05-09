@@ -17,7 +17,7 @@ import { ConceptDisplayConfigurationRepository } from "../port/driven/persistenc
 import { SelectConceptLanguageDomainService } from "./select-concept-language-domain-service";
 import { LanguageString } from "./language-string";
 import { InvariantError } from "./shared/lpdc-error";
-import { Person } from './person';
+import { Iri } from './shared/iri';
 
 export class NewInstanceDomainService {
   private readonly _instanceRepository: InstanceRepository;
@@ -41,7 +41,7 @@ export class NewInstanceDomainService {
 
   public async createNewEmpty(
     bestuurseenheid: Bestuurseenheid,
-    user: Person,
+    user: Iri,
   ): Promise<Instance> {
     const instanceUuid = uuid();
     const instanceId = InstanceBuilder.buildIri(instanceUuid);
@@ -106,7 +106,7 @@ export class NewInstanceDomainService {
 
   public async createNewFromConcept(
     bestuurseenheid: Bestuurseenheid,
-    user: Person,
+    user: Iri,
     concept: Concept,
   ): Promise<Instance> {
     const instanceUuid = uuid();
@@ -220,7 +220,7 @@ export class NewInstanceDomainService {
 
   public async copyFrom(
     bestuurseenheid: Bestuurseenheid,
-    user: Person,
+    user: Iri,
     instanceToCopy: Instance,
     forMunicipalityMerger: boolean,
   ): Promise<Instance> {

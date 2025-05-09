@@ -6,7 +6,7 @@ import { Bestuurseenheid } from "./bestuurseenheid";
 import { FormatPreservingDate } from "./format-preserving-date";
 import { ConceptRepository } from "../port/driven/persistence/concept-repository";
 import { InvariantError } from "./shared/lpdc-error";
-import { Person } from './person';
+import { Iri } from './shared/iri';
 
 export class LinkConceptToInstanceDomainService {
   private readonly _instanceRepository: InstanceRepository;
@@ -26,7 +26,7 @@ export class LinkConceptToInstanceDomainService {
 
   async link(
     bestuurseenheid: Bestuurseenheid,
-    user: Person,
+    user: Iri,
     instance: Instance,
     instanceVersion: FormatPreservingDate,
     concept: Concept,
@@ -55,7 +55,7 @@ export class LinkConceptToInstanceDomainService {
 
   async unlink(
     bestuurseenheid: Bestuurseenheid,
-    user: Person,
+    user: Iri,
     instance: Instance,
     instanceVersion: FormatPreservingDate,
   ): Promise<void> {

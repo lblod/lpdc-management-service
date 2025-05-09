@@ -32,7 +32,6 @@ import {
 import { FormatPreservingDate } from "../../core/domain/format-preserving-date";
 import { requiredValue } from "../../core/domain/shared/invariant";
 import { PublishedInstanceSnapshotBuilder } from "../../core/domain/published-instance-snapshot";
-import { Person } from '../../core/domain/person';
 
 export class InstanceSparqlRepository implements InstanceRepository {
   protected readonly querying: SparqlQuerying;
@@ -122,7 +121,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
   async update(
     bestuurseenheid: Bestuurseenheid,
-    user: Person,
+    user: Iri,
     instance: Instance,
     instanceVersion: FormatPreservingDate,
     dontUpdateDateModified: boolean = false,

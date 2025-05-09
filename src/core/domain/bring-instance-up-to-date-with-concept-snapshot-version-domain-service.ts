@@ -14,7 +14,7 @@ import {
   InstanceStatusType,
   CompetentAuthorityLevelType,
 } from "./types";
-import { Person } from './person';
+import { Iri } from './shared/iri';
 
 export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
   private readonly _instanceRepository: InstanceRepository;
@@ -37,7 +37,7 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
 
   async fullyTakeConceptSnapshotOver(
     bestuurseenheid: Bestuurseenheid,
-    user: Person,
+    user: Iri,
     instance: Instance,
     instanceVersion: FormatPreservingDate,
     conceptSnapshot: ConceptSnapshot,
@@ -150,7 +150,7 @@ export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
 
   async confirmUpToDateTill(
     bestuurseenheid: Bestuurseenheid,
-    user: Person,
+    user: Iri,
     instance: Instance,
     instanceVersion: FormatPreservingDate,
     conceptSnapshot: ConceptSnapshot,

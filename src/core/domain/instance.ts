@@ -33,7 +33,6 @@ import { LegalResource } from "./legal-resource";
 import { InvariantError } from "./shared/lpdc-error";
 import { isEqual, uniq } from "lodash";
 import { lastPartAfter } from "./shared/string-helper";
-import { Person } from './person';
 
 export class Instance {
   private readonly _id: Iri;
@@ -70,8 +69,8 @@ export class Instance {
   private readonly _needsConversionFromFormalToInformal: boolean;
   private readonly _dateCreated: FormatPreservingDate;
   private readonly _dateModified: FormatPreservingDate;
-  private readonly _creator: Person;
-  private readonly _lastModifier: Person;
+  private readonly _creator: Iri;
+  private readonly _lastModifier: Iri;
   private readonly _dateSent: FormatPreservingDate | undefined;
   private readonly _status: InstanceStatusType;
   private readonly _reviewStatus: InstanceReviewStatusType | undefined;
@@ -115,8 +114,8 @@ export class Instance {
     needsConversionFromFormalToInformal: boolean,
     dateCreated: FormatPreservingDate,
     dateModified: FormatPreservingDate,
-    creator: Person,
-    lastModifier: Person,
+    creator: Iri,
+    lastModifier: Iri,
     dateSent: FormatPreservingDate | undefined,
     status: InstanceStatusType,
     reviewStatus: InstanceReviewStatusType,
@@ -465,11 +464,11 @@ export class Instance {
     return this._dateModified;
   }
 
-  get creator(): Person {
+  get creator(): Iri {
     return this._creator;
   }
 
-  get lastModifier(): Person {
+  get lastModifier(): Iri {
     return this._lastModifier;
   }
 
@@ -609,8 +608,8 @@ export class InstanceBuilder {
   private needsConversionFromFormalToInformal: boolean;
   private dateCreated: FormatPreservingDate;
   private dateModified: FormatPreservingDate;
-  private creator: Person;
-  private lastModifier: Person;
+  private creator: Iri;
+  private lastModifier: Iri;
   private dateSent: FormatPreservingDate | undefined;
   private status: InstanceStatusType;
   private reviewStatus: InstanceReviewStatusType;
@@ -865,12 +864,12 @@ export class InstanceBuilder {
     return this;
   }
 
-  public withCreator(user: Person): InstanceBuilder {
+  public withCreator(user: Iri): InstanceBuilder {
     this.creator = user;
     return this;
   }
 
-  public withLastModifier(user: Person): InstanceBuilder {
+  public withLastModifier(user: Iri): InstanceBuilder {
     this.lastModifier = user;
     return this;
   }

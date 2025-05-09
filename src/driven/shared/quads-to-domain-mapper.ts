@@ -48,7 +48,6 @@ import {
   SystemError,
 } from "../../core/domain/shared/lpdc-error";
 import { Language } from "../../core/domain/language";
-import { Person } from '../../core/domain/person';
 
 export interface DoubleQuadReporter {
   report(
@@ -716,35 +715,21 @@ export class QuadsToDomainMapper {
     );
   }
 
-  creator(id: Iri): Person | undefined {
-    const statement = this.storeAccess.uniqueStatement(
-      this.asNamedOrBlankNode(id),
-      NS.dct("creator")
-    );
-
-    const userId = this.asIri(statement);
-    if (!userId) return undefined;
-
-    return Person.reconstitute(
-      userId,
-      this.firstName(userId),
-      this.familyName(userId)
+  creator(id: Iri): Iri | undefined {
+    return this.asIri(
+      this.storeAccess.uniqueStatement(
+        this.asNamedOrBlankNode(id),
+        NS.dct("creator")
+      ),
     );
   }
 
-  lastModifier(id: Iri): Person | undefined {
-    const statement = this.storeAccess.uniqueStatement(
-      this.asNamedOrBlankNode(id),
-      NS.ext("lastModifiedBy")
-    );
-
-    const userId = this.asIri(statement);
-    if (!userId) return undefined;
-
-    return Person.reconstitute(
-      userId,
-      this.firstName(userId),
-      this.familyName(userId)
+  lastModifier(id: Iri): Iri | undefined {
+    return this.asIri(
+      this.storeAccess.uniqueStatement(
+        this.asNamedOrBlankNode(id),
+        NS.ext("lastModifiedBy")
+      ),
     );
   }
 

@@ -1,18 +1,17 @@
 import { Iri } from "./shared/iri";
 import { requiredValue, requireNoDuplicates } from "./shared/invariant";
 import { asSortedArray } from "./shared/collections-helper";
-import { Person } from './person';
 
 export class Session {
   private readonly _id: Iri;
   private readonly _bestuurseenheidId: Iri;
-  private readonly _user: Person;
+  private readonly _user: Iri;
   private readonly _sessionRoles: SessionRoleTypeOrString[];
 
   constructor(
     id: Iri,
     bestuurseenheidId: Iri,
-    user: Person,
+    user: Iri,
     sessionRoles: SessionRoleTypeOrString[],
   ) {
     this._id = requiredValue(id, "id");
@@ -22,7 +21,7 @@ export class Session {
     );
     this._user = requiredValue(
       user,
-      "person",
+      "user",
     );
     this._sessionRoles = requireNoDuplicates(
       asSortedArray(sessionRoles),
@@ -38,7 +37,7 @@ export class Session {
     return this._bestuurseenheidId;
   }
 
-  get user(): Person {
+  get user(): Iri {
     return this._user;
   }
 
