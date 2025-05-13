@@ -22,7 +22,7 @@ export class SessionSparqlRepository implements SessionRepository {
             ${PREFIX.foaf}
             ${PREFIX.mu}
 
-            SELECT ?bestuurseenheid ?sessionRole ?persoon ?firstName ?familyName WHERE {
+            SELECT ?bestuurseenheid ?sessionRole ?persoon WHERE {
               GRAPH ${sparqlEscapeUri(USER_SESSIONS_GRAPH)} {
                 ${sparqlEscapeUri(id)} ext:sessionGroup ?bestuurseenheid .
                 OPTIONAL {
@@ -40,8 +40,6 @@ export class SessionSparqlRepository implements SessionRepository {
               # Look for person information in their organization graph
               GRAPH ?orgGraph {
                 ?persoon foaf:account ?account .
-                ?persoon foaf:firstName ?firstName;
-                      foaf:familyName ?familyName .
               }
             }
         `;
