@@ -29,6 +29,10 @@ export function buildPersonIri(uniqueId: string): Iri {
   return new Iri(`http://data.lblod.info/id/persoon/${uniqueId}`);
 }
 
+export function buildAccountIri(uniqueId: string): Iri {
+  return new Iri(`http://data.lblod.info/id/account/${uniqueId}`);
+}
+
 export function buildVerwijstNaarIri(uniqueId: string): Iri {
   return new Iri(`https://data.vlaanderen.be/id/adres/${uniqueId}`);
 }

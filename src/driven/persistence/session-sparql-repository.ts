@@ -22,7 +22,7 @@ export class SessionSparqlRepository implements SessionRepository {
             ${PREFIX.foaf}
             ${PREFIX.mu}
 
-            SELECT ?bestuurseenheid ?sessionRole ?persoon WHERE {
+            SELECT ?bestuurseenheid ?sessionRole ?account WHERE {
               GRAPH ${sparqlEscapeUri(USER_SESSIONS_GRAPH)} {
                 ${sparqlEscapeUri(id)} ext:sessionGroup ?bestuurseenheid .
                 OPTIONAL {
@@ -30,16 +30,6 @@ export class SessionSparqlRepository implements SessionRepository {
                 }
 
                 ${sparqlEscapeUri(id)} <http://mu.semte.ch/vocabularies/session/account> ?account.
-              }
-
-              # Create the organization graph URI based on the bestuurseenheid
-              BIND(IRI(CONCAT("http://mu.semte.ch/graphs/organizations/",
-                          REPLACE(STR(?bestuurseenheid), "http://data.lblod.info/id/bestuurseenheden/", "")))
-                AS ?orgGraph)
-
-              # Look for person information in their organization graph
-              GRAPH ?orgGraph {
-                ?persoon foaf:account ?account .
               }
             }
         `;
@@ -58,7 +48,7 @@ export class SessionSparqlRepository implements SessionRepository {
     return new Session(
       id,
       new Iri(result[0]["bestuurseenheid"].value),
-      new Iri(result[0]["persoon"].value),
+      new Iri(result[0]["account"].value),
       result
         .map((r) => r["sessionRole"]?.value)
         .filter((sr) => sr !== undefined),
