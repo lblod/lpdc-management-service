@@ -72,6 +72,7 @@ const PREFIX = {
   prov: "PREFIX prov: <http://www.w3.org/ns/prov#>",
   regorg: "PREFIX regorg: <http://www.w3.org/ns/regorg#>",
   time: "PREFIX time: <http://www.w3.org/2006/time#>",
+  session: " PREFIX session: <http://mu.semte.ch/vocabularies/session/>",
 };
 
 export {

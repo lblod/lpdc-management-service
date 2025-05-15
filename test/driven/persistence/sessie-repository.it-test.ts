@@ -6,6 +6,7 @@ import { DirectDatabaseAccess } from "./direct-database-access";
 import { SessionRoleType } from "../../../src/core/domain/session";
 import { USER_SESSIONS_GRAPH } from "../../../config";
 import {
+  buildAccountIri,
   buildBestuurseenheidIri,
   buildSessionIri,
 } from "../../core/domain/iri-test-builder";
@@ -45,10 +46,12 @@ describe("SessionRepository", () => {
     test("Verify ontology and mapping", async () => {
       const sessionId = buildSessionIri(uuid());
       const bestuurseenheidId = buildBestuurseenheidIri(uuid());
+      const accountId = buildAccountIri(uuid());
 
       const session = aSession()
         .withId(sessionId)
         .withBestuurseenheidId(bestuurseenheidId)
+        .withAccountId(accountId)
         .withSessionRoles([
           SessionRoleType.LOKETLB_LPDCGEBRUIKER,
           "LoketLB-bbcdrGebruiker",
@@ -59,6 +62,7 @@ describe("SessionRepository", () => {
       await directDatabaseAccess.insertData(USER_SESSIONS_GRAPH, [
         `<${sessionId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
         `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionGroup> <${bestuurseenheidId}>`,
+        `<${sessionId}> <http://mu.semte.ch/vocabularies/session/account> <${accountId}>`,
         `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionRole> """LoketLB-LPDCGebruiker"""`,
         `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionRole> """LoketLB-bbcdrGebruiker"""`,
         `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionRole> """LoketLB-berichtenGebruiker"""`,
@@ -72,16 +76,19 @@ describe("SessionRepository", () => {
     test("Can load a session without a session role", async () => {
       const sessionId = buildSessionIri(uuid());
       const bestuurseenheidId = buildBestuurseenheidIri(uuid());
+      const accountId = buildAccountIri(uuid());
 
       const session = aSession()
         .withId(sessionId)
         .withBestuurseenheidId(bestuurseenheidId)
+        .withAccountId(accountId)
         .withSessionRoles([])
         .build();
 
       await directDatabaseAccess.insertData(USER_SESSIONS_GRAPH, [
         `<${sessionId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
         `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionGroup> <${bestuurseenheidId}>`,
+        `<${sessionId}> <http://mu.semte.ch/vocabularies/session/account> <${accountId}>`,
       ]);
 
       const actualSession = await repository.findById(sessionId);
@@ -93,16 +100,19 @@ describe("SessionRepository", () => {
     test("Can load a session without a LoketLB-LPDCGebruiker session role", async () => {
       const sessionId = buildSessionIri(uuid());
       const bestuurseenheidId = buildBestuurseenheidIri(uuid());
+      const accountId = buildAccountIri(uuid());
 
       const session = aSession()
         .withId(sessionId)
         .withBestuurseenheidId(bestuurseenheidId)
+        .withAccountId(accountId)
         .withSessionRoles(["AnyOtherRole"])
         .build();
 
       await directDatabaseAccess.insertData(USER_SESSIONS_GRAPH, [
         `<${sessionId}> a <http://data.vlaanderen.be/ns/besluit#Bestuurseenheid>`,
         `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionGroup> <${bestuurseenheidId}>`,
+        `<${sessionId}> <http://mu.semte.ch/vocabularies/session/account> <${accountId}>`,
         `<${sessionId}> <http://mu.semte.ch/vocabularies/ext/sessionRole> """AnyOtherRole"""`,
       ]);
 
