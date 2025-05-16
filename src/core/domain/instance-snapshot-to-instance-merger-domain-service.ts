@@ -351,6 +351,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
     );
     await this._instanceRepository.update(
       bestuurseenheid,
+      null,
       updatedInstance,
       oldInstance.dateModified,
       true,
@@ -430,6 +431,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
       false,
       instanceSnapshot.dateCreated,
       instanceSnapshot.dateModified,
+      null,
+      null,
       instanceSnapshot.generatedAtTime,
       InstanceStatusType.VERZONDEN,
       undefined,
@@ -483,6 +486,8 @@ export class InstanceSnapshotToInstanceMergerDomainService {
       false,
       instanceSnapshot.dateCreated,
       instanceSnapshot.dateModified,
+      null,
+      null,
       instanceSnapshot.generatedAtTime,
       InstanceStatusType.VERZONDEN,
       undefined,

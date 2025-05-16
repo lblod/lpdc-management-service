@@ -51,10 +51,11 @@ describe("Update Instance Application Service tests", () => {
     await bestuurseenheidRepository.save(bestuurseenheid);
 
     const instance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+      await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
 
     await updateInstanceApplicationService.update(
       bestuurseenheid,
+      undefined,
       instance.id,
       instance.dateModified,
       "@prefix : <#>.\n\n",
@@ -78,6 +79,7 @@ describe("Update Instance Application Service tests", () => {
 
     await updateInstanceApplicationService.update(
       bestuurseenheid,
+      undefined,
       instance.id,
       instance.dateModified,
       `        @prefix : <#>\n.
@@ -109,10 +111,11 @@ pub:${instance.uuid} dct:title "initial title"@nl-be-x-formal.\n\n`,
     await bestuurseenheidRepository.save(bestuurseenheid);
 
     const instance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+      await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
 
     await updateInstanceApplicationService.update(
       bestuurseenheid,
+      undefined,
       instance.id,
       instance.dateModified,
       "@prefix : <#>.\n\n",
@@ -170,6 +173,7 @@ pub:${instance.uuid}\n
 
     await updateInstanceApplicationService.update(
       bestuurseenheid,
+      undefined,
       instance.id,
       instance.dateModified,
       `
@@ -208,10 +212,11 @@ pub:${instance.uuid}\n
     await bestuurseenheidRepository.save(bestuurseenheid);
 
     const instance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+      await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
 
     await updateInstanceApplicationService.update(
       bestuurseenheid,
+      undefined,
       instance.id,
       instance.dateModified,
       `@prefix : <#>.
@@ -237,7 +242,7 @@ pub:${instance.uuid}\n
     await bestuurseenheidRepository.save(bestuurseenheid);
 
     const emptyInstance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+      await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
     const instanceAfterCreate = await instanceRepository.findById(
       bestuurseenheid,
       emptyInstance.id,
@@ -245,6 +250,7 @@ pub:${instance.uuid}\n
 
     await updateInstanceApplicationService.update(
       bestuurseenheid,
+      undefined,
       instanceAfterCreate.id,
       instanceAfterCreate.dateModified,
       "@prefix : <#>.\n\n",
@@ -257,6 +263,7 @@ pub:${instance.uuid}\n
     await expect(() =>
       updateInstanceApplicationService.update(
         bestuurseenheid,
+        undefined,
         instanceAfterCreate.id,
         FormatPreservingDate.of("2024-01-15T00:00:00.672Z"),
         `        @prefix : <#>\n.

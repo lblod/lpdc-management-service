@@ -380,6 +380,8 @@ export class QuadsToDomainMapper {
       this.needsConversionFromFormalToInformal(id),
       this.dateCreated(id),
       this.dateModified(id),
+      this.creator(id),
+      this.lastModifier(id),
       this.dateSent(id),
       this.instanceStatusType(id),
       this.instanceReviewStatusType(id),
@@ -673,6 +675,19 @@ export class QuadsToDomainMapper {
     );
   }
 
+  private firstName(id: Iri): string | undefined {
+    return this.storeAccess.uniqueValue(
+      this.asNamedOrBlankNode(id),
+      NS.foaf("firstName"),
+    );
+  }
+  private familyName(id: Iri): string | undefined {
+    return this.storeAccess.uniqueValue(
+      this.asNamedOrBlankNode(id),
+      NS.foaf("familyName"),
+    );
+  }
+
   private isVersionOf(id: Iri): Iri | undefined {
     return this.asIri(
       this.storeAccess.uniqueStatement(
@@ -699,6 +714,25 @@ export class QuadsToDomainMapper {
       ),
     );
   }
+
+  creator(id: Iri): Iri | undefined {
+    return this.asIri(
+      this.storeAccess.uniqueStatement(
+        this.asNamedOrBlankNode(id),
+        NS.dct("creator")
+      ),
+    );
+  }
+
+  lastModifier(id: Iri): Iri | undefined {
+    return this.asIri(
+      this.storeAccess.uniqueStatement(
+        this.asNamedOrBlankNode(id),
+        NS.ext("lastModifiedBy")
+      ),
+    );
+  }
+
 
   private dateSent(id: Iri): FormatPreservingDate | undefined {
     return this.asFormatPreservingDate(

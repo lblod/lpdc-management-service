@@ -5,17 +5,19 @@ import {
   SessionRoleTypeOrString,
 } from "../../../src/core/domain/session";
 import { uuid } from "../../../mu-helper";
-import { buildBestuurseenheidIri, buildSessionIri } from "./iri-test-builder";
+import { buildBestuurseenheidIri, buildAccountIri, buildSessionIri } from "./iri-test-builder";
 
 export function aSession(): SessionTestBuilder {
   return new SessionTestBuilder()
     .withId(buildSessionIri(uuid()))
     .withBestuurseenheidId(buildBestuurseenheidIri(uuid()))
+    .withAccountId(buildAccountIri(uuid()))
     .withSessionRoles([SessionRoleType.LOKETLB_LPDCGEBRUIKER]);
 }
 export class SessionTestBuilder {
   private id: Iri;
   private bestuurseenheidId: Iri;
+  private accountId: Iri;
   private sessionRoles: SessionRoleTypeOrString[] = [];
 
   public withId(id: Iri): SessionTestBuilder {
@@ -28,6 +30,11 @@ export class SessionTestBuilder {
     return this;
   }
 
+  public withAccountId(accountId: Iri): SessionTestBuilder {
+    this.accountId = accountId;
+    return this;
+  }
+
   public withSessionRoles(
     sessionRoles: SessionRoleTypeOrString[],
   ): SessionTestBuilder {
@@ -36,6 +43,6 @@ export class SessionTestBuilder {
   }
 
   public build(): Session {
-    return new Session(this.id, this.bestuurseenheidId, this.sessionRoles);
+    return new Session(this.id, this.bestuurseenheidId, this.accountId, this.sessionRoles);
   }
 }

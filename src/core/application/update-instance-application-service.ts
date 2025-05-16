@@ -19,6 +19,7 @@ export class UpdateInstanceApplicationService {
   //Note: the update instance application service is directly tied to semantic forms, hence that part of the input parameters are xxxAsTurtleFormat
   async update(
     bestuurseenheid: Bestuurseenheid,
+    user: Iri,
     instanceId: Iri,
     instanceVersion: FormatPreservingDate | undefined,
     removalsAsTurtleFormat: string,
@@ -38,6 +39,7 @@ export class UpdateInstanceApplicationService {
 
     await this._instanceRepository.update(
       bestuurseenheid,
+      user,
       mergedInstance,
       instanceVersion,
     );

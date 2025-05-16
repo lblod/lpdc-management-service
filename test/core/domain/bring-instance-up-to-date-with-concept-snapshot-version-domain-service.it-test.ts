@@ -102,6 +102,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         newConceptSnapshot,
@@ -146,6 +147,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         latestFunctionalChangedSnapshot,
@@ -199,6 +201,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         conceptSnapshot2,
@@ -252,6 +255,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         conceptSnapshot3,
@@ -293,6 +297,7 @@ describe("Bring instance up to date with concept snapshot version domain service
       await expect(() =>
         bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(
           bestuurseenheid,
+          undefined,
           instance,
           instance.dateModified,
           aFullConceptSnapshot().build(),
@@ -325,6 +330,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         conceptSnapshot,
@@ -410,6 +416,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         newConceptSnapshot,
@@ -665,6 +672,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         newConceptSnapshot,
@@ -742,6 +750,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         newConceptSnapshot,
@@ -793,6 +802,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         newConceptSnapshot,
@@ -835,6 +845,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         newConceptSnapshot,
@@ -876,6 +887,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         newConceptSnapshot,
@@ -917,6 +929,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         latestFunctionalChangedSnapshot,
@@ -969,6 +982,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         conceptSnapshot2,
@@ -1021,6 +1035,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         conceptSnapshot3,
@@ -1059,6 +1074,7 @@ describe("Bring instance up to date with concept snapshot version domain service
       await expect(() =>
         bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
           bestuurseenheid,
+          undefined,
           instance,
           instance.dateModified,
           aFullConceptSnapshot().build(),
@@ -1091,6 +1107,7 @@ describe("Bring instance up to date with concept snapshot version domain service
 
       await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         conceptSnapshot,
@@ -1155,6 +1172,7 @@ describe("Bring instance up to date with concept snapshot version domain service
       await expect(
         bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
           bestuurseenheid,
+          undefined,
           instanceWithoutReviewStatus,
           instanceWithoutReviewStatus.dateModified,
           newConceptSnapshot,
@@ -1166,6 +1184,7 @@ describe("Bring instance up to date with concept snapshot version domain service
       await expect(
         bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
           bestuurseenheid,
+          undefined,
           instanceWithArchivedConcept,
           instanceWithoutReviewStatus.dateModified,
           newConceptSnapshot,
@@ -1204,6 +1223,7 @@ describe("Bring instance up to date with concept snapshot version domain service
       await expect(
         bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
           bestuurseenheid,
+          undefined,
           instance,
           instance.dateModified,
           archivedConceptSnapshot,

@@ -31,6 +31,20 @@ describe("constructing", () => {
     ).toThrowWithMessage(InvariantError, "iri mag niet leeg zijn");
   });
 
+  test("Undefined accountId throws error", () => {
+    expect(() =>
+      aSession().withAccountId(undefined).build(),
+    ).toThrowWithMessage(
+      InvariantError,
+      "accountId mag niet ontbreken",
+    );
+  });
+  test("Invalid iri accountId throws error", () => {
+    expect(() =>
+      aSession().withAccountId(new Iri("   ")).build(),
+    ).toThrowWithMessage(InvariantError, "iri mag niet leeg zijn");
+  });
+
   test("Duplicate session roles throws error", () => {
     expect(() =>
       aSession().withSessionRoles(["abc", "abc"]).build(),

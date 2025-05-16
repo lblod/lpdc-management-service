@@ -11,6 +11,7 @@ export interface InstanceRepository {
 
   update(
     bestuurseenheid: Bestuurseenheid,
+    user: Iri,
     instance: Instance,
     instanceVersion: FormatPreservingDate,
     dontUpdateDateModified?: boolean,

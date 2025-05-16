@@ -231,6 +231,8 @@ export class DomainToQuadsMapper {
       ),
       this.dateCreated(instance.id, instance.dateCreated),
       this.dateModified(instance.id, instance.dateModified),
+      this.creator(instance.id, instance.creator),
+      this.lastModifier(instance.id, instance.lastModifier),
       instance.dateSent
         ? this.buildQuad(
             namedNode(instance.id.value),
@@ -528,6 +530,26 @@ export class DomainToQuadsMapper {
           namedNode(id.value),
           NS.schema("dateModified"),
           literal(value.value, NS.xsd("dateTime")),
+        )
+      : undefined;
+  }
+
+  private creator(id: Iri, value: Iri | undefined) {
+    return value
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.dct("creator"),
+          namedNode(value.value),
+        )
+      : undefined;
+  }
+
+  private lastModifier(id: Iri, value: Iri | undefined) {
+    return value
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.ext("lastModifiedBy"),
+          namedNode(value.value),
         )
       : undefined;
   }

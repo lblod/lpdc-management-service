@@ -19,13 +19,18 @@ export class SessionSparqlRepository implements SessionRepository {
   async findById(id: Iri): Promise<Session> {
     const query = `
             ${PREFIX.ext}
-            SELECT ?bestuurseenheid ?sessionRole WHERE {
-                GRAPH ${sparqlEscapeUri(USER_SESSIONS_GRAPH)} {
-                    ${sparqlEscapeUri(id)} ext:sessionGroup ?bestuurseenheid .
-                    OPTIONAL {
-                        ${sparqlEscapeUri(id)} ext:sessionRole ?sessionRole .
-                    }
+            ${PREFIX.foaf}
+            ${PREFIX.mu}
+
+            SELECT ?bestuurseenheid ?sessionRole ?account WHERE {
+              GRAPH ${sparqlEscapeUri(USER_SESSIONS_GRAPH)} {
+                ${sparqlEscapeUri(id)} ext:sessionGroup ?bestuurseenheid .
+                OPTIONAL {
+                  ${sparqlEscapeUri(id)} ext:sessionRole ?sessionRole .
                 }
+
+                ${sparqlEscapeUri(id)} <http://mu.semte.ch/vocabularies/session/account> ?account.
+              }
             }
         `;
     const result = await this.querying.list(query);
@@ -43,6 +48,7 @@ export class SessionSparqlRepository implements SessionRepository {
     return new Session(
       id,
       new Iri(result[0]["bestuurseenheid"].value),
+      new Iri(result[0]["account"].value),
       result
         .map((r) => r["sessionRole"]?.value)
         .filter((sr) => sr !== undefined),

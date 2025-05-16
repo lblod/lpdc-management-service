@@ -68,6 +68,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
         NS.dct("source").value,
         NS.dct("spatial").value,
         NS.pav("createdBy").value,
+        NS.dct("creator").value,
+        NS.ext("lastModifiedBy").value,
       ],
       [
         NS.skos("Concept").value,
@@ -77,6 +79,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         NS.lpdcExt("InstancePublicServiceSnapshot").value,
         NS.lpdcExt("ConceptualPublicService").value,
         NS.lpdcExt("ConceptualPublicServiceSnapshot").value,
+        NS.foaf("Person").value,
       ],
     );
 
@@ -106,7 +109,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         : [];
 
     const query = `
-            INSERT DATA { 
+            INSERT DATA {
                 GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                     ${quads.join("\n")}
                     ${publishedInstanceSnapshotTriples.join("\n")}
@@ -118,6 +121,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
   async update(
     bestuurseenheid: Bestuurseenheid,
+    user: Iri,
     instance: Instance,
     instanceVersion: FormatPreservingDate,
     dontUpdateDateModified: boolean = false,
@@ -140,6 +144,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
       ? instance
       : InstanceBuilder.from(instance)
           .withDateModified(FormatPreservingDate.now())
+          .withLastModifier(user)
           .build();
 
     const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph())
@@ -221,9 +226,9 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 ${PREFIX.schema}
                 ${PREFIX.dct}
                 ${PREFIX.prov}
-                
+
                 WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
-                DELETE {            
+                DELETE {
                     ${triples.join("\n")}
                 }
                 INSERT {
@@ -261,7 +266,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
     const query = `
             ${PREFIX.as}
             ${PREFIX.lpdcExt}
-            
+
             ASK WHERE {
                 GRAPH <${bestuurseenheid.userGraph()}> {
                     ?anyId a as:Tombstone;
@@ -290,7 +295,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
             ${PREFIX.ext}
             ${PREFIX.lpdcExt}
             ${PREFIX.dct}
-            
+
             DELETE {
                 GRAPH ?g {
                     ?service ext:reviewStatus ?status.
@@ -307,7 +312,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                         dct:source ${sparqlEscapeUri(conceptId)}.
                     OPTIONAL {
                         ?service ext:reviewStatus ?status.
-                    }    
+                    }
                 }
             }`;
       await this.querying.deleteInsert(updateReviewStatusesQuery);
@@ -338,22 +343,22 @@ export class InstanceSparqlRepository implements InstanceRepository {
     const query = `
         ${PREFIX.lpdcExt}
         WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
-        
+
         DELETE {
            ?instance lpdcExt:needsConversionFromFormalToInformal """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>;
                      <${NS.schema("dateModified").value}> ?previousDateModified.
         }
-        INSERT { 
+        INSERT {
             ?instance lpdcExt:needsConversionFromFormalToInformal """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>;
-                    <${NS.schema("dateModified").value}> ${sparqlEscapeDateTime(now.toISOString())}.     
-        }     
+                    <${NS.schema("dateModified").value}> ${sparqlEscapeDateTime(now.toISOString())}.
+        }
         WHERE {
             ?instance a lpdcExt:InstancePublicService;
                    lpdcExt:dutchLanguageVariant ?variant;
                    <${NS.schema("dateModified").value}> ?previousDateModified .
             FILTER (?variant != "nl-be-x-informal" && CONCAT("nl-be-x-", "${chosenType}") = "nl-be-x-informal")
         }
-           
+
         `;
     await this.querying.deleteInsert(query);
   }

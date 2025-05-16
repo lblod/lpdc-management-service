@@ -53,6 +53,7 @@ describe("LinkConceptToInstanceDomainService", () => {
 
       await linkConceptToInstanceDomainService.link(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         concept,
@@ -96,6 +97,7 @@ describe("LinkConceptToInstanceDomainService", () => {
 
       await linkConceptToInstanceDomainService.link(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
         concept,
@@ -147,6 +149,7 @@ describe("LinkConceptToInstanceDomainService", () => {
         async () =>
           await linkConceptToInstanceDomainService.link(
             bestuurseenheid,
+            undefined,
             instance,
             instance.dateModified,
             concept,
@@ -181,6 +184,7 @@ describe("LinkConceptToInstanceDomainService", () => {
 
       await linkConceptToInstanceDomainService.unlink(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
       );
@@ -223,6 +227,7 @@ describe("LinkConceptToInstanceDomainService", () => {
 
       await linkConceptToInstanceDomainService.unlink(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
       );
@@ -274,6 +279,7 @@ describe("LinkConceptToInstanceDomainService", () => {
 
       await linkConceptToInstanceDomainService.unlink(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
       );
@@ -318,6 +324,7 @@ describe("LinkConceptToInstanceDomainService", () => {
 
       await linkConceptToInstanceDomainService.unlink(
         bestuurseenheid,
+        undefined,
         instance,
         instance.dateModified,
       );

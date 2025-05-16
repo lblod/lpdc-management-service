@@ -17,12 +17,13 @@ export class SessionSparqlTestRepository extends SessionSparqlRepository {
       USER_SESSIONS_GRAPH,
       [
         `${sparqlEscapeUri(session.id)} ext:sessionGroup ${sparqlEscapeUri(session.bestuurseenheidId)}`,
+        `${sparqlEscapeUri(session.id)} session:account ${sparqlEscapeUri(session.accountId)}`,
         ...session.sessionRoles.map(
           (sr) =>
             `${sparqlEscapeUri(session.id)} ext:sessionRole ${sparqlEscapeString(sr)}`,
         ),
       ],
-      [PREFIX.ext],
+      [PREFIX.ext, PREFIX.session],
     );
   }
 }

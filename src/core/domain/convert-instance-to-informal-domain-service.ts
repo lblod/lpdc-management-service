@@ -7,6 +7,7 @@ import { ChosenFormType } from "./types";
 import { InvariantError } from "./shared/lpdc-error";
 import { InstanceInformalLanguageStringsFetcher } from "../port/driven/external/instance-informal-language-strings-fetcher";
 import { Language } from "./language";
+import { Iri } from './shared/iri';
 
 export class ConvertInstanceToInformalDomainService {
   private readonly _instanceRepository: InstanceRepository;
@@ -26,6 +27,7 @@ export class ConvertInstanceToInformalDomainService {
 
   async confirmInstanceIsAlreadyInformal(
     bestuurseenheid: Bestuurseenheid,
+    user: Iri,
     instance: Instance,
     instanceVersion: FormatPreservingDate,
   ): Promise<void> {
@@ -39,6 +41,7 @@ export class ConvertInstanceToInformalDomainService {
 
     await this._instanceRepository.update(
       bestuurseenheid,
+      user,
       updatedInstance,
       instanceVersion,
     );
@@ -46,6 +49,7 @@ export class ConvertInstanceToInformalDomainService {
 
   async convertInstanceToInformal(
     bestuurseenheid: Bestuurseenheid,
+    user: Iri,
     instance: Instance,
     instanceVersion: FormatPreservingDate,
   ): Promise<void> {
@@ -65,6 +69,7 @@ export class ConvertInstanceToInformalDomainService {
 
     await this._instanceRepository.update(
       bestuurseenheid,
+      user,
       updatedInstance,
       instanceVersion,
     );

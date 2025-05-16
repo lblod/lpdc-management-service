@@ -54,6 +54,7 @@ import { ContactInfoOptionsSparqlRepository } from "./src/driven/persistence/con
 import { ConceptSnapshotProcessorApplicationService } from "./src/core/application/concept-snapshot-processor-application-service";
 import { SpatialSparqlRepository } from "./src/driven/persistence/spatial-sparql-repository";
 import { AuthorityLevelSparqlRepository } from './src/driven/persistence/authority-level-sparql-repository';
+import { PersoonSparqlRepository } from './src/driven/persistence/persoon-sparql-repository';
 
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
 //      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
@@ -65,6 +66,7 @@ app.use(bodyparser.json({ limit: bodySizeLimit }));
 
 const sessionRepository = new SessionSparqlRepository();
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository();
+const persoonRepository = new PersoonSparqlRepository();
 const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository();
 const conceptRepository = new ConceptSparqlRepository();
 const conceptDisplayConfigurationRepository =
@@ -441,11 +443,17 @@ async function createInstance(req: Request, res: Response) {
   const bestuurseenheid = await bestuurseenheidRepository.findById(
     session.bestuurseenheidId,
   );
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
+
   if (conceptIdRequestParam) {
     const conceptId = new Iri(conceptIdRequestParam);
     const concept = await conceptRepository.findById(conceptId);
     const newInstance = await newInstanceDomainService.createNewFromConcept(
       bestuurseenheid,
+      persoonId,
       concept,
     );
     return res.status(201).json({
@@ -457,7 +465,7 @@ async function createInstance(req: Request, res: Response) {
     });
   } else {
     const newInstance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid);
+      await newInstanceDomainService.createNewEmpty(bestuurseenheid, persoonId);
     return res.status(201).json({
       data: {
         type: "public-service",
@@ -535,9 +543,14 @@ async function updateInstance(req: Request, res: Response) {
   const bestuurseenheid = await bestuurseenheidRepository.findById(
     session.bestuurseenheidId,
   );
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
 
   await updateInstanceApplicationService.update(
     bestuurseenheid,
+    persoonId,
     instanceId,
     instanceVersion,
     delta.removals,
@@ -563,9 +576,14 @@ async function linkConceptToInstance(req: Request, res: Response) {
     instanceId,
   );
   const concept = await conceptRepository.findById(conceptId);
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
 
   await linkConceptToInstanceDomainService.link(
     bestuurseenheid,
+    persoonId,
     instance,
     instanceVersion,
     concept,
@@ -586,9 +604,14 @@ async function unlinkConceptFromInstance(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
 
   await linkConceptToInstanceDomainService.unlink(
     bestuurseenheid,
+    persoonId,
     instance,
     instanceVersion,
   );
@@ -609,9 +632,14 @@ async function reopenInstance(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
 
   await instanceRepository.update(
     bestuurseenheid,
+    persoonId,
     instance.reopen(),
     instanceVersion,
   );
@@ -636,9 +664,14 @@ async function confirmUpToDateTill(req: Request, res: Response) {
   );
   const conceptSnapshot =
     await conceptSnapshotRepository.findById(conceptSnapshotId);
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
 
   await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.confirmUpToDateTill(
     bestuurseenheid,
+    persoonId,
     instance,
     instanceVersion,
     conceptSnapshot,
@@ -664,9 +697,14 @@ async function fullyTakeConceptSnapshotOver(req: Request, res: Response) {
   );
   const conceptSnapshot =
     await conceptSnapshotRepository.findById(conceptSnapshotId);
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
 
   await bringInstanceUpToDateWithConceptSnapshotVersionDomainService.fullyTakeConceptSnapshotOver(
     bestuurseenheid,
+    persoonId,
     instance,
     instanceVersion,
     conceptSnapshot,
@@ -688,8 +726,14 @@ async function confirmInstanceIsAlreadyInformal(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
+    const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
+
   await convertInstanceToInformalDomainService.confirmInstanceIsAlreadyInformal(
     bestuurseenheid,
+    persoonId,
     instance,
     instanceVersion,
   );
@@ -709,8 +753,13 @@ async function convertInstanceToInformal(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
   await convertInstanceToInformalDomainService.convertInstanceToInformal(
     bestuurseenheid,
+    persoonId,
     instance,
     instanceVersion,
   );
@@ -777,10 +826,15 @@ async function publishInstance(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
 
   const publishedInstance = instance.publish();
   await instanceRepository.update(
     bestuurseenheid,
+    persoonId,
     publishedInstance,
     instanceVersion,
   );
@@ -801,8 +855,14 @@ async function copyInstance(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
+
   const newInstance = await newInstanceDomainService.copyFrom(
     bestuurseenheid,
+    persoonId,
     instance,
     forMunicipalityMerger,
   );
