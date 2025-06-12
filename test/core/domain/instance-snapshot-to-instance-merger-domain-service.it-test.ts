@@ -1,1157 +1,3378 @@
-import {aBestuurseenheid} from "./bestuurseenheid-test-builder";
-import {BestuurseenheidSparqlTestRepository} from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
-import {TEST_SPARQL_ENDPOINT} from "../../test.config";
-import {aFullInstanceSnapshot, aMinimalInstanceSnapshot} from "./instance-snapshot-test-builder";
-import {InstanceSnapshotSparqlTestRepository} from "../../driven/persistence/instance-snapshot-sparql-test-repository";
 import {
-    InstanceSnapshotToInstanceMergerDomainService
+  aBestuurseenheid,
+  anInactiveBestuurseenheid,
+  someCompetentAuthorities,
+  someExecutingAuthorities,
+} from "./bestuurseenheid-test-builder";
+import { BestuurseenheidSparqlTestRepository } from "../../driven/persistence/bestuurseenheid-sparql-test-repository";
+import { TEST_SPARQL_ENDPOINT } from "../../test.config";
+import {
+  aFullInstanceSnapshot,
+  aMinimalInstanceSnapshot,
+  InstanceSnapshotTestBuilder,
+} from "./instance-snapshot-test-builder";
+import { InstanceSnapshotSparqlTestRepository } from "../../driven/persistence/instance-snapshot-sparql-test-repository";
+import {
+  EXPIRED_SPATIAL_ERROR_MESSAGE,
+  INVALID_AUTHORITY_ERROR_MESSAGE,
+  InstanceSnapshotToInstanceMergerDomainService,
+  INACTIVE_AUTHORITY_ERROR_MESSAGE,
+  INACTIVE_CREATOR_ERROR_MESSAGE,
+  UNKNOWN_CONCEPT_ERROR_MESSAGE,
+  UNKNOWN_CREATOR_ERROR_MESSAGE,
 } from "../../../src/core/domain/instance-snapshot-to-instance-merger-domain-service";
-import {InstanceSparqlRepository} from "../../../src/driven/persistence/instance-sparql-repository";
-import {InstancePublicationStatusType, InstanceStatusType} from "../../../src/core/domain/types";
-import {restoreRealTime, setFixedTime} from "../../fixed-time";
-import {FormatPreservingDate} from "../../../src/core/domain/format-preserving-date";
-import {ConceptSparqlRepository} from "../../../src/driven/persistence/concept-sparql-repository";
-import {aFullConcept} from "./concept-test-builder";
-import {aFullInstance} from "./instance-test-builder";
-import {sparqlEscapeUri, uuid} from "../../../mu-helper";
-import {SparqlQuerying} from "../../../src/driven/persistence/sparql-querying";
-import {literal, namedNode, quad} from "rdflib";
-import {DirectDatabaseAccess} from "../../driven/persistence/direct-database-access";
-import {buildBestuurseenheidIri, buildConceptIri, buildInstanceIri} from "./iri-test-builder";
-import {LanguageString} from "../../../src/core/domain/language-string";
+import { InstanceStatusType } from "../../../src/core/domain/types";
+import { FormatPreservingDate } from "../../../src/core/domain/format-preserving-date";
+import { ConceptSparqlRepository } from "../../../src/driven/persistence/concept-sparql-repository";
+import { aFullConcept } from "./concept-test-builder";
+import { aFullInstance, aMinimalInstance } from "./instance-test-builder";
+import { sparqlEscapeUri, uuid } from "../../../mu-helper";
+import { SparqlQuerying } from "../../../src/driven/persistence/sparql-querying";
+import { literal, namedNode, quad } from "rdflib";
+import { DirectDatabaseAccess } from "../../driven/persistence/direct-database-access";
 import {
-    ConceptDisplayConfigurationSparqlRepository
-} from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
-import {Iri} from "../../../src/core/domain/shared/iri";
-import {PREFIX, PUBLIC_GRAPH} from "../../../config";
-import {NS} from "../../../src/driven/persistence/namespaces";
-import {CodeSchema} from "../../../src/core/port/driven/persistence/code-repository";
-import {CodeSparqlRepository} from "../../../src/driven/persistence/code-sparql-repository";
+  buildBestuurseenheidIri,
+  buildConceptIri,
+  buildNutsCodeIri,
+  buildOvoCodeIri,
+} from "./iri-test-builder";
+import { LanguageString } from "../../../src/core/domain/language-string";
+import { ConceptDisplayConfigurationSparqlRepository } from "../../../src/driven/persistence/concept-display-configuration-sparql-repository";
+import { Iri } from "../../../src/core/domain/shared/iri";
 import {
-    EnsureLinkedAuthoritiesExistAsCodeListDomainService
-} from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
-import {DeleteInstanceDomainService} from "../../../src/core/domain/delete-instance-domain-service";
-import {Bestuurseenheid} from "../../../src/core/domain/bestuurseenheid";
-import {Instance} from "../../../src/core/domain/instance";
-import {InvariantError} from "../../../src/core/domain/shared/lpdc-error";
-import {aFullContactPointForInstance} from "./contact-point-test-builder";
-import {aFullAddressForInstance} from "./address-test-builder";
+  INSTANCE_SNAPHOT_LDES_GRAPH,
+  PREFIX,
+  PUBLIC_GRAPH,
+} from "../../../config";
+import { NS } from "../../../src/driven/persistence/namespaces";
+import { CodeSchema } from "../../../src/core/port/driven/persistence/code-repository";
+import { CodeSparqlRepository } from "../../../src/driven/persistence/code-sparql-repository";
+import { EnsureLinkedAuthoritiesExistAsCodeListDomainService } from "../../../src/core/domain/ensure-linked-authorities-exist-as-code-list-domain-service";
+import { DeleteInstanceDomainService } from "../../../src/core/domain/delete-instance-domain-service";
+import { InstanceBuilder } from "../../../src/core/domain/instance";
+import {
+  ForbiddenError,
+  InvariantError,
+  InstanceSnapshotValidationError,
+} from "../../../src/core/domain/shared/lpdc-error";
+import { aFullContactPointForInstance } from "./contact-point-test-builder";
+import { aFullAddressForInstance } from "./address-test-builder";
+import { Language } from "../../../src/core/domain/language";
+import { InstanceSnapshotProcessingAuthorizationSparqlTestRepository } from "../../driven/persistence/instance-snapshot-processing-authorization-sparql-test-repository";
+import { VersionedLdesSnapshotSparqlRepository } from "../../../src/driven/persistence/versioned-ldes-snapshot-sparql-repository";
+import { InstanceSparqlTestRepository } from "../../driven/persistence/instance-sparql-test-repository";
+import {
+  SpatialTestBuilder,
+  aSpatial,
+  anExpiredSpatial,
+} from "./spatial-test-builder";
+import { SpatialSparqlTestRepository } from "../../driven/persistence/spatial-sparql-test-repository";
 
-describe('instanceSnapshotToInstanceMapperDomainService', () => {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+describe("instanceSnapshotToInstanceMapperDomainService", () => {
+  beforeEach(async () => {
+    await instanceSnapshotRepository.clearAllInstanceSnapshotGraphs();
+  });
 
-    const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(TEST_SPARQL_ENDPOINT);
-    const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const bestuurseenheidRegistrationCodeFetcher = {
-        fetchOrgRegistryCodelistEntry: jest.fn().mockReturnValue(Promise.resolve({}))
-    };
-    const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const ensureLinkedAuthoritiesExistAsCodeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(bestuurseenheidRegistrationCodeFetcher, codeRepository);
-    const conceptDisplayConfigurationRepository = new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
-    const deleteInstanceDomainService = new DeleteInstanceDomainService(instanceRepository, conceptDisplayConfigurationRepository);
-    const mapperDomainService = new InstanceSnapshotToInstanceMergerDomainService(
-        instanceSnapshotRepository,
-        instanceRepository,
-        conceptRepository,
-        conceptDisplayConfigurationRepository,
-        deleteInstanceDomainService,
-        ensureLinkedAuthoritiesExistAsCodeListDomainService
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+  const bestuurseenheidRepository = new BestuurseenheidSparqlTestRepository(
+    TEST_SPARQL_ENDPOINT,
+  );
+  const instanceSnapshotRepository = new InstanceSnapshotSparqlTestRepository(
+    TEST_SPARQL_ENDPOINT,
+  );
+  const instanceRepository = new InstanceSparqlTestRepository(
+    TEST_SPARQL_ENDPOINT,
+  );
+  const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
+  const spatialRepository = new SpatialSparqlTestRepository(
+    TEST_SPARQL_ENDPOINT,
+  );
+
+  const bestuurseenheidRegistrationCodeFetcher = {
+    fetchOrgRegistryCodelistEntry: jest
+      .fn()
+      .mockReturnValue(Promise.resolve({})),
+  };
+  const codeRepository = new CodeSparqlRepository(TEST_SPARQL_ENDPOINT);
+  const ensureLinkedAuthoritiesExistAsCodeListDomainService =
+    new EnsureLinkedAuthoritiesExistAsCodeListDomainService(
+      bestuurseenheidRegistrationCodeFetcher,
+      codeRepository,
     );
-    const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
+  const conceptDisplayConfigurationRepository =
+    new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
+  const deleteInstanceDomainService = new DeleteInstanceDomainService(
+    instanceRepository,
+    conceptDisplayConfigurationRepository,
+  );
+  const instanceSnapshotProcessingAuthorizationRepository =
+    new InstanceSnapshotProcessingAuthorizationSparqlTestRepository(
+      TEST_SPARQL_ENDPOINT,
+    );
+  const mergerDomainService = new InstanceSnapshotToInstanceMergerDomainService(
+    instanceSnapshotRepository,
+    instanceRepository,
+    conceptRepository,
+    conceptDisplayConfigurationRepository,
+    deleteInstanceDomainService,
+    ensureLinkedAuthoritiesExistAsCodeListDomainService,
+    instanceSnapshotProcessingAuthorizationRepository,
+    bestuurseenheidRepository,
+    spatialRepository,
+    codeRepository,
+  );
+  const versionedLdesSnapshotRepository =
+    new VersionedLdesSnapshotSparqlRepository(TEST_SPARQL_ENDPOINT);
+  const directDatabaseAccess = new DirectDatabaseAccess(TEST_SPARQL_ENDPOINT);
 
-    beforeAll(() => setFixedTime());
+  beforeAll(async () => {
+    await directDatabaseAccess.insertData(
+      PUBLIC_GRAPH,
+      [
+        `${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)} a skos:ConceptScheme`,
+      ],
+      [PREFIX.skos],
+    );
 
-    afterAll(() => restoreRealTime());
-
-    describe('Instance does not exists', () => {
-
-        test('Given a minimalistic instanceSnapshot, then instance is created', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(undefined).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-            expect(instanceExists).toEqual(false);
-
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
-
-            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
-            expect(instanceAfterMerge.uuid).toBeDefined();
-            expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
-            expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
-            expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
-            expect(instanceAfterMerge.additionalDescription).toEqual(instanceSnapshot.additionalDescription);
-            expect(instanceAfterMerge.exception).toEqual(instanceSnapshot.exception);
-            expect(instanceAfterMerge.regulation).toEqual(instanceSnapshot.regulation);
-            expect(instanceAfterMerge.startDate).toEqual(instanceSnapshot.startDate);
-            expect(instanceAfterMerge.endDate).toEqual(instanceSnapshot.endDate);
-            expect(instanceAfterMerge.type).toEqual(instanceSnapshot.type);
-            expect(instanceAfterMerge.targetAudiences).toEqual(instanceSnapshot.targetAudiences);
-            expect(instanceAfterMerge.themes).toEqual(instanceSnapshot.themes);
-            expect(instanceAfterMerge.competentAuthorityLevels).toEqual(instanceSnapshot.competentAuthorityLevels);
-            expect(instanceAfterMerge.competentAuthorities).toEqual(instanceSnapshot.competentAuthorities);
-            expect(instanceAfterMerge.executingAuthorityLevels).toEqual(instanceSnapshot.executingAuthorityLevels);
-            expect(instanceAfterMerge.executingAuthorities).toEqual(instanceSnapshot.executingAuthorities);
-            expect(instanceAfterMerge.publicationMedia).toEqual(instanceSnapshot.publicationMedia);
-            expect(instanceAfterMerge.yourEuropeCategories).toEqual(instanceSnapshot.yourEuropeCategories);
-            expect(instanceAfterMerge.keywords).toEqual(instanceSnapshot.keywords);
-            expect(instanceAfterMerge.requirements).toEqual([]);
-            expect(instanceAfterMerge.procedures).toEqual([]);
-            expect(instanceAfterMerge.websites).toEqual([]);
-            expect(instanceAfterMerge.costs).toEqual([]);
-            expect(instanceAfterMerge.financialAdvantages).toEqual([]);
-            expect(instanceAfterMerge.contactPoints).toEqual([]);
-            expect(instanceAfterMerge.conceptId).toEqual(undefined);
-            expect(instanceAfterMerge.conceptSnapshotId).toEqual(undefined);
-            expect(instanceAfterMerge.productId).toEqual(undefined);
-            expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
-            expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
-            expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
-            expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
-            expect(instanceAfterMerge.datePublished).toEqual(undefined);
-            expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERSTUURD);
-            expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
-            expect(instanceAfterMerge.publicationStatus).toEqual(undefined);
-            expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
-            expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
-        });
-
-        test('Given a full instanceSnapshot, then instance is created', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const concept = aFullConcept().build();
-            await conceptRepository.save(concept);
-            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
-
-            const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-            expect(instanceExists).toEqual(false);
-
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
-
-            const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-            expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
-            expect(instanceAfterMerge.uuid).toBeDefined();
-            expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
-            expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
-            expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
-            expect(instanceAfterMerge.additionalDescription).toEqual(instanceSnapshot.additionalDescription);
-            expect(instanceAfterMerge.exception).toEqual(instanceSnapshot.exception);
-            expect(instanceAfterMerge.regulation).toEqual(instanceSnapshot.regulation);
-            expect(instanceAfterMerge.startDate).toEqual(instanceSnapshot.startDate);
-            expect(instanceAfterMerge.endDate).toEqual(instanceSnapshot.endDate);
-            expect(instanceAfterMerge.type).toEqual(instanceSnapshot.type);
-            expect(instanceAfterMerge.targetAudiences).toEqual(instanceSnapshot.targetAudiences);
-            expect(instanceAfterMerge.themes).toEqual(instanceSnapshot.themes);
-            expect(instanceAfterMerge.competentAuthorityLevels).toEqual(instanceSnapshot.competentAuthorityLevels);
-            expect(instanceAfterMerge.competentAuthorities).toEqual(instanceSnapshot.competentAuthorities);
-            expect(instanceAfterMerge.executingAuthorityLevels).toEqual(instanceSnapshot.executingAuthorityLevels);
-            expect(instanceAfterMerge.executingAuthorities).toEqual(instanceSnapshot.executingAuthorities);
-            expect(instanceAfterMerge.publicationMedia).toEqual(instanceSnapshot.publicationMedia);
-            expect(instanceAfterMerge.yourEuropeCategories).toEqual(instanceSnapshot.yourEuropeCategories);
-            expect(instanceAfterMerge.keywords).toEqual(instanceSnapshot.keywords);
-            expect(instanceAfterMerge.requirements).toEqual(expect.arrayContaining([
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.requirements[0].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.requirements[0].title,
-                    _description: instanceSnapshot.requirements[0].description,
-                    _order: instanceSnapshot.requirements[0].order,
-                    _evidence: expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.requirements[0].evidence.id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.requirements[0].evidence.title,
-                        _description: instanceSnapshot.requirements[0].evidence.description,
-                        _conceptEvidenceId: instanceSnapshot.requirements[0].evidence.conceptEvidenceId
-                    }),
-                    _conceptRequirementId: instanceSnapshot.requirements[0].conceptRequirementId
-                }),
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.requirements[1].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.requirements[1].title,
-                    _description: instanceSnapshot.requirements[1].description,
-                    _order: instanceSnapshot.requirements[1].order,
-                    _evidence: expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.requirements[1].evidence.id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.requirements[1].evidence.title,
-                        _description: instanceSnapshot.requirements[1].evidence.description,
-                        _conceptEvidenceId: instanceSnapshot.requirements[0].evidence.conceptEvidenceId
-                    }),
-                    _conceptRequirementId: instanceSnapshot.requirements[1].conceptRequirementId
-                })
-            ]));
-            expect(instanceAfterMerge.procedures)
-                .toEqual(expect.arrayContaining([
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.procedures[0].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.procedures[0].title,
-                        _description: instanceSnapshot.procedures[0].description,
-                        _order: instanceSnapshot.procedures[0].order,
-                        _websites: expect.arrayContaining([
-                            expect.objectContaining({
-                                _id: expect.not.objectContaining(instanceSnapshot.procedures[0].websites[0].id),
-                                _uuid: expect.stringMatching(uuidRegex),
-                                _title: instanceSnapshot.procedures[0].websites[0].title,
-                                _description: instanceSnapshot.procedures[0].websites[0].description,
-                                _order: instanceSnapshot.procedures[0].websites[0].order,
-                                _url: instanceSnapshot.procedures[0].websites[0].url,
-                                _conceptWebsiteId: instanceSnapshot.procedures[0].websites[0].conceptWebsiteId
-                            }),
-                            expect.objectContaining({
-                                _id: expect.not.objectContaining(instanceSnapshot.procedures[0].websites[1].id),
-                                _uuid: expect.stringMatching(uuidRegex),
-                                _title: instanceSnapshot.procedures[0].websites[1].title,
-                                _description: instanceSnapshot.procedures[0].websites[1].description,
-                                _order: instanceSnapshot.procedures[0].websites[1].order,
-                                _url: instanceSnapshot.procedures[0].websites[1].url,
-                                _conceptWebsiteId: instanceSnapshot.procedures[0].websites[1].conceptWebsiteId
-                            })
-                        ]),
-                        _conceptProcedureId: instanceSnapshot.procedures[0].conceptProcedureId
-
-                    }),
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.procedures[1].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.procedures[1].title,
-                        _description: instanceSnapshot.procedures[1].description,
-                        _order: instanceSnapshot.procedures[1].order,
-                        _websites: expect.arrayContaining([
-                            expect.objectContaining({
-                                _id: expect.not.objectContaining(instanceSnapshot.procedures[1].websites[0].id),
-                                _uuid: expect.stringMatching(uuidRegex),
-                                _title: instanceSnapshot.procedures[1].websites[0].title,
-                                _description: instanceSnapshot.procedures[1].websites[0].description,
-                                _order: instanceSnapshot.procedures[1].websites[0].order,
-                                _url: instanceSnapshot.procedures[1].websites[0].url,
-                                _conceptWebsiteId: instanceSnapshot.procedures[1].websites[0].conceptWebsiteId
-                            }),
-                            expect.objectContaining({
-                                _id: expect.not.objectContaining(instanceSnapshot.procedures[1].websites[1].id),
-                                _uuid: expect.stringMatching(uuidRegex),
-                                _title: instanceSnapshot.procedures[1].websites[1].title,
-                                _description: instanceSnapshot.procedures[1].websites[1].description,
-                                _order: instanceSnapshot.procedures[1].websites[1].order,
-                                _url: instanceSnapshot.procedures[1].websites[1].url,
-                                _conceptWebsiteId: instanceSnapshot.procedures[1].websites[0].conceptWebsiteId
-                            })
-                        ]),
-                        _conceptProcedureId: instanceSnapshot.procedures[1].conceptProcedureId
-                    })
-                ]));
-            expect(instanceAfterMerge.websites)
-                .toEqual(expect.arrayContaining([
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.websites[0].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.websites[0].title,
-                        _description: instanceSnapshot.websites[0].description,
-                        _order: instanceSnapshot.websites[0].order,
-                        _url: instanceSnapshot.websites[0].url,
-                        _conceptWebsiteId: instanceSnapshot.websites[0].conceptWebsiteId
-                    }),
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.websites[1].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.websites[1].title,
-                        _description: instanceSnapshot.websites[1].description,
-                        _order: instanceSnapshot.websites[1].order,
-                        _url: instanceSnapshot.websites[1].url,
-                        _conceptWebsiteId: instanceSnapshot.websites[1].conceptWebsiteId
-                    })
-                ]));
-            expect(instanceAfterMerge.costs)
-                .toEqual(expect.arrayContaining([
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.costs[0].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.costs[0].title,
-                        _description: instanceSnapshot.costs[0].description,
-                        _order: instanceSnapshot.costs[0].order,
-                        _conceptCostId: instanceSnapshot.costs[0].conceptCostId
-                    }),
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.costs[1].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.costs[1].title,
-                        _description: instanceSnapshot.costs[1].description,
-                        _order: instanceSnapshot.costs[1].order,
-                        _conceptCostId: instanceSnapshot.costs[1].conceptCostId
-                    })
-                ]));
-            expect(instanceAfterMerge.financialAdvantages)
-                .toEqual(expect.arrayContaining([
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.financialAdvantages[0].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.financialAdvantages[0].title,
-                        _description: instanceSnapshot.financialAdvantages[0].description,
-                        _order: instanceSnapshot.financialAdvantages[0].order,
-                        _conceptFinancialAdvantageId: instanceSnapshot.financialAdvantages[0].conceptFinancialAdvantageId
-                    }),
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.financialAdvantages[1].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.financialAdvantages[1].title,
-                        _description: instanceSnapshot.financialAdvantages[1].description,
-                        _order: instanceSnapshot.financialAdvantages[1].order,
-                        _conceptFinancialAdvantageId: instanceSnapshot.financialAdvantages[1].conceptFinancialAdvantageId
-                    })
-                ]));
-            expect(instanceAfterMerge.contactPoints)
-                .toEqual(expect.arrayContaining([
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.contactPoints[0].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _url: instanceSnapshot.contactPoints[0].url,
-                        _email: instanceSnapshot.contactPoints[0].email,
-                        _telephone: instanceSnapshot.contactPoints[0].telephone,
-                        _openingHours: instanceSnapshot.contactPoints[0].openingHours,
-                        _order: instanceSnapshot.contactPoints[0].order,
-                        _address: expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.contactPoints[0].address.id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _gemeentenaam: instanceSnapshot.contactPoints[0].address.gemeentenaam,
-                            _land: instanceSnapshot.contactPoints[0].address.land,
-                            _huisnummer: instanceSnapshot.contactPoints[0].address.huisnummer,
-                            _busnummer: instanceSnapshot.contactPoints[0].address.busnummer,
-                            _postcode: instanceSnapshot.contactPoints[0].address.postcode,
-                            _straatnaam: instanceSnapshot.contactPoints[0].address.straatnaam,
-                            _verwijstNaar: instanceSnapshot.contactPoints[0].address.verwijstNaar,
-                        }),
-                    }),
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.contactPoints[1].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _url: instanceSnapshot.contactPoints[1].url,
-                        _email: instanceSnapshot.contactPoints[1].email,
-                        _telephone: instanceSnapshot.contactPoints[1].telephone,
-                        _openingHours: instanceSnapshot.contactPoints[1].openingHours,
-                        _order: instanceSnapshot.contactPoints[1].order,
-                        _address: expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.contactPoints[1].address.id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _gemeentenaam: instanceSnapshot.contactPoints[1].address.gemeentenaam,
-                            _land: instanceSnapshot.contactPoints[1].address.land,
-                            _huisnummer: instanceSnapshot.contactPoints[1].address.huisnummer,
-                            _busnummer: instanceSnapshot.contactPoints[1].address.busnummer,
-                            _postcode: instanceSnapshot.contactPoints[1].address.postcode,
-                            _straatnaam: instanceSnapshot.contactPoints[1].address.straatnaam,
-                            _verwijstNaar: instanceSnapshot.contactPoints[1].address.verwijstNaar,
-                        }),
-                    })
-                ]));
-            expect(instanceAfterMerge.conceptId).toEqual(concept.id);
-            expect(instanceAfterMerge.conceptSnapshotId).toEqual(concept.latestConceptSnapshot);
-            expect(instanceAfterMerge.productId).toEqual(concept.productId);
-            expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
-            expect(instanceAfterMerge.dateCreated).toEqual(instanceSnapshot.dateCreated);
-            expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
-            expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
-            expect(instanceAfterMerge.datePublished).toEqual(undefined);
-            expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERSTUURD);
-            expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
-            expect(instanceAfterMerge.publicationStatus).toEqual(undefined);
-            expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
-            expect(instanceAfterMerge.legalResources).toEqual(expect.arrayContaining([
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.legalResources[0].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.legalResources[0].title,
-                    _description: instanceSnapshot.legalResources[0].description,
-                    _url: instanceSnapshot.legalResources[0].url,
-                    _order: instanceSnapshot.legalResources[0].order,
-                }),
-                expect.objectContaining({
-                    _id: expect.not.objectContaining(instanceSnapshot.legalResources[1].id),
-                    _uuid: expect.stringMatching(uuidRegex),
-                    _title: instanceSnapshot.legalResources[1].title,
-                    _description: instanceSnapshot.legalResources[1].description,
-                    _url: instanceSnapshot.legalResources[1].url,
-                    _order: instanceSnapshot.legalResources[1].order,
-                })
-            ]));
-        });
-
-        test('conceptDisplayConfiguration is updated', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const concept = aFullConcept().build();
-            await conceptRepository.save(concept);
-
-            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
-
-            const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-            expect(instanceExists).toEqual(false);
-
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
-
-            const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
-            expect(conceptDisplayConfiguration.conceptIsNew).toEqual(false);
-            expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(true);
-        });
-
-        test('instance is validated for publish', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withTitle(LanguageString.of('title', undefined, undefined, 'titel'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
-                .withCreatedBy(bestuurseenheid.id)
-                .withConceptId(undefined)
-                .build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-            await expect(() => mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id))
-                .rejects.toThrowWithMessage(InvariantError, 'titel en beschrijving moeten dezelfde talen bevatten');
-        });
-
-        test('instance is validated for publish, adres can be invalid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withCreatedBy(bestuurseenheid.id)
-                .withConceptId(undefined)
-                .withContactPoints([aFullContactPointForInstance().withAddress(aFullAddressForInstance().withVerwijstNaar(undefined).build()).build()])
-                .build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-            await expect(mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id)).resolves.not.toThrow();
-        });
-
+    someCompetentAuthorities().forEach(async (unit) => {
+      const builtUnit = unit.build();
+      await bestuurseenheidRepository.save(builtUnit);
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `${sparqlEscapeUri(builtUnit.id)} a skos:Concept.`,
+          `${sparqlEscapeUri(builtUnit.id)} skos:inScheme ${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)}.`,
+        ],
+        [PREFIX.skos],
+      );
+      return;
     });
 
-    describe('Instance already exists', () => {
-
-        describe('update', () => {
-
-            test('Given a minimalistic instanceSnapshot, then existing instance is updated', async () => {
-                const bestuurseenheid = aBestuurseenheid().build();
-                await bestuurseenheidRepository.save(bestuurseenheid);
-
-                const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
-                await instanceRepository.save(bestuurseenheid, instance);
-                await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
-
-                const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
-                await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-                expect(instanceExists).toEqual(true);
-
-                await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
-
-                const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-
-                expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
-                expect(instanceAfterMerge.id).toEqual(instance.id);
-                expect(instanceAfterMerge.uuid).toEqual(instance.uuid);
-                expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
-                expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
-                expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
-                expect(instanceAfterMerge.additionalDescription).toEqual(instanceSnapshot.additionalDescription);
-                expect(instanceAfterMerge.exception).toEqual(instanceSnapshot.exception);
-                expect(instanceAfterMerge.regulation).toEqual(instanceSnapshot.regulation);
-                expect(instanceAfterMerge.startDate).toEqual(instanceSnapshot.startDate);
-                expect(instanceAfterMerge.endDate).toEqual(instanceSnapshot.endDate);
-                expect(instanceAfterMerge.type).toEqual(instanceSnapshot.type);
-                expect(instanceAfterMerge.targetAudiences).toEqual(instanceSnapshot.targetAudiences);
-                expect(instanceAfterMerge.themes).toEqual(instanceSnapshot.themes);
-                expect(instanceAfterMerge.competentAuthorityLevels).toEqual(instanceSnapshot.competentAuthorityLevels);
-                expect(instanceAfterMerge.competentAuthorities).toEqual(instanceSnapshot.competentAuthorities);
-                expect(instanceAfterMerge.executingAuthorityLevels).toEqual(instanceSnapshot.executingAuthorityLevels);
-                expect(instanceAfterMerge.executingAuthorities).toEqual(instanceSnapshot.executingAuthorities);
-                expect(instanceAfterMerge.publicationMedia).toEqual(instanceSnapshot.publicationMedia);
-                expect(instanceAfterMerge.yourEuropeCategories).toEqual(instanceSnapshot.yourEuropeCategories);
-                expect(instanceAfterMerge.keywords).toEqual(instanceSnapshot.keywords);
-                expect(instanceAfterMerge.requirements).toEqual([]);
-                expect(instanceAfterMerge.procedures).toEqual([]);
-                expect(instanceAfterMerge.websites).toEqual([]);
-                expect(instanceAfterMerge.costs).toEqual([]);
-                expect(instanceAfterMerge.financialAdvantages).toEqual([]);
-                expect(instanceAfterMerge.contactPoints).toEqual([]);
-                expect(instanceAfterMerge.conceptId).toEqual(undefined);
-                expect(instanceAfterMerge.conceptSnapshotId).toEqual(undefined);
-                expect(instanceAfterMerge.productId).toEqual(undefined);
-                expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
-                expect(instanceAfterMerge.dateCreated).toEqual(instanceAfterMerge.dateCreated);
-                expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
-                expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
-                expect(instanceAfterMerge.datePublished).toEqual(instance.datePublished);
-                expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERSTUURD);
-                expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
-                expect(instanceAfterMerge.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
-                expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
-                expect(instanceAfterMerge.legalResources).toEqual(instanceSnapshot.legalResources);
-
-            });
-
-            test('Given a full instanceSnapshot, then existing instance is updated', async () => {
-                const bestuurseenheid = aBestuurseenheid().build();
-                await bestuurseenheidRepository.save(bestuurseenheid);
-
-                const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
-                await instanceRepository.save(bestuurseenheid, instance);
-                await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
-
-                const concept = aFullConcept().build();
-                await conceptRepository.save(concept);
-                await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
-
-                const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(concept.id).build();
-                await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-                expect(instanceExists).toEqual(true);
-
-                await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
-
-                const instanceAfterMerge = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-                expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOfInstance);
-                expect(instanceAfterMerge.id).toEqual(instance.id);
-                expect(instanceAfterMerge.uuid).toEqual(instance.uuid);
-                expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
-                expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
-                expect(instanceAfterMerge.description).toEqual(instanceSnapshot.description);
-                expect(instanceAfterMerge.additionalDescription).toEqual(instanceSnapshot.additionalDescription);
-                expect(instanceAfterMerge.exception).toEqual(instanceSnapshot.exception);
-                expect(instanceAfterMerge.regulation).toEqual(instanceSnapshot.regulation);
-                expect(instanceAfterMerge.startDate).toEqual(instanceSnapshot.startDate);
-                expect(instanceAfterMerge.endDate).toEqual(instanceSnapshot.endDate);
-                expect(instanceAfterMerge.type).toEqual(instanceSnapshot.type);
-                expect(instanceAfterMerge.targetAudiences).toEqual(instanceSnapshot.targetAudiences);
-                expect(instanceAfterMerge.themes).toEqual(instanceSnapshot.themes);
-                expect(instanceAfterMerge.competentAuthorityLevels).toEqual(instanceSnapshot.competentAuthorityLevels);
-                expect(instanceAfterMerge.competentAuthorities).toEqual(instanceSnapshot.competentAuthorities);
-                expect(instanceAfterMerge.executingAuthorityLevels).toEqual(instanceSnapshot.executingAuthorityLevels);
-                expect(instanceAfterMerge.executingAuthorities).toEqual(instanceSnapshot.executingAuthorities);
-                expect(instanceAfterMerge.publicationMedia).toEqual(instanceSnapshot.publicationMedia);
-                expect(instanceAfterMerge.yourEuropeCategories).toEqual(instanceSnapshot.yourEuropeCategories);
-                expect(instanceAfterMerge.keywords).toEqual(instanceSnapshot.keywords);
-                expect(instanceAfterMerge.requirements).toEqual(expect.arrayContaining([
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.requirements[0].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.requirements[0].title,
-                        _description: instanceSnapshot.requirements[0].description,
-                        _order: instanceSnapshot.requirements[0].order,
-                        _evidence: expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.requirements[0].evidence.id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.requirements[0].evidence.title,
-                            _description: instanceSnapshot.requirements[0].evidence.description,
-                            _conceptEvidenceId: instanceSnapshot.requirements[0].evidence.conceptEvidenceId
-                        }),
-                        _conceptRequirementId: instanceSnapshot.requirements[0].conceptRequirementId
-                    }),
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.requirements[1].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.requirements[1].title,
-                        _description: instanceSnapshot.requirements[1].description,
-                        _order: instanceSnapshot.requirements[1].order,
-                        _evidence: expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.requirements[1].evidence.id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.requirements[1].evidence.title,
-                            _description: instanceSnapshot.requirements[1].evidence.description,
-                            _conceptEvidenceId: instanceSnapshot.requirements[0].evidence.conceptEvidenceId
-                        }),
-                        _conceptRequirementId: instanceSnapshot.requirements[1].conceptRequirementId
-                    })
-                ]));
-                expect(instanceAfterMerge.procedures)
-                    .toEqual(expect.arrayContaining([
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.procedures[0].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.procedures[0].title,
-                            _description: instanceSnapshot.procedures[0].description,
-                            _order: instanceSnapshot.procedures[0].order,
-                            _websites: expect.arrayContaining([
-                                expect.objectContaining({
-                                    _id: expect.not.objectContaining(instanceSnapshot.procedures[0].websites[0].id),
-                                    _uuid: expect.stringMatching(uuidRegex),
-                                    _title: instanceSnapshot.procedures[0].websites[0].title,
-                                    _description: instanceSnapshot.procedures[0].websites[0].description,
-                                    _order: instanceSnapshot.procedures[0].websites[0].order,
-                                    _url: instanceSnapshot.procedures[0].websites[0].url,
-                                    _conceptWebsiteId: instanceSnapshot.procedures[0].websites[0].conceptWebsiteId
-                                }),
-                                expect.objectContaining({
-                                    _id: expect.not.objectContaining(instanceSnapshot.procedures[0].websites[1].id),
-                                    _uuid: expect.stringMatching(uuidRegex),
-                                    _title: instanceSnapshot.procedures[0].websites[1].title,
-                                    _description: instanceSnapshot.procedures[0].websites[1].description,
-                                    _order: instanceSnapshot.procedures[0].websites[1].order,
-                                    _url: instanceSnapshot.procedures[0].websites[1].url,
-                                    _conceptWebsiteId: instanceSnapshot.procedures[0].websites[1].conceptWebsiteId
-                                })
-                            ]),
-                            _conceptProcedureId: instanceSnapshot.procedures[0].conceptProcedureId
-
-                        }),
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.procedures[1].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.procedures[1].title,
-                            _description: instanceSnapshot.procedures[1].description,
-                            _order: instanceSnapshot.procedures[1].order,
-                            _websites: expect.arrayContaining([
-                                expect.objectContaining({
-                                    _id: expect.not.objectContaining(instanceSnapshot.procedures[1].websites[0].id),
-                                    _uuid: expect.stringMatching(uuidRegex),
-                                    _title: instanceSnapshot.procedures[1].websites[0].title,
-                                    _description: instanceSnapshot.procedures[1].websites[0].description,
-                                    _order: instanceSnapshot.procedures[1].websites[0].order,
-                                    _url: instanceSnapshot.procedures[1].websites[0].url,
-                                    _conceptWebsiteId: instanceSnapshot.procedures[1].websites[0].conceptWebsiteId
-                                }),
-                                expect.objectContaining({
-                                    _id: expect.not.objectContaining(instanceSnapshot.procedures[1].websites[1].id),
-                                    _uuid: expect.stringMatching(uuidRegex),
-                                    _title: instanceSnapshot.procedures[1].websites[1].title,
-                                    _description: instanceSnapshot.procedures[1].websites[1].description,
-                                    _order: instanceSnapshot.procedures[1].websites[1].order,
-                                    _url: instanceSnapshot.procedures[1].websites[1].url,
-                                    _conceptWebsiteId: instanceSnapshot.procedures[1].websites[0].conceptWebsiteId
-                                })
-                            ]),
-                            _conceptProcedureId: instanceSnapshot.procedures[1].conceptProcedureId
-                        })
-                    ]));
-                expect(instanceAfterMerge.websites)
-                    .toEqual(expect.arrayContaining([
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.websites[0].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.websites[0].title,
-                            _description: instanceSnapshot.websites[0].description,
-                            _order: instanceSnapshot.websites[0].order,
-                            _url: instanceSnapshot.websites[0].url,
-                            _conceptWebsiteId: instanceSnapshot.websites[0].conceptWebsiteId
-                        }),
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.websites[1].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.websites[1].title,
-                            _description: instanceSnapshot.websites[1].description,
-                            _order: instanceSnapshot.websites[1].order,
-                            _url: instanceSnapshot.websites[1].url,
-                            _conceptWebsiteId: instanceSnapshot.websites[1].conceptWebsiteId
-                        })
-                    ]));
-                expect(instanceAfterMerge.costs)
-                    .toEqual(expect.arrayContaining([
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.costs[0].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.costs[0].title,
-                            _description: instanceSnapshot.costs[0].description,
-                            _order: instanceSnapshot.costs[0].order,
-                            _conceptCostId: instanceSnapshot.costs[0].conceptCostId
-                        }),
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.costs[1].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.costs[1].title,
-                            _description: instanceSnapshot.costs[1].description,
-                            _order: instanceSnapshot.costs[1].order,
-                            _conceptCostId: instanceSnapshot.costs[1].conceptCostId
-                        })
-                    ]));
-                expect(instanceAfterMerge.financialAdvantages)
-                    .toEqual(expect.arrayContaining([
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.financialAdvantages[0].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.financialAdvantages[0].title,
-                            _description: instanceSnapshot.financialAdvantages[0].description,
-                            _order: instanceSnapshot.financialAdvantages[0].order,
-                            _conceptFinancialAdvantageId: instanceSnapshot.financialAdvantages[0].conceptFinancialAdvantageId
-                        }),
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.financialAdvantages[1].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _title: instanceSnapshot.financialAdvantages[1].title,
-                            _description: instanceSnapshot.financialAdvantages[1].description,
-                            _order: instanceSnapshot.financialAdvantages[1].order,
-                            _conceptFinancialAdvantageId: instanceSnapshot.financialAdvantages[1].conceptFinancialAdvantageId
-                        })
-                    ]));
-                expect(instanceAfterMerge.contactPoints)
-                    .toEqual(expect.arrayContaining([
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.contactPoints[0].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _url: instanceSnapshot.contactPoints[0].url,
-                            _email: instanceSnapshot.contactPoints[0].email,
-                            _telephone: instanceSnapshot.contactPoints[0].telephone,
-                            _openingHours: instanceSnapshot.contactPoints[0].openingHours,
-                            _order: instanceSnapshot.contactPoints[0].order,
-                            _address: expect.objectContaining({
-                                _id: expect.not.objectContaining(instanceSnapshot.contactPoints[0].address.id),
-                                _uuid: expect.stringMatching(uuidRegex),
-                                _gemeentenaam: instanceSnapshot.contactPoints[0].address.gemeentenaam,
-                                _land: instanceSnapshot.contactPoints[0].address.land,
-                                _huisnummer: instanceSnapshot.contactPoints[0].address.huisnummer,
-                                _busnummer: instanceSnapshot.contactPoints[0].address.busnummer,
-                                _postcode: instanceSnapshot.contactPoints[0].address.postcode,
-                                _straatnaam: instanceSnapshot.contactPoints[0].address.straatnaam,
-                                _verwijstNaar: instanceSnapshot.contactPoints[0].address.verwijstNaar,
-                            }),
-                        }),
-                        expect.objectContaining({
-                            _id: expect.not.objectContaining(instanceSnapshot.contactPoints[1].id),
-                            _uuid: expect.stringMatching(uuidRegex),
-                            _url: instanceSnapshot.contactPoints[1].url,
-                            _email: instanceSnapshot.contactPoints[1].email,
-                            _telephone: instanceSnapshot.contactPoints[1].telephone,
-                            _openingHours: instanceSnapshot.contactPoints[1].openingHours,
-                            _order: instanceSnapshot.contactPoints[1].order,
-                            _address: expect.objectContaining({
-                                _id: expect.not.objectContaining(instanceSnapshot.contactPoints[1].address.id),
-                                _uuid: expect.stringMatching(uuidRegex),
-                                _gemeentenaam: instanceSnapshot.contactPoints[1].address.gemeentenaam,
-                                _land: instanceSnapshot.contactPoints[1].address.land,
-                                _huisnummer: instanceSnapshot.contactPoints[1].address.huisnummer,
-                                _busnummer: instanceSnapshot.contactPoints[1].address.busnummer,
-                                _postcode: instanceSnapshot.contactPoints[1].address.postcode,
-                                _straatnaam: instanceSnapshot.contactPoints[1].address.straatnaam,
-                                _verwijstNaar: instanceSnapshot.contactPoints[1].address.verwijstNaar,
-                            }),
-                        })
-                    ]));
-                expect(instanceAfterMerge.conceptId).toEqual(concept.id);
-                expect(instanceAfterMerge.conceptSnapshotId).toEqual(concept.latestConceptSnapshot);
-                expect(instanceAfterMerge.productId).toEqual(concept.productId);
-                expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
-                expect(instanceAfterMerge.dateCreated).toEqual(instanceAfterMerge.dateCreated);
-                expect(instanceAfterMerge.dateModified).toEqual(instanceSnapshot.dateModified);
-                expect(instanceAfterMerge.dateSent).toEqual(FormatPreservingDate.now());
-                expect(instanceAfterMerge.datePublished).toEqual(instance.datePublished);
-                expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERSTUURD);
-                expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
-                expect(instanceAfterMerge.publicationStatus).toEqual(InstancePublicationStatusType.TE_HERPUBLICEREN);
-                expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
-                expect(instanceAfterMerge.legalResources).toEqual(expect.arrayContaining([
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.legalResources[0].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.legalResources[0].title,
-                        _description: instanceSnapshot.legalResources[0].description,
-                        _url: instanceSnapshot.legalResources[0].url,
-                        _order: instanceSnapshot.legalResources[0].order,
-                    }),
-                    expect.objectContaining({
-                        _id: expect.not.objectContaining(instanceSnapshot.legalResources[1].id),
-                        _uuid: expect.stringMatching(uuidRegex),
-                        _title: instanceSnapshot.legalResources[1].title,
-                        _description: instanceSnapshot.legalResources[1].description,
-                        _url: instanceSnapshot.legalResources[1].url,
-                        _order: instanceSnapshot.legalResources[1].order,
-                    })
-                ]));
-            });
-        });
-
-        describe('Delete', () => {
-            test('Given a minimal instanceSnapshot with isArchived, then remove instance', async () => {
-                const bestuurseenheid = aBestuurseenheid().build();
-                await bestuurseenheidRepository.save(bestuurseenheid);
-
-                const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
-                await instanceRepository.save(bestuurseenheid, instance);
-                await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
-
-                const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
-                await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-                expect(instanceExists).toEqual(true);
-
-                await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
-
-                expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
-
-                const query = `
-            SELECT ?s ?p ?o WHERE {
-                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                    VALUES ?s {
-                        <${instance.id.value}>
-                    }
-                    ?s ?p ?o
-                }
-            }
-        `;
-                const queryResult = await directDatabaseAccess.list(query);
-                const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
-
-                expect(quads).toHaveLength(4);
-                expect(quads).toEqual(expect.arrayContaining([
-                    quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
-                ]));
-            });
-
-            test('Given a full instanceSnapshot with isArchived, then remove instance', async () => {
-                const bestuurseenheid = aBestuurseenheid().build();
-                await bestuurseenheidRepository.save(bestuurseenheid);
-
-                const concept = aFullConcept().build();
-                await conceptRepository.save(concept);
-                await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
-
-                const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-                await instanceRepository.save(bestuurseenheid, instance);
-
-                const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
-                await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-                expect(instanceExists).toEqual(true);
-
-                await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
-
-                expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
-
-                const query = `
-            SELECT ?s ?p ?o WHERE {
-                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                    VALUES ?s {
-                        <${instance.id.value}>
-                    }
-                    ?s ?p ?o
-                }
-            }
-        `;
-                const queryResult = await directDatabaseAccess.list(query);
-                const quads = new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
-
-                expect(quads).toHaveLength(4);
-                expect(quads).toEqual(expect.arrayContaining([
-                    quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
-                    quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
-                ]));
-            });
-
-            test('Given concept is removed in instance by new instanceSnapshot, then conceptDisplayConfiguration is updated', async () => {
-                const bestuurseenheid = aBestuurseenheid().build();
-                await bestuurseenheidRepository.save(bestuurseenheid);
-
-                const concept = aFullConcept().build();
-                await conceptRepository.save(concept);
-
-                const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-                await instanceRepository.save(bestuurseenheid, instance);
-
-                await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
-
-                const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(undefined).build();
-                await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-                await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
-
-                const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-                expect(instanceExists).toEqual(true);
-
-                await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
-                const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
-                expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
-            });
-        });
-
-        test('Given instance is linked to different concept, then conceptDisplayConfiguration is updated', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const concept = aFullConcept().build();
-            await conceptRepository.save(concept);
-            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
-
-            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).withConceptId(concept.id).build();
-            await instanceRepository.save(bestuurseenheid, instance);
-
-            const concept2 = aFullConcept().build();
-            await conceptRepository.save(concept2);
-            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept2.id);
-
-            const instanceSnapshot = aFullInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withConceptId(concept2.id).build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-            await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
-            await conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept2.id);
-
-            const instanceExists = await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-            expect(instanceExists).toEqual(true);
-
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
-
-            const conceptDisplayConfiguration = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept.id);
-            expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
-
-            const conceptDisplayConfiguration2 = await conceptDisplayConfigurationRepository.findByConceptId(bestuurseenheid, concept2.id);
-            expect(conceptDisplayConfiguration2.conceptIsInstantiated).toEqual(true);
-        });
-
-        test('Dont merge instanceSnapshots if newer one is already processed for the same instance', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-
-            const concept = aFullConcept().build();
-            await conceptRepository.save(concept);
-            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(concept.id);
-            const instanceId = buildInstanceIri(uuid());
-            const otherInstanceId = buildInstanceIri(uuid());
-
-            const instanceSnapshotForOtherInstance = aFullInstanceSnapshot()
-                .withTitle(LanguageString.of('other snapshot', undefined, undefined, 'other snapshot'))
-                .withGeneratedAtTime(FormatPreservingDate.of('2024-01-18T00:00:00.672Z'))
-                .withCreatedBy(bestuurseenheid.id)
-                .withIsVersionOfInstance(otherInstanceId)
-                .withConceptId(concept.id)
-                .build();
-
-            const firstInstanceSnapshot = aFullInstanceSnapshot()
-                .withTitle(LanguageString.of('snapshot 1', undefined, undefined, 'snapshot 1'))
-                .withGeneratedAtTime(FormatPreservingDate.of('2024-01-16T00:00:00.672Z'))
-                .withCreatedBy(bestuurseenheid.id)
-                .withIsVersionOfInstance(instanceId)
-                .withConceptId(concept.id)
-                .build();
-            const secondInstanceSnapshot = aFullInstanceSnapshot()
-                .withTitle(LanguageString.of('snapshot 2', undefined, undefined, 'snapshot 2'))
-                .withGeneratedAtTime(FormatPreservingDate.of('2024-01-17T00:00:00.672Z'))
-                .withCreatedBy(bestuurseenheid.id)
-                .withIsVersionOfInstance(instanceId)
-                .withConceptId(concept.id)
-                .build();
-
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshotForOtherInstance);
-            await instanceSnapshotRepository.save(bestuurseenheid, secondInstanceSnapshot);
-            await instanceSnapshotRepository.save(bestuurseenheid, firstInstanceSnapshot);
-
-            await mapperDomainService.merge(bestuurseenheid, instanceSnapshotForOtherInstance.id);
-            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, instanceSnapshotForOtherInstance.id);
-
-            await mapperDomainService.merge(bestuurseenheid, secondInstanceSnapshot.id);
-            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, secondInstanceSnapshot.id);
-
-            await mapperDomainService.merge(bestuurseenheid, firstInstanceSnapshot.id);
-            await instanceSnapshotRepository.addToProcessedInstanceSnapshots(bestuurseenheid, firstInstanceSnapshot.id);
-
-            const actual = await instanceRepository.findById(bestuurseenheid, instanceId);
-            expect(actual.title).toEqual(secondInstanceSnapshot.title);
-        });
-
-        test('instance is validated for publish', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
-            await instanceRepository.save(bestuurseenheid, instance);
-            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
-
-            const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withTitle(LanguageString.of('title', undefined, undefined, 'titel'))
-                .withDescription(LanguageString.of(undefined, undefined, undefined, 'beschrijving'))
-                .withCreatedBy(bestuurseenheid.id)
-                .withConceptId(undefined)
-                .withIsVersionOfInstance(instance.id)
-                .build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-            await expect(() => mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id))
-                .rejects.toThrowWithMessage(InvariantError, 'titel en beschrijving moeten dezelfde talen bevatten');
-        });
-
-        test('instance is validated for publish, adres can be invalid', async () => {
-            const bestuurseenheid = aBestuurseenheid().build();
-            await bestuurseenheidRepository.save(bestuurseenheid);
-
-            const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
-            await instanceRepository.save(bestuurseenheid, instance);
-            await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
-
-            const instanceSnapshot = aMinimalInstanceSnapshot()
-                .withCreatedBy(bestuurseenheid.id)
-                .withConceptId(undefined)
-                .withContactPoints([aFullContactPointForInstance().withAddress(aFullAddressForInstance().withVerwijstNaar(undefined).build()).build()])
-                .withIsVersionOfInstance(instance.id)
-                .build();
-            await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
-
-            await expect(mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id)).resolves.not.toThrow();
-        });
+    someExecutingAuthorities().forEach(async (unit) => {
+      const builtUnit = unit.build();
+      await bestuurseenheidRepository.save(builtUnit);
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `${sparqlEscapeUri(builtUnit.id)} a skos:Concept.`,
+          `${sparqlEscapeUri(builtUnit.id)} skos:inScheme ${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)}.`,
+        ],
+        [PREFIX.skos],
+      );
+      return;
     });
 
-    test('Given a deleted Instance, when receiving a new snapshot, recreate the instance and remove tombstone', async () => {
+    await spatialRepository.save(
+      aSpatial()
+        .withId(SpatialTestBuilder.OUD_HEVERLEE_SPATIAL_IRI)
+        .withUuid(String(SpatialTestBuilder.OUD_HEVERLEE_SPATIAL_UUID))
+        .build(),
+    );
+    await spatialRepository.save(
+      aSpatial()
+        .withId(SpatialTestBuilder.PEPINGEN_SPATIAL_IRI)
+        .withUuid(String(SpatialTestBuilder.PEPINGEN_SPATIAL_UUID))
+        .build(),
+    );
+  });
+
+  describe("Instance does not exists", () => {
+    test("Given a minimalistic instanceSnapshot, then instance is created", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(undefined)
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      const instanceExists = await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceExists).toEqual(false);
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+
+      const instanceAfterMerge = await instanceRepository.findById(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
+      expect(instanceAfterMerge.uuid).toBeDefined();
+      expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
+      expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+      expect(instanceAfterMerge.description).toEqual(
+        instanceSnapshot.description,
+      );
+      expect(instanceAfterMerge.additionalDescription).toEqual(
+        instanceSnapshot.additionalDescription,
+      );
+      expect(instanceAfterMerge.exception).toEqual(instanceSnapshot.exception);
+      expect(instanceAfterMerge.regulation).toEqual(
+        instanceSnapshot.regulation,
+      );
+      expect(instanceAfterMerge.startDate).toEqual(instanceSnapshot.startDate);
+      expect(instanceAfterMerge.endDate).toEqual(instanceSnapshot.endDate);
+      expect(instanceAfterMerge.type).toEqual(instanceSnapshot.type);
+      expect(instanceAfterMerge.targetAudiences).toEqual(
+        instanceSnapshot.targetAudiences,
+      );
+      expect(instanceAfterMerge.themes).toEqual(instanceSnapshot.themes);
+      expect(instanceAfterMerge.competentAuthorityLevels).toEqual(
+        instanceSnapshot.competentAuthorityLevels,
+      );
+      expect(instanceAfterMerge.competentAuthorities).toEqual(
+        instanceSnapshot.competentAuthorities,
+      );
+      expect(instanceAfterMerge.executingAuthorityLevels).toEqual(
+        instanceSnapshot.executingAuthorityLevels,
+      );
+      expect(instanceAfterMerge.executingAuthorities).toEqual(
+        instanceSnapshot.executingAuthorities,
+      );
+      expect(instanceAfterMerge.publicationMedia).toEqual(
+        instanceSnapshot.publicationMedia,
+      );
+      expect(instanceAfterMerge.yourEuropeCategories).toEqual(
+        instanceSnapshot.yourEuropeCategories,
+      );
+      expect(instanceAfterMerge.keywords).toEqual(instanceSnapshot.keywords);
+      expect(instanceAfterMerge.requirements).toEqual([]);
+      expect(instanceAfterMerge.procedures).toEqual([]);
+      expect(instanceAfterMerge.websites).toEqual([]);
+      expect(instanceAfterMerge.costs).toEqual([]);
+      expect(instanceAfterMerge.financialAdvantages).toEqual([]);
+      expect(instanceAfterMerge.contactPoints).toEqual([]);
+      expect(instanceAfterMerge.conceptId).toEqual(undefined);
+      expect(instanceAfterMerge.conceptSnapshotId).toEqual(undefined);
+      expect(instanceAfterMerge.productId).toEqual(undefined);
+      expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
+      expect(instanceAfterMerge.dutchLanguageVariant).toEqual(
+        Language.INFORMAL,
+      );
+      expect(
+        instanceAfterMerge.needsConversionFromFormalToInformal,
+      ).toBeFalse();
+      expect(instanceAfterMerge.dateCreated).toEqual(
+        instanceSnapshot.dateCreated,
+      );
+      expect(instanceAfterMerge.dateModified).toEqual(
+        instanceSnapshot.dateModified,
+      );
+      expect(instanceAfterMerge.dateSent).toEqual(
+        InstanceSnapshotTestBuilder.GENERATED_AT_TIME,
+      );
+      expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
+      expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
+      expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
+      expect(instanceAfterMerge.legalResources).toEqual(
+        instanceSnapshot.legalResources,
+      );
+    });
+
+    test("Given a full instanceSnapshot, then instance is created", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const concept = aFullConcept().build();
+      await conceptRepository.save(concept);
+      await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+        concept.id,
+      );
+
+      const instanceSnapshot = aFullInstanceSnapshot()
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(concept.id)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      const instanceExists = await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceExists).toEqual(false);
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+
+      const instanceAfterMerge = await instanceRepository.findById(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+
+      expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
+      expect(instanceAfterMerge.uuid).toBeDefined();
+      expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
+      expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+      expect(instanceAfterMerge.description).toEqual(
+        instanceSnapshot.description,
+      );
+      expect(instanceAfterMerge.additionalDescription).toEqual(
+        instanceSnapshot.additionalDescription,
+      );
+      expect(instanceAfterMerge.exception).toEqual(instanceSnapshot.exception);
+      expect(instanceAfterMerge.regulation).toEqual(
+        instanceSnapshot.regulation,
+      );
+      expect(instanceAfterMerge.startDate).toEqual(instanceSnapshot.startDate);
+      expect(instanceAfterMerge.endDate).toEqual(instanceSnapshot.endDate);
+      expect(instanceAfterMerge.type).toEqual(instanceSnapshot.type);
+      expect(instanceAfterMerge.targetAudiences).toEqual(
+        instanceSnapshot.targetAudiences,
+      );
+      expect(instanceAfterMerge.themes).toEqual(instanceSnapshot.themes);
+      expect(instanceAfterMerge.competentAuthorityLevels).toEqual(
+        instanceSnapshot.competentAuthorityLevels,
+      );
+      expect(instanceAfterMerge.competentAuthorities).toEqual(
+        instanceSnapshot.competentAuthorities,
+      );
+      expect(instanceAfterMerge.executingAuthorityLevels).toEqual(
+        instanceSnapshot.executingAuthorityLevels,
+      );
+      expect(instanceAfterMerge.executingAuthorities).toEqual(
+        instanceSnapshot.executingAuthorities,
+      );
+      expect(instanceAfterMerge.publicationMedia).toEqual(
+        instanceSnapshot.publicationMedia,
+      );
+      expect(instanceAfterMerge.yourEuropeCategories).toEqual(
+        instanceSnapshot.yourEuropeCategories,
+      );
+      expect(instanceAfterMerge.keywords).toEqual(instanceSnapshot.keywords);
+      expect(instanceAfterMerge.requirements).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: expect.not.objectContaining(
+              instanceSnapshot.requirements[0].id,
+            ),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.requirements[0].title,
+            _description: instanceSnapshot.requirements[0].description,
+            _order: instanceSnapshot.requirements[0].order,
+            _evidence: expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.requirements[0].evidence.id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.requirements[0].evidence.title,
+              _description:
+                instanceSnapshot.requirements[0].evidence.description,
+            }),
+          }),
+          expect.objectContaining({
+            _id: expect.not.objectContaining(
+              instanceSnapshot.requirements[1].id,
+            ),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.requirements[1].title,
+            _description: instanceSnapshot.requirements[1].description,
+            _order: instanceSnapshot.requirements[1].order,
+            _evidence: expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.requirements[1].evidence.id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.requirements[1].evidence.title,
+              _description:
+                instanceSnapshot.requirements[1].evidence.description,
+            }),
+          }),
+        ]),
+      );
+      expect(instanceAfterMerge.procedures).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: expect.not.objectContaining(instanceSnapshot.procedures[0].id),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.procedures[0].title,
+            _description: instanceSnapshot.procedures[0].description,
+            _order: instanceSnapshot.procedures[0].order,
+            _websites: expect.arrayContaining([
+              expect.objectContaining({
+                _id: expect.not.objectContaining(
+                  instanceSnapshot.procedures[0].websites[0].id,
+                ),
+                _uuid: expect.stringMatching(uuidRegex),
+                _title: instanceSnapshot.procedures[0].websites[0].title,
+                _description:
+                  instanceSnapshot.procedures[0].websites[0].description,
+                _order: instanceSnapshot.procedures[0].websites[0].order,
+                _url: instanceSnapshot.procedures[0].websites[0].url,
+              }),
+              expect.objectContaining({
+                _id: expect.not.objectContaining(
+                  instanceSnapshot.procedures[0].websites[1].id,
+                ),
+                _uuid: expect.stringMatching(uuidRegex),
+                _title: instanceSnapshot.procedures[0].websites[1].title,
+                _description:
+                  instanceSnapshot.procedures[0].websites[1].description,
+                _order: instanceSnapshot.procedures[0].websites[1].order,
+                _url: instanceSnapshot.procedures[0].websites[1].url,
+              }),
+            ]),
+          }),
+          expect.objectContaining({
+            _id: expect.not.objectContaining(instanceSnapshot.procedures[1].id),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.procedures[1].title,
+            _description: instanceSnapshot.procedures[1].description,
+            _order: instanceSnapshot.procedures[1].order,
+            _websites: expect.arrayContaining([
+              expect.objectContaining({
+                _id: expect.not.objectContaining(
+                  instanceSnapshot.procedures[1].websites[0].id,
+                ),
+                _uuid: expect.stringMatching(uuidRegex),
+                _title: instanceSnapshot.procedures[1].websites[0].title,
+                _description:
+                  instanceSnapshot.procedures[1].websites[0].description,
+                _order: instanceSnapshot.procedures[1].websites[0].order,
+                _url: instanceSnapshot.procedures[1].websites[0].url,
+              }),
+              expect.objectContaining({
+                _id: expect.not.objectContaining(
+                  instanceSnapshot.procedures[1].websites[1].id,
+                ),
+                _uuid: expect.stringMatching(uuidRegex),
+                _title: instanceSnapshot.procedures[1].websites[1].title,
+                _description:
+                  instanceSnapshot.procedures[1].websites[1].description,
+                _order: instanceSnapshot.procedures[1].websites[1].order,
+                _url: instanceSnapshot.procedures[1].websites[1].url,
+              }),
+            ]),
+          }),
+        ]),
+      );
+      expect(instanceAfterMerge.websites).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: expect.not.objectContaining(instanceSnapshot.websites[0].id),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.websites[0].title,
+            _description: instanceSnapshot.websites[0].description,
+            _order: instanceSnapshot.websites[0].order,
+            _url: instanceSnapshot.websites[0].url,
+          }),
+          expect.objectContaining({
+            _id: expect.not.objectContaining(instanceSnapshot.websites[1].id),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.websites[1].title,
+            _description: instanceSnapshot.websites[1].description,
+            _order: instanceSnapshot.websites[1].order,
+            _url: instanceSnapshot.websites[1].url,
+          }),
+        ]),
+      );
+      expect(instanceAfterMerge.costs).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: expect.not.objectContaining(instanceSnapshot.costs[0].id),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.costs[0].title,
+            _description: instanceSnapshot.costs[0].description,
+            _order: instanceSnapshot.costs[0].order,
+          }),
+          expect.objectContaining({
+            _id: expect.not.objectContaining(instanceSnapshot.costs[1].id),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.costs[1].title,
+            _description: instanceSnapshot.costs[1].description,
+            _order: instanceSnapshot.costs[1].order,
+          }),
+        ]),
+      );
+      expect(instanceAfterMerge.financialAdvantages).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: expect.not.objectContaining(
+              instanceSnapshot.financialAdvantages[0].id,
+            ),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.financialAdvantages[0].title,
+            _description: instanceSnapshot.financialAdvantages[0].description,
+            _order: instanceSnapshot.financialAdvantages[0].order,
+          }),
+          expect.objectContaining({
+            _id: expect.not.objectContaining(
+              instanceSnapshot.financialAdvantages[1].id,
+            ),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.financialAdvantages[1].title,
+            _description: instanceSnapshot.financialAdvantages[1].description,
+            _order: instanceSnapshot.financialAdvantages[1].order,
+          }),
+        ]),
+      );
+      expect(instanceAfterMerge.contactPoints).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: expect.not.objectContaining(
+              instanceSnapshot.contactPoints[0].id,
+            ),
+            _uuid: expect.stringMatching(uuidRegex),
+            _url: instanceSnapshot.contactPoints[0].url,
+            _email: instanceSnapshot.contactPoints[0].email,
+            _telephone: instanceSnapshot.contactPoints[0].telephone,
+            _openingHours: instanceSnapshot.contactPoints[0].openingHours,
+            _order: instanceSnapshot.contactPoints[0].order,
+            _address: expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.contactPoints[0].address.id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _gemeentenaam:
+                instanceSnapshot.contactPoints[0].address.gemeentenaam,
+              _land: instanceSnapshot.contactPoints[0].address.land,
+              _huisnummer: instanceSnapshot.contactPoints[0].address.huisnummer,
+              _busnummer: instanceSnapshot.contactPoints[0].address.busnummer,
+              _postcode: instanceSnapshot.contactPoints[0].address.postcode,
+              _straatnaam: instanceSnapshot.contactPoints[0].address.straatnaam,
+              _verwijstNaar:
+                instanceSnapshot.contactPoints[0].address.verwijstNaar,
+            }),
+          }),
+          expect.objectContaining({
+            _id: expect.not.objectContaining(
+              instanceSnapshot.contactPoints[1].id,
+            ),
+            _uuid: expect.stringMatching(uuidRegex),
+            _url: instanceSnapshot.contactPoints[1].url,
+            _email: instanceSnapshot.contactPoints[1].email,
+            _telephone: instanceSnapshot.contactPoints[1].telephone,
+            _openingHours: instanceSnapshot.contactPoints[1].openingHours,
+            _order: instanceSnapshot.contactPoints[1].order,
+            _address: expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.contactPoints[1].address.id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _gemeentenaam:
+                instanceSnapshot.contactPoints[1].address.gemeentenaam,
+              _land: instanceSnapshot.contactPoints[1].address.land,
+              _huisnummer: instanceSnapshot.contactPoints[1].address.huisnummer,
+              _busnummer: instanceSnapshot.contactPoints[1].address.busnummer,
+              _postcode: instanceSnapshot.contactPoints[1].address.postcode,
+              _straatnaam: instanceSnapshot.contactPoints[1].address.straatnaam,
+              _verwijstNaar:
+                instanceSnapshot.contactPoints[1].address.verwijstNaar,
+            }),
+          }),
+        ]),
+      );
+      expect(instanceAfterMerge.conceptId).toEqual(concept.id);
+      expect(instanceAfterMerge.conceptSnapshotId).toEqual(
+        concept.latestConceptSnapshot,
+      );
+      expect(instanceAfterMerge.productId).toEqual(concept.productId);
+      expect(instanceAfterMerge.languages).toEqual(instanceSnapshot.languages);
+      expect(instanceAfterMerge.dutchLanguageVariant).toEqual(
+        Language.INFORMAL,
+      );
+      expect(
+        instanceAfterMerge.needsConversionFromFormalToInformal,
+      ).toBeFalse();
+      expect(instanceAfterMerge.dateCreated).toEqual(
+        instanceSnapshot.dateCreated,
+      );
+      expect(instanceAfterMerge.dateModified).toEqual(
+        instanceSnapshot.dateModified,
+      );
+      expect(instanceAfterMerge.dateSent).toEqual(
+        InstanceSnapshotTestBuilder.GENERATED_AT_TIME,
+      );
+      expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
+      expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
+      expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
+      expect(instanceAfterMerge.legalResources).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: expect.not.objectContaining(
+              instanceSnapshot.legalResources[0].id,
+            ),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.legalResources[0].title,
+            _description: instanceSnapshot.legalResources[0].description,
+            _url: instanceSnapshot.legalResources[0].url,
+            _order: instanceSnapshot.legalResources[0].order,
+          }),
+          expect.objectContaining({
+            _id: expect.not.objectContaining(
+              instanceSnapshot.legalResources[1].id,
+            ),
+            _uuid: expect.stringMatching(uuidRegex),
+            _title: instanceSnapshot.legalResources[1].title,
+            _description: instanceSnapshot.legalResources[1].description,
+            _url: instanceSnapshot.legalResources[1].url,
+            _order: instanceSnapshot.legalResources[1].order,
+          }),
+        ]),
+      );
+    });
+
+    test("Given a instanceSnapshot with informal languageStrings, then instance is created with informal dutchLanguageVersion", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const concept = aFullConcept().build();
+      await conceptRepository.save(concept);
+      await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+        concept.id,
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withTitle(
+          LanguageString.of(
+            undefined,
+            undefined,
+            InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL,
+          ),
+        )
+        .withDescription(
+          LanguageString.of(
+            undefined,
+            undefined,
+            InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL,
+          ),
+        )
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(concept.id)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      const instanceExists = await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceExists).toEqual(false);
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+
+      const instanceAfterMerge = await instanceRepository.findById(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+      expect(instanceAfterMerge.description).toEqual(
+        instanceSnapshot.description,
+      );
+      expect(instanceAfterMerge.dutchLanguageVariant).toEqual(
+        Language.INFORMAL,
+      );
+    });
+
+    test("Given a instanceSnapshot with formal languageStrings, then instance is created with formal dutchLanguageVersion", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const concept = aFullConcept().build();
+      await conceptRepository.save(concept);
+      await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+        concept.id,
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withTitle(
+          LanguageString.of(
+            undefined,
+            InstanceSnapshotTestBuilder.TITLE_NL_FORMAL,
+            undefined,
+          ),
+        )
+        .withDescription(
+          LanguageString.of(
+            undefined,
+            InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
+            undefined,
+          ),
+        )
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(concept.id)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      const instanceExists = await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceExists).toEqual(false);
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+
+      const instanceAfterMerge = await instanceRepository.findById(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+      expect(instanceAfterMerge.description).toEqual(
+        instanceSnapshot.description,
+      );
+      expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.FORMAL);
+    });
+
+    test("conceptDisplayConfiguration is updated", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const concept = aFullConcept().build();
+      await conceptRepository.save(concept);
+
+      await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+        concept.id,
+      );
+
+      const instanceSnapshot = aFullInstanceSnapshot()
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(concept.id)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      const instanceExists = await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceExists).toEqual(false);
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+
+      const conceptDisplayConfiguration =
+        await conceptDisplayConfigurationRepository.findByConceptId(
+          bestuurseenheid,
+          concept.id,
+        );
+      expect(conceptDisplayConfiguration.conceptIsNew).toEqual(false);
+      expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(true);
+    });
+
+    test("instance is validated for publish", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withTitle(LanguageString.of(undefined, undefined, "titel"))
+        .withDescription(LanguageString.of(undefined, undefined, ""))
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(undefined)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InvariantError,
+        "Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn",
+      );
+    });
+
+    test("instance is validated for publish, adres can be invalid", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(undefined)
+        .withContactPoints([
+          aFullContactPointForInstance()
+            .withAddress(
+              aFullAddressForInstance().withVerwijstNaar(undefined).build(),
+            )
+            .build(),
+        ])
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await expect(
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).resolves.not.toThrow();
+    });
+
+    test("published instance is created and saved", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(undefined)
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+
+      const instance = await instanceRepository.findById(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      const publishedInstanceSnapshotId =
+        await instanceRepository.findPublishedInstanceSnapshotIdForInstance(
+          bestuurseenheid,
+          instance,
+        );
+      const quads = await instanceRepository.findPublishedInstanceSnapshot(
+        bestuurseenheid,
+        publishedInstanceSnapshotId,
+      );
+      expect(quads).toIncludeAllMembers([
+        quad(
+          namedNode(publishedInstanceSnapshotId.value),
+          namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+          namedNode(
+            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(publishedInstanceSnapshotId.value),
+          namedNode("http://www.w3.org/ns/prov#generatedAtTime"),
+          literal(
+            instanceSnapshot.generatedAtTime.value,
+            "http://www.w3.org/2001/XMLSchema#dateTime",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(publishedInstanceSnapshotId.value),
+          namedNode(
+            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf",
+          ),
+          namedNode(instanceSnapshot.isVersionOf.value),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(publishedInstanceSnapshotId.value),
+          namedNode("http://purl.org/pav/createdBy"),
+          namedNode(instanceSnapshot.createdBy.value),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+      ]);
+    });
+
+    test("unauthorized merging of bestuurseenheid for instance snapshot graph throws ForbiddenError", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(undefined)
+        .withContactPoints([
+          aFullContactPointForInstance()
+            .withAddress(
+              aFullAddressForInstance().withVerwijstNaar(undefined).build(),
+            )
+            .build(),
+        ])
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        ForbiddenError,
+        `Bestuur <${bestuurseenheid.id}> niet toegelaten voor instance snapshot graph <${instanceSnapshotGraph}>.`,
+      );
+    });
+
+    test("throws an error when snapshot is created by an unknown organisation", async function () {
+      const creator = aBestuurseenheid().build();
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        UNKNOWN_CREATOR_ERROR_MESSAGE(instanceSnapshot.id, creator.id),
+      );
+    });
+
+    test("throws an error when snapshot is created by an inactive organisation", async function () {
+      const inactiveCreator = anInactiveBestuurseenheid().build();
+      await bestuurseenheidRepository.save(inactiveCreator);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(inactiveCreator.id)
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        inactiveCreator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INACTIVE_CREATOR_ERROR_MESSAGE(instanceSnapshot.id, inactiveCreator.id),
+      );
+    });
+
+    test("throws an error when authority URI mixes administrative unit and OVO code format", async function () {
+      // NOTE (19/03/2025): This was the case that triggered adding the
+      // additional validations. We received authority URIs of the form
+      // `http://data.lblod.info/id/bestuurseenheden/OVOnnnnnn`.
+      // (See LPDC-1260 ticket)
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const unkownAuthority = buildBestuurseenheidIri("OVO002949");
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withExecutingAuthorities([unkownAuthority])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, unkownAuthority),
+      );
+    });
+
+    test("throws an error when snapshot is linked to a non-existing administrative unit executing authority", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const unkownAuthority = buildBestuurseenheidIri(
+        "this-administrative-unit-does-not-exist",
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withExecutingAuthorities([unkownAuthority])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, unkownAuthority),
+      );
+    });
+
+    test("throws an error when snapshot is linked to a non-existing administrative unit competent authority", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const unkownAuthority = buildBestuurseenheidIri(
+        "this-administrative-unit-does-not-exist",
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withCompetentAuthorities([unkownAuthority])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, unkownAuthority),
+      );
+    });
+
+    test("throws an error when snapshot is linked to an executing authority with an invalid OVO code", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      // Note, OVO numbers are supposed to consist of 6 digits
+      const authorityIri = buildOvoCodeIri("abc");
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withExecutingAuthorities([authorityIri])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, authorityIri),
+      );
+    });
+
+    test("throws an error when snapshot is linked to an competent authority with an invalid OVO code", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      // Note, OVO numbers are supposed to consist of 6 digits
+      const authorityIri = buildOvoCodeIri("abc");
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withCompetentAuthorities([authorityIri])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INVALID_AUTHORITY_ERROR_MESSAGE(instanceSnapshot.id, authorityIri),
+      );
+    });
+
+    test("throws an error when snapshot is linked to a known and inactive executing authority", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const inactiveAuthority = anInactiveBestuurseenheid().build();
+      await bestuurseenheidRepository.save(inactiveAuthority);
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `${sparqlEscapeUri(inactiveAuthority.id)} a skos:Concept.`,
+          `${sparqlEscapeUri(inactiveAuthority.id)} skos:inScheme ${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)}.`,
+        ],
+        [PREFIX.skos],
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withConceptId(undefined)
+        .withExecutingAuthorities([inactiveAuthority.id])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INACTIVE_AUTHORITY_ERROR_MESSAGE(
+          instanceSnapshot.id,
+          inactiveAuthority.id,
+        ),
+      );
+    });
+
+    test("throws an error when snapshot is linked to a known and inactive competent authority", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const inactiveAuthority = anInactiveBestuurseenheid().build();
+      await bestuurseenheidRepository.save(inactiveAuthority);
+      await directDatabaseAccess.insertData(
+        PUBLIC_GRAPH,
+        [
+          `${sparqlEscapeUri(inactiveAuthority.id)} a skos:Concept.`,
+          `${sparqlEscapeUri(inactiveAuthority.id)} skos:inScheme ${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)}.`,
+        ],
+        [PREFIX.skos],
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withConceptId(undefined)
+        .withCompetentAuthorities([inactiveAuthority.id])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        INACTIVE_AUTHORITY_ERROR_MESSAGE(
+          instanceSnapshot.id,
+          inactiveAuthority.id,
+        ),
+      );
+    });
+
+    test("throws an error when snapshot is linked to an unknown concept", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const conceptId = buildConceptIri("unknown-concept");
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withConceptId(conceptId)
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        UNKNOWN_CONCEPT_ERROR_MESSAGE(instanceSnapshot.id, conceptId),
+      );
+    });
+
+    test("throws an error when snapshot is linked to an unknown spatial", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const spatialIri = buildNutsCodeIri(99999999);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withSpatials([spatialIri])
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        `No spatial resource found with URI: ${spatialIri}`,
+      );
+    });
+
+    test("throws an error when snapshot is linked to an expired spatial", async function () {
+      const creator = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(creator);
+
+      const expiredSpatial = anExpiredSpatial().build();
+      await spatialRepository.save(expiredSpatial);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(creator.id)
+        .withSpatials([expiredSpatial.id])
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        creator,
+        instanceSnapshotGraph,
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InstanceSnapshotValidationError,
+        EXPIRED_SPATIAL_ERROR_MESSAGE(instanceSnapshot.id, [expiredSpatial.id]),
+      );
+    });
+  });
+
+  describe("Instance already exists", () => {
+    describe("update", () => {
+      test("Given a minimalistic instanceSnapshot, then existing instance is updated", async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         await bestuurseenheidRepository.save(bestuurseenheid);
 
-        const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+        const instance = aFullInstance()
+          .withCreatedBy(bestuurseenheid.id)
+          .build();
         await instanceRepository.save(bestuurseenheid, instance);
-        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
-        await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+          instance.conceptId,
+        );
 
-        const instanceExists = await instanceRepository.exists(bestuurseenheid, instance.id);
-        expect(instanceExists).toEqual(false);
+        const instanceSnapshot = aMinimalInstanceSnapshot()
+          .withCreatedBy(bestuurseenheid.id)
+          .withIsVersionOfInstance(instance.id)
+          .withConceptId(undefined)
+          .build();
+        const instanceSnapshotGraph = new Iri(
+          INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+        );
 
-        const quadsBeforeRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
+        await instanceSnapshotRepository.save(
+          instanceSnapshotGraph,
+          instanceSnapshot,
+        );
 
-        expect(quadsBeforeRecreate).toHaveLength(4);
-        expect(quadsBeforeRecreate).toEqual(expect.arrayContaining([
-            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
-            quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
-        ]));
+        const instanceExists = await instanceRepository.exists(
+          bestuurseenheid,
+          instanceSnapshot.isVersionOf,
+        );
+        expect(instanceExists).toEqual(true);
 
-        const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(false).build();
-        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+        await instanceSnapshotProcessingAuthorizationRepository.save(
+          bestuurseenheid,
+          instanceSnapshotGraph,
+        );
 
+        await mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        );
 
-        await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+        const instanceAfterMerge = await instanceRepository.findById(
+          bestuurseenheid,
+          instanceSnapshot.isVersionOf,
+        );
 
-        expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeTruthy();
-        const quadsBeforeAfterRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
+        expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
+        expect(instanceAfterMerge.id).toEqual(instance.id);
+        expect(instanceAfterMerge.uuid).toEqual(instance.uuid);
+        expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
+        expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+        expect(instanceAfterMerge.description).toEqual(
+          instanceSnapshot.description,
+        );
+        expect(instanceAfterMerge.additionalDescription).toEqual(
+          instanceSnapshot.additionalDescription,
+        );
+        expect(instanceAfterMerge.exception).toEqual(
+          instanceSnapshot.exception,
+        );
+        expect(instanceAfterMerge.regulation).toEqual(
+          instanceSnapshot.regulation,
+        );
+        expect(instanceAfterMerge.startDate).toEqual(
+          instanceSnapshot.startDate,
+        );
+        expect(instanceAfterMerge.endDate).toEqual(instanceSnapshot.endDate);
+        expect(instanceAfterMerge.type).toEqual(instanceSnapshot.type);
+        expect(instanceAfterMerge.targetAudiences).toEqual(
+          instanceSnapshot.targetAudiences,
+        );
+        expect(instanceAfterMerge.themes).toEqual(instanceSnapshot.themes);
+        expect(instanceAfterMerge.competentAuthorityLevels).toEqual(
+          instanceSnapshot.competentAuthorityLevels,
+        );
+        expect(instanceAfterMerge.competentAuthorities).toEqual(
+          instanceSnapshot.competentAuthorities,
+        );
+        expect(instanceAfterMerge.executingAuthorityLevels).toEqual(
+          instanceSnapshot.executingAuthorityLevels,
+        );
+        expect(instanceAfterMerge.executingAuthorities).toEqual(
+          instanceSnapshot.executingAuthorities,
+        );
+        expect(instanceAfterMerge.publicationMedia).toEqual(
+          instanceSnapshot.publicationMedia,
+        );
+        expect(instanceAfterMerge.yourEuropeCategories).toEqual(
+          instanceSnapshot.yourEuropeCategories,
+        );
+        expect(instanceAfterMerge.keywords).toEqual(instanceSnapshot.keywords);
+        expect(instanceAfterMerge.requirements).toEqual([]);
+        expect(instanceAfterMerge.procedures).toEqual([]);
+        expect(instanceAfterMerge.websites).toEqual([]);
+        expect(instanceAfterMerge.costs).toEqual([]);
+        expect(instanceAfterMerge.financialAdvantages).toEqual([]);
+        expect(instanceAfterMerge.contactPoints).toEqual([]);
+        expect(instanceAfterMerge.conceptId).toEqual(undefined);
+        expect(instanceAfterMerge.conceptSnapshotId).toEqual(undefined);
+        expect(instanceAfterMerge.productId).toEqual(undefined);
+        expect(instanceAfterMerge.languages).toEqual(
+          instanceSnapshot.languages,
+        );
+        expect(instanceAfterMerge.dutchLanguageVariant).toEqual(
+          Language.INFORMAL,
+        );
+        expect(
+          instanceAfterMerge.needsConversionFromFormalToInformal,
+        ).toBeFalse();
 
-        expect(quadsBeforeAfterRecreate).toEqual(expect.not.arrayContaining([
-            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-        ]));
+        expect(instanceAfterMerge.dateCreated).toEqual(
+          instanceSnapshot.dateCreated,
+        );
+        expect(instanceAfterMerge.dateModified).toEqual(
+          instanceSnapshot.dateModified,
+        );
+        expect(instanceAfterMerge.dateSent).toEqual(
+          InstanceSnapshotTestBuilder.GENERATED_AT_TIME,
+        );
+        expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
+        expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
+        expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
+        expect(instanceAfterMerge.legalResources).toEqual(
+          instanceSnapshot.legalResources,
+        );
+      });
 
-        const instanceRecreated = await instanceRepository.findById(bestuurseenheid, instanceSnapshot.isVersionOfInstance);
-        expect(instanceRecreated.id).toEqual(instanceSnapshot.isVersionOfInstance);
-    });
-
-    test('Given a deletedInstance, when receiving a new archive snapshot, update tombstone', async () => {
+      test("Given a full instanceSnapshot, then existing instance is updated", async () => {
         const bestuurseenheid = aBestuurseenheid().build();
         await bestuurseenheidRepository.save(bestuurseenheid);
 
-        const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+        const instance = aFullInstance()
+          .withCreatedBy(bestuurseenheid.id)
+          .withCopyOf(InstanceBuilder.buildIri(uuid()))
+          .withForMunicipalityMerger(true)
+          .build();
         await instanceRepository.save(bestuurseenheid, instance);
-        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(instance.conceptId);
-        await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+          instance.conceptId,
+        );
 
-        const instanceExists = await instanceRepository.exists(bestuurseenheid, instance.id);
-        expect(instanceExists).toEqual(false);
+        const concept = aFullConcept().build();
+        await conceptRepository.save(concept);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+          concept.id,
+        );
 
-        const quadsBeforeRecreate = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
+        const instanceSnapshot = aFullInstanceSnapshot()
+          .withCreatedBy(bestuurseenheid.id)
+          .withIsVersionOfInstance(instance.id)
+          .withConceptId(concept.id)
+          .build();
+        const instanceSnapshotGraph = new Iri(
+          INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+        );
 
-        expect(quadsBeforeRecreate).toHaveLength(4);
-        expect(quadsBeforeRecreate).toEqual(expect.arrayContaining([
-            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),
-            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#deleted'), literal(FormatPreservingDate.now().value, 'http://www.w3.org/2001/XMLSchema#dateTime'), namedNode(bestuurseenheid.userGraph().value)),
-            quad(namedNode(instance.id.value), namedNode('https://www.w3.org/ns/activitystreams#formerType'), namedNode('https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService'), namedNode(bestuurseenheid.userGraph().value)),
-            quad(namedNode(instance.id.value), namedNode('http://schema.org/publication'), namedNode('http://lblod.data.gift/concepts/publication-status/te-herpubliceren'), namedNode(bestuurseenheid.userGraph().value)),
-        ]));
+        await instanceSnapshotRepository.save(
+          instanceSnapshotGraph,
+          instanceSnapshot,
+        );
 
-        const instanceSnapshot = aMinimalInstanceSnapshot().withCreatedBy(bestuurseenheid.id).withIsVersionOfInstance(instance.id).withIsArchived(true).build();
-        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+        const instanceExists = await instanceRepository.exists(
+          bestuurseenheid,
+          instanceSnapshot.isVersionOf,
+        );
+        expect(instanceExists).toEqual(true);
 
-        await mapperDomainService.merge(bestuurseenheid, instanceSnapshot.id);
+        await instanceSnapshotProcessingAuthorizationRepository.save(
+          bestuurseenheid,
+          instanceSnapshotGraph,
+        );
 
-        expect(await instanceRepository.exists(bestuurseenheid, instanceSnapshot.isVersionOfInstance)).toBeFalsy();
-        const quadsBeforeAfterArchivingAgain = await getQuadsForInstance(bestuurseenheid, instance, directDatabaseAccess);
+        await mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        );
 
-        expect(quadsBeforeAfterArchivingAgain).toEqual(expect.arrayContaining([
-            quad(namedNode(instance.id.value), namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), namedNode('https://www.w3.org/ns/activitystreams#Tombstone'), namedNode(bestuurseenheid.userGraph().value)),]));
+        const instanceAfterMerge = await instanceRepository.findById(
+          bestuurseenheid,
+          instanceSnapshot.isVersionOf,
+        );
+        expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
+        expect(instanceAfterMerge.id).toEqual(instance.id);
+        expect(instanceAfterMerge.uuid).toEqual(instance.uuid);
+        expect(instanceAfterMerge.createdBy).toEqual(bestuurseenheid.id);
+        expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+        expect(instanceAfterMerge.description).toEqual(
+          instanceSnapshot.description,
+        );
+        expect(instanceAfterMerge.additionalDescription).toEqual(
+          instanceSnapshot.additionalDescription,
+        );
+        expect(instanceAfterMerge.exception).toEqual(
+          instanceSnapshot.exception,
+        );
+        expect(instanceAfterMerge.regulation).toEqual(
+          instanceSnapshot.regulation,
+        );
+        expect(instanceAfterMerge.startDate).toEqual(
+          instanceSnapshot.startDate,
+        );
+        expect(instanceAfterMerge.endDate).toEqual(instanceSnapshot.endDate);
+        expect(instanceAfterMerge.type).toEqual(instanceSnapshot.type);
+        expect(instanceAfterMerge.targetAudiences).toEqual(
+          instanceSnapshot.targetAudiences,
+        );
+        expect(instanceAfterMerge.themes).toEqual(instanceSnapshot.themes);
+        expect(instanceAfterMerge.competentAuthorityLevels).toEqual(
+          instanceSnapshot.competentAuthorityLevels,
+        );
+        expect(instanceAfterMerge.competentAuthorities).toEqual(
+          instanceSnapshot.competentAuthorities,
+        );
+        expect(instanceAfterMerge.executingAuthorityLevels).toEqual(
+          instanceSnapshot.executingAuthorityLevels,
+        );
+        expect(instanceAfterMerge.executingAuthorities).toEqual(
+          instanceSnapshot.executingAuthorities,
+        );
+        expect(instanceAfterMerge.publicationMedia).toEqual(
+          instanceSnapshot.publicationMedia,
+        );
+        expect(instanceAfterMerge.yourEuropeCategories).toEqual(
+          instanceSnapshot.yourEuropeCategories,
+        );
+        expect(instanceAfterMerge.keywords).toEqual(instanceSnapshot.keywords);
+        expect(instanceAfterMerge.requirements).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.requirements[0].id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.requirements[0].title,
+              _description: instanceSnapshot.requirements[0].description,
+              _order: instanceSnapshot.requirements[0].order,
+              _evidence: expect.objectContaining({
+                _id: expect.not.objectContaining(
+                  instanceSnapshot.requirements[0].evidence.id,
+                ),
+                _uuid: expect.stringMatching(uuidRegex),
+                _title: instanceSnapshot.requirements[0].evidence.title,
+                _description:
+                  instanceSnapshot.requirements[0].evidence.description,
+              }),
+            }),
+            expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.requirements[1].id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.requirements[1].title,
+              _description: instanceSnapshot.requirements[1].description,
+              _order: instanceSnapshot.requirements[1].order,
+              _evidence: expect.objectContaining({
+                _id: expect.not.objectContaining(
+                  instanceSnapshot.requirements[1].evidence.id,
+                ),
+                _uuid: expect.stringMatching(uuidRegex),
+                _title: instanceSnapshot.requirements[1].evidence.title,
+                _description:
+                  instanceSnapshot.requirements[1].evidence.description,
+              }),
+            }),
+          ]),
+        );
+        expect(instanceAfterMerge.procedures).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.procedures[0].id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.procedures[0].title,
+              _description: instanceSnapshot.procedures[0].description,
+              _order: instanceSnapshot.procedures[0].order,
+              _websites: expect.arrayContaining([
+                expect.objectContaining({
+                  _id: expect.not.objectContaining(
+                    instanceSnapshot.procedures[0].websites[0].id,
+                  ),
+                  _uuid: expect.stringMatching(uuidRegex),
+                  _title: instanceSnapshot.procedures[0].websites[0].title,
+                  _description:
+                    instanceSnapshot.procedures[0].websites[0].description,
+                  _order: instanceSnapshot.procedures[0].websites[0].order,
+                  _url: instanceSnapshot.procedures[0].websites[0].url,
+                }),
+                expect.objectContaining({
+                  _id: expect.not.objectContaining(
+                    instanceSnapshot.procedures[0].websites[1].id,
+                  ),
+                  _uuid: expect.stringMatching(uuidRegex),
+                  _title: instanceSnapshot.procedures[0].websites[1].title,
+                  _description:
+                    instanceSnapshot.procedures[0].websites[1].description,
+                  _order: instanceSnapshot.procedures[0].websites[1].order,
+                  _url: instanceSnapshot.procedures[0].websites[1].url,
+                }),
+              ]),
+            }),
+            expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.procedures[1].id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.procedures[1].title,
+              _description: instanceSnapshot.procedures[1].description,
+              _order: instanceSnapshot.procedures[1].order,
+              _websites: expect.arrayContaining([
+                expect.objectContaining({
+                  _id: expect.not.objectContaining(
+                    instanceSnapshot.procedures[1].websites[0].id,
+                  ),
+                  _uuid: expect.stringMatching(uuidRegex),
+                  _title: instanceSnapshot.procedures[1].websites[0].title,
+                  _description:
+                    instanceSnapshot.procedures[1].websites[0].description,
+                  _order: instanceSnapshot.procedures[1].websites[0].order,
+                  _url: instanceSnapshot.procedures[1].websites[0].url,
+                }),
+                expect.objectContaining({
+                  _id: expect.not.objectContaining(
+                    instanceSnapshot.procedures[1].websites[1].id,
+                  ),
+                  _uuid: expect.stringMatching(uuidRegex),
+                  _title: instanceSnapshot.procedures[1].websites[1].title,
+                  _description:
+                    instanceSnapshot.procedures[1].websites[1].description,
+                  _order: instanceSnapshot.procedures[1].websites[1].order,
+                  _url: instanceSnapshot.procedures[1].websites[1].url,
+                }),
+              ]),
+            }),
+          ]),
+        );
+        expect(instanceAfterMerge.websites).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              _id: expect.not.objectContaining(instanceSnapshot.websites[0].id),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.websites[0].title,
+              _description: instanceSnapshot.websites[0].description,
+              _order: instanceSnapshot.websites[0].order,
+              _url: instanceSnapshot.websites[0].url,
+            }),
+            expect.objectContaining({
+              _id: expect.not.objectContaining(instanceSnapshot.websites[1].id),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.websites[1].title,
+              _description: instanceSnapshot.websites[1].description,
+              _order: instanceSnapshot.websites[1].order,
+              _url: instanceSnapshot.websites[1].url,
+            }),
+          ]),
+        );
+        expect(instanceAfterMerge.costs).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              _id: expect.not.objectContaining(instanceSnapshot.costs[0].id),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.costs[0].title,
+              _description: instanceSnapshot.costs[0].description,
+              _order: instanceSnapshot.costs[0].order,
+            }),
+            expect.objectContaining({
+              _id: expect.not.objectContaining(instanceSnapshot.costs[1].id),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.costs[1].title,
+              _description: instanceSnapshot.costs[1].description,
+              _order: instanceSnapshot.costs[1].order,
+            }),
+          ]),
+        );
+        expect(instanceAfterMerge.financialAdvantages).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.financialAdvantages[0].id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.financialAdvantages[0].title,
+              _description: instanceSnapshot.financialAdvantages[0].description,
+              _order: instanceSnapshot.financialAdvantages[0].order,
+            }),
+            expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.financialAdvantages[1].id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.financialAdvantages[1].title,
+              _description: instanceSnapshot.financialAdvantages[1].description,
+              _order: instanceSnapshot.financialAdvantages[1].order,
+            }),
+          ]),
+        );
+        expect(instanceAfterMerge.contactPoints).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.contactPoints[0].id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _url: instanceSnapshot.contactPoints[0].url,
+              _email: instanceSnapshot.contactPoints[0].email,
+              _telephone: instanceSnapshot.contactPoints[0].telephone,
+              _openingHours: instanceSnapshot.contactPoints[0].openingHours,
+              _order: instanceSnapshot.contactPoints[0].order,
+              _address: expect.objectContaining({
+                _id: expect.not.objectContaining(
+                  instanceSnapshot.contactPoints[0].address.id,
+                ),
+                _uuid: expect.stringMatching(uuidRegex),
+                _gemeentenaam:
+                  instanceSnapshot.contactPoints[0].address.gemeentenaam,
+                _land: instanceSnapshot.contactPoints[0].address.land,
+                _huisnummer:
+                  instanceSnapshot.contactPoints[0].address.huisnummer,
+                _busnummer: instanceSnapshot.contactPoints[0].address.busnummer,
+                _postcode: instanceSnapshot.contactPoints[0].address.postcode,
+                _straatnaam:
+                  instanceSnapshot.contactPoints[0].address.straatnaam,
+                _verwijstNaar:
+                  instanceSnapshot.contactPoints[0].address.verwijstNaar,
+              }),
+            }),
+            expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.contactPoints[1].id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _url: instanceSnapshot.contactPoints[1].url,
+              _email: instanceSnapshot.contactPoints[1].email,
+              _telephone: instanceSnapshot.contactPoints[1].telephone,
+              _openingHours: instanceSnapshot.contactPoints[1].openingHours,
+              _order: instanceSnapshot.contactPoints[1].order,
+              _address: expect.objectContaining({
+                _id: expect.not.objectContaining(
+                  instanceSnapshot.contactPoints[1].address.id,
+                ),
+                _uuid: expect.stringMatching(uuidRegex),
+                _gemeentenaam:
+                  instanceSnapshot.contactPoints[1].address.gemeentenaam,
+                _land: instanceSnapshot.contactPoints[1].address.land,
+                _huisnummer:
+                  instanceSnapshot.contactPoints[1].address.huisnummer,
+                _busnummer: instanceSnapshot.contactPoints[1].address.busnummer,
+                _postcode: instanceSnapshot.contactPoints[1].address.postcode,
+                _straatnaam:
+                  instanceSnapshot.contactPoints[1].address.straatnaam,
+                _verwijstNaar:
+                  instanceSnapshot.contactPoints[1].address.verwijstNaar,
+              }),
+            }),
+          ]),
+        );
+        expect(instanceAfterMerge.conceptId).toEqual(concept.id);
+        expect(instanceAfterMerge.conceptSnapshotId).toEqual(
+          concept.latestConceptSnapshot,
+        );
+        expect(instanceAfterMerge.productId).toEqual(concept.productId);
+        expect(instanceAfterMerge.languages).toEqual(
+          instanceSnapshot.languages,
+        );
+        expect(instanceAfterMerge.dutchLanguageVariant).toEqual(
+          Language.INFORMAL,
+        );
+        expect(
+          instanceAfterMerge.needsConversionFromFormalToInformal,
+        ).toBeFalse();
+        expect(instanceAfterMerge.dateCreated).toEqual(
+          instanceSnapshot.dateCreated,
+        );
+        expect(instanceAfterMerge.dateModified).toEqual(
+          instanceSnapshot.dateModified,
+        );
+        expect(instanceAfterMerge.dateSent).toEqual(
+          InstanceSnapshotTestBuilder.GENERATED_AT_TIME,
+        );
+        expect(instanceAfterMerge.status).toEqual(InstanceStatusType.VERZONDEN);
+        expect(instanceAfterMerge.reviewStatus).toEqual(undefined);
+        expect(instanceAfterMerge.spatials).toEqual(instanceSnapshot.spatials);
+        expect(instanceAfterMerge.legalResources).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.legalResources[0].id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.legalResources[0].title,
+              _description: instanceSnapshot.legalResources[0].description,
+              _url: instanceSnapshot.legalResources[0].url,
+              _order: instanceSnapshot.legalResources[0].order,
+            }),
+            expect.objectContaining({
+              _id: expect.not.objectContaining(
+                instanceSnapshot.legalResources[1].id,
+              ),
+              _uuid: expect.stringMatching(uuidRegex),
+              _title: instanceSnapshot.legalResources[1].title,
+              _description: instanceSnapshot.legalResources[1].description,
+              _url: instanceSnapshot.legalResources[1].url,
+              _order: instanceSnapshot.legalResources[1].order,
+            }),
+          ]),
+        );
+        expect(instanceAfterMerge.forMunicipalityMerger).toBeFalse();
+        expect(instanceAfterMerge.copyOf).toBeUndefined();
+      });
+
+      test("published instance is created and saved", async () => {
+        const bestuurseenheid = aBestuurseenheid().build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const instance = aFullInstance()
+          .withCreatedBy(bestuurseenheid.id)
+          .withCopyOf(InstanceBuilder.buildIri(uuid()))
+          .withForMunicipalityMerger(true)
+          .build();
+        await instanceRepository.save(bestuurseenheid, instance);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+          instance.conceptId,
+        );
+
+        const instanceSnapshot = aMinimalInstanceSnapshot()
+          .withCreatedBy(bestuurseenheid.id)
+          .withConceptId(undefined)
+          .withIsVersionOfInstance(instance.id)
+          .build();
+
+        const instanceSnapshotGraph = new Iri(
+          INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+        );
+        await instanceSnapshotRepository.save(
+          instanceSnapshotGraph,
+          instanceSnapshot,
+        );
+        await instanceSnapshotProcessingAuthorizationRepository.save(
+          bestuurseenheid,
+          instanceSnapshotGraph,
+        );
+
+        await mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        );
+
+        const updatedInstance = await instanceRepository.findById(
+          bestuurseenheid,
+          instanceSnapshot.isVersionOf,
+        );
+        const publishedInstanceSnapshotId =
+          await instanceRepository.findPublishedInstanceSnapshotIdForInstance(
+            bestuurseenheid,
+            updatedInstance,
+          );
+        const quads = await instanceRepository.findPublishedInstanceSnapshot(
+          bestuurseenheid,
+          publishedInstanceSnapshotId,
+        );
+        expect(quads).toIncludeAllMembers([
+          quad(
+            namedNode(publishedInstanceSnapshotId.value),
+            namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            namedNode(
+              "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot",
+            ),
+            namedNode(bestuurseenheid.userGraph().value),
+          ),
+          quad(
+            namedNode(publishedInstanceSnapshotId.value),
+            namedNode("http://www.w3.org/ns/prov#generatedAtTime"),
+            literal(
+              instanceSnapshot.generatedAtTime.value,
+              "http://www.w3.org/2001/XMLSchema#dateTime",
+            ),
+            namedNode(bestuurseenheid.userGraph().value),
+          ),
+          quad(
+            namedNode(publishedInstanceSnapshotId.value),
+            namedNode(
+              "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf",
+            ),
+            namedNode(instanceSnapshot.isVersionOf.value),
+            namedNode(bestuurseenheid.userGraph().value),
+          ),
+          quad(
+            namedNode(publishedInstanceSnapshotId.value),
+            namedNode("http://purl.org/pav/createdBy"),
+            namedNode(instanceSnapshot.createdBy.value),
+            namedNode(bestuurseenheid.userGraph().value),
+          ),
+        ]);
+      });
     });
 
-    test('Inserts Code Lists for competent and executing authorities if not existing', async () => {
-        const bestuurseenheidRegistrationCodeFetcher = {
-            fetchOrgRegistryCodelistEntry: jest.fn().mockImplementation((uriEntry: Iri) => Promise.resolve({
-                uri: uriEntry,
-                prefLabel: `preferred label for: ${uriEntry}`
-            }))
-        };
-        const codeListDomainService = new EnsureLinkedAuthoritiesExistAsCodeListDomainService(
-            bestuurseenheidRegistrationCodeFetcher,
-            codeRepository
-        );
-
-        const merger = new InstanceSnapshotToInstanceMergerDomainService(
-            instanceSnapshotRepository,
-            instanceRepository,
-            conceptRepository,
-            conceptDisplayConfigurationRepository,
-            deleteInstanceDomainService,
-            codeListDomainService
-        );
-
-        await directDatabaseAccess.insertData(
-            PUBLIC_GRAPH,
-            [
-                `${sparqlEscapeUri(NS.dvcs(CodeSchema.IPDCOrganisaties).value)} a skos:ConceptScheme`,
-            ],
-            [
-                PREFIX.skos,
-            ],
-        );
-
-        const competentAuthorityWithoutCodeList = buildBestuurseenheidIri(uuid());
-        const executingAuthorityWithoutCodeList = buildBestuurseenheidIri(uuid());
+    describe("Delete", () => {
+      test("Given a minimal instanceSnapshot with isArchived, then remove instance", async () => {
         const bestuurseenheid = aBestuurseenheid().build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
 
-        const isVersionOfInstanceId = buildConceptIri(uuid());
-        const instanceSnapshot =
-            aMinimalInstanceSnapshot()
-                .withCreatedBy(bestuurseenheid.id)
-                .withIsVersionOfInstance(isVersionOfInstanceId)
-                .withCompetentAuthorities([competentAuthorityWithoutCodeList])
-                .withExecutingAuthorities([executingAuthorityWithoutCodeList])
-                .build();
+        const instance = aFullInstance()
+          .withCreatedBy(bestuurseenheid.id)
+          .build();
+        await instanceRepository.save(bestuurseenheid, instance);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+          instance.conceptId,
+        );
 
-        await instanceSnapshotRepository.save(bestuurseenheid, instanceSnapshot);
+        const instanceSnapshot = aMinimalInstanceSnapshot()
+          .withCreatedBy(bestuurseenheid.id)
+          .withIsVersionOfInstance(instance.id)
+          .withIsArchived(true)
+          .build();
+        const instanceSnapshotGraph = new Iri(
+          INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+        );
 
-        await merger.merge(bestuurseenheid, instanceSnapshot.id);
+        await instanceSnapshotRepository.save(
+          instanceSnapshotGraph,
+          instanceSnapshot,
+        );
 
-        const createdInstance = await instanceRepository.findById(bestuurseenheid, isVersionOfInstanceId);
-        expect(createdInstance.id).toEqual(isVersionOfInstanceId);
-        expect(createdInstance.uuid).toMatch(uuidRegex);
+        const instanceExists = await instanceRepository.exists(
+          bestuurseenheid,
+          instanceSnapshot.isVersionOf,
+        );
+        expect(instanceExists).toEqual(true);
 
-        const createdCompetentAuthorityCode = await codeRepository.exists(CodeSchema.IPDCOrganisaties, competentAuthorityWithoutCodeList);
-        expect(createdCompetentAuthorityCode).toBeTruthy();
+        await instanceSnapshotProcessingAuthorizationRepository.save(
+          bestuurseenheid,
+          instanceSnapshotGraph,
+        );
 
-        const createdExecutingAuthorityCode = await codeRepository.exists(CodeSchema.IPDCOrganisaties, executingAuthorityWithoutCodeList);
-        expect(createdExecutingAuthorityCode).toBeTruthy();
+        await mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        );
 
-    }, 10000);
+        expect(
+          await instanceRepository.exists(
+            bestuurseenheid,
+            instanceSnapshot.isVersionOf,
+          ),
+        ).toBeFalsy();
 
+        const tombstoneIds = await instanceRepository.getTombstoneIds(
+          bestuurseenheid,
+          instance,
+          directDatabaseAccess,
+        );
+        expect(tombstoneIds.length).toEqual(1);
+        const tombstoneId = tombstoneIds[0];
+
+        const quads = await instanceRepository.findTombstone(
+          bestuurseenheid,
+          tombstoneId,
+        );
+
+        expect(quads).toHaveLength(5);
+        expect(quads).toEqual(
+          expect.arrayContaining([
+            quad(
+              namedNode(tombstoneId.value),
+              namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+              namedNode("https://www.w3.org/ns/activitystreams#Tombstone"),
+              namedNode(bestuurseenheid.userGraph().value),
+            ),
+            quad(
+              namedNode(tombstoneId.value),
+              namedNode("https://www.w3.org/ns/activitystreams#deleted"),
+              literal(
+                InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value,
+                "http://www.w3.org/2001/XMLSchema#dateTime",
+              ),
+              namedNode(bestuurseenheid.userGraph().value),
+            ),
+            quad(
+              namedNode(tombstoneId.value),
+              namedNode("http://www.w3.org/ns/prov#generatedAtTime"),
+              literal(
+                InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value,
+                "http://www.w3.org/2001/XMLSchema#dateTime",
+              ),
+              namedNode(bestuurseenheid.userGraph().value),
+            ),
+            quad(
+              namedNode(tombstoneId.value),
+              namedNode("https://www.w3.org/ns/activitystreams#formerType"),
+              namedNode(
+                "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService",
+              ),
+              namedNode(bestuurseenheid.userGraph().value),
+            ),
+            quad(
+              namedNode(tombstoneId.value),
+              namedNode(
+                "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf",
+              ),
+              namedNode(instance.id.value),
+              namedNode(bestuurseenheid.userGraph().value),
+            ),
+          ]),
+        );
+      });
+
+      test("Given a full instanceSnapshot with isArchived, then remove instance", async () => {
+        const bestuurseenheid = aBestuurseenheid().build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const concept = aFullConcept().build();
+        await conceptRepository.save(concept);
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+          concept.id,
+        );
+
+        const instance = aFullInstance()
+          .withCreatedBy(bestuurseenheid.id)
+          .withConceptId(concept.id)
+          .build();
+        await instanceRepository.save(bestuurseenheid, instance);
+
+        const instanceSnapshot = aFullInstanceSnapshot()
+          .withCreatedBy(bestuurseenheid.id)
+          .withConceptId(concept.id)
+          .withIsVersionOfInstance(instance.id)
+          .withIsArchived(true)
+          .build();
+        const instanceSnapshotGraph = new Iri(
+          INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+        );
+
+        await instanceSnapshotRepository.save(
+          instanceSnapshotGraph,
+          instanceSnapshot,
+        );
+
+        const instanceExists = await instanceRepository.exists(
+          bestuurseenheid,
+          instanceSnapshot.isVersionOf,
+        );
+        expect(instanceExists).toEqual(true);
+
+        await instanceSnapshotProcessingAuthorizationRepository.save(
+          bestuurseenheid,
+          instanceSnapshotGraph,
+        );
+
+        await mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        );
+
+        expect(
+          await instanceRepository.exists(
+            bestuurseenheid,
+            instanceSnapshot.isVersionOf,
+          ),
+        ).toBeFalsy();
+
+        const tombstoneIds = await instanceRepository.getTombstoneIds(
+          bestuurseenheid,
+          instance,
+          directDatabaseAccess,
+        );
+        expect(tombstoneIds.length).toEqual(1);
+        const tombstoneId = tombstoneIds[0];
+
+        const query = `
+                    SELECT ?s ?p ?o WHERE {
+                        GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                            VALUES ?s {                         
+                                <${tombstoneId}>
+                            }
+                            ?s ?p ?o
+                        }
+                    }
+                `;
+        const queryResult = await directDatabaseAccess.list(query);
+        const quads = new SparqlQuerying().asQuads(
+          queryResult,
+          bestuurseenheid.userGraph().value,
+        );
+
+        expect(quads).toHaveLength(5);
+        expect(quads).toEqual(
+          expect.arrayContaining([
+            quad(
+              namedNode(tombstoneId.value),
+              namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+              namedNode("https://www.w3.org/ns/activitystreams#Tombstone"),
+              namedNode(bestuurseenheid.userGraph().value),
+            ),
+            quad(
+              namedNode(tombstoneId.value),
+              namedNode("https://www.w3.org/ns/activitystreams#deleted"),
+              literal(
+                InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value,
+                "http://www.w3.org/2001/XMLSchema#dateTime",
+              ),
+              namedNode(bestuurseenheid.userGraph().value),
+            ),
+            quad(
+              namedNode(tombstoneId.value),
+              namedNode("http://www.w3.org/ns/prov#generatedAtTime"),
+              literal(
+                InstanceSnapshotTestBuilder.GENERATED_AT_TIME.value,
+                "http://www.w3.org/2001/XMLSchema#dateTime",
+              ),
+              namedNode(bestuurseenheid.userGraph().value),
+            ),
+            quad(
+              namedNode(tombstoneId.value),
+              namedNode("https://www.w3.org/ns/activitystreams#formerType"),
+              namedNode(
+                "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService",
+              ),
+              namedNode(bestuurseenheid.userGraph().value),
+            ),
+            quad(
+              namedNode(tombstoneId.value),
+              namedNode(
+                "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf",
+              ),
+              namedNode(instance.id.value),
+              namedNode(bestuurseenheid.userGraph().value),
+            ),
+          ]),
+        );
+      });
+
+      test("Given concept is removed in instance by new instanceSnapshot, then conceptDisplayConfiguration is updated", async () => {
+        const bestuurseenheid = aBestuurseenheid().build();
+        await bestuurseenheidRepository.save(bestuurseenheid);
+
+        const concept = aFullConcept().build();
+        await conceptRepository.save(concept);
+
+        const instance = aFullInstance()
+          .withCreatedBy(bestuurseenheid.id)
+          .withConceptId(concept.id)
+          .build();
+        await instanceRepository.save(bestuurseenheid, instance);
+
+        await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+          concept.id,
+        );
+
+        const instanceSnapshot = aFullInstanceSnapshot()
+          .withCreatedBy(bestuurseenheid.id)
+          .withIsVersionOfInstance(instance.id)
+          .withConceptId(undefined)
+          .build();
+        const instanceSnapshotGraph = new Iri(
+          INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+        );
+
+        await instanceSnapshotRepository.save(
+          instanceSnapshotGraph,
+          instanceSnapshot,
+        );
+        await conceptDisplayConfigurationRepository.syncInstantiatedFlag(
+          bestuurseenheid,
+          concept.id,
+        );
+
+        const instanceExists = await instanceRepository.exists(
+          bestuurseenheid,
+          instanceSnapshot.isVersionOf,
+        );
+        expect(instanceExists).toEqual(true);
+
+        await instanceSnapshotProcessingAuthorizationRepository.save(
+          bestuurseenheid,
+          instanceSnapshotGraph,
+        );
+
+        await mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        );
+        const conceptDisplayConfiguration =
+          await conceptDisplayConfigurationRepository.findByConceptId(
+            bestuurseenheid,
+            concept.id,
+          );
+        expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(
+          false,
+        );
+      });
+    });
+
+    test("Given instance is linked to different concept, then conceptDisplayConfiguration is updated", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const concept = aFullConcept().build();
+      await conceptRepository.save(concept);
+      await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+        concept.id,
+      );
+
+      const instance = aFullInstance()
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(concept.id)
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const concept2 = aFullConcept().build();
+      await conceptRepository.save(concept2);
+      await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+        concept2.id,
+      );
+
+      const instanceSnapshot = aFullInstanceSnapshot()
+        .withCreatedBy(bestuurseenheid.id)
+        .withIsVersionOfInstance(instance.id)
+        .withConceptId(concept2.id)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await conceptDisplayConfigurationRepository.syncInstantiatedFlag(
+        bestuurseenheid,
+        concept.id,
+      );
+      await conceptDisplayConfigurationRepository.syncInstantiatedFlag(
+        bestuurseenheid,
+        concept2.id,
+      );
+
+      const instanceExists = await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceExists).toEqual(true);
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+
+      const conceptDisplayConfiguration =
+        await conceptDisplayConfigurationRepository.findByConceptId(
+          bestuurseenheid,
+          concept.id,
+        );
+      expect(conceptDisplayConfiguration.conceptIsInstantiated).toEqual(false);
+
+      const conceptDisplayConfiguration2 =
+        await conceptDisplayConfigurationRepository.findByConceptId(
+          bestuurseenheid,
+          concept2.id,
+        );
+      expect(conceptDisplayConfiguration2.conceptIsInstantiated).toEqual(true);
+    });
+
+    test("Dont merge instanceSnapshots if newer one is already processed for the same instance", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const concept = aFullConcept().build();
+      await conceptRepository.save(concept);
+      await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+        concept.id,
+      );
+      const instanceId = InstanceBuilder.buildIri(uuid());
+      const otherInstanceId = InstanceBuilder.buildIri(uuid());
+
+      const instanceSnapshotForOtherInstance = aFullInstanceSnapshot()
+        .withTitle(LanguageString.of(undefined, undefined, "other snapshot"))
+        .withGeneratedAtTime(
+          FormatPreservingDate.of("2024-01-18T00:00:00.672Z"),
+        )
+        .withCreatedBy(bestuurseenheid.id)
+        .withIsVersionOfInstance(otherInstanceId)
+        .withConceptId(concept.id)
+        .build();
+
+      const firstInstanceSnapshot = aFullInstanceSnapshot()
+        .withTitle(LanguageString.of(undefined, undefined, "snapshot 1"))
+        .withGeneratedAtTime(
+          FormatPreservingDate.of("2024-01-16T00:00:00.672Z"),
+        )
+        .withCreatedBy(bestuurseenheid.id)
+        .withIsVersionOfInstance(instanceId)
+        .withConceptId(concept.id)
+        .build();
+      const secondInstanceSnapshot = aFullInstanceSnapshot()
+        .withTitle(LanguageString.of(undefined, undefined, "snapshot 2"))
+        .withGeneratedAtTime(
+          FormatPreservingDate.of("2024-01-17T00:00:00.672Z"),
+        )
+        .withCreatedBy(bestuurseenheid.id)
+        .withIsVersionOfInstance(instanceId)
+        .withConceptId(concept.id)
+        .build();
+
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshotForOtherInstance,
+      );
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        secondInstanceSnapshot,
+      );
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        firstInstanceSnapshot,
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshotForOtherInstance.id,
+        versionedLdesSnapshotRepository,
+      );
+      await versionedLdesSnapshotRepository.addToSuccessfullyProcessedSnapshots(
+        instanceSnapshotGraph,
+        instanceSnapshotForOtherInstance.id,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        secondInstanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+      await versionedLdesSnapshotRepository.addToSuccessfullyProcessedSnapshots(
+        instanceSnapshotGraph,
+        secondInstanceSnapshot.id,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        firstInstanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+      await versionedLdesSnapshotRepository.addToSuccessfullyProcessedSnapshots(
+        instanceSnapshotGraph,
+        firstInstanceSnapshot.id,
+      );
+
+      const actual = await instanceRepository.findById(
+        bestuurseenheid,
+        instanceId,
+      );
+      expect(actual.title).toEqual(secondInstanceSnapshot.title);
+    });
+
+    test("instance is validated for publish", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const instance = aFullInstance()
+        .withCreatedBy(bestuurseenheid.id)
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+      await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+        instance.conceptId,
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withTitle(LanguageString.of(undefined, undefined, "titel"))
+        .withDescription(LanguageString.of(undefined, undefined, ""))
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(undefined)
+        .withIsVersionOfInstance(instance.id)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await expect(() =>
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).rejects.toThrowWithMessage(
+        InvariantError,
+        "Binnen eenzelfde taal moeten titel en beschrijving beide ingevuld (of leeg) zijn",
+      );
+    });
+
+    test("instance is validated for publish, adres can be invalid", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const instance = aFullInstance()
+        .withCreatedBy(bestuurseenheid.id)
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+      await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+        instance.conceptId,
+      );
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withCreatedBy(bestuurseenheid.id)
+        .withConceptId(undefined)
+        .withContactPoints([
+          aFullContactPointForInstance()
+            .withAddress(
+              aFullAddressForInstance().withVerwijstNaar(undefined).build(),
+            )
+            .build(),
+        ])
+        .withIsVersionOfInstance(instance.id)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await expect(
+        mergerDomainService.merge(
+          instanceSnapshotGraph,
+          instanceSnapshot.id,
+          versionedLdesSnapshotRepository,
+        ),
+      ).resolves.not.toThrow();
+    });
+
+    test("Given a instanceSnapshot with formal languageStrings, then instance is merged with formal dutchLanguageVersion", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const instance = aMinimalInstance()
+        .withCreatedBy(bestuurseenheid.id)
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withTitle(
+          LanguageString.of(
+            undefined,
+            InstanceSnapshotTestBuilder.TITLE_NL_FORMAL,
+            undefined,
+          ),
+        )
+        .withDescription(
+          LanguageString.of(
+            undefined,
+            InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
+            undefined,
+          ),
+        )
+        .withCreatedBy(bestuurseenheid.id)
+        .withIsVersionOfInstance(instance.id)
+        .withConceptId(undefined)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      const instanceExists = await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceExists).toEqual(true);
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+
+      const instanceAfterMerge = await instanceRepository.findById(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+
+      expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
+      expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+      expect(instanceAfterMerge.description).toEqual(
+        instanceSnapshot.description,
+      );
+      expect(instanceAfterMerge.dutchLanguageVariant).toEqual(Language.FORMAL);
+    });
+
+    test("Given a instanceSnapshot with informal languageStrings, then instance is merged with informal dutchLanguageVersion", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const instance = aMinimalInstance()
+        .withCreatedBy(bestuurseenheid.id)
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withTitle(
+          LanguageString.of(
+            undefined,
+            undefined,
+            InstanceSnapshotTestBuilder.TITLE_NL_INFORMAL,
+          ),
+        )
+        .withDescription(
+          LanguageString.of(
+            undefined,
+            undefined,
+            InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL,
+          ),
+        )
+        .withCreatedBy(bestuurseenheid.id)
+        .withIsVersionOfInstance(instance.id)
+        .withConceptId(undefined)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      const instanceExists = await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceExists).toEqual(true);
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+
+      const instanceAfterMerge = await instanceRepository.findById(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+
+      expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
+      expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+      expect(instanceAfterMerge.description).toEqual(
+        instanceSnapshot.description,
+      );
+      expect(instanceAfterMerge.dutchLanguageVariant).toEqual(
+        Language.INFORMAL,
+      );
+    });
+
+    test("Given a instanceSnapshot with informal languageStrings and instance was formal, then instance is merged with informal dutchLanguageVersion", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      await bestuurseenheidRepository.save(bestuurseenheid);
+
+      const instance = aMinimalInstance()
+        .withTitle(
+          LanguageString.of(
+            undefined,
+            InstanceSnapshotTestBuilder.TITLE_NL_FORMAL,
+            undefined,
+          ),
+        )
+        .withDescription(
+          LanguageString.of(
+            undefined,
+            InstanceSnapshotTestBuilder.DESCRIPTION_NL_FORMAL,
+            undefined,
+          ),
+        )
+        .withDutchLanguageVariant(Language.FORMAL)
+        .withCreatedBy(bestuurseenheid.id)
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const instanceSnapshot = aMinimalInstanceSnapshot()
+        .withTitle(
+          LanguageString.of(
+            undefined,
+            undefined,
+            InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL,
+          ),
+        )
+        .withDescription(
+          LanguageString.of(
+            undefined,
+            undefined,
+            InstanceSnapshotTestBuilder.DESCRIPTION_NL_INFORMAL,
+          ),
+        )
+        .withCreatedBy(bestuurseenheid.id)
+        .withIsVersionOfInstance(instance.id)
+        .withConceptId(undefined)
+        .build();
+      const instanceSnapshotGraph = new Iri(
+        INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+      );
+
+      await instanceSnapshotRepository.save(
+        instanceSnapshotGraph,
+        instanceSnapshot,
+      );
+
+      const instanceExists = await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+      expect(instanceExists).toEqual(true);
+
+      await instanceSnapshotProcessingAuthorizationRepository.save(
+        bestuurseenheid,
+        instanceSnapshotGraph,
+      );
+
+      await mergerDomainService.merge(
+        instanceSnapshotGraph,
+        instanceSnapshot.id,
+        versionedLdesSnapshotRepository,
+      );
+
+      const instanceAfterMerge = await instanceRepository.findById(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      );
+
+      expect(instanceAfterMerge.id).toEqual(instanceSnapshot.isVersionOf);
+      expect(instanceAfterMerge.title).toEqual(instanceSnapshot.title);
+      expect(instanceAfterMerge.description).toEqual(
+        instanceSnapshot.description,
+      );
+      expect(instanceAfterMerge.dutchLanguageVariant).toEqual(
+        Language.INFORMAL,
+      );
+    });
+  });
+
+  test("Given a deleted Instance, when receiving a new snapshot, create the instance and retain the tombstone", async () => {
+    const bestuurseenheid = aBestuurseenheid().build();
+    await bestuurseenheidRepository.save(bestuurseenheid);
+
+    const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+    await instanceRepository.save(bestuurseenheid, instance);
+    await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+      instance.conceptId,
+    );
+    await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
+
+    const instanceExists = await instanceRepository.exists(
+      bestuurseenheid,
+      instance.id,
+    );
+    expect(instanceExists).toEqual(false);
+
+    const instanceSnapshot = aMinimalInstanceSnapshot()
+      .withCreatedBy(bestuurseenheid.id)
+      .withIsVersionOfInstance(instance.id)
+      .withIsArchived(false)
+      .build();
+    const instanceSnapshotGraph = new Iri(
+      INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+    );
+
+    await instanceSnapshotRepository.save(
+      instanceSnapshotGraph,
+      instanceSnapshot,
+    );
+
+    await instanceSnapshotProcessingAuthorizationRepository.save(
+      bestuurseenheid,
+      instanceSnapshotGraph,
+    );
+
+    await mergerDomainService.merge(
+      instanceSnapshotGraph,
+      instanceSnapshot.id,
+      versionedLdesSnapshotRepository,
+    );
+
+    expect(
+      await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      ),
+    ).toBeTruthy();
+    const tombstoneIds = await instanceRepository.getTombstoneIds(
+      bestuurseenheid,
+      instance,
+      directDatabaseAccess,
+    );
+
+    expect(tombstoneIds.length).toEqual(1);
+
+    const instanceRecreated = await instanceRepository.findById(
+      bestuurseenheid,
+      instanceSnapshot.isVersionOf,
+    );
+    expect(instanceRecreated.id).toEqual(instanceSnapshot.isVersionOf);
+  });
+
+  test("Given a deletedInstance, when receiving a new archive snapshot, create tombstone", async () => {
+    const bestuurseenheid = aBestuurseenheid().build();
+    await bestuurseenheidRepository.save(bestuurseenheid);
+
+    const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+    await instanceRepository.save(bestuurseenheid, instance);
+    await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+      instance.conceptId,
+    );
+    await deleteInstanceDomainService.delete(bestuurseenheid, instance.id);
+
+    const instanceExists = await instanceRepository.exists(
+      bestuurseenheid,
+      instance.id,
+    );
+    expect(instanceExists).toEqual(false);
+
+    const instanceSnapshot = aMinimalInstanceSnapshot()
+      .withCreatedBy(bestuurseenheid.id)
+      .withIsVersionOfInstance(instance.id)
+      .withIsArchived(true)
+      .build();
+    const instanceSnapshotGraph = new Iri(
+      INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+    );
+
+    await instanceSnapshotRepository.save(
+      instanceSnapshotGraph,
+      instanceSnapshot,
+    );
+
+    await instanceSnapshotProcessingAuthorizationRepository.save(
+      bestuurseenheid,
+      instanceSnapshotGraph,
+    );
+
+    await mergerDomainService.merge(
+      instanceSnapshotGraph,
+      instanceSnapshot.id,
+      versionedLdesSnapshotRepository,
+    );
+
+    expect(
+      await instanceRepository.exists(
+        bestuurseenheid,
+        instanceSnapshot.isVersionOf,
+      ),
+    ).toBeFalsy();
+    const tombstonedIds = await instanceRepository.getTombstoneIds(
+      bestuurseenheid,
+      instance,
+      directDatabaseAccess,
+    );
+
+    expect(tombstonedIds.length).toEqual(1);
+  });
+
+  test("Given an instance -> tombstone -> recreate -> tombstone -> recreate", async () => {
+    const bestuurseenheid = aBestuurseenheid().build();
+    await bestuurseenheidRepository.save(bestuurseenheid);
+
+    const instance = aFullInstance().withCreatedBy(bestuurseenheid.id).build();
+    await instanceRepository.save(bestuurseenheid, instance);
+
+    await conceptDisplayConfigurationRepository.ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+      instance.conceptId,
+    );
+    const instanceSnapshotGraph = new Iri(
+      INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+    );
+    const instanceSnapshotArchive1 = aMinimalInstanceSnapshot()
+      .withCreatedBy(bestuurseenheid.id)
+      .withIsVersionOfInstance(instance.id)
+      .withGeneratedAtTime(FormatPreservingDate.of("2024-01-16T00:00:00.672Z"))
+      .withIsArchived(true)
+      .build();
+    const instanceSnapshotRecreate1 = aMinimalInstanceSnapshot()
+      .withCreatedBy(bestuurseenheid.id)
+      .withIsVersionOfInstance(instance.id)
+      .withGeneratedAtTime(FormatPreservingDate.of("2024-01-17T00:00:00.672Z"))
+      .withIsArchived(false)
+      .build();
+    const instanceSnapshotArchive2 = aMinimalInstanceSnapshot()
+      .withCreatedBy(bestuurseenheid.id)
+      .withIsVersionOfInstance(instance.id)
+      .withGeneratedAtTime(FormatPreservingDate.of("2024-01-18T00:00:00.672Z"))
+      .withIsArchived(true)
+      .build();
+    const instanceSnapshotRecreate2 = aMinimalInstanceSnapshot()
+      .withCreatedBy(bestuurseenheid.id)
+      .withIsVersionOfInstance(instance.id)
+      .withGeneratedAtTime(FormatPreservingDate.of("2024-01-19T00:00:00.672Z"))
+      .withIsArchived(false)
+      .build();
+    await instanceSnapshotProcessingAuthorizationRepository.save(
+      bestuurseenheid,
+      instanceSnapshotGraph,
+    );
+
+    await instanceSnapshotRepository.save(
+      instanceSnapshotGraph,
+      instanceSnapshotArchive1,
+    );
+    await mergerDomainService.merge(
+      instanceSnapshotGraph,
+      instanceSnapshotArchive1.id,
+      versionedLdesSnapshotRepository,
+    );
+    expect(
+      await instanceRepository.exists(bestuurseenheid, instance.id),
+    ).toBeFalse();
+    const tombstoneIdsAfterArchive1 = await instanceRepository.getTombstoneIds(
+      bestuurseenheid,
+      instance,
+      directDatabaseAccess,
+    );
+    expect(tombstoneIdsAfterArchive1).toHaveLength(1);
+    const tombstone1Id = tombstoneIdsAfterArchive1[0];
+    const tombstone1Quads = await instanceRepository.findTombstone(
+      bestuurseenheid,
+      tombstone1Id,
+    );
+    expect(tombstone1Quads).toEqual(
+      expect.arrayContaining([
+        quad(
+          namedNode(tombstone1Id.value),
+          namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+          namedNode("https://www.w3.org/ns/activitystreams#Tombstone"),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(tombstone1Id.value),
+          namedNode("https://www.w3.org/ns/activitystreams#deleted"),
+          literal(
+            instanceSnapshotArchive1.generatedAtTime.value,
+            "http://www.w3.org/2001/XMLSchema#dateTime",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(tombstone1Id.value),
+          namedNode("http://www.w3.org/ns/prov#generatedAtTime"),
+          literal(
+            instanceSnapshotArchive1.generatedAtTime.value,
+            "http://www.w3.org/2001/XMLSchema#dateTime",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(tombstone1Id.value),
+          namedNode("https://www.w3.org/ns/activitystreams#formerType"),
+          namedNode(
+            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(tombstone1Id.value),
+          namedNode(
+            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf",
+          ),
+          namedNode(instance.id.value),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+      ]),
+    );
+
+    await instanceSnapshotRepository.save(
+      instanceSnapshotGraph,
+      instanceSnapshotRecreate1,
+    );
+    await mergerDomainService.merge(
+      instanceSnapshotGraph,
+      instanceSnapshotRecreate1.id,
+      versionedLdesSnapshotRepository,
+    );
+    const instanceAfterRecreate1 = await instanceRepository.findById(
+      bestuurseenheid,
+      instance.id,
+    );
+    const publishedInstanceSnapshotIdAfterRecreate1 =
+      await instanceRepository.findPublishedInstanceSnapshotIdForInstance(
+        bestuurseenheid,
+        instanceAfterRecreate1,
+      );
+    const publishedInstanceSnapshotAfterRecreate1 =
+      await instanceRepository.findPublishedInstanceSnapshot(
+        bestuurseenheid,
+        publishedInstanceSnapshotIdAfterRecreate1,
+      );
+    expect(publishedInstanceSnapshotAfterRecreate1).toEqual(
+      expect.arrayContaining([
+        quad(
+          namedNode(publishedInstanceSnapshotIdAfterRecreate1.value),
+          namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+          namedNode(
+            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(publishedInstanceSnapshotIdAfterRecreate1.value),
+          namedNode("http://www.w3.org/ns/prov#generatedAtTime"),
+          literal(
+            instanceSnapshotRecreate1.generatedAtTime.value,
+            "http://www.w3.org/2001/XMLSchema#dateTime",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(publishedInstanceSnapshotIdAfterRecreate1.value),
+          namedNode(
+            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf",
+          ),
+          namedNode(instance.id.value),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(publishedInstanceSnapshotIdAfterRecreate1.value),
+          namedNode("http://purl.org/pav/createdBy"),
+          namedNode(bestuurseenheid.id.value),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+      ]),
+    );
+
+    await instanceSnapshotRepository.save(
+      instanceSnapshotGraph,
+      instanceSnapshotArchive2,
+    );
+    await mergerDomainService.merge(
+      instanceSnapshotGraph,
+      instanceSnapshotArchive2.id,
+      versionedLdesSnapshotRepository,
+    );
+    expect(
+      await instanceRepository.exists(bestuurseenheid, instance.id),
+    ).toBeFalse();
+    const tombstoneIdsAfterArchive2 = await instanceRepository.getTombstoneIds(
+      bestuurseenheid,
+      instance,
+      directDatabaseAccess,
+    );
+    expect(tombstoneIdsAfterArchive2).toHaveLength(2);
+    const tombstone2Id = tombstoneIdsAfterArchive2.filter(
+      (id) => id.value != tombstone1Id.value,
+    )[0];
+    const tombstoneQuads = await instanceRepository.findTombstone(
+      bestuurseenheid,
+      tombstone2Id,
+    );
+    expect(tombstoneQuads).toEqual(
+      expect.arrayContaining([
+        quad(
+          namedNode(tombstone2Id.value),
+          namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+          namedNode("https://www.w3.org/ns/activitystreams#Tombstone"),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(tombstone2Id.value),
+          namedNode("https://www.w3.org/ns/activitystreams#deleted"),
+          literal(
+            instanceSnapshotArchive2.generatedAtTime.value,
+            "http://www.w3.org/2001/XMLSchema#dateTime",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(tombstone2Id.value),
+          namedNode("http://www.w3.org/ns/prov#generatedAtTime"),
+          literal(
+            instanceSnapshotArchive2.generatedAtTime.value,
+            "http://www.w3.org/2001/XMLSchema#dateTime",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(tombstone2Id.value),
+          namedNode("https://www.w3.org/ns/activitystreams#formerType"),
+          namedNode(
+            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(tombstone2Id.value),
+          namedNode(
+            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf",
+          ),
+          namedNode(instance.id.value),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+      ]),
+    );
+
+    await instanceSnapshotRepository.save(
+      instanceSnapshotGraph,
+      instanceSnapshotRecreate2,
+    );
+    await mergerDomainService.merge(
+      instanceSnapshotGraph,
+      instanceSnapshotRecreate2.id,
+      versionedLdesSnapshotRepository,
+    );
+    const instanceAfterRecreate2 = await instanceRepository.findById(
+      bestuurseenheid,
+      instance.id,
+    );
+    const publishedInstanceSnapshotIdAfterRecreate2 =
+      await instanceRepository.findPublishedInstanceSnapshotIdForInstance(
+        bestuurseenheid,
+        instanceAfterRecreate2,
+      );
+    const publishedInstanceSnapshotAfterRecreate2 =
+      await instanceRepository.findPublishedInstanceSnapshot(
+        bestuurseenheid,
+        publishedInstanceSnapshotIdAfterRecreate2,
+      );
+    expect(publishedInstanceSnapshotAfterRecreate2).toEqual(
+      expect.arrayContaining([
+        quad(
+          namedNode(publishedInstanceSnapshotIdAfterRecreate2.value),
+          namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+          namedNode(
+            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#PublishedInstancePublicServiceSnapshot",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(publishedInstanceSnapshotIdAfterRecreate2.value),
+          namedNode("http://www.w3.org/ns/prov#generatedAtTime"),
+          literal(
+            instanceSnapshotRecreate2.generatedAtTime.value,
+            "http://www.w3.org/2001/XMLSchema#dateTime",
+          ),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(publishedInstanceSnapshotIdAfterRecreate2.value),
+          namedNode(
+            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#isPublishedVersionOf",
+          ),
+          namedNode(instance.id.value),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+        quad(
+          namedNode(publishedInstanceSnapshotIdAfterRecreate2.value),
+          namedNode("http://purl.org/pav/createdBy"),
+          namedNode(bestuurseenheid.id.value),
+          namedNode(bestuurseenheid.userGraph().value),
+        ),
+      ]),
+    );
+  });
+
+  test("Inserts Code Lists for competent and executing authorities if not existing", async () => {
+    const bestuurseenheidRegistrationCodeFetcher = {
+      fetchOrgRegistryCodelistEntry: jest
+        .fn()
+        .mockImplementation((uriEntry: Iri) =>
+          Promise.resolve({
+            uri: uriEntry,
+            prefLabel: `preferred label for: ${uriEntry}`,
+          }),
+        ),
+    };
+    const codeListDomainService =
+      new EnsureLinkedAuthoritiesExistAsCodeListDomainService(
+        bestuurseenheidRegistrationCodeFetcher,
+        codeRepository,
+      );
+
+    const merger = new InstanceSnapshotToInstanceMergerDomainService(
+      instanceSnapshotRepository,
+      instanceRepository,
+      conceptRepository,
+      conceptDisplayConfigurationRepository,
+      deleteInstanceDomainService,
+      codeListDomainService,
+      instanceSnapshotProcessingAuthorizationRepository,
+      bestuurseenheidRepository,
+      spatialRepository,
+      codeRepository,
+    );
+
+    const competentAuthorityWithoutCodeList = buildBestuurseenheidIri(uuid());
+    const executingAuthorityWithoutCodeList = buildBestuurseenheidIri(uuid());
+    const bestuurseenheid = aBestuurseenheid().build();
+
+    await bestuurseenheidRepository.save(bestuurseenheid);
+
+    const isVersionOfInstanceId = buildConceptIri(uuid());
+    const instanceSnapshot = aMinimalInstanceSnapshot()
+      .withCreatedBy(bestuurseenheid.id)
+      .withIsVersionOfInstance(isVersionOfInstanceId)
+      .withCompetentAuthorities([competentAuthorityWithoutCodeList])
+      .withExecutingAuthorities([executingAuthorityWithoutCodeList])
+      .build();
+    const instanceSnapshotGraph = new Iri(
+      INSTANCE_SNAPHOT_LDES_GRAPH("an-integrating-partner"),
+    );
+
+    await instanceSnapshotRepository.save(
+      instanceSnapshotGraph,
+      instanceSnapshot,
+    );
+
+    await instanceSnapshotProcessingAuthorizationRepository.save(
+      bestuurseenheid,
+      instanceSnapshotGraph,
+    );
+
+    await merger.merge(
+      instanceSnapshotGraph,
+      instanceSnapshot.id,
+      versionedLdesSnapshotRepository,
+    );
+
+    const createdInstance = await instanceRepository.findById(
+      bestuurseenheid,
+      isVersionOfInstanceId,
+    );
+    expect(createdInstance.id).toEqual(isVersionOfInstanceId);
+    expect(createdInstance.uuid).toMatch(uuidRegex);
+
+    const createdCompetentAuthorityCode = await codeRepository.exists(
+      CodeSchema.IPDCOrganisaties,
+      competentAuthorityWithoutCodeList,
+    );
+    expect(createdCompetentAuthorityCode).toBeTruthy();
+
+    const createdExecutingAuthorityCode = await codeRepository.exists(
+      CodeSchema.IPDCOrganisaties,
+      executingAuthorityWithoutCodeList,
+    );
+    expect(createdExecutingAuthorityCode).toBeTruthy();
+  }, 10000);
 });
-
-async function getQuadsForInstance(bestuurseenheid: Bestuurseenheid, instance: Instance, directDatabaseAccess: DirectDatabaseAccess) {
-    const query = `
-            SELECT ?s ?p ?o WHERE {
-                GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                    VALUES ?s {
-                        <${instance.id.value}>
-                    }
-                    ?s ?p ?o
-                }
-            }
-        `;
-    const queryResult = await directDatabaseAccess.list(query);
-    return new SparqlQuerying().asQuads(queryResult, bestuurseenheid.userGraph().value);
-}

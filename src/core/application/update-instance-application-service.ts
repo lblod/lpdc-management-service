@@ -1,40 +1,47 @@
-import {Bestuurseenheid} from "../domain/bestuurseenheid";
-import {Iri} from "../domain/shared/iri";
-import {InstanceRepository} from "../port/driven/persistence/instance-repository";
-import {InstanceBuilder} from "../domain/instance";
-import {FormatPreservingDate} from "../domain/format-preserving-date";
-import {SemanticFormsMapper} from "../port/driven/persistence/semantic-forms-mapper";
+import { Bestuurseenheid } from "../domain/bestuurseenheid";
+import { Iri } from "../domain/shared/iri";
+import { InstanceRepository } from "../port/driven/persistence/instance-repository";
+import { FormatPreservingDate } from "../domain/format-preserving-date";
+import { SemanticFormsMapper } from "../port/driven/persistence/semantic-forms-mapper";
 
 export class UpdateInstanceApplicationService {
+  private readonly _instanceRepository: InstanceRepository;
+  private readonly _semanticFormsMapper: SemanticFormsMapper;
 
-    private readonly _instanceRepository: InstanceRepository;
-    private readonly _semanticFormsMapper: SemanticFormsMapper;
+  constructor(
+    instanceRepository: InstanceRepository,
+    semanticFormsMapper: SemanticFormsMapper,
+  ) {
+    this._instanceRepository = instanceRepository;
+    this._semanticFormsMapper = semanticFormsMapper;
+  }
 
-    constructor(
-        instanceRepository: InstanceRepository,
-        semanticFormsMapper: SemanticFormsMapper,
-    ) {
-        this._instanceRepository = instanceRepository;
-        this._semanticFormsMapper = semanticFormsMapper;
-    }
+  //Note: the update instance application service is directly tied to semantic forms, hence that part of the input parameters are xxxAsTurtleFormat
+  async update(
+    bestuurseenheid: Bestuurseenheid,
+    user: Iri,
+    instanceId: Iri,
+    instanceVersion: FormatPreservingDate | undefined,
+    removalsAsTurtleFormat: string,
+    additionsAsTurtleFormat: string,
+  ): Promise<void> {
+    const loadedInstance = await this._instanceRepository.findById(
+      bestuurseenheid,
+      instanceId,
+    );
 
-    //Note: the update instance application service is directly tied to semantic forms, hence that part of the input parameters are xxxAsTurtleFormat
-    async update(bestuurseenheid: Bestuurseenheid, instanceId: Iri, instanceAsTurtleFormat: string, removalsAsTurtleFormat: string, additionsAsTurtleFormat: string): Promise<void> {
+    const mergedInstance = this._semanticFormsMapper.mergeInstance(
+      bestuurseenheid,
+      loadedInstance,
+      removalsAsTurtleFormat,
+      additionsAsTurtleFormat,
+    );
 
-        const parsedInstance = this._semanticFormsMapper.instanceFromTurtleFormat(bestuurseenheid, instanceId, instanceAsTurtleFormat);
-
-        const loadedInstance =
-            InstanceBuilder.from(
-                await this._instanceRepository.findById(bestuurseenheid, instanceId))
-                .withDateModified(parsedInstance.dateModified)
-                .build();
-
-        const mergedInstance =
-            InstanceBuilder.from(this._semanticFormsMapper.mergeInstance(bestuurseenheid, loadedInstance, removalsAsTurtleFormat, additionsAsTurtleFormat))
-                .withDateModified(FormatPreservingDate.now())
-                .build();
-
-        await this._instanceRepository.update(bestuurseenheid, mergedInstance, loadedInstance);
-    }
-
+    await this._instanceRepository.update(
+      bestuurseenheid,
+      user,
+      mergedInstance,
+      instanceVersion,
+    );
+  }
 }

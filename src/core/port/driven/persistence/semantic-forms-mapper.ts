@@ -1,16 +1,33 @@
-import {Bestuurseenheid} from "../../../domain/bestuurseenheid";
-import {Instance} from "../../../domain/instance";
-import {Concept} from "../../../domain/concept";
-import {Iri} from "../../../domain/shared/iri";
+import { Bestuurseenheid } from "../../../domain/bestuurseenheid";
+import { Instance } from "../../../domain/instance";
+import { Concept } from "../../../domain/concept";
+import { ConceptSnapshot } from "../../../domain/concept-snapshot";
+import { Iri } from "../../../domain/shared/iri";
 
 export interface SemanticFormsMapper {
+  instanceAsTurtleFormat(
+    bestuurseenheid: Bestuurseenheid,
+    instance: Instance,
+  ): string[];
 
-    instanceAsTurtleFormat(bestuurseenheid: Bestuurseenheid, instance: Instance): string[];
+  mergeInstance(
+    bestuurseenheid: Bestuurseenheid,
+    instance: Instance,
+    removalsInTurtleFormat: string,
+    additionsInTurtleFormat: string,
+  ): Instance;
 
-    instanceFromTurtleFormat(bestuurseenheid: Bestuurseenheid, instanceId: Iri, instanceInTurtleFormat: string): Instance;
+  conceptAsTurtleFormat(concept: Concept): string[];
 
-    mergeInstance(bestuurseenheid: Bestuurseenheid, instance: Instance, removalsInTurtleFormat: string, additionsInTurtleFormat: string): Instance;
+  conceptSnapshotAsTurtleFormat(conceptSnapshot: ConceptSnapshot): string[];
 
-    conceptAsTurtleFormat(concept: Concept): string[];
+  comparisonSourceAsTurtleFormat(
+    comparisonSources: ComparisonSource[],
+    type: "current" | "latest",
+  ): string[];
+}
 
+export interface ComparisonSource {
+  instanceSourceIri: Iri;
+  conceptSnapshotSourceIri: Iri;
 }

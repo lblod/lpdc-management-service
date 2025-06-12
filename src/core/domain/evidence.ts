@@ -1,167 +1,177 @@
-import {Iri} from "./shared/iri";
-import {LanguageString} from "./language-string";
-import {requiredValue} from "./shared/invariant";
-import {instanceLanguages, Language} from "./language";
+import { Iri } from "./shared/iri";
+import { LanguageString } from "./language-string";
+import { requiredValue } from "./shared/invariant";
+import { instanceLanguages, Language } from "./language";
+import { uuid } from "../../../mu-helper";
 
 export class Evidence {
+  private readonly _id: Iri;
+  private readonly _uuid: string | undefined; //required for mu-cl-resources.
+  private readonly _title: LanguageString | undefined;
+  private readonly _description: LanguageString | undefined;
 
-    private readonly _id: Iri;
-    private readonly _uuid: string | undefined; //required for mu-cl-resources.
-    private readonly _title: LanguageString | undefined;
-    private readonly _description: LanguageString | undefined;
-    private readonly _conceptEvidenceId: Iri | undefined;
+  private constructor(
+    id: Iri,
+    uuid: string | undefined,
+    title: LanguageString | undefined,
+    description: LanguageString | undefined,
+  ) {
+    this._id = requiredValue(id, "id");
+    this._uuid = uuid;
+    this._title = title;
+    this._description = description;
+  }
 
-    private constructor(id: Iri,
-                        uuid: string | undefined,
-                        title: LanguageString | undefined,
-                        description: LanguageString | undefined,
-                        conceptEvidenceId: Iri | undefined
-    ) {
-        this._id = requiredValue(id, 'id');
-        this._uuid = uuid;
-        this._title = title;
-        this._description = description;
-        this._conceptEvidenceId = conceptEvidenceId;
-    }
+  static forConcept(evidence: Evidence): Evidence {
+    return new Evidence(
+      evidence.id,
+      requiredValue(evidence.uuid, "uuid"),
+      requiredValue(evidence.title, "title"),
+      requiredValue(evidence.description, "description"),
+    );
+  }
 
-    static forConcept(evidence: Evidence): Evidence {
-        return new Evidence(
-            evidence.id,
-            requiredValue(evidence.uuid, 'uuid'),
-            requiredValue(evidence.title, 'title'),
-            requiredValue(evidence.description, 'description'),
-            undefined
-        );
-    }
+  static forConceptSnapshot(evidence: Evidence): Evidence {
+    return new Evidence(
+      evidence.id,
+      undefined,
+      requiredValue(evidence.title, "title"),
+      requiredValue(evidence.description, "description"),
+    );
+  }
 
-    static forConceptSnapshot(evidence: Evidence): Evidence {
-        return new Evidence(
-            evidence.id,
-            undefined,
-            requiredValue(evidence.title, 'title'),
-            requiredValue(evidence.description, 'description'),
-            undefined
-        );
-    }
+  static forInstance(evidence: Evidence): Evidence {
+    LanguageString.validateUniqueAndCorrectLanguages(
+      instanceLanguages,
+      evidence.title,
+      evidence.description,
+    );
 
-    static forInstance(evidence: Evidence): Evidence {
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, evidence.title, evidence.description);
+    return new Evidence(
+      evidence.id,
+      requiredValue(evidence.uuid, "uuid"),
+      evidence.title,
+      evidence.description,
+    );
+  }
 
-        return new Evidence(
-            evidence.id,
-            requiredValue(evidence.uuid, 'uuid'),
-            evidence.title,
-            evidence.description,
-            evidence.conceptEvidenceId
-        );
-    }
+  static forInstanceSnapshot(evidence: Evidence): Evidence {
+    LanguageString.validateUniqueAndCorrectLanguages(
+      instanceLanguages,
+      evidence.title,
+      evidence.description,
+    );
 
-    static forInstanceSnapshot(evidence: Evidence): Evidence {
-        LanguageString.validateUniqueAndCorrectLanguages(instanceLanguages, evidence.title, evidence.description);
+    return new Evidence(
+      evidence.id,
+      undefined,
+      requiredValue(evidence.title, "title"),
+      requiredValue(evidence.description, "description"),
+    );
+  }
 
-        return new Evidence(
-            evidence.id,
-            undefined,
-            requiredValue(evidence.title, 'title'),
-            requiredValue(evidence.description, 'description'),
-            undefined
-        );
-    }
+  static reconstitute(
+    id: Iri,
+    uuid: string | undefined,
+    title: LanguageString | undefined,
+    description: LanguageString | undefined,
+  ): Evidence {
+    return new Evidence(id, uuid, title, description);
+  }
 
-    static reconstitute(id: Iri,
-                        uuid: string | undefined,
-                        title: LanguageString | undefined,
-                        description: LanguageString | undefined,
-                        conceptEvidenceId: Iri | undefined): Evidence {
+  get nlLanguage(): Language | undefined {
+    return LanguageString.extractLanguages([this._title, this._description])[0];
+  }
 
-        return new Evidence(id, uuid, title, description, conceptEvidenceId);
-    }
+  get id(): Iri {
+    return this._id;
+  }
 
-    get nlLanguage(): Language | undefined {
-        return LanguageString.extractNlLanguages([this._title, this._description])[0];
-    }
+  get uuid(): string | undefined {
+    return this._uuid;
+  }
 
-    get id(): Iri {
-        return this._id;
-    }
+  get title(): LanguageString | undefined {
+    return this._title;
+  }
 
-    get uuid(): string | undefined {
-        return this._uuid;
-    }
+  get description(): LanguageString | undefined {
+    return this._description;
+  }
 
-    get title(): LanguageString | undefined {
-        return this._title;
-    }
+  transformLanguage(from: Language, to: Language): Evidence {
+    return EvidenceBuilder.from(this)
+      .withTitle(this.title?.transformLanguage(from, to))
+      .withDescription(this.description?.transformLanguage(from, to))
+      .build();
+  }
 
-    get description(): LanguageString | undefined {
-        return this._description;
-    }
+  transformWithNewId(): Evidence {
+    const uniqueId = uuid();
+    return EvidenceBuilder.from(this)
+      .withId(EvidenceBuilder.buildIri(uniqueId))
+      .withUuid(uniqueId)
+      .build();
+  }
 
-    get conceptEvidenceId(): Iri | undefined {
-        return this._conceptEvidenceId;
-    }
-
-    static isFunctionallyChanged(value: Evidence | undefined, other: Evidence | undefined): boolean {
-        return LanguageString.isFunctionallyChanged(value?.title, other?.title)
-            || LanguageString.isFunctionallyChanged(value?.description, other?.description);
-    }
+  static isFunctionallyChanged(
+    value: Evidence | undefined,
+    other: Evidence | undefined,
+  ): boolean {
+    return (
+      LanguageString.isFunctionallyChanged(value?.title, other?.title) ||
+      LanguageString.isFunctionallyChanged(
+        value?.description,
+        other?.description,
+      )
+    );
+  }
 }
 
 export class EvidenceBuilder {
-    private id: Iri;
-    private uuid: string | undefined;
-    private title: LanguageString | undefined;
-    private description: LanguageString | undefined;
-    private conceptEvidenceId: Iri | undefined;
+  private id: Iri;
+  private uuid: string | undefined;
+  private title: LanguageString | undefined;
+  private description: LanguageString | undefined;
 
-    static buildIri(uniqueId: string): Iri {
-        return new Iri(`http://data.lblod.info/id/evidence/${uniqueId}`);
-    }
+  static buildIri(uniqueId: string): Iri {
+    return new Iri(`http://data.lblod.info/id/evidence/${uniqueId}`);
+  }
 
-    public withId(id: Iri): EvidenceBuilder {
-        this.id = id;
-        return this;
-    }
+  static from(evidence: Evidence): EvidenceBuilder {
+    return new EvidenceBuilder()
+      .withId(evidence.id)
+      .withUuid(evidence.uuid)
+      .withTitle(evidence.title)
+      .withDescription(evidence.description);
+  }
 
-    public withUuid(uuid: string): EvidenceBuilder {
-        this.uuid = uuid;
-        return this;
-    }
+  public withId(id: Iri): EvidenceBuilder {
+    this.id = id;
+    return this;
+  }
 
-    public withTitle(title: LanguageString): EvidenceBuilder {
-        this.title = title;
-        return this;
-    }
+  public withUuid(uuid: string): EvidenceBuilder {
+    this.uuid = uuid;
+    return this;
+  }
 
-    public withDescription(description: LanguageString): EvidenceBuilder {
-        this.description = description;
-        return this;
-    }
+  public withTitle(title: LanguageString): EvidenceBuilder {
+    this.title = title;
+    return this;
+  }
 
-    public withConceptEvidenceId(conceptEvidenceId: Iri): EvidenceBuilder {
-        this.conceptEvidenceId = conceptEvidenceId;
-        return this;
-    }
+  public withDescription(description: LanguageString): EvidenceBuilder {
+    this.description = description;
+    return this;
+  }
 
-    public buildForInstance(): Evidence {
-        return Evidence.forInstance(this.build());
-    }
-
-    public buildForConcept(): Evidence {
-        return Evidence.forConcept(this.build());
-    }
-
-    public buildForConceptSnapshot(): Evidence {
-        return Evidence.forConceptSnapshot(this.build());
-    }
-
-    public build(): Evidence {
-        return Evidence.reconstitute(
-            this.id,
-            this.uuid,
-            this.title,
-            this.description,
-            this.conceptEvidenceId
-        );
-    }
+  public build(): Evidence {
+    return Evidence.reconstitute(
+      this.id,
+      this.uuid,
+      this.title,
+      this.description,
+    );
+  }
 }

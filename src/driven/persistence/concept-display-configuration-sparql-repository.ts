@@ -1,24 +1,29 @@
-import {ConceptDisplayConfiguration} from "../../core/domain/concept-display-configuration";
+import { ConceptDisplayConfiguration } from "../../core/domain/concept-display-configuration";
+import { ConceptDisplayConfigurationRepository } from "../../core/port/driven/persistence/concept-display-configuration-repository";
+import { Iri } from "../../core/domain/shared/iri";
+import { SparqlQuerying } from "./sparql-querying";
+import { Bestuurseenheid } from "../../core/domain/bestuurseenheid";
+import { PREFIX } from "../../../config";
+import { sparqlEscapeUri } from "../../../mu-helper";
 import {
-    ConceptDisplayConfigurationRepository
-} from "../../core/port/driven/persistence/concept-display-configuration-repository";
-import {Iri} from "../../core/domain/shared/iri";
-import {SparqlQuerying} from "./sparql-querying";
-import {Bestuurseenheid} from "../../core/domain/bestuurseenheid";
-import {PREFIX} from "../../../config";
-import {sparqlEscapeUri} from "../../../mu-helper";
-import {NotFoundError, SystemError} from "../../core/domain/shared/lpdc-error";
+  NotFoundError,
+  SystemError,
+} from "../../core/domain/shared/lpdc-error";
 
-export class ConceptDisplayConfigurationSparqlRepository implements ConceptDisplayConfigurationRepository {
+export class ConceptDisplayConfigurationSparqlRepository
+  implements ConceptDisplayConfigurationRepository
+{
+  protected readonly querying: SparqlQuerying;
 
-    protected readonly querying: SparqlQuerying;
+  constructor(endpoint?: string) {
+    this.querying = new SparqlQuerying(endpoint);
+  }
 
-    constructor(endpoint?: string) {
-        this.querying = new SparqlQuerying(endpoint);
-    }
-
-    async findById(bestuurseenheid: Bestuurseenheid, conceptDisplayConfigurationId: Iri): Promise<ConceptDisplayConfiguration> {
-        const query = `
+  async findById(
+    bestuurseenheid: Bestuurseenheid,
+    conceptDisplayConfigurationId: Iri,
+  ): Promise<ConceptDisplayConfiguration> {
+    const query = `
             ${PREFIX.lpdc}
             ${PREFIX.mu}
             ${PREFIX.dct}
@@ -38,30 +43,39 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
                 }
             }
         `;
-        const result = await this.querying.singleRow(query);
+    const result = await this.querying.singleRow(query);
 
-        if (!result) {
-            throw new NotFoundError(`Geen conceptDisplayConfiguratie gevonden voor id: ${conceptDisplayConfigurationId}`);
-        }
-
-        const conceptDisplayConfiguration = new ConceptDisplayConfiguration(
-            new Iri(result['conceptDisplayConfigurationId'].value),
-            result['uuid'].value,
-            result['conceptIsNew'].value === 'true',
-            result['conceptInstantiated'].value === 'true',
-            new Iri(result['bestuurseenheidId'].value),
-            new Iri(result['conceptId'].value),
-        );
-
-        if(!conceptDisplayConfiguration.bestuurseenheidId.equals(bestuurseenheid.id)) {
-            throw new SystemError(`Concept display configuration ${conceptDisplayConfigurationId} gevonden in de foute gebruikers graph`);
-        }
-
-        return conceptDisplayConfiguration;
+    if (!result) {
+      throw new NotFoundError(
+        `Geen conceptDisplayConfiguratie gevonden voor id: ${conceptDisplayConfigurationId}`,
+      );
     }
 
-    async findByConceptId(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<ConceptDisplayConfiguration> {
-        const query = `
+    const conceptDisplayConfiguration = new ConceptDisplayConfiguration(
+      new Iri(result["conceptDisplayConfigurationId"].value),
+      result["uuid"].value,
+      result["conceptIsNew"].value === "true",
+      result["conceptInstantiated"].value === "true",
+      new Iri(result["bestuurseenheidId"].value),
+      new Iri(result["conceptId"].value),
+    );
+
+    if (
+      !conceptDisplayConfiguration.bestuurseenheidId.equals(bestuurseenheid.id)
+    ) {
+      throw new SystemError(
+        `Concept display configuration ${conceptDisplayConfigurationId} gevonden in de foute gebruikers graph`,
+      );
+    }
+
+    return conceptDisplayConfiguration;
+  }
+
+  async findByConceptId(
+    bestuurseenheid: Bestuurseenheid,
+    conceptId: Iri,
+  ): Promise<ConceptDisplayConfiguration> {
+    const query = `
             ${PREFIX.lpdc}
             ${PREFIX.mu}
             ${PREFIX.dct}
@@ -81,30 +95,39 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
                 }
             }
         `;
-        const result = await this.querying.singleRow(query);
+    const result = await this.querying.singleRow(query);
 
-        if (!result) {
-            throw new NotFoundError(`Geen conceptDisplayConfiguration gevonden voor bestuurseenheid: ${bestuurseenheid.id} en concept ${conceptId}`);
-        }
-
-        const conceptDisplayConfiguration = new ConceptDisplayConfiguration(
-            new Iri(result['conceptDisplayConfigurationId'].value),
-            result['uuid'].value,
-            result['conceptIsNew'].value === 'true',
-            result['conceptInstantiated'].value === 'true',
-            new Iri(result['bestuurseenheidId'].value),
-            new Iri(result['conceptId'].value),
-        );
-
-        if(!conceptDisplayConfiguration.bestuurseenheidId.equals(bestuurseenheid.id)) {
-            throw new SystemError(`Concept display configuration gevonden voor concept met id ${conceptId} in de foute gebruikers graph`);
-        }
-
-        return conceptDisplayConfiguration;
+    if (!result) {
+      throw new NotFoundError(
+        `Geen conceptDisplayConfiguration gevonden voor bestuurseenheid: ${bestuurseenheid.id} en concept ${conceptId}`,
+      );
     }
 
-    async syncInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void> {
-        const query = `
+    const conceptDisplayConfiguration = new ConceptDisplayConfiguration(
+      new Iri(result["conceptDisplayConfigurationId"].value),
+      result["uuid"].value,
+      result["conceptIsNew"].value === "true",
+      result["conceptInstantiated"].value === "true",
+      new Iri(result["bestuurseenheidId"].value),
+      new Iri(result["conceptId"].value),
+    );
+
+    if (
+      !conceptDisplayConfiguration.bestuurseenheidId.equals(bestuurseenheid.id)
+    ) {
+      throw new SystemError(
+        `Concept display configuration gevonden voor concept met id ${conceptId} in de foute gebruikers graph`,
+      );
+    }
+
+    return conceptDisplayConfiguration;
+  }
+
+  async syncInstantiatedFlag(
+    bestuurseenheid: Bestuurseenheid,
+    conceptId: Iri,
+  ): Promise<void> {
+    const query = `
         ${PREFIX.lpdcExt}
         ${PREFIX.dct}
         ASK WHERE {
@@ -114,17 +137,22 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
           }
         }
       `;
-        const hasInstanceForConceptId = await this.querying.ask(query);
+    const hasInstanceForConceptId = await this.querying.ask(query);
 
-        if (hasInstanceForConceptId) {
-            await this.removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid, conceptId);
-        } else {
-            await this.removeInstantiatedFlag(bestuurseenheid, conceptId);
-        }
+    if (hasInstanceForConceptId) {
+      await this.removeConceptIsNewFlagAndSetInstantiatedFlag(
+        bestuurseenheid,
+        conceptId,
+      );
+    } else {
+      await this.removeInstantiatedFlag(bestuurseenheid, conceptId);
     }
+  }
 
-    async ensureConceptDisplayConfigurationsForAllBestuurseenheden(conceptId: Iri): Promise<void> {
-        const query = `
+  async ensureConceptDisplayConfigurationsForAllBestuurseenheden(
+    conceptId: Iri,
+  ): Promise<void> {
+    const query = `
         ${PREFIX.lpdc}
         ${PREFIX.mu}
         ${PREFIX.dct}
@@ -154,19 +182,25 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
             }
           }
         
-          ${/*this is a bit of trickery to generate UUID and URI's since STRUUID doesn't work properly in Virtuoso: https://github.com/openlink/virtuoso-opensource/issues/515#issuecomment-456848368 */''}
-          BIND(SHA512(CONCAT(STR(?conceptId), STR(?bestuurseenheidUuid))) as ?conceptDisplayConfigurationUuid) ${/* conceptId + bestuurseenheidId should be unique per config object */''}
+          ${/*this is a bit of trickery to generate UUID and URI's since STRUUID doesn't work properly in Virtuoso: https://github.com/openlink/virtuoso-opensource/issues/515#issuecomment-456848368 */ ""}
+          BIND(SHA512(CONCAT(STR(?conceptId), STR(?bestuurseenheidUuid))) as ?conceptDisplayConfigurationUuid) ${/* conceptId + bestuurseenheidId should be unique per config object */ ""}
           BIND(IRI(CONCAT('http://data.lblod.info/id/conceptual-display-configuration/', STR(?conceptDisplayConfigurationUuid))) as ?conceptDisplayConfigurationId)
         }
       `;
 
-        await this.querying.insert(query);
-    }
+    await this.querying.insert(query);
+  }
 
-    async removeConceptIsNewFlag(bestuurseenheid: Bestuurseenheid, conceptDisplayConfigurationId: Iri): Promise<void> {
-        const conceptDisplayConfiguration = await this.findById(bestuurseenheid, conceptDisplayConfigurationId);
+  async removeConceptIsNewFlag(
+    bestuurseenheid: Bestuurseenheid,
+    conceptDisplayConfigurationId: Iri,
+  ): Promise<void> {
+    const conceptDisplayConfiguration = await this.findById(
+      bestuurseenheid,
+      conceptDisplayConfigurationId,
+    );
 
-        const query = `
+    const query = `
         ${PREFIX.lpdc}
         DELETE {
             GRAPH <${bestuurseenheid.userGraph()}> {
@@ -184,13 +218,19 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
             }
         }`;
 
-        await this.querying.deleteInsert(query);
-    }
+    await this.querying.deleteInsert(query);
+  }
 
-    private async removeInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId:Iri): Promise<void> {
-        const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid,conceptId);
+  private async removeInstantiatedFlag(
+    bestuurseenheid: Bestuurseenheid,
+    conceptId: Iri,
+  ): Promise<void> {
+    const conceptDisplayConfiguration = await this.findByConceptId(
+      bestuurseenheid,
+      conceptId,
+    );
 
-        const query = `
+    const query = `
         ${PREFIX.lpdc}
     
         DELETE {
@@ -210,13 +250,19 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
         }
       `;
 
-        await this.querying.deleteInsert(query);
-    }
+    await this.querying.deleteInsert(query);
+  }
 
-    private async removeConceptIsNewFlagAndSetInstantiatedFlag(bestuurseenheid: Bestuurseenheid, conceptId: Iri): Promise<void> {
-        const conceptDisplayConfiguration = await this.findByConceptId(bestuurseenheid, conceptId);
+  private async removeConceptIsNewFlagAndSetInstantiatedFlag(
+    bestuurseenheid: Bestuurseenheid,
+    conceptId: Iri,
+  ): Promise<void> {
+    const conceptDisplayConfiguration = await this.findByConceptId(
+      bestuurseenheid,
+      conceptId,
+    );
 
-        const query = `
+    const query = `
         ${PREFIX.lpdc}
         DELETE {
             GRAPH <${bestuurseenheid.userGraph()}> {
@@ -237,6 +283,6 @@ export class ConceptDisplayConfigurationSparqlRepository implements ConceptDispl
             }
         }`;
 
-        await this.querying.deleteInsert(query);
-    }
+    await this.querying.deleteInsert(query);
+  }
 }

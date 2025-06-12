@@ -1,34 +1,41 @@
-import {CodeRepository, CodeSchema} from "../../core/port/driven/persistence/code-repository";
-import {SparqlQuerying} from "./sparql-querying";
-import {PREFIX, PUBLIC_GRAPH} from "../../../config";
-import {sparqlEscapeString, sparqlEscapeUri, uuid} from "../../../mu-helper";
-import {Iri} from "../../core/domain/shared/iri";
-import {NS} from "./namespaces";
-import {extractResultsFromAllSettled} from "../../../platform/promises";
+import {
+  CodeRepository,
+  CodeSchema,
+} from "../../core/port/driven/persistence/code-repository";
+import { SparqlQuerying } from "./sparql-querying";
+import { PREFIX, PUBLIC_GRAPH, WEGWIJS_URL } from "../../../config";
+import { sparqlEscapeString, sparqlEscapeUri, uuid } from "../../../mu-helper";
+import { Iri } from "../../core/domain/shared/iri";
+import { NS } from "./namespaces";
+import { extractResultsFromAllSettled } from "../../../platform/promises";
 
 export class CodeSparqlRepository implements CodeRepository {
+  protected readonly querying: SparqlQuerying;
 
-    protected readonly querying: SparqlQuerying;
+  constructor(endpoint?: string) {
+    this.querying = new SparqlQuerying(endpoint);
+  }
 
-    constructor(endpoint?: string) {
-        this.querying = new SparqlQuerying(endpoint);
-    }
-
-    async exists(schema: CodeSchema, id: Iri): Promise<boolean> {
-        const query = `
+  async exists(schema: CodeSchema, id: Iri): Promise<boolean> {
+    const query = `
         ${PREFIX.skos}
-        
+
         ASK {
             GRAPH ?g {
                 ${sparqlEscapeUri(id)} a skos:Concept;
                     skos:inScheme ${sparqlEscapeUri(NS.dvcs(schema).value)}.
             }
         }`;
-        return this.querying.ask(query);
-    }
+    return this.querying.ask(query);
+  }
 
-    async save(schema: CodeSchema, id: Iri, prefLabel: string, seeAlso: Iri): Promise<void> {
-        const query = `
+  async save(
+    schema: CodeSchema,
+    id: Iri,
+    prefLabel: string,
+    seeAlso: Iri,
+  ): Promise<void> {
+    const query = `
         ${PREFIX.skos}
         ${PREFIX.mu}
         ${PREFIX.rdfs}
@@ -44,11 +51,11 @@ export class CodeSparqlRepository implements CodeRepository {
         }
         `;
 
-        await this.querying.insert(query);
-    }
+    await this.querying.insert(query);
+  }
 
-    async loadIPDCOrganisatiesTailoredInTurtleFormat(): Promise<string[]> {
-        const bestuurseenheidTailoredAsIpdcOrganisatieConceptQuery = `
+  async loadIPDCOrganisatiesTailoredInTurtleFormat(): Promise<string[]> {
+    const bestuurseenheidTailoredAsIpdcOrganisatieConceptQuery = `
             ${PREFIX.skos}
             ${PREFIX.besluit}
             CONSTRUCT {
@@ -60,50 +67,60 @@ export class CodeSparqlRepository implements CodeRepository {
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                   ?bestuurseenheid a besluit:Bestuurseenheid ;
                     skos:prefLabel ?bestuurseenheidLabel .
-            
+
                   ?bestuurseenheid besluit:classificatie ?bestuurseenheidClassificatie .
                   ?bestuurseenheidClassificatie skos:prefLabel ?bestuurseenheidClassificatieLabel .
-            
+
                   BIND(CONCAT(?bestuurseenheidLabel, " (", ?bestuurseenheidClassificatieLabel, ")") as ?newLabel)
                }
             }
           `;
 
-        const ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptQuery = `
+    const ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptQuery = `
             ${PREFIX.skos}
             ${PREFIX.dvcs}
             ${PREFIX.rdfs}
-        
+
             CONSTRUCT {
               ?s ?p ?o ;
                 skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored> .
             }
             WHERE {
-                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {            
+                GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                   ?s a skos:Concept ;
                     skos:inScheme dvcs:IPDCOrganisaties ;
-                    rdfs:seeAlso <https://wegwijs.vlaanderen.be> ;
+                rdfs:seeAlso ${sparqlEscapeUri(WEGWIJS_URL)} ;
                     ?p ?o .
                 }
             }
           `;
 
-        const [
-            bestuurseenheidTailoredAsIpdcOrganisatieConceptResult,
-            ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptResult] =
-            await extractResultsFromAllSettled(
-                [
-                    this.querying.list(bestuurseenheidTailoredAsIpdcOrganisatieConceptQuery),
-                    this.querying.list(ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptQuery)]);
+    const [
+      bestuurseenheidTailoredAsIpdcOrganisatieConceptResult,
+      ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptResult,
+    ] = await extractResultsFromAllSettled([
+      this.querying.list(bestuurseenheidTailoredAsIpdcOrganisatieConceptQuery),
+      this.querying.list(ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptQuery),
+    ]);
 
-        const bestuurseenheidTailoredAsIpdcOrganisatieTailoredConceptQuads
-            = this.querying.asQuads(bestuurseenheidTailoredAsIpdcOrganisatieConceptResult, PUBLIC_GRAPH);
-        const ipdcOrganisatiesConceptSchemesAsIpdcOrganisatieTailoredConceptQuads
-            = this.querying.asQuads(ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptResult, PUBLIC_GRAPH);
+    const bestuurseenheidTailoredAsIpdcOrganisatieTailoredConceptQuads =
+      this.querying.asQuads(
+        bestuurseenheidTailoredAsIpdcOrganisatieConceptResult,
+        PUBLIC_GRAPH,
+      );
+    const ipdcOrganisatiesConceptSchemesAsIpdcOrganisatieTailoredConceptQuads =
+      this.querying.asQuads(
+        ipdcOrganisatiesSchemesAsIpdcOrganisatieConceptResult,
+        PUBLIC_GRAPH,
+      );
 
-        return [
-            ...bestuurseenheidTailoredAsIpdcOrganisatieTailoredConceptQuads.map(q => q.toNT()),
-            ...ipdcOrganisatiesConceptSchemesAsIpdcOrganisatieTailoredConceptQuads.map(q => q.toNT())];
-    }
-
+    return [
+      ...bestuurseenheidTailoredAsIpdcOrganisatieTailoredConceptQuads.map((q) =>
+        q.toNT(),
+      ),
+      ...ipdcOrganisatiesConceptSchemesAsIpdcOrganisatieTailoredConceptQuads.map(
+        (q) => q.toNT(),
+      ),
+    ];
+  }
 }

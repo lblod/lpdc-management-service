@@ -1,0 +1,20 @@
+{
+  "name": "transfer-instances",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "transfer-instances": "ts-node -r dotenv/config transfer-instances-script.ts",
+    "archive-instances": "ts-node -r dotenv/config archive-instances-script.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "author": "",
+  "license": "MIT"
+}

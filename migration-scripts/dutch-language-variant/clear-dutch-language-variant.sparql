@@ -1,0 +1,10 @@
+DELETE {
+    GRAPH ?g {
+        ?instance <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> ?dutchLanguageVariant .
+    }
+} WHERE {
+    GRAPH ?g {
+        ?instance a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .
+        ?instance <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#dutchLanguageVariant> ?dutchLanguageVariant .
+    }
+}

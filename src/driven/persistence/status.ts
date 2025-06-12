@@ -1,7 +1,7 @@
-import {NS} from "./namespaces";
+import { NS } from "./namespaces";
 
 export const STATUS = {
-    concept: {
-        archived: NS.concepts.conceptStatus('gearchiveerd')
-    }
+  concept: {
+    archived: NS.concepts.conceptStatus("gearchiveerd"),
+  },
 };

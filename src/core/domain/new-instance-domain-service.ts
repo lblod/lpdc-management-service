@@ -1,281 +1,298 @@
-import {InstanceRepository} from "../port/driven/persistence/instance-repository";
-import {Bestuurseenheid} from "./bestuurseenheid";
-import {Instance} from "./instance";
-import {uuid} from "../../../mu-helper";
-import {FormatPreservingDate} from "./format-preserving-date";
-import {ChosenFormType, InstanceStatusType} from "./types";
-import {Iri} from "./shared/iri";
-import {Concept} from "./concept";
-import {LanguageString} from "./language-string";
-import {FormalInformalChoiceRepository} from "../port/driven/persistence/formal-informal-choice-repository";
-import {Language} from "./language";
-import {FormalInformalChoice} from "./formal-informal-choice";
-import {Requirement, RequirementBuilder} from "./requirement";
-import {Evidence, EvidenceBuilder} from "./evidence";
-import {Procedure, ProcedureBuilder} from "./procedure";
-import {Website, WebsiteBuilder} from "./website";
-import {Cost, CostBuilder} from "./cost";
-import {FinancialAdvantage, FinancialAdvantageBuilder} from "./financial-advantage";
-import {isEqual, uniqWith} from "lodash";
+import { InstanceRepository } from "../port/driven/persistence/instance-repository";
+import { Bestuurseenheid } from "./bestuurseenheid";
+import { Instance, InstanceBuilder } from "./instance";
+import { uuid } from "../../../mu-helper";
+import { FormatPreservingDate } from "./format-preserving-date";
 import {
-    ConceptDisplayConfigurationRepository
-} from "../port/driven/persistence/concept-display-configuration-repository";
-import {LegalResource, LegalResourceBuilder} from "./legal-resource";
+  ChosenFormType,
+  CompetentAuthorityLevelType,
+  InstanceStatusType,
+} from "./types";
+import { Concept } from "./concept";
+import { FormalInformalChoiceRepository } from "../port/driven/persistence/formal-informal-choice-repository";
+import { Language } from "./language";
+import { FormalInformalChoice } from "./formal-informal-choice";
+import { isEqual, uniqWith } from "lodash";
+import { ConceptDisplayConfigurationRepository } from "../port/driven/persistence/concept-display-configuration-repository";
+import { SelectConceptLanguageDomainService } from "./select-concept-language-domain-service";
+import { LanguageString } from "./language-string";
+import { InvariantError } from "./shared/lpdc-error";
+import { Iri } from './shared/iri';
 
 export class NewInstanceDomainService {
+  private readonly _instanceRepository: InstanceRepository;
+  private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
+  private readonly _selectConceptLanguageDomainService: SelectConceptLanguageDomainService;
+  private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
 
-    private readonly _instanceRepository: InstanceRepository;
-    private readonly _formalInformalChoiceRepository: FormalInformalChoiceRepository;
-    private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
+  constructor(
+    instanceRepository: InstanceRepository,
+    formalInformalChoiceRepository: FormalInformalChoiceRepository,
+    selectConceptLanguageDomainService: SelectConceptLanguageDomainService,
+    conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository,
+  ) {
+    this._instanceRepository = instanceRepository;
+    this._formalInformalChoiceRepository = formalInformalChoiceRepository;
+    this._selectConceptLanguageDomainService =
+      selectConceptLanguageDomainService;
+    this._conceptDisplayConfigurationRepository =
+      conceptDisplayConfigurationRepository;
+  }
 
-    constructor(instanceRepository: InstanceRepository,
-                formalInformalChoiceRepository: FormalInformalChoiceRepository,
-                conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository) {
-        this._instanceRepository = instanceRepository;
-        this._formalInformalChoiceRepository = formalInformalChoiceRepository;
-        this._conceptDisplayConfigurationRepository = conceptDisplayConfigurationRepository;
+  public async createNewEmpty(
+    bestuurseenheid: Bestuurseenheid,
+    user: Iri,
+  ): Promise<Instance> {
+    const instanceUuid = uuid();
+    const instanceId = InstanceBuilder.buildIri(instanceUuid);
+
+    const now = FormatPreservingDate.of(new Date().toISOString());
+    const formalInformalChoice =
+      await this._formalInformalChoiceRepository.findByBestuurseenheid(
+        bestuurseenheid,
+      );
+    const chosenForm = formalInformalChoice?.chosenForm;
+
+    const newInstance = new Instance(
+      instanceId,
+      instanceUuid,
+      bestuurseenheid.id,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      [],
+      [],
+      [],
+      [bestuurseenheid.id],
+      [],
+      [bestuurseenheid.id],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      undefined,
+      undefined,
+      undefined,
+      [],
+      this.toDutchLanguageVariant(chosenForm),
+      false,
+      now,
+      now,
+      user,
+      user,
+      undefined,
+      InstanceStatusType.ONTWERP,
+      undefined,
+      bestuurseenheid.spatials,
+      [],
+      false,
+      undefined,
+    );
+
+    await this._instanceRepository.save(bestuurseenheid, newInstance);
+
+    return newInstance;
+  }
+
+  public async createNewFromConcept(
+    bestuurseenheid: Bestuurseenheid,
+    user: Iri,
+    concept: Concept,
+  ): Promise<Instance> {
+    const instanceUuid = uuid();
+    const instanceId = InstanceBuilder.buildIri(instanceUuid);
+    const now = FormatPreservingDate.of(new Date().toISOString());
+
+    const formalInformalChoice: FormalInformalChoice | undefined =
+      await this._formalInformalChoiceRepository.findByBestuurseenheid(
+        bestuurseenheid,
+      );
+    const conceptLanguage =
+      this._selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(
+        concept,
+        formalInformalChoice,
+      );
+
+    const dutchLanguageVariant = this.toDutchLanguageVariant(
+      formalInformalChoice?.chosenForm,
+    );
+
+    const newInstance = new Instance(
+      instanceId,
+      instanceUuid,
+      bestuurseenheid.id,
+      concept.title?.transformLanguage(conceptLanguage, dutchLanguageVariant),
+      concept.description?.transformLanguage(
+        conceptLanguage,
+        dutchLanguageVariant,
+      ),
+      concept.additionalDescription?.transformLanguage(
+        conceptLanguage,
+        dutchLanguageVariant,
+      ),
+      concept.exception?.transformLanguage(
+        conceptLanguage,
+        dutchLanguageVariant,
+      ),
+      concept.regulation?.transformLanguage(
+        conceptLanguage,
+        dutchLanguageVariant,
+      ),
+      concept.startDate,
+      concept.endDate,
+      concept.type,
+      concept.targetAudiences,
+      concept.themes,
+      concept.competentAuthorityLevels,
+      concept.competentAuthorities,
+      concept.executingAuthorityLevels,
+      uniqWith([...concept.executingAuthorities, bestuurseenheid.id], isEqual),
+      concept.publicationMedia,
+      concept.yourEuropeCategories,
+      concept.keywords,
+      concept.requirements.map((r) =>
+        r
+          .transformLanguage(conceptLanguage, dutchLanguageVariant)
+          .transformWithNewId(),
+      ),
+      concept.procedures.map((proc) =>
+        proc
+          .transformLanguage(conceptLanguage, dutchLanguageVariant)
+          .transformWithNewId(),
+      ),
+      concept.websites.map((ws) =>
+        ws
+          .transformLanguage(conceptLanguage, dutchLanguageVariant)
+          .transformWithNewId(),
+      ),
+      concept.costs.map((c) =>
+        c
+          .transformLanguage(conceptLanguage, dutchLanguageVariant)
+          .transformWithNewId(),
+      ),
+      concept.financialAdvantages.map((fa) =>
+        fa
+          .transformLanguage(conceptLanguage, dutchLanguageVariant)
+          .transformWithNewId(),
+      ),
+      [],
+      concept.id,
+      concept.latestConceptSnapshot,
+      concept.productId,
+      [],
+      dutchLanguageVariant,
+      false,
+      now,
+      now,
+      user,
+      user,
+      undefined,
+      InstanceStatusType.ONTWERP,
+      undefined,
+      bestuurseenheid.spatials,
+      concept.legalResources.map((lr) =>
+        lr
+          .transformLanguage(conceptLanguage, dutchLanguageVariant)
+          .transformWithNewId(),
+      ),
+      false,
+      undefined,
+    );
+
+    await this._instanceRepository.save(bestuurseenheid, newInstance);
+    await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(
+      bestuurseenheid,
+      concept.id,
+    );
+
+    return newInstance;
+  }
+
+  public async copyFrom(
+    bestuurseenheid: Bestuurseenheid,
+    user: Iri,
+    instanceToCopy: Instance,
+    forMunicipalityMerger: boolean,
+  ): Promise<Instance> {
+    if (forMunicipalityMerger === undefined) {
+      throw new InvariantError(`'forMunicipalityMerger' mag niet ontbreken`);
     }
 
-    public async createNewEmpty(bestuurseenheid: Bestuurseenheid): Promise<Instance> {
-        const instanceUuid = uuid();
-        const instanceId = new Iri(`http://data.lblod.info/id/public-service/${instanceUuid}`);
+    const instanceUuid = uuid();
+    const instanceId = InstanceBuilder.buildIri(instanceUuid);
 
-        const now = FormatPreservingDate.of(new Date().toISOString());
+    const hasCompetentAuthorityLevelLokaal =
+      instanceToCopy.competentAuthorityLevels.includes(
+        CompetentAuthorityLevelType.LOKAAL,
+      );
 
-        const newInstance =
-            new Instance(
-                instanceId,
-                instanceUuid,
-                bestuurseenheid.id,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                [],
-                [],
-                [],
-                [bestuurseenheid.id],
-                [],
-                [bestuurseenheid.id],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                undefined,
-                undefined,
-                undefined,
-                [],
-                now,
-                now,
-                undefined,
-                undefined,
-                InstanceStatusType.ONTWERP,
-                undefined,
-                undefined,
-                bestuurseenheid.spatials,
-                [],
-            );
+    const copiedInstance = InstanceBuilder.from(instanceToCopy)
+      .withId(instanceId)
+      .withUuid(instanceUuid)
+      .withTitle(
+        LanguageString.ofValueInLanguage(
+          `Kopie van ${instanceToCopy?.title?.getLanguageValue(instanceToCopy.dutchLanguageVariant) || ""}`,
+          instanceToCopy.dutchLanguageVariant,
+        ),
+      )
+      .withDateCreated(FormatPreservingDate.now())
+      .withDateModified(FormatPreservingDate.now())
+      .withCreator(user)
+      .withLastModifier(user)
+      .withRequirements(
+        instanceToCopy.requirements.map((req) => req.transformWithNewId()),
+      )
+      .withProcedures(
+        instanceToCopy.procedures.map((proc) => proc.transformWithNewId()),
+      )
+      .withWebsites(
+        instanceToCopy.websites.map((ws) => ws.transformWithNewId()),
+      )
+      .withCosts(instanceToCopy.costs.map((c) => c.transformWithNewId()))
+      .withFinancialAdvantages(
+        instanceToCopy.financialAdvantages.map((fa) => fa.transformWithNewId()),
+      )
+      .withContactPoints(
+        instanceToCopy.contactPoints.map((fa) => fa.transformWithNewId()),
+      )
+      .withStatus(InstanceStatusType.ONTWERP)
+      .withDateSent(undefined)
+      .withLegalResources(
+        instanceToCopy.legalResources.map((lr) => lr.transformWithNewId()),
+      )
+      .withSpatials(forMunicipalityMerger ? [] : instanceToCopy.spatials)
+      .withExecutingAuthorities(
+        forMunicipalityMerger ? [] : instanceToCopy.executingAuthorities,
+      )
+      .withCompetentAuthorities(
+        forMunicipalityMerger && hasCompetentAuthorityLevelLokaal
+          ? []
+          : instanceToCopy.competentAuthorities,
+      )
+      .withForMunicipalityMerger(forMunicipalityMerger)
+      .withCopyOf(instanceToCopy.id)
+      .build();
 
-        await this._instanceRepository.save(bestuurseenheid, newInstance);
+    await this._instanceRepository.save(bestuurseenheid, copiedInstance);
 
-        return newInstance;
-    }
+    return copiedInstance;
+  }
 
-    public async createNewFromConcept(bestuurseenheid: Bestuurseenheid, concept: Concept): Promise<Instance> {
-        const instanceUuid = uuid();
-        const instanceId = new Iri(`http://data.lblod.info/id/public-service/${instanceUuid}`);
-        const now = FormatPreservingDate.of(new Date().toISOString());
-
-        const formalInformalChoice: FormalInformalChoice | undefined = await this._formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
-        const chosenForm = formalInformalChoice?.chosenForm;
-        const conceptLanguageVersion = this.selectLanguageVersionForConcept(concept, chosenForm);
-
-        const newInstance =
-            new Instance(
-                instanceId,
-                instanceUuid,
-                bestuurseenheid.id,
-                this.toInstanceLanguageString(concept.title, conceptLanguageVersion, chosenForm),
-                this.toInstanceLanguageString(concept.description, conceptLanguageVersion, chosenForm),
-                this.toInstanceLanguageString(concept.additionalDescription, conceptLanguageVersion, chosenForm),
-                this.toInstanceLanguageString(concept.exception, conceptLanguageVersion, chosenForm),
-                this.toInstanceLanguageString(concept.regulation, conceptLanguageVersion, chosenForm),
-                concept.startDate,
-                concept.endDate,
-                concept.type,
-                concept.targetAudiences,
-                concept.themes,
-                concept.competentAuthorityLevels,
-                concept.competentAuthorities,
-                concept.executingAuthorityLevels,
-                uniqWith([...concept.executingAuthorities, bestuurseenheid.id], isEqual),
-                concept.publicationMedia,
-                concept.yourEuropeCategories,
-                concept.keywords,
-                this.toInstanceRequirements(concept.requirements, conceptLanguageVersion, chosenForm),
-                this.toInstanceProcedures(concept.procedures, conceptLanguageVersion, chosenForm),
-                this.toInstanceWebsites(concept.websites, conceptLanguageVersion, chosenForm),
-                this.toInstanceCosts(concept.costs, conceptLanguageVersion, chosenForm),
-                this.toInstanceFinancialAdvantages(concept.financialAdvantages, conceptLanguageVersion, chosenForm),
-                [],
-                concept.id,
-                concept.latestConceptSnapshot,
-                concept.productId,
-                [],
-                now,
-                now,
-                undefined,
-                undefined,
-                InstanceStatusType.ONTWERP,
-                undefined,
-                undefined,
-                bestuurseenheid.spatials,
-                this.toInstanceLegalResources(concept.legalResources, conceptLanguageVersion, chosenForm),
-            );
-
-        await this._instanceRepository.save(bestuurseenheid, newInstance);
-        await this._conceptDisplayConfigurationRepository.syncInstantiatedFlag(bestuurseenheid, concept.id);
-
-        return newInstance;
-    }
-
-    private toInstanceRequirements(conceptRequirements: Requirement[], conceptLanguageVersion: Language, chosenForm: ChosenFormType | undefined): Requirement[] {
-        return conceptRequirements.map(conceptRequirement => {
-            const uniqueId = uuid();
-            return new RequirementBuilder()
-                .withId(RequirementBuilder.buildIri(uniqueId))
-                .withUuid(uniqueId)
-                .withTitle(this.toInstanceLanguageString(conceptRequirement.title, conceptLanguageVersion, chosenForm))
-                .withDescription(this.toInstanceLanguageString(conceptRequirement.description, conceptLanguageVersion, chosenForm))
-                .withOrder(conceptRequirement.order)
-                .withEvidence(conceptRequirement.evidence ? this.toInstanceEvidence(conceptRequirement.evidence, conceptLanguageVersion, chosenForm) : undefined)
-                .withConceptRequirementId(conceptRequirement.id)
-                .buildForInstance();
-        });
-    }
-
-    private toInstanceEvidence(conceptEvidence: Evidence, conceptLanguageVersion: Language, chosenForm: ChosenFormType | undefined): Evidence {
-        const uniqueId = uuid();
-        return new EvidenceBuilder()
-            .withId(EvidenceBuilder.buildIri(uniqueId))
-            .withUuid(uniqueId)
-            .withTitle(this.toInstanceLanguageString(conceptEvidence.title, conceptLanguageVersion, chosenForm))
-            .withDescription(this.toInstanceLanguageString(conceptEvidence.description, conceptLanguageVersion, chosenForm))
-            .withConceptEvidenceId(conceptEvidence.id)
-            .buildForInstance();
-    }
-
-    private toInstanceProcedures(conceptProcedures: Procedure[], conceptLanguageVersion: Language, chosenForm: ChosenFormType | undefined): Procedure[] {
-        return conceptProcedures.map(conceptProcedure => {
-            const uniqueId = uuid();
-            return new ProcedureBuilder()
-                .withId(ProcedureBuilder.buildIri(uniqueId))
-                .withUuid(uniqueId)
-                .withTitle(this.toInstanceLanguageString(conceptProcedure.title, conceptLanguageVersion, chosenForm))
-                .withDescription(this.toInstanceLanguageString(conceptProcedure.description, conceptLanguageVersion, chosenForm))
-                .withOrder(conceptProcedure.order)
-                .withWebsites(this.toInstanceWebsites(conceptProcedure.websites, conceptLanguageVersion, chosenForm))
-                .withConceptProcedureId(conceptProcedure.id)
-                .buildForInstance();
-        });
-    }
-
-    private toInstanceWebsites(conceptWebsites: Website[], conceptLanguageVersion: Language, chosenForm: ChosenFormType | undefined): Website[] {
-        return conceptWebsites.map(conceptWebsite => {
-            const uniqueId = uuid();
-            return new WebsiteBuilder()
-                .withId(WebsiteBuilder.buildIri(uniqueId))
-                .withUuid(uniqueId)
-                .withTitle(this.toInstanceLanguageString(conceptWebsite.title, conceptLanguageVersion, chosenForm))
-                .withDescription(this.toInstanceLanguageString(conceptWebsite.description, conceptLanguageVersion, chosenForm))
-                .withOrder(conceptWebsite.order)
-                .withUrl(conceptWebsite.url)
-                .withConceptWebsiteId(conceptWebsite.id)
-                .buildForInstance();
-        });
-    }
-
-    private toInstanceCosts(conceptCosts: Cost[], conceptLanguageVersion: Language, chosenForm: ChosenFormType | undefined): Cost[] {
-        return conceptCosts.map(conceptCost => {
-            const uniqueId = uuid();
-            return new CostBuilder()
-                .withId(CostBuilder.buildIri(uniqueId))
-                .withUuid(uniqueId)
-                .withTitle(this.toInstanceLanguageString(conceptCost.title, conceptLanguageVersion, chosenForm))
-                .withDescription(this.toInstanceLanguageString(conceptCost.description, conceptLanguageVersion, chosenForm))
-                .withOrder(conceptCost.order)
-                .withConceptCostId(conceptCost.id)
-                .buildForInstance();
-        });
-    }
-
-    private toInstanceFinancialAdvantages(conceptFinancialAdvantages: FinancialAdvantage[], conceptLanguageVersion: Language, chosenForm: ChosenFormType | undefined): FinancialAdvantage[] {
-        return conceptFinancialAdvantages.map(conceptFinancialAdvantage => {
-            const uniqueId = uuid();
-            return new FinancialAdvantageBuilder()
-                .withId(FinancialAdvantageBuilder.buildIri(uniqueId))
-                .withUuid(uniqueId)
-                .withTitle(this.toInstanceLanguageString(conceptFinancialAdvantage.title, conceptLanguageVersion, chosenForm))
-                .withDescription(this.toInstanceLanguageString(conceptFinancialAdvantage.description, conceptLanguageVersion, chosenForm))
-                .withConceptFinancialAdvantageId(conceptFinancialAdvantage.id)
-                .withOrder(conceptFinancialAdvantage.order)
-                .buildForInstance();
-        });
-    }
-
-    private toInstanceLegalResources(conceptLegalResources: LegalResource[], conceptLanguageVersion: Language, chosenForm: ChosenFormType | undefined): LegalResource[] {
-        return conceptLegalResources.map(conceptLegalResource => {
-            const uniqueId = uuid();
-            return new LegalResourceBuilder()
-                .withId(LegalResourceBuilder.buildIri(uniqueId))
-                .withUuid(uniqueId)
-                .withTitle(this.toInstanceLanguageString(conceptLegalResource.title, conceptLanguageVersion, chosenForm))
-                .withDescription(this.toInstanceLanguageString(conceptLegalResource.description, conceptLanguageVersion, chosenForm))
-                .withUrl(conceptLegalResource.url)
-                .withOrder(conceptLegalResource.order)
-                .buildForInstance();
-        });
-    }
-
-    private toInstanceLanguageString(languageString: LanguageString, selectedLanguage: Language, chosenForm: ChosenFormType | undefined): LanguageString {
-        if (languageString === undefined) {
-            return undefined;
-        }
-        const selectedVersion = languageString.getLanguageValue(selectedLanguage);
-
-        return LanguageString.of(
-            languageString.en,
-            undefined,
-            chosenForm === ChosenFormType.FORMAL || chosenForm === undefined ? selectedVersion : undefined,
-            chosenForm === ChosenFormType.INFORMAL ? selectedVersion : undefined);
-    }
-
-    private selectLanguageVersionForConcept(concept: Concept, chosenForm: ChosenFormType | undefined): Language {
-        if (chosenForm === ChosenFormType.INFORMAL) {
-            if (concept.conceptNlLanguages.includes(Language.INFORMAL)) {
-                return Language.INFORMAL;
-            } else if (concept.conceptNlLanguages.includes(Language.GENERATED_INFORMAL)) {
-                return Language.GENERATED_INFORMAL;
-            } else {
-                return Language.NL;
-            }
-        } else {
-            if (concept.conceptNlLanguages.includes(Language.FORMAL)) {
-                return Language.FORMAL;
-            } else if (concept.conceptNlLanguages.includes(Language.GENERATED_FORMAL) && concept.conceptNlLanguages.includes(Language.INFORMAL)) {
-                return Language.GENERATED_FORMAL;
-            } else {
-                return Language.NL;
-            }
-        }
-    }
+  private toDutchLanguageVariant(
+    chosenForm: ChosenFormType | undefined,
+  ): Language {
+    return chosenForm === ChosenFormType.INFORMAL
+      ? Language.INFORMAL
+      : Language.FORMAL;
+  }
 }

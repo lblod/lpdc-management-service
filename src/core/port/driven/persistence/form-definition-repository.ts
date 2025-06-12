@@ -1,8 +1,8 @@
-import {FormType} from "../../../domain/types";
-import {Language} from "../../../domain/language";
+import { FormType } from "../../../domain/types";
+import { Language } from "../../../domain/language";
 
 export interface FormDefinitionRepository {
+  loadInstanceFormDefinition(formType: FormType, language: Language): string;
 
-    loadFormDefinition(formType: FormType, language: Language, isEnglishRequired: boolean): string;
-
+  loadConceptFormDefinition(formType: FormType, language: Language): string;
 }

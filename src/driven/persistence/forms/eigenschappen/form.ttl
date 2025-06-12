@@ -35,7 +35,8 @@ ext:form a form:Form, form:TopLevelForm ;
     form:includes ext:tagsF;
     form:includes ext:startDateF;
     form:hasFieldGroup ext:pubChannelFG ;
-    form:includes ext:endDateF.
+    form:includes ext:endDateF ;
+    <MUNICIPALITY_MERGER_FILTER>
 
 ##########################################################
 #  property-group: Algemene info
@@ -45,13 +46,23 @@ ext:generalPg a form:PropertyGroup;
     sh:order 20 .
 
    ##########################################################
+   # Field: Product of dienst bestemd voor fusiegemeente
+   ##########################################################
+   ext:forMunicipalityMergerF a form:Field ;
+      sh:name "Product of dienst bestemd voor fusiegemeente" ;
+      sh:order 1 ;
+      sh:path lpdcExt:forMunicipalityMerger ;
+      form:displayType displayTypes:switch ;
+      sh:group ext:generalPg .
+
+   ##########################################################
    # Field: geldig vanaf
    ##########################################################
    ext:startDateF a form:Field ;
       sh:name "Product of dienst geldig vanaf" ;
       sh:order 2 ;
       sh:path schema:startDate ;
-      form:displayType displayTypes:dateTime ;
+      form:displayType displayTypes:lpdcDateTime ;
       sh:group ext:generalPg .
 
    ##########################################################
@@ -61,14 +72,14 @@ ext:generalPg a form:PropertyGroup;
       sh:name "Product of dienst geldig tot" ;
       sh:order 3 ;
       sh:path schema:endDate ;
-      form:displayType displayTypes:dateTime ;
+      form:displayType displayTypes:lpdcDateTime ;
       sh:group ext:generalPg .
 
   ##########################################################
-  #  field: product type
+  #  field: producttype
   ##########################################################
   ext:productTypeF a form:Field ;
-      sh:name "Product type" ;
+      sh:name "Producttype" ;
       sh:order 20 ;
       form:options  """{"conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/Type"}""" ;
       sh:path dct:type ;
@@ -163,7 +174,7 @@ ext:authorityPg a form:PropertyGroup;
                        "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored"
                      }
                     """ ;
-      form:displayType displayTypes:conceptSchemeMultiSelector ;
+      form:displayType displayTypes:lpdcConceptSchemeMultiSelector ;
       form:validations [
           a form:RequiredConstraint ;
           form:grouping form:Bag ;
@@ -202,7 +213,7 @@ ext:authorityPg a form:PropertyGroup;
                        "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored"
                      }
                     """ ;
-      form:displayType displayTypes:conceptSchemeMultiSelector ;
+      form:displayType displayTypes:lpdcConceptSchemeMultiSelector ;
       sh:group ext:authorityPg .
 
   ##########################################################
@@ -214,7 +225,7 @@ ext:authorityPg a form:PropertyGroup;
       sh:path dct:spatial ;
       form:options  """
                      {
-                       "conceptScheme":"http://lblod.data.gift/vocabularies/lpdc-ipdc/IPDCLocaties",
+                       "conceptScheme":"<NUTS_VERSION>",
                        "multiple": true
                      }
                     """ ;
@@ -266,7 +277,7 @@ ext:relatedPg a form:PropertyGroup;
       form:displayType displayTypes:conceptSelector ;
       sh:group ext:relatedPg ;
       form:hasConditionalFieldGroup ext:pubChannelCFG .
-  
+
   ##########################################################
   # Conditionally show the YourEurope category field if the publication channel is selected
   ##########################################################
@@ -283,7 +294,7 @@ ext:relatedPg a form:PropertyGroup;
           ) ;
         ] ;
       form:hasFieldGroup ext:yourEuropeCatFG .
-  
+
   ext:yourEuropeCatFG form:hasField ext:yourEuropeCatF .
 
   ##########################################################
