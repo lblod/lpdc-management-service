@@ -17,4 +17,4 @@ steps:
       - ssh root@lpdc-dev.s.redhost.be 'cd /data/lpdc-management-service-ci && git fetch && git checkout ${CI_COMMIT_BRANCH} && git pull && cd /data/lpdc-management-service-ci/test && ./run-test.sh'
 when:
   - event: push
-    branch: [development]
+    branch: [master]
