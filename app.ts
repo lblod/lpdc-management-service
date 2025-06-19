@@ -39,7 +39,6 @@ import errorHandler from "./src/driving/error-handler";
 import { NotFound } from "./src/driving/http-error";
 import { InvariantError } from "./src/core/domain/shared/lpdc-error";
 import { ValidateInstanceForPublishApplicationService } from "./src/core/application/validate-instance-for-publish-application-service";
-import { ValidateInstanceForUpdateApplicationService } from "./src/core/application/validate-instance-for-update-application-service";
 import { ChosenFormType, FormType } from "./src/core/domain/types";
 import { FormatPreservingDate } from "./src/core/domain/format-preserving-date";
 import { FormalInformalChoice } from "./src/core/domain/formal-informal-choice";
@@ -53,8 +52,8 @@ import { AdressenRegisterFetcher } from "./src/driven/external/adressen-register
 import { ContactInfoOptionsSparqlRepository } from "./src/driven/persistence/contact-info-options-sparql-repository";
 import { ConceptSnapshotProcessorApplicationService } from "./src/core/application/concept-snapshot-processor-application-service";
 import { SpatialSparqlRepository } from "./src/driven/persistence/spatial-sparql-repository";
-import { AuthorityLevelSparqlRepository } from './src/driven/persistence/authority-level-sparql-repository';
-import { PersoonSparqlRepository } from './src/driven/persistence/persoon-sparql-repository';
+import { AuthorityLevelSparqlRepository } from "./src/driven/persistence/authority-level-sparql-repository";
+import { PersoonSparqlRepository } from "./src/driven/persistence/persoon-sparql-repository";
 
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
 //      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
@@ -140,13 +139,7 @@ const validateInstanceForPublishApplicationService =
     bestuurseenheidRepository,
     spatialRepository,
     codeRepository,
-  );
-
-const validateInstanceForUpdateApplicationService =
-  new ValidateInstanceForUpdateApplicationService(
-    instanceRepository,
-    semanticFormsMapper,
-    authorityLevelRepository
+    authorityLevelRepository,
   );
 
 const linkConceptToInstanceDomainService =
@@ -312,13 +305,6 @@ app.put(
 );
 
 app.put(
-  "/public-services/:instanceId/validate-for-update",
-  async function (req, res, next): Promise<any> {
-    return await validateForUpdate(req, res).catch(next);
-  },
-);
-
-app.put(
   "/public-services/:instanceId/publish",
   async function (req, res, next): Promise<any> {
     return await publishInstance(req, res).catch(next);
@@ -464,8 +450,10 @@ async function createInstance(req: Request, res: Response) {
       },
     });
   } else {
-    const newInstance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid, persoonId);
+    const newInstance = await newInstanceDomainService.createNewEmpty(
+      bestuurseenheid,
+      persoonId,
+    );
     return res.status(201).json({
       data: {
         type: "public-service",
@@ -662,8 +650,9 @@ async function confirmUpToDateTill(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
-  const conceptSnapshot =
-    await conceptSnapshotRepository.findById(conceptSnapshotId);
+  const conceptSnapshot = await conceptSnapshotRepository.findById(
+    conceptSnapshotId,
+  );
   const persoonId = await persoonRepository.findByAccountId(
     session.accountId,
     session.bestuurseenheidId,
@@ -695,8 +684,9 @@ async function fullyTakeConceptSnapshotOver(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
-  const conceptSnapshot =
-    await conceptSnapshotRepository.findById(conceptSnapshotId);
+  const conceptSnapshot = await conceptSnapshotRepository.findById(
+    conceptSnapshotId,
+  );
   const persoonId = await persoonRepository.findByAccountId(
     session.accountId,
     session.bestuurseenheidId,
@@ -726,7 +716,7 @@ async function confirmInstanceIsAlreadyInformal(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
-    const persoonId = await persoonRepository.findByAccountId(
+  const persoonId = await persoonRepository.findByAccountId(
     session.accountId,
     session.bestuurseenheidId,
   );
@@ -775,30 +765,11 @@ async function validateForPublish(req: Request, res: Response) {
     session.bestuurseenheidId,
   );
 
-  const errors = await validateInstanceForPublishApplicationService.validate(
-    instanceId,
-    bestuurseenheid,
-  );
-
-  return res.status(200).json(errors);
-}
-
-async function validateForUpdate(req: Request, res: Response) {
-  const instanceIdRequestParam = req.params.instanceId;
-  const delta = req.body;
-
-  const instanceId = new Iri(instanceIdRequestParam);
-  const session: Session = req["session"];
-  const bestuurseenheid = await bestuurseenheidRepository.findById(
-    session.bestuurseenheidId,
-  );
-
-  const errors = await validateInstanceForUpdateApplicationService.validate(
-    bestuurseenheid,
-    instanceId,
-    delta.removals,
-    delta.additions,
-  );
+  const errors =
+    await validateInstanceForPublishApplicationService.validate(
+      instanceId,
+      bestuurseenheid,
+    );
 
   return res.status(200).json(errors);
 }
