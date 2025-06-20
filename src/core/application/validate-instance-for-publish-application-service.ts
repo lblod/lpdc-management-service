@@ -3,7 +3,10 @@ import {
   ValidationError,
 } from "./form-application-service";
 import { Iri } from "../domain/shared/iri";
-import { Bestuurseenheid } from "../domain/bestuurseenheid";
+import {
+  Bestuurseenheid,
+  BestuurseenheidClassificatieCode,
+} from "../domain/bestuurseenheid";
 import { InstanceRepository } from "../port/driven/persistence/instance-repository";
 import { InvariantError, NotFoundError } from "../domain/shared/lpdc-error";
 import { Instance } from "../domain/instance";
@@ -14,11 +17,18 @@ import {
   CodeRepository,
   CodeSchema,
 } from "../port/driven/persistence/code-repository";
+import { ExecutingAuthorityLevelType } from "../domain/types";
+import { AuthorityLevelRepository } from "../port/driven/persistence/authority-level-repository";
 
 export const INACTIVE_AUTHORITY_ERROR_MESSAGE =
   "Het product dat je probeert te verzenden, is gelinkt aan een inactief bestuur. Kijk in de tab ‘eigenschappen’ de overheidsorganisatie na.";
 export const EXPIRED_SPATIAL_ERROR_MESSAGE =
   "Het product dat je probeert te verzenden, is gelinkt aan een inactief bestuur. Kijk in de tab ‘eigenschappen’ het geografisch toepassingsgebied na.";
+
+export const EXECUTING_AUTHORITY_MISMATCH_ERROR = `Het uitvoerend bestuursniveau komt niet overeen met de geselecteerde overheid`;
+export const COMPETENT_AUTHORITY_MISMATCH_ERROR = `Het bevoegd bestuursniveau komt niet overeen met de geselecteerde overheid`;
+export const EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR = `Dienstverlening van bovenlokale overheden kunnen niet worden toegevoegd aan LPDC. Het uitvoerend niveau hoort steeds lokale overheid te bevatten.`;
+export const EXECUTING_AUTHORITY_MISSING_PROVINCIAL_LEVEL_ERROR = `Dienstverlening van bovenlokale overheden kunnen niet worden toegevoegd aan LPDC. Het uitvoerend niveau hoort steeds provinciale overheid te bevatten.`;
 
 export class ValidateInstanceForPublishApplicationService {
   private readonly _formApplicationService: FormApplicationService;
@@ -26,6 +36,7 @@ export class ValidateInstanceForPublishApplicationService {
   private readonly _bestuurseenheidRepository: BestuurseenheidRepository;
   private readonly _spatialRepository: SpatialRepository;
   private readonly _codeRepository: CodeRepository;
+  private readonly _authorityLevelRepository: AuthorityLevelRepository;
 
   constructor(
     formApplicationService: FormApplicationService,
@@ -33,12 +44,14 @@ export class ValidateInstanceForPublishApplicationService {
     bestuurseenheidRepository: BestuurseenheidRepository,
     spatialRepository: SpatialRepository,
     codeRepository: CodeRepository,
+    authorityLevelRepository: AuthorityLevelRepository,
   ) {
     this._formApplicationService = formApplicationService;
     this._instanceRepository = instanceRepository;
     this._bestuurseenheidRepository = bestuurseenheidRepository;
     this._spatialRepository = spatialRepository;
     this._codeRepository = codeRepository;
+    this._authorityLevelRepository = authorityLevelRepository;
   }
 
   async validate(
@@ -67,6 +80,27 @@ export class ValidateInstanceForPublishApplicationService {
     const spatialError = await this.validateSpatials(instance);
     if (spatialError) {
       errorList.push(spatialError);
+    }
+
+    // Validate competent authorities
+    const competentAuthorityErrors =
+      await this.validateAuthoritiesCompetentLevelMapping(
+        instance.competentAuthorityLevels,
+        instance.competentAuthorities,
+      );
+    if (competentAuthorityErrors) {
+      errorList.push(...competentAuthorityErrors);
+    }
+
+    // Validate executing authorities
+    const executingAuthorityErrors =
+      await this.validateAuthoritiesExecutingLevelMapping(
+        instance.executingAuthorityLevels,
+        instance.executingAuthorities,
+        bestuurseenheid,
+      );
+    if (executingAuthorityErrors) {
+      errorList.push(...executingAuthorityErrors);
     }
 
     if (errorList.length) {
@@ -165,5 +199,111 @@ export class ValidateInstanceForPublishApplicationService {
         throw e;
       }
     }
+  }
+
+  private async validateAuthoritiesExecutingLevelMapping(
+    selectedLevels: string[],
+    selectedAuthorities: Iri[],
+    bestuurseenheid: Bestuurseenheid,
+  ): Promise<ValidationError[]> {
+    const errors = [];
+
+    // 1. Translate the selected executing authorities to their corresponding levels
+    const levelsForSelectedAuthorities = await Promise.all(
+      selectedAuthorities.map(async (iri) => {
+        return await this._authorityLevelRepository.getExecutingAuthorityLevel(
+          iri,
+        );
+      }),
+    );
+
+    // 2. Perform the common validation call
+    const hasErrors: boolean = this.hasInvalidAuthorityLevelMapping(
+      selectedLevels,
+      levelsForSelectedAuthorities,
+    );
+
+    if (hasErrors) {
+      errors.push({ message: EXECUTING_AUTHORITY_MISMATCH_ERROR });
+    }
+
+    // 3. The additional validations for lokaal/provinciaal & derden
+    if (selectedLevels.length > 0) {
+      const isProvince =
+        bestuurseenheid.classificatieCode ===
+        BestuurseenheidClassificatieCode.PROVINCIE;
+      const requiredLevel = isProvince
+        ? ExecutingAuthorityLevelType.PROVINCIAAL
+        : ExecutingAuthorityLevelType.LOKAAL;
+      const errorMessage = isProvince
+        ? EXECUTING_AUTHORITY_MISSING_PROVINCIAL_LEVEL_ERROR
+        : EXECUTING_AUTHORITY_MISSING_LOCAL_LEVEL_ERROR;
+
+      // Check if neither the required level nor DERDEN is selected
+      if (
+        !selectedLevels.includes(requiredLevel) &&
+        !selectedLevels.includes(ExecutingAuthorityLevelType.DERDEN)
+      ) {
+        errors.push({ message: errorMessage });
+      }
+    }
+
+    return errors;
+  }
+
+  private async validateAuthoritiesCompetentLevelMapping(
+    selectedLevels: string[],
+    selectedAuthorities: Iri[],
+  ): Promise<ValidationError[]> {
+    const errors = [];
+
+    // 1. Translate the selected executing authorities to their corresponding levels
+    const levelsForSelectedAuthorities = await Promise.all(
+      selectedAuthorities.map(async (iri) => {
+        return await this._authorityLevelRepository.getCompetentAuthorityLevel(
+          iri,
+        );
+      }),
+    );
+
+    // 2. Perform the common validation call
+    const hasErrors: boolean = this.hasInvalidAuthorityLevelMapping(
+      selectedLevels,
+      levelsForSelectedAuthorities,
+    );
+
+    if (hasErrors) {
+      errors.push({ message: COMPETENT_AUTHORITY_MISMATCH_ERROR });
+    }
+
+    return errors;
+  }
+
+  private hasInvalidAuthorityLevelMapping(
+    selectedLevels: string[],
+    levelsForSelectedAuthorities: string[],
+  ): boolean {
+    // Check if every selected level has a matching authority selected with the same level
+    levelsForSelectedAuthorities = levelsForSelectedAuthorities.filter(
+      (level) => level !== undefined,
+    );
+
+    // Skip the validation if there are no authorities selected
+    const hasLevelWithoutMatchingAuthority =
+      levelsForSelectedAuthorities.length !== 0 &&
+      selectedLevels.some(
+        (level) => !levelsForSelectedAuthorities.includes(level),
+      );
+
+    // Check if every selected authority has a matching level selected
+    levelsForSelectedAuthorities = [...new Set(levelsForSelectedAuthorities)];
+    // Skip the validation if there are no levels selected
+    const hasAuthorityWithoutMatchingLevel =
+      selectedLevels.length !== 0 &&
+      levelsForSelectedAuthorities.some(
+        (level) => !selectedLevels.includes(level),
+      );
+
+    return hasLevelWithoutMatchingAuthority || hasAuthorityWithoutMatchingLevel;
   }
 }
