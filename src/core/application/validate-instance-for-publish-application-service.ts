@@ -283,27 +283,25 @@ export class ValidateInstanceForPublishApplicationService {
     selectedLevels: string[],
     levelsForSelectedAuthorities: string[],
   ): boolean {
-    // Check if every selected level has a matching authority selected with the same level
-    levelsForSelectedAuthorities = levelsForSelectedAuthorities.filter(
+    const validAuthorityLevels = levelsForSelectedAuthorities.filter(
       (level) => level !== undefined,
     );
 
-    // Skip the validation if there are no authorities selected
-    const hasLevelWithoutMatchingAuthority =
-      levelsForSelectedAuthorities.length !== 0 &&
-      selectedLevels.some(
-        (level) => !levelsForSelectedAuthorities.includes(level),
-      );
+    // If either list is empty skip validations
+    if (selectedLevels.length === 0 || validAuthorityLevels.length === 0) {
+      return false;
+    }
 
-    // Check if every selected authority has a matching level selected
-    levelsForSelectedAuthorities = [...new Set(levelsForSelectedAuthorities)];
-    // Skip the validation if there are no levels selected
-    const hasAuthorityWithoutMatchingLevel =
-      selectedLevels.length !== 0 &&
-      levelsForSelectedAuthorities.some(
-        (level) => !selectedLevels.includes(level),
-      );
+    // Check if every selected level has a corresponding authority level or is unmatchable
+    const hasInvalidLevel = selectedLevels.some(
+      (level) => !validAuthorityLevels.includes(level) // not matching
+    );
 
-    return hasLevelWithoutMatchingAuthority || hasAuthorityWithoutMatchingLevel;
+    const hasInvalidAuthority = validAuthorityLevels.some(
+      (authLevel) => !selectedLevels.includes(authLevel) // not matching
+    );
+
+    // Now only return invalid if both sides contain at least one value that does not match
+    return hasInvalidLevel && hasInvalidAuthority;
   }
 }
