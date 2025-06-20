@@ -52,6 +52,7 @@ export class Session {
 
 export enum SessionRoleType {
   LOKETLB_LPDCGEBRUIKER = "LoketLB-LPDCGebruiker",
+  LOKETLB_LPDCADMIN = "LoketLB-admin",
 }
 
 export type SessionRoleTypeOrString = SessionRoleType | string;
