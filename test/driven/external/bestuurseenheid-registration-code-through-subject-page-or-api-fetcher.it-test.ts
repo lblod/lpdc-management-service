@@ -5,6 +5,13 @@ import {
 } from "../../core/domain/iri-test-builder";
 
 describe("BestuurseenheidRegistrationCodeThroughSubjectPageOrApiFetcher", () => {
+  // NOTE (25/06/2025): Currently this test is expected to fail. The tested
+  // functionality is broken as the Centrale Vindplaats is not intended to be
+  // used this way. We opted not to fix as
+  // - the functionality is rarely used, if at all; and
+  // - the proper solution is to set up a sync with the OrganisatiePortaal app
+  // - which is the master of this data.
+  // See LPDC-1301 for more background
   test("it should return a preflabel for an existing administrative unit", async () => {
     const uriString = buildBestuurseenheidIri(
       "09f5b10fbd078fcb1e0e4910d32e47146a5eb31d8138dcbaec798309e64dd059",
