@@ -23,6 +23,17 @@ It is also in charge of post-processing the LDES feed coming from IPDC.
 ### Description
 A form is a simple way to group relevant content together for the user to act on. As an example we can look at the '[Content](https://github.com/lblod/lpdc-management-service/blob/master/src/driven/persistence/forms/inhoud/form.ttl)' form. This form contains the 'main' fields of a Public service like the Title, Description & Contact Information, while the 'Properties Form' contains more secondary data like status, start-date & languages. **The structure of these forms is arbitrary**, meaning that you could also put the Title field in the 'Properties' form instead of the 'Content form' if you like. It just helps to group fields together to display to the user.
 
+# Testing
+
+The `test` folder contains a fairly extensive set of tests for this service's functionality, as well as some of its external dependencies such as IPDC. To run all tests go to the `test`  folder and execute the `run-test.sh` script. Note that
+- this will start and stop several docker containers;
+- will take some time; and
+- will spew a lot of output in your terminal.
+
+It is advised to
+- run these tests when modifying (core) functionality of this service to verify no other functionality was broken in the process; and
+- add appropriate tests when adding new (core) functionality to this service.
+
 # Deployment
 
 ## Docker-compose configuration
