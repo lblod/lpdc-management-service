@@ -18,6 +18,7 @@ import { CodeSparqlRepository } from "../../src/driven/persistence/code-sparql-r
 import { ConceptSnapshotSparqlRepository } from "../../src/driven/persistence/concept-snapshot-sparql-repository";
 import { InstanceSparqlRepository } from "../../src/driven/persistence/instance-sparql-repository";
 import { SpatialSparqlTestRepository } from "../driven/persistence/spatial-sparql-test-repository";
+import { AuthorityLevelSparqlRepository } from "../../src/driven/persistence/authority-level-sparql-repository";
 
 const endPoint = END2END_TEST_SPARQL_ENDPOINT;
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
@@ -46,6 +47,8 @@ const formApplicationService = new FormApplicationService(
   selectFormLanguageDomainService,
   semanticFormsMapper,
 );
+const authorityLevelRepository = new AuthorityLevelSparqlRepository(endPoint);
+
 const validateInstanceForPublishApplicationService =
   new ValidateInstanceForPublishApplicationService(
     formApplicationService,
@@ -53,6 +56,7 @@ const validateInstanceForPublishApplicationService =
     bestuurseenheidRepository,
     spatialRepository,
     codeRepository,
+    authorityLevelRepository,
   );
 
 describe("Instance publish validation", () => {

@@ -46,6 +46,7 @@ import {
   anExpiredSpatial,
 } from "../domain/spatial-test-builder";
 import { CodeSchema } from "../../../src/core/port/driven/persistence/code-repository";
+import { AuthorityLevelSparqlRepository } from "../../../src/driven/persistence/authority-level-sparql-repository";
 
 describe("ValidateInstanceForPublishApplicationService", () => {
   describe("validate", () => {
@@ -79,6 +80,9 @@ describe("ValidateInstanceForPublishApplicationService", () => {
       selectConceptLanguageDomainService,
       semanticFormsMapper,
     );
+    const authorityLevelRepository = new AuthorityLevelSparqlRepository(
+      TEST_SPARQL_ENDPOINT,
+    );
 
     const validateInstanceForPublishApplicationService =
       new ValidateInstanceForPublishApplicationService(
@@ -87,6 +91,7 @@ describe("ValidateInstanceForPublishApplicationService", () => {
         bestuurseenheidRepository,
         spatialRepository,
         codeRepository,
+        authorityLevelRepository,
       );
 
     beforeAll(async () => {
