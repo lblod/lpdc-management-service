@@ -118,6 +118,11 @@ describe("ValidateInstanceForPublishApplicationService", () => {
     });
 
     test("when valid instance for publish, returns empty array", async () => {
+      // NOTE (26/06/2025): For some reason this test occasionally fails due to
+      // an `INACTIVE_AUTHORITY_ERROR_MESSAGE` being returned.  Possibly, there
+      // is a race condition where this test is executed earlier than all
+      // necessary data was persisted or something.  If this happens, try to
+      // rerun the tests to check whether it fails consistently or not.
       const bestuurseenheid = aBestuurseenheid().build();
       const instance = aFullInstance().build();
       await instanceRepository.save(bestuurseenheid, instance);
