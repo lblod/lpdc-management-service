@@ -3,6 +3,7 @@ import {
   ValidateInstanceForPublishApplicationService,
   INACTIVE_AUTHORITY_ERROR_MESSAGE,
   EXPIRED_SPATIAL_ERROR_MESSAGE,
+  EXECUTING_AUTHORITY_MISMATCH_ERROR,
 } from "../../../src/core/application/validate-instance-for-publish-application-service";
 import { ConceptSparqlRepository } from "../../../src/driven/persistence/concept-sparql-repository";
 import { TEST_SPARQL_ENDPOINT } from "../../test.config";
@@ -46,7 +47,12 @@ import {
   anExpiredSpatial,
 } from "../domain/spatial-test-builder";
 import { CodeSchema } from "../../../src/core/port/driven/persistence/code-repository";
-import { AuthorityLevelSparqlRepository } from "../../../src/driven/persistence/authority-level-sparql-repository";
+import {
+  CompetentAuthorityLevelUri,
+  ExecutingAuthorityLevelUri,
+} from "../../../src/driven/persistence/authority-level-sparql-repository";
+import { ExecutingAuthorityLevelType } from "../../../src/core/domain/types";
+import { AuthorityLevelSparqlTestRepository } from "../../driven/persistence/authority-level-sparql-test-repository";
 
 describe("ValidateInstanceForPublishApplicationService", () => {
   describe("validate", () => {
@@ -80,7 +86,7 @@ describe("ValidateInstanceForPublishApplicationService", () => {
       selectConceptLanguageDomainService,
       semanticFormsMapper,
     );
-    const authorityLevelRepository = new AuthorityLevelSparqlRepository(
+    const authorityLevelRepository = new AuthorityLevelSparqlTestRepository(
       TEST_SPARQL_ENDPOINT,
     );
 
@@ -95,13 +101,23 @@ describe("ValidateInstanceForPublishApplicationService", () => {
       );
 
     beforeAll(async () => {
-      someCompetentAuthorities().forEach(
-        async (unit) => await bestuurseenheidRepository.save(unit.build()),
-      );
+      someCompetentAuthorities().forEach(async (unit) => {
+        const builtUnit = unit.build();
+        await bestuurseenheidRepository.save(unit.build());
+        await authorityLevelRepository.saveCompetentAuthorityLevel(
+          builtUnit.id,
+          CompetentAuthorityLevelUri.LOKAAL,
+        );
+      });
 
-      someExecutingAuthorities().forEach(
-        async (unit) => await bestuurseenheidRepository.save(unit.build()),
-      );
+      someExecutingAuthorities().forEach(async (unit) => {
+        const builtUnit = unit.build();
+        await bestuurseenheidRepository.save(builtUnit);
+        await authorityLevelRepository.saveExecutingAuthorityLevel(
+          builtUnit.id,
+          ExecutingAuthorityLevelUri.LOKAAL,
+        );
+      });
 
       await spatialRepository.save(
         aSpatial()
@@ -669,6 +685,93 @@ describe("ValidateInstanceForPublishApplicationService", () => {
         );
 
       expect(errorList).toEqual([]);
+    });
+
+    test("results in no error when there is a matching level for executing authority and an extra executing authority level without matching Authority", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorityLevels([
+          ExecutingAuthorityLevelType.LOKAAL,
+          ExecutingAuthorityLevelType.EUROPEES,
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("results in no error when there is an executing authority for each selected level and an executing authority without a matching level", async () => {
+      const federalAuthority = buildOvoCodeIri(uuid());
+      await codeRepository.save(
+        CodeSchema.IPDCOrganisaties,
+        federalAuthority,
+        "Some concept code",
+        buildWegwijsIri(),
+      );
+      await authorityLevelRepository.saveExecutingAuthorityLevel(
+        federalAuthority,
+        ExecutingAuthorityLevelUri.FEDERAAL,
+      );
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorities([
+          ...InstanceTestBuilder.EXECUTING_AUTHORITIES,
+          federalAuthority,
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("results in an error when the executing authority levels and executing authorities do not match", async () => {
+      const federalAuthority = buildOvoCodeIri(uuid());
+      await codeRepository.save(
+        CodeSchema.IPDCOrganisaties,
+        federalAuthority,
+        "Some concept code",
+        buildWegwijsIri(),
+      );
+      await authorityLevelRepository.saveExecutingAuthorityLevel(
+        federalAuthority,
+        ExecutingAuthorityLevelUri.FEDERAAL,
+      );
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withExecutingAuthorityLevels([
+          ExecutingAuthorityLevelType.LOKAAL,
+          ExecutingAuthorityLevelType.EUROPEES,
+        ])
+        .withExecutingAuthorities([
+          ...InstanceTestBuilder.EXECUTING_AUTHORITIES,
+          federalAuthority,
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: EXECUTING_AUTHORITY_MISMATCH_ERROR },
+      ]);
     });
 
     test("results in an error when an expired spatial is assigned", async () => {
