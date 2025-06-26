@@ -219,13 +219,9 @@ export class InstanceTestBuilder {
 
   public static readonly COMPETENT_AUTHORITY_LEVELS = [
     CompetentAuthorityLevelType.LOKAAL,
-    CompetentAuthorityLevelType.EUROPEES,
-    CompetentAuthorityLevelType.FEDERAAL,
   ];
   public static readonly EXECUTING_AUTHORITY_LEVELS = [
-    ExecutingAuthorityLevelType.DERDEN,
-    ExecutingAuthorityLevelType.VLAAMS,
-    ExecutingAuthorityLevelType.FEDERAAL,
+    ExecutingAuthorityLevelType.LOKAAL,
   ];
 
   public static readonly PUBLICATION_MEDIA = [

@@ -1313,14 +1313,10 @@ describe("InstanceRepository", () => {
         `<${instanceId}> <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(InstanceTestBuilder.THEMES[1]).value}>`,
         `<${instanceId}> <http://data.europa.eu/m8g/thematicArea> <${NS.dvc.thema(InstanceTestBuilder.THEMES[2]).value}>`,
         `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(InstanceTestBuilder.COMPETENT_AUTHORITY_LEVELS[0]).value}>`,
-        `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(InstanceTestBuilder.COMPETENT_AUTHORITY_LEVELS[1]).value}>`,
-        `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel> <${NS.dvc.bevoegdBestuursniveau(InstanceTestBuilder.COMPETENT_AUTHORITY_LEVELS[2]).value}>`,
         `<${instanceId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceTestBuilder.COMPETENT_AUTHORITIES[0]}>`,
         `<${instanceId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceTestBuilder.COMPETENT_AUTHORITIES[1]}>`,
         `<${instanceId}> <http://data.europa.eu/m8g/hasCompetentAuthority> <${InstanceTestBuilder.COMPETENT_AUTHORITIES[2]}>`,
         `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(InstanceTestBuilder.EXECUTING_AUTHORITY_LEVELS[0]).value}>`,
-        `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(InstanceTestBuilder.EXECUTING_AUTHORITY_LEVELS[1]).value}>`,
-        `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel> <${NS.dvc.uitvoerendBestuursniveau(InstanceTestBuilder.EXECUTING_AUTHORITY_LEVELS[2]).value}>`,
         `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${InstanceTestBuilder.EXECUTING_AUTHORITIES[0]}>`,
         `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasExecutingAuthority> <${InstanceTestBuilder.EXECUTING_AUTHORITIES[1]}>`,
         `<${instanceId}> <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#publicationMedium> <${NS.dvc.publicatieKanaal(InstanceTestBuilder.PUBLICATION_MEDIA[0]).value}>`,
@@ -2391,30 +2387,6 @@ describe("InstanceRepository", () => {
         ),
         quad(
           namedNode(publishedInstanceSnapshot.id.value),
-          namedNode(
-            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel",
-          ),
-          namedNode(
-            NS.dvc.bevoegdBestuursniveau(
-              publishedInstanceSnapshot.competentAuthorityLevels[1],
-            ).value,
-          ),
-          namedNode(bestuurseenheid.userGraph().value),
-        ),
-        quad(
-          namedNode(publishedInstanceSnapshot.id.value),
-          namedNode(
-            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#competentAuthorityLevel",
-          ),
-          namedNode(
-            NS.dvc.bevoegdBestuursniveau(
-              publishedInstanceSnapshot.competentAuthorityLevels[2],
-            ).value,
-          ),
-          namedNode(bestuurseenheid.userGraph().value),
-        ),
-        quad(
-          namedNode(publishedInstanceSnapshot.id.value),
           namedNode("http://data.europa.eu/m8g/hasCompetentAuthority"),
           namedNode(publishedInstanceSnapshot.competentAuthorities[0].value),
           namedNode(bestuurseenheid.userGraph().value),
@@ -2439,30 +2411,6 @@ describe("InstanceRepository", () => {
           namedNode(
             NS.dvc.uitvoerendBestuursniveau(
               publishedInstanceSnapshot.executingAuthorityLevels[0],
-            ).value,
-          ),
-          namedNode(bestuurseenheid.userGraph().value),
-        ),
-        quad(
-          namedNode(publishedInstanceSnapshot.id.value),
-          namedNode(
-            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel",
-          ),
-          namedNode(
-            NS.dvc.uitvoerendBestuursniveau(
-              publishedInstanceSnapshot.executingAuthorityLevels[1],
-            ).value,
-          ),
-          namedNode(bestuurseenheid.userGraph().value),
-        ),
-        quad(
-          namedNode(publishedInstanceSnapshot.id.value),
-          namedNode(
-            "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#executingAuthorityLevel",
-          ),
-          namedNode(
-            NS.dvc.uitvoerendBestuursniveau(
-              publishedInstanceSnapshot.executingAuthorityLevels[2],
             ).value,
           ),
           namedNode(bestuurseenheid.userGraph().value),
