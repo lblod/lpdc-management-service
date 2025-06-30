@@ -4,6 +4,7 @@ import {
   INACTIVE_AUTHORITY_ERROR_MESSAGE,
   EXPIRED_SPATIAL_ERROR_MESSAGE,
   EXECUTING_AUTHORITY_MISMATCH_ERROR,
+  COMPETENT_AUTHORITY_MISMATCH_ERROR,
 } from "../../../src/core/application/validate-instance-for-publish-application-service";
 import { ConceptSparqlRepository } from "../../../src/driven/persistence/concept-sparql-repository";
 import { TEST_SPARQL_ENDPOINT } from "../../test.config";
@@ -51,7 +52,10 @@ import {
   CompetentAuthorityLevelUri,
   ExecutingAuthorityLevelUri,
 } from "../../../src/driven/persistence/authority-level-sparql-repository";
-import { ExecutingAuthorityLevelType } from "../../../src/core/domain/types";
+import {
+  CompetentAuthorityLevelType,
+  ExecutingAuthorityLevelType,
+} from "../../../src/core/domain/types";
 import { AuthorityLevelSparqlTestRepository } from "../../driven/persistence/authority-level-sparql-test-repository";
 
 describe("ValidateInstanceForPublishApplicationService", () => {
@@ -477,6 +481,93 @@ describe("ValidateInstanceForPublishApplicationService", () => {
       ]);
     });
 
+    test("results in no error when there is a matching level for competent authority and an extra competent authority level without matching authority", async () => {
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorityLevels([
+          CompetentAuthorityLevelType.LOKAAL,
+          CompetentAuthorityLevelType.EUROPEES,
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("results in no error when there is an competent authority for each selected level and a competent authority without a matching level", async () => {
+      const federalAuthority = buildOvoCodeIri(uuid());
+      await codeRepository.save(
+        CodeSchema.IPDCOrganisaties,
+        federalAuthority,
+        "Some concept code",
+        buildWegwijsIri(),
+      );
+      await authorityLevelRepository.saveCompetentAuthorityLevel(
+        federalAuthority,
+        CompetentAuthorityLevelUri.FEDERAAL,
+      );
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorities([
+          ...InstanceTestBuilder.COMPETENT_AUTHORITIES,
+          federalAuthority,
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([]);
+    });
+
+    test("results in an error when the competent authority levels and competent authorities do not match", async () => {
+      const federalAuthority = buildOvoCodeIri(uuid());
+      await codeRepository.save(
+        CodeSchema.IPDCOrganisaties,
+        federalAuthority,
+        "Some concept code",
+        buildWegwijsIri(),
+      );
+      await authorityLevelRepository.saveCompetentAuthorityLevel(
+        federalAuthority,
+        CompetentAuthorityLevelUri.FEDERAAL,
+      );
+
+      const bestuurseenheid = aBestuurseenheid().build();
+      const instance = aFullInstance()
+        .withCompetentAuthorityLevels([
+          CompetentAuthorityLevelType.LOKAAL,
+          CompetentAuthorityLevelType.EUROPEES,
+        ])
+        .withCompetentAuthorities([
+          ...InstanceTestBuilder.COMPETENT_AUTHORITIES,
+          federalAuthority,
+        ])
+        .build();
+      await instanceRepository.save(bestuurseenheid, instance);
+
+      const errorList =
+        await validateInstanceForPublishApplicationService.validate(
+          instance.id,
+          bestuurseenheid,
+        );
+
+      expect(errorList).toEqual([
+        { message: COMPETENT_AUTHORITY_MISMATCH_ERROR },
+      ]);
+    });
+
     test("results in an error when an inactive executing authority is assigned", async () => {
       const authorityUuid = uuid();
       const authorityIri = buildBestuurseenheidIri(authorityUuid);
@@ -687,7 +778,7 @@ describe("ValidateInstanceForPublishApplicationService", () => {
       expect(errorList).toEqual([]);
     });
 
-    test("results in no error when there is a matching level for executing authority and an extra executing authority level without matching Authority", async () => {
+    test("results in no error when there is a matching level for executing authority and an extra executing authority level without matching authority", async () => {
       const bestuurseenheid = aBestuurseenheid().build();
       const instance = aFullInstance()
         .withExecutingAuthorityLevels([
