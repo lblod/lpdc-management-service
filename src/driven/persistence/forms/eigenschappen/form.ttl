@@ -308,7 +308,7 @@ ext:relatedPg a form:PropertyGroup;
       form:options  """
                      {
                        "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/YourEuropeCategorie",
-                       "orderBy": "http://purl.org/linked-data/cube#order",
+                       "sortByOrder": true,
                        "multiple": true
                      }
                     """ ;
