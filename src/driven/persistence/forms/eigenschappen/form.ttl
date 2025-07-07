@@ -307,7 +307,7 @@ ext:relatedPg a form:PropertyGroup;
       sh:path lpdcExt:yourEuropeCategory ;
       form:options  """
                      {
-                       "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/YourEuropeCategorie",
+                       "conceptScheme":"http://lblod.data.gift/concept-schemes/YourEuropeSubCategorie",
                        "sortByOrder": true,
                        "multiple": true
                      }
