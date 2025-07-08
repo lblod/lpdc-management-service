@@ -2,6 +2,7 @@ import { Iri } from "../../core/domain/shared/iri";
 import { InstanceRepository } from "../../core/port/driven/persistence/instance-repository";
 import { SparqlQuerying } from "./sparql-querying";
 import { PREFIX } from "../../../config";
+import { sortBy } from "lodash";
 import {
   sparqlEscapeDateTime,
   sparqlEscapeUri,
@@ -379,4 +380,47 @@ export class InstanceSparqlRepository implements InstanceRepository {
         `;
     return this.querying.ask(query);
   }
+
+  async creatorOptions(bestuurseenheid: Bestuurseenheid): Promise<any> {
+    const query = `
+            ${PREFIX.dct}
+            ${PREFIX.foaf}
+            ${PREFIX.mu}
+            SELECT DISTINCT ?id ?firstName ?familyName
+            WHERE {
+              GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                ?service a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .
+                ?service <http://purl.org/pav/createdBy> ${sparqlEscapeUri(
+                  bestuurseenheid.id
+                )};
+                   dct:creator ?creator .
+              }
+
+              GRAPH ?g {
+                ?creator mu:uuid ?id .
+                ?creator foaf:firstName ?firstName .
+                ?creator foaf:familyName ?familyName .
+              }
+            }
+        `;
+
+    const result = await this.querying.list(query);
+
+    const creators = result.map((object) => {
+      const id = object["id"]?.value || "";
+      const firstName = object["firstName"]?.value || "";
+      const familyName = object["familyName"]?.value || "";
+
+      return {
+        id,
+        firstName: firstName,
+        familyName: familyName,
+      };
+    });
+
+    return sortBy(creators, (creator) =>
+      `${creator.firstName} ${creator.familyName}`.toUpperCase()
+    );
+  }
+
 }
