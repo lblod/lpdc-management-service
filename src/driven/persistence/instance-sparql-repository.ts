@@ -410,17 +410,14 @@ export class InstanceSparqlRepository implements InstanceRepository {
       const id = object["id"]?.value || "";
       const firstName = object["firstName"]?.value || "";
       const familyName = object["familyName"]?.value || "";
+      const fullName = `${firstName} ${familyName}`;
 
       return {
         id,
-        firstName: firstName,
-        familyName: familyName,
+        fullName: fullName,
       };
     });
 
-    return sortBy(creators, (creator) =>
-      `${creator.firstName} ${creator.familyName}`.toUpperCase()
-    );
+    return sortBy(creators, (creator) => creator.fullName.toUpperCase());
   }
-
 }
