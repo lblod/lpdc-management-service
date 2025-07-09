@@ -413,6 +413,17 @@ app.get("/creator-options/", async (req, res, next): Promise<any> => {
   },
 );
 
+app.use("/last-modifier-options/", async (req, res, next) => {
+  await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(
+    next,
+  );
+});
+
+app.get("/last-modifier-options/", async (req, res, next): Promise<any> => {
+    return await getLastModifierOptions(req, res).catch(next);
+  },
+);
+
 app.use("/concept-snapshot", async (req, res, next) => {
   await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(
     next,
@@ -989,6 +1000,18 @@ async function getCreatorOptions(req: Request, res: Response) {
   );
 
   const result = await instanceRepository.creatorOptions(
+    bestuurseenheid
+  );
+  return res.json(result);
+}
+
+async function getLastModifierOptions(req: Request, res: Response) {
+  const session: Session = req["session"];
+  const bestuurseenheid = await bestuurseenheidRepository.findById(
+    session.bestuurseenheidId,
+  );
+
+  const result = await instanceRepository.lastModifierOptions(
     bestuurseenheid
   );
   return res.json(result);

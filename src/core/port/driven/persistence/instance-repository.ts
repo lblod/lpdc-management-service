@@ -44,4 +44,8 @@ export interface InstanceRepository {
   creatorOptions(
     bestuurseenheid: Bestuurseenheid,
   ): Promise<any>;
+
+  lastModifierOptions(
+    bestuurseenheid: Bestuurseenheid,
+  ): Promise<any>;
 }

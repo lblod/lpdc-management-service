@@ -420,4 +420,46 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
     return sortBy(creators, (creator) => creator.fullName.toUpperCase());
   }
+
+  async lastModifierOptions(bestuurseenheid: Bestuurseenheid): Promise<any> {
+    const query = `
+            ${PREFIX.ext}
+            ${PREFIX.foaf}
+            ${PREFIX.mu}
+            SELECT DISTINCT ?id ?firstName ?familyName
+            WHERE {
+              GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                ?service a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .
+                ?service <http://purl.org/pav/createdBy> ${sparqlEscapeUri(
+                  bestuurseenheid.id
+                )};
+                   ext:lastModifiedBy ?lastModifier .
+              }
+
+              GRAPH ?g {
+                ?lastModifier mu:uuid ?id .
+                ?lastModifier foaf:firstName ?firstName .
+                ?lastModifier foaf:familyName ?familyName .
+              }
+            }
+        `;
+
+    const result = await this.querying.list(query);
+
+    const lastModifiers = result.map((object) => {
+      const id = object["id"]?.value || "";
+      const firstName = object["firstName"]?.value || "";
+      const familyName = object["familyName"]?.value || "";
+      const fullName = `${firstName} ${familyName}`;
+
+      return {
+        id,
+        fullName: fullName,
+      };
+    });
+
+    return sortBy(lastModifiers, (lastModifier) =>
+      lastModifier.fullName.toUpperCase()
+    );
+  }
 }
