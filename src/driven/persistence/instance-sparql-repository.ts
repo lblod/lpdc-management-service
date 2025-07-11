@@ -398,7 +398,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                    dct:creator ?creator .
               }
 
-              GRAPH ?g {
+              GRAPH ${sparqlEscapeUri(bestuurseenheid.orgGraph())} {
                 ?creator mu:uuid ?id .
                 ?creator foaf:firstName ?firstName .
                 ?creator foaf:familyName ?familyName .
@@ -440,7 +440,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                    ext:lastModifiedBy ?lastModifier .
               }
 
-              GRAPH ?g {
+              GRAPH ${sparqlEscapeUri(bestuurseenheid.orgGraph())} {
                 ?lastModifier mu:uuid ?id .
                 ?lastModifier foaf:firstName ?firstName .
                 ?lastModifier foaf:familyName ?familyName .
