@@ -383,14 +383,16 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
   async creatorOptions(bestuurseenheid: Bestuurseenheid): Promise<any> {
     const query = `
+            ${PREFIX.lpdcExt}
             ${PREFIX.dct}
             ${PREFIX.foaf}
             ${PREFIX.mu}
+            ${PREFIX.pav}
             SELECT DISTINCT ?id ?firstName ?familyName
             WHERE {
               GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                ?service a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .
-                ?service <http://purl.org/pav/createdBy> ${sparqlEscapeUri(
+                ?service a lpdcExt:InstancePublicService .
+                ?service pav:createdBy ${sparqlEscapeUri(
                   bestuurseenheid.id
                 )};
                    dct:creator ?creator .
@@ -423,14 +425,16 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
   async lastModifierOptions(bestuurseenheid: Bestuurseenheid): Promise<any> {
     const query = `
+            ${PREFIX.lpdcExt}
             ${PREFIX.ext}
             ${PREFIX.foaf}
             ${PREFIX.mu}
+            ${PREFIX.pav}
             SELECT DISTINCT ?id ?firstName ?familyName
             WHERE {
               GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                ?service a <https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#InstancePublicService> .
-                ?service <http://purl.org/pav/createdBy> ${sparqlEscapeUri(
+                ?service a lpdcExt:InstancePublicService .
+                ?service pav:createdBy ${sparqlEscapeUri(
                   bestuurseenheid.id
                 )};
                    ext:lastModifiedBy ?lastModifier .
