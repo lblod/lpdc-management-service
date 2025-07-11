@@ -40,4 +40,12 @@ export interface InstanceRepository {
     bestuurseenheid: Bestuurseenheid,
     instance: Instance,
   ): Promise<boolean>;
+
+  creatorOptions(
+    bestuurseenheid: Bestuurseenheid,
+  ): Promise<any>;
+
+  lastModifierOptions(
+    bestuurseenheid: Bestuurseenheid,
+  ): Promise<any>;
 }

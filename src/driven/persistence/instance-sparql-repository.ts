@@ -2,6 +2,7 @@ import { Iri } from "../../core/domain/shared/iri";
 import { InstanceRepository } from "../../core/port/driven/persistence/instance-repository";
 import { SparqlQuerying } from "./sparql-querying";
 import { PREFIX } from "../../../config";
+import { sortBy } from "lodash";
 import {
   sparqlEscapeDateTime,
   sparqlEscapeUri,
@@ -378,5 +379,91 @@ export class InstanceSparqlRepository implements InstanceRepository {
             }
         `;
     return this.querying.ask(query);
+  }
+
+  async creatorOptions(bestuurseenheid: Bestuurseenheid): Promise<any> {
+    const query = `
+            ${PREFIX.lpdcExt}
+            ${PREFIX.dct}
+            ${PREFIX.foaf}
+            ${PREFIX.mu}
+            ${PREFIX.pav}
+            SELECT DISTINCT ?id ?firstName ?familyName
+            WHERE {
+              GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                ?service a lpdcExt:InstancePublicService .
+                ?service pav:createdBy ${sparqlEscapeUri(
+                  bestuurseenheid.id
+                )};
+                   dct:creator ?creator .
+              }
+
+              GRAPH ${sparqlEscapeUri(bestuurseenheid.orgGraph())} {
+                ?creator mu:uuid ?id .
+                ?creator foaf:firstName ?firstName .
+                ?creator foaf:familyName ?familyName .
+              }
+            }
+        `;
+
+    const result = await this.querying.list(query);
+
+    const creators = result.map((object) => {
+      const id = object["id"]?.value || "";
+      const firstName = object["firstName"]?.value || "";
+      const familyName = object["familyName"]?.value || "";
+      const fullName = `${firstName} ${familyName}`;
+
+      return {
+        id,
+        fullName: fullName,
+      };
+    });
+
+    return sortBy(creators, (creator) => creator.fullName.toUpperCase());
+  }
+
+  async lastModifierOptions(bestuurseenheid: Bestuurseenheid): Promise<any> {
+    const query = `
+            ${PREFIX.lpdcExt}
+            ${PREFIX.ext}
+            ${PREFIX.foaf}
+            ${PREFIX.mu}
+            ${PREFIX.pav}
+            SELECT DISTINCT ?id ?firstName ?familyName
+            WHERE {
+              GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+                ?service a lpdcExt:InstancePublicService .
+                ?service pav:createdBy ${sparqlEscapeUri(
+                  bestuurseenheid.id
+                )};
+                   ext:lastModifiedBy ?lastModifier .
+              }
+
+              GRAPH ${sparqlEscapeUri(bestuurseenheid.orgGraph())} {
+                ?lastModifier mu:uuid ?id .
+                ?lastModifier foaf:firstName ?firstName .
+                ?lastModifier foaf:familyName ?familyName .
+              }
+            }
+        `;
+
+    const result = await this.querying.list(query);
+
+    const lastModifiers = result.map((object) => {
+      const id = object["id"]?.value || "";
+      const firstName = object["firstName"]?.value || "";
+      const familyName = object["familyName"]?.value || "";
+      const fullName = `${firstName} ${familyName}`;
+
+      return {
+        id,
+        fullName: fullName,
+      };
+    });
+
+    return sortBy(lastModifiers, (lastModifier) =>
+      lastModifier.fullName.toUpperCase()
+    );
   }
 }
