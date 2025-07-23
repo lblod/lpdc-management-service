@@ -29,9 +29,14 @@ The [transfer-instances-script](transfer-instances-script.ts) generates migratio
 ### Usage
 
 - Configure [transfer-instances-script](transfer-instances-script.ts) by adding a `Configuration` for each product instances transfer that should be generated. See the `Configuration` type definition in the script for more details.
-- Execute the script by running the following command in this folder
+- In this folder, run the script using one of the two commands below, depending on how you want to handle the Competent Authority and Executing Authority of the product instances:
+  - To keep the existing authorities unchanged:
 ```shell
   npm run transfer-instances
+```
+ - To replace the authorities with the target authority, but only if the current Competent Authority matches the one you're transferring from:
+```shell
+  npm run transfer-instances -- --replace-authorities
 ```
 - Execute the generated migrations found in `./migration-results/`, by placing them in the app's migration folder and (re)starting the `migrations` service.
 
