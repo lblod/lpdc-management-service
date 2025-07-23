@@ -122,16 +122,19 @@ export class TransferInstanceService {
       .withLegalResources(
         instanceToCopy.legalResources.map((lr) => lr.transformWithNewId()),
       )
-      .withCompetentAuthorities(
-        instanceToCopy.competentAuthorities.map((authorityId) =>
-          authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
-        ),
-      )
-      .withExecutingAuthorities(
-        instanceToCopy.executingAuthorities.map((authorityId) =>
-          authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
-        ),
-      )
+      // Old code: Will change the comptetent and executing authority to the toAuthority value.
+      // .withCompetentAuthorities(
+      //   instanceToCopy.competentAuthorities.map((authorityId) =>
+      //     authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
+      //   ),
+      // )
+      // .withExecutingAuthorities(
+      //   instanceToCopy.executingAuthorities.map((authorityId) =>
+      //     authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
+      //   ),
+      // )
+      .withCompetentAuthorities(instanceToCopy.competentAuthorities)
+      .withExecutingAuthorities(instanceToCopy.executingAuthorities)
       .withSpatials(
         copySpatial || instanceToCopy.forMunicipalityMerger
           ? instanceToCopy.spatials
