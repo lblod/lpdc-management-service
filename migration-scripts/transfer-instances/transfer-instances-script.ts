@@ -11,7 +11,6 @@ import { FormalInformalChoiceSparqlRepository } from "../../src/driven/persisten
 import { TransferInstanceService } from "./transfer-instance-service";
 import { AdressenRegisterFetcher } from "../../src/driven/external/adressen-register-fetcher";
 import { buildFilename } from "./util";
-import { replace } from "lodash";
 
 const endPoint = process.env.SPARQL_URL;
 const args = process.argv.slice(2);
