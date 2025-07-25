@@ -44,6 +44,7 @@ export class TransferInstanceService {
     fromAuthority: Bestuurseenheid,
     toAuthority: Bestuurseenheid,
     copySpatial: boolean,
+    replaceAuthorities: boolean,
   ): Promise<Instance> {
     const toAuthorityChoice = (
       await this.formalInformalChoiceRepository.findByBestuurseenheid(
@@ -70,6 +71,7 @@ export class TransferInstanceService {
       toAuthorityChoice,
       instance,
       copySpatial,
+      replaceAuthorities,
     );
   }
 
@@ -79,6 +81,7 @@ export class TransferInstanceService {
     toAuthorityChoice: ChosenFormType,
     instanceToCopy: Instance,
     copySpatial: boolean,
+    replaceAuthorities: boolean,
   ) {
     const instanceUuid = uuid();
     const instanceId = InstanceBuilder.buildIri(instanceUuid);
@@ -123,14 +126,18 @@ export class TransferInstanceService {
         instanceToCopy.legalResources.map((lr) => lr.transformWithNewId()),
       )
       .withCompetentAuthorities(
-        instanceToCopy.competentAuthorities.map((authorityId) =>
-          authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
-        ),
-      )
+            replaceAuthorities
+              ? instanceToCopy.competentAuthorities.map((authorityId) =>
+                  authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
+                )
+              : instanceToCopy.competentAuthorities,
+          )
       .withExecutingAuthorities(
-        instanceToCopy.executingAuthorities.map((authorityId) =>
-          authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
-        ),
+        replaceAuthorities
+          ? instanceToCopy.executingAuthorities.map((authorityId) =>
+              authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
+            )
+          : instanceToCopy.executingAuthorities,
       )
       .withSpatials(
         copySpatial || instanceToCopy.forMunicipalityMerger

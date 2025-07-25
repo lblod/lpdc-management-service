@@ -13,6 +13,8 @@ import { AdressenRegisterFetcher } from "../../src/driven/external/adressen-regi
 import { buildFilename } from "./util";
 
 const endPoint = process.env.SPARQL_URL;
+const args = process.argv.slice(2);
+const replaceAuthorities = args.includes("--replace-authorities");
 const directDatabaseAccess = new DirectDatabaseAccess(endPoint);
 const bestuurseenheidRepository = new BestuurseenheidSparqlRepository(endPoint);
 const instanceRepository = new InstanceSparqlRepository(endPoint);
@@ -35,6 +37,7 @@ async function generateMigration(
   toAuthorityId: Iri,
   onlyForMunicipalityMergerInstances: boolean,
   copyLocalAuthorities: boolean,
+  replaceAuthorities: boolean,
 ) {
   const insertTriples = [];
   const fromAuthority =
@@ -57,6 +60,7 @@ async function generateMigration(
         fromAuthority,
         toAuthority,
         copyLocalAuthorities,
+        replaceAuthorities,
       );
 
       const triples = domainToQuadsMerger
@@ -214,5 +218,6 @@ for (const conf of transferConfiguration) {
       ? conf.onlyMunicipalityMergerInstances
       : false,
     true, // Update local authorities using migration later
+    replaceAuthorities,
   );
 }
