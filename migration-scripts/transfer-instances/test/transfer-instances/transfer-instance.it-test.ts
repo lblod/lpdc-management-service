@@ -65,6 +65,7 @@ describe("transfer instance", () => {
       fromAuthority,
       toAuthority,
       false,
+      true,
     );
 
     expect(transferredInstance.createdBy).toEqual(toAuthority.id);
@@ -78,6 +79,7 @@ describe("transfer instance", () => {
       fromAuthority,
       toAuthority,
       false,
+      true,
     );
 
     expect(
@@ -99,6 +101,7 @@ describe("transfer instance", () => {
       fromAuthority,
       toAuthority,
       false,
+      true,
     );
 
     expect(transferredInstance.forMunicipalityMerger).toBeTrue();
@@ -117,6 +120,7 @@ describe("transfer instance", () => {
       fromAuthority,
       toAuthority,
       false,
+      true,
     );
 
     expect(transferredInstance.status).toEqual(InstanceStatusType.ONTWERP);
@@ -139,6 +143,7 @@ describe("transfer instance", () => {
       fromAuthority,
       toAuthority,
       false,
+      true,
     );
 
     expect(transferredInstance.copyOf).toBeUndefined();
@@ -157,6 +162,7 @@ describe("transfer instance", () => {
       fromAuthority,
       toAuthority,
       false,
+      true,
     );
 
     expect(instance.spatials).not.toBeEmpty();
@@ -213,6 +219,7 @@ describe("transfer instance", () => {
       fromAuthority,
       toAuthority,
       false,
+      true,
     );
 
     expect(updatedInstance.calculatedInstanceLanguages()).toEqual([
@@ -575,6 +582,7 @@ describe("transfer instance", () => {
         fromAuthority,
         toAuthority,
         false,
+        true,
       );
 
       expect(transferredInstance.needsConversionFromFormalToInformal).toEqual(
@@ -603,6 +611,7 @@ describe("transfer instance", () => {
         fromAuthority,
         toAuthority,
         false,
+        true,
       );
 
       expect(transferredInstance.needsConversionFromFormalToInformal).toEqual(
@@ -632,6 +641,7 @@ describe("transfer instance", () => {
         fromAuthority,
         toAuthority,
         false,
+        true,
       );
 
       expect(transferredInstance.needsConversionFromFormalToInformal).toEqual(
@@ -662,6 +672,7 @@ describe("transfer instance", () => {
           fromAuthority,
           toAuthority,
           false,
+          true,
         ),
       ).rejects.toThrowWithMessage(
         InvariantError,
@@ -701,12 +712,14 @@ describe("transfer instance", () => {
         fromAuthority,
         toAuthority,
         false,
+        true,
       );
       const transferredNlInstance = await transferInstanceService.transfer(
         nlInstance.id,
         fromAuthority,
         toAuthority,
         false,
+        true,
       );
       const transferredInformalInstance =
         await transferInstanceService.transfer(
@@ -714,6 +727,7 @@ describe("transfer instance", () => {
           fromAuthority,
           toAuthority,
           false,
+          true,
         );
 
       expect(
@@ -757,6 +771,7 @@ describe("transfer instance", () => {
         fromAuthority,
         toAuthority,
         false,
+        true,
       );
 
       expect(
