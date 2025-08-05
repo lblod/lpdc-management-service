@@ -204,7 +204,7 @@ export class Instance {
       this._financialAdvantages.map((fa) => fa.order),
       "financial advantages > order",
     );
-    this._contactPoints = [...contactPoints].map((cp) =>
+    this._contactPoints = [...contactPoints].filter(cp => !cp.isEmpty()).map((cp) =>
       ContactPoint.forInstance(cp),
     );
     requireNoDuplicates(

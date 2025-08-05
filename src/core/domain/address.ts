@@ -134,6 +134,18 @@ export class Address {
       .withUuid(uniqueId)
       .build();
   }
+
+ public isEmpty(): boolean {
+    const hasGemeentenaam = this._gemeentenaam !== undefined && !this._gemeentenaam.isEmpty();
+    const hasLand = this._land !== undefined && !this._land.isEmpty();
+    const hasHuisnummer = this._huisnummer !== undefined && this._huisnummer.trim() !== '';
+    const hasBusnummer = this._busnummer !== undefined && this._busnummer.trim() !== '';
+    const hasPostcode = this._postcode !== undefined && this._postcode.trim() !== '';
+    const hasStraatnaam = this._straatnaam !== undefined && !this._straatnaam.isEmpty();
+    const hasVerwijstNaar = this._verwijstNaar !== undefined;
+
+    return !hasGemeentenaam && !hasLand && !hasHuisnummer && !hasBusnummer && !hasPostcode && !hasStraatnaam && !hasVerwijstNaar;
+  }
 }
 
 export class AddressBuilder {
