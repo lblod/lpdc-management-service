@@ -490,9 +490,9 @@ ext:rulesHeading a form:Field;
               sh:name "Website URL" ;
               sh:order 3 ;
               form:validations
-              [ a form:UriConstraint ;
+              [ a form:WebUriConstraint ;
                 form:grouping form:MatchEvery ;
-                sh:resultMessage "Gelieve een geldige URL op te geven. Zorg dat vooraan in de link altijd http://, https://, ftp:// of sftp:// staat."; # TODO: later custom validator
+                sh:resultMessage "Gelieve een geldige URL op te geven. Zorg dat vooraan in de link altijd http://, https:// staat."; # TODO: later custom validator
                 sh:path schema:url
               ],
               [
@@ -795,9 +795,9 @@ ext:regulationsPg a form:PropertyGroup;
        sh:order 5 ;
        sh:path schema:url ;
        form:validations [
-         a form:UriConstraint ;
+         a form:WebUriConstraint ;
          form:grouping form:MatchEvery ;
-         sh:resultMessage "Gelieve een geldige URL op te geven. Zorg dat vooraan in de link altijd http://, https://, ftp:// of sftp:// staat."; # TODO: later custom validator
+         sh:resultMessage "Gelieve een geldige URL op te geven. Zorg dat vooraan in de link altijd http://, https:// staat."; # TODO: later custom validator
          sh:path schema:url
        ],
        [
@@ -904,9 +904,9 @@ ext:contactpointsPg a form:PropertyGroup;
         sh:name "Website URL" ;
         sh:order 3 ;
         form:validations [
-          a form:UriConstraint ;
+          a form:WebUriConstraint ;
           form:grouping form:MatchEvery ;
-          sh:resultMessage "Gelieve een geldige URL op te geven. Zorg dat vooraan in de link altijd http://, https://, ftp:// of sftp:// staat."; # TODO: later custom validator
+          sh:resultMessage "Gelieve een geldige URL op te geven. Zorg dat vooraan in de link altijd http://, https:// staat."; # TODO: later custom validator
           sh:path schema:url
         ];
         sh:path schema:url ;
@@ -1079,9 +1079,9 @@ ext:websitesHeading a form:Field;
         sh:name "Website URL" ;
         sh:order 5 ;
         form:validations
-        [ a form:UriConstraint ;
+        [ a form:WebUriConstraint ;
           form:grouping form:MatchEvery ;
-          sh:resultMessage "Gelieve een geldige URL op te geven. Zorg dat vooraan in de link altijd http://, https://, ftp:// of sftp:// staat."; # TODO: later custom validator
+          sh:resultMessage "Gelieve een geldige URL op te geven. Zorg dat vooraan in de link altijd http://, https:// staat."; # TODO: later custom validator
           sh:path schema:url
         ],
         [
