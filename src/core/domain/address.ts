@@ -136,15 +136,15 @@ export class Address {
   }
 
  public isEmpty(): boolean {
-    const hasGemeentenaam = this._gemeentenaam !== undefined && !this._gemeentenaam.isEmpty();
-    const hasLand = this._land !== undefined && !this._land.isEmpty();
-    const hasHuisnummer = this._huisnummer !== undefined && this._huisnummer.trim() !== '';
-    const hasBusnummer = this._busnummer !== undefined && this._busnummer.trim() !== '';
-    const hasPostcode = this._postcode !== undefined && this._postcode.trim() !== '';
-    const hasStraatnaam = this._straatnaam !== undefined && !this._straatnaam.isEmpty();
-    const hasVerwijstNaar = this._verwijstNaar !== undefined;
+    const hasNoGemeentenaam = this._gemeentenaam === undefined || this._gemeentenaam.isEmpty();
+    const hasNoLand = this._land === undefined || this._land.isEmpty();
+    const hasNoHuisnummer = this._huisnummer === undefined || this._huisnummer.trim() === '';
+    const hasNoBusnummer = this._busnummer === undefined || this._busnummer.trim() === '';
+    const hasNoPostcode = this._postcode === undefined || this._postcode.trim() === '';
+    const hasNoStraatnaam = this._straatnaam === undefined || this._straatnaam.isEmpty();
+    const hasNoVerwijstNaar = this._verwijstNaar === undefined;
 
-    return !hasGemeentenaam && !hasLand && !hasHuisnummer && !hasBusnummer && !hasPostcode && !hasStraatnaam && !hasVerwijstNaar;
+    return hasNoGemeentenaam && hasNoLand && hasNoHuisnummer && hasNoBusnummer && hasNoPostcode && hasNoStraatnaam && hasNoVerwijstNaar;
   }
 }
 

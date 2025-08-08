@@ -127,16 +127,20 @@ export class ContactPoint {
   }
 
   public isEmpty(): boolean {
-    const hasEmail = this._email !== undefined && this._email.trim() !== "";
-    const hasTelephone =
-      this._telephone !== undefined && this._telephone.trim() !== "";
-    const hasUrl = this._url !== undefined && this._url.trim() !== "";
-    const hasOpeningHours =
-      this._openingHours !== undefined && this._openingHours.trim() !== "";
-    const hasAddress = this._address !== undefined;
+    const hasNoEmail = this._email === undefined || this._email.trim() === "";
+    const hasNoTelephone =
+      this._telephone === undefined || this._telephone.trim() === "";
+    const hasNoUrl = this._url === undefined || this._url.trim() === "";
+    const hasNoOpeningHours =
+      this._openingHours === undefined || this._openingHours.trim() === "";
+    const hasNoAddress = this._address === undefined;
 
     return (
-      !hasUrl && !hasEmail && !hasTelephone && !hasOpeningHours && !hasAddress
+      hasNoUrl &&
+      hasNoEmail &&
+      hasNoTelephone &&
+      hasNoOpeningHours &&
+      hasNoAddress
     );
   }
 }
