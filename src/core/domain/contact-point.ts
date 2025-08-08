@@ -30,7 +30,7 @@ export class ContactPoint {
     this._telephone = telephone;
     this._openingHours = openingHours;
     this._order = requiredValue(order, "order");
-    this._address = address;
+    this._address = address && !address.isEmpty() ? address : undefined;
   }
 
   static forInstance(contactPoint: ContactPoint): ContactPoint {
@@ -125,8 +125,25 @@ export class ContactPoint {
       .withAddress(this._address?.transformWithNewId())
       .build();
   }
-}
 
+  public isEmpty(): boolean {
+    const hasNoEmail = this._email === undefined || this._email.trim() === "";
+    const hasNoTelephone =
+      this._telephone === undefined || this._telephone.trim() === "";
+    const hasNoUrl = this._url === undefined || this._url.trim() === "";
+    const hasNoOpeningHours =
+      this._openingHours === undefined || this._openingHours.trim() === "";
+    const hasNoAddress = this._address === undefined;
+
+    return (
+      hasNoUrl &&
+      hasNoEmail &&
+      hasNoTelephone &&
+      hasNoOpeningHours &&
+      hasNoAddress
+    );
+  }
+}
 export class ContactPointBuilder {
   private id: Iri;
   private uuid: string | undefined;

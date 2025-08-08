@@ -197,4 +197,8 @@ export class LanguageString {
     const strB = b || "";
     return strA.localeCompare(strB);
   }
+
+  public isEmpty(): boolean {
+    return this.notBlankLanguages.length === 0;
+  }
 }
