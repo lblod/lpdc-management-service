@@ -674,11 +674,11 @@ describe("constructing", () => {
       ).not.toThrow();
     });
 
-    test("invalid contact point does throw error", () => {
+    test("invalid contact point throws error", () => {
       const invalidContactPoint = ContactPoint.reconstitute(
         ContactPointBuilder.buildIri(uuid()),
         undefined,
-        undefined,
+        ContactPointTestBuilder.URL,
         undefined,
         undefined,
         undefined,
@@ -690,11 +690,30 @@ describe("constructing", () => {
       ).toThrow();
     });
 
+    test("empty contact point gets filtered out before creating instance", () => {
+      const uuidValue = uuid();
+      const emptyContactPoint = ContactPoint.reconstitute(
+        ContactPointBuilder.buildIri(uuidValue),
+        uuidValue,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        1,
+        undefined,
+      );
+
+      const result = aFullInstance().withContactPoints([emptyContactPoint]).build();
+      expect(result.contactPoints).toHaveLength(0);
+    });
+
     test("contact points that dont have unique order throws error", () => {
       const contactPoint1 = aMinimalContactPointForInstance()
+        .withUrl(ContactPointTestBuilder.URL)
         .withOrder(1)
         .build();
       const contactPoint2 = aMinimalContactPointForInstance()
+        .withUrl(ContactPointTestBuilder.URL)
         .withOrder(1)
         .build();
 
@@ -765,7 +784,7 @@ describe("constructing", () => {
           Address.reconstitute(
             AddressBuilder.buildIri(uuid()),
             undefined,
-            undefined,
+            aMinimalLanguageString(AddressTestBuilder.GEMEENTENAAM).build(),
             undefined,
             undefined,
             undefined,
@@ -777,6 +796,35 @@ describe("constructing", () => {
         expect(() =>
           aFullInstance().withContactPoints([invalidContactPoint]).build(),
         ).toThrow();
+      });
+
+      test("valid contact point with empty address gets filtered out before creating", () => {
+        const uuidValue = uuid();
+        const uuidValueAddress = uuid();
+        const validContactPoint = ContactPoint.reconstitute(
+          ContactPointBuilder.buildIri(uuidValue),
+          uuidValue,
+          ContactPointTestBuilder.URL,
+          ContactPointTestBuilder.EMAIL,
+          ContactPointTestBuilder.TELEPHONE,
+          ContactPointTestBuilder.OPENING_HOURS,
+          1,
+          Address.reconstitute(
+            AddressBuilder.buildIri(uuidValueAddress),
+            uuidValueAddress,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+          ),
+        );
+
+      const result = aFullInstance().withContactPoints([validContactPoint]).build();
+      expect(result.contactPoints).toHaveLength(1);
+      expect(result.contactPoints[0].address).toBeUndefined();
       });
     });
   });
