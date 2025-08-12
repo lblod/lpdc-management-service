@@ -76,7 +76,7 @@ export class BestuurseenheidSparqlRepository
       this.mapStatusUriToCode(bestuurseenheidQueryResult["statusUri"]?.value),
       (resultSpatials as Promise<unknown>[]).map(
         (r) => new Iri(r["spatialId"].value),
-      )
+      ),
     );
   }
 
@@ -94,7 +94,7 @@ export class BestuurseenheidSparqlRepository
   }
 
   mapBestuurseenheidClassificatieUriToCode(
-    classificatieCodeUri: BestuurseenheidClassificatieCodeUri | undefined
+    classificatieCodeUri: BestuurseenheidClassificatieCodeUri | undefined,
   ): BestuurseenheidClassificatieCode | undefined {
     if (!classificatieCodeUri) {
       return undefined;
@@ -103,7 +103,8 @@ export class BestuurseenheidSparqlRepository
     const key: string | undefined = Object.keys(
       BestuurseenheidClassificatieCodeUri,
     ).find(
-      (key) => BestuurseenheidClassificatieCodeUri[key] === classificatieCodeUri
+      (key) =>
+        BestuurseenheidClassificatieCodeUri[key] === classificatieCodeUri,
     );
 
     const classificatieCode = BestuurseenheidClassificatieCode[key];

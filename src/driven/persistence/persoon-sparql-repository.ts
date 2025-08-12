@@ -15,7 +15,7 @@ export class PersoonSparqlRepository implements PersoonRepository {
   async findByAccountId(accountId: Iri, bestuurseenheidId: Iri): Promise<Iri> {
     const bestuurseenheidUuid = bestuurseenheidId.value.replace(
       "http://data.lblod.info/id/bestuurseenheden/",
-      ""
+      "",
     );
     const orgGraph = `http://mu.semte.ch/graphs/organizations/${bestuurseenheidUuid}`;
 

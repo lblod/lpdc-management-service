@@ -294,11 +294,11 @@ export class ValidateInstanceForPublishApplicationService {
 
     // Check if every selected level has a corresponding authority level or is unmatchable
     const hasInvalidLevel = selectedLevels.some(
-      (level) => !validAuthorityLevels.includes(level) // not matching
+      (level) => !validAuthorityLevels.includes(level), // not matching
     );
 
     const hasInvalidAuthority = validAuthorityLevels.some(
-      (authLevel) => !selectedLevels.includes(authLevel) // not matching
+      (authLevel) => !selectedLevels.includes(authLevel), // not matching
     );
 
     // Now only return invalid if both sides contain at least one value that does not match

@@ -14,7 +14,7 @@ import {
   InstanceStatusType,
   CompetentAuthorityLevelType,
 } from "./types";
-import { Iri } from './shared/iri';
+import { Iri } from "./shared/iri";
 
 export class BringInstanceUpToDateWithConceptSnapshotVersionDomainService {
   private readonly _instanceRepository: InstanceRepository;

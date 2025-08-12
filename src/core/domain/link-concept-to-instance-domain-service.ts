@@ -6,7 +6,7 @@ import { Bestuurseenheid } from "./bestuurseenheid";
 import { FormatPreservingDate } from "./format-preserving-date";
 import { ConceptRepository } from "../port/driven/persistence/concept-repository";
 import { InvariantError } from "./shared/lpdc-error";
-import { Iri } from './shared/iri';
+import { Iri } from "./shared/iri";
 
 export class LinkConceptToInstanceDomainService {
   private readonly _instanceRepository: InstanceRepository;

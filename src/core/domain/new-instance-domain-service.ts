@@ -17,7 +17,7 @@ import { ConceptDisplayConfigurationRepository } from "../port/driven/persistenc
 import { SelectConceptLanguageDomainService } from "./select-concept-language-domain-service";
 import { LanguageString } from "./language-string";
 import { InvariantError } from "./shared/lpdc-error";
-import { Iri } from './shared/iri';
+import { Iri } from "./shared/iri";
 
 export class NewInstanceDomainService {
   private readonly _instanceRepository: InstanceRepository;

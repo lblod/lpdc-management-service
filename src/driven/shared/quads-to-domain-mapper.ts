@@ -719,7 +719,7 @@ export class QuadsToDomainMapper {
     return this.asIri(
       this.storeAccess.uniqueStatement(
         this.asNamedOrBlankNode(id),
-        NS.dct("creator")
+        NS.dct("creator"),
       ),
     );
   }
@@ -728,11 +728,10 @@ export class QuadsToDomainMapper {
     return this.asIri(
       this.storeAccess.uniqueStatement(
         this.asNamedOrBlankNode(id),
-        NS.ext("lastModifiedBy")
+        NS.ext("lastModifiedBy"),
       ),
     );
   }
-
 
   private dateSent(id: Iri): FormatPreservingDate | undefined {
     return this.asFormatPreservingDate(

@@ -703,7 +703,9 @@ describe("constructing", () => {
         undefined,
       );
 
-      const result = aFullInstance().withContactPoints([emptyContactPoint]).build();
+      const result = aFullInstance()
+        .withContactPoints([emptyContactPoint])
+        .build();
       expect(result.contactPoints).toHaveLength(0);
     });
 
@@ -822,9 +824,11 @@ describe("constructing", () => {
           ),
         );
 
-      const result = aFullInstance().withContactPoints([validContactPoint]).build();
-      expect(result.contactPoints).toHaveLength(1);
-      expect(result.contactPoints[0].address).toBeUndefined();
+        const result = aFullInstance()
+          .withContactPoints([validContactPoint])
+          .build();
+        expect(result.contactPoints).toHaveLength(1);
+        expect(result.contactPoints[0].address).toBeUndefined();
       });
     });
   });

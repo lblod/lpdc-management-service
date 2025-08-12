@@ -34,10 +34,7 @@ describe("constructing", () => {
   test("Undefined accountId throws error", () => {
     expect(() =>
       aSession().withAccountId(undefined).build(),
-    ).toThrowWithMessage(
-      InvariantError,
-      "accountId mag niet ontbreken",
-    );
+    ).toThrowWithMessage(InvariantError, "accountId mag niet ontbreken");
   });
   test("Invalid iri accountId throws error", () => {
     expect(() =>

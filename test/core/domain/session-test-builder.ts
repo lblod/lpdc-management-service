@@ -5,7 +5,11 @@ import {
   SessionRoleTypeOrString,
 } from "../../../src/core/domain/session";
 import { uuid } from "../../../mu-helper";
-import { buildBestuurseenheidIri, buildAccountIri, buildSessionIri } from "./iri-test-builder";
+import {
+  buildBestuurseenheidIri,
+  buildAccountIri,
+  buildSessionIri,
+} from "./iri-test-builder";
 
 export function aSession(): SessionTestBuilder {
   return new SessionTestBuilder()
@@ -43,6 +47,11 @@ export class SessionTestBuilder {
   }
 
   public build(): Session {
-    return new Session(this.id, this.bestuurseenheidId, this.accountId, this.sessionRoles);
+    return new Session(
+      this.id,
+      this.bestuurseenheidId,
+      this.accountId,
+      this.sessionRoles,
+    );
   }
 }

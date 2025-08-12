@@ -50,8 +50,10 @@ describe("Update Instance Application Service tests", () => {
     const bestuurseenheid = aBestuurseenheid().build();
     await bestuurseenheidRepository.save(bestuurseenheid);
 
-    const instance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
+    const instance = await newInstanceDomainService.createNewEmpty(
+      bestuurseenheid,
+      undefined,
+    );
 
     await updateInstanceApplicationService.update(
       bestuurseenheid,
@@ -110,8 +112,10 @@ pub:${instance.uuid} dct:title "initial title"@nl-be-x-formal.\n\n`,
     const bestuurseenheid = aBestuurseenheid().build();
     await bestuurseenheidRepository.save(bestuurseenheid);
 
-    const instance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
+    const instance = await newInstanceDomainService.createNewEmpty(
+      bestuurseenheid,
+      undefined,
+    );
 
     await updateInstanceApplicationService.update(
       bestuurseenheid,
@@ -211,8 +215,10 @@ pub:${instance.uuid}\n
     const bestuurseenheid = aBestuurseenheid().build();
     await bestuurseenheidRepository.save(bestuurseenheid);
 
-    const instance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
+    const instance = await newInstanceDomainService.createNewEmpty(
+      bestuurseenheid,
+      undefined,
+    );
 
     await updateInstanceApplicationService.update(
       bestuurseenheid,
@@ -241,8 +247,10 @@ pub:${instance.uuid}\n
     const bestuurseenheid = aBestuurseenheid().build();
     await bestuurseenheidRepository.save(bestuurseenheid);
 
-    const emptyInstance =
-      await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
+    const emptyInstance = await newInstanceDomainService.createNewEmpty(
+      bestuurseenheid,
+      undefined,
+    );
     const instanceAfterCreate = await instanceRepository.findById(
       bestuurseenheid,
       emptyInstance.id,

@@ -18,7 +18,12 @@ export async function authenticateAndAuthorizeRequest(
     throw new Unauthorized();
   }
   const session = await sessionRepository.findById(sessionId);
-  if (!(session.hasRole(SessionRoleType.LOKETLB_LPDCGEBRUIKER) || session.hasRole(SessionRoleType.LOKETLB_LPDCADMIN))) {
+  if (
+    !(
+      session.hasRole(SessionRoleType.LOKETLB_LPDCGEBRUIKER) ||
+      session.hasRole(SessionRoleType.LOKETLB_LPDCADMIN)
+    )
+  ) {
     throw new Forbidden();
   }
 

@@ -3,7 +3,11 @@ import {
   aBestuurseenheid,
   BestuurseenheidTestBuilder,
 } from "./bestuurseenheid-test-builder";
-import { buildBestuurseenheidIri, buildNutsCodeIri, buildPersonIri } from "./iri-test-builder";
+import {
+  buildBestuurseenheidIri,
+  buildNutsCodeIri,
+  buildPersonIri,
+} from "./iri-test-builder";
 import { uuid } from "../../../mu-helper";
 import {
   ChosenFormType,
@@ -78,8 +82,10 @@ describe("Creating a new Instance domain service", () => {
         .withSpatials([spatial1, spatial2])
         .build();
 
-      const createdInstance =
-        await newInstanceDomainService.createNewEmpty(bestuurseenheid, user);
+      const createdInstance = await newInstanceDomainService.createNewEmpty(
+        bestuurseenheid,
+        user,
+      );
 
       const reloadedInstance = await instanceRepository.findById(
         bestuurseenheid,
@@ -115,8 +121,10 @@ describe("Creating a new Instance domain service", () => {
         .withId(buildBestuurseenheidIri(uuid()))
         .build();
 
-      const createdInstance =
-        await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
+      const createdInstance = await newInstanceDomainService.createNewEmpty(
+        bestuurseenheid,
+        undefined,
+      );
 
       expect(createdInstance.creator).toBeUndefined();
       expect(createdInstance.lastModifier).toBeUndefined();
@@ -134,8 +142,10 @@ describe("Creating a new Instance domain service", () => {
         bestuurseenheid,
         aFormalInformalChoice().withChosenForm(ChosenFormType.INFORMAL).build(),
       );
-      const createdInstance =
-        await newInstanceDomainService.createNewEmpty(bestuurseenheid, undefined);
+      const createdInstance = await newInstanceDomainService.createNewEmpty(
+        bestuurseenheid,
+        undefined,
+      );
 
       const reloadedInstance = await instanceRepository.findById(
         bestuurseenheid,
@@ -2141,7 +2151,12 @@ describe("Creating a new Instance domain service", () => {
       await instanceRepository.save(bestuurseenheid, instance);
 
       await expect(
-        newInstanceDomainService.copyFrom(bestuurseenheid, undefined, instance, undefined),
+        newInstanceDomainService.copyFrom(
+          bestuurseenheid,
+          undefined,
+          instance,
+          undefined,
+        ),
       ).rejects.toThrowWithMessage(
         InvariantError,
         `'forMunicipalityMerger' mag niet ontbreken`,

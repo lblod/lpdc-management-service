@@ -126,12 +126,12 @@ export class TransferInstanceService {
         instanceToCopy.legalResources.map((lr) => lr.transformWithNewId()),
       )
       .withCompetentAuthorities(
-            replaceAuthorities
-              ? instanceToCopy.competentAuthorities.map((authorityId) =>
-                  authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
-                )
-              : instanceToCopy.competentAuthorities,
-          )
+        replaceAuthorities
+          ? instanceToCopy.competentAuthorities.map((authorityId) =>
+              authorityId.equals(fromAuthorityId) ? toAuthorityId : authorityId,
+            )
+          : instanceToCopy.competentAuthorities,
+      )
       .withExecutingAuthorities(
         replaceAuthorities
           ? instanceToCopy.executingAuthorities.map((authorityId) =>

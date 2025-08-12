@@ -73,9 +73,7 @@ export class Bestuurseenheid {
   }
 
   orgGraph(): Iri {
-    return new Iri(
-      `http://mu.semte.ch/graphs/organizations/${this.uuid}`,
-    );
+    return new Iri(`http://mu.semte.ch/graphs/organizations/${this.uuid}`);
   }
 
   get isValidAuthority(): boolean {
