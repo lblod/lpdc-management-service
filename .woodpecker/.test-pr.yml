@@ -1,0 +1,11 @@
+steps:
+  install:
+    image: node:20
+    commands:
+      - npm ci
+  lint-format:
+    image: node:20
+    commands:
+      - npm run lint:format
+when:
+  - event: pull_request

@@ -13,7 +13,6 @@ module.exports = {
         "sourceType": "module"
     },
     "rules": {
-        'semi': [2, 'always'],
         '@typescript-eslint/no-explicit-any': 'off'
     }
 };
