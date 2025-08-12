@@ -10,7 +10,10 @@ import {
   ComparisonSource,
   SemanticFormsMapper,
 } from "../port/driven/persistence/semantic-forms-mapper";
-import { validateForm } from "@lblod/submission-form-helpers";
+import {
+  validateForm,
+  registerCustomValidation,
+} from "@lblod/submission-form-helpers";
 import ForkingStore from "forking-store";
 import { namedNode } from "rdflib";
 import { FormalInformalChoiceRepository } from "../port/driven/persistence/formal-informal-choice-repository";
@@ -22,6 +25,7 @@ import { Instance } from "../domain/instance";
 import { ConceptSnapshot } from "../domain/concept-snapshot";
 import { Requirement } from "../domain/requirement";
 import { Procedure } from "../domain/procedure";
+import isURL from "validator/lib/isURL.js";
 
 export class FormApplicationService {
   private readonly _conceptRepository: ConceptRepository;
@@ -52,6 +56,19 @@ export class FormApplicationService {
     this._selectConceptLanguageDomainService =
       selectConceptLanguageDomainService;
     this._semanticFormsMapper = semanticFormsMapper;
+    this.registerCustomValidations();
+  }
+
+  registerCustomValidations() {
+    registerCustomValidation(
+      "http://lblod.data.gift/vocabularies/forms/WebUriConstraint",
+      (value: { value: string }) =>
+        isURL(value.value, {
+          protocols: ["http", "https"],
+          require_protocol: true,
+          require_valid_protocol: true,
+        }),
+    );
   }
 
   async loadConceptForm(
