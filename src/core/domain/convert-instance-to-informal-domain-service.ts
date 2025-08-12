@@ -7,7 +7,7 @@ import { ChosenFormType } from "./types";
 import { InvariantError } from "./shared/lpdc-error";
 import { InstanceInformalLanguageStringsFetcher } from "../port/driven/external/instance-informal-language-strings-fetcher";
 import { Language } from "./language";
-import { Iri } from './shared/iri';
+import { Iri } from "./shared/iri";
 
 export class ConvertInstanceToInformalDomainService {
   private readonly _instanceRepository: InstanceRepository;

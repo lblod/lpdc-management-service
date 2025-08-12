@@ -1,12 +1,13 @@
 import { SparqlQuerying } from "./sparql-querying";
 import { PREFIX } from "../../../config";
-import {
-  sparqlEscapeUri,
-} from "../../../mu-helper";
+import { sparqlEscapeUri } from "../../../mu-helper";
 import { Iri } from "../../core/domain/shared/iri";
-import { CompetentAuthorityLevelType, ExecutingAuthorityLevelType } from "../../core/domain/types";
+import {
+  CompetentAuthorityLevelType,
+  ExecutingAuthorityLevelType,
+} from "../../core/domain/types";
 import { NotFoundError } from "../../core/domain/shared/lpdc-error";
-import { AuthorityLevelRepository } from '../../core/port/driven/persistence/authority-level-repository';
+import { AuthorityLevelRepository } from "../../core/port/driven/persistence/authority-level-repository";
 
 export class AuthorityLevelSparqlRepository
   implements AuthorityLevelRepository
@@ -17,21 +18,32 @@ export class AuthorityLevelSparqlRepository
     this.querying = new SparqlQuerying(endpoint);
   }
 
-  async getExecutingAuthorityLevel(iri: Iri): Promise<ExecutingAuthorityLevelType | undefined> {
-    const level = await this.getAuthorityLevel(iri, OrganizationLevelType.EXECUTINGLEVEL);
+  async getExecutingAuthorityLevel(
+    iri: Iri,
+  ): Promise<ExecutingAuthorityLevelType | undefined> {
+    const level = await this.getAuthorityLevel(
+      iri,
+      OrganizationLevelType.EXECUTINGLEVEL,
+    );
 
     return this.mapExecutingLevelUriToType(level);
-
   }
 
-  async getCompetentAuthorityLevel(iri: Iri): Promise<CompetentAuthorityLevelType | undefined> {
-    const level = await this.getAuthorityLevel(iri, OrganizationLevelType.COMPETENTLEVEL);
+  async getCompetentAuthorityLevel(
+    iri: Iri,
+  ): Promise<CompetentAuthorityLevelType | undefined> {
+    const level = await this.getAuthorityLevel(
+      iri,
+      OrganizationLevelType.COMPETENTLEVEL,
+    );
 
     return this.mapCompetentLevelUriToType(level);
-
   }
 
-  private async getAuthorityLevel(iri: Iri, typeLevel: OrganizationLevelType): Promise<string | undefined> {
+  private async getAuthorityLevel(
+    iri: Iri,
+    typeLevel: OrganizationLevelType,
+  ): Promise<string | undefined> {
     const authorityLevelQuery = `
           ${PREFIX.lpdc}
 
@@ -50,18 +62,18 @@ export class AuthorityLevelSparqlRepository
   }
 
   private mapExecutingLevelUriToType(
-    executingLevelUri: string | undefined
+    executingLevelUri: string | undefined,
   ): ExecutingAuthorityLevelType {
     if (!executingLevelUri) return undefined;
 
     const key: string | undefined = Object.keys(
-      ExecutingAuthorityLevelUri
+      ExecutingAuthorityLevelUri,
     ).find((key) => ExecutingAuthorityLevelUri[key] === executingLevelUri);
 
     const executingLevel = ExecutingAuthorityLevelType[key];
     if (!executingLevel) {
       throw new NotFoundError(
-        `Geen uitvoerend bestuursniveau gevonden voor: ${executingLevelUri}`
+        `Geen uitvoerend bestuursniveau gevonden voor: ${executingLevelUri}`,
       );
     }
 
@@ -69,18 +81,18 @@ export class AuthorityLevelSparqlRepository
   }
 
   private mapCompetentLevelUriToType(
-    competentLevelUri: string | undefined
+    competentLevelUri: string | undefined,
   ): CompetentAuthorityLevelType {
     if (!competentLevelUri) return undefined;
 
     const key: string | undefined = Object.keys(
-      CompetentAuthorityLevelUri
+      CompetentAuthorityLevelUri,
     ).find((key) => CompetentAuthorityLevelUri[key] === competentLevelUri);
 
     const competentLevel = CompetentAuthorityLevelType[key];
     if (!competentLevel) {
       throw new NotFoundError(
-        `Geen bevoegd bestuursniveau gevonden voor: ${competentLevelUri}`
+        `Geen bevoegd bestuursniveau gevonden voor: ${competentLevelUri}`,
       );
     }
 
@@ -104,7 +116,6 @@ export enum CompetentAuthorityLevelUri {
   EUROPEES = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Europees",
   PROVINCIAAL = "https://productencatalogus.data.vlaanderen.be/id/concept/BevoegdBestuursniveau/Provinciaal",
 }
-
 
 export enum OrganizationLevelType {
   EXECUTINGLEVEL = "organizationExecutingLevel",

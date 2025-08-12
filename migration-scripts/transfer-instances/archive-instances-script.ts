@@ -175,7 +175,7 @@ const archiveConfigurations: Configuration[] = [
   {
     uri: "http://data.lblod.info/id/bestuurseenheden/201519f35e14c5f67d0ae819831be4ad60bbb87fea40dab4ca5ea4eae018b4a7",
     keepMunicipalityMergerInstances: false,
-  }
+  },
 ];
 
 for (const conf of archiveConfigurations) {

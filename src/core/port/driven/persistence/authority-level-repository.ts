@@ -6,9 +6,9 @@ import {
 
 export interface AuthorityLevelRepository {
   getExecutingAuthorityLevel(
-    iri: Iri
+    iri: Iri,
   ): Promise<ExecutingAuthorityLevelType | undefined>;
   getCompetentAuthorityLevel(
-    iri: Iri
+    iri: Iri,
   ): Promise<CompetentAuthorityLevelType | undefined>;
 }

@@ -392,9 +392,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
             WHERE {
               GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                 ?service a lpdcExt:InstancePublicService .
-                ?service pav:createdBy ${sparqlEscapeUri(
-                  bestuurseenheid.id
-                )};
+                ?service pav:createdBy ${sparqlEscapeUri(bestuurseenheid.id)};
                    dct:creator ?creator .
               }
 
@@ -434,9 +432,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
             WHERE {
               GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
                 ?service a lpdcExt:InstancePublicService .
-                ?service pav:createdBy ${sparqlEscapeUri(
-                  bestuurseenheid.id
-                )};
+                ?service pav:createdBy ${sparqlEscapeUri(bestuurseenheid.id)};
                    ext:lastModifiedBy ?lastModifier .
               }
 
@@ -463,7 +459,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
     });
 
     return sortBy(lastModifiers, (lastModifier) =>
-      lastModifier.fullName.toUpperCase()
+      lastModifier.fullName.toUpperCase(),
     );
   }
 }

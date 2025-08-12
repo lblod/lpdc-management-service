@@ -19,10 +19,7 @@ export class Session {
       bestuurseenheidId,
       "bestuurseenheidId",
     );
-    this._accountId = requiredValue(
-      accountId,
-      "accountId",
-    );
+    this._accountId = requiredValue(accountId, "accountId");
     this._sessionRoles = requireNoDuplicates(
       asSortedArray(sessionRoles),
       "sessionRoles",

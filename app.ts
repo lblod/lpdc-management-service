@@ -409,9 +409,8 @@ app.use("/creator-options/", async (req, res, next) => {
 });
 
 app.get("/creator-options/", async (req, res, next): Promise<any> => {
-    return await getCreatorOptions(req, res).catch(next);
-  },
-);
+  return await getCreatorOptions(req, res).catch(next);
+});
 
 app.use("/last-modifier-options/", async (req, res, next) => {
   await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(
@@ -420,9 +419,8 @@ app.use("/last-modifier-options/", async (req, res, next) => {
 });
 
 app.get("/last-modifier-options/", async (req, res, next): Promise<any> => {
-    return await getLastModifierOptions(req, res).catch(next);
-  },
-);
+  return await getLastModifierOptions(req, res).catch(next);
+});
 
 app.use("/concept-snapshot", async (req, res, next) => {
   await authenticateAndAuthorizeRequest(req, next, sessionRepository).catch(
@@ -672,9 +670,8 @@ async function confirmUpToDateTill(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
-  const conceptSnapshot = await conceptSnapshotRepository.findById(
-    conceptSnapshotId,
-  );
+  const conceptSnapshot =
+    await conceptSnapshotRepository.findById(conceptSnapshotId);
   const persoonId = await persoonRepository.findByAccountId(
     session.accountId,
     session.bestuurseenheidId,
@@ -706,9 +703,8 @@ async function fullyTakeConceptSnapshotOver(req: Request, res: Response) {
     bestuurseenheid,
     instanceId,
   );
-  const conceptSnapshot = await conceptSnapshotRepository.findById(
-    conceptSnapshotId,
-  );
+  const conceptSnapshot =
+    await conceptSnapshotRepository.findById(conceptSnapshotId);
   const persoonId = await persoonRepository.findByAccountId(
     session.accountId,
     session.bestuurseenheidId,
@@ -787,11 +783,10 @@ async function validateForPublish(req: Request, res: Response) {
     session.bestuurseenheidId,
   );
 
-  const errors =
-    await validateInstanceForPublishApplicationService.validate(
-      instanceId,
-      bestuurseenheid,
-    );
+  const errors = await validateInstanceForPublishApplicationService.validate(
+    instanceId,
+    bestuurseenheid,
+  );
 
   return res.status(200).json(errors);
 }
@@ -999,9 +994,7 @@ async function getCreatorOptions(req: Request, res: Response) {
     session.bestuurseenheidId,
   );
 
-  const result = await instanceRepository.creatorOptions(
-    bestuurseenheid
-  );
+  const result = await instanceRepository.creatorOptions(bestuurseenheid);
   return res.json(result);
 }
 
@@ -1011,9 +1004,7 @@ async function getLastModifierOptions(req: Request, res: Response) {
     session.bestuurseenheidId,
   );
 
-  const result = await instanceRepository.lastModifierOptions(
-    bestuurseenheid
-  );
+  const result = await instanceRepository.lastModifierOptions(bestuurseenheid);
   return res.json(result);
 }
 

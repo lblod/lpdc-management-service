@@ -4,7 +4,7 @@ cd ..
 
 echo "Running lint & tests"
 npm ci
-npm run lint
+npm run lint:js
 exit_code_lint=$?
 npm run test
 exit_code_test=$?
