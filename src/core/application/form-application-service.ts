@@ -10,7 +10,10 @@ import {
   ComparisonSource,
   SemanticFormsMapper,
 } from "../port/driven/persistence/semantic-forms-mapper";
-import { validateForm, registerCustomValidation } from "@lblod/submission-form-helpers";
+import {
+  validateForm,
+  registerCustomValidation,
+} from "@lblod/submission-form-helpers";
 import ForkingStore from "forking-store";
 import { namedNode } from "rdflib";
 import { FormalInformalChoiceRepository } from "../port/driven/persistence/formal-informal-choice-repository";
@@ -22,7 +25,7 @@ import { Instance } from "../domain/instance";
 import { ConceptSnapshot } from "../domain/concept-snapshot";
 import { Requirement } from "../domain/requirement";
 import { Procedure } from "../domain/procedure";
-import isURL from 'validator/lib/isURL.js';
+import isURL from "validator/lib/isURL.js";
 
 export class FormApplicationService {
   private readonly _conceptRepository: ConceptRepository;
@@ -64,14 +67,14 @@ export class FormApplicationService {
           protocols: ["http", "https"],
           require_protocol: true,
           require_valid_protocol: true,
-        })
+        }),
     );
   }
 
   async loadConceptForm(
     bestuurseenheid: Bestuurseenheid,
     conceptId: Iri,
-    formType: FormType
+    formType: FormType,
   ): Promise<{
     form: string;
     meta: string;
@@ -81,18 +84,18 @@ export class FormApplicationService {
     const concept = await this._conceptRepository.findById(conceptId);
     const formalInformalChoice =
       await this._formalInformalChoiceRepository.findByBestuurseenheid(
-        bestuurseenheid
+        bestuurseenheid,
       );
     const languageForForm =
       this._selectConceptLanguageDomainService.selectAvailableLanguageUsingFormalInformalChoice(
         concept,
-        formalInformalChoice
+        formalInformalChoice,
       );
 
     const formDefinition =
       this._formDefinitionRepository.loadConceptFormDefinition(
         formType,
-        languageForForm
+        languageForForm,
       );
 
     const tailoredSchemes =
@@ -114,7 +117,7 @@ export class FormApplicationService {
     bestuurseenheid: Bestuurseenheid,
     instanceId: Iri,
     latestConceptSnapshotId: Iri | undefined,
-    formType: FormType
+    formType: FormType,
   ): Promise<{
     form: string;
     meta: string;
@@ -126,7 +129,7 @@ export class FormApplicationService {
       instanceId,
       latestConceptSnapshotId,
       formType,
-      true
+      true,
     );
   }
 
@@ -135,7 +138,7 @@ export class FormApplicationService {
     instanceId: Iri,
     latestConceptSnapshotId: Iri | undefined,
     formType: FormType,
-    loadMetaData: boolean
+    loadMetaData: boolean,
   ): Promise<{
     form: string;
     meta: string;
@@ -144,13 +147,13 @@ export class FormApplicationService {
   }> {
     const instance = await this._instanceRepository.findById(
       bestuurseenheid,
-      instanceId
+      instanceId,
     );
 
     const formDefinition =
       this._formDefinitionRepository.loadInstanceFormDefinition(
         formType,
-        instance.dutchLanguageVariant
+        instance.dutchLanguageVariant,
       );
 
     let meta = [];
@@ -169,34 +172,34 @@ export class FormApplicationService {
 
         const latestConceptSnapshot =
           await this._conceptSnapshotRepository.findById(
-            latestConceptSnapshotId
+            latestConceptSnapshotId,
           );
         const instanceConceptSnapshot =
           await this._conceptSnapshotRepository.findById(
-            instance.conceptSnapshotId
+            instance.conceptSnapshotId,
           );
 
         if (!latestConceptSnapshot.isVersionOf.equals(instance.conceptId)) {
           throw new SystemError(
-            `latestConceptSnapshot hoort niet bij concept van instantie`
+            `latestConceptSnapshot hoort niet bij concept van instantie`,
           );
         }
 
         if (!instanceConceptSnapshot.isVersionOf.equals(instance.conceptId)) {
           throw new SystemError(
-            `concept snapshot van instantie hoort niet bij concept van instantie`
+            `concept snapshot van instantie hoort niet bij concept van instantie`,
           );
         }
 
         const languageForLatestConceptSnapshot =
           this._selectConceptLanguageDomainService.selectAvailableLanguage(
             latestConceptSnapshot,
-            instance.dutchLanguageVariant === Language.INFORMAL
+            instance.dutchLanguageVariant === Language.INFORMAL,
           );
         const languageForInstanceConceptSnapshot =
           this._selectConceptLanguageDomainService.selectAvailableLanguage(
             instanceConceptSnapshot,
-            instance.dutchLanguageVariant === Language.INFORMAL
+            instance.dutchLanguageVariant === Language.INFORMAL,
           );
 
         const currentComparisonSources: ComparisonSource[] =
@@ -209,22 +212,22 @@ export class FormApplicationService {
           ...this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(
             latestConceptSnapshot.transformLanguage(
               languageForLatestConceptSnapshot,
-              instance.dutchLanguageVariant
-            )
+              instance.dutchLanguageVariant,
+            ),
           ),
           ...this._semanticFormsMapper.conceptSnapshotAsTurtleFormat(
             instanceConceptSnapshot.transformLanguage(
               languageForInstanceConceptSnapshot,
-              instance.dutchLanguageVariant
-            )
+              instance.dutchLanguageVariant,
+            ),
           ),
           ...this._semanticFormsMapper.comparisonSourceAsTurtleFormat(
             currentComparisonSources,
-            "current"
+            "current",
           ),
           ...this._semanticFormsMapper.comparisonSourceAsTurtleFormat(
             latestComparisonSources,
-            "latest"
+            "latest",
           ),
         ];
       }
@@ -242,7 +245,7 @@ export class FormApplicationService {
 
   async validateForms(
     instanceId: Iri,
-    bestuurseenheid: Bestuurseenheid
+    bestuurseenheid: Bestuurseenheid,
   ): Promise<ValidationError[]> {
     const errors = [];
     for (const formType of Object.values(FormType)) {
@@ -251,7 +254,7 @@ export class FormApplicationService {
         instanceId,
         undefined,
         formType,
-        false
+        false,
       );
 
       const FORM_GRAPHS = {
@@ -274,10 +277,9 @@ export class FormApplicationService {
         undefined,
         namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
         namedNode("http://lblod.data.gift/vocabularies/forms/Form"),
-        FORM_GRAPHS.formGraph
+        FORM_GRAPHS.formGraph,
       );
 
-      
       const isValid = validateForm(formUri, options);
       if (!isValid) {
         errors.push({
@@ -291,15 +293,15 @@ export class FormApplicationService {
 
   private findComparisonSources(
     instance: Instance,
-    conceptSnapshot: ConceptSnapshot
+    conceptSnapshot: ConceptSnapshot,
   ): ComparisonSource[] {
     const mapToComparisonSource = (
       a1: Identifiable[],
       a2: Identifiable[],
       extractNested: (
         a1: Identifiable,
-        a2: Identifiable
-      ) => ComparisonSource[] = () => []
+        a2: Identifiable,
+      ) => ComparisonSource[] = () => [],
     ) =>
       zip(a1, a2)
         .flatMap(([o1, o2]: [Identifiable, Identifiable]) => [
@@ -308,7 +310,7 @@ export class FormApplicationService {
         ])
         .filter(
           (cs: ComparisonSource) =>
-            cs.instanceSourceIri && cs.conceptSnapshotSourceIri
+            cs.instanceSourceIri && cs.conceptSnapshotSourceIri,
         );
 
     return [
@@ -320,23 +322,23 @@ export class FormApplicationService {
         instance.requirements,
         conceptSnapshot.requirements,
         (req1: Requirement, req2: Requirement) =>
-          mapToComparisonSource([req1?.evidence], [req2?.evidence])
+          mapToComparisonSource([req1?.evidence], [req2?.evidence]),
       ),
       ...mapToComparisonSource(
         instance.procedures,
         conceptSnapshot.procedures,
         (proc1: Procedure, proc2: Procedure) =>
-          mapToComparisonSource(proc1?.websites, proc2?.websites)
+          mapToComparisonSource(proc1?.websites, proc2?.websites),
       ),
       ...mapToComparisonSource(instance.costs, conceptSnapshot.costs),
       ...mapToComparisonSource(
         instance.financialAdvantages,
-        conceptSnapshot.financialAdvantages
+        conceptSnapshot.financialAdvantages,
       ),
       ...mapToComparisonSource(instance.websites, conceptSnapshot.websites),
       ...mapToComparisonSource(
         instance.legalResources,
-        conceptSnapshot.legalResources
+        conceptSnapshot.legalResources,
       ),
     ];
   }
