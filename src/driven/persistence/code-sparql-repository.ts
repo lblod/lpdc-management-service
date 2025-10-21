@@ -58,6 +58,7 @@ export class CodeSparqlRepository implements CodeRepository {
     const bestuurseenheidTailoredAsIpdcOrganisatieConceptQuery = `
             ${PREFIX.skos}
             ${PREFIX.besluit}
+            ${PREFIX.regorg}
             CONSTRUCT {
               ?bestuurseenheid a skos:Concept ;
                 skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored> ;
@@ -71,8 +72,12 @@ export class CodeSparqlRepository implements CodeRepository {
                   ?bestuurseenheid besluit:classificatie ?bestuurseenheidClassificatie .
                   ?bestuurseenheidClassificatie skos:prefLabel ?bestuurseenheidClassificatieLabel .
 
+                  FILTER NOT EXISTS {
+                    ?bestuurseenheid regorg:orgStatus <http://lblod.data.gift/concepts/d02c4e12bf88d2fdf5123b07f29c9311> .
+                  }
+
                   BIND(CONCAT(?bestuurseenheidLabel, " (", ?bestuurseenheidClassificatieLabel, ")") as ?newLabel)
-               }
+              }
             }
           `;
 
