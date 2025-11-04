@@ -2,6 +2,7 @@ import { Iri } from "./shared/iri";
 import { requiredValue } from "./shared/invariant";
 import { Address } from "./address";
 import { uuid } from "../../../mu-helper";
+import { zip } from "lodash";
 
 export class ContactPoint {
   private readonly _id: Iri;
@@ -124,6 +125,27 @@ export class ContactPoint {
       .withUuid(uniqueId)
       .withAddress(this._address?.transformWithNewId())
       .build();
+  }
+
+  static isFunctionallyChanged(
+    value: ContactPoint[],
+    other: ContactPoint[],
+  ): boolean {
+    return (
+      value.length !== other.length ||
+      zip(value, other).some(
+        ([left, right]: [ContactPoint, ContactPoint]) => {
+          return (
+            left.url !== right.url ||
+            left.email !== right.email ||
+            left.telephone !== right.telephone ||
+            left.openingHours !== right.openingHours ||
+            left.order !== right.order ||
+            Address.isFunctionallyChanged(left.address, right.address)
+          );
+        },
+      )
+    );
   }
 
   public isEmpty(): boolean {
