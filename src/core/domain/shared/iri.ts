@@ -49,7 +49,10 @@ export class Iri {
     return this._value === other.value;
   }
 
-  static compare(a: Iri, b: Iri): number {
+  static compare(a?: Iri, b?: Iri): number {
+    if (!a && !b) return 0;
+    if (!a) return -1;
+    if (!b) return 1;
     return a.value.localeCompare(b.value);
   }
 }
