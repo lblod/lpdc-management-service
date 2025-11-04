@@ -289,7 +289,7 @@ export class Instance {
    */
   public static isFunctionallyChanged(value?: Instance, other?: Instance) {
     return (
-      LanguageString.isFunctionallyChanged(value?._title, other?._title) ||
+      LanguageString.isFunctionallyChanged(value?.title, other?.title) ||
       LanguageString.isFunctionallyChanged(
         value?.description,
         other?.description,
