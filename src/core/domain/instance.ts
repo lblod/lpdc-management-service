@@ -21,7 +21,11 @@ import {
   ThemeType,
   YourEuropeCategoryType,
 } from "./types";
-import { asSortedArray } from "./shared/collections-helper";
+import {
+  asSortedArray,
+  iriArraysEqual,
+  languageStringArraysFunctionallyChanged,
+} from "./shared/collections-helper";
 import { Requirement } from "./requirement";
 import { Procedure } from "./procedure";
 import { Website } from "./website";
@@ -274,6 +278,106 @@ export class Instance {
     return InstanceBuilder.from(this)
       .withStatus(InstanceStatusType.ONTWERP)
       .build();
+  }
+
+  /**
+   * Checks if 2 instances are functionally changed, ignoring
+   * identifiers, creation- and modification dates.
+   * @param value Instance to compare
+   * @param other Instance to compare
+   * @returns boolean
+   */
+  public static isFunctionallyChanged(value?: Instance, other?: Instance) {
+    return (
+      LanguageString.isFunctionallyChanged(value?._title, other?._title) ||
+      LanguageString.isFunctionallyChanged(
+        value?.description,
+        other?.description,
+      ) ||
+      LanguageString.isFunctionallyChanged(
+        value?.additionalDescription,
+        other?.additionalDescription,
+      ) ||
+      LanguageString.isFunctionallyChanged(
+        value?.exception,
+        other?.exception,
+      ) ||
+      LanguageString.isFunctionallyChanged(
+        value?.regulation,
+        other?.regulation,
+      ) ||
+      FormatPreservingDate.isFunctionallyChanged(
+        value?.startDate,
+        other?.startDate,
+      ) ||
+      FormatPreservingDate.isFunctionallyChanged(
+        value?.endDate,
+        other?.endDate,
+      ) ||
+      value?._type !== other?._type ||
+      !isEqual(value?.targetAudiences, other?.targetAudiences) ||
+      !isEqual(value?.themes, other?.themes) ||
+      !isEqual(
+        value?.competentAuthorityLevels,
+        other?.competentAuthorityLevels,
+      ) ||
+      !iriArraysEqual(
+        value?.competentAuthorities,
+        other?.competentAuthorities,
+      ) ||
+      !isEqual(
+        value?.executingAuthorityLevels,
+        other?.executingAuthorityLevels,
+      ) ||
+      !iriArraysEqual(
+        value?.executingAuthorities,
+        other?.executingAuthorities,
+      ) ||
+      !isEqual(value?.publicationMedia, other?.publicationMedia) ||
+      !isEqual(
+        value?.yourEuropeCategories,
+        other?.yourEuropeCategories,
+      ) ||
+      languageStringArraysFunctionallyChanged(
+        value?.keywords,
+        other?.keywords,
+      ) ||
+      Requirement.isFunctionallyChanged(
+        value?.requirements,
+        other?.requirements,
+      ) ||
+      Procedure.isFunctionallyChanged(value?.procedures, other?.procedures) ||
+      Website.isFunctionallyChanged(value?.websites, other?.websites) ||
+      Cost.isFunctionallyChanged(value?.costs, other?.costs) ||
+      FinancialAdvantage.isFunctionallyChanged(
+        value?.financialAdvantages,
+        other?.financialAdvantages,
+      ) ||
+      ContactPoint.isFunctionallyChanged(
+        value?.contactPoints,
+        other?.contactPoints,
+      ) ||
+      Iri.compare(value?.conceptId, other?.conceptId) !== 0 ||
+      Iri.compare(value?.conceptSnapshotId, other?.conceptSnapshotId) !== 0 ||
+      value?.productId !== other?.productId ||
+      !isEqual(value?.languages, other?.languages) ||
+      value?.dutchLanguageVariant !== other?.dutchLanguageVariant ||
+      value?.needsConversionFromFormalToInformal !==
+        other?.needsConversionFromFormalToInformal ||
+      FormatPreservingDate.isFunctionallyChanged(
+        value?.dateSent,
+        other?.dateSent,
+      ) ||
+      value?.status !== other?.status ||
+      value?.reviewStatus !== other?.reviewStatus ||
+      !iriArraysEqual(value?.spatials, other?.spatials) ||
+      LegalResource.isFunctionallyChanged(
+        value?.legalResources,
+        other?.legalResources,
+      ) ||
+      value?.forMunicipalityMerger !== other?.forMunicipalityMerger ||
+      Iri.compare(value?.copyOf, other?.copyOf) !== 0
+    );
   }
 
   public calculatedInstanceLanguages(): Language[] {
