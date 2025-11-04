@@ -153,8 +153,9 @@ export class Address {
     );
   }
 
- public isEmpty(): boolean {
-    const hasNoGemeentenaam = this._gemeentenaam === undefined || this._gemeentenaam.isEmpty();
+  public isEmpty(): boolean {
+    const hasNoGemeentenaam =
+      this._gemeentenaam === undefined || this._gemeentenaam.isEmpty();
     const hasNoLand = this._land === undefined || this._land.isEmpty();
     const hasNoHuisnummer =
       this._huisnummer === undefined || this._huisnummer.trim() === "";

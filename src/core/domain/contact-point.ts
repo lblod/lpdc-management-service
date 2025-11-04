@@ -133,18 +133,16 @@ export class ContactPoint {
   ): boolean {
     return (
       value.length !== other.length ||
-      zip(value, other).some(
-        ([left, right]: [ContactPoint, ContactPoint]) => {
-          return (
-            left.url !== right.url ||
-            left.email !== right.email ||
-            left.telephone !== right.telephone ||
-            left.openingHours !== right.openingHours ||
-            left.order !== right.order ||
-            Address.isFunctionallyChanged(left.address, right.address)
-          );
-        },
-      )
+      zip(value, other).some(([left, right]: [ContactPoint, ContactPoint]) => {
+        return (
+          left.url !== right.url ||
+          left.email !== right.email ||
+          left.telephone !== right.telephone ||
+          left.openingHours !== right.openingHours ||
+          left.order !== right.order ||
+          Address.isFunctionallyChanged(left.address, right.address)
+        );
+      })
     );
   }
 

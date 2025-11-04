@@ -334,10 +334,7 @@ export class Instance {
         other?.executingAuthorities,
       ) ||
       !isEqual(value?.publicationMedia, other?.publicationMedia) ||
-      !isEqual(
-        value?.yourEuropeCategories,
-        other?.yourEuropeCategories,
-      ) ||
+      !isEqual(value?.yourEuropeCategories, other?.yourEuropeCategories) ||
       languageStringArraysFunctionallyChanged(
         value?.keywords,
         other?.keywords,
