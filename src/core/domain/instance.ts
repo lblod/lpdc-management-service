@@ -21,11 +21,7 @@ import {
   ThemeType,
   YourEuropeCategoryType,
 } from "./types";
-import {
-  asSortedArray,
-  iriArraysEqual,
-  languageStringArraysFunctionallyChanged,
-} from "./shared/collections-helper";
+import { asSortedArray } from "./shared/collections-helper";
 import { Requirement } from "./requirement";
 import { Procedure } from "./procedure";
 import { Website } from "./website";
@@ -289,11 +285,14 @@ export class Instance {
    */
   public static isFunctionallyChanged(value?: Instance, other?: Instance) {
     return !isEqualWith(value, other, (value, other, key) => {
-      if (key === '_id' || key === '_uuid' || key === '_dateModified') {
+      if (key === "_id" || key === "_uuid" || key === "_dateModified") {
         return true;
       }
-      
-      if (value instanceof FormatPreservingDate && other instanceof FormatPreservingDate) {
+
+      if (
+        value instanceof FormatPreservingDate &&
+        other instanceof FormatPreservingDate
+      ) {
         return !FormatPreservingDate.isFunctionallyChanged(value, other);
       }
 
