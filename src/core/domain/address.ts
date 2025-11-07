@@ -135,24 +135,6 @@ export class Address {
       .build();
   }
 
-  static isFunctionallyChanged(value: Address, other: Address): boolean {
-    return (
-      LanguageString.isFunctionallyChanged(
-        value?.gemeentenaam,
-        other?.gemeentenaam,
-      ) ||
-      LanguageString.isFunctionallyChanged(value?.land, other?.land) ||
-      value?.huisnummer !== other?.huisnummer ||
-      value?.busnummer !== other?.busnummer ||
-      value?.postcode !== other?.postcode ||
-      LanguageString.isFunctionallyChanged(
-        value?.straatnaam,
-        other?.straatnaam,
-      ) ||
-      Iri.compare(value?.verwijstNaar, other?.verwijstNaar) !== 0
-    );
-  }
-
   public isEmpty(): boolean {
     const hasNoGemeentenaam =
       this._gemeentenaam === undefined || this._gemeentenaam.isEmpty();

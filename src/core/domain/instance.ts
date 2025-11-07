@@ -35,7 +35,7 @@ import { ContactPoint } from "./contact-point";
 import { instanceLanguages, Language } from "./language";
 import { LegalResource } from "./legal-resource";
 import { InvariantError } from "./shared/lpdc-error";
-import { isEqual, uniq } from "lodash";
+import { isEqual, uniq, isEqualWith } from "lodash";
 import { lastPartAfter } from "./shared/string-helper";
 
 export class Instance {
@@ -282,99 +282,25 @@ export class Instance {
 
   /**
    * Checks if 2 instances are functionally changed, ignoring
-   * identifiers, creation- and modification dates.
+   * identifiers and modification dates.
    * @param value Instance to compare
    * @param other Instance to compare
    * @returns boolean
    */
   public static isFunctionallyChanged(value?: Instance, other?: Instance) {
-    return (
-      LanguageString.isFunctionallyChanged(value?.title, other?.title) ||
-      LanguageString.isFunctionallyChanged(
-        value?.description,
-        other?.description,
-      ) ||
-      LanguageString.isFunctionallyChanged(
-        value?.additionalDescription,
-        other?.additionalDescription,
-      ) ||
-      LanguageString.isFunctionallyChanged(
-        value?.exception,
-        other?.exception,
-      ) ||
-      LanguageString.isFunctionallyChanged(
-        value?.regulation,
-        other?.regulation,
-      ) ||
-      FormatPreservingDate.isFunctionallyChanged(
-        value?.startDate,
-        other?.startDate,
-      ) ||
-      FormatPreservingDate.isFunctionallyChanged(
-        value?.endDate,
-        other?.endDate,
-      ) ||
-      value?._type !== other?._type ||
-      !isEqual(value?.targetAudiences, other?.targetAudiences) ||
-      !isEqual(value?.themes, other?.themes) ||
-      !isEqual(
-        value?.competentAuthorityLevels,
-        other?.competentAuthorityLevels,
-      ) ||
-      !iriArraysEqual(
-        value?.competentAuthorities,
-        other?.competentAuthorities,
-      ) ||
-      !isEqual(
-        value?.executingAuthorityLevels,
-        other?.executingAuthorityLevels,
-      ) ||
-      !iriArraysEqual(
-        value?.executingAuthorities,
-        other?.executingAuthorities,
-      ) ||
-      !isEqual(value?.publicationMedia, other?.publicationMedia) ||
-      !isEqual(value?.yourEuropeCategories, other?.yourEuropeCategories) ||
-      languageStringArraysFunctionallyChanged(
-        value?.keywords,
-        other?.keywords,
-      ) ||
-      Requirement.isFunctionallyChanged(
-        value?.requirements,
-        other?.requirements,
-      ) ||
-      Procedure.isFunctionallyChanged(value?.procedures, other?.procedures) ||
-      Website.isFunctionallyChanged(value?.websites, other?.websites) ||
-      Cost.isFunctionallyChanged(value?.costs, other?.costs) ||
-      FinancialAdvantage.isFunctionallyChanged(
-        value?.financialAdvantages,
-        other?.financialAdvantages,
-      ) ||
-      ContactPoint.isFunctionallyChanged(
-        value?.contactPoints,
-        other?.contactPoints,
-      ) ||
-      Iri.compare(value?.conceptId, other?.conceptId) !== 0 ||
-      Iri.compare(value?.conceptSnapshotId, other?.conceptSnapshotId) !== 0 ||
-      value?.productId !== other?.productId ||
-      !isEqual(value?.languages, other?.languages) ||
-      value?.dutchLanguageVariant !== other?.dutchLanguageVariant ||
-      value?.needsConversionFromFormalToInformal !==
-        other?.needsConversionFromFormalToInformal ||
-      FormatPreservingDate.isFunctionallyChanged(
-        value?.dateSent,
-        other?.dateSent,
-      ) ||
-      value?.status !== other?.status ||
-      value?.reviewStatus !== other?.reviewStatus ||
-      !iriArraysEqual(value?.spatials, other?.spatials) ||
-      LegalResource.isFunctionallyChanged(
-        value?.legalResources,
-        other?.legalResources,
-      ) ||
-      value?.forMunicipalityMerger !== other?.forMunicipalityMerger ||
-      Iri.compare(value?.copyOf, other?.copyOf) !== 0
-    );
+    return !isEqualWith(value, other, (value, other, key) => {
+      if (key === '_id' || key === '_uuid' || key === '_dateModified') {
+        return true;
+      }
+      
+      if (value instanceof FormatPreservingDate && other instanceof FormatPreservingDate) {
+        return !FormatPreservingDate.isFunctionallyChanged(value, other);
+      }
+
+      if (value instanceof LanguageString && other instanceof LanguageString) {
+        return !LanguageString.isFunctionallyChanged(value, other);
+      }
+    });
   }
 
   public calculatedInstanceLanguages(): Language[] {
