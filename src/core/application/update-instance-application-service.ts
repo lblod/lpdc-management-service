@@ -3,6 +3,7 @@ import { Iri } from "../domain/shared/iri";
 import { InstanceRepository } from "../port/driven/persistence/instance-repository";
 import { FormatPreservingDate } from "../domain/format-preserving-date";
 import { SemanticFormsMapper } from "../port/driven/persistence/semantic-forms-mapper";
+import { Instance } from "../domain/instance";
 
 export class UpdateInstanceApplicationService {
   private readonly _instanceRepository: InstanceRepository;
@@ -37,11 +38,13 @@ export class UpdateInstanceApplicationService {
       additionsAsTurtleFormat,
     );
 
-    await this._instanceRepository.update(
-      bestuurseenheid,
-      user,
-      mergedInstance,
-      instanceVersion,
-    );
+    if (Instance.isFunctionallyChanged(loadedInstance, mergedInstance)) {
+      await this._instanceRepository.update(
+        bestuurseenheid,
+        user,
+        mergedInstance,
+        instanceVersion,
+      );
+    }
   }
 }

@@ -150,7 +150,11 @@ export class LanguageString {
     value: LanguageString | undefined,
     other: LanguageString | undefined,
   ): boolean {
-    return value?.nl !== other?.nl;
+    return (
+      value?.nl !== other?.nl ||
+      value?.nlFormal !== other?.nlFormal ||
+      value?.nlInformal !== other?.nlInformal
+    );
   }
 
   static compare(a: LanguageString, b: LanguageString): number {

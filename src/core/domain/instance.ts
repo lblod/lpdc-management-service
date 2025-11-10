@@ -31,7 +31,7 @@ import { ContactPoint } from "./contact-point";
 import { instanceLanguages, Language } from "./language";
 import { LegalResource } from "./legal-resource";
 import { InvariantError } from "./shared/lpdc-error";
-import { isEqual, uniq } from "lodash";
+import { isEqual, uniq, isEqualWith } from "lodash";
 import { lastPartAfter } from "./shared/string-helper";
 
 export class Instance {
@@ -274,6 +274,32 @@ export class Instance {
     return InstanceBuilder.from(this)
       .withStatus(InstanceStatusType.ONTWERP)
       .build();
+  }
+
+  /**
+   * Checks if 2 instances are functionally changed, ignoring
+   * identifiers and modification dates.
+   * @param value Instance to compare
+   * @param other Instance to compare
+   * @returns boolean
+   */
+  public static isFunctionallyChanged(value?: Instance, other?: Instance) {
+    return !isEqualWith(value, other, (value, other, key) => {
+      if (key === "_id" || key === "_uuid" || key === "_dateModified") {
+        return true;
+      }
+
+      if (
+        value instanceof FormatPreservingDate &&
+        other instanceof FormatPreservingDate
+      ) {
+        return !FormatPreservingDate.isFunctionallyChanged(value, other);
+      }
+
+      if (value instanceof LanguageString && other instanceof LanguageString) {
+        return !LanguageString.isFunctionallyChanged(value, other);
+      }
+    });
   }
 
   public calculatedInstanceLanguages(): Language[] {
