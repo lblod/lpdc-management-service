@@ -339,24 +339,19 @@ export class InstanceSparqlRepository implements InstanceRepository {
     bestuurseenheid: Bestuurseenheid,
     chosenType: ChosenFormType,
   ) {
-    const now = new Date();
-
     const query = `
         ${PREFIX.lpdcExt}
         WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
 
         DELETE {
-           ?instance lpdcExt:needsConversionFromFormalToInformal """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>;
-                     <${NS.schema("dateModified").value}> ?previousDateModified.
+           ?instance lpdcExt:needsConversionFromFormalToInformal """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>.
         }
         INSERT {
-            ?instance lpdcExt:needsConversionFromFormalToInformal """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>;
-                    <${NS.schema("dateModified").value}> ${sparqlEscapeDateTime(now.toISOString())}.
+            ?instance lpdcExt:needsConversionFromFormalToInformal """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>.
         }
         WHERE {
             ?instance a lpdcExt:InstancePublicService;
-                   lpdcExt:dutchLanguageVariant ?variant;
-                   <${NS.schema("dateModified").value}> ?previousDateModified .
+                   lpdcExt:dutchLanguageVariant ?variant.
             FILTER (?variant != "nl-be-x-informal" && CONCAT("nl-be-x-", "${chosenType}") = "nl-be-x-informal")
         }
 
