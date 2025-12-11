@@ -59,7 +59,7 @@ ext:generalPg a form:PropertyGroup;
    # Field: geldig vanaf
    ##########################################################
    ext:startDateF a form:Field ;
-      sh:name "Product of dienst geldig vanaf" ;
+      sh:name "Aanvraagbaar van" ;
       sh:order 2 ;
       sh:path schema:startDate ;
       form:displayType displayTypes:lpdcDateTime ;
@@ -69,7 +69,7 @@ ext:generalPg a form:PropertyGroup;
    # Field: geldig tot
    ##########################################################
    ext:endDateF a form:Field ;
-      sh:name "Product of dienst geldig tot" ;
+      sh:name "Aanvraagbaar tot en met" ;
       sh:order 3 ;
       sh:path schema:endDate ;
       form:displayType displayTypes:lpdcDateTime ;
