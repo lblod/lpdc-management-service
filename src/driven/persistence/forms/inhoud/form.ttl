@@ -49,6 +49,7 @@ ext:form a form:Form, form:TopLevelForm ;
 ##########################################################
 ext:basisinformatiePg a form:PropertyGroup;
     sh:name "Basisinformatie" ;
+    form:options """{ "level": "2", "skin": "3" }""";
     sh:order 1 .
 
   ##########################################################
@@ -696,6 +697,7 @@ ext:finAdvHeading a form:Field;
 ##########################################################
 ext:regulationsPg a form:PropertyGroup;
     sh:name "Regelgeving" ;
+    form:options """{ "level": "2", "skin": "3" }""";
     sh:order 8 .
 
   ##########################################################
@@ -814,6 +816,7 @@ ext:regulationsPg a form:PropertyGroup;
 ##########################################################
 ext:contactpointsPg a form:PropertyGroup;
     sh:name "Contactpunten" ;
+    form:options """{ "level": "2", "skin": "3" }""";
     sh:order 9 .
 
   ##########################################################
@@ -851,6 +854,7 @@ ext:contactpointsPg a form:PropertyGroup;
   ##########################################################
   ext:contactpointsPg-sub a form:PropertyGroup;
       sh:name "Contactpunt" ;
+    form:options """{ "level": "3", "skin": "4" }""";
       sh:order 1 .
 
   ##########################################################
@@ -928,6 +932,7 @@ ext:contactpointsPg a form:PropertyGroup;
         ##########################################################
         ext:contactPointAddressPg a form:PropertyGroup;
             sh:name "Adres" ;
+            form:options """{ "level": "2", "skin": "3" }""";
             sh:order 1 .
 
         ##########################################################
@@ -1032,6 +1037,7 @@ ext:websitesHeading a form:Field;
   ##########################################################
   ext:websitesPg-sub a form:PropertyGroup;
       sh:name "Gegevens website";
+      form:options """{ "level": "3", "skin": "4" }""";
       sh:order 1 .
 
   ##########################################################
