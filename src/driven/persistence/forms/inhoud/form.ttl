@@ -67,7 +67,7 @@ ext:basisinformatiePg a form:PropertyGroup;
         sh:resultMessage "Dit veld is verplicht." ;
         sh:path dct:title
       ];
-      form:options """{ "helpText": "Behoud waar mogelijk de titel van het concept.<p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel</a></p>" }""";
+      form:options """{ "conceptHelpText": "Behoud waar mogelijk de titel van het concept.<p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel</a></p>", "helpText": "Controleer of de productfiche die je wil toevoegen weldegelijk dienstverlening is.<p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel</a></p>" }""";
       form:displayType displayTypes:lpdcInput;
       sh:group ext:basisinformatiePg .
 
@@ -122,7 +122,7 @@ ext:requirementsPg a form:PropertyGroup;
 ext:requirementHeading a form:Field;
     sh:order 1;
     sh:name "Voorwaarden";
-    form:options """{ "level": "2", "skin": "3", "tooltipText": "Dit is een voorbeeld van een tooltip.", "pillText": "Het aantal voorwaarden is gewijzigd", "path": "http://vocab.belgif.be/ns/publicservice#hasRequirement"}""";
+    form:options """{ "level": "2", "skin": "3", "tooltipText": "Wil je bewijsstukken toevoegen? Voeg dan eerst voorwaarden toe.", "pillText": "Het aantal voorwaarden is gewijzigd", "subTitleHelpText": "Waar moet iemand aan voldoen om recht te hebben op dit product of deze dienst?", "path": "http://vocab.belgif.be/ns/publicservice#hasRequirement"}""";
     form:displayType displayTypes:lpdcHeading ;
     sh:group ext:requirementsPg.
 
@@ -218,7 +218,7 @@ ext:requirementHeading a form:Field;
         ext:evidencesHeading a form:Field;
            sh:order 1;
            sh:name "Bewijsstukken";
-           form:options """{ "level": "3", "skin": "4", "pillText": "Het aantal bewijsstukken is gewijzigd", "path": "http://data.europa.eu/m8g/hasSupportingEvidence"}""";
+           form:options """{ "level": "3", "skin": "4", "pillText": "Het aantal bewijsstukken is gewijzigd", "subTitleHelpText": "Welke documenten moet men kunnen voorleggen?", "path": "http://data.europa.eu/m8g/hasSupportingEvidence"}""";
            form:displayType displayTypes:lpdcHeading ;
            sh:group ext:evidencesPg.
 
@@ -312,7 +312,7 @@ ext:rulesPg a form:PropertyGroup;
 ext:rulesHeading a form:Field;
     sh:order 1;
     sh:name "Procedure";
-    form:options """{ "level": "2", "skin": "3", "pillText": "Het aantal procedures is gewijzigd", "path": "http://purl.org/vocab/cpsv#follows"}""";
+    form:options """{ "level": "2", "skin": "3", "pillText": "Het aantal procedures is gewijzigd", "subTitleHelpText": "Welke stappen moet men doorlopen om dit product of deze dienst te krijgen?", "path": "http://purl.org/vocab/cpsv#follows"}""";
     form:displayType displayTypes:lpdcHeading ;
     sh:group ext:rulesPg.
 
