@@ -86,7 +86,7 @@ ext:basisinformatiePg a form:PropertyGroup;
         sh:path dct:description
       ];
       sh:path dct:description ;
-      form:options """{ "helpText": "Dit is een voorbeeld van waar een hulptekst geplaatst kan worden.<ul class='au-c-bullet-list'><li>tip nummer een</li><li>tip nummer twee</li><li>tip nummer drie</li></ul>", "helpTextMoreInfoUrl": "https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel"}""";
+      form:options """{ "conceptHelpText": "Pas conceptteksten aan aan de specifieke situatie in jouw gemeente.<p>Vermijd informatie die in andere velden thuishoort (voorwaarden, procedures, tarieven en contacten komen verderop aan bod).</p><p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#beschrijving'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#beschrijving</a></p>", "helpText": "<ul class='au-c-bullet-list'><li>De eerste twee regels worden getoond als korte inhoud in de zoekresultaten van hergebruikers.</li><li>Gebruik zo weinig mogelijk moeilijke woorden of jargon, of leg de termen uit.</li><li>Vermijd informatie die in andere velden thuishoort (voorwaarden, procedures, tarieven en contacten komen verderop aan bod).</li></ul><p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#beschrijving'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#beschrijving</a></p>" }""";
       form:displayType displayTypes:richText ;
       sh:group ext:basisinformatiePg .
 
@@ -98,7 +98,7 @@ ext:basisinformatiePg a form:PropertyGroup;
       sh:name "Aanvullende Beschrijving";
       form:language "<FORMAL_INFORMAL_LANGUAGE>";
       sh:path lpdcExt:additionalDescription ;
-      form:options """{ "subTitleHelpText": "Dit is een voorbeeld van een statisch hulptekstje over een specifiek veld."}""";
+      form:help """Dit is een voorbeeld van een statisch hulptekstje over een specifiek veld.""";
       form:displayType displayTypes:richText ;
       sh:group ext:basisinformatiePg .
 
@@ -122,7 +122,8 @@ ext:requirementsPg a form:PropertyGroup;
 ext:requirementHeading a form:Field;
     sh:order 1;
     sh:name "Voorwaarden";
-    form:options """{ "level": "2", "skin": "3", "tooltipText": "Wil je bewijsstukken toevoegen? Voeg dan eerst voorwaarden toe.", "pillText": "Het aantal voorwaarden is gewijzigd", "subTitleHelpText": "Waar moet iemand aan voldoen om recht te hebben op dit product of deze dienst?", "path": "http://vocab.belgif.be/ns/publicservice#hasRequirement"}""";
+    form:help """Waar moet iemand aan voldoen om recht te hebben op dit product of deze dienst?""" ;
+    form:options """{ "level": "2", "skin": "3", "tooltipText": "Wil je bewijsstukken toevoegen? Voeg dan eerst voorwaarden toe.", "pillText": "Het aantal voorwaarden is gewijzigd", "path": "http://vocab.belgif.be/ns/publicservice#hasRequirement"}""";
     form:displayType displayTypes:lpdcHeading ;
     sh:group ext:requirementsPg.
 
@@ -218,7 +219,8 @@ ext:requirementHeading a form:Field;
         ext:evidencesHeading a form:Field;
            sh:order 1;
            sh:name "Bewijsstukken";
-           form:options """{ "level": "3", "skin": "4", "pillText": "Het aantal bewijsstukken is gewijzigd", "subTitleHelpText": "Welke documenten moet men kunnen voorleggen?", "path": "http://data.europa.eu/m8g/hasSupportingEvidence"}""";
+           form:help """Welke documenten moet men kunnen voorleggen?""" ;
+           form:options """{ "level": "3", "skin": "4", "pillText": "Het aantal bewijsstukken is gewijzigd", "path": "http://data.europa.eu/m8g/hasSupportingEvidence"}""";
            form:displayType displayTypes:lpdcHeading ;
            sh:group ext:evidencesPg.
 
@@ -312,7 +314,8 @@ ext:rulesPg a form:PropertyGroup;
 ext:rulesHeading a form:Field;
     sh:order 1;
     sh:name "Procedure";
-    form:options """{ "level": "2", "skin": "3", "pillText": "Het aantal procedures is gewijzigd", "subTitleHelpText": "Welke stappen moet men doorlopen om dit product of deze dienst te krijgen?", "path": "http://purl.org/vocab/cpsv#follows"}""";
+    form:help """Welke stappen moet men doorlopen om dit product of deze dienst te krijgen?""" ;
+    form:options """{ "level": "2", "skin": "3", "pillText": "Het aantal procedures is gewijzigd", "path": "http://purl.org/vocab/cpsv#follows"}""";
     form:displayType displayTypes:lpdcHeading ;
     sh:group ext:rulesPg.
 
@@ -408,8 +411,8 @@ ext:rulesHeading a form:Field;
         ext:procedureWebsitesHeading a form:Field;
             sh:order 1;
             sh:name "Website procedure";
+            form:help """Hier kan u de relevante websites om een of meerdere procedurestappen online uit te voeren, aanbrengen/wijzigen.""";
             form:options """{ "level": "3", "skin": "4", "pillText": "Het aantal website procedures is gewijzigd", "path": "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite"}""";
-            form:help "Hier kan u de relevante websites om een of meerdere procedurestappen online uit te voeren, aanbrengen/wijzigen.";
             form:displayType displayTypes:lpdcHeading ;
             sh:group ext:procedureWebsitesPg.
 
