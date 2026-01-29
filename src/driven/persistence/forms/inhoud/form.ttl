@@ -859,9 +859,9 @@ ext:contactpointsPg a form:PropertyGroup;
   #  property-group: Contactpunten-sub
   ##########################################################
   ext:contactpointsPg-sub a form:PropertyGroup;
-      sh:name "Contactpunt" ;
-    form:options """{ "level": "3", "skin": "4" }""";
-      sh:order 1 .
+    sh:name "Contactpunt" ;
+    form:options """{ "level": "3", "skin": "4" """;
+    sh:order 1 .
 
   ##########################################################
   #  Subform: Contactpunten
@@ -888,6 +888,7 @@ ext:contactpointsPg a form:PropertyGroup;
         ] ;
         sh:path schema:email ;
         form:displayType displayTypes:selectWithCreate ;
+        form:options """{ "conceptHelpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Vul de specifieke contactgegevens in van de dienst waar men terecht kan voor meer informatie over deze dienstverlening.</p><p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#contactpunten'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#contactpunten</a></p>", "helpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Vul de specifieke contactgegevens in van de dienst waar men terecht kan voor meer informatie over deze dienstverlening.</p><p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#contactpunten'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#contactpunten</a></p>" }""";
         sh:group ext:contactpointsPg-sub .
 
     ##########################################################
