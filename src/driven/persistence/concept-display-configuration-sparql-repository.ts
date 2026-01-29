@@ -169,8 +169,11 @@ export class ConceptDisplayConfigurationSparqlRepository
           }
         }
         WHERE {
-          ?bestuurseenheidId a besluit:Bestuurseenheid ;
-            mu:uuid ?bestuurseenheidUuid .
+          GRAPH <http://mu.semte.ch/graphs/public> {
+            ?bestuurseenheidId 
+              a besluit:Bestuurseenheid ;
+              mu:uuid ?bestuurseenheidUuid .
+          }
         
           BIND(IRI(CONCAT("http://mu.semte.ch/graphs/organizations/", STR(?bestuurseenheidUuid), "/LoketLB-LPDCGebruiker")) as ?bestuurseenheidGraph)
           BIND(${sparqlEscapeUri(conceptId)} as ?conceptId)
