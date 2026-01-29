@@ -136,6 +136,8 @@ export class ConceptSnapshotToConceptMergerDomainService {
     );
   }
 
+  // TODO: optimize this function, we can do this more efficiently, like storing the latest `generatedAtTime` on the `concept` resource itself,
+  // or at least query the snapshots in bulk
   private async isNewerSnapshotThanAllPreviouslyApplied(
     conceptSnapshot: ConceptSnapshot,
     concept: Concept | undefined,
