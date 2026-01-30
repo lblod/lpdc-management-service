@@ -860,7 +860,7 @@ ext:contactpointsPg a form:PropertyGroup;
   ##########################################################
   ext:contactpointsPg-sub a form:PropertyGroup;
     sh:name "Contactpunt" ;
-    form:options """{ "level": "3", "skin": "4" """;
+    form:options """{ "level": "3", "skin": "4" }""";
     sh:order 1 .
 
   ##########################################################
