@@ -63,6 +63,12 @@ ext:generalPg a form:PropertyGroup;
       sh:name "Aanvraagbaar van" ;
       sh:order 2 ;
       sh:path schema:startDate ;
+      form:options """
+                    {
+                      "conceptHelpText": "Vul een start- en einddatum in wanneer het product slechts in een bepaalde periode aangevraagd kan worden. De datum van een product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen.",
+                      "helpText": "Vul een start- en einddatum in wanneer het product slechts in een bepaalde periode aangevraagd kan worden. De datum van een product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen."
+                    }
+                   """ ;
       form:displayType displayTypes:lpdcDateTime ;
       sh:group ext:generalPg .
 
@@ -73,6 +79,12 @@ ext:generalPg a form:PropertyGroup;
       sh:name "Aanvraagbaar tot en met" ;
       sh:order 3 ;
       sh:path schema:endDate ;
+      form:options """
+                    {
+                      "conceptHelpText": "Vul een start- en einddatum in wanneer het product slechts in een bepaalde periode aangevraagd kan worden. De datum van een product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen.",
+                      "helpText": "Vul een start- en einddatum in wanneer het product slechts in een bepaalde periode aangevraagd kan worden. De datum van een product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen."
+                    }
+                   """ ;
       form:displayType displayTypes:lpdcDateTime ;
       sh:group ext:generalPg .
 
@@ -274,7 +286,8 @@ ext:relatedPg a form:PropertyGroup;
       form:options  """
                      {
                        "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/PublicatieKanaal",
-                       "multiple": true
+                       "multiple": true,
+                       "tooltipText": "enkel van toepassing voor Your Europe"
                      }
                     """ ;
       form:displayType displayTypes:conceptSelector ;
