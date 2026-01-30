@@ -140,9 +140,13 @@ export class ConceptSnapshotToConceptMergerDomainService {
     if (!concept) {
       return true;
     }
-    const latestAppliedSnapshot = await this._conceptSnapshotRepository.findById(concept.latestConceptSnapshot);
-    return latestAppliedSnapshot.generatedAtTime.before(conceptSnapshot.generatedAtTime);
-
+    const latestAppliedSnapshot =
+      await this._conceptSnapshotRepository.findById(
+        concept.latestConceptSnapshot,
+      );
+    return latestAppliedSnapshot.generatedAtTime.before(
+      conceptSnapshot.generatedAtTime,
+    );
   }
 
   private asNewConcept(conceptSnapshot: ConceptSnapshot): Concept {
