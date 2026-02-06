@@ -70,12 +70,9 @@ export class ConceptSnapshotToConceptMergerDomainService {
       return;
     }
 
-    const isNewerSnapshotThanAllPreviouslyApplied =
-      await this.isNewerSnapshotThanAllPreviouslyApplied(
-        newConceptSnapshot,
-        concept,
-      );
-    if (conceptExists && !isNewerSnapshotThanAllPreviouslyApplied) {
+    const isNewerSnapshotThanLatestApplied =
+      await this.isNewerSnapshotThanLatestApplied(newConceptSnapshot, concept);
+    if (conceptExists && !isNewerSnapshotThanLatestApplied) {
       this._logger.log(
         `The versioned resource <${conceptSnapshotId}> is an older version of service <${conceptId}>`,
       );
@@ -136,24 +133,20 @@ export class ConceptSnapshotToConceptMergerDomainService {
     );
   }
 
-  private async isNewerSnapshotThanAllPreviouslyApplied(
+  private async isNewerSnapshotThanLatestApplied(
     conceptSnapshot: ConceptSnapshot,
     concept: Concept | undefined,
   ): Promise<boolean> {
-    if (concept) {
-      for (const appliedSnapshotId of concept.appliedConceptSnapshots) {
-        const alreadyAppliedSnapshot =
-          await this._conceptSnapshotRepository.findById(appliedSnapshotId);
-        if (
-          conceptSnapshot.generatedAtTime.before(
-            alreadyAppliedSnapshot.generatedAtTime,
-          )
-        ) {
-          return false;
-        }
-      }
+    if (!concept) {
+      return true;
     }
-    return true;
+    const latestAppliedSnapshot =
+      await this._conceptSnapshotRepository.findById(
+        concept.latestConceptSnapshot,
+      );
+    return latestAppliedSnapshot.generatedAtTime.before(
+      conceptSnapshot.generatedAtTime,
+    );
   }
 
   private asNewConcept(conceptSnapshot: ConceptSnapshot): Concept {
@@ -278,7 +271,7 @@ export class ConceptSnapshotToConceptMergerDomainService {
 
   private async isConceptChanged(
     newConceptSnapshot: ConceptSnapshot,
-    currentSnapshotId: Iri,
+    currentSnapshotId?: Iri,
   ): Promise<boolean> {
     if (!currentSnapshotId) {
       return false;
