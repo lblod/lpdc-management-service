@@ -67,7 +67,13 @@ ext:basisinformatiePg a form:PropertyGroup;
         sh:resultMessage "Dit veld is verplicht." ;
         sh:path dct:title
       ];
-      form:options """{ "conceptHelpText": "Behoud waar mogelijk de titel van het concept.<p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel</a></p>", "helpText": "Controleer of de productfiche die je wil toevoegen weldegelijk dienstverlening is.<p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel</a></p>" }""";
+      form:help "Kies een titel die duidelijk is voor de beoogde doelgroep." ;
+      form:options """
+                    {
+                      "conceptHelpText": "Behoud waar mogelijk de titel van het concept.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel'>Meer info</a></p>",
+                      "helpText": "Controleer of de productfiche die je wil toevoegen weldegelijk dienstverlening is.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel'>Meer info</a></p>"
+                    }
+                   """;
       form:displayType displayTypes:lpdcInput;
       sh:group ext:basisinformatiePg .
 
@@ -86,7 +92,13 @@ ext:basisinformatiePg a form:PropertyGroup;
         sh:path dct:description
       ];
       sh:path dct:description ;
-      form:options """{ "conceptHelpText": "Pas conceptteksten aan aan de specifieke situatie in jouw gemeente.<p>Vermijd informatie die in andere velden thuishoort (voorwaarden, procedures, tarieven en contacten komen verderop aan bod).</p><p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#beschrijving'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#beschrijving</a></p>", "helpText": "<ul><li>De eerste twee regels worden getoond als korte inhoud in de zoekresultaten van hergebruikers.</li><li>Gebruik zo weinig mogelijk moeilijke woorden of jargon, of leg de termen uit.</li><li>Vermijd informatie die in andere velden thuishoort (voorwaarden, procedures, tarieven en contacten komen verderop aan bod).</li></ul><p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#beschrijving'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#beschrijving</a></p>" }""";
+      form:help "Geef de essentie van de dienstverlening weer in enkele zinnen." ;
+      form:options """
+                    {
+                      "conceptHelpText": "Pas conceptteksten aan aan de specifieke situatie in jouw gemeente.<p>Vermijd informatie die in andere velden thuishoort (voorwaarden, procedures, tarieven en contacten komen verderop aan bod).</p><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#beschrijving'>Meer info</a></p>",
+                      "helpText": "<ul><li>De eerste twee regels worden getoond als korte inhoud in de zoekresultaten van hergebruikers.</li><li>Gebruik zo weinig mogelijk moeilijke woorden of jargon, of leg de termen uit.</li><li>Vermijd informatie die in andere velden thuishoort (voorwaarden, procedures, tarieven en contacten komen verderop aan bod).</li></ul><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#beschrijving'>Meer info</a></p>"
+                    }
+                   """;
       form:displayType displayTypes:richText ;
       sh:group ext:basisinformatiePg .
 
@@ -98,7 +110,12 @@ ext:basisinformatiePg a form:PropertyGroup;
       sh:name "Aanvullende Beschrijving";
       form:language "<FORMAL_INFORMAL_LANGUAGE>";
       sh:path lpdcExt:additionalDescription ;
-      form:help """Dit is een voorbeeld van een statisch hulptekstje over een specifiek veld.""";
+      form:options """
+                    {
+                      "conceptHelpText": "Voeg indien gewenst uitgebreidere informatie of achtergrondinformatie toe.",
+                      "helpText": "Voeg indien gewenst uitgebreidere informatie of achtergrondinformatie toe."
+                    }
+                   """;
       form:displayType displayTypes:richText ;
       sh:group ext:basisinformatiePg .
 
@@ -110,6 +127,12 @@ ext:basisinformatiePg a form:PropertyGroup;
       sh:name "Uitzonderingen" ;
       form:language "<FORMAL_INFORMAL_LANGUAGE>";
       sh:path lpdcExt:exception ;
+      form:options """
+                    {
+                      "conceptHelpText": "Maak waar nodig een duidelijke afbakening tussen (gelijkaardige) producten.<ul><li>Bijv. De Vlaamse huursubsidie is niet combineerbaar met een huurpremie of een huurtoelage van het OCMW</li></ul><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#uitzonderingen'>Meer info</a></p>",
+                      "helpText": "Maak waar nodig een duidelijke afbakening tussen (gelijkaardige) producten.<ul><li>Bijv. De Vlaamse huursubsidie is niet combineerbaar met een huurpremie of een huurtoelage van het OCMW</li></ul><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#uitzonderingen'>Meer info</a></p>"
+                    }
+                   """;
       form:displayType displayTypes:richText ;
       sh:group ext:basisinformatiePg .
 
@@ -123,7 +146,17 @@ ext:requirementHeading a form:Field;
     sh:order 1;
     sh:name "Voorwaarden";
     form:help """Waar moet iemand aan voldoen om recht te hebben op dit product of deze dienst?""" ;
-    form:options """{ "level": "2", "skin": "3", "tooltipText": "Wil je bewijsstukken toevoegen? Voeg dan eerst voorwaarden toe.", "pillText": "Het aantal voorwaarden is gewijzigd", "path": "http://vocab.belgif.be/ns/publicservice#hasRequirement"}""";
+    form:options """
+                  {
+                    "level": "2",
+                    "skin": "3",
+                    "pillText": "Het aantal voorwaarden is gewijzigd",
+                    "path": "http://vocab.belgif.be/ns/publicservice#hasRequirement",
+                    "tooltipText": "Wil je bewijsstukken toevoegen? Voeg dan eerst voorwaarden toe.",
+                    "conceptHelpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Laat je de velden leeg verwijder deze dan via de verwijderknop.</p>",
+                    "helpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Laat je de velden leeg verwijder deze dan via de verwijderknop.</p>"
+                  }
+                """;
     form:displayType displayTypes:lpdcHeading ;
     sh:group ext:requirementsPg.
 
@@ -189,6 +222,12 @@ ext:requirementHeading a form:Field;
           sh:path dct:title
         ];
         sh:path dct:title ;
+        form:options """
+                      {
+                        "conceptHelpText": "Geef een titel die je op je website zou willen zien, of vul simpelweg 'Voorwaarden' in.<ul><li>Zet geen streepje ('-' of '/')</li></ul>",
+                        "helpText": "Geef een titel die je op je website zou willen zien, of vul simpelweg 'Voorwaarden' in.<ul><li>Zet geen streepje ('-' of '/')</li></ul>"
+                      }
+                    """;
         form:displayType displayTypes:lpdcInput ;
         sh:group ext:requirementsPg-sub .
 
@@ -207,6 +246,12 @@ ext:requirementHeading a form:Field;
           sh:path dct:description
         ];
         sh:path dct:description ;
+        form:options """
+                      {
+                        "conceptHelpText": "Zijn de voorwaarden erg uitgebreid? Geef dan de grote lijnen weer, en verwijs naar de gedetailleerde voorwaarden via een link.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#voorwaarden'>Meer info</a></p>",
+                        "helpText": "Zijn de voorwaarden erg uitgebreid? Geef dan de grote lijnen weer, en verwijs naar de gedetailleerde voorwaarden via een link.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#voorwaarden'>Meer info</a></p>"
+                      }
+                    """;
         form:displayType displayTypes:richText ;
         sh:group ext:requirementsPg-sub .
 
@@ -220,7 +265,16 @@ ext:requirementHeading a form:Field;
            sh:order 1;
            sh:name "Bewijsstukken";
            form:help """Welke documenten moet men kunnen voorleggen?""" ;
-           form:options """{ "level": "3", "skin": "4", "pillText": "Het aantal bewijsstukken is gewijzigd", "path": "http://data.europa.eu/m8g/hasSupportingEvidence"}""";
+           form:options """
+                         {
+                          "level": "3",
+                          "skin": "4",
+                          "pillText": "Het aantal bewijsstukken is gewijzigd",
+                          "path": "http://data.europa.eu/m8g/hasSupportingEvidence",
+                          "conceptHelpText": "Zijn de velden leeg, verwijder deze dan via de verwijderknop.",
+                          "helpText": "Zijn de velden leeg, verwijder deze dan via de verwijderknop."
+                         }
+                        """;
            form:displayType displayTypes:lpdcHeading ;
            sh:group ext:evidencesPg.
 
@@ -284,6 +338,12 @@ ext:requirementHeading a form:Field;
                 sh:path dct:title
               ];
               sh:path dct:title ;
+              form:options """
+                            {
+                              "conceptHelpText": "Geef een titel die je op je website zou willen zien, of vul simpelweg 'Bewijsstukken' in.<ul><li>Zet geen streepje ('-' of '/')</li></ul>",
+                              "helpText": "Geef een titel die je op je website zou willen zien, of vul simpelweg 'Bewijsstukken' in.<ul><li>Zet geen streepje ('-' of '/')</li></ul>"
+                            }
+                          """;
               form:displayType displayTypes:lpdcInput ;
               sh:group ext:evidencesPg-sub .
 
@@ -315,7 +375,16 @@ ext:rulesHeading a form:Field;
     sh:order 1;
     sh:name "Procedure";
     form:help """Welke stappen moet men doorlopen om dit product of deze dienst te krijgen?""" ;
-    form:options """{ "level": "2", "skin": "3", "pillText": "Het aantal procedures is gewijzigd", "path": "http://purl.org/vocab/cpsv#follows"}""";
+    form:options """
+                  {
+                    "level": "2",
+                    "skin": "3",
+                    "pillText": "Het aantal procedures is gewijzigd",
+                    "path": "http://purl.org/vocab/cpsv#follows",
+                    "conceptHelpText": "<strong>Deze info is belangrijk voor de hergebruikers.</strong><p>Laat je de velden leeg, verwijder deze dan via de verwijderknop.</p>",
+                    "helpText": "<strong>Deze info is belangrijk voor de hergebruikers.</strong><p>Laat je de velden leeg, verwijder deze dan via de verwijderknop.</p>"
+                  }
+                 """;
     form:displayType displayTypes:lpdcHeading ;
     sh:group ext:rulesPg.
 
@@ -381,6 +450,12 @@ ext:rulesHeading a form:Field;
           sh:path dct:title
         ];
         sh:path dct:title ;
+        form:options """
+                      {
+                        "conceptHelpText": "Geef een titel die je op je website zou willen zien, of vul simpelweg 'Procedure' in.<ul><li>Zet geen streepje ('-' of '/')</li></ul>",
+                        "helpText": "Geef een titel die je op je website zou willen zien, of vul simpelweg 'Procedure' in.<ul><li>Zet geen streepje ('-' of '/')</li></ul>"
+                      }
+                    """;
         form:displayType displayTypes:lpdcInput ;
         sh:group ext:rulesPg-sub .
 
@@ -399,6 +474,12 @@ ext:rulesHeading a form:Field;
           sh:path dct:description
         ];
         sh:path dct:description ;
+        form:options """
+                      {
+                        "conceptHelpText": "Beschrijf enkel  de stappen die een burger, vereniging of onderneming moet doorlopen, niet de interne procedure binnen het lokaal bestuur / de overheid.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#procedure'>Meer info</a></p>",
+                        "helpText": "Beschrijf enkel  de stappen die een burger, vereniging of onderneming moet doorlopen, niet de interne procedure binnen het lokaal bestuur / de overheid.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#procedure'>Meer info</a></p>"
+                      }
+                    """;
         form:displayType displayTypes:richText ;
         sh:group ext:rulesPg-sub .
 
@@ -411,8 +492,17 @@ ext:rulesHeading a form:Field;
         ext:procedureWebsitesHeading a form:Field;
             sh:order 1;
             sh:name "Website procedure";
-            form:help """Hier kan u de relevante websites om een of meerdere procedurestappen online uit te voeren, aanbrengen/wijzigen.""";
-            form:options """{ "level": "3", "skin": "4", "pillText": "Het aantal website procedures is gewijzigd", "path": "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite"}""";
+            form:help "Waar kan de eindgebruiker  de aanvraag / procedure online opstarten?";
+            form:options """
+                          {
+                           "level": "3",
+                           "skin": "4",
+                           "pillText":"Het aantal website procedures is gewijzigd",
+                           "path": "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite",
+                           "conceptHelpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Laat je de velden leeg, verwijder dez dan via de verwijderknop.</p>",
+                           "helpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Laat je de velden leeg, verwijder dez dan via de verwijderknop.</p>"
+                          }
+                         """;
             form:displayType displayTypes:lpdcHeading ;
             sh:group ext:procedureWebsitesPg.
 
@@ -476,6 +566,12 @@ ext:rulesHeading a form:Field;
                 sh:path dct:title
               ];
               sh:path dct:title ;
+              form:options """
+                            {
+                              "conceptHelpText": "Dit is de zichtbare tekst van de link of de actieknop waarop de eindgebruiker kan verderklikken.<ul><li>Zet geen streepje ('-' of '/')</li></ul>",
+                              "helpText": "Dit is de zichtbare tekst van de link of de actieknop waarop de eindgebruiker kan verderklikken.<ul><li>Zet geen streepje ('-' of '/')</li></ul>"
+                            }
+                          """;
               form:displayType displayTypes:lpdcInput ;
               sh:group ext:procedureWebsitesPg-sub .
 
@@ -509,6 +605,12 @@ ext:rulesHeading a form:Field;
                 sh:path schema:url
               ];
               sh:path schema:url ;
+              form:options """
+                            {
+                              "conceptHelpText": "Vul de specifieke webpagina in waar men de procedure kan opstarten.<p>Deze URL wordt ingezet als actieknop bij verschillende hergebruikers om de eindgebruiker rechtstreeks naar de start van de procedure door te verwijzen.</p><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#website-procedure'>Meer info</a></p>",
+                              "helpText": "Vul de specifieke webpagina in waar men de procedure kan opstarten.<p>Deze URL wordt ingezet als actieknop bij verschillende hergebruikers om de eindgebruiker rechtstreeks naar de start van de procedure door te verwijzen.</p><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#website-procedure'>Meer info</a></p>"
+                            }
+                          """;
               form:displayType displayTypes:lpdcInput ;
               sh:group ext:procedureWebsitesPg-sub .
 
@@ -521,7 +623,17 @@ ext:costPg a form:PropertyGroup;
 ext:costsHeading a form:Field;
     sh:order 1;
     sh:name "Kosten";
-    form:options """{ "level": "2", "skin": "3", "pillText": "Het aantal kosten is gewijzigd", "path": "http://data.europa.eu/m8g/hasCost"}""";
+    form:help "Welke kosten zijn er verbonden aan deze dienstverlening?" ;
+    form:options """
+                  {
+                   "level": "2",
+                   "skin": "3",
+                   "pillText": "Het aantal kosten is gewijzigd",
+                   "path": "http://data.europa.eu/m8g/hasCost",
+                   "conceptHelpText": "Laat je de velden leeg, verwijder deze dan via de verwijderknop.",
+                   "helpText": "Laat je de velden leeg, verwijder deze dan via de verwijderknop."
+                  }
+                 """;
     form:displayType displayTypes:lpdcHeading ;
     sh:group ext:costPg.
 
@@ -602,6 +714,12 @@ ext:costsHeading a form:Field;
         ];
         sh:order 3 ;
         sh:path dct:description ;
+        form:options """
+                      {
+                        "conceptHelpText": "Moet de gebruiker iets betalen voor het product of de dienst? Of is het gratis?<ul><li>Ook kortingen of verminderingen op de kostprijs voor bepaalde doelgroepen horen hieronder.</li></ul><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#kosten'>Meer info</a></p>",
+                        "helpText": "Moet de gebruiker iets betalen voor het product of de dienst? Of is het gratis?<ul><li>Ook kortingen of verminderingen op de kostprijs voor bepaalde doelgroepen horen hieronder.</li></ul><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#kosten'>Meer info</a></p>"
+                      }
+                    """;
         form:displayType displayTypes:richText ;
         sh:group ext:costsPg-sub .
 
@@ -614,7 +732,17 @@ ext:finAdvPg a form:PropertyGroup;
 ext:finAdvHeading a form:Field;
     sh:order 1;
     sh:name "Financiële voordelen";
-    form:options """{ "level": "2", "skin": "3", "pillText": "Het aantal financiële voordelen is gewijzigd", "path": "http://purl.org/vocab/cpsv#produces"}""";
+    form:help "Welk bedrag kan men ontvangen als men recht heeft op dit product of deze dienst?" ;
+    form:options """
+                  {
+                   "level": "2",
+                   "skin": "3",
+                   "pillText": "Het aantal financiële voordelen is gewijzigd",
+                   "path": "http://purl.org/vocab/cpsv#produces",
+                   "conceptHelpText": "Dit veld specifiek van toepassing op producten of diensten van het producttype financieel voordeel (premies, subsidies, toelages).<p>Laat je de velden leeg, verwijder deze dan via de verwijderknop.</p>",
+                   "helpText": "Dit veld specifiek van toepassing op producten of diensten van het producttype financieel voordeel (premies, subsidies, toelages).<p>Laat je de velden leeg, verwijder deze dan via de verwijderknop.</p>"
+                  }
+                 """;
     form:displayType displayTypes:lpdcHeading ;
     sh:group ext:finAdvPg.
 
@@ -695,6 +823,12 @@ ext:finAdvHeading a form:Field;
         ];
         sh:order 3 ;
         sh:path dct:description ;
+        form:options """
+                      {
+                      "conceptHelpText": "Hier horen de subsidies, premies, toelages thuis.<ul><li>Kortingen kan je kwijt onder het veld 'Kosten'.</li></ul><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#financiele-voordelen'>Meer info</a></p>",
+                      "helpText": "Hier horen de subsidies, premies, toelages thuis.<ul><li>Kortingen kan je kwijt onder het veld 'Kosten'.</li></ul><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#financiele-voordelen'>Meer info</a></p>"
+                      }
+                    """;
         form:displayType displayTypes:richText ;
         sh:group ext:finAdvPg-sub .
 
@@ -714,6 +848,13 @@ ext:regulationsPg a form:PropertyGroup;
       form:language "<FORMAL_INFORMAL_LANGUAGE>";
       sh:name "Regelgeving";
       sh:path lpdcExt:regulation;
+      form:help "Welke regelgeving ligt aan de basis van dit product of deze dienst?" ;
+      form:options """
+                    {
+                      "conceptHelpText": "Gebruik de officiële benaming van het KB, decreet, …<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#regelgeving'>Meer info</a></p>",
+                      "helpText": "Gebruik de officiële benaming van het KB, decreet, …<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#regelgeving'>Meer info</a></p>"
+                    }
+                   """;
       form:displayType displayTypes:richText ;
       sh:group ext:regulationsPg .
 
@@ -723,8 +864,17 @@ ext:regulationsPg a form:PropertyGroup;
   ext:headerLegalResource a form:Field;
      sh:order 3;
      sh:name "Regelgevende bron";
-     form:help """Hier kan u de links naar relevante regelgevende bronnen aanbrengen/wijzigen (bijv. <a target="_blank" href="https://codex.vlaanderen.be/">Vlaamse codex</a>).""";
-     form:options """{ "level": "3", "skin": "4", "pillText": "Het aantal regelgevende bronnen is gewijzigd", "path": "http://data.europa.eu/m8g/hasLegalResource"}""";
+     form:help """Voeg een link toe naar de relevante regelgeving (bijv. <a target="_blank" href="https://codex.vlaanderen.be/">Vlaamse codex</a>).""";
+     form:options """
+                   {
+                    "level": "3",
+                    "skin": "4",
+                    "pillText": "Het aantal regelgevende bronnen is gewijzigd",
+                    "path": "http://data.europa.eu/m8g/hasLegalResource",
+                    "conceptHelpText": "Ook een link naar jouw eigen lokale besluiten of reglementen kan hier worden toegevoegd.",
+                    "helpText": "Ook een link naar jouw eigen lokale besluiten of reglementen kan hier worden toegevoegd."
+                   }
+                  """;
      form:displayType displayTypes:lpdcHeading ;
      sh:group ext:regulationsPg.
 
@@ -781,6 +931,12 @@ ext:regulationsPg a form:PropertyGroup;
         sh:order 1 ;
         form:language "<FORMAL_INFORMAL_LANGUAGE>";
         sh:path dct:title ;
+        form:options """
+                      {
+                      "conceptHelpText": "Dit is de zichtbare tekst van de link waarop je kan klikken.",
+                      "helpText": "Dit is de zichtbare tekst van de link waarop je kan klikken."
+                      }
+                    """;
         form:displayType displayTypes:lpdcInput ;
         sh:group ext:legalResourcePg-sub .
 
@@ -821,9 +977,22 @@ ext:regulationsPg a form:PropertyGroup;
 #  property-group: Contactpunten
 ##########################################################
 ext:contactpointsPg a form:PropertyGroup;
-    sh:name "Contactpunten" ;
-    form:options """{ "level": "2", "skin": "3" }""";
     sh:order 9 .
+
+ext:contactpointsHeading a form:Field;
+    sh:order 1;
+    sh:name "Contactpunten";
+    form:help "Waar kan men terecht voor meer informatie over dit product of deze dienst?" ;
+    form:options """
+                  {
+                   "level": "2",
+                   "skin": "3",
+                   "conceptHelpText": "Laat je de velden leeg verwijder deze dan via de verwijderknop.",
+                   "helpText": "Laat je de velden leeg verwijder deze dan via de verwijderknop."
+                  }
+                 """;
+    form:displayType displayTypes:lpdcHeading ;
+    sh:group ext:contactpointsPg.
 
   ##########################################################
   #  listing-scope: Contactpunten
@@ -842,7 +1011,7 @@ ext:contactpointsPg a form:PropertyGroup;
     form:addLabel "Voeg contactpunt toe";
     form:canAdd true;
     form:canRemove true;
-    sh:order 1 .
+    sh:order 2 .
 
  ##########################################################
   #  Generator: Contactpunten
@@ -859,19 +1028,32 @@ ext:contactpointsPg a form:PropertyGroup;
   #  property-group: Contactpunten-sub
   ##########################################################
   ext:contactpointsPg-sub a form:PropertyGroup;
-    sh:name "Contactpunt" ;
-    form:options """{ "level": "3", "skin": "4" }""";
     sh:order 1 .
+
+  ext:contactpointHeading-sub a form:Field;
+      sh:order 1;
+      sh:name "Contactpunt";
+      form:help "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Vul de specifieke contactgegevens in van de dienst waar men terecht kan voor meer informatie over deze dienstverlening.</p><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#contactpunten'>Meer info</a></p>" ;
+      form:options """
+                    {
+                    "level": "3",
+                    "skin": "4"
+                    }
+                  """;
+      form:displayType displayTypes:lpdcHeading ;
+      sh:group ext:contactpointsPg-sub.
 
   ##########################################################
   #  Subform: Contactpunten
   ##########################################################
   ext:contactpointsSf a form:SubForm;
      form:removeLabel "Verwijder contactpunt";
+     form:includes ext:contactpointHeading-sub;
      form:includes ext:contactPEmailF;
      form:includes ext:contactPTelephoneF;
      form:includes ext:contactPageF;
      form:includes ext:contactPOpeningF;
+     form:includes ext:contactPointAddressHeading;
      form:includes ext:contactPointAddressL.
 
     ##########################################################
@@ -879,7 +1061,7 @@ ext:contactpointsPg a form:PropertyGroup;
     ##########################################################
     ext:contactPEmailF a form:Field ;
         sh:name "Email" ;
-        sh:order 1 ;
+        sh:order 2 ;
         form:validations [
           a form:ValidEmail ;
           form:grouping form:MatchEvery ;
@@ -888,7 +1070,6 @@ ext:contactpointsPg a form:PropertyGroup;
         ] ;
         sh:path schema:email ;
         form:displayType displayTypes:selectWithCreate ;
-        form:options """{ "conceptHelpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Vul de specifieke contactgegevens in van de dienst waar men terecht kan voor meer informatie over deze dienstverlening.</p><p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#contactpunten'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#contactpunten</a></p>", "helpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Vul de specifieke contactgegevens in van de dienst waar men terecht kan voor meer informatie over deze dienstverlening.</p><p>Meer info <a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#contactpunten'>https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#contactpunten</a></p>" }""";
         sh:group ext:contactpointsPg-sub .
 
     ##########################################################
@@ -896,7 +1077,7 @@ ext:contactpointsPg a form:PropertyGroup;
     ##########################################################
     ext:contactPTelephoneF a form:Field ;
         sh:name "Telefoon" ;
-        sh:order 2 ;
+        sh:order 3 ;
         form:validations [
           a form:ValidPhoneNumber ;
           form:grouping form:MatchEvery ;
@@ -913,7 +1094,7 @@ ext:contactpointsPg a form:PropertyGroup;
     ##########################################################
     ext:contactPageF a form:Field ;
         sh:name "Website URL" ;
-        sh:order 3 ;
+        sh:order 4 ;
         form:validations [
           a form:WebUriConstraint ;
           form:grouping form:MatchEvery ;
@@ -929,7 +1110,7 @@ ext:contactpointsPg a form:PropertyGroup;
     ##########################################################
     ext:contactPOpeningF a form:Field ;
         sh:name "Openingsuren" ;
-        sh:order 4 ;
+        sh:order 5 ;
         sh:path schema:openingHours ;
         form:displayType displayTypes:selectWithCreate ;
         sh:group ext:contactpointsPg-sub .
@@ -938,9 +1119,20 @@ ext:contactpointsPg a form:PropertyGroup;
         #  property-group: contactPointAddress
         ##########################################################
         ext:contactPointAddressPg a form:PropertyGroup;
-            sh:name "Adres" ;
-            form:options """{ "level": "2", "skin": "3" }""";
             sh:order 1 .
+
+        ext:contactPointAddressHeading a form:Field;
+            sh:order 6;
+            sh:name "Adres";
+            form:help "Tijdens het invullen van de adresvelden worden er suggesties gedaan vanuit het Adressenregister.<p>Wordt een adres niet gevonden, dan is hij niet bekend is bij het Adressenregister. Laat het adres daar dan eerst registreren.</p><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#adres'>Meer info</a></p>" ;
+            form:options """
+                          {
+                          "level": "3",
+                          "skin": "4"
+                          }
+                        """;
+            form:displayType displayTypes:lpdcHeading ;
+            sh:group ext:contactpointsPg-sub.
 
         ##########################################################
         #  listing-scope: contactPointAddress
@@ -991,7 +1183,6 @@ ext:contactpointsPg a form:PropertyGroup;
           ##########################################################
 
           ext:contactPointAddress a form:Field ;
-            sh:name "Adres" ;
             sh:path lpdcExt:address;
             form:displayType displayTypes:addressSelector ;
             sh:group ext:contactPointAddressPg-sub .
@@ -1005,7 +1196,17 @@ ext:websitesPg a form:PropertyGroup;
 ext:websitesHeading a form:Field;
     sh:order 1;
     sh:name "Meer info";
-    form:options """{ "level": "2", "skin": "3", "pillText": "Het aantal websites is gewijzigd", "path": "http://www.w3.org/2000/01/rdf-schema#seeAlso"}""";
+    form:help "Verwijs hier door naar webpagina's met meer relevante informatie over dit product of deze dienst." ;
+    form:options """
+                  {
+                   "level": "2",
+                   "skin": "3",
+                   "pillText": "Het aantal websites is gewijzigd",
+                   "path": "http://www.w3.org/2000/01/rdf-schema#seeAlso",
+                   "conceptHelpText": "Laat je de velden leeg verwijder deze dan via de verwijderknop.",
+                   "helpText": "Laat je de velden leeg verwijder deze dan via de verwijderknop."
+                  }
+                 """;
     form:displayType displayTypes:lpdcHeading ;
     sh:group ext:websitesPg.
 
@@ -1071,6 +1272,12 @@ ext:websitesHeading a form:Field;
           sh:path dct:title
         ];
         sh:path dct:title ;
+        form:options """
+                      {
+                      "conceptHelpText": "Dit is de zichtbare tekst op de webpagina of van de actieknop waarop je kan klikken.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#meer-info'>Meer info</a></p>",
+                      "helpText": "Dit is de zichtbare tekst op de webpagina of van de actieknop waarop je kan klikken.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#meer-info'>Meer info</a></p>"
+                      }
+                    """;
         form:displayType displayTypes:lpdcInput ;
         sh:group ext:websitesPg-sub .
 
