@@ -71,7 +71,7 @@ ext:basisinformatiePg a form:PropertyGroup;
       form:options """
                     {
                       "conceptHelpText": "Behoud waar mogelijk de titel van het concept.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel'>Meer info</a></p>",
-                      "helpText": "Controleer of de productfiche die je wil toevoegen weldegelijk dienstverlening is.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel'>Meer info</a></p>"
+                      "helpText": "Controleer of de productfiche die je wil toevoegen weldegelijk dienstverlening is (<a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/ipdc-and-lpdc/welke-producten-horen-thuis-in-lpdc'>Welke producten horen thuis in LPDC</a>).<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#titel'>Meer info</a></p>"
                     }
                    """;
       form:displayType displayTypes:lpdcInput;
