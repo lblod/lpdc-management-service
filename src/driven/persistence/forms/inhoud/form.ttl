@@ -271,8 +271,8 @@ ext:requirementHeading a form:Field;
                           "skin": "4",
                           "pillText": "Het aantal bewijsstukken is gewijzigd",
                           "path": "http://data.europa.eu/m8g/hasSupportingEvidence",
-                          "conceptHelpText": "Zijn de velden leeg, verwijder deze dan via de verwijderknop.",
-                          "helpText": "Zijn de velden leeg, verwijder deze dan via de verwijderknop."
+                          "conceptHelpText": "Laat je de velden leeg, verwijder deze dan via de verwijderknop.",
+                          "helpText": "Laat je de velden leeg, verwijder deze dan via de verwijderknop."
                          }
                         """;
            form:displayType displayTypes:lpdcHeading ;

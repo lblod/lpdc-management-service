@@ -80,12 +80,6 @@ ext:generalPg a form:PropertyGroup;
       sh:name "Aanvraagbaar tot en met" ;
       sh:order 3 ;
       sh:path schema:endDate ;
-      form:options """
-                    {
-                      "conceptHelpText": "Vul een start- en einddatum in wanneer het product slechts in een bepaalde periode aangevraagd kan worden. De datum van een product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#aanvraagbaar-van-tot-en-met'>Meer info</a></p>",
-                      "helpText": "Vul een start- en einddatum in wanneer het product slechts in een bepaalde periode aangevraagd kan worden. De datum van een product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#aanvraagbaar-van-tot-en-met'>Meer info</a></p>"
-                    }
-                   """ ;
       form:displayType displayTypes:lpdcDateTime ;
       sh:group ext:generalPg .
 
