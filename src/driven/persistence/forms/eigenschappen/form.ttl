@@ -28,6 +28,7 @@ ext:form a form:Form, form:TopLevelForm ;
     form:includes ext:themeF;
     form:includes ext:languageF;
     form:includes ext:applicationAreaF;
+    form:includes ext:authorityHeading;
     form:includes ext:competentAuthorityLevelF;
     form:includes ext:competentAuthorityF;
     form:includes ext:executingAuthorityLevelF;
@@ -63,6 +64,12 @@ ext:generalPg a form:PropertyGroup;
       sh:name "Aanvraagbaar van" ;
       sh:order 2 ;
       sh:path schema:startDate ;
+      form:options """
+                    {
+                      "conceptHelpText": "Vul een start- en einddatum in wanneer het product slechts in een bepaalde periode aangevraagd kan worden. De datum van een product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#aanvraagbaar-van-tot-en-met'>Meer info</a></p>",
+                      "helpText": "Vul een start- en einddatum in wanneer het product slechts in een bepaalde periode aangevraagd kan worden. De datum van een product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#aanvraagbaar-van-tot-en-met'>Meer info</a></p>"
+                    }
+                   """ ;
       form:displayType displayTypes:lpdcDateTime ;
       sh:group ext:generalPg .
 
@@ -82,7 +89,13 @@ ext:generalPg a form:PropertyGroup;
   ext:productTypeF a form:Field ;
       sh:name "Producttype" ;
       sh:order 20 ;
-      form:options  """{"conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/Type"}""" ;
+      form:options  """
+                     {
+                        "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/Type",
+                        "conceptHelpText": "<strong>Vul dit veld in voor een correcte doorstroom van de informatie naar de relevante hergebruikers.</strong><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#producttype'>Meer info</a></p>",
+                        "helpText": "<strong>Vul dit veld in voor een correcte doorstroom van de informatie naar de relevante hergebruikers.</strong><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#producttype'>Meer info</a></p>"
+                     }
+                    """ ;
       sh:path dct:type ;
       form:displayType displayTypes:conceptSelector ;
       sh:group ext:generalPg .
@@ -96,12 +109,13 @@ ext:generalPg a form:PropertyGroup;
       form:options  """
                      {
                        "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/Doelgroep",
-                       "multiple": true
+                       "multiple": true,
+                       "conceptHelpText": "<strong>Vul dit veld in voor een correcte doorstroom van de informatie naar de relevante hergebruikers.</strong><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#doelgroepen'>Meer info</a></p>",
+                       "helpText": "<strong>Vul dit veld in voor een correcte doorstroom van de informatie naar de relevante hergebruikers.</strong><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#doelgroepen'>Meer info</a></p>"
                      }
                     """ ;
       sh:path lpdcExt:targetAudience ;
       form:displayType displayTypes:conceptSelector ;
-      form:help "Meerdere doelgroepen kunnen worden toegewezen";
       sh:group ext:generalPg .
 
   ##########################################################
@@ -113,12 +127,13 @@ ext:generalPg a form:PropertyGroup;
       form:options  """
                      {
                        "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/Thema",
-                       "multiple": true
+                       "multiple": true,
+                       "conceptHelpText": "<strong>Dit veld is belangrijk voor hergebruikers.</strong><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#themas'>Meer info</a></p>",
+                       "helpText": "<strong>Dit veld is belangrijk voor hergebruikers.</strong><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#themas'>Meer info</a></p>"
                      }
                     """ ;
       sh:path m8g:thematicArea ;
       form:displayType displayTypes:conceptSelector ;
-      form:help "Meerdere thema's kunnen worden toegewezen";
       sh:group ext:generalPg .
 
   ##########################################################
@@ -134,7 +149,6 @@ ext:generalPg a form:PropertyGroup;
                      }
                     """ ;
       sh:path dct:language ;
-      form:help "Meerdere talen kunnen worden toegewezen";
       form:displayType displayTypes:conceptSelector ;
       sh:group ext:generalPg .
 
@@ -142,17 +156,27 @@ ext:generalPg a form:PropertyGroup;
 #  property-group: Bevoegdheid TODO
 ##########################################################
 ext:authorityPg a form:PropertyGroup;
-    sh:name "Bevoegdheid" ;
-    form:options """{ "level": "2", "skin": "3" }""";
     sh:order 30.
+
+ext:authorityHeading a form:Field;
+    sh:order 1;
+    sh:name "Bevoegdheid";
+    form:help "Zorg dat het bestuursniveau en de overheid met elkaar matchen.<ul><li>Bijv. Lokale overheid (bestuursniveau) - Gemeente X (overheid)</li><li>Bijv. Vlaamse overheid (bestuursniveau) - Agentschap Binnenlands Bestuur (overheid)</li></ul><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#bevoegde-en-uitvoerende-bestuursniveaus-en-overheden'>Meer info</a></p>" ;
+    form:options """
+                  {
+                   "level": "2",
+                   "skin": "3"
+                  }
+                 """;
+    form:displayType displayTypes:lpdcHeading ;
+    sh:group ext:authorityPg.
 
   ##########################################################
   #  field: bevoegd bestuursniveau
   ##########################################################
   ext:competentAuthorityLevelF a form:Field ;
       sh:name "Bevoegd bestuursniveau" ;
-      form:help "Meerdere niveaus kunnen worden toegewezen";
-      sh:order 00 ;
+      sh:order 2 ;
       sh:path lpdcExt:competentAuthorityLevel ;
       form:options  """
                      {
@@ -168,8 +192,7 @@ ext:authorityPg a form:PropertyGroup;
   ##########################################################
   ext:competentAuthorityF a form:Field ;
       sh:name "Bevoegde overheid" ;
-      form:help "Meerdere overheden kunnen worden toegewezen";
-      sh:order 10 ;
+      sh:order 3 ;
       sh:path m8g:hasCompetentAuthority ;
       form:options  """
                      {
@@ -190,8 +213,7 @@ ext:authorityPg a form:PropertyGroup;
   ##########################################################
   ext:executingAuthorityLevelF a form:Field ;
       sh:name "Uitvoerend bestuursniveau" ;
-      form:help "Meerdere niveaus kunnen worden toegewezen";
-      sh:order 20 ;
+      sh:order 4 ;
       sh:path lpdcExt:executingAuthorityLevel ;
       form:options  """
                      {
@@ -207,8 +229,7 @@ ext:authorityPg a form:PropertyGroup;
   ##########################################################
   ext:executingAuthorityF a form:Field ;
       sh:name "Uitvoerende overheid" ;
-      form:help "Meerdere overheden kunnen worden toegewezen";
-      sh:order 30 ;
+      sh:order 5 ;
       sh:path lpdcExt:hasExecutingAuthority ;
       form:options  """
                      {
@@ -223,15 +244,16 @@ ext:authorityPg a form:PropertyGroup;
   ##########################################################
   ext:applicationAreaF a form:Field ;
       sh:name "Geografisch toepassingsgebied" ;
-      sh:order 40 ;
+      sh:order 6 ;
       sh:path dct:spatial ;
       form:options  """
                      {
                        "conceptScheme":"<NUTS_VERSION>",
-                       "multiple": true
+                       "multiple": true,
+                       "conceptHelpText": "<strong>Dit veld is belangrijk voor hergebruikers.</strong><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#geografisch-toepassingsgebied'>Meer info</a></p>",
+                       "helpText": "<strong>Dit veld is belangrijk voor hergebruikers.</strong><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#geografisch-toepassingsgebied'>Meer info</a></p>"
                      }
                     """ ;
-      form:help "Gelieve de meeste specifieke gebied(en) op te geven. Meerdere toepassingsgebieden kunnen worden toegewezen";
       form:displayType displayTypes:conceptSelector ;
       form:validations [
           a form:RequiredConstraint ;
@@ -268,13 +290,15 @@ ext:relatedPg a form:PropertyGroup;
   ##########################################################
   ext:pubChannelF a form:Field ;
       sh:name "Publicatiekanalen" ;
-      form:help "Gelieve de publicatiekanalen die van toepassing zijn te kiezen. Meerdere publicatiekanalen kunnen worden toegewezen.";
       sh:order 30 ;
       sh:path lpdcExt:publicationMedium ;
       form:options  """
                      {
                        "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/PublicatieKanaal",
-                       "multiple": true
+                       "multiple": true,
+                       "tooltipText": "enkel van toepassing voor Your Europe",
+                       "conceptHelpText": "Valt een dienstverlening onder de SDG-verordening, vul dan publicatiekanaal 'Your Europe' en onderliggende categorie in.<ul><li>Voor andere hergebruikers moet je het publicatiekanaal niet invullen.</li></ul><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#publicatiekanalen'>Meer info</a></p>",
+                       "helpText": "Valt een dienstverlening onder de SDG-verordening, vul dan publicatiekanaal 'Your Europe' en onderliggende categorie in.<ul><li>Voor andere hergebruikers moet je het publicatiekanaal niet invullen.</li></ul><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#publicatiekanalen'>Meer info</a></p>"
                      }
                     """ ;
       form:displayType displayTypes:conceptSelector ;
@@ -305,7 +329,6 @@ ext:relatedPg a form:PropertyGroup;
   ##########################################################
   ext:yourEuropeCatF a form:Field ;
       sh:name "Categorieën Your Europe" ;
-      form:help "Gelieve de categorieën die het meest van toepassing zijn te kiezen. Meerdere categorieën kunnen worden toegewezen.";
       sh:order 40 ;
       sh:path lpdcExt:yourEuropeCategory ;
       form:options  """

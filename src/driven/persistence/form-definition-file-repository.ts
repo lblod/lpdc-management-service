@@ -18,7 +18,7 @@ export class FormDefinitionFileRepository implements FormDefinitionRepository {
     form = this.replaceInForm(
       form,
       this.contactpoint,
-      "form:includes ext:contactpointsL;",
+      "form:includes ext:contactpointsL;\nform:includes ext:contactpointsHeading;",
     );
 
     const municipalityMergerReplacement = ENABLE_MUNICIPALITY_MERGER_FLAG
