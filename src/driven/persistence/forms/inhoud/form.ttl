@@ -90,6 +90,11 @@ ext:basisinformatiePg a form:PropertyGroup;
         form:grouping form:Bag ;
         sh:resultMessage "Dit veld is verplicht." ;
         sh:path dct:description
+      ], [
+        a form:RichTextLinkValidator ;
+        form:grouping form:Bag ;
+        sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+        sh:path dct:description
       ];
       sh:path dct:description ;
       form:help "Geef de essentie van de dienstverlening weer in enkele zinnen." ;
@@ -109,6 +114,12 @@ ext:basisinformatiePg a form:PropertyGroup;
       sh:order 1 ;
       sh:name "Aanvullende Beschrijving";
       form:language "<FORMAL_INFORMAL_LANGUAGE>";
+      form:validations [
+        a form:RichTextLinkValidator ;
+        form:grouping form:Bag ;
+        sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+        sh:path lpdcExt:additionalDescription
+      ];
       sh:path lpdcExt:additionalDescription ;
       form:options """
                     {
@@ -126,6 +137,12 @@ ext:basisinformatiePg a form:PropertyGroup;
       sh:order 1 ;
       sh:name "Uitzonderingen" ;
       form:language "<FORMAL_INFORMAL_LANGUAGE>";
+      form:validations [
+        a form:RichTextLinkValidator ;
+        form:grouping form:Bag ;
+        sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+        sh:path lpdcExt:exception
+      ];
       sh:path lpdcExt:exception ;
       form:options """
                     {
@@ -244,6 +261,11 @@ ext:requirementHeading a form:Field;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld is verplicht." ;
           sh:path dct:description
+        ], [
+          a form:RichTextLinkValidator ;
+          form:grouping form:Bag ;
+          sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+          sh:path dct:description
         ];
         sh:path dct:description ;
         form:options """
@@ -360,6 +382,11 @@ ext:requirementHeading a form:Field;
                 form:grouping form:Bag ;
                 sh:resultMessage "Dit veld is verplicht." ;
                 sh:path dct:description
+              ], [
+                a form:RichTextLinkValidator ;
+                form:grouping form:Bag ;
+                sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+                sh:path dct:description
               ];
               sh:path dct:description ;
               form:displayType displayTypes:richText ;
@@ -472,6 +499,11 @@ ext:rulesHeading a form:Field;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld is verplicht." ;
           sh:path dct:description
+        ], [
+          a form:RichTextLinkValidator ;
+          form:grouping form:Bag ;
+          sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+          sh:path dct:description
         ];
         sh:path dct:description ;
         form:options """
@@ -582,6 +614,12 @@ ext:rulesHeading a form:Field;
               sh:name "Beschrijving website" ;
               sh:order 2 ;
               form:language "<FORMAL_INFORMAL_LANGUAGE>";
+              form:validations [
+                a form:RichTextLinkValidator ;
+                form:grouping form:Bag ;
+                sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+                sh:path dct:description
+              ];
               sh:path dct:description ;
               form:displayType displayTypes:richText ;
               sh:group ext:procedureWebsitesPg-sub .
@@ -711,6 +749,11 @@ ext:costsHeading a form:Field;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld is verplicht." ;
           sh:path dct:description
+        ], [
+          a form:RichTextLinkValidator ;
+          form:grouping form:Bag ;
+          sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+          sh:path dct:description
         ];
         sh:order 3 ;
         sh:path dct:description ;
@@ -820,6 +863,11 @@ ext:finAdvHeading a form:Field;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld is verplicht." ;
           sh:path dct:description
+        ], [
+          a form:RichTextLinkValidator ;
+          form:grouping form:Bag ;
+          sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+          sh:path dct:description
         ];
         sh:order 3 ;
         sh:path dct:description ;
@@ -846,6 +894,12 @@ ext:regulationsPg a form:PropertyGroup;
   ext:regulationitleF a form:Field ;
       sh:order 1 ;
       form:language "<FORMAL_INFORMAL_LANGUAGE>";
+      form:validations [
+        a form:RichTextLinkValidator ;
+        form:grouping form:Bag ;
+        sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+        sh:path lpdcExt:regulation
+      ];
       sh:name "Regelgeving";
       sh:path lpdcExt:regulation;
       form:help "Welke regelgeving ligt aan de basis van dit product of deze dienst?" ;
@@ -947,6 +1001,12 @@ ext:regulationsPg a form:PropertyGroup;
         sh:name "Beschrijving regelgevende bron" ;
         sh:order 3 ;
         form:language "<FORMAL_INFORMAL_LANGUAGE>";
+        form:validations [
+          a form:RichTextLinkValidator ;
+          form:grouping form:Bag ;
+          sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+          sh:path dct:description
+        ];
         sh:path dct:description ;
         form:displayType displayTypes:richText ;
         sh:group ext:legalResourcePg-sub .
@@ -1288,6 +1348,12 @@ ext:websitesHeading a form:Field;
         sh:name "Beschrijving website" ;
         sh:order 3 ;
         form:language "<FORMAL_INFORMAL_LANGUAGE>";
+        form:validations [
+          a form:RichTextLinkValidator ;
+          form:grouping form:Bag ;
+          sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+          sh:path dct:description
+        ];
         sh:path dct:description ;
         form:displayType displayTypes:richText ;
         sh:group ext:websitesPg-sub .
