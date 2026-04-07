@@ -66,6 +66,14 @@ ext:basisinformatiePg a form:PropertyGroup;
         form:grouping form:Bag ;
         sh:resultMessage "Dit veld is verplicht." ;
         sh:path dct:title
+      ],
+      [
+        a form:MinLength ;
+        form:grouping form:MatchEvery ;
+        form:min "3" ;
+        sh:resultMessage "Voeg inhoudelijk relevante informatie toe." ;
+        sh:severity sh:Warning ;
+        sh:path dct:title
       ];
       form:help "Kies een titel die duidelijk is voor de beoogde doelgroep." ;
       form:options """
