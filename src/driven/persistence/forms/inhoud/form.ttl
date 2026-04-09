@@ -70,7 +70,7 @@ ext:basisinformatiePg a form:PropertyGroup;
       [
         a form:TextMinLength ;
         form:grouping form:MatchEvery ;
-        form:min "3" ;
+        form:min "4" ;
         sh:resultMessage "Voeg inhoudelijk relevante informatie toe." ;
         sh:severity sh:Warning ;
         sh:path dct:title
@@ -107,7 +107,7 @@ ext:basisinformatiePg a form:PropertyGroup;
       [
         a form:TextMinLength ;
         form:grouping form:MatchEvery ;
-        form:min "3" ;
+        form:min "4" ;
         sh:resultMessage "Voeg inhoudelijk relevante informatie toe." ;
         sh:severity sh:Warning ;
         sh:path dct:description
@@ -257,7 +257,7 @@ ext:requirementHeading a form:Field;
         [
           a form:TextMinLength ;
           form:grouping form:MatchEvery ;
-          form:min "3" ;
+          form:min "4" ;
           sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
           sh:severity sh:Warning ;
           sh:path dct:title
@@ -294,7 +294,7 @@ ext:requirementHeading a form:Field;
         [
           a form:TextMinLength ;
           form:grouping form:MatchEvery ;
-          form:min "3" ;
+          form:min "4" ;
           sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
           sh:severity sh:Warning ;
           sh:path dct:description
@@ -394,7 +394,7 @@ ext:requirementHeading a form:Field;
               [
                 a form:TextMinLength ;
                 form:grouping form:MatchEvery ;
-                form:min "3" ;
+                form:min "4" ;
                 sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
                 sh:severity sh:Warning ;
                 sh:path dct:title
@@ -431,7 +431,7 @@ ext:requirementHeading a form:Field;
               [
                 a form:TextMinLength ;
                 form:grouping form:MatchEvery ;
-                form:min "3" ;
+                form:min "4" ;
                 sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
                 sh:severity sh:Warning ;
                 sh:path dct:description
@@ -527,7 +527,7 @@ ext:rulesHeading a form:Field;
         [
           a form:TextMinLength ;
           form:grouping form:MatchEvery ;
-          form:min "3" ;
+          form:min "4" ;
           sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
           sh:severity sh:Warning ;
           sh:path dct:title
@@ -564,7 +564,7 @@ ext:rulesHeading a form:Field;
         [
           a form:TextMinLength ;
           form:grouping form:MatchEvery ;
-          form:min "3" ;
+          form:min "4" ;
           sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
           sh:severity sh:Warning ;
           sh:path dct:description
@@ -664,7 +664,7 @@ ext:rulesHeading a form:Field;
               [
                 a form:TextMinLength ;
                 form:grouping form:MatchEvery ;
-                form:min "3" ;
+                form:min "4" ;
                 sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
                 sh:severity sh:Warning ;
                 sh:path dct:title
@@ -807,7 +807,7 @@ ext:costsHeading a form:Field;
         [
           a form:TextMinLength ;
           form:grouping form:MatchEvery ;
-          form:min "3" ;
+          form:min "4" ;
           sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
           sh:severity sh:Warning ;
           sh:path dct:title
@@ -838,7 +838,7 @@ ext:costsHeading a form:Field;
         [
           a form:TextMinLength ;
           form:grouping form:MatchEvery ;
-          form:min "3" ;
+          form:min "4" ;
           sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
           sh:severity sh:Warning ;
           sh:path dct:description
@@ -937,7 +937,7 @@ ext:finAdvHeading a form:Field;
         [
           a form:TextMinLength ;
           form:grouping form:MatchEvery ;
-          form:min "3" ;
+          form:min "4" ;
           sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
           sh:severity sh:Warning ;
           sh:path dct:title
@@ -968,7 +968,7 @@ ext:finAdvHeading a form:Field;
         [
           a form:TextMinLength ;
           form:grouping form:MatchEvery ;
-          form:min "3" ;
+          form:min "4" ;
           sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
           sh:severity sh:Warning ;
           sh:path dct:description
@@ -1438,7 +1438,7 @@ ext:websitesHeading a form:Field;
         [
           a form:TextMinLength ;
           form:grouping form:MatchEvery ;
-          form:min "3" ;
+          form:min "4" ;
           sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
           sh:severity sh:Warning ;
           sh:path dct:title
