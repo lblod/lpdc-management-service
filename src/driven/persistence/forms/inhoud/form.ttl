@@ -66,6 +66,14 @@ ext:basisinformatiePg a form:PropertyGroup;
         form:grouping form:Bag ;
         sh:resultMessage "Dit veld is verplicht." ;
         sh:path dct:title
+      ],
+      [
+        a form:TextMinLength ;
+        form:grouping form:MatchEvery ;
+        form:min "4" ;
+        sh:resultMessage "Voeg inhoudelijk relevante informatie toe." ;
+        sh:severity sh:Warning ;
+        sh:path dct:title
       ];
       form:help "Kies een titel die duidelijk is voor de beoogde doelgroep." ;
       form:options """
@@ -94,6 +102,14 @@ ext:basisinformatiePg a form:PropertyGroup;
         a form:RichTextLinkValidator ;
         form:grouping form:Bag ;
         sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+        sh:path dct:description
+      ],
+      [
+        a form:TextMinLength ;
+        form:grouping form:MatchEvery ;
+        form:min "4" ;
+        sh:resultMessage "Voeg inhoudelijk relevante informatie toe." ;
+        sh:severity sh:Warning ;
         sh:path dct:description
       ];
       sh:path dct:description ;
@@ -237,6 +253,14 @@ ext:requirementHeading a form:Field;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld is verplicht." ;
           sh:path dct:title
+        ],
+        [
+          a form:TextMinLength ;
+          form:grouping form:MatchEvery ;
+          form:min "4" ;
+          sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+          sh:severity sh:Warning ;
+          sh:path dct:title
         ];
         sh:path dct:title ;
         form:options """
@@ -265,6 +289,14 @@ ext:requirementHeading a form:Field;
           a form:RichTextLinkValidator ;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+          sh:path dct:description
+        ],
+        [
+          a form:TextMinLength ;
+          form:grouping form:MatchEvery ;
+          form:min "4" ;
+          sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+          sh:severity sh:Warning ;
           sh:path dct:description
         ];
         sh:path dct:description ;
@@ -358,6 +390,14 @@ ext:requirementHeading a form:Field;
                 form:grouping form:Bag ;
                 sh:resultMessage "Dit veld is verplicht." ;
                 sh:path dct:title
+              ],
+              [
+                a form:TextMinLength ;
+                form:grouping form:MatchEvery ;
+                form:min "4" ;
+                sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+                sh:severity sh:Warning ;
+                sh:path dct:title
               ];
               sh:path dct:title ;
               form:options """
@@ -386,6 +426,14 @@ ext:requirementHeading a form:Field;
                 a form:RichTextLinkValidator ;
                 form:grouping form:Bag ;
                 sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+                sh:path dct:description
+              ],
+              [
+                a form:TextMinLength ;
+                form:grouping form:MatchEvery ;
+                form:min "4" ;
+                sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+                sh:severity sh:Warning ;
                 sh:path dct:description
               ];
               sh:path dct:description ;
@@ -475,6 +523,14 @@ ext:rulesHeading a form:Field;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld is verplicht." ;
           sh:path dct:title
+        ],
+        [
+          a form:TextMinLength ;
+          form:grouping form:MatchEvery ;
+          form:min "4" ;
+          sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+          sh:severity sh:Warning ;
+          sh:path dct:title
         ];
         sh:path dct:title ;
         form:options """
@@ -503,6 +559,14 @@ ext:rulesHeading a form:Field;
           a form:RichTextLinkValidator ;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+          sh:path dct:description
+        ],
+        [
+          a form:TextMinLength ;
+          form:grouping form:MatchEvery ;
+          form:min "4" ;
+          sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+          sh:severity sh:Warning ;
           sh:path dct:description
         ];
         sh:path dct:description ;
@@ -595,6 +659,14 @@ ext:rulesHeading a form:Field;
                 form:language "<FORMAL_INFORMAL_LANGUAGE>";
                 form:grouping form:Bag ;
                 sh:resultMessage "Dit veld is verplicht." ;
+                sh:path dct:title
+              ],
+              [
+                a form:TextMinLength ;
+                form:grouping form:MatchEvery ;
+                form:min "4" ;
+                sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+                sh:severity sh:Warning ;
                 sh:path dct:title
               ];
               sh:path dct:title ;
@@ -731,6 +803,14 @@ ext:costsHeading a form:Field;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld is verplicht." ;
           sh:path dct:title
+        ],
+        [
+          a form:TextMinLength ;
+          form:grouping form:MatchEvery ;
+          form:min "4" ;
+          sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+          sh:severity sh:Warning ;
+          sh:path dct:title
         ];
         sh:order 1 ;
         sh:path dct:title ;
@@ -753,6 +833,14 @@ ext:costsHeading a form:Field;
           a form:RichTextLinkValidator ;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+          sh:path dct:description
+        ],
+        [
+          a form:TextMinLength ;
+          form:grouping form:MatchEvery ;
+          form:min "4" ;
+          sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+          sh:severity sh:Warning ;
           sh:path dct:description
         ];
         sh:order 3 ;
@@ -845,6 +933,14 @@ ext:finAdvHeading a form:Field;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld is verplicht." ;
           sh:path dct:title
+        ],
+        [
+          a form:TextMinLength ;
+          form:grouping form:MatchEvery ;
+          form:min "4" ;
+          sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+          sh:severity sh:Warning ;
+          sh:path dct:title
         ];
         sh:order 1 ;
         sh:path dct:title ;
@@ -867,6 +963,14 @@ ext:finAdvHeading a form:Field;
           a form:RichTextLinkValidator ;
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld bevat ongeldige URL's of email-adressen" ;
+          sh:path dct:description
+        ],
+        [
+          a form:TextMinLength ;
+          form:grouping form:MatchEvery ;
+          form:min "4" ;
+          sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+          sh:severity sh:Warning ;
           sh:path dct:description
         ];
         sh:order 3 ;
@@ -1329,6 +1433,14 @@ ext:websitesHeading a form:Field;
           form:language "<FORMAL_INFORMAL_LANGUAGE>";
           form:grouping form:Bag ;
           sh:resultMessage "Dit veld is verplicht." ;
+          sh:path dct:title
+        ],
+        [
+          a form:TextMinLength ;
+          form:grouping form:MatchEvery ;
+          form:min "4" ;
+          sh:resultMessage "Voeg inhoudelijk relevante informatie toe, of verwijder deze groep velden via de verwijderknop." ;
+          sh:severity sh:Warning ;
           sh:path dct:title
         ];
         sh:path dct:title ;
