@@ -317,6 +317,25 @@ export class InstanceSparqlRepository implements InstanceRepository {
                 }
             }`;
       await this.querying.deleteInsert(updateReviewStatusesQuery);
+    } else {
+      const removeReviewStatusQuery = `
+            ${PREFIX.ext}
+            ${PREFIX.lpdcExt}
+            ${PREFIX.dct}
+
+            DELETE {
+                GRAPH ?g {
+                    ?service ext:reviewStatus ?status.
+                }
+            }
+            WHERE {
+                GRAPH ?g {
+                    ?service a lpdcExt:InstancePublicService;
+                        dct:source ${sparqlEscapeUri(conceptId)}.
+                    ?service ext:reviewStatus ?status.
+                }
+            }`;
+      await this.querying.deleteInsert(removeReviewStatusQuery);
     }
   }
 
