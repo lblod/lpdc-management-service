@@ -147,6 +147,7 @@ export class LanguageString {
   }
 
   static isFunctionallyChanged(
+// Compares language strings using effective values. Switching between generated and explicit values with identical content is not a meaningful change and should not count as a functional difference.
     value: LanguageString | undefined,
     other: LanguageString | undefined,
   ): boolean {
