@@ -54,6 +54,7 @@ import { ConceptSnapshotProcessorApplicationService } from "./src/core/applicati
 import { SpatialSparqlRepository } from "./src/driven/persistence/spatial-sparql-repository";
 import { AuthorityLevelSparqlRepository } from "./src/driven/persistence/authority-level-sparql-repository";
 import { PersoonSparqlRepository } from "./src/driven/persistence/persoon-sparql-repository";
+import { setChosenForm } from "./src/core/domain/chosen-form-context";
 
 //TODO: The original bodyparser is configured to only accept 'application/vnd.api+json'
 //      The current endpoint(s) don't work with json:api. Also we need both types, as e.g. deltanotifier doesn't
@@ -1044,6 +1045,19 @@ async function compareSnapshots(req: Request, res: Response) {
     const newConceptSnapshot = await conceptSnapshotRepository.findById(
       new Iri(newSnapshotIdRequestParam),
     );
+
+    const session: Session = req["session"];
+    const bestuurseenheid = await bestuurseenheidRepository.findById(
+      session.bestuurseenheidId,
+    );
+    const formalInformalChoice: FormalInformalChoice | undefined =
+      await formalInformalChoiceRepository.findByBestuurseenheid(
+        bestuurseenheid,
+      );
+    setChosenForm(
+      formalInformalChoice?._chosenForm as "formal" | "informal" | undefined,
+    );
+
     return res.json(
       ConceptSnapshot.isFunctionallyChanged(
         currentConceptSnapshot,
