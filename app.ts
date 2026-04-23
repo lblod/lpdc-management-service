@@ -1051,8 +1051,12 @@ async function compareSnapshots(req: Request, res: Response) {
       session.bestuurseenheidId,
     );
     const formalInformalChoice: FormalInformalChoice | undefined =
-    await formalInformalChoiceRepository.findByBestuurseenheid(bestuurseenheid);
-    setChosenForm(formalInformalChoice?._chosenForm as 'formal' | 'informal' | undefined);
+      await formalInformalChoiceRepository.findByBestuurseenheid(
+        bestuurseenheid,
+      );
+    setChosenForm(
+      formalInformalChoice?._chosenForm as "formal" | "informal" | undefined,
+    );
 
     return res.json(
       ConceptSnapshot.isFunctionallyChanged(

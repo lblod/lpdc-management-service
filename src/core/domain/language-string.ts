@@ -148,18 +148,18 @@ export class LanguageString {
   }
 
   static isFunctionallyChanged(
-// Compares language strings using effective values. Switching between generated and explicit values with identical content is not a meaningful change and should not count as a functional difference.
+    // Compares language strings using effective values. Switching between generated and explicit values with identical content is not a meaningful change and should not count as a functional difference.
     value: LanguageString | undefined,
     other: LanguageString | undefined,
   ): boolean {
     const chosenForm = getChosenForm();
-    
-    if (chosenForm === 'formal') {
+
+    if (chosenForm === "formal") {
       const valueFormal = value?.nlFormal ?? value?.nlGeneratedFormal;
       const otherFormal = other?.nlFormal ?? other?.nlGeneratedFormal;
       return valueFormal !== otherFormal;
     }
-    if (chosenForm === 'informal') {
+    if (chosenForm === "informal") {
       const valueInformal = value?.nlInformal ?? value?.nlGeneratedInformal;
       const otherInformal = other?.nlInformal ?? other?.nlGeneratedInformal;
       return valueInformal !== otherInformal;
