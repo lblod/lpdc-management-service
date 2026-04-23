@@ -2,6 +2,7 @@ import { Language } from "./language";
 import { uniq } from "lodash";
 import { InvariantError } from "./shared/lpdc-error";
 import { isNotBlank } from "./shared/string-helper";
+import { getChosenForm } from "./chosen-form-context";
 
 export class LanguageString {
   private readonly _nl: string | undefined;
@@ -151,16 +152,19 @@ export class LanguageString {
     value: LanguageString | undefined,
     other: LanguageString | undefined,
   ): boolean {
-    const valueFormal = value?.nlFormal ?? value?.nlGeneratedFormal;
-    const otherFormal = other?.nlFormal ?? other?.nlGeneratedFormal;
-    const valueInformal = value?.nlInformal ?? value?.nlGeneratedInformal;
-    const otherInformal = other?.nlInformal ?? other?.nlGeneratedInformal;
-
-    return (
-      value?.nl !== other?.nl ||
-      valueFormal !== otherFormal ||
-      valueInformal !== otherInformal
-    );
+    const chosenForm = getChosenForm();
+    
+    if (chosenForm === 'formal') {
+      const valueFormal = value?.nlFormal ?? value?.nlGeneratedFormal;
+      const otherFormal = other?.nlFormal ?? other?.nlGeneratedFormal;
+      return valueFormal !== otherFormal;
+    }
+    if (chosenForm === 'informal') {
+      const valueInformal = value?.nlInformal ?? value?.nlGeneratedInformal;
+      const otherInformal = other?.nlInformal ?? other?.nlGeneratedInformal;
+      return valueInformal !== otherInformal;
+    }
+    return value?.nl !== other?.nl;
   }
 
   static compare(a: LanguageString, b: LanguageString): number {
