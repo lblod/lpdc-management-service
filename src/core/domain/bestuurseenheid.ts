@@ -105,6 +105,7 @@ export enum BestuurseenheidClassificatieCode {
   WELZIJNSVERENIGING = "Welzijnsvereniging",
   OCMW_VERENIGING = "OCMW vereniging",
   VLAAMSE_GEMEENSCHAPSCOMMISSIE = "Vlaamse gemeenschapscommissie",
+  ABB = "Agentschap Binnenlands Bestuur",
 }
 
 export enum BestuurseenheidStatusCode {
