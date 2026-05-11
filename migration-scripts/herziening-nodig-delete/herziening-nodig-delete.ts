@@ -12,7 +12,9 @@ const directDb = new DirectDatabaseAccess(endPoint);
 const sparqlQuerying = new SparqlQuerying(endPoint);
 const snapshotRepo = new ConceptSnapshotSparqlRepository(endPoint);
 
-async function getAllInstancesWithReviewStatus(): Promise<{ id: Iri; conceptId: Iri; upToDateSnapshotId: Iri }[]> {
+async function getAllInstancesWithReviewStatus(): Promise<
+  { id: Iri; conceptId: Iri; upToDateSnapshotId: Iri }[]
+> {
   const query = `
     ${PREFIX.lpdcExt}
     ${PREFIX.dct}
@@ -30,7 +32,7 @@ async function getAllInstancesWithReviewStatus(): Promise<{ id: Iri; conceptId: 
 
   const results = await directDb.list(query);
 
-  return (results as any[]).map(r => ({
+  return (results as any[]).map((r) => ({
     id: new Iri(r.id.value),
     conceptId: new Iri(r.conceptId.value),
     upToDateSnapshotId: new Iri(r.upToDateSnapshotId.value),
@@ -90,15 +92,21 @@ async function main() {
   for (const instance of instances) {
     const latestSnapshotId = await getLatestSnapshotId(instance.conceptId);
     if (!latestSnapshotId) {
-      console.log(`No latest snapshot found for concept ${instance.conceptId.value}, skipping`);
+      console.log(
+        `No latest snapshot found for concept ${instance.conceptId.value}, skipping`,
+      );
       continue;
     }
 
-    const upToDateSnapshot = await snapshotRepo.findById(instance.upToDateSnapshotId);
+    const upToDateSnapshot = await snapshotRepo.findById(
+      instance.upToDateSnapshotId,
+    );
     const latestSnapshot = await snapshotRepo.findById(latestSnapshotId);
 
     const isArchived = latestSnapshot.isArchived;
-    const isFunctionallyChanged = ConceptSnapshot.isFunctionallyChanged(upToDateSnapshot, latestSnapshot).length !== 0;
+    const isFunctionallyChanged =
+      ConceptSnapshot.isFunctionallyChanged(upToDateSnapshot, latestSnapshot)
+        .length !== 0;
 
     if (!isArchived && !isFunctionallyChanged) {
       console.log(`Removing review status from instance ${instance.id.value}`);
@@ -112,7 +120,7 @@ async function main() {
 
 main()
   .then(() => process.exit(0))
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
     process.exit(1);
   });
