@@ -669,10 +669,11 @@ export class QuadsToDomainMapper {
   }
 
   private url(id: Iri): string | undefined {
-    return this.storeAccess.uniqueValue(
+    const urlValue = this.storeAccess.uniqueValue(
       this.asNamedOrBlankNode(id),
       NS.schema("url"),
     );
+    return urlValue?.trim();
   }
 
   private firstName(id: Iri): string | undefined {
