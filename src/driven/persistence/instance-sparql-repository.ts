@@ -39,6 +39,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
   protected readonly fetcher: DatastoreToQuadsRecursiveSparqlFetcher;
   protected doubleQuadReporter: DoubleQuadReporter =
     new LoggingDoubleQuadReporter(new Logger("Instance-QuadsToDomainLogger"));
+  private readonly reviewStatusUpdatesEnabled: boolean;
 
   constructor(endpoint?: string, doubleQuadReporter?: DoubleQuadReporter) {
     this.querying = new SparqlQuerying(endpoint);
@@ -46,6 +47,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
     if (doubleQuadReporter) {
       this.doubleQuadReporter = doubleQuadReporter;
     }
+    this.reviewStatusUpdatesEnabled =
+      process.env.ENABLE_REVIEW_STATUS_UPDATES !== "false";
   }
 
   async findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<Instance> {
@@ -284,6 +287,9 @@ export class InstanceSparqlRepository implements InstanceRepository {
     isConceptFunctionallyChanged: boolean,
     isConceptArchived: boolean,
   ): Promise<void> {
+    if (!this.reviewStatusUpdatesEnabled) {
+      return;
+    }
     let reviewStatus = undefined;
     if (isConceptArchived) {
       reviewStatus = InstanceReviewStatusType.CONCEPT_GEARCHIVEERD;
