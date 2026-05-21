@@ -287,6 +287,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
     isConceptFunctionallyChanged: boolean,
     isConceptArchived: boolean,
   ): Promise<void> {
+    // Disables the "Herziening nodig" process via DISABLE_REVIEW_STATUS_UPDATES: "true" in app-lpdc-digitaal-loket docker-compose.override.
     if (!this.reviewStatusUpdatesEnabled) {
       return;
     }
