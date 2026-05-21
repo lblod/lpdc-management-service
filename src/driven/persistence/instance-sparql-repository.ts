@@ -48,7 +48,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
       this.doubleQuadReporter = doubleQuadReporter;
     }
     this.reviewStatusUpdatesEnabled =
-      process.env.ENABLE_REVIEW_STATUS_UPDATES !== "false";
+      process.env.DISABLE_REVIEW_STATUS_UPDATES !== "true";
   }
 
   async findById(bestuurseenheid: Bestuurseenheid, id: Iri): Promise<Instance> {
