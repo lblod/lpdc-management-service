@@ -231,6 +231,8 @@ export class DomainToQuadsMapper {
       ),
       this.dateCreated(instance.id, instance.dateCreated),
       this.dateModified(instance.id, instance.dateModified),
+      this.revisionModifiedDate(instance.id, instance.revisionModifiedDate),
+      this.formalInformalModifiedDate(instance.id, instance.formalInformalModifiedDate),
       this.creator(instance.id, instance.creator),
       this.lastModifier(instance.id, instance.lastModifier),
       instance.dateSent
@@ -524,6 +526,26 @@ export class DomainToQuadsMapper {
       : undefined;
   }
 
+  private revisionModifiedDate(id: Iri, value: FormatPreservingDate | undefined ) {
+    return value
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.lpdcExt("revisionModifiedDate"),
+          literal(value.value, NS.xsd("dateTime")),
+        )
+      : undefined;
+  }
+
+  private formalInformalModifiedDate(id: Iri, value: FormatPreservingDate | undefined ) {
+    return value
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.lpdcExt("formalInformalModifiedDate"),
+          literal(value.value, NS.xsd("dateTime")),
+        )
+      : undefined;
+  }
+  
   private dateModified(id: Iri, value: FormatPreservingDate | undefined) {
     return value
       ? this.buildQuad(

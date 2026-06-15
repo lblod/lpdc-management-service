@@ -380,6 +380,8 @@ export class QuadsToDomainMapper {
       this.needsConversionFromFormalToInformal(id),
       this.dateCreated(id),
       this.dateModified(id),
+      this.revisionModifiedDate(id),
+      this.formalInformalModifiedDate(id),
       this.creator(id),
       this.lastModifier(id),
       this.dateSent(id),
@@ -712,6 +714,24 @@ export class QuadsToDomainMapper {
       this.storeAccess.uniqueValue(
         this.asNamedOrBlankNode(id),
         NS.schema("dateModified"),
+      ),
+    );
+  }
+
+  revisionModifiedDate(id: Iri): FormatPreservingDate | undefined {
+    return this.asFormatPreservingDate(
+      this.storeAccess.uniqueValue(
+        this.asNamedOrBlankNode(id),
+        NS.lpdcExt("revisionModifiedDate"),
+      ),
+    );
+  }
+
+  formalInformalModifiedDate(id: Iri): FormatPreservingDate | undefined {
+    return this.asFormatPreservingDate(
+      this.storeAccess.uniqueValue(
+        this.asNamedOrBlankNode(id),
+        NS.lpdcExt("formalInformalModifiedDate"),
       ),
     );
   }

@@ -88,6 +88,8 @@ export class NewInstanceDomainService {
       false,
       now,
       now,
+      undefined,
+      undefined,
       user,
       user,
       undefined,
@@ -194,6 +196,8 @@ export class NewInstanceDomainService {
       false,
       now,
       now,
+      undefined,
+      undefined,
       user,
       user,
       undefined,
@@ -247,6 +251,8 @@ export class NewInstanceDomainService {
       )
       .withDateCreated(FormatPreservingDate.now())
       .withDateModified(FormatPreservingDate.now())
+      .withRevisionModifiedDate(undefined)
+      .withFormalInformalModifiedDate(undefined)
       .withCreator(user)
       .withLastModifier(user)
       .withRequirements(
