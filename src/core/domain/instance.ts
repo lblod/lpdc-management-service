@@ -908,15 +908,19 @@ export class InstanceBuilder {
     return this;
   }
 
-  public withRevisionModifiedDate(revisionModifiedDate: FormatPreservingDate): InstanceBuilder {
+  public withRevisionModifiedDate(
+    revisionModifiedDate: FormatPreservingDate,
+  ): InstanceBuilder {
     this.revisionModifiedDate = revisionModifiedDate;
     return this;
   }
 
-  public withFormalInformalModifiedDate(formalInformalModifiedDate: FormatPreservingDate): InstanceBuilder {
-  this.formalInformalModifiedDate = formalInformalModifiedDate;
-  return this;
-}
+  public withFormalInformalModifiedDate(
+    formalInformalModifiedDate: FormatPreservingDate,
+  ): InstanceBuilder {
+    this.formalInformalModifiedDate = formalInformalModifiedDate;
+    return this;
+  }
 
   public withCreator(user: Iri): InstanceBuilder {
     this.creator = user;
