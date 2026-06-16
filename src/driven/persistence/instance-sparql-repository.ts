@@ -299,6 +299,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
     }
 
     if (reviewStatus) {
+      const now = new Date();
+
       const updateReviewStatusesQuery = `
             ${PREFIX.ext}
             ${PREFIX.lpdcExt}
@@ -306,12 +308,14 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
             DELETE {
                 GRAPH ?g {
-                    ?service ext:reviewStatus ?status.
+                    ?service ext:reviewStatus ?status;
+                             lpdcExt:revisionModifiedDate ?oldDate
                 }
             }
             INSERT {
                 GRAPH ?g {
-                    ?service ext:reviewStatus ${NS.concepts.reviewStatus(reviewStatus)}.
+                    ?service ext:reviewStatus ${NS.concepts.reviewStatus(reviewStatus)};
+                             lpdcExt:revisionModifiedDate ${sparqlEscapeDateTime(now.toISOString())}.
                 }
             }
             WHERE {
@@ -321,6 +325,9 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     OPTIONAL {
                         ?service ext:reviewStatus ?status.
                     }
+                    OPTIONAL {
+                        ?service lpdcExt:revisionModifiedDate ?oldDate .
+                    }    
                 }
             }`;
       await this.querying.deleteInsert(updateReviewStatusesQuery);
