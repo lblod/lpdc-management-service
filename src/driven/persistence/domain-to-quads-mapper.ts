@@ -231,7 +231,10 @@ export class DomainToQuadsMapper {
       ),
       this.dateCreated(instance.id, instance.dateCreated),
       this.dateModified(instance.id, instance.dateModified),
-      this.reviewStatusModifiedDate(instance.id, instance.reviewStatusModifiedDate),
+      this.reviewStatusModifiedDate(
+        instance.id,
+        instance.reviewStatusModifiedDate,
+      ),
       this.formalInformalModifiedDate(
         instance.id,
         instance.formalInformalModifiedDate,
