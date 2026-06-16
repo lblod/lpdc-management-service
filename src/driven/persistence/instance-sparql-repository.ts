@@ -309,13 +309,13 @@ export class InstanceSparqlRepository implements InstanceRepository {
             DELETE {
                 GRAPH ?g {
                     ?service ext:reviewStatus ?status;
-                             lpdcExt:revisionModifiedDate ?oldDate
+                             lpdcExt:reviewStatusModifiedDate ?oldDate
                 }
             }
             INSERT {
                 GRAPH ?g {
                     ?service ext:reviewStatus ${NS.concepts.reviewStatus(reviewStatus)};
-                             lpdcExt:revisionModifiedDate ${sparqlEscapeDateTime(now.toISOString())}.
+                             lpdcExt:reviewStatusModifiedDate ${sparqlEscapeDateTime(now.toISOString())}.
                 }
             }
             WHERE {
@@ -326,7 +326,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                         ?service ext:reviewStatus ?status.
                     }
                     OPTIONAL {
-                        ?service lpdcExt:revisionModifiedDate ?oldDate .
+                        ?service lpdcExt:reviewStatusModifiedDate ?oldDate .
                     }    
                 }
             }`;

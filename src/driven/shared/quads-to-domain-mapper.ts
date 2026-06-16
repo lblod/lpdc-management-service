@@ -380,7 +380,7 @@ export class QuadsToDomainMapper {
       this.needsConversionFromFormalToInformal(id),
       this.dateCreated(id),
       this.dateModified(id),
-      this.revisionModifiedDate(id),
+      this.reviewStatusModifiedDate(id),
       this.formalInformalModifiedDate(id),
       this.creator(id),
       this.lastModifier(id),
@@ -718,11 +718,11 @@ export class QuadsToDomainMapper {
     );
   }
 
-  revisionModifiedDate(id: Iri): FormatPreservingDate | undefined {
+  reviewStatusModifiedDate(id: Iri): FormatPreservingDate | undefined {
     return this.asFormatPreservingDate(
       this.storeAccess.uniqueValue(
         this.asNamedOrBlankNode(id),
-        NS.lpdcExt("revisionModifiedDate"),
+        NS.lpdcExt("reviewStatusModifiedDate"),
       ),
     );
   }
