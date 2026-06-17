@@ -702,7 +702,7 @@ export class InstanceBuilder {
       )
       .withDateCreated(instance.dateCreated)
       .withDateModified(instance.dateModified)
-      .withRevisionModifiedDate(instance.reviewStatusModifiedDate)
+      .withReviewStatusModifiedDate(instance.reviewStatusModifiedDate)
       .withFormalInformalModifiedDate(instance.formalInformalModifiedDate)
       .withCreator(instance.creator)
       .withLastModifier(instance.lastModifier)
@@ -908,7 +908,7 @@ export class InstanceBuilder {
     return this;
   }
 
-  public withRevisionModifiedDate(
+  public withReviewStatusModifiedDate(
     reviewStatusModifiedDate: FormatPreservingDate,
   ): InstanceBuilder {
     this.reviewStatusModifiedDate = reviewStatusModifiedDate;

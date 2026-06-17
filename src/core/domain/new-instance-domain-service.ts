@@ -251,7 +251,7 @@ export class NewInstanceDomainService {
       )
       .withDateCreated(FormatPreservingDate.now())
       .withDateModified(FormatPreservingDate.now())
-      .withRevisionModifiedDate(undefined)
+      .withReviewStatusModifiedDate(undefined)
       .withFormalInformalModifiedDate(undefined)
       .withCreator(user)
       .withLastModifier(user)
