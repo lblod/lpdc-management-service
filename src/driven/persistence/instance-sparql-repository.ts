@@ -299,6 +299,8 @@ export class InstanceSparqlRepository implements InstanceRepository {
     }
 
     if (reviewStatus) {
+      const now = new Date();
+
       const updateReviewStatusesQuery = `
             ${PREFIX.ext}
             ${PREFIX.lpdcExt}
@@ -306,12 +308,14 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
             DELETE {
                 GRAPH ?g {
-                    ?service ext:reviewStatus ?status.
+                    ?service ext:reviewStatus ?status;
+                             lpdcExt:reviewStatusModifiedDate ?oldDate
                 }
             }
             INSERT {
                 GRAPH ?g {
-                    ?service ext:reviewStatus ${NS.concepts.reviewStatus(reviewStatus)}.
+                    ?service ext:reviewStatus ${NS.concepts.reviewStatus(reviewStatus)};
+                             lpdcExt:reviewStatusModifiedDate ${sparqlEscapeDateTime(now.toISOString())}.
                 }
             }
             WHERE {
@@ -321,6 +325,9 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     OPTIONAL {
                         ?service ext:reviewStatus ?status.
                     }
+                    OPTIONAL {
+                        ?service lpdcExt:reviewStatusModifiedDate ?oldDate .
+                    }    
                 }
             }`;
       await this.querying.deleteInsert(updateReviewStatusesQuery);
@@ -365,19 +372,28 @@ export class InstanceSparqlRepository implements InstanceRepository {
     bestuurseenheid: Bestuurseenheid,
     chosenType: ChosenFormType,
   ) {
+    const now = new Date();
+
     const query = `
         ${PREFIX.lpdcExt}
         WITH ${sparqlEscapeUri(bestuurseenheid.userGraph())}
 
         DELETE {
-           ?instance lpdcExt:needsConversionFromFormalToInformal """false"""^^<http://www.w3.org/2001/XMLSchema#boolean>.
+          ?instance lpdcExt:needsConversionFromFormalToInformal """false"""^^<http://www.w3.org/2001/XMLSchema#boolean> ;
+                    lpdcExt:formalInformalModifiedDate ?old .
         }
         INSERT {
-            ?instance lpdcExt:needsConversionFromFormalToInformal """true"""^^<http://www.w3.org/2001/XMLSchema#boolean>.
+            ?instance lpdcExt:needsConversionFromFormalToInformal """true"""^^<http://www.w3.org/2001/XMLSchema#boolean> ;
+                    lpdcExt:formalInformalModifiedDate ${sparqlEscapeDateTime(now.toISOString())} .
         }
         WHERE {
             ?instance a lpdcExt:InstancePublicService;
                    lpdcExt:dutchLanguageVariant ?variant.
+            
+            OPTIONAL {
+                ?instance lpdcExt:formalInformalModifiedDate ?old .
+            }
+
             FILTER (?variant != "nl-be-x-informal" && CONCAT("nl-be-x-", "${chosenType}") = "nl-be-x-informal")
         }
 

@@ -69,6 +69,8 @@ export class Instance {
   private readonly _needsConversionFromFormalToInformal: boolean;
   private readonly _dateCreated: FormatPreservingDate;
   private readonly _dateModified: FormatPreservingDate;
+  private readonly _reviewStatusModifiedDate: FormatPreservingDate;
+  private readonly _formalInformalModifiedDate: FormatPreservingDate;
   private readonly _creator: Iri;
   private readonly _lastModifier: Iri;
   private readonly _dateSent: FormatPreservingDate | undefined;
@@ -114,6 +116,8 @@ export class Instance {
     needsConversionFromFormalToInformal: boolean,
     dateCreated: FormatPreservingDate,
     dateModified: FormatPreservingDate,
+    reviewStatusModifiedDate: FormatPreservingDate | undefined,
+    formalInformalModifiedDate: FormatPreservingDate | undefined,
     creator: Iri,
     lastModifier: Iri,
     dateSent: FormatPreservingDate | undefined,
@@ -233,6 +237,8 @@ export class Instance {
     );
     this._dateCreated = requiredValue(dateCreated, "dateCreated");
     this._dateModified = requiredValue(dateModified, "dateModified");
+    this._reviewStatusModifiedDate = reviewStatusModifiedDate;
+    this._formalInformalModifiedDate = formalInformalModifiedDate;
     // No required values, because existing instances won't have a creator
     this._creator = creator;
     this._lastModifier = lastModifier;
@@ -490,6 +496,14 @@ export class Instance {
     return this._dateModified;
   }
 
+  get reviewStatusModifiedDate(): FormatPreservingDate {
+    return this._reviewStatusModifiedDate;
+  }
+
+  get formalInformalModifiedDate(): FormatPreservingDate {
+    return this._formalInformalModifiedDate;
+  }
+
   get creator(): Iri {
     return this._creator;
   }
@@ -634,6 +648,8 @@ export class InstanceBuilder {
   private needsConversionFromFormalToInformal: boolean;
   private dateCreated: FormatPreservingDate;
   private dateModified: FormatPreservingDate;
+  private reviewStatusModifiedDate: FormatPreservingDate;
+  private formalInformalModifiedDate: FormatPreservingDate;
   private creator: Iri;
   private lastModifier: Iri;
   private dateSent: FormatPreservingDate | undefined;
@@ -686,6 +702,8 @@ export class InstanceBuilder {
       )
       .withDateCreated(instance.dateCreated)
       .withDateModified(instance.dateModified)
+      .withReviewStatusModifiedDate(instance.reviewStatusModifiedDate)
+      .withFormalInformalModifiedDate(instance.formalInformalModifiedDate)
       .withCreator(instance.creator)
       .withLastModifier(instance.lastModifier)
       .withDateSent(instance.dateSent)
@@ -890,6 +908,20 @@ export class InstanceBuilder {
     return this;
   }
 
+  public withReviewStatusModifiedDate(
+    reviewStatusModifiedDate: FormatPreservingDate,
+  ): InstanceBuilder {
+    this.reviewStatusModifiedDate = reviewStatusModifiedDate;
+    return this;
+  }
+
+  public withFormalInformalModifiedDate(
+    formalInformalModifiedDate: FormatPreservingDate,
+  ): InstanceBuilder {
+    this.formalInformalModifiedDate = formalInformalModifiedDate;
+    return this;
+  }
+
   public withCreator(user: Iri): InstanceBuilder {
     this.creator = user;
     return this;
@@ -975,6 +1007,8 @@ export class InstanceBuilder {
       this.needsConversionFromFormalToInformal,
       this.dateCreated,
       this.dateModified,
+      this.reviewStatusModifiedDate,
+      this.formalInformalModifiedDate,
       this.creator,
       this.lastModifier,
       this.dateSent,
