@@ -327,7 +327,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     }
                     OPTIONAL {
                         ?service lpdcExt:reviewStatusModifiedDate ?oldDate .
-                    }    
+                    }
                 }
             }`;
       await this.querying.deleteInsert(updateReviewStatusesQuery);
@@ -349,7 +349,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     ?service ext:reviewStatus ?status.
                 }
             }`;
-      await this.querying.deleteInsert(removeReviewStatusQuery);
+      await this.querying.delete(removeReviewStatusQuery);
     }
   }
 
@@ -389,7 +389,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         WHERE {
             ?instance a lpdcExt:InstancePublicService;
                    lpdcExt:dutchLanguageVariant ?variant.
-            
+
             OPTIONAL {
                 ?instance lpdcExt:formalInformalModifiedDate ?old .
             }
