@@ -47,7 +47,7 @@ describe("InstanceSnapshotProcessorApplicationService", () => {
   const deleteInstanceDomainService = new DeleteInstanceDomainService(
     instanceRepository,
     conceptDisplayConfigurationRepository,
-    notificationPreferenceRepository
+    notificationPreferenceRepository,
   );
   const bestuurseenheidRegistrationCodeFetcher = {
     fetchOrgRegistryCodelistEntry: jest

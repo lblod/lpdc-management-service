@@ -109,7 +109,7 @@ describe("instanceSnapshotToInstanceMapperDomainService", () => {
   const deleteInstanceDomainService = new DeleteInstanceDomainService(
     instanceRepository,
     conceptDisplayConfigurationRepository,
-    notificationPreferenceRepository
+    notificationPreferenceRepository,
   );
   const instanceSnapshotProcessingAuthorizationRepository =
     new InstanceSnapshotProcessingAuthorizationSparqlTestRepository(
