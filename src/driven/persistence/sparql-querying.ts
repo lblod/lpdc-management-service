@@ -32,7 +32,7 @@ export class SparqlQuerying {
     this.verifyResultToMatch(
       query,
       result,
-      /Delete from <.*>, \d+ \(or less\) (triples|quads) -- done/,
+      /Delete from <.*>, \d+ (\(or less\) )?(triples|quads) (-- done|-- nothing to do)/,
     );
   }
 
