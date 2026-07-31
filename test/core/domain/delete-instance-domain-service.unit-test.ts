@@ -12,6 +12,7 @@ import { restoreRealTime, setFixedTime } from "../../fixed-time";
 import { NotFoundError } from "../../../src/core/domain/shared/lpdc-error";
 import { InstanceBuilder } from "../../../src/core/domain/instance";
 import { InstanceSparqlRepository } from "../../../src/driven/persistence/instance-sparql-repository";
+import { NotificationPreferenceSparqlRepository } from "../../../src/driven/persistence/notification-preference-sparql-repository";
 
 describe("Deleting a new Instance domain service", () => {
   const instanceRepository = new InstanceSparqlRepository(TEST_SPARQL_ENDPOINT);
@@ -20,10 +21,13 @@ describe("Deleting a new Instance domain service", () => {
     new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
   const conceptDisplayConfigurationSparqlTestRepository =
     new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+  const notificationPreferenceSparqlRepository =
+    new NotificationPreferenceSparqlRepository(TEST_SPARQL_ENDPOINT);
 
   const deleteInstanceDomainService = new DeleteInstanceDomainService(
     instanceRepository,
     conceptDisplayConfigurationSparqlRepository,
+    notificationPreferenceSparqlRepository,
   );
 
   beforeAll(() => setFixedTime());

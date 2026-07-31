@@ -67,6 +67,7 @@ import {
   anExpiredSpatial,
 } from "./spatial-test-builder";
 import { SpatialSparqlTestRepository } from "../../driven/persistence/spatial-sparql-test-repository";
+import { NotificationPreferenceSparqlRepository } from "../../../src/driven/persistence/notification-preference-sparql-repository";
 
 describe("instanceSnapshotToInstanceMapperDomainService", () => {
   beforeEach(async () => {
@@ -103,9 +104,12 @@ describe("instanceSnapshotToInstanceMapperDomainService", () => {
     );
   const conceptDisplayConfigurationRepository =
     new ConceptDisplayConfigurationSparqlRepository(TEST_SPARQL_ENDPOINT);
+  const notificationPreferenceRepository =
+    new NotificationPreferenceSparqlRepository(TEST_SPARQL_ENDPOINT);
   const deleteInstanceDomainService = new DeleteInstanceDomainService(
     instanceRepository,
     conceptDisplayConfigurationRepository,
+    notificationPreferenceRepository
   );
   const instanceSnapshotProcessingAuthorizationRepository =
     new InstanceSnapshotProcessingAuthorizationSparqlTestRepository(
@@ -2262,7 +2266,7 @@ describe("instanceSnapshotToInstanceMapperDomainService", () => {
         const query = `
                     SELECT ?s ?p ?o WHERE {
                         GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
-                            VALUES ?s {                         
+                            VALUES ?s {
                                 <${tombstoneId}>
                             }
                             ?s ?p ?o

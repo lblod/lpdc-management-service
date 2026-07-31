@@ -22,6 +22,7 @@ import { VersionedLdesSnapshotSparqlRepository } from "../../../src/driven/persi
 import { InstanceSparqlRepository } from "../../../src/driven/persistence/instance-sparql-repository";
 import spyOn = jest.spyOn;
 import { SpatialSparqlRepository } from "../../../src/driven/persistence/spatial-sparql-repository";
+import { NotificationPreferenceSparqlRepository } from "../../../src/driven/persistence/notification-preference-sparql-repository";
 
 describe("InstanceSnapshotProcessorApplicationService", () => {
   beforeEach(async () => {
@@ -38,12 +39,15 @@ describe("InstanceSnapshotProcessorApplicationService", () => {
   const conceptRepository = new ConceptSparqlRepository(TEST_SPARQL_ENDPOINT);
   const conceptDisplayConfigurationRepository =
     new ConceptDisplayConfigurationSparqlTestRepository(TEST_SPARQL_ENDPOINT);
+  const notificationPreferenceRepository =
+    new NotificationPreferenceSparqlRepository(TEST_SPARQL_ENDPOINT);
 
   const spatialRepository = new SpatialSparqlRepository(TEST_SPARQL_ENDPOINT);
 
   const deleteInstanceDomainService = new DeleteInstanceDomainService(
     instanceRepository,
     conceptDisplayConfigurationRepository,
+    notificationPreferenceRepository
   );
   const bestuurseenheidRegistrationCodeFetcher = {
     fetchOrgRegistryCodelistEntry: jest

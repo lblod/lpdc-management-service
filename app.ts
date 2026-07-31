@@ -13,6 +13,7 @@ import { ConceptSparqlRepository } from "./src/driven/persistence/concept-sparql
 import { Iri } from "./src/core/domain/shared/iri";
 import { ConceptSnapshotToConceptMergerDomainService } from "./src/core/domain/concept-snapshot-to-concept-merger-domain-service";
 import { ConceptDisplayConfigurationSparqlRepository } from "./src/driven/persistence/concept-display-configuration-sparql-repository";
+import { NotificationPreferenceSparqlRepository } from "./src/driven/persistence/notification-preference-sparql-repository";
 import { BestuurseenheidRegistrationCodeThroughSubjectPageOrApiFetcher } from "./src/driven/external/bestuurseenheid-registration-code-through-subject-page-or-api-fetcher";
 import { CodeSparqlRepository } from "./src/driven/persistence/code-sparql-repository";
 import { InstanceSparqlRepository } from "./src/driven/persistence/instance-sparql-repository";
@@ -70,6 +71,8 @@ const conceptSnapshotRepository = new ConceptSnapshotSparqlRepository();
 const conceptRepository = new ConceptSparqlRepository();
 const conceptDisplayConfigurationRepository =
   new ConceptDisplayConfigurationSparqlRepository();
+const notificationPreferenceRepository =
+  new NotificationPreferenceSparqlRepository();
 const bestuurseenheidRegistrationCodeFetcher =
   new BestuurseenheidRegistrationCodeThroughSubjectPageOrApiFetcher();
 const codeRepository = new CodeSparqlRepository();
@@ -119,6 +122,7 @@ const newInstanceDomainService = new NewInstanceDomainService(
 const deleteInstanceDomainService = new DeleteInstanceDomainService(
   instanceRepository,
   conceptDisplayConfigurationRepository,
+  notificationPreferenceRepository,
 );
 
 const formApplicationService = new FormApplicationService(
