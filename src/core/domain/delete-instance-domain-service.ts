@@ -30,6 +30,13 @@ export class DeleteInstanceDomainService {
       bestuurseenheid,
       instanceId,
     );
+
+    // Cleanup all notificationPreference links to the instance
+    await this._notificationPreferenceRepository.removeNotificationInstanceLink(
+      bestuurseenheid,
+      instance.id,
+    );
+
     const tombstoneIdOrUndefined = await this._instanceRepository.delete(
       bestuurseenheid,
       instance.id,
@@ -42,12 +49,6 @@ export class DeleteInstanceDomainService {
         instance.conceptId,
       );
     }
-
-    // Cleanup all notificationPreference links to the instance
-    await this._notificationPreferenceRepository.removeNotificationInstance(
-      bestuurseenheid,
-      instance.id,
-    );
     return tombstoneIdOrUndefined;
   }
 }

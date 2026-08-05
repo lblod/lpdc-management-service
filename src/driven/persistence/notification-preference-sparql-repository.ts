@@ -14,7 +14,7 @@ export class NotificationPreferenceSparqlRepository
     this.querying = new SparqlQuerying(endpoint);
   }
 
-  async removeNotificationInstance(
+  async removeNotificationInstanceLink(
     bestuurseenheid: Bestuurseenheid,
     instanceId: Iri,
   ) {
