@@ -1,5 +1,6 @@
 import { InstanceRepository } from "../port/driven/persistence/instance-repository";
 import { ConceptDisplayConfigurationRepository } from "../port/driven/persistence/concept-display-configuration-repository";
+import { NotificationPreferenceRepository } from "../port/driven/persistence/notification-preference-repository";
 import { Bestuurseenheid } from "./bestuurseenheid";
 import { Iri } from "./shared/iri";
 import { FormatPreservingDate } from "./format-preserving-date";
@@ -7,14 +8,17 @@ import { FormatPreservingDate } from "./format-preserving-date";
 export class DeleteInstanceDomainService {
   private readonly _instanceRepository: InstanceRepository;
   private readonly _conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository;
+  private readonly _notificationPreferenceRepository: NotificationPreferenceRepository;
 
   constructor(
     instanceRepository: InstanceRepository,
     conceptDisplayConfigurationRepository: ConceptDisplayConfigurationRepository,
+    notificationPreferenceRepository: NotificationPreferenceRepository,
   ) {
     this._instanceRepository = instanceRepository;
     this._conceptDisplayConfigurationRepository =
       conceptDisplayConfigurationRepository;
+    this._notificationPreferenceRepository = notificationPreferenceRepository;
   }
 
   public async delete(
@@ -26,6 +30,13 @@ export class DeleteInstanceDomainService {
       bestuurseenheid,
       instanceId,
     );
+
+    // Cleanup all notificationPreference links to the instance
+    await this._notificationPreferenceRepository.removeNotificationInstanceLink(
+      bestuurseenheid,
+      instance.id,
+    );
+
     const tombstoneIdOrUndefined = await this._instanceRepository.delete(
       bestuurseenheid,
       instance.id,
