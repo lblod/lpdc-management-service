@@ -36,6 +36,7 @@ import { PublishedInstanceSnapshotBuilder } from "../../core/domain/published-in
 
 export class InstanceSparqlRepository implements InstanceRepository {
   protected readonly querying: SparqlQuerying;
+  protected readonly databaseQuerying: SparqlQuerying;
   protected readonly fetcher: DatastoreToQuadsRecursiveSparqlFetcher;
   protected doubleQuadReporter: DoubleQuadReporter =
     new LoggingDoubleQuadReporter(new Logger("Instance-QuadsToDomainLogger"));
@@ -43,6 +44,9 @@ export class InstanceSparqlRepository implements InstanceRepository {
 
   constructor(endpoint?: string, doubleQuadReporter?: DoubleQuadReporter) {
     this.querying = new SparqlQuerying(endpoint);
+    this.databaseQuerying = new SparqlQuerying(
+      process.env.MU_SPARQL_ENDPOINT || "http://database:8890/sparql",
+    );
     this.fetcher = new DatastoreToQuadsRecursiveSparqlFetcher(endpoint);
     if (doubleQuadReporter) {
       this.doubleQuadReporter = doubleQuadReporter;
@@ -330,7 +334,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
                     }
                 }
             }`;
-      await this.querying.deleteInsert(updateReviewStatusesQuery);
+      await this.databaseQuerying.deleteInsert(updateReviewStatusesQuery);
     } else {
       const removeReviewStatusQuery = `
             ${PREFIX.ext}
@@ -398,7 +402,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
         }
 
         `;
-    await this.querying.deleteInsert(query);
+    await this.databaseQuerying.deleteInsert(query);
   }
 
   async isPublishedToIpdc(
