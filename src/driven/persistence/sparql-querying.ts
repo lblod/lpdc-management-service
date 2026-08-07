@@ -48,7 +48,7 @@ export class SparqlQuerying {
     this.verifyResultToMatch(
       query,
       result,
-      /(Modify <.*>, delete \d+ \(or less\) and insert \d+ \(or less\) triples -- done|(Delete \d+ \(or less\) quads -- done)|(Delete from <.*>, 0 quads -- nothing to do)\n(Insert into <.*>, \d+ \(or less\) quads -- done)|(Insert into <.*>, 0 quads -- nothing to do))/,
+      /(Modify <.*>, delete \d+ \(or less\) and insert \d+ \(or less\) triples -- done|(Delete \d+ \(or less\) quads -- done)|(Delete from <.*>, 0 quads -- nothing to do)\n(Insert into <.*>, \d+ \(or less\) quads -- done)|(Insert into <.*>, 0 quads -- nothing to do)|(Executed update query))/,
     );
     if (resultVerification) {
       const results = result.results.bindings.map((b) => b["callret-0"].value);
