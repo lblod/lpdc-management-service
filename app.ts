@@ -480,7 +480,10 @@ async function createInstance(req: Request, res: Response) {
       newInstance.id,
     );
   } catch (e) {
-    console.error(`Could not automatically enable the notifications for instance ${newInstance.id.value}`, e);
+    console.error(
+      `Could not automatically enable the notifications for instance ${newInstance.id.value}`,
+      e,
+    );
   }
 
   return res.status(201).json({
