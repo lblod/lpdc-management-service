@@ -19,7 +19,7 @@ export class SparqlQuerying {
     this.verifyResultToMatch(
       query,
       result,
-      /(Insert into <.*>, \d+ \(or less\) (triples|quads) -- done)|(Insert into <.*>, 0 quads -- nothing to do)|(Insert into \d+ \(or more\) graphs, total \d+ \(or less\) quads -- done)/,
+      /(Insert into <.*>, \d+ \(or less\) (triples|quads) -- done)|(Insert into <.*>, 0 (triples|quads) -- nothing to do)|(Insert into \d+ \(or more\) graphs, total \d+ \(or less\) quads -- done)/,
     );
   }
 
