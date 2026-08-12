@@ -14,6 +14,30 @@ export class NotificationPreferenceSparqlRepository
     this.querying = new SparqlQuerying(endpoint);
   }
 
+  async addNotificationInstanceLink(
+    bestuurseenheid: Bestuurseenheid,
+    persoonId: Iri,
+    instanceId: Iri,
+  ) {
+    const query = `
+        ${PREFIX.lpdcExt}
+        ${PREFIX.dct}
+        INSERT {
+          GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+            ?preference lpdcExt:notificationInstance ${sparqlEscapeUri(instanceId.value)} .
+          }
+        }
+        WHERE {
+          GRAPH ${sparqlEscapeUri(bestuurseenheid.userGraph())} {
+            ?preference a lpdcExt:NotificationPreference ;
+                        dct:creator ${sparqlEscapeUri(persoonId.value)} ;
+                        lpdcExt:notificationsEnabled ?notificationsEnabled .
+          FILTER(STR(?notificationsEnabled) = "true"|| STR(?notificationsEnabled) = "1")
+          }
+        }`;
+    await this.querying.insert(query);
+  }
+
   async removeNotificationInstanceLink(
     bestuurseenheid: Bestuurseenheid,
     instanceId: Iri,

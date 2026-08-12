@@ -447,9 +447,7 @@ app.use(errorHandler);
 async function createInstance(req: Request, res: Response) {
   const body = req.body;
   const conceptIdRequestParam = body.conceptId;
-
   const session: Session = req["session"];
-
   const bestuurseenheid = await bestuurseenheidRepository.findById(
     session.bestuurseenheidId,
   );
@@ -457,35 +455,44 @@ async function createInstance(req: Request, res: Response) {
     session.accountId,
     session.bestuurseenheidId,
   );
+  let newInstance;
 
   if (conceptIdRequestParam) {
     const conceptId = new Iri(conceptIdRequestParam);
     const concept = await conceptRepository.findById(conceptId);
-    const newInstance = await newInstanceDomainService.createNewFromConcept(
+    newInstance = await newInstanceDomainService.createNewFromConcept(
       bestuurseenheid,
       persoonId,
       concept,
     );
-    return res.status(201).json({
-      data: {
-        type: "public-service",
-        id: newInstance.uuid,
-        uri: newInstance.id.value,
-      },
-    });
   } else {
-    const newInstance = await newInstanceDomainService.createNewEmpty(
+    newInstance = await newInstanceDomainService.createNewEmpty(
       bestuurseenheid,
       persoonId,
     );
-    return res.status(201).json({
-      data: {
-        type: "public-service",
-        id: newInstance.uuid,
-        uri: newInstance.id.value,
-      },
-    });
   }
+
+  try {
+    // enable the notifications for the instance if user has an active notificationsPreference
+    await notificationPreferenceRepository.addNotificationInstanceLink(
+      bestuurseenheid,
+      persoonId,
+      newInstance.id,
+    );
+  } catch (e) {
+    console.error(
+      `Could not automatically enable the notifications for instance ${newInstance.id.value}`,
+      e,
+    );
+  }
+
+  return res.status(201).json({
+    data: {
+      type: "public-service",
+      id: newInstance.uuid,
+      uri: newInstance.id.value,
+    },
+  });
 }
 
 async function getInstanceForm(req: Request, res: Response) {
