@@ -471,12 +471,18 @@ async function createInstance(req: Request, res: Response) {
       persoonId,
     );
   }
-  // enable the notifications for the instance if user has an active notificationsPreference
-  await notificationPreferenceRepository.addNotificationInstanceLink(
-    bestuurseenheid,
-    persoonId,
-    newInstance.id,
-  );
+
+  try {
+    // enable the notifications for the instance if user has an active notificationsPreference
+    await notificationPreferenceRepository.addNotificationInstanceLink(
+      bestuurseenheid,
+      persoonId,
+      newInstance.id,
+    );
+  } catch (e) {
+    console.error(`Could not automatically enable the notifications for instance ${newInstance.id.value}`, e);
+  }
+
   return res.status(201).json({
     data: {
       type: "public-service",
