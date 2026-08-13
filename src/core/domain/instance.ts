@@ -67,10 +67,12 @@ export class Instance {
   private readonly _languages: LanguageType[];
   private readonly _dutchLanguageVariant: Language;
   private readonly _needsConversionFromFormalToInformal: boolean;
+  private readonly _feedbackAvailable: boolean;
   private readonly _dateCreated: FormatPreservingDate;
   private readonly _dateModified: FormatPreservingDate;
   private readonly _reviewStatusModifiedDate: FormatPreservingDate;
   private readonly _formalInformalModifiedDate: FormatPreservingDate;
+  private readonly _feedbackModifiedDate: FormatPreservingDate;
   private readonly _creator: Iri;
   private readonly _lastModifier: Iri;
   private readonly _dateSent: FormatPreservingDate | undefined;
@@ -114,10 +116,12 @@ export class Instance {
     languages: LanguageType[],
     dutchLanguageVariant: Language,
     needsConversionFromFormalToInformal: boolean,
+    feedbackAvailable: boolean | undefined,
     dateCreated: FormatPreservingDate,
     dateModified: FormatPreservingDate,
     reviewStatusModifiedDate: FormatPreservingDate | undefined,
     formalInformalModifiedDate: FormatPreservingDate | undefined,
+    feedbackModifiedDate: FormatPreservingDate | undefined,
     creator: Iri,
     lastModifier: Iri,
     dateSent: FormatPreservingDate | undefined,
@@ -235,10 +239,12 @@ export class Instance {
       needsConversionFromFormalToInformal,
       "needsConversionFromFormalToInformal",
     );
+    this._feedbackAvailable = feedbackAvailable;
     this._dateCreated = requiredValue(dateCreated, "dateCreated");
     this._dateModified = requiredValue(dateModified, "dateModified");
     this._reviewStatusModifiedDate = reviewStatusModifiedDate;
     this._formalInformalModifiedDate = formalInformalModifiedDate;
+    this._feedbackModifiedDate = feedbackModifiedDate;
     // No required values, because existing instances won't have a creator
     this._creator = creator;
     this._lastModifier = lastModifier;
@@ -488,6 +494,10 @@ export class Instance {
     return this._needsConversionFromFormalToInformal;
   }
 
+  get feedbackAvailable(): boolean {
+    return this._feedbackAvailable;
+  }
+
   get dateCreated(): FormatPreservingDate {
     return this._dateCreated;
   }
@@ -502,6 +512,10 @@ export class Instance {
 
   get formalInformalModifiedDate(): FormatPreservingDate {
     return this._formalInformalModifiedDate;
+  }
+
+  get feedbackModifiedDate(): FormatPreservingDate {
+    return this._feedbackModifiedDate;
   }
 
   get creator(): Iri {
@@ -646,10 +660,12 @@ export class InstanceBuilder {
   private languages: LanguageType[] = [];
   private dutchLanguageVariant: Language;
   private needsConversionFromFormalToInformal: boolean;
+  private feedbackAvailable: boolean;
   private dateCreated: FormatPreservingDate;
   private dateModified: FormatPreservingDate;
   private reviewStatusModifiedDate: FormatPreservingDate;
   private formalInformalModifiedDate: FormatPreservingDate;
+  private feedbackModifiedDate: FormatPreservingDate;
   private creator: Iri;
   private lastModifier: Iri;
   private dateSent: FormatPreservingDate | undefined;
@@ -700,10 +716,12 @@ export class InstanceBuilder {
       .withNeedsConversionFromFormalToInformal(
         instance.needsConversionFromFormalToInformal,
       )
+      .withFeedbackAvailable(instance.feedbackAvailable)
       .withDateCreated(instance.dateCreated)
       .withDateModified(instance.dateModified)
       .withReviewStatusModifiedDate(instance.reviewStatusModifiedDate)
       .withFormalInformalModifiedDate(instance.formalInformalModifiedDate)
+      .withFeedbackModifiedDate(instance.feedbackModifiedDate)
       .withCreator(instance.creator)
       .withLastModifier(instance.lastModifier)
       .withDateSent(instance.dateSent)
@@ -898,6 +916,11 @@ export class InstanceBuilder {
     return this;
   }
 
+  public withFeedbackAvailable(feedbackAvailable: boolean,) {
+    this.feedbackAvailable = feedbackAvailable;
+    return this;
+  }
+
   public withDateCreated(dateCreated: FormatPreservingDate): InstanceBuilder {
     this.dateCreated = dateCreated;
     return this;
@@ -919,6 +942,13 @@ export class InstanceBuilder {
     formalInformalModifiedDate: FormatPreservingDate,
   ): InstanceBuilder {
     this.formalInformalModifiedDate = formalInformalModifiedDate;
+    return this;
+  }
+
+  public withFeedbackModifiedDate(
+    feedbackModifiedDate: FormatPreservingDate,
+  ): InstanceBuilder {
+    this.feedbackModifiedDate = feedbackModifiedDate;
     return this;
   }
 
@@ -1005,10 +1035,12 @@ export class InstanceBuilder {
       this.languages,
       this.dutchLanguageVariant,
       this.needsConversionFromFormalToInformal,
+      this.feedbackAvailable,
       this.dateCreated,
       this.dateModified,
       this.reviewStatusModifiedDate,
       this.formalInformalModifiedDate,
+      this.feedbackModifiedDate,
       this.creator,
       this.lastModifier,
       this.dateSent,

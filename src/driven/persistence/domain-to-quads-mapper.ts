@@ -229,6 +229,10 @@ export class DomainToQuadsMapper {
         instance.id,
         instance.needsConversionFromFormalToInformal,
       ),
+      this.feedbackAvailable(
+        instance.id,
+        instance.feedbackAvailable,
+      ),
       this.dateCreated(instance.id, instance.dateCreated),
       this.dateModified(instance.id, instance.dateModified),
       this.reviewStatusModifiedDate(
@@ -238,6 +242,10 @@ export class DomainToQuadsMapper {
       this.formalInformalModifiedDate(
         instance.id,
         instance.formalInformalModifiedDate,
+      ),
+      this.feedbackModifiedDate(
+        instance.id,
+        instance.feedbackModifiedDate,
       ),
       this.creator(instance.id, instance.creator),
       this.lastModifier(instance.id, instance.lastModifier),
@@ -553,6 +561,19 @@ export class DomainToQuadsMapper {
       ? this.buildQuad(
           namedNode(id.value),
           NS.lpdcExt("formalInformalModifiedDate"),
+          literal(value.value, NS.xsd("dateTime")),
+        )
+      : undefined;
+  }
+
+  private feedbackModifiedDate(
+    id: Iri,
+    value: FormatPreservingDate | undefined,
+  ) {
+    return value
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.lpdcExt("feedbackModifiedDate"),
           literal(value.value, NS.xsd("dateTime")),
         )
       : undefined;
@@ -1323,6 +1344,20 @@ export class DomainToQuadsMapper {
       NS.lpdcExt("needsConversionFromFormalToInformal"),
       literal(
         needsConversionFromFormalToInformal.toString(),
+        NS.xsd("boolean"),
+      ),
+    );
+  }
+
+  private feedbackAvailable(
+    id: Iri,
+    feedbackAvailable: boolean | undefined,
+  ): Statement {
+    return this.buildQuad(
+      namedNode(id.value),
+      NS.lpdcExt("feedbackAvailable"),
+      literal(
+        feedbackAvailable.toString(),
         NS.xsd("boolean"),
       ),
     );
