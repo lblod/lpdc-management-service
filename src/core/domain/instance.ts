@@ -916,7 +916,7 @@ export class InstanceBuilder {
     return this;
   }
 
-  public withFeedbackAvailable(feedbackAvailable: boolean,) {
+  public withFeedbackAvailable(feedbackAvailable: boolean) {
     this.feedbackAvailable = feedbackAvailable;
     return this;
   }

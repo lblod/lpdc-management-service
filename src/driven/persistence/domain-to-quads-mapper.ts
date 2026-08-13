@@ -229,10 +229,7 @@ export class DomainToQuadsMapper {
         instance.id,
         instance.needsConversionFromFormalToInformal,
       ),
-      this.feedbackAvailable(
-        instance.id,
-        instance.feedbackAvailable,
-      ),
+      this.feedbackAvailable(instance.id, instance.feedbackAvailable),
       this.dateCreated(instance.id, instance.dateCreated),
       this.dateModified(instance.id, instance.dateModified),
       this.reviewStatusModifiedDate(
@@ -243,10 +240,7 @@ export class DomainToQuadsMapper {
         instance.id,
         instance.formalInformalModifiedDate,
       ),
-      this.feedbackModifiedDate(
-        instance.id,
-        instance.feedbackModifiedDate,
-      ),
+      this.feedbackModifiedDate(instance.id, instance.feedbackModifiedDate),
       this.creator(instance.id, instance.creator),
       this.lastModifier(instance.id, instance.lastModifier),
       instance.dateSent
@@ -1356,10 +1350,7 @@ export class DomainToQuadsMapper {
     return this.buildQuad(
       namedNode(id.value),
       NS.lpdcExt("feedbackAvailable"),
-      literal(
-        feedbackAvailable.toString(),
-        NS.xsd("boolean"),
-      ),
+      literal(feedbackAvailable.toString(), NS.xsd("boolean")),
     );
   }
 
