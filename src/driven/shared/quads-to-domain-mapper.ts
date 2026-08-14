@@ -378,10 +378,12 @@ export class QuadsToDomainMapper {
       this.languages(id),
       this.dutchLanguageVariant(id),
       this.needsConversionFromFormalToInformal(id),
+      this.feedbackAvailable(id),
       this.dateCreated(id),
       this.dateModified(id),
       this.reviewStatusModifiedDate(id),
       this.formalInformalModifiedDate(id),
+      this.feedbackModifiedDate(id),
       this.creator(id),
       this.lastModifier(id),
       this.dateSent(id),
@@ -732,6 +734,15 @@ export class QuadsToDomainMapper {
       this.storeAccess.uniqueValue(
         this.asNamedOrBlankNode(id),
         NS.lpdcExt("formalInformalModifiedDate"),
+      ),
+    );
+  }
+
+  feedbackModifiedDate(id: Iri): FormatPreservingDate | undefined {
+    return this.asFormatPreservingDate(
+      this.storeAccess.uniqueValue(
+        this.asNamedOrBlankNode(id),
+        NS.lpdcExt("feedbackModifiedDate"),
       ),
     );
   }
@@ -1179,6 +1190,15 @@ export class QuadsToDomainMapper {
       this.storeAccess.uniqueStatement(
         this.asNamedOrBlankNode(id),
         NS.lpdcExt("needsConversionFromFormalToInformal"),
+      )?.object as Literal,
+    );
+  }
+
+  feedbackAvailable(id: Iri): boolean {
+    return this.parseBoolean(
+      this.storeAccess.uniqueStatement(
+        this.asNamedOrBlankNode(id),
+        NS.lpdcExt("feedbackAvailable"),
       )?.object as Literal,
     );
   }

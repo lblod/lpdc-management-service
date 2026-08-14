@@ -86,8 +86,10 @@ export class NewInstanceDomainService {
       [],
       this.toDutchLanguageVariant(chosenForm),
       false,
+      false,
       now,
       now,
+      undefined,
       undefined,
       undefined,
       user,
@@ -194,8 +196,10 @@ export class NewInstanceDomainService {
       [],
       dutchLanguageVariant,
       false,
+      false,
       now,
       now,
+      undefined,
       undefined,
       undefined,
       user,
@@ -253,6 +257,7 @@ export class NewInstanceDomainService {
       .withDateModified(FormatPreservingDate.now())
       .withReviewStatusModifiedDate(undefined)
       .withFormalInformalModifiedDate(undefined)
+      .withFeedbackAvailable(undefined)
       .withCreator(user)
       .withLastModifier(user)
       .withRequirements(
