@@ -162,10 +162,9 @@ const bringInstanceUpToDateWithConceptSnapshotVersionDomainService =
     selectConceptLanguageDomainService,
   );
 
-const markInstanceAsCurrentService =
-  new MarkInstanceAsCurrentService(
-    instanceRepository,
-  );
+const markInstanceAsCurrentService = new MarkInstanceAsCurrentService(
+  instanceRepository,
+);
 
 const updateInstanceApplicationService = new UpdateInstanceApplicationService(
   instanceRepository,
@@ -716,8 +715,8 @@ async function confirmAsCurrent(req: Request, res: Response) {
   const instanceIdRequestParam = req.params.instanceId;
   const instanceVersion: FormatPreservingDate | undefined =
     FormatPreservingDate.of(req.headers["instance-version"] as string);
-  console.log('headers:', req.headers);
-  console.log('marking as current:', instanceVersion);
+  console.log("headers:", req.headers);
+  console.log("marking as current:", instanceVersion);
   const instanceId = new Iri(instanceIdRequestParam);
   const session: Session = req["session"];
   const bestuurseenheid: Bestuurseenheid =
@@ -737,7 +736,7 @@ async function confirmAsCurrent(req: Request, res: Response) {
     instance,
     instanceVersion,
   );
-  console.log('marking as current');
+  console.log("marking as current");
 
   return res.sendStatus(200);
 }

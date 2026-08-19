@@ -1355,10 +1355,7 @@ export class DomainToQuadsMapper {
     );
   }
 
-  private isYearOld(
-    id: Iri,
-    isYearOld: boolean | undefined,
-  ): Statement {
+  private isYearOld(id: Iri, isYearOld: boolean | undefined): Statement {
     return this.buildQuad(
       namedNode(id.value),
       NS.lpdcExt("isYearOld"),

@@ -7,9 +7,7 @@ import { Iri } from "./shared/iri";
 export class MarkInstanceAsCurrentService {
   private readonly _instanceRepository: InstanceRepository;
 
-  constructor(
-    instanceRepository: InstanceRepository,
-  ) {
+  constructor(instanceRepository: InstanceRepository) {
     this._instanceRepository = instanceRepository;
   }
 
