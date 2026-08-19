@@ -444,6 +444,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
       instanceSnapshot.legalResources.map((lr) => lr.transformWithNewId()),
       false,
       undefined,
+      false,
     );
     instance.validateForPublish(false);
     return instance;
@@ -503,6 +504,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
       instanceSnapshot.legalResources.map((lr) => lr.transformWithNewId()),
       false,
       undefined,
+      false,
     );
     mergedInstance.validateForPublish(false);
     return mergedInstance;

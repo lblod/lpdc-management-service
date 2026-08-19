@@ -82,6 +82,7 @@ export class Instance {
   private readonly _legalResources: LegalResource[];
   private readonly _forMunicipalityMerger: boolean;
   private readonly _copyOf: Iri | undefined;
+  private readonly _isYearOld: boolean | undefined;
 
   constructor(
     id: Iri,
@@ -131,6 +132,7 @@ export class Instance {
     legalResources: LegalResource[],
     forMunicipalityMerger: boolean,
     copyOf: Iri | undefined,
+    isYearOld: boolean | undefined,
   ) {
     this._id = requiredValue(id, "id");
     this._uuid = requiredValue(uuid, "uuid");
@@ -276,6 +278,7 @@ export class Instance {
       "forMunicipalityMerger",
     );
     this._copyOf = copyOf;
+    this._isYearOld = isYearOld;
     this.validateLanguages();
   }
 
@@ -554,6 +557,10 @@ export class Instance {
     return this._copyOf;
   }
 
+  get isYearOld(): boolean | undefined {
+    return this._isYearOld;
+  }
+
   transformToInformal(): Instance {
     if (this._dutchLanguageVariant == Language.INFORMAL) {
       throw new InvariantError("Instantie is reeds in de je-vorm");
@@ -675,6 +682,7 @@ export class InstanceBuilder {
   private legalResources: LegalResource[] = [];
   private forMunicipalityMerger: boolean;
   private copyOf: Iri | undefined;
+  private isYearOld: boolean | undefined;
 
   static buildIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/public-service/${uniqueId}`);
@@ -730,7 +738,8 @@ export class InstanceBuilder {
       .withSpatials(instance.spatials)
       .withLegalResources(instance.legalResources)
       .withForMunicipalityMerger(instance.forMunicipalityMerger)
-      .withCopyOf(instance.copyOf);
+      .withCopyOf(instance.copyOf)
+      .withIsYearOld(instance.isYearOld);
   }
 
   public withId(id: Iri): InstanceBuilder {
@@ -1000,6 +1009,10 @@ export class InstanceBuilder {
     this.copyOf = copyOf;
     return this;
   }
+  public withIsYearOld(isYearOld: boolean): InstanceBuilder {
+    this.isYearOld = isYearOld;
+    return this;
+  }
 
   public build(): Instance {
     return new Instance(
@@ -1050,6 +1063,7 @@ export class InstanceBuilder {
       this.legalResources,
       this.forMunicipalityMerger,
       this.copyOf,
+      this.isYearOld,
     );
   }
 }

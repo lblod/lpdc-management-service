@@ -262,6 +262,7 @@ export class DomainToQuadsMapper {
             namedNode(instance.copyOf.value),
           )
         : undefined,
+      this.isYearOld(instance.id, instance.isYearOld),
     ].filter((t) => t !== undefined);
   }
 
@@ -1351,6 +1352,17 @@ export class DomainToQuadsMapper {
       namedNode(id.value),
       NS.lpdcExt("feedbackAvailable"),
       literal(feedbackAvailable.toString(), NS.xsd("boolean")),
+    );
+  }
+
+  private isYearOld(
+    id: Iri,
+    isYearOld: boolean | undefined,
+  ): Statement {
+    return this.buildQuad(
+      namedNode(id.value),
+      NS.lpdcExt("isYearOld"),
+      literal(isYearOld.toString(), NS.xsd("boolean")),
     );
   }
 
