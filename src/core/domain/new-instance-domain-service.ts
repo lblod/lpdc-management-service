@@ -101,6 +101,7 @@ export class NewInstanceDomainService {
       [],
       false,
       undefined,
+      false,
     );
 
     await this._instanceRepository.save(bestuurseenheid, newInstance);
@@ -215,6 +216,7 @@ export class NewInstanceDomainService {
       ),
       false,
       undefined,
+      false,
     );
 
     await this._instanceRepository.save(bestuurseenheid, newInstance);

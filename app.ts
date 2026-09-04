@@ -28,6 +28,7 @@ import { Bestuurseenheid } from "./src/core/domain/bestuurseenheid";
 import { DeleteInstanceDomainService } from "./src/core/domain/delete-instance-domain-service";
 import { LinkConceptToInstanceDomainService } from "./src/core/domain/link-concept-to-instance-domain-service";
 import { BringInstanceUpToDateWithConceptSnapshotVersionDomainService } from "./src/core/domain/bring-instance-up-to-date-with-concept-snapshot-version-domain-service";
+import { MarkInstanceAsCurrentService } from "./src/core/domain/mark-instance-as-current-service";
 import { UpdateInstanceApplicationService } from "./src/core/application/update-instance-application-service";
 import { SemanticFormsMapperImpl } from "./src/driven/persistence/semantic-forms-mapper-impl";
 import { InstanceSnapshotProcessorApplicationService } from "./src/core/application/instance-snapshot-processor-application-service";
@@ -161,6 +162,10 @@ const bringInstanceUpToDateWithConceptSnapshotVersionDomainService =
     selectConceptLanguageDomainService,
   );
 
+const markInstanceAsCurrentService = new MarkInstanceAsCurrentService(
+  instanceRepository,
+);
+
 const updateInstanceApplicationService = new UpdateInstanceApplicationService(
   instanceRepository,
   semanticFormsMapper,
@@ -277,6 +282,13 @@ app.post(
   "/public-services/:instanceId/confirm-up-to-date-till",
   async function (req, res, next): Promise<any> {
     return await confirmUpToDateTill(req, res).catch(next);
+  },
+);
+
+app.post(
+  "/public-services/:instanceId/confirm-as-current",
+  async function (req, res, next): Promise<any> {
+    return await confirmAsCurrent(req, res).catch(next);
   },
 );
 
@@ -695,6 +707,36 @@ async function confirmUpToDateTill(req: Request, res: Response) {
     instanceVersion,
     conceptSnapshot,
   );
+
+  return res.sendStatus(200);
+}
+
+async function confirmAsCurrent(req: Request, res: Response) {
+  const instanceIdRequestParam = req.params.instanceId;
+  const instanceVersion: FormatPreservingDate | undefined =
+    FormatPreservingDate.of(req.headers["instance-version"] as string);
+  console.log("headers:", req.headers);
+  console.log("marking as current:", instanceVersion);
+  const instanceId = new Iri(instanceIdRequestParam);
+  const session: Session = req["session"];
+  const bestuurseenheid: Bestuurseenheid =
+    await bestuurseenheidRepository.findById(session.bestuurseenheidId);
+  const instance = await instanceRepository.findById(
+    bestuurseenheid,
+    instanceId,
+  );
+  const persoonId = await persoonRepository.findByAccountId(
+    session.accountId,
+    session.bestuurseenheidId,
+  );
+
+  await markInstanceAsCurrentService.markInstanceAsCurrent(
+    bestuurseenheid,
+    persoonId,
+    instance,
+    instanceVersion,
+  );
+  console.log("marking as current");
 
   return res.sendStatus(200);
 }
