@@ -229,7 +229,9 @@ export class DomainToQuadsMapper {
         instance.id,
         instance.needsConversionFromFormalToInformal,
       ),
-      instance.feedbackAvailable ? this.feedbackAvailable(instance.id, instance.feedbackAvailable) : undefined,
+      instance.feedbackAvailable
+        ? this.feedbackAvailable(instance.id, instance.feedbackAvailable)
+        : undefined,
       this.dateCreated(instance.id, instance.dateCreated),
       this.dateModified(instance.id, instance.dateModified),
       this.reviewStatusModifiedDate(
