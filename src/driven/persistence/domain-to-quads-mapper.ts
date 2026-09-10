@@ -265,6 +265,7 @@ export class DomainToQuadsMapper {
           )
         : undefined,
       this.isYearOld(instance.id, instance.isYearOld),
+      this.yearOldModifiedDate(instance.id, instance.yearOldModifiedDate),
     ].filter((t) => t !== undefined);
   }
 
@@ -1363,6 +1364,19 @@ export class DomainToQuadsMapper {
       NS.lpdcExt("isYearOld"),
       literal(isYearOld.toString(), NS.xsd("boolean")),
     );
+  }
+
+  private yearOldModifiedDate(
+    id: Iri,
+    value: FormatPreservingDate | undefined,
+  ) {
+    return value
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.lpdcExt("yearOldModifiedDate"),
+          literal(value.value, NS.xsd("dateTime")),
+        )
+      : undefined;
   }
 
   private forMunicipalityMerger(

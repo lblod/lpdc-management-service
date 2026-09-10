@@ -445,6 +445,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
       false,
       undefined,
       false,
+      undefined,
     );
     instance.validateForPublish(false);
     return instance;
@@ -505,6 +506,7 @@ export class InstanceSnapshotToInstanceMergerDomainService {
       false,
       undefined,
       false,
+      undefined,
     );
     mergedInstance.validateForPublish(false);
     return mergedInstance;

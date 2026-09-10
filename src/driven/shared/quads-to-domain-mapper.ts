@@ -394,6 +394,7 @@ export class QuadsToDomainMapper {
       this.forMunicipalityMerger(id),
       this.copyOf(id),
       this.isYearOld(id),
+      this.yearOldModifiedDate(id),
     );
   }
 
@@ -1228,6 +1229,15 @@ export class QuadsToDomainMapper {
         this.asNamedOrBlankNode(id),
         NS.lpdcExt("isYearOld"),
       )?.object as Literal,
+    );
+  }
+
+  yearOldModifiedDate(id: Iri): FormatPreservingDate | undefined {
+    return this.asFormatPreservingDate(
+      this.storeAccess.uniqueValue(
+        this.asNamedOrBlankNode(id),
+        NS.lpdcExt("yearOldModifiedDate"),
+      ),
     );
   }
 
