@@ -229,9 +229,7 @@ export class DomainToQuadsMapper {
         instance.id,
         instance.needsConversionFromFormalToInformal,
       ),
-      instance.feedbackAvailable
-        ? this.feedbackAvailable(instance.id, instance.feedbackAvailable)
-        : undefined,
+      this.feedbackAvailable(instance.id, instance.feedbackAvailable),
       this.dateCreated(instance.id, instance.dateCreated),
       this.dateModified(instance.id, instance.dateModified),
       this.reviewStatusModifiedDate(
@@ -1351,11 +1349,13 @@ export class DomainToQuadsMapper {
     id: Iri,
     feedbackAvailable: boolean | undefined,
   ): Statement {
-    return this.buildQuad(
-      namedNode(id.value),
-      NS.lpdcExt("feedbackAvailable"),
-      literal(feedbackAvailable.toString(), NS.xsd("boolean")),
-    );
+    return feedbackAvailable !== undefined
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.lpdcExt("feedbackAvailable"),
+          literal(feedbackAvailable.toString(), NS.xsd("boolean")),
+        )
+      : undefined;
   }
 
   private isYearOld(id: Iri, isYearOld: boolean | undefined): Statement {
