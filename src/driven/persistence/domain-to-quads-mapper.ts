@@ -1348,7 +1348,7 @@ export class DomainToQuadsMapper {
   private feedbackAvailable(
     id: Iri,
     feedbackAvailable: boolean | undefined,
-  ): Statement | undefined{
+  ): Statement | undefined {
     return feedbackAvailable !== undefined
       ? this.buildQuad(
           namedNode(id.value),
