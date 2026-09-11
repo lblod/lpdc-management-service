@@ -1348,7 +1348,7 @@ export class DomainToQuadsMapper {
   private feedbackAvailable(
     id: Iri,
     feedbackAvailable: boolean | undefined,
-  ): Statement {
+  ): Statement | undefined{
     return feedbackAvailable !== undefined
       ? this.buildQuad(
           namedNode(id.value),
@@ -1358,12 +1358,17 @@ export class DomainToQuadsMapper {
       : undefined;
   }
 
-  private isYearOld(id: Iri, isYearOld: boolean | undefined): Statement {
-    return this.buildQuad(
-      namedNode(id.value),
-      NS.lpdcExt("isYearOld"),
-      literal(isYearOld.toString(), NS.xsd("boolean")),
-    );
+  private isYearOld(
+    id: Iri,
+    isYearOld: boolean | undefined,
+  ): Statement | undefined {
+    return isYearOld !== undefined
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.lpdcExt("isYearOld"),
+          literal(isYearOld.toString(), NS.xsd("boolean")),
+        )
+      : undefined;
   }
 
   private yearOldModifiedDate(

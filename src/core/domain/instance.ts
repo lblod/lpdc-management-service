@@ -83,7 +83,7 @@ export class Instance {
   private readonly _forMunicipalityMerger: boolean;
   private readonly _copyOf: Iri | undefined;
   private readonly _isYearOld: boolean | undefined;
-  private readonly _yearOldModifiedDate: FormatPreservingDate;
+  private readonly _yearOldModifiedDate: FormatPreservingDate | undefined;
 
   constructor(
     id: Iri,
