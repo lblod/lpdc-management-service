@@ -229,7 +229,7 @@ export class DomainToQuadsMapper {
         instance.id,
         instance.needsConversionFromFormalToInformal,
       ),
-      instance.feedbackAvailable ? this.feedbackAvailable(instance.id, instance.feedbackAvailable) : undefined,
+      this.feedbackAvailable(instance.id, instance.feedbackAvailable),
       this.dateCreated(instance.id, instance.dateCreated),
       this.dateModified(instance.id, instance.dateModified),
       this.reviewStatusModifiedDate(
@@ -262,6 +262,8 @@ export class DomainToQuadsMapper {
             namedNode(instance.copyOf.value),
           )
         : undefined,
+      this.isYearOld(instance.id, instance.isYearOld),
+      this.yearOldModifiedDate(instance.id, instance.yearOldModifiedDate),
     ].filter((t) => t !== undefined);
   }
 
@@ -1346,12 +1348,40 @@ export class DomainToQuadsMapper {
   private feedbackAvailable(
     id: Iri,
     feedbackAvailable: boolean | undefined,
-  ): Statement {
-    return this.buildQuad(
-      namedNode(id.value),
-      NS.lpdcExt("feedbackAvailable"),
-      literal(feedbackAvailable.toString(), NS.xsd("boolean")),
-    );
+  ): Statement | undefined {
+    return feedbackAvailable !== undefined
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.lpdcExt("feedbackAvailable"),
+          literal(feedbackAvailable.toString(), NS.xsd("boolean")),
+        )
+      : undefined;
+  }
+
+  private isYearOld(
+    id: Iri,
+    isYearOld: boolean | undefined,
+  ): Statement | undefined {
+    return isYearOld !== undefined
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.lpdcExt("isYearOld"),
+          literal(isYearOld.toString(), NS.xsd("boolean")),
+        )
+      : undefined;
+  }
+
+  private yearOldModifiedDate(
+    id: Iri,
+    value: FormatPreservingDate | undefined,
+  ) {
+    return value
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.lpdcExt("yearOldModifiedDate"),
+          literal(value.value, NS.xsd("dateTime")),
+        )
+      : undefined;
   }
 
   private forMunicipalityMerger(

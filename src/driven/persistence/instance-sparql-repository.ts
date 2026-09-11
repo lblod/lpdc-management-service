@@ -153,6 +153,7 @@ export class InstanceSparqlRepository implements InstanceRepository {
       : InstanceBuilder.from(instance)
           .withDateModified(FormatPreservingDate.now())
           .withLastModifier(user)
+          .withIsYearOld(false)
           .build();
 
     const oldTriples = new DomainToQuadsMapper(bestuurseenheid.userGraph())

@@ -82,6 +82,8 @@ export class Instance {
   private readonly _legalResources: LegalResource[];
   private readonly _forMunicipalityMerger: boolean;
   private readonly _copyOf: Iri | undefined;
+  private readonly _isYearOld: boolean | undefined;
+  private readonly _yearOldModifiedDate: FormatPreservingDate | undefined;
 
   constructor(
     id: Iri,
@@ -131,6 +133,8 @@ export class Instance {
     legalResources: LegalResource[],
     forMunicipalityMerger: boolean,
     copyOf: Iri | undefined,
+    isYearOld: boolean | undefined,
+    yearOldModifiedDate: FormatPreservingDate | undefined,
   ) {
     this._id = requiredValue(id, "id");
     this._uuid = requiredValue(uuid, "uuid");
@@ -276,6 +280,8 @@ export class Instance {
       "forMunicipalityMerger",
     );
     this._copyOf = copyOf;
+    this._isYearOld = isYearOld;
+    this._yearOldModifiedDate = yearOldModifiedDate;
     this.validateLanguages();
   }
 
@@ -554,6 +560,14 @@ export class Instance {
     return this._copyOf;
   }
 
+  get isYearOld(): boolean | undefined {
+    return this._isYearOld;
+  }
+
+  get yearOldModifiedDate(): FormatPreservingDate | undefined {
+    return this._yearOldModifiedDate;
+  }
+
   transformToInformal(): Instance {
     if (this._dutchLanguageVariant == Language.INFORMAL) {
       throw new InvariantError("Instantie is reeds in de je-vorm");
@@ -675,6 +689,8 @@ export class InstanceBuilder {
   private legalResources: LegalResource[] = [];
   private forMunicipalityMerger: boolean;
   private copyOf: Iri | undefined;
+  private isYearOld: boolean | undefined;
+  private yearOldModifiedDate: FormatPreservingDate | undefined;
 
   static buildIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/public-service/${uniqueId}`);
@@ -730,7 +746,9 @@ export class InstanceBuilder {
       .withSpatials(instance.spatials)
       .withLegalResources(instance.legalResources)
       .withForMunicipalityMerger(instance.forMunicipalityMerger)
-      .withCopyOf(instance.copyOf);
+      .withCopyOf(instance.copyOf)
+      .withIsYearOld(instance.isYearOld)
+      .withYearOldModifiedDate(instance.yearOldModifiedDate);
   }
 
   public withId(id: Iri): InstanceBuilder {
@@ -1000,7 +1018,16 @@ export class InstanceBuilder {
     this.copyOf = copyOf;
     return this;
   }
-
+  public withIsYearOld(isYearOld: boolean): InstanceBuilder {
+    this.isYearOld = isYearOld;
+    return this;
+  }
+  public withYearOldModifiedDate(
+    yearOldModifiedDate: FormatPreservingDate,
+  ): InstanceBuilder {
+    this.yearOldModifiedDate = yearOldModifiedDate;
+    return this;
+  }
   public build(): Instance {
     return new Instance(
       this.id,
@@ -1050,6 +1077,8 @@ export class InstanceBuilder {
       this.legalResources,
       this.forMunicipalityMerger,
       this.copyOf,
+      this.isYearOld,
+      this.yearOldModifiedDate,
     );
   }
 }

@@ -393,6 +393,8 @@ export class QuadsToDomainMapper {
       this.legalResources(id),
       this.forMunicipalityMerger(id),
       this.copyOf(id),
+      this.isYearOld(id),
+      this.yearOldModifiedDate(id),
     );
   }
 
@@ -1217,6 +1219,24 @@ export class QuadsToDomainMapper {
       this.storeAccess.uniqueStatement(
         this.asNamedOrBlankNode(id),
         NS.lpdcExt("copyOf"),
+      ),
+    );
+  }
+
+  isYearOld(id: Iri): boolean | undefined {
+    return this.parseBoolean(
+      this.storeAccess.uniqueStatement(
+        this.asNamedOrBlankNode(id),
+        NS.lpdcExt("isYearOld"),
+      )?.object as Literal,
+    );
+  }
+
+  yearOldModifiedDate(id: Iri): FormatPreservingDate | undefined {
+    return this.asFormatPreservingDate(
+      this.storeAccess.uniqueValue(
+        this.asNamedOrBlankNode(id),
+        NS.lpdcExt("yearOldModifiedDate"),
       ),
     );
   }

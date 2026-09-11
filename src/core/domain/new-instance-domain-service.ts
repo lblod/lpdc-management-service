@@ -101,6 +101,8 @@ export class NewInstanceDomainService {
       [],
       false,
       undefined,
+      false,
+      undefined,
     );
 
     await this._instanceRepository.save(bestuurseenheid, newInstance);
@@ -215,6 +217,8 @@ export class NewInstanceDomainService {
       ),
       false,
       undefined,
+      false,
+      undefined,
     );
 
     await this._instanceRepository.save(bestuurseenheid, newInstance);
@@ -258,6 +262,8 @@ export class NewInstanceDomainService {
       .withReviewStatusModifiedDate(undefined)
       .withFormalInformalModifiedDate(undefined)
       .withFeedbackAvailable(undefined)
+      .withIsYearOld(false)
+      .withYearOldModifiedDate(undefined)
       .withCreator(user)
       .withLastModifier(user)
       .withRequirements(
