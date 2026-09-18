@@ -1,11 +1,15 @@
 import { InstanceRepository } from "../port/driven/persistence/instance-repository";
-import { Bestuurseenheid } from "./bestuurseenheid";
+import {
+  Bestuurseenheid,
+  BestuurseenheidClassificatieCode,
+} from "./bestuurseenheid";
 import { Instance, InstanceBuilder } from "./instance";
 import { uuid } from "../../../mu-helper";
 import { FormatPreservingDate } from "./format-preserving-date";
 import {
   ChosenFormType,
   CompetentAuthorityLevelType,
+  ExecutingAuthorityLevelType,
   InstanceStatusType,
 } from "./types";
 import { Concept } from "./concept";
@@ -53,6 +57,23 @@ export class NewInstanceDomainService {
       );
     const chosenForm = formalInformalChoice?.chosenForm;
 
+    // Prefill lokaal if lokaal bestuur, provinciaal if provinciaal bestuur
+    const isProvincie =
+      bestuurseenheid.classificatieCode ===
+      BestuurseenheidClassificatieCode.PROVINCIE;
+
+    const competentAuthorityLevels = [
+      isProvincie
+        ? CompetentAuthorityLevelType.PROVINCIAAL
+        : CompetentAuthorityLevelType.LOKAAL,
+    ];
+
+    const executingAuthorityLevels = [
+      isProvincie
+        ? ExecutingAuthorityLevelType.PROVINCIAAL
+        : ExecutingAuthorityLevelType.LOKAAL,
+    ];
+
     const newInstance = new Instance(
       instanceId,
       instanceUuid,
@@ -67,9 +88,9 @@ export class NewInstanceDomainService {
       undefined,
       [],
       [],
-      [],
+      competentAuthorityLevels,
       [bestuurseenheid.id],
-      [],
+      executingAuthorityLevels,
       [bestuurseenheid.id],
       [],
       [],
@@ -133,6 +154,18 @@ export class NewInstanceDomainService {
       formalInformalChoice?.chosenForm,
     );
 
+    // Prefill 'lokaal' if not already present in the concept, provinciaal if provincial bestuur
+    const prefillDefaultLevel =
+      bestuurseenheid.classificatieCode ===
+      BestuurseenheidClassificatieCode.PROVINCIE
+        ? CompetentAuthorityLevelType.PROVINCIAAL
+        : CompetentAuthorityLevelType.LOKAAL;
+    const competentAuthorityLevels = concept.competentAuthorityLevels.includes(
+      prefillDefaultLevel,
+    )
+      ? concept.competentAuthorityLevels
+      : [...concept.competentAuthorityLevels, prefillDefaultLevel];
+
     const newInstance = new Instance(
       instanceId,
       instanceUuid,
@@ -159,7 +192,7 @@ export class NewInstanceDomainService {
       concept.type,
       concept.targetAudiences,
       concept.themes,
-      concept.competentAuthorityLevels,
+      competentAuthorityLevels,
       concept.competentAuthorities,
       concept.executingAuthorityLevels,
       uniqWith([...concept.executingAuthorities, bestuurseenheid.id], isEqual),
