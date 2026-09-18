@@ -158,13 +158,13 @@ export class NewInstanceDomainService {
     const prefillDefaultLevel =
       bestuurseenheid.classificatieCode ===
       BestuurseenheidClassificatieCode.PROVINCIE
-        ? CompetentAuthorityLevelType.PROVINCIAAL
-        : CompetentAuthorityLevelType.LOKAAL;
-    const competentAuthorityLevels = concept.competentAuthorityLevels.includes(
+        ? ExecutingAuthorityLevelType.PROVINCIAAL
+        : ExecutingAuthorityLevelType.LOKAAL;
+    const executingAuthorityLevels = concept.executingAuthorityLevels.includes(
       prefillDefaultLevel,
     )
-      ? concept.competentAuthorityLevels
-      : [...concept.competentAuthorityLevels, prefillDefaultLevel];
+      ? concept.executingAuthorityLevels
+      : [...concept.executingAuthorityLevels, prefillDefaultLevel];
 
     const newInstance = new Instance(
       instanceId,
@@ -192,9 +192,9 @@ export class NewInstanceDomainService {
       concept.type,
       concept.targetAudiences,
       concept.themes,
-      competentAuthorityLevels,
+      concept.competentAuthorityLevels,
       concept.competentAuthorities,
-      concept.executingAuthorityLevels,
+      executingAuthorityLevels,
       uniqWith([...concept.executingAuthorities, bestuurseenheid.id], isEqual),
       concept.publicationMedia,
       concept.yourEuropeCategories,
