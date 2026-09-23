@@ -7,6 +7,7 @@ import { PREFIX, PUBLIC_GRAPH, WEGWIJS_URL } from "../../../config";
 import { sparqlEscapeString, sparqlEscapeUri, uuid } from "../../../mu-helper";
 import { Iri } from "../../core/domain/shared/iri";
 import { NS } from "./namespaces";
+import { ExecutingAuthorityLevelUri } from "./authority-level-sparql-repository";
 import { extractResultsFromAllSettled } from "../../../platform/promises";
 
 export class CodeSparqlRepository implements CodeRepository {
@@ -54,14 +55,19 @@ export class CodeSparqlRepository implements CodeRepository {
     await this.querying.insert(query);
   }
 
+  // Create the tailored codelists used by the form dropdowns
+  // -> executing codelist: active bestuurseenheden + ipdc orgs (all)
+  // -> competent codelist: active bestuurseenheden + ipdc orgs (without 'derden')
   async loadIPDCOrganisatiesTailoredInTurtleFormat(): Promise<string[]> {
     const bestuurseenheidTailoredAsIpdcOrganisatieConceptQuery = `
             ${PREFIX.skos}
             ${PREFIX.besluit}
             ${PREFIX.regorg}
+
             CONSTRUCT {
               ?bestuurseenheid a skos:Concept ;
-                skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored> ;
+                skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailoredCompetent> ;
+                skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailoredExecuting> ;
                 skos:prefLabel ?newLabel .
             }
             WHERE {
@@ -85,17 +91,27 @@ export class CodeSparqlRepository implements CodeRepository {
             ${PREFIX.skos}
             ${PREFIX.dvcs}
             ${PREFIX.rdfs}
+            ${PREFIX.lpdc}
 
             CONSTRUCT {
               ?s ?p ?o ;
-                skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored> .
+                skos:inScheme <https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailoredExecuting> ;
+                skos:inScheme ?competentScheme .
             }
             WHERE {
                 GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
                   ?s a skos:Concept ;
                     skos:inScheme dvcs:IPDCOrganisaties ;
-                rdfs:seeAlso ${sparqlEscapeUri(WEGWIJS_URL)} ;
+                    rdfs:seeAlso ${sparqlEscapeUri(WEGWIJS_URL)} ;
                     ?p ?o .
+
+                  OPTIONAL {
+                    ?s a skos:Concept .
+                    FILTER NOT EXISTS {
+                      ?s lpdc:organizationExecutingLevel ${sparqlEscapeUri(ExecutingAuthorityLevelUri.DERDEN)} .
+                    }
+                    BIND(<https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailoredCompetent> AS ?competentScheme)
+                  }
                 }
             }
           `;

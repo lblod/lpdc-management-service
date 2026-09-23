@@ -196,7 +196,7 @@ ext:authorityHeading a form:Field;
       sh:path m8g:hasCompetentAuthority ;
       form:options  """
                      {
-                       "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored"
+                       "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailoredCompetent"
                      }
                     """ ;
       form:displayType displayTypes:lpdcConceptSchemeMultiSelector ;
@@ -233,7 +233,7 @@ ext:authorityHeading a form:Field;
       sh:path lpdcExt:hasExecutingAuthority ;
       form:options  """
                      {
-                       "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailored"
+                       "conceptScheme":"https://productencatalogus.data.vlaanderen.be/id/conceptscheme/IPDCOrganisaties/tailoredExecuting"
                      }
                     """ ;
       form:displayType displayTypes:lpdcConceptSchemeMultiSelector ;
