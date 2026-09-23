@@ -9,6 +9,7 @@ import { Iri } from "../../core/domain/shared/iri";
 import { NS } from "./namespaces";
 import { ExecutingAuthorityLevelUri } from "./authority-level-sparql-repository";
 import { extractResultsFromAllSettled } from "../../../platform/promises";
+import { BestuurseenheidStatusCodeUri } from "./bestuurseenheid-sparql-repository";
 
 export class CodeSparqlRepository implements CodeRepository {
   protected readonly querying: SparqlQuerying;
@@ -79,7 +80,7 @@ export class CodeSparqlRepository implements CodeRepository {
                   ?bestuurseenheidClassificatie skos:prefLabel ?bestuurseenheidClassificatieLabel .
 
                   FILTER NOT EXISTS {
-                    ?bestuurseenheid regorg:orgStatus <http://lblod.data.gift/concepts/d02c4e12bf88d2fdf5123b07f29c9311> .
+                    ?bestuurseenheid regorg:orgStatus ${sparqlEscapeUri(BestuurseenheidStatusCodeUri.INACTIVE)} .
                   }
 
                   BIND(CONCAT(?bestuurseenheidLabel, " (", ?bestuurseenheidClassificatieLabel, ")") as ?newLabel)
