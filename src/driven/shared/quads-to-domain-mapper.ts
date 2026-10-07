@@ -679,7 +679,9 @@ export class QuadsToDomainMapper {
       this.asNamedOrBlankNode(id),
       NS.schema("url"),
     );
-    return urlValue?.trim();
+    return urlValue
+      ?.trim()
+      .replace(/^https?:\/\//i, (scheme) => scheme.toLowerCase());
   }
 
   private firstName(id: Iri): string | undefined {
