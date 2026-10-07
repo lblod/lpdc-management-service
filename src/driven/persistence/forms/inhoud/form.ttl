@@ -595,8 +595,8 @@ ext:rulesHeading a form:Field;
                            "skin": "4",
                            "pillText":"Het aantal website procedures is gewijzigd",
                            "path": "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#hasWebsite",
-                           "conceptHelpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Laat je de velden leeg, verwijder dez dan via de verwijderknop.</p>",
-                           "helpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Laat je de velden leeg, verwijder dez dan via de verwijderknop.</p>"
+                           "conceptHelpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Laat je de velden leeg, verwijder deze dan via de verwijderknop.</p>",
+                           "helpText": "<strong>Deze info is belangrijk voor hergebruikers.</strong><p>Laat je de velden leeg, verwijder deze dan via de verwijderknop.</p>"
                           }
                          """;
             form:displayType displayTypes:lpdcHeading ;
