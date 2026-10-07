@@ -2,6 +2,7 @@
   "name": "lpdc-management-service",
   "version": "0.54.2",
   "description": "",
+  "type": "module",
   "main": "app.ts",
   "scripts": {
     "build": "tsc --noEmit",
@@ -13,7 +14,8 @@
     "start": "ts-node app.ts",
     "development": "nodemon -e 'js,ts' --exec 'node --inspect=0.0.0.0:9229 --require ts-node/register ./app.ts'",
     "lint:js": "eslint . --cache",
-    "lint:format": "prettier . --cache --check"
+    "lint:format": "prettier . --cache --check",
+    "lint:types": "tsc --noEmit"
   },
   "repository": {
     "type": "git",

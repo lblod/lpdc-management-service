@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "strict": false,
+    "verbatimModuleSyntax": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
     "esModuleInterop": true,
     "target": "ES2022",
     "moduleResolution": "nodenext",
