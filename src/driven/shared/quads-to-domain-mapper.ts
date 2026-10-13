@@ -1035,14 +1035,14 @@ export class QuadsToDomainMapper {
   }
 
   digitaalAanvraagbaar(id: Iri): boolean | undefined {
-  const statement = this.storeAccess.uniqueStatement(   
-    this.asNamedOrBlankNode(id),
-    NS.lpdcExt("digitaalAanvraagbaar"),                  
-  );
-  return statement
-    ? this.parseBoolean(statement.object as Literal)     
-    : undefined;
-}
+    const statement = this.storeAccess.uniqueStatement(
+      this.asNamedOrBlankNode(id),
+      NS.lpdcExt("digitaalAanvraagbaar"),
+    );
+    return statement
+      ? this.parseBoolean(statement.object as Literal)
+      : undefined;
+  }
 
   procedures(id: Iri): Procedure[] {
     const procedureIds = this.asIris(
