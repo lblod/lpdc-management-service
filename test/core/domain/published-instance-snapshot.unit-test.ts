@@ -455,6 +455,7 @@ describe("constructing", () => {
         LanguageString.of(undefined, undefined, "omschrijving"),
         1,
         [],
+        undefined,
       );
 
       expect(() =>
@@ -472,6 +473,7 @@ describe("constructing", () => {
         undefined,
         1,
         [],
+        undefined,
       );
 
       expect(() =>
