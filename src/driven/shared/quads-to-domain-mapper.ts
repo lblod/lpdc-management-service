@@ -1034,14 +1034,13 @@ export class QuadsToDomainMapper {
     return this.sort(websites);
   }
 
-  digitaalAanvraagbaar(id: Iri): boolean | undefined {
-    const statement = this.storeAccess.uniqueStatement(
-      this.asNamedOrBlankNode(id),
-      NS.lpdcExt("digitaalAanvraagbaar"),
+  digitaalAanvraagbaar(id: Iri): LanguageString | undefined {
+    return this.asLanguageString(
+      this.storeAccess.statements(
+        this.asNamedOrBlankNode(id),
+        NS.lpdcExt("digitaalAanvraagbaar"),
+      ),
     );
-    return statement
-      ? this.parseBoolean(statement.object as Literal)
-      : undefined;
   }
 
   procedures(id: Iri): Procedure[] {

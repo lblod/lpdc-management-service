@@ -13,7 +13,7 @@ export class Procedure {
   private readonly _description: LanguageString | undefined;
   private readonly _order: number;
   private readonly _websites: Website[];
-  private readonly _digitaalAanvraagbaar: boolean | undefined;
+  private readonly _digitaalAanvraagbaar: LanguageString | undefined;
 
   private constructor(
     id: Iri,
@@ -22,7 +22,7 @@ export class Procedure {
     description: LanguageString | undefined,
     order: number,
     websites: Website[],
-    digitaalAanvraagbaar: boolean | undefined,
+    digitaalAanvraagbaar: LanguageString | undefined,
   ) {
     this._id = requiredValue(id, "id");
     this._uuid = uuid;
@@ -116,7 +116,7 @@ export class Procedure {
     description: LanguageString | undefined,
     order: number,
     websites: Website[],
-    digitaalAanvraagbaar: boolean | undefined,
+    digitaalAanvraagbaar: LanguageString | undefined,
   ): Procedure {
     return new Procedure(
       id,
@@ -162,7 +162,7 @@ export class Procedure {
     return [...this._websites];
   }
 
-  get digitaalAanvraagbaar(): boolean | undefined {
+  get digitaalAanvraagbaar(): LanguageString | undefined {
     return this._digitaalAanvraagbaar;
   }
 
@@ -214,7 +214,7 @@ export class ProcedureBuilder {
   private description: LanguageString | undefined;
   private order: number;
   private websites: Website[] = [];
-  private digitaalAanvraagbaar: boolean | undefined;
+  private digitaalAanvraagbaar: LanguageString | undefined;
 
   static buildIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/rule/${uniqueId}`);
@@ -262,7 +262,7 @@ export class ProcedureBuilder {
   }
 
   public withDigitaalAanvraagbaar(
-    digitaalAanvraagbaar: boolean | undefined,
+    digitaalAanvraagbaar: LanguageString | undefined,
   ): ProcedureBuilder {
     this.digitaalAanvraagbaar = digitaalAanvraagbaar;
     return this;
