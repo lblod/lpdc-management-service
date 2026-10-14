@@ -13,7 +13,7 @@ export class Procedure {
   private readonly _description: LanguageString | undefined;
   private readonly _order: number;
   private readonly _websites: Website[];
-  private readonly _digitaalAanvraagbaar: LanguageString | undefined;
+  private readonly _isDigitallyRequestable: boolean | undefined;
 
   private constructor(
     id: Iri,
@@ -22,7 +22,7 @@ export class Procedure {
     description: LanguageString | undefined,
     order: number,
     websites: Website[],
-    digitaalAanvraagbaar: LanguageString | undefined,
+    isDigitallyRequestable: boolean | undefined,
   ) {
     this._id = requiredValue(id, "id");
     this._uuid = uuid;
@@ -30,7 +30,7 @@ export class Procedure {
     this._description = description;
     this._order = requiredValue(order, "order");
     this._websites = [...websites];
-    this._digitaalAanvraagbaar = digitaalAanvraagbaar;
+    this._isDigitallyRequestable = isDigitallyRequestable;
     requireNoDuplicates(
       this._websites.map((r) => r.order),
       "websites > order",
@@ -45,7 +45,7 @@ export class Procedure {
       requiredValue(procedure.description, "description"),
       procedure.order,
       procedure.websites.map(Website.forConcept),
-      procedure.digitaalAanvraagbaar,
+      procedure.isDigitallyRequestable,
     );
   }
 
@@ -57,7 +57,7 @@ export class Procedure {
       requiredValue(procedure.description, "description"),
       procedure.order,
       procedure.websites.map(Website.forConceptSnapshot),
-      procedure.digitaalAanvraagbaar,
+      procedure.isDigitallyRequestable,
     );
   }
 
@@ -81,7 +81,7 @@ export class Procedure {
       procedure.description,
       procedure.order,
       procedure.websites.map(Website.forInstance),
-      procedure.digitaalAanvraagbaar,
+      procedure.isDigitallyRequestable,
     );
   }
 
@@ -105,7 +105,7 @@ export class Procedure {
       requiredValue(procedure.description, "description"),
       procedure.order,
       procedure.websites.map(Website.forInstanceSnapshot),
-      procedure.digitaalAanvraagbaar,
+      procedure.isDigitallyRequestable,
     );
   }
 
@@ -116,7 +116,7 @@ export class Procedure {
     description: LanguageString | undefined,
     order: number,
     websites: Website[],
-    digitaalAanvraagbaar: LanguageString | undefined,
+    isDigitallyRequestable: boolean | undefined,
   ): Procedure {
     return new Procedure(
       id,
@@ -125,7 +125,7 @@ export class Procedure {
       description,
       order,
       websites,
-      digitaalAanvraagbaar,
+      isDigitallyRequestable,
     );
   }
 
@@ -162,8 +162,8 @@ export class Procedure {
     return [...this._websites];
   }
 
-  get digitaalAanvraagbaar(): LanguageString | undefined {
-    return this._digitaalAanvraagbaar;
+  get isDigitallyRequestable(): boolean | undefined {
+    return this._isDigitallyRequestable;
   }
 
   transformLanguage(from: Language, to: Language) {
@@ -199,7 +199,7 @@ export class Procedure {
             procs[0].description,
             procs[1].description,
           ) ||
-          procs[0].digitaalAanvraagbaar !== procs[1].digitaalAanvraagbaar ||
+          procs[0].isDigitallyRequestable !== procs[1].isDigitallyRequestable ||
           Website.isFunctionallyChanged(procs[0].websites, procs[1].websites)
         );
       })
@@ -214,7 +214,7 @@ export class ProcedureBuilder {
   private description: LanguageString | undefined;
   private order: number;
   private websites: Website[] = [];
-  private digitaalAanvraagbaar: LanguageString | undefined;
+  private isDigitallyRequestable: boolean | undefined;
 
   static buildIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/rule/${uniqueId}`);
@@ -228,7 +228,7 @@ export class ProcedureBuilder {
       .withDescription(procedure.description)
       .withOrder(procedure.order)
       .withWebsites(procedure.websites)
-      .withDigitaalAanvraagbaar(procedure.digitaalAanvraagbaar);
+      .withisDigitallyRequestable(procedure.isDigitallyRequestable);
   }
 
   public withId(id: Iri): ProcedureBuilder {
@@ -261,10 +261,10 @@ export class ProcedureBuilder {
     return this;
   }
 
-  public withDigitaalAanvraagbaar(
-    digitaalAanvraagbaar: LanguageString | undefined,
+  public withisDigitallyRequestable(
+    isDigitallyRequestable: boolean | undefined,
   ): ProcedureBuilder {
-    this.digitaalAanvraagbaar = digitaalAanvraagbaar;
+    this.isDigitallyRequestable = isDigitallyRequestable;
     return this;
   }
 
@@ -276,7 +276,7 @@ export class ProcedureBuilder {
       this.description,
       this.order,
       this.websites,
-      this.digitaalAanvraagbaar,
+      this.isDigitallyRequestable,
     );
   }
 }

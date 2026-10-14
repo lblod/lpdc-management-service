@@ -1034,13 +1034,14 @@ export class QuadsToDomainMapper {
     return this.sort(websites);
   }
 
-  digitaalAanvraagbaar(id: Iri): LanguageString | undefined {
-    return this.asLanguageString(
-      this.storeAccess.statements(
-        this.asNamedOrBlankNode(id),
-        NS.lpdcExt("digitaalAanvraagbaar"),
-      ),
+  isDigitallyRequestable(id: Iri): boolean | undefined {
+    const statement = this.storeAccess.uniqueStatement(
+      this.asNamedOrBlankNode(id),
+      NS.lpdcExt("isDigitallyRequestable"),
     );
+    return statement
+      ? this.parseBoolean(statement.object as Literal)
+      : undefined;
   }
 
   procedures(id: Iri): Procedure[] {
@@ -1063,7 +1064,7 @@ export class QuadsToDomainMapper {
         this.description(procedureId),
         this.order(procedureId),
         this.websites(procedureId, NS.lpdcExt("hasWebsite")),
-        this.digitaalAanvraagbaar(procedureId),
+        this.isDigitallyRequestable(procedureId),
       ),
     );
 
