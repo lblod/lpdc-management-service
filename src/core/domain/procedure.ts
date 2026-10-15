@@ -13,6 +13,7 @@ export class Procedure {
   private readonly _description: LanguageString | undefined;
   private readonly _order: number;
   private readonly _websites: Website[];
+  private readonly _isDigitallyRequestable: boolean | undefined;
 
   private constructor(
     id: Iri,
@@ -21,6 +22,7 @@ export class Procedure {
     description: LanguageString | undefined,
     order: number,
     websites: Website[],
+    isDigitallyRequestable: boolean | undefined,
   ) {
     this._id = requiredValue(id, "id");
     this._uuid = uuid;
@@ -28,6 +30,7 @@ export class Procedure {
     this._description = description;
     this._order = requiredValue(order, "order");
     this._websites = [...websites];
+    this._isDigitallyRequestable = isDigitallyRequestable;
     requireNoDuplicates(
       this._websites.map((r) => r.order),
       "websites > order",
@@ -42,6 +45,7 @@ export class Procedure {
       requiredValue(procedure.description, "description"),
       procedure.order,
       procedure.websites.map(Website.forConcept),
+      procedure.isDigitallyRequestable,
     );
   }
 
@@ -53,6 +57,7 @@ export class Procedure {
       requiredValue(procedure.description, "description"),
       procedure.order,
       procedure.websites.map(Website.forConceptSnapshot),
+      procedure.isDigitallyRequestable,
     );
   }
 
@@ -76,6 +81,7 @@ export class Procedure {
       procedure.description,
       procedure.order,
       procedure.websites.map(Website.forInstance),
+      procedure.isDigitallyRequestable,
     );
   }
 
@@ -99,6 +105,7 @@ export class Procedure {
       requiredValue(procedure.description, "description"),
       procedure.order,
       procedure.websites.map(Website.forInstanceSnapshot),
+      procedure.isDigitallyRequestable,
     );
   }
 
@@ -109,8 +116,17 @@ export class Procedure {
     description: LanguageString | undefined,
     order: number,
     websites: Website[],
+    isDigitallyRequestable: boolean | undefined,
   ): Procedure {
-    return new Procedure(id, uuid, title, description, order, websites);
+    return new Procedure(
+      id,
+      uuid,
+      title,
+      description,
+      order,
+      websites,
+      isDigitallyRequestable,
+    );
   }
 
   get nlLanguage(): Language | undefined {
@@ -146,6 +162,10 @@ export class Procedure {
     return [...this._websites];
   }
 
+  get isDigitallyRequestable(): boolean | undefined {
+    return this._isDigitallyRequestable;
+  }
+
   transformLanguage(from: Language, to: Language) {
     return ProcedureBuilder.from(this)
       .withTitle(this.title?.transformLanguage(from, to))
@@ -179,6 +199,7 @@ export class Procedure {
             procs[0].description,
             procs[1].description,
           ) ||
+          procs[0].isDigitallyRequestable !== procs[1].isDigitallyRequestable ||
           Website.isFunctionallyChanged(procs[0].websites, procs[1].websites)
         );
       })
@@ -193,6 +214,7 @@ export class ProcedureBuilder {
   private description: LanguageString | undefined;
   private order: number;
   private websites: Website[] = [];
+  private isDigitallyRequestable: boolean | undefined;
 
   static buildIri(uniqueId: string): Iri {
     return new Iri(`http://data.lblod.info/id/rule/${uniqueId}`);
@@ -205,7 +227,8 @@ export class ProcedureBuilder {
       .withTitle(procedure.title)
       .withDescription(procedure.description)
       .withOrder(procedure.order)
-      .withWebsites(procedure.websites);
+      .withWebsites(procedure.websites)
+      .withisDigitallyRequestable(procedure.isDigitallyRequestable);
   }
 
   public withId(id: Iri): ProcedureBuilder {
@@ -238,6 +261,13 @@ export class ProcedureBuilder {
     return this;
   }
 
+  public withisDigitallyRequestable(
+    isDigitallyRequestable: boolean | undefined,
+  ): ProcedureBuilder {
+    this.isDigitallyRequestable = isDigitallyRequestable;
+    return this;
+  }
+
   public build(): Procedure {
     return Procedure.reconstitute(
       this.id,
@@ -246,6 +276,7 @@ export class ProcedureBuilder {
       this.description,
       this.order,
       this.websites,
+      this.isDigitallyRequestable,
     );
   }
 }
