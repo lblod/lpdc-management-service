@@ -69,6 +69,16 @@ export class FormApplicationService {
           require_valid_protocol: true,
         }),
     );
+
+    registerCustomValidation(
+      "https://productencatalogus.data.vlaanderen.be/ns/ipdc-lpdc#matchValuesAllowMissing",
+      () => {
+        // This can always return true since we don't use it to validate, but for conditional rendering.
+        // We do need to register it because otherwise an error is thrown.
+        // The frontend has the real implementation.
+        return true;
+      },
+    );
   }
 
   async loadConceptForm(
