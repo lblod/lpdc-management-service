@@ -942,6 +942,16 @@ export class DomainToQuadsMapper {
         NS.sh("order"),
         literal(procedure.order.toString(), NS.xsd("integer")),
       ),
+      procedure.isDigitallyRequestable !== undefined
+        ? this.buildQuad(
+            namedNode(procedure.id.value),
+            NS.lpdcExt("isDigitallyRequestable"),
+            literal(
+              procedure.isDigitallyRequestable.toString(),
+              NS.xsd("boolean"),
+            ),
+          )
+        : undefined,
       ...this.websites(
         procedure.id,
         NS.lpdcExt("hasWebsite"),
