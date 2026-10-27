@@ -20,6 +20,7 @@
 @prefix locn: <http://www.w3.org/ns/locn#> .
 @prefix adres: <https://data.vlaanderen.be/ns/adres#> .
 @prefix eli: <http://data.europa.eu/eli/ontology#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 
 ##########################################################
 # form
@@ -507,8 +508,10 @@ ext:rulesHeading a form:Field;
      form:removeLabel "Verwijder procedure";
      form:includes ext:ruleTitleF;
      form:includes ext:ruleDescriptionF;
+     form:includes ext:ruleIsDigitallyRequestableF;
      form:includes ext:procedureWebsitesHeading;
-     form:includes ext:procedureWebsitesL.
+     form:includes ext:procedureWebsitesL;
+     form:includes ext:procedureWebsitesRequiredL.
 
     ##########################################################
     # Field: Procedure title
@@ -547,7 +550,7 @@ ext:rulesHeading a form:Field;
     ##########################################################
     ext:ruleDescriptionF a form:Field ;
         sh:name "Beschrijving procedure" ;
-        sh:order 3 ;
+        sh:order 2 ;
         form:language "<FORMAL_INFORMAL_LANGUAGE>";
         form:validations [
           a form:RequiredConstraint ;
@@ -577,6 +580,22 @@ ext:rulesHeading a form:Field;
                       }
                     """;
         form:displayType displayTypes:richText ;
+        sh:group ext:rulesPg-sub .
+
+    ##########################################################
+    # Field: Digitaal aanvraagbaar
+    ##########################################################
+    ext:ruleIsDigitallyRequestableF a form:Field ;
+        sh:name "Digitaal aanvraagbaar" ;
+        sh:order 3 ;
+        sh:path lpdcExt:isDigitallyRequestable ;
+        form:displayType displayTypes:lpdcConfirmRadios ;
+        form:options """
+          {
+            "conceptHelpText": "Geef aan of het product digitaal kan worden opgestart, aangevraagd of ingediend. Kan dit, voeg dan de rechtstreekse link naar de start van de aanvraag toe onder Website Procedure.",
+            "helpText": "Geef aan of het product digitaal kan worden opgestart, aangevraagd of ingediend. Kan dit, voeg dan de rechtstreekse link naar de start van de aanvraag toe onder Website Procedure."
+          }
+        """;
         sh:group ext:rulesPg-sub .
 
         ##########################################################
@@ -619,7 +638,40 @@ ext:rulesHeading a form:Field;
           form:addLabel "Voeg website toe";
           form:canAdd true;
           form:canRemove true;
-          sh:order 2 .
+          sh:order 2 ;
+          form:rendersWhen
+            # We use our custom matcher because it fixes some comparison issues with boolean literals which the built-in matcher doesn't have yet.
+            # The value is only optional if the extra predicate is configured. We can replace it with the default version once that fix is upstreamed.
+            [ a lpdcExt:MatchValuesAllowMissing ;
+              form:grouping form:Bag ;
+              sh:path lpdcExt:isDigitallyRequestable ;
+              lpdcExt:allowMissing true;
+              form:valuesIn (
+                "false"^^xsd:boolean
+              ) ;
+            ] . 
+
+        ##########################################################
+        #  Listing: ProcedureWebsiteRequired - This is a special version that requires at least 1 website
+        ##########################################################
+        ext:procedureWebsitesRequiredL a form:Listing;
+          form:each ext:procedureWebsitesSf;
+          form:scope ext:procedureWebsitesS;
+          form:createGenerator ext:procedureWebsitesG;
+          sh:group ext:procedureWebsitesPg;
+          form:addLabel "Voeg website toe";
+          sh:minCount 1;
+          form:canAdd true;
+          form:canRemove true;
+          sh:order 2 ;
+          form:rendersWhen
+            [ a lpdcExt:MatchValuesAllowMissing ;
+              form:grouping form:Bag ;
+              sh:path lpdcExt:isDigitallyRequestable ;
+              form:valuesIn (
+                "true"^^xsd:boolean
+              ) ;
+            ] . 
 
        ##########################################################
         #  Generator: ProcedureWebsite

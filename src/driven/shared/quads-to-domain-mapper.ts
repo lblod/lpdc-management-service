@@ -1036,6 +1036,16 @@ export class QuadsToDomainMapper {
     return this.sort(websites);
   }
 
+  isDigitallyRequestable(id: Iri): boolean | undefined {
+    const statement = this.storeAccess.uniqueStatement(
+      this.asNamedOrBlankNode(id),
+      NS.lpdcExt("isDigitallyRequestable"),
+    );
+    return statement
+      ? this.parseBoolean(statement.object as Literal)
+      : undefined;
+  }
+
   procedures(id: Iri): Procedure[] {
     const procedureIds = this.asIris(
       this.storeAccess.statements(
@@ -1056,6 +1066,7 @@ export class QuadsToDomainMapper {
         this.description(procedureId),
         this.order(procedureId),
         this.websites(procedureId, NS.lpdcExt("hasWebsite")),
+        this.isDigitallyRequestable(procedureId),
       ),
     );
 

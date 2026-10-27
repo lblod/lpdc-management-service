@@ -464,6 +464,7 @@ describe("constructing", () => {
         aMinimalLanguageString(ProcedureTestBuilder.DESCRIPTION).build(),
         1,
         [],
+        undefined,
       );
 
       expect(() =>
@@ -479,6 +480,7 @@ describe("constructing", () => {
         undefined,
         1,
         [],
+        undefined,
       );
 
       expect(() =>
