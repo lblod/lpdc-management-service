@@ -34,6 +34,8 @@ ext:form a form:Form, form:TopLevelForm ;
     form:includes ext:executingAuthorityLevelF;
     form:includes ext:executingAuthorityF;
     form:includes ext:tagsF;
+    form:includes ext:availabilityStartsF;
+    form:includes ext:availabilityEndsF;
     form:includes ext:startDateF;
     form:hasFieldGroup ext:pubChannelFG ;
     form:includes ext:endDateF ;
@@ -59,10 +61,37 @@ ext:generalPg a form:PropertyGroup;
 
    ##########################################################
    # Field: geldig vanaf
+   # NOTE: fill in the handleiding link (LINK Handleiding) before release
+   ##########################################################
+   ext:availabilityStartsF a form:Field ;
+      sh:name "Geldig vanaf" ;
+      sh:order 2 ;
+      sh:path schema:availabilityStarts ;
+      form:options """
+                    {
+                      "conceptHelpText": "Vul een start- en einddatum in wanneer het product slechts voor een bepaalde periode aangeboden wordt of beschikbaar is. De geldigheidsdatum van het product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen.<p><a target='_blank' rel='noopener noreferrer' href='LINK Handleiding'>Meer info</a></p>",
+                      "helpText": "Vul een start- en einddatum in wanneer het product slechts voor een bepaalde periode aangeboden wordt of beschikbaar is. De geldigheidsdatum van het product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen.<p><a target='_blank' rel='noopener noreferrer' href='LINK Handleiding'>Meer info</a></p>"
+                    }
+                   """ ;
+      form:displayType displayTypes:lpdcDateTime ;
+      sh:group ext:generalPg .
+
+   ##########################################################
+   # Field: geldig tot en met
+   ##########################################################
+   ext:availabilityEndsF a form:Field ;
+      sh:name "Geldig tot en met" ;
+      sh:order 3 ;
+      sh:path schema:availabilityEnds ;
+      form:displayType displayTypes:lpdcDateTime ;
+      sh:group ext:generalPg .
+
+   ##########################################################
+   # Field: geldig vanaf
    ##########################################################
    ext:startDateF a form:Field ;
       sh:name "Aanvraagbaar van" ;
-      sh:order 2 ;
+      sh:order 4 ;
       sh:path schema:startDate ;
       form:options """
                     {
@@ -78,7 +107,7 @@ ext:generalPg a form:PropertyGroup;
    ##########################################################
    ext:endDateF a form:Field ;
       sh:name "Aanvraagbaar tot en met" ;
-      sh:order 3 ;
+      sh:order 5 ;
       sh:path schema:endDate ;
       form:displayType displayTypes:lpdcDateTime ;
       sh:group ext:generalPg .

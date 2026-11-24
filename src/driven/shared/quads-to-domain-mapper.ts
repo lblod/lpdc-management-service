@@ -206,6 +206,8 @@ export class QuadsToDomainMapper {
       this.regulation(id),
       this.startDate(id),
       this.endDate(id),
+      this.availabilityStarts(id),
+      this.availabilityEnds(id),
       this.productType(id),
       this.targetAudiences(id),
       this.themes(id),
@@ -273,6 +275,8 @@ export class QuadsToDomainMapper {
       this.regulation(id),
       this.startDate(id),
       this.endDate(id),
+      this.availabilityStarts(id),
+      this.availabilityEnds(id),
       this.productType(id),
       this.targetAudiences(id),
       this.themes(id),
@@ -314,6 +318,8 @@ export class QuadsToDomainMapper {
       this.regulation(id),
       this.startDate(id),
       this.endDate(id),
+      this.availabilityStarts(id),
+      this.availabilityEnds(id),
       this.productType(id),
       this.targetAudiences(id),
       this.themes(id),
@@ -356,6 +362,8 @@ export class QuadsToDomainMapper {
       this.regulation(id),
       this.startDate(id),
       this.endDate(id),
+      this.availabilityStarts(id),
+      this.availabilityEnds(id),
       this.productType(id),
       this.targetAudiences(id),
       this.themes(id),
@@ -429,6 +437,24 @@ export class QuadsToDomainMapper {
       this.storeAccess.uniqueValue(
         this.asNamedOrBlankNode(id),
         NS.schema("endDate"),
+      ),
+    );
+  }
+
+  availabilityStarts(id: Iri): FormatPreservingDate | undefined {
+    return this.asFormatPreservingDate(
+      this.storeAccess.uniqueValue(
+        this.asNamedOrBlankNode(id),
+        NS.schema("availabilityStarts"),
+      ),
+    );
+  }
+
+  availabilityEnds(id: Iri): FormatPreservingDate | undefined {
+    return this.asFormatPreservingDate(
+      this.storeAccess.uniqueValue(
+        this.asNamedOrBlankNode(id),
+        NS.schema("availabilityEnds"),
       ),
     );
   }
