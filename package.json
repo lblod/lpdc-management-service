@@ -39,7 +39,7 @@
     "fs-extra": "^11.2.0",
     "lodash": "^4.17.1",
     "node-fetch": "^2.7.0",
-    "rdflib": "^2.2.33",
+    "rdflib": "^2.4.1",
     "sparql-client-2": "https://github.com/erikap/node-sparql-client.git",
     "ts-retry-promise": "^0.7.1",
     "uuid": "^9.0.0",
