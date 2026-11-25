@@ -1265,6 +1265,7 @@ ext:contactpointsHeading a form:Field;
   ext:contactpointsSf a form:SubForm;
      form:removeLabel "Verwijder contactpunt";
      form:includes ext:contactpointHeading-sub;
+     form:includes ext:contactPTitleF;
      form:includes ext:contactPEmailF;
      form:includes ext:contactPTelephoneF;
      form:includes ext:contactPageF;
@@ -1273,11 +1274,21 @@ ext:contactpointsHeading a form:Field;
      form:includes ext:contactPointAddressL.
 
     ##########################################################
+    # Field: ContactPunt title/naam
+    ##########################################################
+    ext:contactPTitleF a form:Field ;
+        sh:name "Naam" ;
+        sh:order 2 ;
+        sh:path schema:name ;
+        form:displayType displayTypes:lpdcInput ;
+        sh:group ext:contactpointsPg-sub .
+
+    ##########################################################
     # Field: ContactPunt email
     ##########################################################
     ext:contactPEmailF a form:Field ;
         sh:name "Email" ;
-        sh:order 2 ;
+        sh:order 3 ;
         form:validations [
           a form:ValidEmail ;
           form:grouping form:MatchEvery ;
@@ -1293,7 +1304,7 @@ ext:contactpointsHeading a form:Field;
     ##########################################################
     ext:contactPTelephoneF a form:Field ;
         sh:name "Telefoon" ;
-        sh:order 3 ;
+        sh:order 4 ;
         form:validations [
           a form:ValidPhoneNumber ;
           form:grouping form:MatchEvery ;
@@ -1310,7 +1321,7 @@ ext:contactpointsHeading a form:Field;
     ##########################################################
     ext:contactPageF a form:Field ;
         sh:name "Website URL" ;
-        sh:order 4 ;
+        sh:order 5 ;
         form:validations [
           a form:WebUriConstraint ;
           form:grouping form:MatchEvery ;
@@ -1326,7 +1337,7 @@ ext:contactpointsHeading a form:Field;
     ##########################################################
     ext:contactPOpeningF a form:Field ;
         sh:name "Openingsuren" ;
-        sh:order 5 ;
+        sh:order 6 ;
         sh:path schema:openingHours ;
         form:displayType displayTypes:selectWithCreate ;
         sh:group ext:contactpointsPg-sub .
@@ -1338,7 +1349,7 @@ ext:contactpointsHeading a form:Field;
             sh:order 1 .
 
         ext:contactPointAddressHeading a form:Field;
-            sh:order 6;
+            sh:order 7;
             sh:name "Adres";
             form:help "Tijdens het invullen van de adresvelden worden er suggesties gedaan vanuit het Adressenregister.<p>Wordt een adres niet gevonden, dan is hij niet bekend is bij het Adressenregister. Laat het adres daar dan eerst registreren.</p><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#adres'>Meer info</a></p>" ;
             form:options """

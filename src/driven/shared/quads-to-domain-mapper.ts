@@ -700,6 +700,13 @@ export class QuadsToDomainMapper {
       .filter((languageString) => languageString != undefined);
   }
 
+  private name(id: Iri): string | undefined {
+    return this.storeAccess.uniqueValue(
+      this.asNamedOrBlankNode(id),
+      NS.schema("name"),
+    );
+  }
+
   private url(id: Iri): string | undefined {
     const urlValue = this.storeAccess.uniqueValue(
       this.asNamedOrBlankNode(id),
@@ -996,6 +1003,7 @@ export class QuadsToDomainMapper {
           contactPointId,
           this.uuid(contactPointId),
           this.url(contactPointId),
+          this.name(contactPointId),
           this.email(contactPointId),
           this.telephone(contactPointId),
           this.openingHours(contactPointId),

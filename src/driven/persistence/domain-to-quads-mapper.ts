@@ -1218,6 +1218,13 @@ export class DomainToQuadsMapper {
               contactPoint.url,
             )
           : undefined,
+        contactPoint.name !== undefined
+          ? this.buildQuad(
+              namedNode(contactPoint.id.value),
+              NS.schema("name"),
+              literal(contactPoint.name, NS.xsd("string")),
+            )
+          : undefined,
         contactPoint.email !== undefined
           ? this.buildQuad(
               namedNode(contactPoint.id.value),
