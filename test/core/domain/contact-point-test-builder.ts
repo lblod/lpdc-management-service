@@ -21,6 +21,7 @@ export function aFullContactPointForInstance(): ContactPointBuilder {
     .withId(ContactPointBuilder.buildIri(uniqueId))
     .withUuid(uniqueId)
     .withUrl(ContactPointTestBuilder.URL)
+    .withName(ContactPointTestBuilder.NAME)
     .withEmail(ContactPointTestBuilder.EMAIL)
     .withTelephone(ContactPointTestBuilder.TELEPHONE)
     .withOpeningHours(ContactPointTestBuilder.OPENING_HOURS)
@@ -34,6 +35,7 @@ export function anotherFullContactPointForInstance(): ContactPointBuilder {
     .withId(ContactPointBuilder.buildIri(uniqueId))
     .withUuid(uniqueId)
     .withUrl(ContactPointTestBuilder.ANOTHER_URL)
+    .withName(ContactPointTestBuilder.ANOTHER_NAME)
     .withEmail(ContactPointTestBuilder.ANOTHER_EMAIL)
     .withTelephone(ContactPointTestBuilder.ANOTHER_TELEPHONE)
     .withOpeningHours(ContactPointTestBuilder.ANOTHER_OPENING_HOURS)
@@ -60,6 +62,8 @@ export function anotherFullContactPointForInstanceSnapshot(): ContactPointBuilde
 export class ContactPointTestBuilder {
   public static readonly EMAIL = "test@leuven.com";
   public static readonly ANOTHER_EMAIL = "test@gent.com";
+  public static readonly NAME = "Gemeentelijke contactpunt Leuven";
+  public static readonly ANOTHER_NAME = "Gemeentelijke contactpunt Gent";
   public static readonly TELEPHONE = "016123123";
   public static readonly ANOTHER_TELEPHONE = "016456456";
   public static readonly OPENING_HOURS = "Everyday from 09:00 - 17:00";

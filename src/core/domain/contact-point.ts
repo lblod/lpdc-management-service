@@ -7,6 +7,7 @@ export class ContactPoint {
   private readonly _id: Iri;
   private readonly _uuid: string | undefined; //required for mu-cl-resources.
   private readonly _url: string | undefined;
+  private readonly _name: string | undefined;
   private readonly _email: string | undefined;
   private readonly _telephone: string | undefined;
   private readonly _openingHours: string | undefined;
@@ -17,6 +18,7 @@ export class ContactPoint {
     id: Iri,
     uuid: string | undefined,
     url: string | undefined,
+    name: string | undefined,
     email: string | undefined,
     telephone: string | undefined,
     openingHours: string | undefined,
@@ -26,6 +28,7 @@ export class ContactPoint {
     this._id = requiredValue(id, "id");
     this._uuid = uuid;
     this._url = url;
+    this._name = name;
     this._email = email;
     this._telephone = telephone;
     this._openingHours = openingHours;
@@ -38,6 +41,7 @@ export class ContactPoint {
       contactPoint.id,
       requiredValue(contactPoint.uuid, "uuid"),
       contactPoint.url,
+      contactPoint.name,
       contactPoint.email,
       contactPoint.telephone,
       contactPoint.openingHours,
@@ -53,6 +57,7 @@ export class ContactPoint {
       contactPoint.id,
       undefined,
       contactPoint.url,
+      contactPoint.name,
       contactPoint.email,
       contactPoint.telephone,
       contactPoint.openingHours,
@@ -67,6 +72,7 @@ export class ContactPoint {
     id: Iri,
     uuid: string | undefined,
     url: string | undefined,
+    name: string | undefined,
     email: string | undefined,
     telephone: string | undefined,
     openingHours: string | undefined,
@@ -77,6 +83,7 @@ export class ContactPoint {
       id,
       uuid,
       url,
+      name,
       email,
       telephone,
       openingHours,
@@ -95,6 +102,10 @@ export class ContactPoint {
 
   get url(): string | undefined {
     return this._url;
+  }
+
+  get name(): string | undefined {
+    return this._name;
   }
 
   get email(): string | undefined {
@@ -128,6 +139,7 @@ export class ContactPoint {
 
   public isEmpty(): boolean {
     const hasNoEmail = this._email === undefined || this._email.trim() === "";
+    const hasNoName = this._name === undefined || this._name.trim() === "";
     const hasNoTelephone =
       this._telephone === undefined || this._telephone.trim() === "";
     const hasNoUrl = this._url === undefined || this._url.trim() === "";
@@ -137,6 +149,7 @@ export class ContactPoint {
 
     return (
       hasNoUrl &&
+      hasNoName &&
       hasNoEmail &&
       hasNoTelephone &&
       hasNoOpeningHours &&
@@ -148,6 +161,7 @@ export class ContactPointBuilder {
   private id: Iri;
   private uuid: string | undefined;
   private url: string | undefined;
+  private name: string | undefined;
   private email: string | undefined;
   private telephone: string | undefined;
   private openingHours: string | undefined;
@@ -163,6 +177,7 @@ export class ContactPointBuilder {
       .withId(contactPoint.id)
       .withUuid(contactPoint.uuid)
       .withUrl(contactPoint.url)
+      .withName(contactPoint.name)
       .withEmail(contactPoint.email)
       .withTelephone(contactPoint.telephone)
       .withOpeningHours(contactPoint.openingHours)
@@ -182,6 +197,11 @@ export class ContactPointBuilder {
 
   public withUrl(url: string): ContactPointBuilder {
     this.url = url;
+    return this;
+  }
+
+  public withName(name: string): ContactPointBuilder {
+    this.name = name;
     return this;
   }
 
@@ -215,6 +235,7 @@ export class ContactPointBuilder {
       this.id,
       this.uuid,
       this.url,
+      this.name,
       this.email,
       this.telephone,
       this.openingHours,

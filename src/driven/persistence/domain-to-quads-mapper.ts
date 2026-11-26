@@ -53,6 +53,8 @@ export class DomainToQuadsMapper {
         : undefined,
       this.startDate(concept.id, concept.startDate),
       this.endDate(concept.id, concept.endDate),
+      this.availabilityStarts(concept.id, concept.availabilityStarts),
+      this.availabilityEnds(concept.id, concept.availabilityEnds),
       this.type(concept.id, concept.type),
       ...this.title(concept.id, concept.title),
       ...this.description(concept.id, concept.description),
@@ -103,6 +105,14 @@ export class DomainToQuadsMapper {
       ),
       this.startDate(conceptSnapshot.id, conceptSnapshot.startDate),
       this.endDate(conceptSnapshot.id, conceptSnapshot.endDate),
+      this.availabilityStarts(
+        conceptSnapshot.id,
+        conceptSnapshot.availabilityStarts,
+      ),
+      this.availabilityEnds(
+        conceptSnapshot.id,
+        conceptSnapshot.availabilityEnds,
+      ),
       this.type(conceptSnapshot.id, conceptSnapshot.type),
       ...this.title(conceptSnapshot.id, conceptSnapshot.title),
       ...this.description(conceptSnapshot.id, conceptSnapshot.description),
@@ -198,6 +208,8 @@ export class DomainToQuadsMapper {
       ...this.regulation(instance.id, instance.regulation),
       this.startDate(instance.id, instance.startDate),
       this.endDate(instance.id, instance.endDate),
+      this.availabilityStarts(instance.id, instance.availabilityStarts),
+      this.availabilityEnds(instance.id, instance.availabilityEnds),
       this.type(instance.id, instance.type),
       ...this.targetAudiences(instance.id, instance.targetAudiences),
       ...this.themes(instance.id, instance.themes),
@@ -288,6 +300,14 @@ export class DomainToQuadsMapper {
       ...this.regulation(instanceSnapshot.id, instanceSnapshot.regulation),
       this.startDate(instanceSnapshot.id, instanceSnapshot.startDate),
       this.endDate(instanceSnapshot.id, instanceSnapshot.endDate),
+      this.availabilityStarts(
+        instanceSnapshot.id,
+        instanceSnapshot.availabilityStarts,
+      ),
+      this.availabilityEnds(
+        instanceSnapshot.id,
+        instanceSnapshot.availabilityEnds,
+      ),
       this.type(instanceSnapshot.id, instanceSnapshot.type),
       ...this.targetAudiences(
         instanceSnapshot.id,
@@ -402,6 +422,14 @@ export class DomainToQuadsMapper {
       this.endDate(
         publishedInstanceSnapshot.id,
         publishedInstanceSnapshot.endDate,
+      ),
+      this.availabilityStarts(
+        publishedInstanceSnapshot.id,
+        publishedInstanceSnapshot.availabilityStarts,
+      ),
+      this.availabilityEnds(
+        publishedInstanceSnapshot.id,
+        publishedInstanceSnapshot.availabilityEnds,
       ),
       this.type(publishedInstanceSnapshot.id, publishedInstanceSnapshot.type),
       ...this.targetAudiences(
@@ -521,6 +549,32 @@ export class DomainToQuadsMapper {
       ? this.buildQuad(
           namedNode(id.value),
           NS.schema("endDate"),
+          literal(value.value, NS.xsd("dateTime")),
+        )
+      : undefined;
+  }
+
+  private availabilityStarts(
+    id: Iri,
+    value: FormatPreservingDate | undefined,
+  ): Statement | undefined {
+    return value
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.schema("availabilityStarts"),
+          literal(value.value, NS.xsd("dateTime")),
+        )
+      : undefined;
+  }
+
+  private availabilityEnds(
+    id: Iri,
+    value: FormatPreservingDate | undefined,
+  ): Statement | undefined {
+    return value
+      ? this.buildQuad(
+          namedNode(id.value),
+          NS.schema("availabilityEnds"),
           literal(value.value, NS.xsd("dateTime")),
         )
       : undefined;
@@ -1162,6 +1216,13 @@ export class DomainToQuadsMapper {
               namedNode(contactPoint.id.value),
               NS.schema("url"),
               contactPoint.url,
+            )
+          : undefined,
+        contactPoint.name !== undefined
+          ? this.buildQuad(
+              namedNode(contactPoint.id.value),
+              NS.schema("name"),
+              literal(contactPoint.name, NS.xsd("string")),
             )
           : undefined,
         contactPoint.email !== undefined

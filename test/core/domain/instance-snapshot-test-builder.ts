@@ -323,6 +323,8 @@ export class InstanceSnapshotTestBuilder {
   private regulation: LanguageString | undefined;
   private startDate: FormatPreservingDate | undefined;
   private endDate: FormatPreservingDate | undefined;
+  private availabilityStarts: FormatPreservingDate | undefined;
+  private availabilityEnds: FormatPreservingDate | undefined;
   private type: ProductType | undefined;
   private targetAudiences: TargetAudienceType[] = [];
   private themes: ThemeType[] = [];
@@ -401,6 +403,20 @@ export class InstanceSnapshotTestBuilder {
     endDate: FormatPreservingDate,
   ): InstanceSnapshotTestBuilder {
     this.endDate = endDate;
+    return this;
+  }
+
+  public withAvailabilityStarts(
+    availabilityStarts: FormatPreservingDate,
+  ): InstanceSnapshotTestBuilder {
+    this.availabilityStarts = availabilityStarts;
+    return this;
+  }
+
+  public withAvailabilityEnds(
+    availabilityEnds: FormatPreservingDate,
+  ): InstanceSnapshotTestBuilder {
+    this.availabilityEnds = availabilityEnds;
     return this;
   }
 
@@ -570,6 +586,8 @@ export class InstanceSnapshotTestBuilder {
       this.regulation,
       this.startDate,
       this.endDate,
+      this.availabilityStarts,
+      this.availabilityEnds,
       this.type,
       this.targetAudiences,
       this.themes,

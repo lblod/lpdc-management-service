@@ -308,6 +308,8 @@ export class ConceptTestBuilder {
   private regulation: LanguageString | undefined;
   private startDate: FormatPreservingDate | undefined;
   private endDate: FormatPreservingDate | undefined;
+  private availabilityStarts: FormatPreservingDate | undefined;
+  private availabilityEnds: FormatPreservingDate | undefined;
   private type: ProductType | undefined;
   private targetAudiences: TargetAudienceType[] = [];
   private themes: ThemeType[] = [];
@@ -375,6 +377,20 @@ export class ConceptTestBuilder {
 
   public withEndDate(endDate: FormatPreservingDate): ConceptTestBuilder {
     this.endDate = endDate;
+    return this;
+  }
+
+  public withAvailabilityStarts(
+    availabilityStarts: FormatPreservingDate,
+  ): ConceptTestBuilder {
+    this.availabilityStarts = availabilityStarts;
+    return this;
+  }
+
+  public withAvailabilityEnds(
+    availabilityEnds: FormatPreservingDate,
+  ): ConceptTestBuilder {
+    this.availabilityEnds = availabilityEnds;
     return this;
   }
 
@@ -524,6 +540,8 @@ export class ConceptTestBuilder {
       this.regulation,
       this.startDate,
       this.endDate,
+      this.availabilityStarts,
+      this.availabilityEnds,
       this.type,
       this.targetAudiences,
       this.themes,

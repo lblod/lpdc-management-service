@@ -508,6 +508,8 @@ ext:rulesHeading a form:Field;
      form:removeLabel "Verwijder procedure";
      form:includes ext:ruleTitleF;
      form:includes ext:ruleDescriptionF;
+     form:includes ext:ruleStartDateF;
+     form:includes ext:ruleEndDateF;
      form:includes ext:ruleIsDigitallyRequestableF;
      form:includes ext:procedureWebsitesHeading;
      form:includes ext:procedureWebsitesL;
@@ -583,11 +585,42 @@ ext:rulesHeading a form:Field;
         sh:group ext:rulesPg-sub .
 
     ##########################################################
+    # Field: Aanvraagbaar van
+    ##########################################################
+    ext:ruleStartDateF a form:Field ;
+        sh:name "Aanvraagbaar van" ;
+        sh:order 3 ;
+        sh:path schema:startDate ;
+        form:options """
+                      {
+                        "conceptHelpText": "Vul een start- en einddatum in wanneer het product slechts in een bepaalde periode aangevraagd kan worden. De datum van een product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#aanvraagbaar-van-tot-en-met'>Meer info</a></p>",
+                        "helpText": "Vul een start- en einddatum in wanneer het product slechts in een bepaalde periode aangevraagd kan worden. De datum van een product heeft geen invloed op de beschikbaarheid van de informatie in LPDC of IPDC. Hergebruikers kunnen wel beslissen om op basis van deze data informatie al dan niet te tonen op hun kanalen.<p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#aanvraagbaar-van-tot-en-met'>Meer info</a></p>",
+                        "sourceNodeViaInversePath": "http://purl.org/vocab/cpsv#follows"
+                      }
+                     """;
+        form:displayType displayTypes:lpdcDateTime ;
+        sh:group ext:rulesPg-sub .
+
+    ##########################################################
+    # Field: Aanvraagbaar tot en met
+    ##########################################################
+    ext:ruleEndDateF a form:Field ;
+        sh:name "Aanvraagbaar tot en met" ;
+        sh:order 4 ;
+        sh:path schema:endDate ;
+        form:options """
+                      {
+                        "sourceNodeViaInversePath": "http://purl.org/vocab/cpsv#follows"
+                      }
+                     """;
+        form:displayType displayTypes:lpdcDateTime ;
+        sh:group ext:rulesPg-sub .
+
+    ##########################################################
     # Field: Digitaal aanvraagbaar
     ##########################################################
     ext:ruleIsDigitallyRequestableF a form:Field ;
         sh:name "Digitaal aanvraagbaar" ;
-        sh:order 3 ;
         sh:path lpdcExt:isDigitallyRequestable ;
         form:displayType displayTypes:lpdcConfirmRadios ;
         form:options """
@@ -596,6 +629,7 @@ ext:rulesHeading a form:Field;
             "helpText": "Geef aan of het product digitaal kan worden opgestart, aangevraagd of ingediend. Kan dit, voeg dan de rechtstreekse link naar de start van de aanvraag toe onder Website Procedure."
           }
         """;
+        sh:order 5 ;
         sh:group ext:rulesPg-sub .
 
         ##########################################################
@@ -1265,6 +1299,7 @@ ext:contactpointsHeading a form:Field;
   ext:contactpointsSf a form:SubForm;
      form:removeLabel "Verwijder contactpunt";
      form:includes ext:contactpointHeading-sub;
+     form:includes ext:contactPTitleF;
      form:includes ext:contactPEmailF;
      form:includes ext:contactPTelephoneF;
      form:includes ext:contactPageF;
@@ -1273,11 +1308,21 @@ ext:contactpointsHeading a form:Field;
      form:includes ext:contactPointAddressL.
 
     ##########################################################
+    # Field: ContactPunt title/naam
+    ##########################################################
+    ext:contactPTitleF a form:Field ;
+        sh:name "Naam" ;
+        sh:order 2 ;
+        sh:path schema:name ;
+        form:displayType displayTypes:lpdcInput ;
+        sh:group ext:contactpointsPg-sub .
+
+    ##########################################################
     # Field: ContactPunt email
     ##########################################################
     ext:contactPEmailF a form:Field ;
         sh:name "Email" ;
-        sh:order 2 ;
+        sh:order 3 ;
         form:validations [
           a form:ValidEmail ;
           form:grouping form:MatchEvery ;
@@ -1293,7 +1338,7 @@ ext:contactpointsHeading a form:Field;
     ##########################################################
     ext:contactPTelephoneF a form:Field ;
         sh:name "Telefoon" ;
-        sh:order 3 ;
+        sh:order 4 ;
         form:validations [
           a form:ValidPhoneNumber ;
           form:grouping form:MatchEvery ;
@@ -1310,7 +1355,7 @@ ext:contactpointsHeading a form:Field;
     ##########################################################
     ext:contactPageF a form:Field ;
         sh:name "Website URL" ;
-        sh:order 4 ;
+        sh:order 5 ;
         form:validations [
           a form:WebUriConstraint ;
           form:grouping form:MatchEvery ;
@@ -1326,7 +1371,7 @@ ext:contactpointsHeading a form:Field;
     ##########################################################
     ext:contactPOpeningF a form:Field ;
         sh:name "Openingsuren" ;
-        sh:order 5 ;
+        sh:order 6 ;
         sh:path schema:openingHours ;
         form:displayType displayTypes:selectWithCreate ;
         sh:group ext:contactpointsPg-sub .
@@ -1338,7 +1383,7 @@ ext:contactpointsHeading a form:Field;
             sh:order 1 .
 
         ext:contactPointAddressHeading a form:Field;
-            sh:order 6;
+            sh:order 7;
             sh:name "Adres";
             form:help "Tijdens het invullen van de adresvelden worden er suggesties gedaan vanuit het Adressenregister.<p>Wordt een adres niet gevonden, dan is hij niet bekend is bij het Adressenregister. Laat het adres daar dan eerst registreren.</p><p><a target='_blank' rel='noopener noreferrer' href='https://abb-vlaanderen.gitbook.io/informatie-lpdc/informatievelden-en-redactietips-voor-lpdc/tips-voor-het-invullen-van-een-productfiche#adres'>Meer info</a></p>" ;
             form:options """

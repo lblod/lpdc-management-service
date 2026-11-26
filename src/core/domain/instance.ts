@@ -45,6 +45,8 @@ export class Instance {
   private readonly _regulation: LanguageString | undefined;
   private readonly _startDate: FormatPreservingDate | undefined;
   private readonly _endDate: FormatPreservingDate | undefined;
+  private readonly _availabilityStarts: FormatPreservingDate | undefined;
+  private readonly _availabilityEnds: FormatPreservingDate | undefined;
   private readonly _type: ProductType | undefined;
   private readonly _targetAudiences: TargetAudienceType[];
   private readonly _themes: ThemeType[];
@@ -96,6 +98,8 @@ export class Instance {
     regulation: LanguageString | undefined,
     startDate: FormatPreservingDate | undefined,
     endDate: FormatPreservingDate | undefined,
+    availabilityStarts: FormatPreservingDate | undefined,
+    availabilityEnds: FormatPreservingDate | undefined,
     type: ProductType | undefined,
     targetAudiences: TargetAudienceType[],
     themes: ThemeType[],
@@ -151,6 +155,8 @@ export class Instance {
     this._regulation = regulation;
     this._startDate = startDate;
     this._endDate = endDate;
+    this._availabilityStarts = availabilityStarts;
+    this._availabilityEnds = availabilityEnds;
     this._type = type;
     this._targetAudiences = requireNoDuplicates(
       asSortedArray(targetAudiences),
@@ -412,6 +418,14 @@ export class Instance {
     return this._endDate;
   }
 
+  get availabilityStarts(): FormatPreservingDate | undefined {
+    return this._availabilityStarts;
+  }
+
+  get availabilityEnds(): FormatPreservingDate | undefined {
+    return this._availabilityEnds;
+  }
+
   get type(): ProductType | undefined {
     return this._type;
   }
@@ -652,6 +666,8 @@ export class InstanceBuilder {
   private regulation: LanguageString | undefined;
   private startDate: FormatPreservingDate | undefined;
   private endDate: FormatPreservingDate | undefined;
+  private availabilityStarts: FormatPreservingDate | undefined;
+  private availabilityEnds: FormatPreservingDate | undefined;
   private type: ProductType | undefined;
   private targetAudiences: TargetAudienceType[] = [];
   private themes: ThemeType[] = [];
@@ -708,6 +724,8 @@ export class InstanceBuilder {
       .withRegulation(instance.regulation)
       .withStartDate(instance.startDate)
       .withEndDate(instance.endDate)
+      .withAvailabilityStarts(instance.availabilityStarts)
+      .withAvailabilityEnds(instance.availabilityEnds)
       .withType(instance.type)
       .withTargetAudiences(instance.targetAudiences)
       .withThemes(instance.themes)
@@ -800,6 +818,20 @@ export class InstanceBuilder {
 
   public withEndDate(endDate: FormatPreservingDate): InstanceBuilder {
     this.endDate = endDate;
+    return this;
+  }
+
+  public withAvailabilityStarts(
+    availabilityStarts: FormatPreservingDate,
+  ): InstanceBuilder {
+    this.availabilityStarts = availabilityStarts;
+    return this;
+  }
+
+  public withAvailabilityEnds(
+    availabilityEnds: FormatPreservingDate,
+  ): InstanceBuilder {
+    this.availabilityEnds = availabilityEnds;
     return this;
   }
 
@@ -1040,6 +1072,8 @@ export class InstanceBuilder {
       this.regulation,
       this.startDate,
       this.endDate,
+      this.availabilityStarts,
+      this.availabilityEnds,
       this.type,
       this.targetAudiences,
       this.themes,

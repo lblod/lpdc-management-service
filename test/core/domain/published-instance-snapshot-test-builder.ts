@@ -316,6 +316,8 @@ export class PublishedInstanceSnapshotTestBuilder extends PublishedInstanceSnaps
   private regulation: LanguageString | undefined;
   private startDate: FormatPreservingDate | undefined;
   private endDate: FormatPreservingDate | undefined;
+  private availabilityStarts: FormatPreservingDate | undefined;
+  private availabilityEnds: FormatPreservingDate | undefined;
   private type: ProductType | undefined;
   private targetAudiences: TargetAudienceType[];
   private themes: ThemeType[];
@@ -407,6 +409,20 @@ export class PublishedInstanceSnapshotTestBuilder extends PublishedInstanceSnaps
     endDate: FormatPreservingDate,
   ): PublishedInstanceSnapshotTestBuilder {
     this.endDate = endDate;
+    return this;
+  }
+
+  withAvailabilityStarts(
+    availabilityStarts: FormatPreservingDate,
+  ): PublishedInstanceSnapshotTestBuilder {
+    this.availabilityStarts = availabilityStarts;
+    return this;
+  }
+
+  withAvailabilityEnds(
+    availabilityEnds: FormatPreservingDate,
+  ): PublishedInstanceSnapshotTestBuilder {
+    this.availabilityEnds = availabilityEnds;
     return this;
   }
 
@@ -565,6 +581,8 @@ export class PublishedInstanceSnapshotTestBuilder extends PublishedInstanceSnaps
       this.regulation,
       this.startDate,
       this.endDate,
+      this.availabilityStarts,
+      this.availabilityEnds,
       this.type,
       this.targetAudiences,
       this.themes,
